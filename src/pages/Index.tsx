@@ -1,26 +1,43 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { DateTabs } from '@/components/news/DateTabs';
 import { NewsCard } from '@/components/news/NewsCard';
+import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useNewsByDate, useRefreshNews } from '@/hooks/useNews';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Filter, ChevronDown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Currency } from '@/types/news';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>([]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   
   const { data: news, isLoading, error, dataUpdatedAt } = useNewsByDate(selectedDate);
   const { mutate: refreshNews, isPending: isRefreshing } = useRefreshNews();
+  
+  // Filter news by selected currencies
+  const filteredNews = useMemo(() => {
+    if (!news) return [];
+    if (selectedCurrencies.length === 0) return news;
+    
+    return news.filter((item) =>
+      item.affected_currencies.some((currency) =>
+        selectedCurrencies.includes(currency)
+      )
+    );
+  }, [news, selectedCurrencies]);
   
   const handleRefresh = () => {
     refreshNews();
   };
   
-  const featuredNews = news?.[0];
-  const otherNews = news?.slice(1) || [];
+  const featuredNews = filteredNews[0];
+  const otherNews = filteredNews.slice(1);
   
   const lastUpdated = dataUpdatedAt 
     ? formatDistanceToNow(dataUpdatedAt, { addSuffix: true, locale: es })
@@ -39,9 +56,42 @@ const Index = () => {
           isRefreshing={isRefreshing}
         />
         
+        {/* Currency Filters */}
+        <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+          <CollapsibleTrigger asChild>
+            <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full justify-between p-3 rounded-lg bg-card border border-border">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                <span>Filtros</span>
+                {selectedCurrencies.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+                    {selectedCurrencies.length}
+                  </span>
+                )}
+              </div>
+              <ChevronDown className={`w-4 h-4 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-3">
+            <div className="p-4 rounded-lg bg-card border border-border">
+              <CurrencyFilter
+                selected={selectedCurrencies}
+                onChange={setSelectedCurrencies}
+              />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+        
         {/* Section Title */}
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-foreground">Principales Noticias</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-foreground">Principales Noticias</h1>
+            {selectedCurrencies.length > 0 && (
+              <span className="text-sm text-muted-foreground">
+                ({filteredNews.length} resultados)
+              </span>
+            )}
+          </div>
           <span className="text-xs text-muted-foreground">
             Última actualización: {lastUpdated}
           </span>
@@ -77,11 +127,23 @@ const Index = () => {
         )}
         
         {/* News Content */}
-        {!isLoading && !error && news && (
+        {!isLoading && !error && (
           <>
-            {news.length === 0 ? (
+            {filteredNews.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <p className="text-muted-foreground">No hay noticias para esta fecha</p>
+                <p className="text-muted-foreground">
+                  {selectedCurrencies.length > 0
+                    ? 'No hay noticias para las divisas seleccionadas'
+                    : 'No hay noticias para esta fecha'}
+                </p>
+                {selectedCurrencies.length > 0 && (
+                  <button
+                    onClick={() => setSelectedCurrencies([])}
+                    className="mt-3 text-sm text-primary hover:text-primary/80"
+                  >
+                    Limpiar filtros
+                  </button>
+                )}
               </div>
             ) : (
               <>
