@@ -6,18 +6,55 @@ import { CurrencyBadgeList } from '@/components/news/CurrencyBadge';
 import { BiasBadge } from '@/components/news/BiasBadge';
 import { ImpactChart } from '@/components/news/ImpactChart';
 import { HistoricalChart } from '@/components/news/HistoricalChart';
-import { getNewsById } from '@/data/mockNews';
+import { useNewsDetail } from '@/hooks/useNews';
 import { ArrowLeft, Clock, ExternalLink, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertCircle } from 'lucide-react';
 
 const NewsDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const news = getNewsById(id || '1');
+  const { data: news, isLoading, error } = useNewsDetail(id || '');
   
-  if (!news) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Noticia no encontrada</p>
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Header />
+        <main className="container py-4 space-y-6 max-w-4xl">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
+  
+  if (error || !news) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Header />
+        <main className="container py-4 flex flex-col items-center justify-center min-h-[50vh]">
+          <AlertCircle className="w-12 h-12 text-destructive mb-4" />
+          <h2 className="text-lg font-semibold text-foreground mb-2">
+            {error ? 'Error al cargar la noticia' : 'Noticia no encontrada'}
+          </h2>
+          <p className="text-muted-foreground text-sm mb-4">
+            {error instanceof Error ? error.message : 'La noticia que buscas no existe'}
+          </p>
+          <Link to="/">
+            <Button variant="outline" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Volver a noticias
+            </Button>
+          </Link>
+        </main>
+        <BottomNav />
       </div>
     );
   }
