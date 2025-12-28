@@ -10,7 +10,6 @@ import { AlertCircle, Filter, ChevronDown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Currency } from '@/types/news';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -57,30 +56,31 @@ const Index = () => {
         />
         
         {/* Currency Filters */}
-        <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full justify-between p-3 rounded-lg bg-card border border-border">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4" />
-                <span>Filtros</span>
-                {selectedCurrencies.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
-                    {selectedCurrencies.length}
-                  </span>
-                )}
-              </div>
-              <ChevronDown className={`w-4 h-4 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-3">
-            <div className="p-4 rounded-lg bg-card border border-border">
+        <div className="space-y-3">
+          <button 
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full justify-between p-3 rounded-lg bg-card border border-border"
+          >
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              <span>Filtros</span>
+              {selectedCurrencies.length > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+                  {selectedCurrencies.length}
+                </span>
+              )}
+            </div>
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {filtersOpen && (
+            <div className="p-4 rounded-lg bg-card border border-border animate-fade-in">
               <CurrencyFilter
                 selected={selectedCurrencies}
                 onChange={setSelectedCurrencies}
               />
             </div>
-          </CollapsibleContent>
-        </Collapsible>
+          )}
+        </div>
         
         {/* Section Title */}
         <div className="flex items-center justify-between">
