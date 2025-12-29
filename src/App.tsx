@@ -6,6 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NewsDetail from "./pages/NewsDetail";
 import Monitoring from "./pages/Monitoring";
+import Settings from "./pages/Settings";
+import PersonalInfo from "./pages/settings/PersonalInfo";
+import Documents from "./pages/settings/Documents";
+import Security from "./pages/settings/Security";
+import Notifications from "./pages/settings/Notifications";
+import Appearance from "./pages/settings/Appearance";
+import Referrals from "./pages/Referrals";
+import Broker from "./pages/Broker";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +30,17 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/news/:id" element={<NewsDetail />} />
             <Route path="/monitoring" element={<Monitoring />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings/profile" element={<Settings />} />
+            <Route path="/settings/personal" element={<PersonalInfo />} />
+            <Route path="/settings/documents" element={<Documents />} />
+            <Route path="/settings/security" element={<Security />} />
+            <Route path="/settings/notifications" element={<Notifications />} />
+            <Route path="/settings/appearance" element={<Appearance />} />
+            <Route path="/settings/language" element={<Appearance />} />
+            <Route path="/referrals" element={<Referrals />} />
+            <Route path="/broker" element={<Broker />} />
+            <Route path="/support" element={<Support />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

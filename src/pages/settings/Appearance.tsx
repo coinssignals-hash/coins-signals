@@ -1,0 +1,107 @@
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Header } from '@/components/layout/Header';
+import { BottomNav } from '@/components/layout/BottomNav';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Palette } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+export default function Appearance() {
+  const [theme, setTheme] = useState('dark');
+  const [language, setLanguage] = useState('es');
+  const [fontSize, setFontSize] = useState('100');
+  const [timezone, setTimezone] = useState('america-bogota');
+
+  return (
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
+      <Header />
+      
+      <main className="container py-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Link to="/settings">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <div>
+            <span className="text-xs text-muted-foreground">ID # 0572564</span>
+            <h1 className="text-xl font-bold text-foreground">Aspecto</h1>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="text-sm text-primary flex items-center gap-2">
+                <Palette className="w-4 h-4" />
+                Preferencias
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Tema</label>
+                <Select value={theme} onValueChange={setTheme}>
+                  <SelectTrigger className="bg-secondary border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dark">Oscuro</SelectItem>
+                    <SelectItem value="light">Claro</SelectItem>
+                    <SelectItem value="system">Sistema</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Idioma</label>
+                <Select value={language} onValueChange={setLanguage}>
+                  <SelectTrigger className="bg-secondary border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="es">Español</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="pt">Português</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Tamaño de Letra</label>
+                <Select value={fontSize} onValueChange={setFontSize}>
+                  <SelectTrigger className="bg-secondary border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="75">75%</SelectItem>
+                    <SelectItem value="100">100%</SelectItem>
+                    <SelectItem value="125">125%</SelectItem>
+                    <SelectItem value="150">150%</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Zona Horaria</label>
+                <Select value={timezone} onValueChange={setTimezone}>
+                  <SelectTrigger className="bg-secondary border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="america-bogota">Bogotá, Quito UTC -05:00</SelectItem>
+                    <SelectItem value="america-new-york">New York UTC -05:00</SelectItem>
+                    <SelectItem value="europe-london">London UTC +00:00</SelectItem>
+                    <SelectItem value="asia-tokyo">Tokyo UTC +09:00</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+}
