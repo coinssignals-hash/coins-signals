@@ -1,197 +1,113 @@
 import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { Link2, Search, Shield, Eye, Send, CheckCircle } from 'lucide-react';
-
-const popularBrokers = [
-  { name: 'IG Group', deposit: '10$ Dolares', commission: '0.0 $', rating: 4.8 },
-  { name: 'OANDA', deposit: '1$ Dolar', commission: '0.1 $', rating: 4.7 },
-  { name: 'XM', deposit: '5$ Dolares', commission: '0.0 $', rating: 4.6 },
-  { name: 'Pepperstone', deposit: '200$ Dolares', commission: '0.0 $', rating: 4.5 },
-  { name: 'eToro', deposit: '50$ Dolares', commission: '0.0 $', rating: 4.4 },
-];
+import { BrokerCard, BrokerData } from '@/components/broker/BrokerCard';
+import { BrokerDetail } from '@/components/broker/BrokerDetail';
+import { BrokerSearch } from '@/components/broker/BrokerSearch';
+import { BrokerFilter } from '@/components/broker/BrokerFilter';
+import { brokersData } from '@/components/broker/brokersData';
+import { useNavigate } from 'react-router-dom';
 
 export default function Broker() {
-  const [connectionMethod, setConnectionMethod] = useState('api');
-  const [permissions, setPermissions] = useState({
-    readBalance: true,
-    sendOrders: false,
-    viewOperations: true,
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
+  const [selectedBroker, setSelectedBroker] = useState<BrokerData | null>(null);
+  const [filters, setFilters] = useState({
+    ubicacion: '',
+    moneda: '',
+    depositoInicial: '',
+    metodo: '',
+    enOperacion: '',
+    mercados: '',
   });
+
+  // Filter brokers based on search and category
+  const filteredBrokers = brokersData.filter((broker) => {
+    const matchesSearch = broker.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || 
+      (selectedCategory === 'forex' && broker.instrumentos.some(i => i.toLowerCase().includes('forex'))) ||
+      (selectedCategory === 'acciones' && broker.instrumentos.some(i => i.toLowerCase().includes('acciones'))) ||
+      (selectedCategory === 'materias' && broker.instrumentos.some(i => i.toLowerCase().includes('materias'))) ||
+      (selectedCategory === 'crypto' && broker.instrumentos.some(i => i.toLowerCase().includes('crypto')));
+    return matchesSearch && matchesCategory;
+  });
+
+  // If a broker is selected, show the detail view
+  if (selectedBroker) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Header />
+        <main className="container py-6">
+          <BrokerDetail broker={selectedBroker} onBack={() => setSelectedBroker(null)} />
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
       <main className="container py-6">
-        <div className="mb-6">
-          <span className="text-xs text-muted-foreground">ID # 0572564</span>
-          <h1 className="text-xl font-bold text-foreground">Vincular Broker</h1>
+        {/* Back button and title */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className="flex items-center gap-2 text-muted-foreground mb-4"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+
+        <div className="text-center mb-6">
+          <h1 className="text-primary font-medium">Busca el Broker a tu medida</h1>
+          <p className="text-sm text-primary/80">
+            Aumenta y asegura tus ganancia escogioendo un broker a tu medidas
+          </p>
         </div>
 
-        <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 mb-6">
-          <CardContent className="p-6 text-center">
-            <Link2 className="w-12 h-12 mx-auto text-primary mb-3" />
-            <h2 className="text-lg font-bold text-foreground mb-2">
-              Maneja hasta 5 cuentas Brokers a la vez
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Invierte de manera segura, Rápido y con mejores resultados.
-            </p>
-          </CardContent>
-        </Card>
+        {/* Search and Categories */}
+        <BrokerSearch
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          onAdvancedSearch={() => setShowAdvancedFilter(true)}
+        />
 
-        <Tabs defaultValue="connect" className="mb-6">
-          <TabsList className="w-full bg-secondary">
-            <TabsTrigger value="connect" className="flex-1">Conectar</TabsTrigger>
-            <TabsTrigger value="brokers" className="flex-1">Buscar Broker</TabsTrigger>
-          </TabsList>
+        {/* Advanced Filter Panel */}
+        {showAdvancedFilter && (
+          <div className="mt-4">
+            <BrokerFilter
+              filters={filters}
+              onFiltersChange={setFilters}
+              onSearch={() => {
+                // Apply filters logic here
+                console.log('Searching with filters:', filters);
+              }}
+              onClose={() => setShowAdvancedFilter(false)}
+            />
+          </div>
+        )}
 
-          <TabsContent value="connect" className="space-y-4 mt-4">
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-sm text-primary">Seleccionar Broker</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Buscar tu Broker" 
-                    className="pl-10 bg-secondary border-border"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Conecta tu cuenta, Opera de la mano de los Profesionales.
-                </p>
-              </CardContent>
-            </Card>
+        {/* Broker List */}
+        <div className="space-y-4 mt-6">
+          {filteredBrokers.map((broker) => (
+            <BrokerCard
+              key={broker.id}
+              broker={broker}
+              onSelect={setSelectedBroker}
+            />
+          ))}
+        </div>
 
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-sm text-primary">Método de Conexión</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <Button 
-                    variant={connectionMethod === 'api' ? 'default' : 'outline'}
-                    onClick={() => setConnectionMethod('api')}
-                    className="flex-1"
-                  >
-                    API Key
-                  </Button>
-                  <Button 
-                    variant={connectionMethod === 'oauth' ? 'default' : 'outline'}
-                    onClick={() => setConnectionMethod('oauth')}
-                    className="flex-1"
-                  >
-                    OAuth
-                  </Button>
-                </div>
-
-                {connectionMethod === 'api' && (
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-xs text-muted-foreground">ID o Correo</label>
-                      <Input placeholder="Introduce tu correo o número ID" className="bg-secondary border-border" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-muted-foreground">API Key</label>
-                      <Input placeholder="Introduce tu API Key" className="bg-secondary border-border" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs text-muted-foreground">Secreto API Key</label>
-                      <Input type="password" placeholder="Introduce tu Secreto API Key" className="bg-secondary border-border" />
-                    </div>
-                    <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                      <Shield className="w-4 h-4 mr-2" />
-                      Probar Conexión
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-sm text-primary">Permisos y Alcances</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-foreground">Leer Balance</span>
-                  </div>
-                  <Switch 
-                    checked={permissions.readBalance}
-                    onCheckedChange={(v) => setPermissions({...permissions, readBalance: v})}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2">
-                    <Send className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-foreground">Enviar Órdenes (Solo con Confirmación)</span>
-                  </div>
-                  <Switch 
-                    checked={permissions.sendOrders}
-                    onCheckedChange={(v) => setPermissions({...permissions, sendOrders: v})}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-foreground">Ver Operaciones Abiertas</span>
-                  </div>
-                  <Switch 
-                    checked={permissions.viewOperations}
-                    onCheckedChange={(v) => setPermissions({...permissions, viewOperations: v})}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="brokers" className="mt-4">
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-sm text-primary">
-                  Los 5 Brokers Más Populares Para Principiantes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-3 text-muted-foreground font-medium">Broker</th>
-                        <th className="text-left py-3 text-muted-foreground font-medium">Depósito</th>
-                        <th className="text-left py-3 text-muted-foreground font-medium">Comisión</th>
-                        <th className="text-right py-3 text-muted-foreground font-medium">Rating</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {popularBrokers.map((broker, index) => (
-                        <tr key={index} className="border-b border-border last:border-0">
-                          <td className="py-3 font-medium text-foreground">{broker.name}</td>
-                          <td className="py-3 text-muted-foreground">{broker.deposit}</td>
-                          <td className="py-3 text-primary">{broker.commission}</td>
-                          <td className="py-3 text-right text-accent">{broker.rating}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {filteredBrokers.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>No se encontraron brokers con los criterios seleccionados</p>
+          </div>
+        )}
       </main>
 
       <BottomNav />
