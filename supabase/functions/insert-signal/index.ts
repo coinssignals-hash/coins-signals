@@ -99,6 +99,31 @@ serve(async (req) => {
 
     console.log('Signal inserted successfully:', data.id);
 
+    // Send push notification to all subscribers
+    try {
+      const actionText = payload.action === 'BUY' ? 'COMPRAR' : 'VENDER';
+      const notificationResponse = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': expectedApiKey,
+        },
+        body: JSON.stringify({
+          title: `📈 ${payload.currency_pair} - ${actionText}`,
+          body: `Nueva señal: ${actionText} a ${payload.entry_price} | Probabilidad: ${payload.probability}%`,
+          url: '/',
+          signalId: data.id,
+          tag: `signal-${data.id}`,
+        }),
+      });
+
+      const notificationResult = await notificationResponse.json();
+      console.log('Push notification result:', notificationResult);
+    } catch (notifError) {
+      console.error('Failed to send push notification:', notifError);
+      // Don't fail the request if notification fails
+    }
+
     return new Response(
       JSON.stringify({ success: true, signal: data }),
       { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
