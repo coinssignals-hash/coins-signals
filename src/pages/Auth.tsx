@@ -18,7 +18,7 @@ const authSchema = emailSchema.extend({
   password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }).max(100),
 });
 
-type AuthMode = 'login' | 'register' | 'forgot' | 'reset';
+type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'verify-pending';
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
   // Check if we're in password reset mode (user clicked reset link in email)
@@ -217,11 +218,11 @@ export default function Auth() {
         });
         navigate('/');
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/auth`,
           },
         });
 
@@ -242,11 +243,20 @@ export default function Auth() {
           return;
         }
 
-        toast({
-          title: '¡Cuenta creada!',
-          description: 'Tu cuenta ha sido creada exitosamente',
-        });
-        navigate('/');
+        // Check if email confirmation is required
+        if (data.user && !data.session) {
+          setMode('verify-pending');
+          toast({
+            title: '¡Revisa tu email!',
+            description: 'Te hemos enviado un enlace de verificación',
+          });
+        } else {
+          toast({
+            title: '¡Cuenta creada!',
+            description: 'Tu cuenta ha sido creada exitosamente',
+          });
+          navigate('/');
+        }
       }
     } catch (error) {
       toast({
@@ -259,12 +269,48 @@ export default function Auth() {
     }
   };
 
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+        },
+      });
+
+      if (error) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      toast({
+        title: 'Email reenviado',
+        description: 'Revisa tu bandeja de entrada',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Ocurrió un error inesperado',
+        variant: 'destructive',
+      });
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const getTitle = () => {
     switch (mode) {
       case 'login': return 'Iniciar Sesión';
       case 'register': return 'Crear Cuenta';
       case 'forgot': return 'Recuperar Contraseña';
       case 'reset': return 'Nueva Contraseña';
+      case 'verify-pending': return 'Verifica tu Email';
     }
   };
 
@@ -274,12 +320,16 @@ export default function Auth() {
       case 'register': return 'Crea una cuenta para guardar tu progreso en la nube';
       case 'forgot': return 'Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña';
       case 'reset': return 'Ingresa tu nueva contraseña';
+      case 'verify-pending': return `Hemos enviado un enlace de verificación a ${email}`;
     }
   };
 
   const getIcon = () => {
     if (mode === 'forgot' || mode === 'reset') {
       return <KeyRound className="w-8 h-8 text-primary" />;
+    }
+    if (mode === 'verify-pending') {
+      return <Mail className="w-8 h-8 text-accent" />;
     }
     return <Mail className="w-8 h-8 text-primary" />;
   };
@@ -309,7 +359,40 @@ export default function Auth() {
             <p className="text-sm text-muted-foreground mt-2">{getDescription()}</p>
           </CardHeader>
           <CardContent>
-            {mode === 'forgot' ? (
+            {mode === 'verify-pending' ? (
+              <div className="space-y-6 text-center">
+                <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+                  <p className="text-sm text-foreground">
+                    Haz clic en el enlace que enviamos a tu email para activar tu cuenta.
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    ¿No recibiste el email?
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-border"
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                  >
+                    {resendLoading ? 'Enviando...' : 'Reenviar email de verificación'}
+                  </Button>
+                </div>
+
+                <Separator className="bg-border" />
+
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Volver a iniciar sesión
+                </button>
+              </div>
+            ) : mode === 'forgot' ? (
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
