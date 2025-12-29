@@ -6,7 +6,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Video, Headphones, Play, Download, Clock } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { ArrowLeft, FileText, Video, Headphones, Play, Clock, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const categories = [
@@ -130,6 +132,7 @@ export default function Courses() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('inicio');
   const [contentType, setContentType] = useState('lectura');
+  const { isLessonCompleted, progress } = useCourseProgress();
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -158,9 +161,17 @@ export default function Courses() {
           <p className="text-lg text-foreground">
             Bienvenido <span className="text-primary font-bold">Philip j. Fray</span>
           </p>
-          <h1 className="text-xl font-bold text-foreground">
+          <h1 className="text-xl font-bold text-foreground mb-3">
             Encuentra la mejor manera para tu aprendizaje
           </h1>
+          {progress.totalCompletedLessons > 0 && (
+            <div className="flex items-center gap-2 mt-2">
+              <CheckCircle className="w-4 h-4 text-primary" />
+              <span className="text-sm text-muted-foreground">
+                {progress.totalCompletedLessons} lecciones completadas
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Categories Navigation */}
@@ -242,37 +253,61 @@ export default function Courses() {
                       className="border border-border rounded-lg overflow-hidden"
                     >
                       <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-secondary/50">
-                        <div className="flex items-center gap-3 text-left">
+                        <div className="flex items-center gap-3 text-left flex-1">
                           <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
                             {getTypeIcon(module.type)}
                           </div>
-                          <div>
+                          <div className="flex-1">
                             <p className="font-medium text-foreground text-sm">{module.title}</p>
-                            <p className="text-xs text-muted-foreground">{module.lessons.length} lecciones</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-muted-foreground">{module.lessons.length} lecciones</p>
+                              {module.lessons.some(l => isLessonCompleted(l.id)) && (
+                                <span className="text-xs text-primary">
+                                  • {module.lessons.filter(l => isLessonCompleted(l.id)).length} completadas
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-4 pb-4">
                         <div className="space-y-2 mt-2">
-                          {module.lessons.map((lesson) => (
-                            <div 
-                              key={lesson.id}
-                              onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
-                              className="flex items-center justify-between p-3 rounded-lg bg-secondary/50 hover:bg-secondary cursor-pointer transition-colors group"
-                            >
-                              <div className="flex items-center gap-3">
-                                <span className="text-xs font-bold text-primary">{lesson.id}</span>
-                                <span className="text-sm text-foreground">{lesson.title}</span>
+                          {module.lessons.map((lesson) => {
+                            const completed = isLessonCompleted(lesson.id);
+                            return (
+                              <div 
+                                key={lesson.id}
+                                onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
+                                className={cn(
+                                  "flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors group",
+                                  completed 
+                                    ? "bg-primary/10 hover:bg-primary/20" 
+                                    : "bg-secondary/50 hover:bg-secondary"
+                                )}
+                              >
+                                <div className="flex items-center gap-3">
+                                  {completed ? (
+                                    <CheckCircle className="w-4 h-4 text-primary" />
+                                  ) : (
+                                    <span className="text-xs font-bold text-primary">{lesson.id}</span>
+                                  )}
+                                  <span className={cn(
+                                    "text-sm",
+                                    completed ? "text-foreground" : "text-foreground"
+                                  )}>
+                                    {lesson.title}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {lesson.duration}
+                                  </span>
+                                  <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
-                                  {lesson.duration}
-                                </span>
-                                <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                              </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </AccordionContent>
                     </AccordionItem>
