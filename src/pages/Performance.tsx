@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { startOfWeek, endOfWeek, format, getWeek } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { WeeklySummary } from '@/components/performance/WeeklySummary';
+import { WeekFilter } from '@/components/performance/WeekFilter';
 import { DayTabs } from '@/components/performance/DayTabs';
 import { MarketTabs } from '@/components/performance/MarketTabs';
 import { DailyBreakdownTable, type DailyData } from '@/components/performance/DailyBreakdownTable';
@@ -12,15 +15,29 @@ import { SignalsList, type SignalData } from '@/components/performance/SignalsLi
 import { DailyActivityChart } from '@/components/performance/DailyActivityChart';
 import { CurrencyPairCard } from '@/components/performance/CurrencyPairCard';
 
-// Mock data
-const weeklyData = {
-  weekNumber: 46,
-  totalSignals: 28,
-  successfulSignals: 20,
-  lostSignals: 8,
-  pipsGained: 153,
-  pipsLost: -45,
-  successRate: 75,
+// Helper to get week number
+const getWeekNumber = (date: Date) => {
+  return getWeek(date, { weekStartsOn: 1 });
+};
+
+// Generate mock data based on selected week
+const generateWeeklyData = (weekDate: Date) => {
+  const weekNum = getWeekNumber(weekDate);
+  // Simulate different data for different weeks
+  const baseSignals = 20 + (weekNum % 10);
+  const successRate = 70 + (weekNum % 15);
+  const successful = Math.round(baseSignals * (successRate / 100));
+  const lost = baseSignals - successful;
+  
+  return {
+    weekNumber: weekNum,
+    totalSignals: baseSignals,
+    successfulSignals: successful,
+    lostSignals: lost,
+    pipsGained: 100 + (weekNum * 3),
+    pipsLost: -(30 + (weekNum % 20)),
+    successRate: successRate,
+  };
 };
 
 const dailyData: DailyData[] = [
@@ -163,6 +180,52 @@ export default function Performance() {
   const [selectedDay, setSelectedDay] = useState('Viernes');
   const [selectedMarket, setSelectedMarket] = useState('Forex');
   const [expandedDay, setExpandedDay] = useState<string | null>('Viernes');
+  const [selectedWeek, setSelectedWeek] = useState(new Date());
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: undefined,
+    to: undefined,
+  });
+
+  // Generate data based on selected week
+  const weeklyData = useMemo(() => generateWeeklyData(selectedWeek), [selectedWeek]);
+
+  // Generate daily data based on selected week
+  const dailyData = useMemo(() => {
+    const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 });
+    const days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
+    
+    return days.map((day, index) => {
+      const date = new Date(weekStart);
+      date.setDate(date.getDate() + index);
+      const signals = 4 + Math.floor(Math.random() * 4);
+      const positivas = Math.floor(signals * 0.7);
+      
+      return {
+        day,
+        date: format(date, 'dd-MMM', { locale: es }),
+        totalSignals: signals,
+        positivas,
+        negativos: signals - positivas,
+        pipsWins: 50 + Math.floor(Math.random() * 100),
+        pipsLoss: 10 + Math.floor(Math.random() * 50),
+      };
+    }).reverse(); // Most recent first
+  }, [selectedWeek]);
+
+  const weekTotal = useMemo(() => {
+    const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(selectedWeek, { weekStartsOn: 1 });
+    
+    return {
+      day: getWeekNumber(selectedWeek).toString(),
+      date: `${format(weekStart, 'dd/MM', { locale: es })}-${format(weekEnd, 'dd/MM', { locale: es })}`,
+      totalSignals: dailyData.reduce((acc, d) => acc + d.totalSignals, 0),
+      positivas: dailyData.reduce((acc, d) => acc + d.positivas, 0),
+      negativos: dailyData.reduce((acc, d) => acc + d.negativos, 0),
+      pipsWins: dailyData.reduce((acc, d) => acc + d.pipsWins, 0),
+      pipsLoss: dailyData.reduce((acc, d) => acc + d.pipsLoss, 0),
+    };
+  }, [dailyData, selectedWeek]);
 
   const handleToggleDay = (day: string) => {
     setExpandedDay(expandedDay === day ? null : day);
@@ -181,6 +244,14 @@ export default function Performance() {
             </Button>
           </Link>
         </div>
+
+        {/* Week Filter */}
+        <WeekFilter 
+          selectedWeek={selectedWeek}
+          onWeekChange={setSelectedWeek}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
 
         {/* Weekly Summary */}
         <WeeklySummary {...weeklyData} />
