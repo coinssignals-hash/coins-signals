@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 const categories = [
   { icon: TrendingUp, label: 'Forex', sublabel: 'Divisas' },
@@ -506,6 +508,9 @@ export default function BrokerRating() {
   const [selectedLevel, setSelectedLevel] = useState('Principiante');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
+  const [compareMode, setCompareMode] = useState(false);
+  const [brokersToCompare, setBrokersToCompare] = useState<Broker[]>([]);
+  const [showComparePanel, setShowComparePanel] = useState(false);
   
   // Advanced filters
   const [location, setLocation] = useState('');
@@ -514,6 +519,30 @@ export default function BrokerRating() {
   const [method, setMethod] = useState('');
   const [operation, setOperation] = useState('');
   const [markets, setMarkets] = useState('');
+
+  const toggleBrokerCompare = (broker: Broker) => {
+    if (brokersToCompare.some(b => b.id === broker.id)) {
+      setBrokersToCompare(prev => prev.filter(b => b.id !== broker.id));
+    } else {
+      if (brokersToCompare.length >= 4) {
+        toast.error('Máximo 4 brokers para comparar');
+        return;
+      }
+      setBrokersToCompare(prev => [...prev, broker]);
+    }
+  };
+
+  const removeBrokerFromCompare = (brokerId: string) => {
+    setBrokersToCompare(prev => prev.filter(b => b.id !== brokerId));
+  };
+
+  const handleCompare = () => {
+    if (brokersToCompare.length < 2) {
+      toast.error('Selecciona al menos 2 brokers para comparar');
+      return;
+    }
+    setShowComparePanel(true);
+  };
 
   const filteredBrokers = brokers.filter(broker => {
     const matchesSearch = broker.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -747,82 +776,295 @@ export default function BrokerRating() {
           </Card>
         )}
 
-        {/* Results header */}
-        <p className="text-xs text-muted-foreground mb-4">
-          Estos son los {filteredBrokers.length} Brokers Más Populares Para {selectedLevel}s en el mercado de {selectedCategory || 'Forex'}
-        </p>
+        {/* Results header with compare toggle */}
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs text-muted-foreground">
+            Estos son los {filteredBrokers.length} Brokers Más Populares Para {selectedLevel}s en el mercado de {selectedCategory || 'Forex'}
+          </p>
+          <Button
+            variant={compareMode ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setCompareMode(!compareMode);
+              if (compareMode) {
+                setBrokersToCompare([]);
+              }
+            }}
+            className="text-xs"
+          >
+            <GitCompare className="w-4 h-4 mr-1" />
+            {compareMode ? 'Cancelar' : 'Comparar'}
+          </Button>
+        </div>
+
+        {/* Compare selection bar */}
+        {compareMode && (
+          <Card className="mb-4 border-primary/50">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-foreground">
+                    {brokersToCompare.length} broker{brokersToCompare.length !== 1 ? 's' : ''} seleccionado{brokersToCompare.length !== 1 ? 's' : ''}
+                  </span>
+                  {brokersToCompare.length > 0 && (
+                    <div className="flex gap-1">
+                      {brokersToCompare.map(b => (
+                        <Badge key={b.id} variant="secondary" className="text-xs">
+                          {b.name}
+                          <button 
+                            onClick={() => removeBrokerFromCompare(b.id)}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <Button
+                  size="sm"
+                  onClick={handleCompare}
+                  disabled={brokersToCompare.length < 2}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  Comparar ({brokersToCompare.length})
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Broker cards */}
         <div className="space-y-4">
-          {filteredBrokers.map((broker) => (
-            <Card key={broker.id} className="overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex gap-4">
-                  {/* Logo */}
-                  <div className="flex flex-col items-center">
-                    <div className="w-20 h-20 bg-secondary rounded-lg flex items-center justify-center mb-2">
-                      <span className="text-2xl font-bold text-foreground">{broker.logo}</span>
+          {filteredBrokers.map((broker) => {
+            const isSelectedForCompare = brokersToCompare.some(b => b.id === broker.id);
+            return (
+              <Card 
+                key={broker.id} 
+                className={`overflow-hidden transition-all ${isSelectedForCompare ? 'ring-2 ring-primary' : ''}`}
+              >
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    {/* Checkbox for compare mode */}
+                    {compareMode && (
+                      <div className="flex items-start pt-1">
+                        <Checkbox
+                          checked={isSelectedForCompare}
+                          onCheckedChange={() => toggleBrokerCompare(broker)}
+                          className="border-primary data-[state=checked]:bg-primary"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Logo */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 bg-secondary rounded-lg flex items-center justify-center mb-2">
+                        <span className="text-2xl font-bold text-foreground">{broker.logo}</span>
+                      </div>
+                      <p className="text-xs text-foreground">Central: <span className="text-primary">{broker.central}</span></p>
+                      <p className="text-xs text-primary">{broker.regions}</p>
                     </div>
-                    <p className="text-xs text-foreground">Central: <span className="text-primary">{broker.central}</span></p>
-                    <p className="text-xs text-primary">{broker.regions}</p>
+
+                    {/* Info */}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-bold text-foreground">{broker.name}</h3>
+                        <Badge variant="outline" className="text-primary border-primary text-xs">
+                          {broker.level}
+                        </Badge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-2">
+                        <div>
+                          <span className="text-primary">Depósito inicial</span>
+                          <p className="text-amber-400">{broker.depositMin}</p>
+                        </div>
+                        <div>
+                          <span className="text-primary">Comisión</span> / <span className="text-primary">Spreads</span>
+                          <p><span className="text-amber-400">{broker.commission}</span> <span className="text-primary ml-2">{broker.spreads}</span></p>
+                        </div>
+                        <div>
+                          <span className="text-primary">Plataforma</span>
+                          <p className="text-foreground">{broker.platform.join(', ')}</p>
+                        </div>
+                        <div>
+                          <span className="text-primary">Apalancamiento</span>
+                          <p className="text-foreground">{broker.leverage.scb} (SCB)<br />{broker.leverage.fca} (FCA)</p>
+                        </div>
+                        <div>
+                          <span className="text-primary">Regulaciones</span>
+                          <p className="text-foreground">{broker.regulations.join(', ')}</p>
+                        </div>
+                        <div>
+                          <span className="text-primary">Instrumentos</span>
+                          <p className="text-foreground">{broker.instruments.join(', ')}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-3">
+                        <div>
+                          {renderStars(broker.rating)}
+                          <span className="text-xs text-muted-foreground ml-2">Comentarios</span>
+                        </div>
+                        <div className="flex gap-2">
+                          {compareMode && (
+                            <Button
+                              size="sm"
+                              variant={isSelectedForCompare ? "secondary" : "outline"}
+                              className="text-xs"
+                              onClick={() => toggleBrokerCompare(broker)}
+                            >
+                              {isSelectedForCompare ? 'Quitar' : 'Añadir'}
+                            </Button>
+                          )}
+                          <Button 
+                            size="sm" 
+                            className="bg-primary hover:bg-primary/90 text-xs"
+                            onClick={() => setSelectedBroker(broker)}
+                          >
+                            Ver Detalles
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Info */}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-bold text-foreground">{broker.name}</h3>
-                      <Badge variant="outline" className="text-primary border-primary text-xs">
-                        {broker.level}
-                      </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-2">
-                      <div>
-                        <span className="text-primary">Depósito inicial</span>
-                        <p className="text-amber-400">{broker.depositMin}</p>
-                      </div>
-                      <div>
-                        <span className="text-primary">Comisión</span> / <span className="text-primary">Spreads</span>
-                        <p><span className="text-amber-400">{broker.commission}</span> <span className="text-primary ml-2">{broker.spreads}</span></p>
-                      </div>
-                      <div>
-                        <span className="text-primary">Plataforma</span>
-                        <p className="text-foreground">{broker.platform.join(', ')}</p>
-                      </div>
-                      <div>
-                        <span className="text-primary">Apalancamiento</span>
-                        <p className="text-foreground">{broker.leverage.scb} (SCB)<br />{broker.leverage.fca} (FCA)</p>
-                      </div>
-                      <div>
-                        <span className="text-primary">Regulaciones</span>
-                        <p className="text-foreground">{broker.regulations.join(', ')}</p>
-                      </div>
-                      <div>
-                        <span className="text-primary">Instrumentos</span>
-                        <p className="text-foreground">{broker.instruments.join(', ')}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-3">
-                      <div>
-                        {renderStars(broker.rating)}
-                        <span className="text-xs text-muted-foreground ml-2">Comentarios</span>
-                      </div>
-                      <Button 
-                        size="sm" 
-                        className="bg-primary hover:bg-primary/90 text-xs"
-                        onClick={() => setSelectedBroker(broker)}
-                      >
-                        Ver Detalles
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </main>
+
+      {/* Compare Panel Dialog */}
+      <Dialog open={showComparePanel} onOpenChange={setShowComparePanel}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 bg-card">
+          <ScrollArea className="max-h-[90vh]">
+            <div className="p-6">
+              <DialogHeader className="mb-4">
+                <div className="flex items-center justify-between">
+                  <DialogTitle className="text-xl font-bold text-foreground">
+                    Comparar Brokers ({brokersToCompare.length})
+                  </DialogTitle>
+                </div>
+              </DialogHeader>
+
+              {/* Comparison Table */}
+              <div className="min-w-max">
+                {/* Broker Headers */}
+                <div className="flex border-b border-border">
+                  <div className="w-32 shrink-0 p-3 bg-secondary/50">
+                    <span className="text-sm font-medium text-muted-foreground">Característica</span>
+                  </div>
+                  {brokersToCompare.map((broker) => (
+                    <div key={broker.id} className="w-48 shrink-0 p-3 bg-card border-l border-border">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-bold text-foreground">{broker.name}</h3>
+                          <span className="text-xs text-primary">{broker.level}</span>
+                        </div>
+                        <button
+                          onClick={() => removeBrokerFromCompare(broker.id)}
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Comparison Rows */}
+                {[
+                  { label: 'Nivel', render: (b: Broker) => b.level },
+                  { label: 'Depósito Inicial', render: (b: Broker) => b.depositMin },
+                  { label: 'Comisión', render: (b: Broker) => b.commission },
+                  { label: 'Spreads', render: (b: Broker) => b.spreads },
+                  { label: 'Plataformas', render: (b: Broker) => b.platform.join(', ') },
+                  { label: 'Apalancamiento', render: (b: Broker) => `${b.leverage.scb} / ${b.leverage.fca}` },
+                  { label: 'Regulaciones', render: (b: Broker) => b.regulations.join(', ') },
+                  { label: 'Instrumentos', render: (b: Broker) => b.instruments.join(', ') },
+                  { label: 'Central', render: (b: Broker) => b.central },
+                  { label: 'Cobertura', render: (b: Broker) => b.regions },
+                  { label: 'Rating', render: (b: Broker) => (
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-3 h-3 ${star <= Math.floor(b.rating) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'}`}
+                        />
+                      ))}
+                      <span className="ml-1">{b.rating}</span>
+                    </div>
+                  )},
+                ].map((row, idx) => (
+                  <div key={row.label} className={`flex border-b border-border ${idx % 2 === 0 ? 'bg-secondary/20' : ''}`}>
+                    <div className="w-32 shrink-0 p-3">
+                      <span className="text-sm font-medium text-primary">{row.label}</span>
+                    </div>
+                    {brokersToCompare.map((broker) => (
+                      <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
+                        <span className="text-sm text-foreground">{row.render(broker)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {/* Pros */}
+                <div className="flex border-b border-border bg-secondary/20">
+                  <div className="w-32 shrink-0 p-3">
+                    <span className="text-sm font-medium text-primary">Pros</span>
+                  </div>
+                  {brokersToCompare.map((broker) => (
+                    <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
+                      <ul className="space-y-1">
+                        {broker.pros.slice(0, 3).map((pro, i) => (
+                          <li key={i} className="flex items-start gap-1 text-xs">
+                            <CheckCircle2 className="w-3 h-3 text-primary shrink-0 mt-0.5" />
+                            <span className="text-foreground">{pro}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cons */}
+                <div className="flex border-b border-border">
+                  <div className="w-32 shrink-0 p-3">
+                    <span className="text-sm font-medium text-destructive">Cons</span>
+                  </div>
+                  {brokersToCompare.map((broker) => (
+                    <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
+                      <ul className="space-y-1">
+                        {broker.cons.slice(0, 2).map((con, i) => (
+                          <li key={i} className="flex items-start gap-1 text-xs">
+                            <XCircle className="w-3 h-3 text-destructive shrink-0 mt-0.5" />
+                            <span className="text-foreground">{con}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex">
+                  <div className="w-32 shrink-0 p-3"></div>
+                  {brokersToCompare.map((broker) => (
+                    <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
+                      <Button size="sm" className="w-full bg-primary hover:bg-primary/90">
+                        Abrir Cuenta
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       {/* Broker Detail Dialog */}
       <Dialog open={!!selectedBroker} onOpenChange={() => setSelectedBroker(null)}>
