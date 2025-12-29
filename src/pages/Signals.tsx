@@ -4,6 +4,7 @@ import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
+import { NotificationToggle } from '@/components/notifications/NotificationToggle';
 import { useSignals } from '@/hooks/useSignals';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -45,11 +46,14 @@ export default function Signals() {
             Coins <span className="text-yellow-400">$</span>ignals
           </h1>
           
-          <button className="p-2 text-blue-300 hover:text-blue-100">
-            <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-              <User className="w-5 h-5" />
-            </div>
-          </button>
+          <div className="flex items-center gap-1">
+            <NotificationToggle />
+            <button className="p-2 text-blue-300 hover:text-blue-100">
+              <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                <User className="w-5 h-5" />
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Day Tabs */}

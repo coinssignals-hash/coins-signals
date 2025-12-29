@@ -2,3 +2,9 @@ project_id = "fkaziwfwangiwnduxymf"
 
 [functions.insert-signal]
 verify_jwt = false
+
+[functions.save-push-subscription]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
