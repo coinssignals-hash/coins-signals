@@ -121,3 +121,34 @@ ports:
 docker-compose down -v --rmi all
 docker-compose up --build
 ```
+
+---
+
+## 🗄️ Backup de MongoDB
+
+### Backup manual
+```bash
+# Linux/Mac
+chmod +x scripts/backup.sh
+./scripts/backup.sh
+
+# Windows
+scripts\backup.bat
+```
+
+### Restaurar backup
+```bash
+./scripts/restore.sh backups/backup_economic_news_YYYYMMDD_HHMMSS.tar.gz
+```
+
+### Backup automático (Linux/Mac)
+```bash
+chmod +x scripts/schedule-backup.sh
+./scripts/schedule-backup.sh
+```
+
+Esto configura un cron job para backups automáticos con las opciones:
+- Cada hora
+- Cada 6 horas
+- Diario
+- Semanal
