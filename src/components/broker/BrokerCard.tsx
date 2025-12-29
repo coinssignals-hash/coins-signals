@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export interface BrokerData {
   id: string;
@@ -32,15 +33,33 @@ export interface BrokerData {
 interface BrokerCardProps {
   broker: BrokerData;
   onSelect: (broker: BrokerData) => void;
+  isSelectedForCompare?: boolean;
+  onToggleCompare?: (broker: BrokerData) => void;
+  showCompareCheckbox?: boolean;
 }
 
-export function BrokerCard({ broker, onSelect }: BrokerCardProps) {
+export function BrokerCard({ 
+  broker, 
+  onSelect, 
+  isSelectedForCompare = false,
+  onToggleCompare,
+  showCompareCheckbox = false
+}: BrokerCardProps) {
   return (
-    <Card className="bg-card border-border overflow-hidden">
+    <Card className={`bg-card border-border overflow-hidden transition-all ${isSelectedForCompare ? 'ring-2 ring-primary' : ''}`}>
       <CardContent className="p-0">
         <div className="p-4">
           <div className="flex justify-between items-start mb-3">
-            <h3 className="text-xl font-bold text-foreground">{broker.name}</h3>
+            <div className="flex items-center gap-2">
+              {showCompareCheckbox && onToggleCompare && (
+                <Checkbox
+                  checked={isSelectedForCompare}
+                  onCheckedChange={() => onToggleCompare(broker)}
+                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                />
+              )}
+              <h3 className="text-xl font-bold text-foreground">{broker.name}</h3>
+            </div>
             <Badge variant="outline" className="text-primary border-primary">
               {broker.level}
             </Badge>
