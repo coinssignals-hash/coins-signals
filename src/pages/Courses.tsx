@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Video, Headphones, Play, Download, Clock, ChevronRight } from 'lucide-react';
+import { ArrowLeft, FileText, Video, Headphones, Play, Download, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const categories = [
@@ -128,6 +127,7 @@ const contentTypes = [
 ];
 
 export default function Courses() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('inicio');
   const [contentType, setContentType] = useState('lectura');
 
@@ -257,6 +257,7 @@ export default function Courses() {
                           {module.lessons.map((lesson) => (
                             <div 
                               key={lesson.id}
+                              onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
                               className="flex items-center justify-between p-3 rounded-lg bg-secondary/50 hover:bg-secondary cursor-pointer transition-colors group"
                             >
                               <div className="flex items-center gap-3">
@@ -268,11 +269,7 @@ export default function Courses() {
                                   <Clock className="w-3 h-3" />
                                   {lesson.duration}
                                 </span>
-                                {module.type === 'pdf' ? (
-                                  <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-                                ) : (
-                                  <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-                                )}
+                                <Play className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                               </div>
                             </div>
                           ))}
