@@ -17,6 +17,7 @@ import Broker from "./pages/Broker";
 import Support from "./pages/Support";
 import Subscriptions from "./pages/Subscriptions";
 import Courses from "./pages/Courses";
+import LessonDetail from "./pages/LessonDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/support" element={<Support />} />
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
