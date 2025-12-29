@@ -1,14 +1,33 @@
 import { useState } from 'react';
-import { Menu, User } from 'lucide-react';
+import { Menu, User, Loader2 } from 'lucide-react';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { mockSignals, weekDays } from '@/data/mockSignals';
 import { MainDrawer } from '@/components/layout/MainDrawer';
+import { useSignals } from '@/hooks/useSignals';
+import { format, addDays, startOfWeek } from 'date-fns';
+import { es } from 'date-fns/locale';
+
+// Generate week days dynamically
+const generateWeekDays = () => {
+  const today = new Date();
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+  
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = addDays(weekStart, i);
+    return {
+      date: format(date, 'yyyy-MM-dd'),
+      label: `${format(date, 'EEE', { locale: es })} ${format(date, 'd')}`,
+    };
+  });
+};
 
 export default function Signals() {
-  const [selectedDate, setSelectedDate] = useState('2025-10-08');
+  const weekDays = generateWeekDays();
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
+  const { signals, loading, error } = useSignals();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20">
@@ -43,9 +62,24 @@ export default function Signals() {
 
       {/* Signals List */}
       <main className="p-4 space-y-4">
-        {mockSignals.map((signal) => (
-          <SignalCard key={signal.id} signal={signal} />
-        ))}
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-400">
+            <p>Error al cargar señales</p>
+            <p className="text-sm text-muted-foreground mt-1">{error}</p>
+          </div>
+        ) : signals.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>No hay señales disponibles</p>
+          </div>
+        ) : (
+          signals.map((signal) => (
+            <SignalCard key={signal.id} signal={signal} />
+          ))
+        )}
       </main>
 
       {/* Drawer */}
