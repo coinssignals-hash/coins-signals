@@ -19,7 +19,8 @@ import {
   Bell,
   Palette,
   Globe,
-  Cloud
+  Cloud,
+  Download
 } from 'lucide-react';
 import {
   Sheet,
@@ -54,6 +55,7 @@ const settingsItems = [
   { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
   { icon: Palette, label: 'Aspecto', href: '/settings/appearance' },
   { icon: Globe, label: 'Idioma y Zona Horaria', href: '/settings/language' },
+  { icon: Download, label: 'Instalar App', href: '/install' },
 ];
 
 export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
