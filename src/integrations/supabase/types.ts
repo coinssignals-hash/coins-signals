@@ -50,6 +50,63 @@ export type Database = {
         }
         Relationships: []
       }
+      trading_signals: {
+        Row: {
+          action: string
+          analysis_data: Json | null
+          created_at: string
+          currency_pair: string
+          datetime: string
+          entry_price: number
+          id: string
+          probability: number
+          resistance: number | null
+          session_data: Json | null
+          status: string
+          stop_loss: number
+          support: number | null
+          take_profit: number
+          trend: string
+          updated_at: string
+        }
+        Insert: {
+          action?: string
+          analysis_data?: Json | null
+          created_at?: string
+          currency_pair: string
+          datetime?: string
+          entry_price: number
+          id?: string
+          probability?: number
+          resistance?: number | null
+          session_data?: Json | null
+          status?: string
+          stop_loss: number
+          support?: number | null
+          take_profit: number
+          trend?: string
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          analysis_data?: Json | null
+          created_at?: string
+          currency_pair?: string
+          datetime?: string
+          entry_price?: number
+          id?: string
+          probability?: number
+          resistance?: number | null
+          session_data?: Json | null
+          status?: string
+          stop_loss?: number
+          support?: number | null
+          take_profit?: number
+          trend?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { TradingSignal } from '@/data/mockSignals';
+import { TradingSignal } from '@/hooks/useSignals';
 import { Copy, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface SignalCardProps {
   signal: TradingSignal;
@@ -16,7 +18,21 @@ export function SignalCard({ signal }: SignalCardProps) {
     toast.success('Precio copiado');
   };
 
-  const isBuy = signal.action === 'Comprar';
+  const isBuy = signal.action === 'BUY';
+  const formattedDate = format(new Date(signal.datetime), "dd MMM yyyy HH:mm", { locale: es });
+
+  // Get flag emojis based on currency pair
+  const getFlagEmojis = (pair: string) => {
+    const flags: Record<string, string> = {
+      'EUR': '🇪🇺', 'USD': '🇺🇸', 'GBP': '🇬🇧', 'JPY': '🇯🇵',
+      'AUD': '🇦🇺', 'CAD': '🇨🇦', 'CHF': '🇨🇭', 'NZD': '🇳🇿',
+      'XAU': '🥇', 'BTC': '₿'
+    };
+    const [base, quote] = pair.split('/');
+    return { flag1: flags[base] || '🏳️', flag2: flags[quote] || '🏳️' };
+  };
+
+  const { flag1, flag2 } = getFlagEmojis(signal.currencyPair);
 
   return (
     <div className="rounded-xl overflow-hidden bg-gradient-to-br from-[#0a1628] via-[#0d1f3c] to-[#0a1628] border border-blue-500/30 shadow-lg shadow-blue-500/10">
@@ -29,7 +45,7 @@ export function SignalCard({ signal }: SignalCardProps) {
       >
         {/* Date */}
         <div className="text-center text-xs text-blue-200/80 mb-2">
-          {signal.datetime}
+          {formattedDate}
         </div>
 
         {/* Main Header Row */}
@@ -37,15 +53,22 @@ export function SignalCard({ signal }: SignalCardProps) {
           {/* Pair Info */}
           <div className="flex items-center gap-3">
             <div className="flex items-center">
-              <span className="text-2xl">{signal.flag1}</span>
-              <span className="text-2xl -ml-1">{signal.flag2}</span>
+              <span className="text-2xl">{flag1}</span>
+              <span className="text-2xl -ml-1">{flag2}</span>
             </div>
-            <span className="text-2xl font-bold text-white">{signal.pair}</span>
+            <span className="text-2xl font-bold text-white">{signal.currencyPair}</span>
           </div>
 
           {/* Status & Probability */}
           <div className="flex flex-col items-end gap-1">
-            <span className="text-green-400 font-semibold text-sm italic">Señal Activa</span>
+            <span className={cn(
+              "font-semibold text-sm italic",
+              signal.status === 'active' ? "text-green-400" : 
+              signal.status === 'pending' ? "text-yellow-400" : "text-gray-400"
+            )}>
+              {signal.status === 'active' ? 'Señal Activa' : 
+               signal.status === 'pending' ? 'Pendiente' : 'Completada'}
+            </span>
             <div className="relative w-12 h-12">
               <svg className="w-12 h-12 -rotate-90">
                 <circle
@@ -83,7 +106,7 @@ export function SignalCard({ signal }: SignalCardProps) {
               isBuy ? "text-green-400" : "text-red-400"
             )}>
               {isBuy ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-              {signal.trend}%
+              {signal.trend === 'bullish' ? 'Alcista' : 'Bajista'}
             </div>
           </div>
           <div className="bg-blue-900/50 rounded-lg p-2 text-center">
@@ -92,14 +115,14 @@ export function SignalCard({ signal }: SignalCardProps) {
               "font-bold",
               isBuy ? "text-green-400" : "text-red-400"
             )}>
-              {signal.action}
+              {signal.action === 'BUY' ? 'Comprar' : 'Vender'}
             </div>
           </div>
           <div className="bg-blue-900/50 rounded-lg p-2 text-center">
-            <div className="text-[10px] text-blue-300 uppercase">Sección</div>
+            <div className="text-[10px] text-blue-300 uppercase">Sesiones</div>
             <div className="text-blue-100 text-xs">
-              {signal.sessions.map((s, i) => (
-                <div key={i}>{s}</div>
+              {signal.sessionData?.map((s, i) => (
+                <div key={i}>{s.session}</div>
               ))}
             </div>
           </div>
@@ -130,33 +153,19 @@ export function SignalCard({ signal }: SignalCardProps) {
       {/* Expanded Content */}
       {expanded && (
         <div className="px-4 pb-4 space-y-3 animate-in slide-in-from-top-2 duration-300">
-          {/* Take Profit 1 */}
+          {/* Take Profit */}
           <PriceRow
-            label="Takeprofit 1"
-            probability={signal.takeProfit1.probability}
-            pips={signal.takeProfit1.pips}
-            price={signal.takeProfit1.price}
-            onCopy={() => copyToClipboard(signal.takeProfit1.price)}
+            label="Take Profit"
+            price={signal.takeProfit}
+            onCopy={() => copyToClipboard(signal.takeProfit)}
             color="green"
-          />
-
-          {/* Take Profit 2 */}
-          <PriceRow
-            label="Takeprofit 2"
-            probability={signal.takeProfit2.probability}
-            pips={signal.takeProfit2.pips}
-            price={signal.takeProfit2.price}
-            onCopy={() => copyToClipboard(signal.takeProfit2.price)}
-            color="yellow"
           />
 
           {/* Stop Loss */}
           <PriceRow
             label="Stop Loss"
-            probability={signal.stopLoss.probability}
-            pips={signal.stopLoss.pips}
-            price={signal.stopLoss.price}
-            onCopy={() => copyToClipboard(signal.stopLoss.price)}
+            price={signal.stopLoss}
+            onCopy={() => copyToClipboard(signal.stopLoss)}
             color="red"
           />
 
@@ -171,7 +180,7 @@ export function SignalCard({ signal }: SignalCardProps) {
               </div>
               <div className="mt-2 flex justify-between">
                 <span className="text-green-400 italic text-sm">Soporte</span>
-                <span className="text-green-400 font-bold">{signal.support}</span>
+                <span className="text-green-400 font-bold">{signal.support || '-'}</span>
               </div>
             </div>
 
@@ -179,12 +188,12 @@ export function SignalCard({ signal }: SignalCardProps) {
             <div className="bg-[#0a1628] rounded-lg p-3 border border-blue-500/20">
               <div className="h-16 flex items-end gap-0.5">
                 {[80, 70, 85, 65, 75, 60, 70, 55, 65, 50, 60, 45].map((h, i) => (
-                  <div key={i} className="flex-1 bg-green-500/60" style={{ height: `${h}%` }} />
+                  <div key={i} className="flex-1 bg-red-500/60" style={{ height: `${h}%` }} />
                 ))}
               </div>
               <div className="mt-2 flex justify-between">
                 <span className="text-red-400 italic text-sm">Resistencia</span>
-                <span className="text-red-400 font-bold">{signal.resistance}</span>
+                <span className="text-red-400 font-bold">{signal.resistance || '-'}</span>
               </div>
             </div>
           </div>
@@ -229,55 +238,37 @@ export function SignalCard({ signal }: SignalCardProps) {
 
             {/* Session Data */}
             <div className="bg-[#0a1628] rounded-lg p-3 border border-blue-500/20">
-              <div className="text-[10px] text-blue-300 mb-2">Precio Apertura y Cierre De Seccion</div>
+              <div className="text-[10px] text-blue-300 mb-2">Datos de Sesión</div>
               <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-green-400 italic">Cierre</span>
-                  <span className="text-green-400 font-bold">{signal.sessionData.close}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-red-400 italic">Apertura</span>
-                  <span className="text-red-400 font-bold">{signal.sessionData.open}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-blue-300">Diferencia de Pips</span>
-                  <span className={cn(
-                    "font-bold",
-                    signal.sessionData.pipsDiff >= 0 ? "text-green-400" : "text-red-400"
-                  )}>
-                    {signal.sessionData.pipsDiff}
-                  </span>
-                </div>
+                {signal.sessionData?.map((session, i) => (
+                  <div key={i} className="flex justify-between">
+                    <span className="text-blue-300">{session.session}</span>
+                    <span className="text-blue-100">{session.volume}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
           {/* Analysis Chart */}
-          <div className="bg-[#0a1628] rounded-lg p-3 border border-blue-500/20">
-            <div className="flex items-end justify-around h-20 mb-2">
-              {[
-                { label: 'Inteligencia\nArtificial', value: signal.analysis.ai },
-                { label: 'Sentimiento\ndel Mercado', value: signal.analysis.sentiment },
-                { label: 'Paginas\nTrader', value: signal.analysis.traderPages },
-                { label: 'Analisis\nPrefecionales', value: signal.analysis.professional }
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <div 
-                    className="w-8 bg-blue-500 rounded-t"
-                    style={{ height: `${item.value}%` }}
-                  />
-                  <span className="text-[8px] text-center text-muted-foreground whitespace-pre-line leading-tight">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
+          {signal.analysisData && signal.analysisData.length > 0 && (
+            <div className="bg-[#0a1628] rounded-lg p-3 border border-blue-500/20">
+              <div className="text-[10px] text-blue-300 mb-2">Análisis Técnico</div>
+              <div className="flex items-end justify-around h-20 mb-2">
+                {signal.analysisData.map((item, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <div 
+                      className="w-8 bg-blue-500 rounded-t"
+                      style={{ height: `${item.value}%` }}
+                    />
+                    <span className="text-[10px] text-center text-muted-foreground">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="absolute left-3 top-3 flex flex-col text-[8px] text-muted-foreground">
-              {[90, 70, 50, 30, 10].map(v => (
-                <span key={v}>{v}%</span>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3 mt-4">
@@ -296,47 +287,23 @@ export function SignalCard({ signal }: SignalCardProps) {
 
 function PriceRow({ 
   label, 
-  probability, 
-  pips, 
   price, 
   onCopy, 
   color 
 }: { 
   label: string; 
-  probability: number; 
-  pips: number; 
   price: number; 
   onCopy: () => void;
-  color: 'green' | 'yellow' | 'red';
+  color: 'green' | 'red';
 }) {
-  const colors = {
-    green: 'from-green-500 to-green-400',
-    yellow: 'from-yellow-500 to-green-400',
-    red: 'from-red-500 to-red-400'
-  };
-
   return (
     <div className="bg-[#0a1628] rounded-lg p-3 border border-blue-500/20">
       <div className="flex items-center justify-between">
-        <span className="text-white font-medium">{label}</span>
-        <div className="flex-1 mx-3 relative">
-          <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-            <div 
-              className={cn("h-full rounded-full bg-gradient-to-r", colors[color])}
-              style={{ width: `${probability}%` }}
-            />
-          </div>
-          <div className="absolute right-0 -top-4 text-[10px] text-muted-foreground">
-            Probabilida<br />{probability}%
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className={cn(
-            "text-xs",
-            pips >= 0 ? "text-green-400" : "text-red-400"
-          )}>
-            {pips >= 0 ? '+' : ''}{pips}
-          </span>
+        <span className={cn(
+          "font-medium",
+          color === 'green' ? "text-green-400" : "text-red-400"
+        )}>{label}</span>
+        <div className="flex items-center gap-2">
           <span className="text-white font-bold">{price}</span>
           <button onClick={onCopy} className="text-blue-400 hover:text-blue-300">
             <Copy className="w-4 h-4" />
