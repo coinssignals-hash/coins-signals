@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { TrendingUp, Newspaper, Star, BarChart3, MoreHorizontal } from 'lucide-react';
+import { Activity, Newspaper, GraduationCap, Building2, Settings } from 'lucide-react';
 
 const navItems = [
-  { icon: BarChart3, label: 'Markets', href: '/markets' },
-  { icon: Newspaper, label: 'News', href: '/' },
-  { icon: TrendingUp, label: 'Ideas', href: '/ideas' },
-  { icon: Star, label: 'Watchlist', href: '/watchlist' },
-  { icon: MoreHorizontal, label: 'More', href: '/more' },
+  { icon: Activity, label: 'Señales', href: '/' },
+  { icon: Newspaper, label: 'Noticias', href: '/news' },
+  { icon: GraduationCap, label: 'Cursos', href: '/courses' },
+  { icon: Building2, label: 'Brokers', href: '/broker' },
+  { icon: Settings, label: 'Ajustes', href: '/settings' },
 ];
 
 export function BottomNav() {
