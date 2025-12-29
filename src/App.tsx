@@ -18,6 +18,7 @@ import Support from "./pages/Support";
 import Subscriptions from "./pages/Subscriptions";
 import Courses from "./pages/Courses";
 import LessonDetail from "./pages/LessonDetail";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 interface LessonProgress {
   lessonId: string;
@@ -34,46 +36,142 @@ const getInitialProgress = (): CourseProgress => ({
 export function useCourseProgress() {
   const [progress, setProgress] = useState<CourseProgress>(getInitialProgress);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
-  // Load progress from localStorage on mount
+  // Listen for auth changes
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setProgress(parsed);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
       }
-    } catch (error) {
-      console.error('Error loading course progress:', error);
-    }
-    setIsLoaded(true);
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Save progress to localStorage whenever it changes
+  // Load progress from database or localStorage
+  useEffect(() => {
+    const loadProgress = async () => {
+      if (user) {
+        // Load from database
+        try {
+          const { data, error } = await supabase
+            .from('course_progress')
+            .select('*')
+            .eq('user_id', user.id);
+
+          if (error) {
+            console.error('Error loading progress from database:', error);
+            // Fall back to localStorage
+            loadFromLocalStorage();
+            return;
+          }
+
+          if (data && data.length > 0) {
+            const lessonProgress: Record<string, LessonProgress> = {};
+            data.forEach((item) => {
+              lessonProgress[item.lesson_id] = {
+                lessonId: item.lesson_id,
+                completed: item.completed,
+                completedAt: item.completed_at || undefined,
+                watchedSeconds: item.watched_seconds || undefined,
+                lastWatchedAt: item.last_watched_at || undefined,
+              };
+            });
+
+            const totalCompleted = Object.values(lessonProgress).filter(l => l.completed).length;
+
+            setProgress({
+              lessonProgress,
+              moduleProgress: {},
+              totalCompletedLessons: totalCompleted,
+            });
+          }
+        } catch (error) {
+          console.error('Error loading progress:', error);
+          loadFromLocalStorage();
+        }
+      } else {
+        // Load from localStorage for anonymous users
+        loadFromLocalStorage();
+      }
+      setIsLoaded(true);
+    };
+
+    const loadFromLocalStorage = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setProgress(parsed);
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+    };
+
+    loadProgress();
+  }, [user]);
+
+  // Save to localStorage for backup
   useEffect(() => {
     if (isLoaded) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
       } catch (error) {
-        console.error('Error saving course progress:', error);
+        console.error('Error saving to localStorage:', error);
       }
     }
   }, [progress, isLoaded]);
 
+  // Sync progress to database
+  const syncToDatabase = useCallback(async (lessonId: string, data: Partial<LessonProgress>) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('course_progress')
+        .upsert({
+          user_id: user.id,
+          lesson_id: lessonId,
+          completed: data.completed || false,
+          completed_at: data.completedAt || null,
+          watched_seconds: data.watchedSeconds || 0,
+          last_watched_at: data.lastWatchedAt || new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,lesson_id'
+        });
+
+      if (error) {
+        console.error('Error syncing to database:', error);
+      }
+    } catch (error) {
+      console.error('Error syncing progress:', error);
+    }
+  }, [user]);
+
   // Mark a lesson as completed
   const markLessonCompleted = useCallback((lessonId: string, moduleId?: string) => {
+    const now = new Date().toISOString();
+    
     setProgress(prev => {
       const newLessonProgress = {
         ...prev.lessonProgress,
         [lessonId]: {
           lessonId,
           completed: true,
-          completedAt: new Date().toISOString(),
-          lastWatchedAt: new Date().toISOString(),
+          completedAt: now,
+          lastWatchedAt: now,
         }
       };
 
-      // Update module progress if moduleId is provided
       let newModuleProgress = { ...prev.moduleProgress };
       if (moduleId) {
         const currentModule = prev.moduleProgress[moduleId] || { 
@@ -82,12 +180,11 @@ export function useCourseProgress() {
           totalLessons: 0 
         };
         
-        // Only increment if this lesson wasn't already completed
         if (!prev.lessonProgress[lessonId]?.completed) {
           newModuleProgress[moduleId] = {
             ...currentModule,
             completedLessons: currentModule.completedLessons + 1,
-            lastAccessedAt: new Date().toISOString(),
+            lastAccessedAt: now,
           };
         }
       }
@@ -99,10 +196,13 @@ export function useCourseProgress() {
         lessonProgress: newLessonProgress,
         moduleProgress: newModuleProgress,
         totalCompletedLessons: totalCompleted,
-        lastActivityAt: new Date().toISOString(),
+        lastActivityAt: now,
       };
     });
-  }, []);
+
+    // Sync to database
+    syncToDatabase(lessonId, { completed: true, completedAt: now, lastWatchedAt: now });
+  }, [syncToDatabase]);
 
   // Mark a lesson as not completed
   const markLessonIncomplete = useCallback((lessonId: string, moduleId?: string) => {
@@ -117,7 +217,6 @@ export function useCourseProgress() {
         }
       };
 
-      // Update module progress if moduleId is provided
       let newModuleProgress = { ...prev.moduleProgress };
       if (moduleId && prev.lessonProgress[lessonId]?.completed) {
         const currentModule = prev.moduleProgress[moduleId];
@@ -139,7 +238,10 @@ export function useCourseProgress() {
         lastActivityAt: new Date().toISOString(),
       };
     });
-  }, []);
+
+    // Sync to database
+    syncToDatabase(lessonId, { completed: false, completedAt: undefined });
+  }, [syncToDatabase]);
 
   // Toggle lesson completion status
   const toggleLessonComplete = useCallback((lessonId: string, moduleId?: string) => {
@@ -153,6 +255,8 @@ export function useCourseProgress() {
 
   // Update watch progress for a lesson
   const updateWatchProgress = useCallback((lessonId: string, watchedSeconds: number) => {
+    const now = new Date().toISOString();
+    
     setProgress(prev => ({
       ...prev,
       lessonProgress: {
@@ -162,13 +266,16 @@ export function useCourseProgress() {
           lessonId,
           completed: prev.lessonProgress[lessonId]?.completed || false,
           watchedSeconds,
-          lastWatchedAt: new Date().toISOString(),
+          lastWatchedAt: now,
         }
       },
       lastViewedLesson: lessonId,
-      lastActivityAt: new Date().toISOString(),
+      lastActivityAt: now,
     }));
-  }, []);
+
+    // Sync to database
+    syncToDatabase(lessonId, { watchedSeconds, lastWatchedAt: now });
+  }, [syncToDatabase]);
 
   // Set the last viewed lesson
   const setLastViewedLesson = useCallback((lessonId: string) => {
@@ -231,14 +338,27 @@ export function useCourseProgress() {
   }, [progress.moduleProgress]);
 
   // Reset all progress
-  const resetProgress = useCallback(() => {
+  const resetProgress = useCallback(async () => {
     setProgress(getInitialProgress());
     localStorage.removeItem(STORAGE_KEY);
-  }, []);
+    
+    if (user) {
+      try {
+        await supabase
+          .from('course_progress')
+          .delete()
+          .eq('user_id', user.id);
+      } catch (error) {
+        console.error('Error resetting database progress:', error);
+      }
+    }
+  }, [user]);
 
   return {
     progress,
     isLoaded,
+    user,
+    isAuthenticated: !!user,
     markLessonCompleted,
     markLessonIncomplete,
     toggleLessonComplete,
