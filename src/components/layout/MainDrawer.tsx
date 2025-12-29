@@ -32,7 +32,7 @@ interface MainDrawerProps {
 }
 
 const menuItems = [
-  { icon: User, label: 'Ajuste De Perfil', href: '/settings/profile' },
+  { icon: User, label: 'Ajuste De Perfil', href: '/settings' },
   { icon: FileText, label: 'Suscripciones', href: '/subscriptions' },
   { icon: Gift, label: 'Bonos Por Referidos', href: '/referrals' },
   { icon: Link2, label: 'Vincular Broker', href: '/broker' },

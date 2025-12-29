@@ -15,6 +15,7 @@ import Appearance from "./pages/settings/Appearance";
 import Referrals from "./pages/Referrals";
 import Broker from "./pages/Broker";
 import Support from "./pages/Support";
+import Subscriptions from "./pages/Subscriptions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/referrals" element={<Referrals />} />
             <Route path="/broker" element={<Broker />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
