@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { Menu, User, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, User, Loader2, Heart } from 'lucide-react';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
 import { useSignals } from '@/hooks/useSignals';
+import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
+import { useAuth } from '@/hooks/useAuth';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 // Generate week days dynamically
 const generateWeekDays = () => {
@@ -24,11 +29,29 @@ const generateWeekDays = () => {
 };
 
 export default function Signals() {
+  const navigate = useNavigate();
   const weekDays = generateWeekDays();
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   
   const { signals, loading, error } = useSignals();
+  const { isFavorite, toggleFavorite, favoriteIds, isAuthenticated } = useFavoriteSignals();
+  const { user, profile } = useAuth();
+
+  const filteredSignals = showFavoritesOnly 
+    ? signals.filter(s => favoriteIds.has(s.id))
+    : signals;
+
+  const getInitials = () => {
+    if (profile?.first_name) {
+      return `${profile.first_name.charAt(0)}${profile.last_name?.charAt(0) || ''}`.toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20">
@@ -48,10 +71,34 @@ export default function Signals() {
           
           <div className="flex items-center gap-1">
             <NotificationToggle />
-            <button className="p-2 text-blue-300 hover:text-blue-100">
-              <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                <User className="w-5 h-5" />
-              </div>
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  showFavoritesOnly ? "text-red-400" : "text-blue-300 hover:text-blue-100"
+                )}
+                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}
+              >
+                <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
+              </button>
+            )}
+            <button 
+              onClick={() => navigate(user ? '/settings' : '/auth')}
+              className="p-2 text-blue-300 hover:text-blue-100"
+            >
+              {user ? (
+                <Avatar className="w-8 h-8 border-2 border-blue-500/50">
+                  <AvatarImage src={profile?.avatar_url || ''} alt="Avatar" />
+                  <AvatarFallback className="bg-blue-600 text-white text-xs">
+                    {getInitials()}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                  <User className="w-5 h-5" />
+                </div>
+              )}
             </button>
           </div>
         </div>
@@ -64,6 +111,16 @@ export default function Signals() {
         />
       </header>
 
+      {/* Favorites Filter Indicator */}
+      {showFavoritesOnly && (
+        <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2">
+          <div className="flex items-center justify-center gap-2 text-sm text-red-300">
+            <Heart className="w-4 h-4 fill-current" />
+            <span>Mostrando solo favoritos ({favoriteIds.size})</span>
+          </div>
+        </div>
+      )}
+
       {/* Signals List */}
       <main className="p-4 space-y-4">
         {loading ? (
@@ -75,13 +132,26 @@ export default function Signals() {
             <p>Error al cargar señales</p>
             <p className="text-sm text-muted-foreground mt-1">{error}</p>
           </div>
-        ) : signals.length === 0 ? (
+        ) : filteredSignals.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            <p>No hay señales disponibles</p>
+            <p>{showFavoritesOnly ? 'No tienes señales favoritas' : 'No hay señales disponibles'}</p>
+            {showFavoritesOnly && (
+              <button
+                onClick={() => setShowFavoritesOnly(false)}
+                className="mt-2 text-blue-400 hover:underline text-sm"
+              >
+                Ver todas las señales
+              </button>
+            )}
           </div>
         ) : (
-          signals.map((signal) => (
-            <SignalCard key={signal.id} signal={signal} />
+          filteredSignals.map((signal) => (
+            <SignalCard 
+              key={signal.id} 
+              signal={signal}
+              isFavorite={isFavorite(signal.id)}
+              onToggleFavorite={toggleFavorite}
+            />
           ))
         )}
       </main>
