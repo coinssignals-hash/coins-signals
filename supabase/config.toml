@@ -1,1 +1,4 @@
 project_id = "fkaziwfwangiwnduxymf"
+
+[functions.insert-signal]
+verify_jwt = false
