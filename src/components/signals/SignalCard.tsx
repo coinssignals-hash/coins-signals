@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -8,9 +8,11 @@ import { es } from 'date-fns/locale';
 
 interface SignalCardProps {
   signal: TradingSignal;
+  isFavorite?: boolean;
+  onToggleFavorite?: (signalId: string) => void;
 }
 
-export function SignalCard({ signal }: SignalCardProps) {
+export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: SignalCardProps) {
   const [expanded, setExpanded] = useState(false);
   
   const copyToClipboard = (value: number) => {
@@ -43,9 +45,27 @@ export function SignalCard({ signal }: SignalCardProps) {
           background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.4) 0%, rgba(59, 130, 246, 0.2) 50%, rgba(30, 64, 175, 0.4) 100%)'
         }}
       >
-        {/* Date */}
-        <div className="text-center text-xs text-blue-200/80 mb-2">
-          {formattedDate}
+        {/* Favorite Button & Date */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-xs text-blue-200/80">
+            {formattedDate}
+          </div>
+          {onToggleFavorite && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(signal.id);
+              }}
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <Heart
+                className={cn(
+                  "w-5 h-5 transition-colors",
+                  isFavorite ? "fill-red-500 text-red-500" : "text-white/60 hover:text-red-400"
+                )}
+              />
+            </button>
+          )}
         </div>
 
         {/* Main Header Row */}

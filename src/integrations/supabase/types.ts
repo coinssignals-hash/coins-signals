@@ -50,6 +50,77 @@ export type Database = {
         }
         Relationships: []
       }
+      favorite_signals: {
+        Row: {
+          created_at: string
+          id: string
+          signal_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          signal_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          signal_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_signals_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "trading_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          country: string | null
+          created_at: string
+          email_notifications_enabled: boolean | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          push_notifications_enabled: boolean | null
+          signal_alerts_enabled: boolean | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string
+          email_notifications_enabled?: boolean | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          push_notifications_enabled?: boolean | null
+          signal_alerts_enabled?: boolean | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          country?: string | null
+          created_at?: string
+          email_notifications_enabled?: boolean | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          push_notifications_enabled?: boolean | null
+          signal_alerts_enabled?: boolean | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
