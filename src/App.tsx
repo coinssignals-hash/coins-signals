@@ -21,8 +21,8 @@ import Courses from "./pages/Courses";
 import LessonDetail from "./pages/LessonDetail";
 import Auth from "./pages/Auth";
 import Install from "./pages/Install";
+import Performance from "./pages/Performance";
 import NotFound from "./pages/NotFound";
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -53,6 +53,7 @@ const App = () => (
             <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/install" element={<Install />} />
+            <Route path="/performance" element={<Performance />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
