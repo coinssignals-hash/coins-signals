@@ -1,5 +1,25 @@
 # 🐳 Docker Setup - Economic News App
 
+## Inicio rápido con scripts
+
+### Linux/Mac
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+### Windows (CMD)
+```cmd
+scripts\setup.bat
+```
+
+### Windows (PowerShell)
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
+```
+
+---
+
 ## Requisitos previos
 
 1. **Docker Desktop** instalado: https://www.docker.com/products/docker-desktop
