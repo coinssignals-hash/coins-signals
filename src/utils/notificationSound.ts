@@ -8,7 +8,9 @@ const getAudioContext = (): AudioContext => {
   return audioContext;
 };
 
-export const playNotificationSound = (type: 'signal' | 'alert' = 'signal') => {
+export type SoundType = 'signal' | 'alert' | 'buy' | 'sell';
+
+export const playNotificationSound = (type: SoundType = 'signal') => {
   try {
     const ctx = getAudioContext();
     
@@ -23,29 +25,62 @@ export const playNotificationSound = (type: 'signal' | 'alert' = 'signal') => {
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
 
-    if (type === 'signal') {
-      // Pleasant two-tone notification for new signals
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
-      oscillator.frequency.setValueAtTime(1108.73, ctx.currentTime + 0.1); // C#6
-      
-      gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-      
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.3);
-    } else {
-      // Alert sound for critical indicators
-      oscillator.type = 'square';
-      oscillator.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      oscillator.frequency.setValueAtTime(783.99, ctx.currentTime + 0.1); // G5
-      oscillator.frequency.setValueAtTime(587.33, ctx.currentTime + 0.2); // D5
-      
-      gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-      
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.4);
+    switch (type) {
+      case 'buy':
+        // Ascending tones - positive/bullish feeling
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+        
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.4);
+        break;
+
+      case 'sell':
+        // Descending tones - cautious/bearish feeling
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(783.99, ctx.currentTime); // G5
+        oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(523.25, ctx.currentTime + 0.2); // C5
+        
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.4);
+        break;
+
+      case 'alert':
+        // Alert sound for critical indicators
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        oscillator.frequency.setValueAtTime(783.99, ctx.currentTime + 0.1); // G5
+        oscillator.frequency.setValueAtTime(587.33, ctx.currentTime + 0.2); // D5
+        
+        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.4);
+        break;
+
+      case 'signal':
+      default:
+        // Generic two-tone notification
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+        oscillator.frequency.setValueAtTime(1108.73, ctx.currentTime + 0.1); // C#6
+        
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.3);
+        break;
     }
   } catch (error) {
     console.error('Error playing notification sound:', error);
