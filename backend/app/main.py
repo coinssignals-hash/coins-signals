@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 
-from app.routers import news, analysis
+from app.routers import news, analysis, ai
 from app.services.database import Database
 from app.services.cache import Cache
 
@@ -52,6 +52,7 @@ app.add_middleware(
 # Include routers
 app.include_router(news.router, prefix="/api/v1/news", tags=["News"])
 app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Analysis"])
+app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI Analysis"])
 
 @app.get("/")
 async def root():
