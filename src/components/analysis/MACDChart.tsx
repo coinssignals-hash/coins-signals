@@ -1,47 +1,60 @@
 import { useMemo } from 'react';
-import { BarChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, ReferenceLine, Cell } from 'recharts';
+import { Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, ReferenceLine, Cell } from 'recharts';
+import { Loader2 } from 'lucide-react';
 
 interface MACDChartProps {
   pair: string;
   timeframe: string;
+  macdData?: Array<{ time: string; macd: number; signal: number; histogram: number }>;
+  loading?: boolean;
+  error?: string | null;
 }
 
-// Generate mock MACD data
-const generateMACDData = (pair: string, timeframe: string) => {
-  const points = 50;
-  const data = [];
-  
-  let macdLine = (Math.random() - 0.5) * 0.002;
-  let signalLine = macdLine * 0.8;
-  
-  for (let i = 0; i < points; i++) {
-    const macdChange = (Math.random() - 0.5) * 0.0004;
-    macdLine = macdLine + macdChange;
+export function MACDChart({ pair, timeframe, macdData, loading, error }: MACDChartProps) {
+  const chartData = useMemo(() => {
+    if (!macdData || macdData.length === 0) return [];
     
-    // Signal line follows MACD with lag
-    signalLine = signalLine + (macdLine - signalLine) * 0.2;
-    
-    const histogram = macdLine - signalLine;
-    
-    data.push({
-      time: `${i}:00`,
-      macd: parseFloat((macdLine * 1000).toFixed(3)),
-      signal: parseFloat((signalLine * 1000).toFixed(3)),
-      histogram: parseFloat((histogram * 1000).toFixed(3)),
+    return macdData.map((item) => {
+      const timeLabel = item.time.split(' ')[1] || item.time.split('T')[0];
+      return {
+        time: timeLabel,
+        macd: item.macd,
+        signal: item.signal,
+        histogram: item.histogram,
+      };
     });
-  }
-  
-  return data;
-};
+  }, [macdData]);
 
-export function MACDChart({ pair, timeframe }: MACDChartProps) {
-  const data = useMemo(() => generateMACDData(pair, timeframe), [pair, timeframe]);
-  
-  const currentMACD = data[data.length - 1];
+  const currentMACD = chartData[chartData.length - 1];
   const trend = currentMACD?.macd > currentMACD?.signal ? 'bullish' : 'bearish';
-  const crossover = data.length > 1 && 
-    ((data[data.length - 2].macd < data[data.length - 2].signal && currentMACD.macd > currentMACD.signal) ||
-     (data[data.length - 2].macd > data[data.length - 2].signal && currentMACD.macd < currentMACD.signal));
+  
+  const crossover = chartData.length > 1 && 
+    ((chartData[chartData.length - 2].macd < chartData[chartData.length - 2].signal && currentMACD.macd > currentMACD.signal) ||
+     (chartData[chartData.length - 2].macd > chartData[chartData.length - 2].signal && currentMACD.macd < currentMACD.signal));
+
+  if (loading) {
+    return (
+      <div className="h-[250px] w-full flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-[250px] w-full flex items-center justify-center text-destructive">
+        <p className="text-sm">{error}</p>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="h-[250px] w-full flex items-center justify-center text-muted-foreground">
+        <p className="text-sm">No hay datos disponibles</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -49,16 +62,16 @@ export function MACDChart({ pair, timeframe }: MACDChartProps) {
         <div className="flex items-center gap-3">
           <div>
             <span className="text-xs text-muted-foreground">MACD: </span>
-            <span className="text-sm font-semibold text-blue-400">{currentMACD?.macd.toFixed(3)}</span>
+            <span className="text-sm font-semibold text-blue-400">{currentMACD?.macd?.toFixed(5)}</span>
           </div>
           <div>
             <span className="text-xs text-muted-foreground">Signal: </span>
-            <span className="text-sm font-semibold text-orange-400">{currentMACD?.signal.toFixed(3)}</span>
+            <span className="text-sm font-semibold text-orange-400">{currentMACD?.signal?.toFixed(5)}</span>
           </div>
           <div>
             <span className="text-xs text-muted-foreground">Hist: </span>
             <span className={`text-sm font-semibold ${currentMACD?.histogram >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {currentMACD?.histogram.toFixed(3)}
+              {currentMACD?.histogram?.toFixed(5)}
             </span>
           </div>
         </div>
@@ -78,20 +91,21 @@ export function MACDChart({ pair, timeframe }: MACDChartProps) {
       
       <div className="h-[250px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
             <XAxis 
               dataKey="time" 
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
               tickLine={false}
+              interval="preserveStartEnd"
             />
             <YAxis 
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
               tickLine={false}
-              width={45}
-              tickFormatter={(value) => value.toFixed(2)}
+              width={55}
+              tickFormatter={(value) => value.toFixed(4)}
             />
             <Tooltip
               contentStyle={{
@@ -101,10 +115,11 @@ export function MACDChart({ pair, timeframe }: MACDChartProps) {
                 fontSize: '12px',
               }}
               labelStyle={{ color: 'hsl(var(--foreground))' }}
+              formatter={(value: number) => [value?.toFixed(5), '']}
             />
             <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
             <Bar dataKey="histogram" name="Histograma">
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
                   fill={entry.histogram >= 0 ? '#22c55e' : '#ef4444'} 

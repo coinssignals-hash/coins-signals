@@ -5,11 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, Activity, BarChart2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { TrendingUp, TrendingDown, Activity, BarChart2, RefreshCw } from 'lucide-react';
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
 import { IndicatorsSummary } from '@/components/analysis/IndicatorsSummary';
+import { useMarketData } from '@/hooks/useMarketData';
 
 const currencyPairs = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 
@@ -26,6 +28,8 @@ const timeframes = [
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('4H');
+  
+  const { data, loading, error, refetch } = useMarketData(selectedPair, selectedTimeframe);
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -38,7 +42,7 @@ export default function Analysis() {
             <BarChart2 className="w-6 h-6 text-primary" />
             <div>
               <h1 className="text-xl font-bold text-foreground">Análisis Técnico</h1>
-              <p className="text-xs text-muted-foreground">Indicadores y gráficos en tiempo real</p>
+              <p className="text-xs text-muted-foreground">Indicadores y gráficos en tiempo real • Twelve Data API</p>
             </div>
           </div>
           
@@ -64,11 +68,41 @@ export default function Analysis() {
                 ))}
               </SelectContent>
             </Select>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={refetch}
+              disabled={loading}
+              className="shrink-0"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
         </div>
 
+        {/* Error message */}
+        {error && (
+          <Card className="border-destructive/50 bg-destructive/10">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-destructive">{error}</p>
+              <Button variant="outline" size="sm" className="mt-2" onClick={refetch}>
+                Reintentar
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Summary Cards */}
-        <IndicatorsSummary pair={selectedPair} timeframe={selectedTimeframe} />
+        <IndicatorsSummary 
+          pair={selectedPair} 
+          timeframe={selectedTimeframe}
+          priceData={data?.priceData}
+          smaData={data?.smaData}
+          rsiData={data?.rsiData}
+          macdData={data?.macdData}
+          loading={loading}
+        />
 
         {/* Charts */}
         <Tabs defaultValue="price" className="space-y-4">
@@ -90,7 +124,7 @@ export default function Analysis() {
           <TabsContent value="price" className="space-y-4">
             <Card>
               <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <CardTitle className="text-base">
                     {selectedPair} - Precio con Medias Móviles
                   </CardTitle>
@@ -101,14 +135,18 @@ export default function Analysis() {
                     <Badge variant="outline" className="text-xs bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
                       SMA 50
                     </Badge>
-                    <Badge variant="outline" className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
-                      EMA 200
-                    </Badge>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <PriceChart pair={selectedPair} timeframe={selectedTimeframe} />
+                <PriceChart 
+                  pair={selectedPair} 
+                  timeframe={selectedTimeframe}
+                  priceData={data?.priceData}
+                  smaData={data?.smaData}
+                  loading={loading}
+                  error={error}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -131,7 +169,13 @@ export default function Analysis() {
                 </div>
               </CardHeader>
               <CardContent>
-                <RSIChart pair={selectedPair} timeframe={selectedTimeframe} />
+                <RSIChart 
+                  pair={selectedPair} 
+                  timeframe={selectedTimeframe}
+                  rsiData={data?.rsiData}
+                  loading={loading}
+                  error={error}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -154,7 +198,13 @@ export default function Analysis() {
                 </div>
               </CardHeader>
               <CardContent>
-                <MACDChart pair={selectedPair} timeframe={selectedTimeframe} />
+                <MACDChart 
+                  pair={selectedPair} 
+                  timeframe={selectedTimeframe}
+                  macdData={data?.macdData}
+                  loading={loading}
+                  error={error}
+                />
               </CardContent>
             </Card>
           </TabsContent>

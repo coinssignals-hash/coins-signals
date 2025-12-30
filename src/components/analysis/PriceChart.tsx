@@ -1,63 +1,77 @@
 import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from 'recharts';
+import { Loader2 } from 'lucide-react';
 
 interface PriceChartProps {
   pair: string;
   timeframe: string;
+  priceData?: Array<{ time: string; price: number; open: number; high: number; low: number }>;
+  smaData?: {
+    sma20: Array<{ datetime: string; sma: number }>;
+    sma50: Array<{ datetime: string; sma: number }>;
+  };
+  loading?: boolean;
+  error?: string | null;
 }
 
-// Generate mock price data with moving averages
-const generatePriceData = (pair: string, timeframe: string) => {
-  const basePrice = pair === 'EUR/USD' ? 1.0850 : 
-                    pair === 'GBP/USD' ? 1.2650 :
-                    pair === 'USD/JPY' ? 149.50 :
-                    pair === 'USD/CHF' ? 0.8820 :
-                    pair === 'AUD/USD' ? 0.6550 :
-                    pair === 'USD/CAD' ? 1.3650 :
-                    pair === 'NZD/USD' ? 0.6120 : 0.8580;
-  
-  const volatility = basePrice * 0.002;
-  const points = 50;
-  const data = [];
-  
-  let price = basePrice;
-  const prices: number[] = [];
-  
-  for (let i = 0; i < points; i++) {
-    const change = (Math.random() - 0.48) * volatility;
-    price = price + change;
-    prices.push(price);
+export function PriceChart({ pair, timeframe, priceData, smaData, loading, error }: PriceChartProps) {
+  const chartData = useMemo(() => {
+    if (!priceData || priceData.length === 0) return [];
     
-    // Calculate moving averages
-    const sma20 = prices.slice(-20).reduce((a, b) => a + b, 0) / Math.min(prices.length, 20);
-    const sma50 = prices.slice(-50).reduce((a, b) => a + b, 0) / Math.min(prices.length, 50);
-    
-    // EMA 200 approximation
-    const ema200 = basePrice + (price - basePrice) * 0.3;
-    
-    data.push({
-      time: `${i}:00`,
-      price: parseFloat(price.toFixed(5)),
-      sma20: parseFloat(sma20.toFixed(5)),
-      sma50: parseFloat(sma50.toFixed(5)),
-      ema200: parseFloat(ema200.toFixed(5)),
+    return priceData.map((price, index) => {
+      const sma20Value = smaData?.sma20?.[index]?.sma;
+      const sma50Value = smaData?.sma50?.[index]?.sma;
+      
+      const timeLabel = price.time.split(' ')[1] || price.time.split('T')[0];
+      
+      return {
+        time: timeLabel,
+        price: price.price,
+        sma20: sma20Value || null,
+        sma50: sma50Value || null,
+      };
     });
-  }
-  
-  return data;
-};
+  }, [priceData, smaData]);
 
-export function PriceChart({ pair, timeframe }: PriceChartProps) {
-  const data = useMemo(() => generatePriceData(pair, timeframe), [pair, timeframe]);
+  if (loading) {
+    return (
+      <div className="h-[300px] w-full flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-[300px] w-full flex items-center justify-center text-destructive">
+        <p className="text-sm">{error}</p>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
+        <p className="text-sm">No hay datos disponibles</p>
+      </div>
+    );
+  }
+
+  const prices = chartData.map(d => d.price).filter(Boolean);
+  const allValues = [
+    ...prices,
+    ...chartData.map(d => d.sma20).filter(Boolean) as number[],
+    ...chartData.map(d => d.sma50).filter(Boolean) as number[],
+  ];
   
-  const minPrice = Math.min(...data.map(d => Math.min(d.price, d.sma20, d.sma50, d.ema200)));
-  const maxPrice = Math.max(...data.map(d => Math.max(d.price, d.sma20, d.sma50, d.ema200)));
+  const minPrice = Math.min(...allValues);
+  const maxPrice = Math.max(...allValues);
   const padding = (maxPrice - minPrice) * 0.1;
 
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -70,6 +84,7 @@ export function PriceChart({ pair, timeframe }: PriceChartProps) {
             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             tickLine={false}
+            interval="preserveStartEnd"
           />
           <YAxis 
             domain={[minPrice - padding, maxPrice + padding]}
@@ -87,6 +102,7 @@ export function PriceChart({ pair, timeframe }: PriceChartProps) {
               fontSize: '12px',
             }}
             labelStyle={{ color: 'hsl(var(--foreground))' }}
+            formatter={(value: number) => [value?.toFixed(5), '']}
           />
           <Area
             type="monotone"
@@ -103,6 +119,7 @@ export function PriceChart({ pair, timeframe }: PriceChartProps) {
             strokeWidth={1.5}
             dot={false}
             name="SMA 20"
+            connectNulls
           />
           <Line
             type="monotone"
@@ -111,15 +128,7 @@ export function PriceChart({ pair, timeframe }: PriceChartProps) {
             strokeWidth={1.5}
             dot={false}
             name="SMA 50"
-          />
-          <Line
-            type="monotone"
-            dataKey="ema200"
-            stroke="#a855f7"
-            strokeWidth={1.5}
-            dot={false}
-            strokeDasharray="5 5"
-            name="EMA 200"
+            connectNulls
           />
         </ComposedChart>
       </ResponsiveContainer>
