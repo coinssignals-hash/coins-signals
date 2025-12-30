@@ -24,6 +24,7 @@ import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
+import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
 import { useMarketData } from '@/hooks/useMarketData';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
 import {
@@ -153,6 +154,13 @@ export default function Analysis() {
               ))}
             </SelectContent>
           </Select>
+          
+          <AIFullRegenerateButton
+            symbol={selectedPair}
+            currentPrice={marketStats.currentPrice}
+            high={marketStats.high}
+            low={marketStats.low}
+          />
           
           <Sheet>
             <SheetTrigger asChild>
