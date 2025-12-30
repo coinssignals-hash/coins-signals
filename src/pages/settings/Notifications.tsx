@@ -5,9 +5,15 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Bell, MessageCircle, Volume2 } from 'lucide-react';
+import { ArrowLeft, Bell, MessageCircle, Volume2, Play, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
-import { playNotificationSound, enableAudio } from '@/utils/notificationSound';
+import { playNotificationSound, enableAudio, SoundType } from '@/utils/notificationSound';
+
+const soundPreviews: { type: SoundType; label: string; description: string; icon: typeof TrendingUp; color: string }[] = [
+  { type: 'buy', label: 'Señal BUY', description: 'Tono ascendente alcista', icon: TrendingUp, color: 'text-green-500' },
+  { type: 'sell', label: 'Señal SELL', description: 'Tono descendente bajista', icon: TrendingDown, color: 'text-red-500' },
+  { type: 'alert', label: 'Alerta Crítica', description: 'Indicadores en niveles extremos', icon: AlertTriangle, color: 'text-yellow-500' },
+];
 
 export default function Notifications() {
   const { soundEnabled, toggleSound } = useNewSignalsCount();
@@ -41,6 +47,11 @@ export default function Notifications() {
       // Play a preview sound when enabling
       playNotificationSound('signal');
     }
+  };
+
+  const handlePreviewSound = (type: SoundType) => {
+    enableAudio();
+    playNotificationSound(type);
   };
 
   return (
@@ -125,6 +136,35 @@ export default function Notifications() {
                   className="data-[state=checked]:bg-primary"
                 />
               </div>
+              
+              {/* Sound Previews */}
+              <div className="py-4 border-b border-border">
+                <p className="text-xs text-muted-foreground mb-3">Previsualizar sonidos:</p>
+                <div className="grid grid-cols-1 gap-2">
+                  {soundPreviews.map((sound) => {
+                    const Icon = sound.icon;
+                    return (
+                      <button
+                        key={sound.type}
+                        onClick={() => handlePreviewSound(sound.type)}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-left group"
+                      >
+                        <div className={`p-2 rounded-full bg-background ${sound.color}`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-foreground">{sound.label}</span>
+                          <p className="text-xs text-muted-foreground">{sound.description}</p>
+                        </div>
+                        <div className="p-2 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                          <Play className="w-4 h-4" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              
               {[
                 { key: 'realTimeUpdate', label: 'Actualización en Tiempo Real' },
                 { key: 'entryOperation', label: 'Operación Entrada' },
