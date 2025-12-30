@@ -7,6 +7,42 @@ const corsHeaders = {
 
 const TWELVE_DATA_API_KEY = Deno.env.get('TWELVE_DATA_API_KEY');
 
+// Simple in-memory cache with TTL
+interface CacheEntry {
+  data: unknown;
+  timestamp: number;
+}
+
+const cache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
+function getCacheKey(symbol: string, interval: string, indicator?: string): string {
+  return `${symbol}:${interval}:${indicator || 'price'}`;
+}
+
+function getFromCache(key: string): unknown | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  
+  console.log(`Cache HIT for: ${key}`);
+  return entry.data;
+}
+
+function setCache(key: string, data: unknown): void {
+  // Limit cache size to prevent memory issues
+  if (cache.size > 100) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey) cache.delete(oldestKey);
+  }
+  cache.set(key, { data, timestamp: Date.now() });
+  console.log(`Cache SET for: ${key}`);
+}
+
 interface TimeSeriesData {
   datetime: string;
   open: string;
@@ -65,6 +101,18 @@ serve(async (req) => {
       });
     }
 
+    // Check cache first
+    const cacheKey = getCacheKey(formattedSymbol, interval, indicator);
+    const cachedData = getFromCache(cacheKey);
+    if (cachedData) {
+      return new Response(JSON.stringify({
+        ...cachedData as object,
+        cached: true
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const encodedSymbol = encodeURIComponent(formattedSymbol);
 
     console.log(`Fetching data for ${formattedSymbol} with interval ${interval}, indicator: ${indicator || 'price'}`);
@@ -104,11 +152,15 @@ serve(async (req) => {
         throw new Error(sma20Data.message || sma50Data.message || 'Error fetching SMA data');
       }
 
-      return new Response(JSON.stringify({
+      const smaResult = {
         sma20: sma20Data.values || [],
         sma50: sma50Data.values || [],
         symbol: formattedSymbol
-      }), {
+      };
+      
+      setCache(cacheKey, smaResult);
+
+      return new Response(JSON.stringify(smaResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } else {
@@ -128,10 +180,14 @@ serve(async (req) => {
       throw new Error(data.message || 'Error fetching market data');
     }
     
-    return new Response(JSON.stringify({
+    const result = {
       ...data,
       symbol: formattedSymbol
-    }), {
+    };
+    
+    setCache(cacheKey, result);
+    
+    return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
     
