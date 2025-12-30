@@ -28,9 +28,36 @@ serve(async (req) => {
   }
 
   try {
-    const { symbol, interval, indicator, outputsize } = await req.json();
+    const body = await req.json();
+    const { symbol, interval = '4h', indicator, outputsize = 50 } = body;
     
-    console.log(`Fetching data for ${symbol} with interval ${interval}, indicator: ${indicator || 'price'}`);
+    // Validate required parameters
+    if (!symbol || typeof symbol !== 'string') {
+      console.error('Invalid or missing symbol:', symbol);
+      return new Response(JSON.stringify({
+        error: 'Symbol parameter is required',
+        status: 'error'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    // Format symbol for Twelve Data (remove / and trim)
+    const formattedSymbol = symbol.replace('/', '').trim().toUpperCase();
+    
+    if (!formattedSymbol) {
+      console.error('Empty symbol after formatting');
+      return new Response(JSON.stringify({
+        error: 'Invalid symbol format',
+        status: 'error'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    console.log(`Fetching data for ${formattedSymbol} with interval ${interval}, indicator: ${indicator || 'price'}`);
     
     if (!TWELVE_DATA_API_KEY) {
       console.error('TWELVE_DATA_API_KEY not configured');
@@ -39,10 +66,7 @@ serve(async (req) => {
 
     const baseUrl = 'https://api.twelvedata.com';
     let url: string;
-    
-    // Format symbol for Twelve Data (remove /)
-    const formattedSymbol = symbol.replace('/', '');
-    const size = outputsize || 50;
+    const size = outputsize;
     
     if (indicator === 'rsi') {
       url = `${baseUrl}/rsi?symbol=${formattedSymbol}&interval=${interval}&time_period=14&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
