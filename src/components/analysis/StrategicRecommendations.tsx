@@ -18,14 +18,14 @@ export function StrategicRecommendations({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger className="w-full bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4 flex items-center justify-between hover:bg-green-900/10 transition-colors">
-        <h3 className="text-white font-semibold">Recomendaciones Estratégicas</h3>
-        <ChevronDown className={`w-5 h-5 text-green-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
+      <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
+        <h3 className="text-white font-semibold text-sm">Recomendaciones Estratégicas</h3>
+        <ChevronDown className={`w-5 h-5 text-green-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </CollapsibleTrigger>
       
       <CollapsibleContent>
-        <div className="bg-[#0a1a0a] border border-t-0 border-green-900/50 rounded-b-lg p-4 -mt-2">
+        <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Long Term Traders */}
             <div className="space-y-3">
