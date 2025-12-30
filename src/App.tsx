@@ -24,6 +24,7 @@ import Install from "./pages/Install";
 import Performance from "./pages/Performance";
 import About from "./pages/About";
 import BrokerRating from "./pages/BrokerRating";
+import Analysis from "./pages/Analysis";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/performance" element={<Performance />} />
             <Route path="/about" element={<About />} />
             <Route path="/broker-rating" element={<BrokerRating />} />
+            <Route path="/analysis" element={<Analysis />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
