@@ -6,12 +6,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Activity, BarChart2, RefreshCw } from 'lucide-react';
+import { TrendingUp, Activity, BarChart2, RefreshCw, Bell } from 'lucide-react';
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
 import { IndicatorsSummary } from '@/components/analysis/IndicatorsSummary';
+import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { useMarketData } from '@/hooks/useMarketData';
+import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const currencyPairs = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 
@@ -25,11 +34,29 @@ const timeframes = [
   { value: '1W', label: '1 Semana' },
 ];
 
+interface AlertConfig {
+  rsiOverbought: number;
+  rsiOversold: number;
+  enableRSI: boolean;
+  enableMACD: boolean;
+  enableSMACross: boolean;
+}
+
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('4H');
+  const [alertConfig, setAlertConfig] = useState<AlertConfig>({
+    rsiOverbought: 70,
+    rsiOversold: 30,
+    enableRSI: true,
+    enableMACD: true,
+    enableSMACross: true,
+  });
   
   const { data, loading, error, refetch } = useMarketData(selectedPair, selectedTimeframe);
+  
+  // Initialize indicator alerts hook
+  useIndicatorAlerts(data, selectedPair, alertConfig);
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -68,6 +95,25 @@ export default function Analysis() {
                 ))}
               </SelectContent>
             </Select>
+            
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0 relative">
+                  <Bell className="w-4 h-4" />
+                  {(alertConfig.enableRSI || alertConfig.enableMACD || alertConfig.enableSMACross) && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full" />
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[320px] sm:w-[380px]">
+                <SheetHeader>
+                  <SheetTitle>Alertas de Indicadores</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4">
+                  <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
+                </div>
+              </SheetContent>
+            </Sheet>
             
             <Button
               variant="outline"
@@ -160,10 +206,10 @@ export default function Analysis() {
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs bg-red-500/20 text-red-400 border-red-500/30">
-                      Sobrecompra 70
+                      Sobrecompra {alertConfig.rsiOverbought}
                     </Badge>
                     <Badge variant="outline" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
-                      Sobreventa 30
+                      Sobreventa {alertConfig.rsiOversold}
                     </Badge>
                   </div>
                 </div>
