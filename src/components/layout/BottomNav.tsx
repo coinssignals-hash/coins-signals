@@ -1,9 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Activity, Newspaper, GraduationCap, Building2, Settings } from 'lucide-react';
+import { Activity, Newspaper, GraduationCap, Building2, Settings, BarChart2 } from 'lucide-react';
 
 const navItems = [
   { icon: Activity, label: 'Señales', href: '/' },
+  { icon: BarChart2, label: 'Análisis', href: '/analysis' },
   { icon: Newspaper, label: 'Noticias', href: '/news' },
   { icon: GraduationCap, label: 'Cursos', href: '/courses' },
   { icon: Building2, label: 'Brokers', href: '/broker' },
