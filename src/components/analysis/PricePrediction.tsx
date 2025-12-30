@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface PricePredictionProps {
   symbol: string;
@@ -27,9 +28,11 @@ export function PricePrediction({ symbol, currentPrice }: PricePredictionProps) 
 
   if (error || !data) {
     return (
-      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
-        <p className="text-red-400 text-sm">Error al cargar la predicción del precio</p>
-      </div>
+      <AnalysisError 
+        title="Predicción del Precio"
+        error={error as Error}
+        compact
+      />
     );
   }
 

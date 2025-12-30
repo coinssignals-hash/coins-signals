@@ -2,6 +2,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useMajorNews, MajorNewsEvent } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface MajorNewsProps {
   symbol: string;
@@ -28,9 +29,11 @@ export function MajorNews({ symbol }: MajorNewsProps) {
               <span className="ml-2 text-gray-400">Cargando noticias...</span>
             </div>
           ) : error ? (
-            <div className="text-red-400 text-sm py-4">
-              Error al cargar las noticias. Intente de nuevo más tarde.
-            </div>
+            <AnalysisError 
+              title="Noticias de Impacto"
+              error={error as Error}
+              compact
+            />
           ) : events && events.length > 0 ? (
             <div className="space-y-4">
               {events.map((event, index) => (

@@ -2,6 +2,7 @@ import { Loader2, ExternalLink } from 'lucide-react';
 import { useRelevantNews } from '@/hooks/useAnalysisData';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { AnalysisError } from './AnalysisError';
 
 interface RelevantNewsProps {
   symbol: string;
@@ -21,10 +22,20 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
     );
   }
 
-  if (error || !news || news.length === 0) {
+  if (error) {
+    return (
+      <AnalysisError 
+        title="Noticias Relevantes"
+        error={error as Error}
+        compact
+      />
+    );
+  }
+
+  if (!news || news.length === 0) {
     return (
       <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4">
-        <p className="text-gray-400 text-sm">No hay noticias relevantes disponibles</p>
+        <p className="text-gray-400 text-sm">No hay noticias relevantes disponibles para este par</p>
       </div>
     );
   }

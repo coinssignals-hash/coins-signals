@@ -1,5 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { useTechnicalLevels } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface TechnicalLevelsProps {
   symbol: string;
@@ -22,9 +23,11 @@ export function TechnicalLevels({ symbol, currentPrice }: TechnicalLevelsProps) 
 
   if (error || !data) {
     return (
-      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
-        <p className="text-red-400 text-sm">Error al cargar niveles técnicos</p>
-      </div>
+      <AnalysisError 
+        title="Niveles Técnicos"
+        error={error as Error}
+        compact
+      />
     );
   }
 

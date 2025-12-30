@@ -2,6 +2,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useMonetaryPolicies } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface MonetaryPoliciesProps {
   symbol: string;
@@ -26,9 +27,11 @@ export function MonetaryPolicies({ symbol }: MonetaryPoliciesProps) {
               <span className="ml-2 text-gray-400">Cargando políticas...</span>
             </div>
           ) : error || !policies ? (
-            <div className="text-red-400 text-sm py-4">
-              Error al cargar las políticas monetarias.
-            </div>
+            <AnalysisError 
+              title="Políticas Monetarias"
+              error={error as Error}
+              compact
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {policies.map((policy, index) => (

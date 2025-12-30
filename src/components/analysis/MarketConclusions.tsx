@@ -2,6 +2,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useMarketConclusions } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface MarketConclusionsProps {
   symbol: string;
@@ -35,9 +36,11 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
               <span className="ml-2 text-gray-400">Cargando conclusiones...</span>
             </div>
           ) : error || !data ? (
-            <div className="text-red-400 text-sm py-4">
-              Error al cargar las conclusiones.
-            </div>
+            <AnalysisError 
+              title="Conclusiones del Mercado"
+              error={error as Error}
+              compact
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Market Direction */}
