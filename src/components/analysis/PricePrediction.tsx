@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
+import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
+import { AIRegenerateButton } from './AIRegenerateButton';
+import { AIRefreshOverlay } from './AIRefreshOverlay';
 
 interface PricePredictionProps {
   symbol: string;
@@ -11,9 +15,34 @@ interface PricePredictionProps {
 
 export function PricePrediction({ symbol, currentPrice }: PricePredictionProps) {
   const { data, isLoading, error } = usePricePrediction(symbol, currentPrice);
+  const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
+  const [aiPrediction, setAIPrediction] = useState<Record<string, unknown> | null>(null);
+
+  const handleRegenerateWithAI = async () => {
+    const result = await generateAnalysis('prediction', symbol, {
+      currentPrice,
+      previousClose: currentPrice * 0.998,
+      high: currentPrice * 1.005,
+      low: currentPrice * 0.995
+    });
+    if (result?.analysis) {
+      setAIPrediction(result.analysis);
+    }
+  };
 
   const today = new Date();
   const dateStr = format(today, "d 'de' MMMM 'de' yyyy", { locale: es });
+  
+  // Merge AI prediction with data if available
+  const displayData = aiPrediction ? {
+    ...data,
+    predictedHigh: (aiPrediction.predicted_high as number) || data?.predictedHigh,
+    predictedLow: (aiPrediction.predicted_low as number) || data?.predictedLow,
+    predictedClose: (aiPrediction.predicted_close as number) || data?.predictedClose,
+    confidence: (aiPrediction.confidence as number) || data?.confidence,
+    summary: (aiPrediction.summary as string) || data?.summary,
+    direction: (aiPrediction.direction as string) || data?.direction,
+  } : data;
 
   if (isLoading) {
     return (
@@ -26,7 +55,7 @@ export function PricePrediction({ symbol, currentPrice }: PricePredictionProps) 
     );
   }
 
-  if (error || !data) {
+  if (error || !displayData) {
     return (
       <AnalysisError 
         title="Predicción del Precio"
@@ -36,82 +65,95 @@ export function PricePrediction({ symbol, currentPrice }: PricePredictionProps) 
     );
   }
 
-  const trendIcon = data.direction === 'up' ? <TrendingUp className="w-5 h-5" /> :
-                    data.direction === 'down' ? <TrendingDown className="w-5 h-5" /> :
+  const trendIcon = displayData.direction === 'up' ? <TrendingUp className="w-5 h-5" /> :
+                    displayData.direction === 'down' ? <TrendingDown className="w-5 h-5" /> :
                     <Minus className="w-5 h-5" />;
   
-  const trendColor = data.direction === 'up' ? 'text-green-400' : 
-                     data.direction === 'down' ? 'text-red-400' : 'text-yellow-400';
+  const trendColor = displayData.direction === 'up' ? 'text-green-400' : 
+                     displayData.direction === 'down' ? 'text-red-400' : 'text-yellow-400';
   
-  const trendText = data.direction === 'up' ? 'Tendencia Alcista' : 
-                    data.direction === 'down' ? 'Tendencia Bajista' : 'Tendencia Lateral';
+  const trendText = displayData.direction === 'up' ? 'Tendencia Alcista' : 
+                    displayData.direction === 'down' ? 'Tendencia Bajista' : 'Tendencia Lateral';
 
   return (
-    <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
-      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-        <h3 className="text-white font-semibold flex items-center gap-2">
-          Predicción Del Precio
-          <span className="text-gray-500">{'·'.repeat(20)}</span>
-        </h3>
-        <div className="flex items-center gap-2">
-          <span className={`flex items-center gap-1 ${trendColor}`}>
-            {trendIcon}
-          </span>
-          <span className="text-green-400 text-2xl font-bold font-mono">{data.currentPrice.toFixed(4)}</span>
-        </div>
-      </div>
-
-      {/* Predicted range */}
-      <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-[#0d1f0d] rounded-lg">
-        <div className="text-center">
-          <p className="text-gray-400 text-xs mb-1">Mínimo Esperado</p>
-          <p className="text-red-400 font-mono font-semibold">{data.predictedLow.toFixed(4)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-400 text-xs mb-1">Cierre Esperado</p>
-          <p className="text-white font-mono font-semibold">{data.predictedClose.toFixed(4)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-400 text-xs mb-1">Máximo Esperado</p>
-          <p className="text-green-400 font-mono font-semibold">{data.predictedHigh.toFixed(4)}</p>
-        </div>
-      </div>
-
-      {/* Confidence bar */}
-      <div className="mb-4">
-        <div className="flex justify-between text-xs mb-1">
-          <span className="text-gray-400">Confianza de la predicción</span>
-          <span className={`font-semibold ${
-            data.confidence >= 70 ? 'text-green-400' : 
-            data.confidence >= 50 ? 'text-yellow-400' : 'text-red-400'
-          }`}>{data.confidence}%</span>
-        </div>
-        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-          <div 
-            className={`h-full rounded-full transition-all duration-500 ${
-              data.confidence >= 70 ? 'bg-green-500' : 
-              data.confidence >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-            }`}
-            style={{ width: `${data.confidence}%` }}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-3 text-sm">
-        <div>
-          <h4 className="text-white font-semibold mb-1">Síntesis del Día</h4>
-          <p className="text-gray-300 leading-relaxed">
-            El par <span className="text-green-400 underline">{data.symbol}</span> muestra una{' '}
-            <span className={trendColor}>{trendText}</span> el {dateStr}. {data.summary}
-          </p>
+    <AIRefreshOverlay isRefreshing={isAILoading}>
+      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              Predicción Del Precio
+              {aiPrediction && (
+                <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
+              )}
+            </h3>
+            <AIRegenerateButton 
+              onClick={handleRegenerateWithAI} 
+              isLoading={isAILoading}
+              showLabel={false}
+              size="icon"
+              className="h-7 w-7"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`flex items-center gap-1 ${trendColor}`}>
+              {trendIcon}
+            </span>
+            <span className="text-green-400 text-2xl font-bold font-mono">{displayData.currentPrice.toFixed(4)}</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <span>Timeframe: {data.timeframe}</span>
-          <span>•</span>
-          <span>Última actualización: {format(new Date(), 'HH:mm')}</span>
+        {/* Predicted range */}
+        <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-[#0d1f0d] rounded-lg">
+          <div className="text-center">
+            <p className="text-gray-400 text-xs mb-1">Mínimo Esperado</p>
+            <p className="text-red-400 font-mono font-semibold">{displayData.predictedLow.toFixed(4)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-400 text-xs mb-1">Cierre Esperado</p>
+            <p className="text-white font-mono font-semibold">{displayData.predictedClose.toFixed(4)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-400 text-xs mb-1">Máximo Esperado</p>
+            <p className="text-green-400 font-mono font-semibold">{displayData.predictedHigh.toFixed(4)}</p>
+          </div>
+        </div>
+
+        {/* Confidence bar */}
+        <div className="mb-4">
+          <div className="flex justify-between text-xs mb-1">
+            <span className="text-gray-400">Confianza de la predicción</span>
+            <span className={`font-semibold ${
+              displayData.confidence >= 70 ? 'text-green-400' : 
+              displayData.confidence >= 50 ? 'text-yellow-400' : 'text-red-400'
+            }`}>{displayData.confidence}%</span>
+          </div>
+          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div 
+              className={`h-full rounded-full transition-all duration-500 ${
+                displayData.confidence >= 70 ? 'bg-green-500' : 
+                displayData.confidence >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+              }`}
+              style={{ width: `${displayData.confidence}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3 text-sm">
+          <div>
+            <h4 className="text-white font-semibold mb-1">Síntesis del Día</h4>
+            <p className="text-gray-300 leading-relaxed">
+              El par <span className="text-green-400 underline">{displayData.symbol}</span> muestra una{' '}
+              <span className={trendColor}>{trendText}</span> el {dateStr}. {displayData.summary}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span>Timeframe: {displayData.timeframe}</span>
+            <span>•</span>
+            <span>Última actualización: {format(new Date(), 'HH:mm')}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </AIRefreshOverlay>
   );
 }

@@ -5,6 +5,7 @@ import { useMarketConclusions } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
+import { AIRefreshOverlay } from './AIRefreshOverlay';
 
 interface MarketConclusionsProps {
   symbol: string;
@@ -38,7 +39,8 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
+    <AIRefreshOverlay isRefreshing={isAILoading}>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
       <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
         <div className="flex items-center gap-2">
           <h3 className="text-white font-semibold text-sm">Conclusiones y Dirección Esperada Del Mercado</h3>
@@ -177,6 +179,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
           )}
         </div>
       </CollapsibleContent>
-    </Collapsible>
+      </Collapsible>
+    </AIRefreshOverlay>
   );
 }

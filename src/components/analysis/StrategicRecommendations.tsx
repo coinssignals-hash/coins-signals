@@ -5,6 +5,7 @@ import { useStrategicRecommendations } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
+import { AIRefreshOverlay } from './AIRefreshOverlay';
 
 interface StrategicRecommendationsProps {
   symbol: string;
@@ -45,7 +46,8 @@ export function StrategicRecommendations({ symbol, currentPrice }: StrategicReco
     shortTerm: formatAIRecommendation(aiRecommendations.short_term as Record<string, unknown>)
   } : data;
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
+    <AIRefreshOverlay isRefreshing={isAILoading}>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
       <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
         <div className="flex items-center gap-2">
           <h3 className="text-white font-semibold text-sm">Recomendaciones Estratégicas</h3>
@@ -164,6 +166,7 @@ export function StrategicRecommendations({ symbol, currentPrice }: StrategicReco
           )}
         </div>
       </CollapsibleContent>
-    </Collapsible>
+      </Collapsible>
+    </AIRefreshOverlay>
   );
 }

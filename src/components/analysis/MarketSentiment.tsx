@@ -5,6 +5,7 @@ import { useMarketSentiment } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
+import { AIRefreshOverlay } from './AIRefreshOverlay';
 
 interface MarketSentimentProps {
   symbol: string;
@@ -74,7 +75,8 @@ export function MarketSentiment({
   }
 
   return (
-    <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
+    <AIRefreshOverlay isRefreshing={isAILoading}>
+      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Sentiment Chart */}
         <div>
@@ -176,6 +178,7 @@ export function MarketSentiment({
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </AIRefreshOverlay>
   );
 }
