@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
 import { Loader2 } from 'lucide-react';
 import { useMarketSentiment } from '@/hooks/useAnalysisData';
+import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
+import { AIRegenerateButton } from './AIRegenerateButton';
 
 interface MarketSentimentProps {
   symbol: string;
@@ -19,11 +22,34 @@ export function MarketSentiment({
   pipsChange,
 }: MarketSentimentProps) {
   const { data: sentimentData, isLoading, error } = useMarketSentiment(symbol);
+  const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
+  const [aiSentiment, setAISentiment] = useState<Record<string, unknown> | null>(null);
+
+  const handleRegenerateWithAI = async () => {
+    const result = await generateAnalysis('sentiment', symbol, {
+      currentPrice: (highPrice + lowPrice) / 2,
+      previousClose: (highPrice + lowPrice) / 2 - (dailyChange / 100),
+      high: highPrice,
+      low: lowPrice
+    });
+    if (result?.analysis) {
+      setAISentiment(result.analysis);
+    }
+  };
+
+  // Use AI data if available, otherwise use API data
+  const displayData = aiSentiment || sentimentData;
 
   const chartData = [
-    { name: 'Alcista', value: sentimentData?.bullishPercent || 0, color: '#22c55e' },
-    { name: 'Neutro', value: sentimentData?.neutralPercent || 0, color: '#eab308' },
-    { name: 'Bajista', value: sentimentData?.bearishPercent || 0, color: '#ef4444' },
+    { name: 'Alcista', value: aiSentiment 
+      ? Math.round(((Number(aiSentiment.score) || 0) + 1) / 2 * 100) 
+      : (sentimentData?.bullishPercent || 0) as number, color: '#22c55e' },
+    { name: 'Neutro', value: aiSentiment 
+      ? Math.round((1 - Math.abs(Number(aiSentiment.score) || 0)) * 50) 
+      : (sentimentData?.neutralPercent || 0) as number, color: '#eab308' },
+    { name: 'Bajista', value: aiSentiment 
+      ? Math.round((1 - (Number(aiSentiment.score) || 0)) / 2 * 100) 
+      : (sentimentData?.bearishPercent || 0) as number, color: '#ef4444' },
   ];
 
   if (isLoading) {
@@ -37,7 +63,7 @@ export function MarketSentiment({
     );
   }
 
-  if (error) {
+  if (error && !aiSentiment) {
     return (
       <AnalysisError 
         title="Sentimiento del Mercado"
@@ -52,7 +78,19 @@ export function MarketSentiment({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Sentiment Chart */}
         <div>
-          <h3 className="text-center text-white font-semibold mb-2">Sentimiento del Mercado</h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-center text-white font-semibold">Sentimiento del Mercado</h3>
+            <AIRegenerateButton 
+              onClick={handleRegenerateWithAI} 
+              isLoading={isAILoading}
+            />
+          </div>
+          {aiSentiment && (
+            <div className="mb-2 text-xs text-purple-400 flex items-center gap-1">
+              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+              Análisis generado con IA
+            </div>
+          )}
           <div className="h-32">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} layout="horizontal">
