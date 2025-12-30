@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
 import { Loader2 } from 'lucide-react';
 import { useMarketSentiment } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface MarketSentimentProps {
   symbol: string;
@@ -38,9 +39,11 @@ export function MarketSentiment({
 
   if (error) {
     return (
-      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
-        <p className="text-red-400 text-sm">Error al cargar el sentimiento del mercado</p>
-      </div>
+      <AnalysisError 
+        title="Sentimiento del Mercado"
+        error={error as Error}
+        compact
+      />
     );
   }
 

@@ -1,5 +1,6 @@
 import { Loader2, TrendingUp, TrendingDown } from 'lucide-react';
 import { usePreviousDay } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface PreviousDayChartProps {
   symbol: string;
@@ -22,9 +23,11 @@ export function PreviousDayChart({ symbol, currentPrice }: PreviousDayChartProps
 
   if (error || !data) {
     return (
-      <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4">
-        <p className="text-red-400 text-sm">Error al cargar datos del día anterior</p>
-      </div>
+      <AnalysisError 
+        title="Datos del Día Anterior"
+        error={error as Error}
+        compact
+      />
     );
   }
 

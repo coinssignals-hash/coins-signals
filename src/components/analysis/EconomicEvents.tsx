@@ -2,6 +2,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useEconomicEvents, EconomicEvent } from '@/hooks/useAnalysisData';
+import { AnalysisError } from './AnalysisError';
 
 interface EconomicEventsProps {
   symbol: string;
@@ -40,9 +41,11 @@ export function EconomicEvents({ symbol, date }: EconomicEventsProps) {
               <span className="ml-2 text-gray-400">Cargando eventos...</span>
             </div>
           ) : error ? (
-            <div className="text-red-400 text-sm py-4">
-              Error al cargar los eventos. Intente de nuevo más tarde.
-            </div>
+            <AnalysisError 
+              title="Eventos Económicos"
+              error={error as Error}
+              compact
+            />
           ) : events && events.length > 0 ? (
             <div className="border border-green-900/30 rounded-lg overflow-hidden">
               <div className="bg-green-900/20 p-2">
