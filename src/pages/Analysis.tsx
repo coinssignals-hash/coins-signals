@@ -105,23 +105,6 @@ export default function Analysis() {
     };
   }, [data?.priceData]);
 
-  // Generate technical levels based on price data
-  const technicalLevels = useMemo(() => {
-    const { resistance, support, currentPrice } = marketStats;
-    return {
-      resistances: [
-        { price: resistance, description: 'Confluencia de MA20, MA50 y 200-period MA en gráfico de 4 horas. Nivel psicológico importante' },
-        { price: resistance + 0.0065, description: 'Fibonacci 23.6% de retroceso de la última tendencia alcista' },
-        { price: resistance + 0.012, description: 'Nivel estático clave, resistencia significativa' },
-      ],
-      supports: [
-        { price: support, description: '100-day SMA, soporte técnico crítico. EUR/USD rompió por encima de este nivel recientemente' },
-        { price: support - 0.007, description: 'Fibonacci 61.8% de retroceso, soporte fuerte' },
-        { price: support - 0.0114, description: 'Soporte de tendencia a medio plazo' },
-      ],
-    };
-  }, [marketStats]);
-
   // Candlestick data for chart
   const candleData = useMemo(() => {
     if (!data?.priceData || data.priceData.length === 0) {
