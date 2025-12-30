@@ -311,9 +311,8 @@ export default function Analysis() {
 
         {/* Technical Levels */}
         <TechnicalLevels
-          resistances={technicalLevels.resistances}
-          supports={technicalLevels.supports}
-          loading={loading}
+          symbol={selectedPair}
+          currentPrice={marketStats.currentPrice}
         />
 
         {/* Candlestick Chart */}
