@@ -1,5 +1,6 @@
 // API Configuration
-// Set VITE_USE_MOCK_DATA=false and VITE_API_URL to your FastAPI backend URL
+// The app will use the Edge Function proxy when FASTAPI_BASE_URL secret is configured
+// For local development, set VITE_USE_MOCK_DATA=false to use real API
 export const API_CONFIG = {
   baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:8000',
   endpoints: {
@@ -23,7 +24,9 @@ export const API_CONFIG = {
     relevantNews: (symbol: string) => `/api/v1/analysis/relevant-news/${encodeURIComponent(symbol)}`,
     economicEvents: (symbol: string, date: string) => `/api/v1/analysis/economic-events/${encodeURIComponent(symbol)}/${date}`,
   },
-  // Mock data is enabled by default unless explicitly set to 'false'
-  // Set VITE_USE_MOCK_DATA=false in .env to use real FastAPI backend
-  useMockData: import.meta.env.VITE_USE_MOCK_DATA !== 'false',
+  // In production (Lovable), use real API via Edge Function proxy
+  // For local dev, set VITE_USE_MOCK_DATA=true to use mock data
+  useMockData: import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_DATA !== 'false' 
+    ? true 
+    : import.meta.env.VITE_USE_MOCK_DATA === 'true',
 } as const;
