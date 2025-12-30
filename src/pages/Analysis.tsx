@@ -339,17 +339,14 @@ export default function Analysis() {
           <StrategicRecommendations
             symbol={selectedPair}
             currentPrice={marketStats.currentPrice}
-            support={marketStats.support}
-            resistance={marketStats.resistance}
           />
 
           <MarketConclusions
             symbol={selectedPair}
-            resistance={marketStats.resistance}
-            support={marketStats.support}
+            currentPrice={marketStats.currentPrice}
           />
 
-          <MonetaryPolicies />
+          <MonetaryPolicies symbol={selectedPair} />
 
           <MajorNews symbol={selectedPair} />
 
