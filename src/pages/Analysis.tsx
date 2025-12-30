@@ -294,29 +294,17 @@ export default function Analysis() {
 
         {/* Market Sentiment */}
         <MarketSentiment
-          bullish={45}
-          neutral={25}
-          bearish={30}
+          symbol={selectedPair}
           highPrice={marketStats.high}
           lowPrice={marketStats.low}
           dailyChange={marketStats.changePercent}
           pipsChange={marketStats.change}
-          loading={loading}
         />
 
         {/* Price Prediction */}
         <PricePrediction
           symbol={selectedPair}
           currentPrice={marketStats.currentPrice}
-          trend={marketStats.changePercent >= 0 ? 'bullish' : 'bearish'}
-          changePercent={marketStats.changePercent}
-          pips={marketStats.pips}
-          high={marketStats.high}
-          low={marketStats.low}
-          bullishPercent={45}
-          bearishPercent={30}
-          targetPrice={marketStats.resistance}
-          loading={loading}
         />
 
         {/* Technical Levels */}
