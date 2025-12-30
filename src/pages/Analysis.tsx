@@ -12,6 +12,7 @@ import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
 import { IndicatorsSummary } from '@/components/analysis/IndicatorsSummary';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
+import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { useMarketData } from '@/hooks/useMarketData';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
 import {
@@ -22,16 +23,11 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
-const currencyPairs = [
-  'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 
-  'AUD/USD', 'USD/CAD', 'NZD/USD', 'EUR/GBP'
-];
-
 const timeframes = [
-  { value: '1H', label: '1 Hora' },
-  { value: '4H', label: '4 Horas' },
-  { value: '1D', label: '1 Día' },
-  { value: '1W', label: '1 Semana' },
+  { value: '1h', label: '1 Hora' },
+  { value: '4h', label: '4 Horas' },
+  { value: '1day', label: '1 Día' },
+  { value: '1week', label: '1 Semana' },
 ];
 
 interface AlertConfig {
@@ -44,7 +40,7 @@ interface AlertConfig {
 
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('4H');
+  const [selectedTimeframe, setSelectedTimeframe] = useState('4h');
   const [alertConfig, setAlertConfig] = useState<AlertConfig>({
     rsiOverbought: 70,
     rsiOversold: 30,
@@ -73,17 +69,12 @@ export default function Analysis() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Select value={selectedPair} onValueChange={setSelectedPair}>
-              <SelectTrigger className="w-[130px] bg-secondary">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border">
-                {currencyPairs.map(pair => (
-                  <SelectItem key={pair} value={pair}>{pair}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-2 flex-wrap">
+            <SymbolSearch 
+              value={selectedPair} 
+              onChange={setSelectedPair}
+              className="w-[200px] sm:w-[260px]"
+            />
             
             <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
               <SelectTrigger className="w-[110px] bg-secondary">

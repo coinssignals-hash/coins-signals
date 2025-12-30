@@ -79,6 +79,33 @@ export type Database = {
           },
         ]
       }
+      favorite_symbols: {
+        Row: {
+          created_at: string
+          id: string
+          symbol: string
+          symbol_name: string | null
+          symbol_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          symbol: string
+          symbol_name?: string | null
+          symbol_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          symbol?: string
+          symbol_name?: string | null
+          symbol_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.indicator-alerts]
 verify_jwt = false
+
+[functions.symbol-search]
+verify_jwt = false
