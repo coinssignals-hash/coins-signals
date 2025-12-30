@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Activity, Newspaper, GraduationCap, Building2, Settings, BarChart2, TrendingUp } from 'lucide-react';
+import { Newspaper, GraduationCap, Building2, Settings, BarChart2, TrendingUp } from 'lucide-react';
+import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
+import { useEffect } from 'react';
 
 const navItems = [
   { icon: BarChart2, label: 'Markets', href: '/' },
-  { icon: TrendingUp, label: 'Señales', href: '/signals' },
+  { icon: TrendingUp, label: 'Señales', href: '/signals', showBadge: true },
   { icon: Newspaper, label: 'Noticias', href: '/news' },
   { icon: GraduationCap, label: 'Cursos', href: '/courses' },
   { icon: Building2, label: 'Brokers', href: '/broker' },
@@ -13,6 +15,14 @@ const navItems = [
 
 export function BottomNav() {
   const location = useLocation();
+  const { newCount, markAsSeen } = useNewSignalsCount();
+
+  // Mark signals as seen when visiting the signals page
+  useEffect(() => {
+    if (location.pathname === '/signals') {
+      markAsSeen();
+    }
+  }, [location.pathname, markAsSeen]);
   
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-card border-t border-border">
@@ -20,19 +30,27 @@ export function BottomNav() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
+          const showBadge = item.showBadge && newCount > 0 && !isActive;
           
           return (
             <Link
               key={item.href}
               to={item.href}
               className={cn(
-                'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors',
+                'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors relative',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground'
               )}
             >
-              <Icon className={cn('w-5 h-5', isActive && 'text-primary')} />
+              <div className="relative">
+                <Icon className={cn('w-5 h-5', isActive && 'text-primary')} />
+                {showBadge && (
+                  <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
+                    {newCount > 99 ? '99+' : newCount}
+                  </span>
+                )}
+              </div>
               <span>{item.label}</span>
             </Link>
           );
