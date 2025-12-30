@@ -1,5 +1,6 @@
 import { API_CONFIG } from '@/config/api';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 import {
   MajorNewsEvent,
   EconomicEvent,
@@ -14,7 +15,33 @@ import {
   FullAnalysisData,
 } from '@/types/analysis';
 
-// Helper function for fetch requests
+// Helper function to call the Edge Function proxy
+async function fetchViaProxy<T>(
+  endpoint: string, 
+  symbol: string, 
+  date?: string,
+  currentPrice?: number
+): Promise<T> {
+  console.log(`Fetching via proxy: ${endpoint} for ${symbol}`);
+  
+  const { data, error } = await supabase.functions.invoke('analysis-proxy', {
+    body: { endpoint, symbol, date, currentPrice },
+  });
+
+  if (error) {
+    console.error('Proxy error:', error);
+    throw new Error(`Proxy Error: ${error.message}`);
+  }
+
+  if (data.error) {
+    console.error('Backend error:', data.error);
+    throw new Error(data.error);
+  }
+
+  return data as T;
+}
+
+// Helper function for direct fetch requests (fallback)
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_CONFIG.baseUrl}${endpoint}`;
   
@@ -364,7 +391,7 @@ export const analysisApi = {
         economicEvents: generateMockEconomicEvents(symbol),
       };
     }
-    return fetchApi<FullAnalysisData>(API_CONFIG.endpoints.fullAnalysis(symbol));
+    return fetchViaProxy<FullAnalysisData>('fullAnalysis', symbol, undefined, currentPrice);
   },
 
   // Individual endpoints
@@ -372,63 +399,63 @@ export const analysisApi = {
     if (API_CONFIG.useMockData) {
       return generateMockSentiment(symbol);
     }
-    return fetchApi<MarketSentimentData>(API_CONFIG.endpoints.sentiment(symbol));
+    return fetchViaProxy<MarketSentimentData>('sentiment', symbol);
   },
 
   async getPrediction(symbol: string, currentPrice: number): Promise<PricePredictionData> {
     if (API_CONFIG.useMockData) {
       return generateMockPrediction(symbol, currentPrice);
     }
-    return fetchApi<PricePredictionData>(API_CONFIG.endpoints.prediction(symbol));
+    return fetchViaProxy<PricePredictionData>('prediction', symbol, undefined, currentPrice);
   },
 
   async getTechnicalLevels(symbol: string, currentPrice: number): Promise<TechnicalLevelsData> {
     if (API_CONFIG.useMockData) {
       return generateMockTechnicalLevels(symbol, currentPrice);
     }
-    return fetchApi<TechnicalLevelsData>(API_CONFIG.endpoints.technicalLevels(symbol));
+    return fetchViaProxy<TechnicalLevelsData>('technicalLevels', symbol, undefined, currentPrice);
   },
 
   async getPreviousDay(symbol: string, currentPrice: number): Promise<PreviousDayData> {
     if (API_CONFIG.useMockData) {
       return generateMockPreviousDay(symbol, currentPrice);
     }
-    return fetchApi<PreviousDayData>(API_CONFIG.endpoints.previousDay(symbol));
+    return fetchViaProxy<PreviousDayData>('previousDay', symbol, undefined, currentPrice);
   },
 
   async getRecommendations(symbol: string, currentPrice: number): Promise<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }> {
     if (API_CONFIG.useMockData) {
       return generateMockRecommendations(symbol, currentPrice);
     }
-    return fetchApi<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }>(API_CONFIG.endpoints.recommendations(symbol));
+    return fetchViaProxy<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }>('recommendations', symbol, undefined, currentPrice);
   },
 
   async getConclusions(symbol: string, currentPrice: number): Promise<MarketConclusionsData> {
     if (API_CONFIG.useMockData) {
       return generateMockConclusions(symbol, currentPrice);
     }
-    return fetchApi<MarketConclusionsData>(API_CONFIG.endpoints.conclusions(symbol));
+    return fetchViaProxy<MarketConclusionsData>('conclusions', symbol, undefined, currentPrice);
   },
 
   async getMonetaryPolicies(symbol: string): Promise<MonetaryPolicyData[]> {
     if (API_CONFIG.useMockData) {
       return generateMockMonetaryPolicies(symbol);
     }
-    return fetchApi<MonetaryPolicyData[]>(API_CONFIG.endpoints.monetaryPolicies(symbol));
+    return fetchViaProxy<MonetaryPolicyData[]>('monetaryPolicies', symbol);
   },
 
   async getMajorNews(symbol: string): Promise<MajorNewsEvent[]> {
     if (API_CONFIG.useMockData) {
       return generateMockMajorNews(symbol);
     }
-    return fetchApi<MajorNewsEvent[]>(API_CONFIG.endpoints.majorNews(symbol));
+    return fetchViaProxy<MajorNewsEvent[]>('majorNews', symbol);
   },
 
   async getRelevantNews(symbol: string): Promise<RelevantNewsItem[]> {
     if (API_CONFIG.useMockData) {
       return generateMockRelevantNews(symbol);
     }
-    return fetchApi<RelevantNewsItem[]>(API_CONFIG.endpoints.relevantNews(symbol));
+    return fetchViaProxy<RelevantNewsItem[]>('relevantNews', symbol);
   },
 
   async getEconomicEvents(symbol: string, date: Date): Promise<EconomicEvent[]> {
@@ -436,7 +463,7 @@ export const analysisApi = {
       return generateMockEconomicEvents(symbol);
     }
     const formattedDate = format(date, 'yyyy-MM-dd');
-    return fetchApi<EconomicEvent[]>(API_CONFIG.endpoints.economicEvents(symbol, formattedDate));
+    return fetchViaProxy<EconomicEvent[]>('economicEvents', symbol, formattedDate);
   },
 };
 

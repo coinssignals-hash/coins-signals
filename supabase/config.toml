@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.symbol-search]
 verify_jwt = false
+
+[functions.analysis-proxy]
+verify_jwt = false
