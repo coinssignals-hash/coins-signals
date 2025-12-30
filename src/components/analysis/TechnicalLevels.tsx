@@ -1,37 +1,73 @@
-interface Level {
-  price: number;
-  description: string;
-}
+import { Loader2 } from 'lucide-react';
+import { useTechnicalLevels } from '@/hooks/useAnalysisData';
 
 interface TechnicalLevelsProps {
-  resistances: Level[];
-  supports: Level[];
-  loading?: boolean;
+  symbol: string;
+  currentPrice: number;
 }
 
-export function TechnicalLevels({ resistances, supports, loading }: TechnicalLevelsProps) {
-  if (loading) {
+export function TechnicalLevels({ symbol, currentPrice }: TechnicalLevelsProps) {
+  const { data, isLoading, error } = useTechnicalLevels(symbol, currentPrice);
+
+  if (isLoading) {
     return (
-      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4 animate-pulse">
-        <div className="h-40 bg-green-900/20 rounded"></div>
+      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+          <span className="ml-2 text-gray-400">Cargando niveles técnicos...</span>
+        </div>
       </div>
     );
   }
+
+  if (error || !data) {
+    return (
+      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
+        <p className="text-red-400 text-sm">Error al cargar niveles técnicos</p>
+      </div>
+    );
+  }
+
+  const getStrengthBadge = (strength: 'strong' | 'moderate' | 'weak') => {
+    switch (strength) {
+      case 'strong': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'moderate': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'weak': return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  const getStrengthLabel = (strength: 'strong' | 'moderate' | 'weak') => {
+    switch (strength) {
+      case 'strong': return 'Fuerte';
+      case 'moderate': return 'Moderado';
+      case 'weak': return 'Débil';
+    }
+  };
 
   return (
     <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
       <h3 className="text-white font-semibold mb-4">Niveles Técnicos - Soportes y Resistencias</h3>
       
       <div className="space-y-4 text-sm">
+        {/* Pivot Point */}
+        <div className="flex items-center justify-between p-3 bg-[#0d1f0d] rounded-lg">
+          <span className="text-gray-400">Punto Pivote</span>
+          <span className="text-white font-mono font-bold">{data.pivot.toFixed(4)}</span>
+        </div>
+
         {/* Resistances */}
         <div>
           <h4 className="text-gray-400 mb-2">Resistencias Clave:</h4>
-          <div className="space-y-1">
-            {resistances.map((level, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <span className="text-red-400 font-mono font-bold shrink-0">{level.price.toFixed(4)}</span>
-                <span className="text-gray-400">-</span>
-                <span className="text-gray-300">{level.description}</span>
+          <div className="space-y-2">
+            {data.resistances.map((level, index) => (
+              <div key={index} className="flex items-start gap-2 p-2 bg-[#0d1f0d] rounded">
+                <span className="text-red-400 font-mono font-bold shrink-0">{level.level.toFixed(4)}</span>
+                <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
+                  {getStrengthLabel(level.strength)}
+                </span>
+                {level.description && (
+                  <span className="text-gray-400 text-xs">{level.description}</span>
+                )}
               </div>
             ))}
           </div>
@@ -40,16 +76,35 @@ export function TechnicalLevels({ resistances, supports, loading }: TechnicalLev
         {/* Supports */}
         <div>
           <h4 className="text-gray-400 mb-2">Soportes Clave:</h4>
-          <div className="space-y-1">
-            {supports.map((level, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <span className="text-green-400 font-mono font-bold shrink-0">{level.price.toFixed(4)}</span>
-                <span className="text-gray-400">-</span>
-                <span className="text-gray-300">{level.description}</span>
+          <div className="space-y-2">
+            {data.supports.map((level, index) => (
+              <div key={index} className="flex items-start gap-2 p-2 bg-[#0d1f0d] rounded">
+                <span className="text-green-400 font-mono font-bold shrink-0">{level.level.toFixed(4)}</span>
+                <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
+                  {getStrengthLabel(level.strength)}
+                </span>
+                {level.description && (
+                  <span className="text-gray-400 text-xs">{level.description}</span>
+                )}
               </div>
             ))}
           </div>
         </div>
+
+        {/* Fibonacci Levels */}
+        {data.fibonacci && data.fibonacci.length > 0 && (
+          <div>
+            <h4 className="text-gray-400 mb-2">Niveles Fibonacci:</h4>
+            <div className="grid grid-cols-3 gap-2">
+              {data.fibonacci.map((fib, index) => (
+                <div key={index} className="text-center p-2 bg-[#0d1f0d] rounded">
+                  <p className="text-blue-400 text-xs">{fib.level}</p>
+                  <p className="text-white font-mono text-xs">{fib.price.toFixed(4)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
