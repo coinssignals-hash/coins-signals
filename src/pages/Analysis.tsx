@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Activity, BarChart2, RefreshCw, Bell } from 'lucide-react';
+import { TrendingUp, Activity, BarChart2, RefreshCw, Bell, Clock, Zap } from 'lucide-react';
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
@@ -49,7 +49,7 @@ export default function Analysis() {
     enableSMACross: true,
   });
   
-  const { data, loading, error, refetch } = useMarketData(selectedPair, selectedTimeframe);
+  const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
   
   // Initialize indicator alerts hook
   useIndicatorAlerts(data, selectedPair, alertConfig);
@@ -118,8 +118,29 @@ export default function Analysis() {
           </div>
         </div>
 
-        {/* Error message */}
-        {error && (
+        {/* Rate limit warning */}
+        {isRateLimited && (
+          <Card className="border-yellow-500/50 bg-yellow-500/10">
+            <CardContent className="p-3 flex items-center gap-3">
+              <Clock className="h-5 w-5 text-yellow-500 shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
+                  Límite de API alcanzado
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  El plan gratuito de Twelve Data permite 8 peticiones/minuto. Los datos se actualizarán automáticamente.
+                </p>
+              </div>
+              <Button variant="outline" size="sm" onClick={refetch} disabled={loading}>
+                <RefreshCw className={`w-3 h-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                Reintentar
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error message (non-rate-limit errors) */}
+        {error && !isRateLimited && (
           <Card className="border-destructive/50 bg-destructive/10">
             <CardContent className="p-4 text-center">
               <p className="text-sm text-destructive">{error}</p>
@@ -128,6 +149,14 @@ export default function Analysis() {
               </Button>
             </CardContent>
           </Card>
+        )}
+
+        {/* Cache indicator */}
+        {data?.cached && !loading && !error && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Zap className="h-3 w-3 text-green-500" />
+            <span>Datos desde caché (actualización cada 60s)</span>
+          </div>
         )}
 
         {/* Summary Cards */}

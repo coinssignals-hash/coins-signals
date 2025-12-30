@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface TimeSeriesValue {
@@ -45,31 +45,124 @@ interface MarketData {
     signal: number;
     histogram: number;
   }>;
+  cached?: boolean;
 }
 
 const timeframeMap: Record<string, string> = {
+  '1h': '1h',
+  '4h': '4h',
+  '1day': '1day',
+  '1week': '1week',
+  // Legacy mappings
   '1H': '1h',
   '4H': '4h',
   '1D': '1day',
   '1W': '1week',
 };
 
+// Client-side cache to reduce API calls
+interface CacheEntry {
+  data: MarketData;
+  timestamp: number;
+}
+
+const clientCache = new Map<string, CacheEntry>();
+const CLIENT_CACHE_TTL = 60 * 1000; // 60 seconds
+
+function getCacheKey(symbol: string, interval: string): string {
+  return `${symbol}:${interval}`;
+}
+
+function getFromClientCache(key: string): MarketData | null {
+  const entry = clientCache.get(key);
+  if (!entry) return null;
+  
+  if (Date.now() - entry.timestamp > CLIENT_CACHE_TTL) {
+    clientCache.delete(key);
+    return null;
+  }
+  
+  return entry.data;
+}
+
+function setClientCache(key: string, data: MarketData): void {
+  if (clientCache.size > 20) {
+    const oldestKey = clientCache.keys().next().value;
+    if (oldestKey) clientCache.delete(oldestKey);
+  }
+  clientCache.set(key, { data, timestamp: Date.now() });
+}
+
+// Rate limiting helper
+const lastRequestTime = { value: 0 };
+const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between full refreshes
+
 export function useMarketData(symbol: string, timeframe: string) {
   const [data, setData] = useState<MarketData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (forceRefresh = false) => {
+    const interval = timeframeMap[timeframe] || '4h';
+    const cacheKey = getCacheKey(symbol, interval);
+
+    // Check client cache first (unless force refresh)
+    if (!forceRefresh) {
+      const cachedData = getFromClientCache(cacheKey);
+      if (cachedData) {
+        setData({ ...cachedData, cached: true });
+        setLoading(false);
+        setError(null);
+        return;
+      }
+    }
+
+    // Rate limiting check
+    const now = Date.now();
+    if (now - lastRequestTime.value < MIN_REQUEST_INTERVAL && !forceRefresh) {
+      console.log('Rate limited on client side, using existing data');
+      setLoading(false);
+      return;
+    }
+    lastRequestTime.value = now;
+
+    // Cancel any in-flight requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     setLoading(true);
     setError(null);
-
-    const interval = timeframeMap[timeframe] || '4h';
+    setIsRateLimited(false);
 
     try {
-      // Fetch price data
-      const priceResponse = await supabase.functions.invoke('market-data', {
-        body: { symbol, interval, outputsize: 50 },
-      });
+      // Fetch all data in parallel to reduce time window
+      const [priceResponse, rsiResponse, macdResponse, smaResponse] = await Promise.all([
+        supabase.functions.invoke('market-data', {
+          body: { symbol, interval, outputsize: 50 },
+        }),
+        supabase.functions.invoke('market-data', {
+          body: { symbol, interval, indicator: 'rsi', outputsize: 50 },
+        }),
+        supabase.functions.invoke('market-data', {
+          body: { symbol, interval, indicator: 'macd', outputsize: 50 },
+        }),
+        supabase.functions.invoke('market-data', {
+          body: { symbol, interval, indicator: 'sma', outputsize: 50 },
+        }),
+      ]);
+
+      // Check for rate limit errors
+      const responses = [priceResponse, rsiResponse, macdResponse, smaResponse];
+      for (const response of responses) {
+        if (response.data?.error?.includes('API credits') || response.data?.error?.includes('rate limit')) {
+          setIsRateLimited(true);
+          throw new Error('Límite de API alcanzado. Los datos se actualizarán en 1 minuto.');
+        }
+      }
 
       if (priceResponse.error) {
         throw new Error(priceResponse.error.message);
@@ -78,23 +171,12 @@ export function useMarketData(symbol: string, timeframe: string) {
       const priceResult = priceResponse.data;
       
       if (priceResult.status === 'error') {
+        if (priceResult.error?.includes('API credits')) {
+          setIsRateLimited(true);
+          throw new Error('Límite de API alcanzado. Los datos se actualizarán en 1 minuto.');
+        }
         throw new Error(priceResult.error || 'Error fetching price data');
       }
-
-      // Fetch RSI
-      const rsiResponse = await supabase.functions.invoke('market-data', {
-        body: { symbol, interval, indicator: 'rsi', outputsize: 50 },
-      });
-
-      // Fetch MACD
-      const macdResponse = await supabase.functions.invoke('market-data', {
-        body: { symbol, interval, indicator: 'macd', outputsize: 50 },
-      });
-
-      // Fetch SMA
-      const smaResponse = await supabase.functions.invoke('market-data', {
-        body: { symbol, interval, indicator: 'sma', outputsize: 50 },
-      });
 
       // Process price data
       const priceValues: TimeSeriesValue[] = priceResult.values || [];
@@ -137,28 +219,45 @@ export function useMarketData(symbol: string, timeframe: string) {
         })).reverse(),
       };
 
-      setData({
+      const marketData: MarketData = {
         priceData: processedPrice,
         smaData: processedSMA,
         rsiData: processedRSI,
         macdData: processedMACD,
-      });
+        cached: priceResult.cached || false,
+      };
+
+      // Cache the result
+      setClientCache(cacheKey, marketData);
+      setData(marketData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error fetching market data';
       console.error('Market data error:', errorMessage);
       setError(errorMessage);
+      
+      // If rate limited, keep showing existing data
+      if (isRateLimited && data) {
+        setError('Límite de API alcanzado. Mostrando últimos datos disponibles.');
+      }
     } finally {
       setLoading(false);
     }
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, data, isRateLimited]);
 
   useEffect(() => {
     fetchData();
     
-    // Refresh every 5 minutes
-    const interval = setInterval(fetchData, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+    // Refresh every 2 minutes (instead of 5) but rely on cache
+    const intervalId = setInterval(() => fetchData(false), 2 * 60 * 1000);
+    return () => {
+      clearInterval(intervalId);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [fetchData]);
 
-  return { data, loading, error, refetch: fetchData };
+  const refetch = useCallback(() => fetchData(true), [fetchData]);
+
+  return { data, loading, error, refetch, isRateLimited };
 }
