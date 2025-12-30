@@ -1,21 +1,16 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useStrategicRecommendations } from '@/hooks/useAnalysisData';
 
 interface StrategicRecommendationsProps {
   symbol: string;
   currentPrice: number;
-  support: number;
-  resistance: number;
 }
 
-export function StrategicRecommendations({ 
-  symbol, 
-  currentPrice, 
-  support, 
-  resistance 
-}: StrategicRecommendationsProps) {
+export function StrategicRecommendations({ symbol, currentPrice }: StrategicRecommendationsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data, isLoading, error } = useStrategicRecommendations(symbol, currentPrice);
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
@@ -26,70 +21,99 @@ export function StrategicRecommendations({
       
       <CollapsibleContent>
         <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Long Term Traders */}
-            <div className="space-y-3">
-              <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                Para Traders de Largo Plazo
-              </h4>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="text-green-400 font-semibold">Estrategia:</span>
-                  <p className="text-gray-300">Operar el rango {support.toFixed(4)}-{resistance.toFixed(4)} con stops ajustados</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Entrada:</span>
-                  <p className="text-gray-300">Zona de compra {(support - 0.002).toFixed(4)}-{support.toFixed(4)} (soporte de 100-day SMA)</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Stop Loss:</span>
-                  <p className="text-gray-300">Por debajo de {(support - 0.007).toFixed(4)} (Fibonacci 61.8%)</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Objetivo 1:</span>
-                  <p className="text-gray-300">{resistance.toFixed(4)} (resistencia Fibonacci 23.6%)</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Objetivo 2:</span>
-                  <p className="text-gray-300">{(resistance + 0.012).toFixed(4)} (resistencias mayores)</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Horizonte:</span>
-                  <p className="text-gray-300">2-3 meses</p>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+              <span className="ml-2 text-gray-400">Cargando recomendaciones...</span>
+            </div>
+          ) : error || !data ? (
+            <div className="text-red-400 text-sm py-4">
+              Error al cargar las recomendaciones.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Long Term Traders */}
+              <div className="space-y-3">
+                <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
+                  Para Traders de Largo Plazo
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-green-400 font-semibold">Estrategia:</span>
+                    <p className="text-gray-300">{data.longTerm.strategy}</p>
+                  </div>
+                  <div>
+                    <span className="text-green-400 font-semibold">Entrada:</span>
+                    <p className="text-gray-300">{data.longTerm.entry}</p>
+                  </div>
+                  <div>
+                    <span className="text-green-400 font-semibold">Stop Loss:</span>
+                    <p className="text-gray-300">{data.longTerm.stopLoss}</p>
+                  </div>
+                  <div>
+                    <span className="text-green-400 font-semibold">Objetivo 1:</span>
+                    <p className="text-gray-300">{data.longTerm.takeProfit1}</p>
+                  </div>
+                  {data.longTerm.takeProfit2 && (
+                    <div>
+                      <span className="text-green-400 font-semibold">Objetivo 2:</span>
+                      <p className="text-gray-300">{data.longTerm.takeProfit2}</p>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-green-400 font-semibold">Horizonte:</span>
+                    <p className="text-gray-300">{data.longTerm.horizon}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Short Term Traders */}
-            <div className="space-y-3">
-              <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                Para Traders de Corto Plazo
-                <span className="text-gray-400 text-xs ml-2">(Day/Swing Traders)</span>
-              </h4>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="text-green-400 font-semibold">Estrategia:</span>
-                  <p className="text-gray-300">Operar el rango {support.toFixed(4)}-{resistance.toFixed(4)} con stops ajustados</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Compra:</span>
-                  <p className="text-gray-300">En retrocesos hacia {support.toFixed(4)}-{(support + 0.001).toFixed(4)} con stop loss por debajo de {(support - 0.001).toFixed(4)}</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Venta:</span>
-                  <p className="text-gray-300">En aproximación a {(resistance - 0.001).toFixed(4)}-{resistance.toFixed(4)} con stop loss por encima de {(resistance + 0.001).toFixed(4)}</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Horario Óptimo:</span>
-                  <p className="text-gray-300">Overlap Europa-América (13:00-17:00 GMT) para máxima volatilidad</p>
-                </div>
-                <div>
-                  <span className="text-green-400 font-semibold">Vigilar:</span>
-                  <p className="text-gray-300">Ruptura sostenida de {resistance.toFixed(4)} (alcista) o {support.toFixed(4)} (bajista/trading de tendencia)</p>
+              {/* Short Term Traders */}
+              <div className="space-y-3">
+                <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
+                  Para Traders de Corto Plazo
+                  <span className="text-gray-400 text-xs ml-2">(Day/Swing Traders)</span>
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-green-400 font-semibold">Estrategia:</span>
+                    <p className="text-gray-300">{data.shortTerm.strategy}</p>
+                  </div>
+                  <div>
+                    <span className="text-green-400 font-semibold">Entrada:</span>
+                    <p className="text-gray-300">{data.shortTerm.entry}</p>
+                  </div>
+                  <div>
+                    <span className="text-green-400 font-semibold">Stop Loss:</span>
+                    <p className="text-gray-300">{data.shortTerm.stopLoss}</p>
+                  </div>
+                  <div>
+                    <span className="text-green-400 font-semibold">Objetivo 1:</span>
+                    <p className="text-gray-300">{data.shortTerm.takeProfit1}</p>
+                  </div>
+                  {data.shortTerm.takeProfit2 && (
+                    <div>
+                      <span className="text-green-400 font-semibold">Objetivo 2:</span>
+                      <p className="text-gray-300">{data.shortTerm.takeProfit2}</p>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-green-400 font-semibold">Horizonte:</span>
+                    <p className="text-gray-300">{data.shortTerm.horizon}</p>
+                  </div>
+                  {data.shortTerm.notes && data.shortTerm.notes.length > 0 && (
+                    <div>
+                      <span className="text-green-400 font-semibold">Vigilar:</span>
+                      <ul className="text-gray-300 list-disc list-inside">
+                        {data.shortTerm.notes.map((note, i) => (
+                          <li key={i}>{note}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>

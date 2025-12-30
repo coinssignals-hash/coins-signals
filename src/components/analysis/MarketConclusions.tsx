@@ -1,15 +1,24 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useMarketConclusions } from '@/hooks/useAnalysisData';
 
 interface MarketConclusionsProps {
   symbol: string;
-  resistance: number;
-  support: number;
+  currentPrice: number;
 }
 
-export function MarketConclusions({ symbol, resistance, support }: MarketConclusionsProps) {
+export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data, isLoading, error } = useMarketConclusions(symbol, currentPrice);
+
+  const getDirectionColor = (direction: string) => {
+    switch (direction) {
+      case 'bullish': return 'text-green-400';
+      case 'bearish': return 'text-red-400';
+      default: return 'text-yellow-400';
+    }
+  };
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
@@ -20,72 +29,81 @@ export function MarketConclusions({ symbol, resistance, support }: MarketConclus
       
       <CollapsibleContent>
         <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Market Direction */}
-            <div className="space-y-4">
-              <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                Dirección Esperada del Mercado
-              </h4>
-              
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-gray-400">Muy Corto Plazo (1-2 días):</p>
-                  <p className="text-blue-400 font-semibold">REBOTE TÉCNICO PROBABLE</p>
-                  <p className="text-gray-300 text-xs">Probabilidad: 60-65% | Objetivo: {(resistance - 0.002).toFixed(4)}</p>
-                </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+              <span className="ml-2 text-gray-400">Cargando conclusiones...</span>
+            </div>
+          ) : error || !data ? (
+            <div className="text-red-400 text-sm py-4">
+              Error al cargar las conclusiones.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Market Direction */}
+              <div className="space-y-4">
+                <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
+                  Dirección Esperada del Mercado
+                </h4>
                 
-                <div>
-                  <p className="text-gray-400">Corto Plazo (1-2 semanas):</p>
-                  <p className="text-yellow-400 font-semibold">CONSOLIDACIÓN EN RANGO</p>
-                  <p className="text-gray-300 text-xs">Probabilidad: 45-55% | Rango: {support.toFixed(4)}-{resistance.toFixed(4)}</p>
-                </div>
-                
-                <div>
-                  <p className="text-gray-400">Medio Plazo (1-3 meses):</p>
-                  <p className="text-green-400 font-semibold">SESGO ALCISTA</p>
-                  <p className="text-gray-300 text-xs">Objetivo: {(resistance + 0.010).toFixed(4)}</p>
-                </div>
-                
-                <div>
-                  <p className="text-gray-400">Largo Plazo (6-12 meses):</p>
-                  <p className="text-yellow-400 font-semibold">NEUTRAL CON RIESGOS BIDIRECCIONALES</p>
-                  <p className="text-gray-300 text-xs">Rango: {(support - 0.05).toFixed(2)}-{(resistance + 0.08).toFixed(2)} | Objetivo Central: {((support + resistance) / 2).toFixed(2)}</p>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-gray-400">Muy Corto Plazo (1-2 días):</p>
+                    <p className={`font-semibold ${getDirectionColor(data.shortTerm.direction)}`}>
+                      {data.shortTerm.label}
+                    </p>
+                    <p className="text-gray-300 text-xs">
+                      Probabilidad: {data.shortTerm.probability}% | Objetivo: {data.shortTerm.target.toFixed(4)}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-400">Corto Plazo (1-2 semanas):</p>
+                    <p className={`font-semibold ${getDirectionColor(data.mediumTerm.direction)}`}>
+                      {data.mediumTerm.label}
+                    </p>
+                    <p className="text-gray-300 text-xs">
+                      Probabilidad: {data.mediumTerm.probability}% | Rango: {data.mediumTerm.range.min.toFixed(4)}-{data.mediumTerm.range.max.toFixed(4)}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-400">Medio Plazo (1-3 meses):</p>
+                    <p className={`font-semibold ${getDirectionColor(data.longTerm.direction)}`}>
+                      {data.longTerm.label}
+                    </p>
+                    <p className="text-gray-300 text-xs">
+                      Objetivo: {data.longTerm.target.toFixed(4)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Technical Analysis */}
-            <div className="space-y-4">
-              <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                Análisis Técnico Detallado
-              </h4>
-              
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-gray-400">Resumen Técnico:</p>
-                  <p className="text-gray-300 text-xs">
-                    Indicadores técnicos muestran señales mixtas con predominio bajista a corto plazo pero condiciones de sobreventa que podrían generar rebote
-                  </p>
-                </div>
+              {/* Technical Analysis */}
+              <div className="space-y-4">
+                <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
+                  Análisis Técnico Detallado
+                </h4>
                 
-                <div>
-                  <p className="text-gray-400">Punto Técnico Identificado:</p>
-                  <p className="text-yellow-400 font-semibold">CONSOLIDACIÓN EN RANGO</p>
-                  <p className="text-gray-300 text-xs">Consolidación después de ruptura alcista</p>
-                </div>
-                
-                <div>
-                  <p className="text-gray-400">Para Alcistas:</p>
-                  <p className="text-gray-300 text-xs">Confirmación por encima de {resistance.toFixed(4)} abriría camino a {(resistance + 0.006).toFixed(4)} y luego {(resistance + 0.012).toFixed(4)}</p>
-                </div>
-                
-                <div>
-                  <p className="text-gray-400">Escenario Bajista:</p>
-                  <p className="text-gray-300 text-xs">Fallo en mantener {support.toFixed(4)} y ruptura por debajo de {(support - 0.005).toFixed(4)} apuntaría a {(support - 0.012).toFixed(4)}</p>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-gray-400">Resumen Técnico:</p>
+                    <p className="text-gray-300 text-xs">{data.technicalSummary}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-400">Para Alcistas:</p>
+                    <p className="text-green-400 text-xs">{data.bullishScenario}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-400">Escenario Bajista:</p>
+                    <p className="text-red-400 text-xs">{data.bearishScenario}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>

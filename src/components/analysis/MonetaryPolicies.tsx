@@ -1,9 +1,15 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useMonetaryPolicies } from '@/hooks/useAnalysisData';
 
-export function MonetaryPolicies() {
+interface MonetaryPoliciesProps {
+  symbol: string;
+}
+
+export function MonetaryPolicies({ symbol }: MonetaryPoliciesProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: policies, isLoading, error } = useMonetaryPolicies(symbol);
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
@@ -14,69 +20,50 @@ export function MonetaryPolicies() {
       
       <CollapsibleContent>
         <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Fed */}
-            <div className="space-y-3 border border-green-900/30 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400 text-xs">Fed</span>
-              </div>
-              <h4 className="text-blue-400 font-semibold">US Federal Reserve</h4>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Tasa Actual:</span>
-                  <span className="text-green-400">4.00% - 4.25%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Última Decisión:</span>
-                  <span className="text-green-400">Recorte de 25 pb (Septiembre 2025)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Próxima Reunión:</span>
-                  <span className="text-green-400">28-29 Octubre 2025</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Expectativas:</span>
-                  <span className="text-green-400 text-xs">Alta probabilidad (cerca de 100%) de recorte de 25 puntos básicos</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Tasa Fin 2025:</span>
-                  <span className="text-white">3.50% - 3.75%</span>
-                </div>
-              </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+              <span className="ml-2 text-gray-400">Cargando políticas...</span>
             </div>
-
-            {/* ECB */}
-            <div className="space-y-3 border border-green-900/30 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400 text-xs">ECB</span>
-              </div>
-              <h4 className="text-blue-400 font-semibold">EU Banco Central Europeo</h4>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Tasa Actual:</span>
-                  <span className="text-green-400">2.15%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Última Decisión:</span>
-                  <span className="text-green-400">Sin cambios (Octubre 2025)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Próxima Reunión:</span>
-                  <span className="text-green-400">Diciembre 2025 (estimado)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Expectativas:</span>
-                  <span className="text-green-400 text-xs">Probable pausa continua, evaluación de datos</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Tasa Fin 2025:</span>
-                  <span className="text-white">2.2% (cerca del objetivo 2%)</span>
-                </div>
-              </div>
+          ) : error || !policies ? (
+            <div className="text-red-400 text-sm py-4">
+              Error al cargar las políticas monetarias.
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {policies.map((policy, index) => (
+                <div key={index} className="space-y-3 border border-green-900/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400 text-xs">{policy.currency}</span>
+                  </div>
+                  <h4 className="text-blue-400 font-semibold">{policy.centralBank}</h4>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Tasa Actual:</span>
+                      <span className="text-green-400">{policy.currentRate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Última Decisión:</span>
+                      <span className="text-green-400 text-xs">{policy.lastDecision}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Próxima Reunión:</span>
+                      <span className="text-green-400">{policy.nextMeeting}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Expectativas:</span>
+                      <span className="text-green-400 text-xs">{policy.expectations}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Tasa Fin 2025:</span>
+                      <span className="text-white">{policy.endYearRate}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>
