@@ -1,17 +1,20 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Bell, MessageCircle, Volume2 } from 'lucide-react';
+import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
+import { playNotificationSound, enableAudio } from '@/utils/notificationSound';
 
 export default function Notifications() {
+  const { soundEnabled, toggleSound } = useNewSignalsCount();
+  
   const [settings, setSettings] = useState({
     pushNotifications: true,
     signalAlert: true,
-    alertSound: false,
     whatsapp: true,
     telegram: true,
     sms: false,
@@ -23,8 +26,21 @@ export default function Notifications() {
     brokerAccount: false,
   });
 
+  // Enable audio on page load (user already interacted to get here)
+  useEffect(() => {
+    enableAudio();
+  }, []);
+
   const toggleSetting = (key: keyof typeof settings) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSoundToggle = () => {
+    toggleSound();
+    if (!soundEnabled) {
+      // Play a preview sound when enabling
+      playNotificationSound('signal');
+    }
   };
 
   return (
@@ -98,6 +114,17 @@ export default function Notifications() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-0">
+              <div className="flex items-center justify-between py-3 border-b border-border">
+                <div>
+                  <span className="text-sm text-foreground">Sonido de Nuevas Señales</span>
+                  <p className="text-xs text-muted-foreground">Reproduce un sonido cuando llegue una nueva señal</p>
+                </div>
+                <Switch 
+                  checked={soundEnabled} 
+                  onCheckedChange={handleSoundToggle}
+                  className="data-[state=checked]:bg-primary"
+                />
+              </div>
               {[
                 { key: 'realTimeUpdate', label: 'Actualización en Tiempo Real' },
                 { key: 'entryOperation', label: 'Operación Entrada' },
