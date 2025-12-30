@@ -351,9 +351,9 @@ export default function Analysis() {
 
           <MonetaryPolicies />
 
-          <MajorNews />
+          <MajorNews symbol={selectedPair} />
 
-          <EconomicEvents />
+          <EconomicEvents date={selectedDay} />
         </div>
       </main>
       

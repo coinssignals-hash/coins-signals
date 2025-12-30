@@ -8,6 +8,9 @@ export const API_CONFIG = {
     newsByDate: (date: string) => `/api/v1/news/by-date/${date}`,
     newsByCurrency: (currency: string) => `/api/v1/news/currency/${currency}`,
     refresh: '/api/v1/news/refresh',
+    // Analysis endpoints
+    majorNews: (symbol: string) => `/api/v1/analysis/major-news/${symbol}`,
+    economicEvents: (date: string) => `/api/v1/analysis/economic-events/${date}`,
   },
   // Enable mock data when API is not available
   useMockData: import.meta.env.VITE_USE_MOCK_DATA === 'true' || true,

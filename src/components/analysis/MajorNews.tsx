@@ -1,45 +1,15 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-
-interface NewsEvent {
-  type: 'positive' | 'negative';
-  currency: string;
-  title: string;
-  description: string;
-  source?: string;
-}
+import { useMajorNews, MajorNewsEvent } from '@/hooks/useAnalysisData';
 
 interface MajorNewsProps {
-  events?: NewsEvent[];
+  symbol: string;
 }
 
-const mockEvents: NewsEvent[] = [
-  {
-    type: 'positive',
-    currency: 'EUR',
-    title: 'Estabilidad política en la Eurozona',
-    description: 'El Primer Ministro Sébastien Lecornu sobrevivió a dos votos consecutivos de no confianza, reduciendo el riesgo político en la segunda economía más grande de la Eurozona y aliviando tensiones políticas regionales',
-    source: 'Fed mantiene perspectiva dovish'
-  },
-  {
-    type: 'negative',
-    currency: 'USD',
-    title: 'Presión sobre el dólar',
-    description: 'Los funcionarios de la Fed Christopher Waller y Stephen Miran pidieron más recortes de tasas para apoyar el mercado laboral, añadiendo presión al dólar. Los mercados esperan al menos dos recortes de 25 puntos básicos antes de fin de año.',
-    source: 'Crisis en sector bancario regional de EE.UU.'
-  },
-  {
-    type: 'negative',
-    currency: 'USD',
-    title: 'Preocupaciones bancarias',
-    description: 'Crecientes preocupaciones sobre prácticas de préstamos poco saludables en bancos regionales de EE.UU., particularmente problemas en Zions Bancorporation y Western Alliance Bancorp, elevaron riesgos de contagio en el mercado crediticio.',
-    source: 'Cierre del gobierno de EE.UU. continúa'
-  }
-];
-
-export function MajorNews({ events = mockEvents }: MajorNewsProps) {
+export function MajorNews({ symbol }: MajorNewsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: events, isLoading, error } = useMajorNews(symbol);
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
@@ -52,21 +22,36 @@ export function MajorNews({ events = mockEvents }: MajorNewsProps) {
         <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
           <h4 className="text-white font-semibold mb-4">Eventos Destacados</h4>
           
-          <div className="space-y-4">
-            {events.map((event, index) => (
-              <div key={index} className="space-y-2">
-                <p className={`font-bold ${event.type === 'positive' ? 'text-green-400' : 'text-red-400'}`}>
-                  {event.type === 'positive' ? 'POSITIVO' : 'NEGATIVO'} PARA {event.currency}:
-                </p>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  {event.description}
-                </p>
-                {event.source && (
-                  <p className="text-yellow-400 text-xs">{event.source}</p>
-                )}
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+              <span className="ml-2 text-gray-400">Cargando noticias...</span>
+            </div>
+          ) : error ? (
+            <div className="text-red-400 text-sm py-4">
+              Error al cargar las noticias. Intente de nuevo más tarde.
+            </div>
+          ) : events && events.length > 0 ? (
+            <div className="space-y-4">
+              {events.map((event, index) => (
+                <div key={index} className="space-y-2">
+                  <p className={`font-bold ${event.type === 'positive' ? 'text-green-400' : 'text-red-400'}`}>
+                    {event.type === 'positive' ? 'POSITIVO' : 'NEGATIVO'} PARA {event.currency}:
+                  </p>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {event.description}
+                  </p>
+                  {event.source && (
+                    <p className="text-yellow-400 text-xs">Fuente: {event.source}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-gray-400 text-sm py-4">
+              No hay noticias de impacto disponibles para este símbolo.
+            </div>
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>
