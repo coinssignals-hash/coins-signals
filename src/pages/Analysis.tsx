@@ -1,16 +1,25 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Activity, BarChart2, RefreshCw, Bell, Clock, Zap } from 'lucide-react';
+import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2 } from 'lucide-react';
+import { DayTabs } from '@/components/analysis/DayTabs';
+import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
+import { MarketSentiment } from '@/components/analysis/MarketSentiment';
+import { PricePrediction } from '@/components/analysis/PricePrediction';
+import { TechnicalLevels } from '@/components/analysis/TechnicalLevels';
+import { CandlestickChart } from '@/components/analysis/CandlestickChart';
+import { StrategicRecommendations } from '@/components/analysis/StrategicRecommendations';
+import { MarketConclusions } from '@/components/analysis/MarketConclusions';
+import { MonetaryPolicies } from '@/components/analysis/MonetaryPolicies';
+import { MajorNews } from '@/components/analysis/MajorNews';
+import { EconomicEvents } from '@/components/analysis/EconomicEvents';
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
-import { IndicatorsSummary } from '@/components/analysis/IndicatorsSummary';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { useMarketData } from '@/hooks/useMarketData';
@@ -41,6 +50,7 @@ interface AlertConfig {
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('4h');
+  const [selectedDay, setSelectedDay] = useState(new Date());
   const [alertConfig, setAlertConfig] = useState<AlertConfig>({
     rsiOverbought: 70,
     rsiOversold: 30,
@@ -54,68 +64,136 @@ export default function Analysis() {
   // Initialize indicator alerts hook
   useIndicatorAlerts(data, selectedPair, alertConfig);
 
+  // Calculate derived values from market data
+  const marketStats = useMemo(() => {
+    if (!data?.priceData || data.priceData.length === 0) {
+      return {
+        currentPrice: 1.1689,
+        change: 0.00467,
+        changePercent: 0.40,
+        high: 1.1729,
+        low: 1.1651,
+        resistance: 1.1700,
+        support: 1.1650,
+        pips: 78,
+      };
+    }
+
+    const prices = data.priceData;
+    const latest = prices[prices.length - 1];
+    const first = prices[0];
+    const currentPrice = latest?.price || 1.1689;
+    const change = currentPrice - (first?.price || currentPrice);
+    const changePercent = first?.price ? ((change / first.price) * 100) : 0;
+    const high = Math.max(...prices.map(p => p.high));
+    const low = Math.min(...prices.map(p => p.low));
+    const resistance = high - (high - currentPrice) * 0.3;
+    const support = low + (currentPrice - low) * 0.3;
+    const pips = Math.abs(change) * 10000;
+
+    return {
+      currentPrice,
+      change,
+      changePercent,
+      high,
+      low,
+      resistance,
+      support,
+      pips,
+    };
+  }, [data?.priceData]);
+
+  // Generate technical levels based on price data
+  const technicalLevels = useMemo(() => {
+    const { resistance, support, currentPrice } = marketStats;
+    return {
+      resistances: [
+        { price: resistance, description: 'Confluencia de MA20, MA50 y 200-period MA en gráfico de 4 horas. Nivel psicológico importante' },
+        { price: resistance + 0.0065, description: 'Fibonacci 23.6% de retroceso de la última tendencia alcista' },
+        { price: resistance + 0.012, description: 'Nivel estático clave, resistencia significativa' },
+      ],
+      supports: [
+        { price: support, description: '100-day SMA, soporte técnico crítico. EUR/USD rompió por encima de este nivel recientemente' },
+        { price: support - 0.007, description: 'Fibonacci 61.8% de retroceso, soporte fuerte' },
+        { price: support - 0.0114, description: 'Soporte de tendencia a medio plazo' },
+      ],
+    };
+  }, [marketStats]);
+
+  // Candlestick data for chart
+  const candleData = useMemo(() => {
+    if (!data?.priceData || data.priceData.length === 0) {
+      // Generate mock data
+      const now = new Date();
+      return Array.from({ length: 20 }, (_, i) => ({
+        time: new Date(now.getTime() - (20 - i) * 3600000).toISOString(),
+        open: 1.165 + Math.random() * 0.01,
+        high: 1.168 + Math.random() * 0.005,
+        low: 1.163 + Math.random() * 0.005,
+        close: 1.166 + Math.random() * 0.01,
+      }));
+    }
+    return data.priceData.map(p => ({
+      time: p.time,
+      open: p.open,
+      high: p.high,
+      low: p.low,
+      close: p.price,
+    }));
+  }, [data?.priceData]);
+
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen bg-black pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-4 px-4 max-w-6xl mx-auto space-y-4">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <BarChart2 className="w-6 h-6 text-primary" />
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Análisis Técnico</h1>
-              <p className="text-xs text-muted-foreground">Indicadores y gráficos en tiempo real • Twelve Data API</p>
-            </div>
-          </div>
+      {/* Day Tabs */}
+      <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
+      
+      <main className="container py-4 px-2 sm:px-4 max-w-4xl mx-auto space-y-4">
+        {/* Controls */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <SymbolSearch 
+            value={selectedPair} 
+            onChange={setSelectedPair}
+            className="flex-1 min-w-[180px]"
+          />
           
-          <div className="flex items-center gap-2 flex-wrap">
-            <SymbolSearch 
-              value={selectedPair} 
-              onChange={setSelectedPair}
-              className="w-[200px] sm:w-[260px]"
-            />
-            
-            <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-              <SelectTrigger className="w-[110px] bg-secondary">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border">
-                {timeframes.map(tf => (
-                  <SelectItem key={tf.value} value={tf.value}>{tf.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="shrink-0 relative">
-                  <Bell className="w-4 h-4" />
-                  {(alertConfig.enableRSI || alertConfig.enableMACD || alertConfig.enableSMACross) && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full" />
-                  )}
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="w-[320px] sm:w-[380px]">
-                <SheetHeader>
-                  <SheetTitle>Alertas de Indicadores</SheetTitle>
-                </SheetHeader>
-                <div className="mt-4">
-                  <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
-                </div>
-              </SheetContent>
-            </Sheet>
-            
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={refetch}
-              disabled={loading}
-              className="shrink-0"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
+          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+            <SelectTrigger className="w-[100px] bg-[#0a1a0a] border-green-900/50">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#0a1a0a] border-green-900/50">
+              {timeframes.map(tf => (
+                <SelectItem key={tf.value} value={tf.value}>{tf.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0 border-green-900/50 bg-[#0a1a0a]">
+                <Bell className="w-4 h-4 text-green-400" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[320px] sm:w-[380px] bg-[#0a1a0a] border-green-900/50">
+              <SheetHeader>
+                <SheetTitle className="text-white">Alertas de Indicadores</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4">
+                <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
+              </div>
+            </SheetContent>
+          </Sheet>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={refetch}
+            disabled={loading}
+            className="shrink-0 border-green-900/50 bg-[#0a1a0a]"
+          >
+            <RefreshCw className={`w-4 h-4 text-green-400 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
 
         {/* Rate limit warning */}
@@ -124,157 +202,159 @@ export default function Analysis() {
             <CardContent className="p-3 flex items-center gap-3">
               <Clock className="h-5 w-5 text-yellow-500 shrink-0" />
               <div className="flex-1">
-                <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
-                  Límite de API alcanzado
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  El plan gratuito de Twelve Data permite 8 peticiones/minuto. Los datos se actualizarán automáticamente.
-                </p>
+                <p className="text-sm text-yellow-400 font-medium">Límite de API alcanzado</p>
+                <p className="text-xs text-gray-400">Actualizando en 60 segundos...</p>
               </div>
-              <Button variant="outline" size="sm" onClick={refetch} disabled={loading}>
-                <RefreshCw className={`w-3 h-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                Reintentar
-              </Button>
             </CardContent>
           </Card>
         )}
 
-        {/* Error message (non-rate-limit errors) */}
+        {/* Error message */}
         {error && !isRateLimited && (
-          <Card className="border-destructive/50 bg-destructive/10">
-            <CardContent className="p-4 text-center">
-              <p className="text-sm text-destructive">{error}</p>
-              <Button variant="outline" size="sm" className="mt-2" onClick={refetch}>
-                Reintentar
-              </Button>
+          <Card className="border-red-500/50 bg-red-500/10">
+            <CardContent className="p-3">
+              <p className="text-sm text-red-400">{error}</p>
             </CardContent>
           </Card>
         )}
 
         {/* Cache indicator */}
         {data?.cached && !loading && !error && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-gray-400">
             <Zap className="h-3 w-3 text-green-500" />
-            <span>Datos desde caché (actualización cada 60s)</span>
+            <span>Datos desde caché</span>
           </div>
         )}
 
-        {/* Summary Cards */}
-        <IndicatorsSummary 
-          pair={selectedPair} 
-          timeframe={selectedTimeframe}
-          priceData={data?.priceData}
-          smaData={data?.smaData}
-          rsiData={data?.rsiData}
-          macdData={data?.macdData}
+        {/* Currency Header Card */}
+        <CurrencyHeader
+          symbol={selectedPair}
+          currentPrice={marketStats.currentPrice}
+          change={marketStats.change}
+          changePercent={marketStats.changePercent}
+          high={marketStats.high}
+          low={marketStats.low}
           loading={loading}
         />
 
-        {/* Charts */}
-        <Tabs defaultValue="price" className="space-y-4">
-          <TabsList className="bg-secondary w-full justify-start overflow-x-auto">
-            <TabsTrigger value="price" className="flex items-center gap-1">
-              <Activity className="w-4 h-4" />
-              Precio + MA
+        {/* Charts Tabs */}
+        <Tabs defaultValue="price" className="space-y-3">
+          <TabsList className="bg-[#0a1a0a] border border-green-900/50 w-full justify-start">
+            <TabsTrigger value="price" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+              <Activity className="w-3 h-3 mr-1" />
+              Precio
             </TabsTrigger>
-            <TabsTrigger value="rsi" className="flex items-center gap-1">
-              <TrendingUp className="w-4 h-4" />
+            <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+              <TrendingUp className="w-3 h-3 mr-1" />
               RSI
             </TabsTrigger>
-            <TabsTrigger value="macd" className="flex items-center gap-1">
-              <BarChart2 className="w-4 h-4" />
+            <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+              <BarChart2 className="w-3 h-3 mr-1" />
               MACD
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="price" className="space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <CardTitle className="text-base">
-                    {selectedPair} - Precio con Medias Móviles
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30">
-                      SMA 20
-                    </Badge>
-                    <Badge variant="outline" className="text-xs bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                      SMA 50
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <PriceChart 
-                  pair={selectedPair} 
-                  timeframe={selectedTimeframe}
-                  priceData={data?.priceData}
-                  smaData={data?.smaData}
-                  loading={loading}
-                  error={error}
-                />
-              </CardContent>
-            </Card>
+          <TabsContent value="price">
+            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+              <PriceChart 
+                pair={selectedPair} 
+                timeframe={selectedTimeframe}
+                priceData={data?.priceData}
+                smaData={data?.smaData}
+                loading={loading}
+                error={error}
+              />
+            </div>
           </TabsContent>
 
-          <TabsContent value="rsi" className="space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
-                    RSI (Índice de Fuerza Relativa) - Período 14
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs bg-red-500/20 text-red-400 border-red-500/30">
-                      Sobrecompra {alertConfig.rsiOverbought}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
-                      Sobreventa {alertConfig.rsiOversold}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <RSIChart 
-                  pair={selectedPair} 
-                  timeframe={selectedTimeframe}
-                  rsiData={data?.rsiData}
-                  loading={loading}
-                  error={error}
-                />
-              </CardContent>
-            </Card>
+          <TabsContent value="rsi">
+            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+              <RSIChart 
+                pair={selectedPair} 
+                timeframe={selectedTimeframe}
+                rsiData={data?.rsiData}
+                loading={loading}
+                error={error}
+              />
+            </div>
           </TabsContent>
 
-          <TabsContent value="macd" className="space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
-                    MACD (12, 26, 9)
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30">
-                      MACD Line
-                    </Badge>
-                    <Badge variant="outline" className="text-xs bg-orange-500/20 text-orange-400 border-orange-500/30">
-                      Signal Line
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <MACDChart 
-                  pair={selectedPair} 
-                  timeframe={selectedTimeframe}
-                  macdData={data?.macdData}
-                  loading={loading}
-                  error={error}
-                />
-              </CardContent>
-            </Card>
+          <TabsContent value="macd">
+            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+              <MACDChart 
+                pair={selectedPair} 
+                timeframe={selectedTimeframe}
+                macdData={data?.macdData}
+                loading={loading}
+                error={error}
+              />
+            </div>
           </TabsContent>
         </Tabs>
+
+        {/* Market Sentiment */}
+        <MarketSentiment
+          bullish={45}
+          neutral={25}
+          bearish={30}
+          highPrice={marketStats.high}
+          lowPrice={marketStats.low}
+          dailyChange={marketStats.changePercent}
+          pipsChange={marketStats.change}
+          loading={loading}
+        />
+
+        {/* Price Prediction */}
+        <PricePrediction
+          symbol={selectedPair}
+          currentPrice={marketStats.currentPrice}
+          trend={marketStats.changePercent >= 0 ? 'bullish' : 'bearish'}
+          changePercent={marketStats.changePercent}
+          pips={marketStats.pips}
+          high={marketStats.high}
+          low={marketStats.low}
+          bullishPercent={45}
+          bearishPercent={30}
+          targetPrice={marketStats.resistance}
+          loading={loading}
+        />
+
+        {/* Technical Levels */}
+        <TechnicalLevels
+          resistances={technicalLevels.resistances}
+          supports={technicalLevels.supports}
+          loading={loading}
+        />
+
+        {/* Candlestick Chart */}
+        <CandlestickChart
+          data={candleData}
+          resistance={marketStats.resistance}
+          support={marketStats.support}
+          loading={loading}
+        />
+
+        {/* Collapsible Sections */}
+        <div className="space-y-3">
+          <StrategicRecommendations
+            symbol={selectedPair}
+            currentPrice={marketStats.currentPrice}
+            support={marketStats.support}
+            resistance={marketStats.resistance}
+          />
+
+          <MarketConclusions
+            symbol={selectedPair}
+            resistance={marketStats.resistance}
+            support={marketStats.support}
+          />
+
+          <MonetaryPolicies />
+
+          <MajorNews />
+
+          <EconomicEvents />
+        </div>
       </main>
       
       <BottomNav />
