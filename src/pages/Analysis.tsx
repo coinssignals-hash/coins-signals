@@ -353,7 +353,7 @@ export default function Analysis() {
 
           <MajorNews symbol={selectedPair} />
 
-          <EconomicEvents date={selectedDay} />
+          <EconomicEvents symbol={selectedPair} date={selectedDay} />
         </div>
       </main>
       

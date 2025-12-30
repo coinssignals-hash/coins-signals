@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useEconomicEvents, EconomicEvent } from '@/hooks/useAnalysisData';
 
 interface EconomicEventsProps {
+  symbol: string;
   date: Date;
 }
 
-export function EconomicEvents({ date }: EconomicEventsProps) {
+export function EconomicEvents({ symbol, date }: EconomicEventsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: events, isLoading, error } = useEconomicEvents(date);
+  const { data: events, isLoading, error } = useEconomicEvents(symbol, date);
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
