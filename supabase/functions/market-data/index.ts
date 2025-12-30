@@ -43,9 +43,17 @@ serve(async (req) => {
       });
     }
     
-    // Format symbol for Twelve Data (remove / and trim)
-    const formattedSymbol = symbol.replace('/', '').trim().toUpperCase();
-    
+    // Normalize symbol for Twelve Data
+    // Accept formats like: "EUR/USD", "EURUSD", "EUR-USD", "EUR_USD"
+    const rawSymbol = symbol.trim().toUpperCase();
+    let formattedSymbol = rawSymbol.replace(/\s+/g, "");
+    formattedSymbol = formattedSymbol.replace(/[-_]/g, "/");
+
+    // If user provides a 6-letter pair (e.g. EURUSD), convert to EUR/USD
+    if (/^[A-Z]{6}$/.test(formattedSymbol)) {
+      formattedSymbol = `${formattedSymbol.slice(0, 3)}/${formattedSymbol.slice(3)}`;
+    }
+
     if (!formattedSymbol) {
       console.error('Empty symbol after formatting');
       return new Response(JSON.stringify({
@@ -56,9 +64,11 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    
+
+    const encodedSymbol = encodeURIComponent(formattedSymbol);
+
     console.log(`Fetching data for ${formattedSymbol} with interval ${interval}, indicator: ${indicator || 'price'}`);
-    
+
     if (!TWELVE_DATA_API_KEY) {
       console.error('TWELVE_DATA_API_KEY not configured');
       throw new Error('API key not configured');
@@ -67,33 +77,33 @@ serve(async (req) => {
     const baseUrl = 'https://api.twelvedata.com';
     let url: string;
     const size = outputsize;
-    
+
     if (indicator === 'rsi') {
-      url = `${baseUrl}/rsi?symbol=${formattedSymbol}&interval=${interval}&time_period=14&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
+      url = `${baseUrl}/rsi?symbol=${encodedSymbol}&interval=${interval}&time_period=14&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
     } else if (indicator === 'macd') {
-      url = `${baseUrl}/macd?symbol=${formattedSymbol}&interval=${interval}&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
+      url = `${baseUrl}/macd?symbol=${encodedSymbol}&interval=${interval}&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
     } else if (indicator === 'sma') {
       // Fetch multiple SMAs
-      const sma20Url = `${baseUrl}/sma?symbol=${formattedSymbol}&interval=${interval}&time_period=20&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
-      const sma50Url = `${baseUrl}/sma?symbol=${formattedSymbol}&interval=${interval}&time_period=50&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
-      
+      const sma20Url = `${baseUrl}/sma?symbol=${encodedSymbol}&interval=${interval}&time_period=20&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
+      const sma50Url = `${baseUrl}/sma?symbol=${encodedSymbol}&interval=${interval}&time_period=50&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
+
       console.log('Fetching SMA 20 and SMA 50...');
-      
+
       const [sma20Response, sma50Response] = await Promise.all([
         fetch(sma20Url),
         fetch(sma50Url)
       ]);
-      
+
       const sma20Data = await sma20Response.json();
       const sma50Data = await sma50Response.json();
-      
+
       console.log('SMA 20 response status:', sma20Data.status);
       console.log('SMA 50 response status:', sma50Data.status);
-      
+
       if (sma20Data.status === 'error' || sma50Data.status === 'error') {
         throw new Error(sma20Data.message || sma50Data.message || 'Error fetching SMA data');
       }
-      
+
       return new Response(JSON.stringify({
         sma20: sma20Data.values || [],
         sma50: sma50Data.values || [],
@@ -103,9 +113,9 @@ serve(async (req) => {
       });
     } else {
       // Default: fetch time series (price data)
-      url = `${baseUrl}/time_series?symbol=${formattedSymbol}&interval=${interval}&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
+      url = `${baseUrl}/time_series?symbol=${encodedSymbol}&interval=${interval}&outputsize=${size}&apikey=${TWELVE_DATA_API_KEY}`;
     }
-    
+
     console.log('Fetching from URL:', url.replace(TWELVE_DATA_API_KEY!, '***'));
     
     const response = await fetch(url);
