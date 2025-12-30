@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -502,6 +502,18 @@ const brokers = [
 
 type Broker = typeof brokers[0];
 
+type SortOption = 'rating' | 'deposit' | 'spreads';
+
+const parseDeposit = (deposit: string): number => {
+  const num = parseFloat(deposit.replace(/[^0-9.]/g, ''));
+  return isNaN(num) ? 0 : num;
+};
+
+const parseSpreads = (spreads: string): number => {
+  const num = parseFloat(spreads.replace(/[^0-9.]/g, ''));
+  return isNaN(num) ? 0 : num;
+};
+
 export default function BrokerRating() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -511,6 +523,7 @@ export default function BrokerRating() {
   const [compareMode, setCompareMode] = useState(false);
   const [brokersToCompare, setBrokersToCompare] = useState<Broker[]>([]);
   const [showComparePanel, setShowComparePanel] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption | ''>('');
   
   // Advanced filters
   const [location, setLocation] = useState('');
@@ -544,14 +557,29 @@ export default function BrokerRating() {
     setShowComparePanel(true);
   };
 
-  const filteredBrokers = brokers.filter(broker => {
-    const matchesSearch = broker.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = broker.level === selectedLevel;
-    const matchesCategory = !selectedCategory || broker.instruments.some(i => 
-      i.toLowerCase().includes(selectedCategory.toLowerCase())
-    );
-    return matchesSearch && matchesLevel && matchesCategory;
-  });
+  const filteredBrokers = brokers
+    .filter(broker => {
+      const matchesSearch = broker.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesLevel = broker.level === selectedLevel;
+      const matchesCategory = !selectedCategory || broker.instruments.some(i => 
+        i.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+      return matchesSearch && matchesLevel && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (!sortBy) return 0;
+      
+      switch (sortBy) {
+        case 'rating':
+          return b.rating - a.rating;
+        case 'deposit':
+          return parseDeposit(a.depositMin) - parseDeposit(b.depositMin);
+        case 'spreads':
+          return parseSpreads(a.spreads) - parseSpreads(b.spreads);
+        default:
+          return 0;
+      }
+    });
 
   const renderStars = (rating: number) => {
     return (
@@ -776,25 +804,38 @@ export default function BrokerRating() {
           </Card>
         )}
 
-        {/* Results header with compare toggle */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-xs text-muted-foreground">
+        {/* Results header with sort and compare toggle */}
+        <div className="flex items-center justify-between mb-4 gap-2">
+          <p className="text-xs text-muted-foreground flex-1">
             Estos son los {filteredBrokers.length} Brokers Más Populares Para {selectedLevel}s en el mercado de {selectedCategory || 'Forex'}
           </p>
-          <Button
-            variant={compareMode ? "default" : "outline"}
-            size="sm"
-            onClick={() => {
-              setCompareMode(!compareMode);
-              if (compareMode) {
-                setBrokersToCompare([]);
-              }
-            }}
-            className="text-xs"
-          >
-            <GitCompare className="w-4 h-4 mr-1" />
-            {compareMode ? 'Cancelar' : 'Comparar'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption | '')}>
+              <SelectTrigger className="w-[140px] bg-secondary text-xs h-8">
+                <ArrowUpDown className="w-3 h-3 mr-1" />
+                <SelectValue placeholder="Ordenar por" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                <SelectItem value="rating">Mayor Rating</SelectItem>
+                <SelectItem value="deposit">Menor Depósito</SelectItem>
+                <SelectItem value="spreads">Menor Spreads</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant={compareMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setCompareMode(!compareMode);
+                if (compareMode) {
+                  setBrokersToCompare([]);
+                }
+              }}
+              className="text-xs"
+            >
+              <GitCompare className="w-4 h-4 mr-1" />
+              {compareMode ? 'Cancelar' : 'Comparar'}
+            </Button>
+          </div>
         </div>
 
         {/* Compare selection bar */}
