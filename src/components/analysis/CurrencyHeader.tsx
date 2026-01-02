@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wifi, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -178,6 +178,9 @@ interface CurrencyHeaderProps {
   high: number;
   low: number;
   loading?: boolean;
+  // Realtime data
+  realtimePrice?: number | null;
+  isRealtimeConnected?: boolean;
 }
 
 export function CurrencyHeader({
@@ -187,12 +190,32 @@ export function CurrencyHeader({
   changePercent,
   high,
   low,
-  loading
+  loading,
+  realtimePrice,
+  isRealtimeConnected = false
 }: CurrencyHeaderProps) {
+  const [flash, setFlash] = useState<'up' | 'down' | null>(null);
+  const [lastPrice, setLastPrice] = useState<number | null>(null);
+  
+  // Use realtime price if available, otherwise fallback to currentPrice
+  const displayPrice = realtimePrice ?? currentPrice;
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
   const [isAnimating, setIsAnimating] = useState(false);
   const [displaySymbol, setDisplaySymbol] = useState(symbol);
+
+  // Flash animation when price changes
+  useEffect(() => {
+    if (realtimePrice !== null && lastPrice !== null && realtimePrice !== lastPrice) {
+      const direction = realtimePrice > lastPrice ? 'up' : 'down';
+      setFlash(direction);
+      const timer = setTimeout(() => setFlash(null), 500);
+      return () => clearTimeout(timer);
+    }
+    if (realtimePrice !== null) {
+      setLastPrice(realtimePrice);
+    }
+  }, [realtimePrice, lastPrice]);
 
   // Trigger animation when symbol changes
   useEffect(() => {
@@ -215,7 +238,9 @@ export function CurrencyHeader({
   return (
     <div className={cn(
       "bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-lg p-4 transition-all duration-300",
-      isAnimating && "border-green-500/50"
+      isAnimating && "border-green-500/50",
+      flash === 'up' && "border-green-500/70",
+      flash === 'down' && "border-red-500/70"
     )}>
       <div className="flex items-center justify-between flex-wrap gap-4">
         {/* Currency Pair Icons */}
@@ -226,10 +251,36 @@ export function CurrencyHeader({
             isAnimating && "animate-fade-in"
           )}>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-bold text-white">
-                {currentPrice.toFixed(4)}
+              <span className={cn(
+                "text-2xl sm:text-3xl font-bold transition-colors duration-300",
+                flash === 'up' && "text-green-400",
+                flash === 'down' && "text-red-400",
+                !flash && "text-white"
+              )}>
+                {displayPrice.toFixed(realtimePrice ? 5 : 4)}
               </span>
               <span className="text-gray-400 text-sm">{symbol}</span>
+              
+              {/* Realtime indicator */}
+              <div className={cn(
+                "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ml-2",
+                isRealtimeConnected 
+                  ? "bg-green-500/20 text-green-400" 
+                  : "bg-gray-500/20 text-gray-400"
+              )}>
+                {isRealtimeConnected ? (
+                  <>
+                    <Wifi className="w-3 h-3" />
+                    <span className="hidden sm:inline animate-pulse">LIVE</span>
+                    <span className="sm:hidden">●</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="w-3 h-3" />
+                    <span className="hidden sm:inline">DELAYED</span>
+                  </>
+                )}
+              </div>
             </div>
             <div className={cn(
               "flex items-center gap-2 text-sm",
@@ -245,7 +296,9 @@ export function CurrencyHeader({
         {/* Mini sparkline placeholder + High/Low */}
         <div className="flex items-center gap-6">
           <div className="hidden sm:block">
-            <svg width="60" height="30" viewBox="0 0 60 30" className="text-green-500">
+            <svg width="60" height="30" viewBox="0 0 60 30" className={cn(
+              flash === 'up' ? "text-green-500" : flash === 'down' ? "text-red-500" : "text-green-500"
+            )}>
               <path
                 d="M0 25 Q15 20, 20 15 T35 10 T50 5 T60 8"
                 fill="none"
