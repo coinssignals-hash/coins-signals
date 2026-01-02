@@ -17,7 +17,7 @@ const NewsDetail = () => {
   const { id } = useParams<{ id: string }>();
   
   // Fetch all news and find the one matching the ID
-  const { data: allNews, isLoading, error } = useRealNews(undefined, undefined, 100);
+  const { data: allNews, isLoading, error, refetch } = useRealNews(undefined, undefined, 100);
   
   const news = useMemo(() => {
     if (!allNews || !id) return null;
@@ -28,9 +28,11 @@ const NewsDetail = () => {
   const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
 
   // Get recent news to show as suggestions when news not found
+  // These are guaranteed to be fresh from the current API response
   const recentNews = useMemo(() => {
     if (news || !allNews) return [];
-    return allNews.slice(0, 5);
+    // Return latest 6 news items (they're already fresh from the API)
+    return allNews.slice(0, 6);
   }, [news, allNews]);
   
   // Map sentiment to bias format
@@ -98,8 +100,17 @@ const NewsDetail = () => {
             <p className="text-muted-foreground text-sm">
               {error instanceof Error 
                 ? error.message 
-                : 'Esta noticia ya no está en el feed. Te mostramos las noticias más recientes.'}
+                : 'Esta noticia ya no está en el feed. Aquí tienes las noticias más recientes.'}
             </p>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => refetch()} 
+              className="text-primary hover:text-primary/80"
+            >
+              <Loader2 className="w-3 h-3 mr-1" />
+              Actualizar noticias
+            </Button>
           </div>
 
           {/* Related/Recent news suggestions */}
