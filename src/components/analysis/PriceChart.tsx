@@ -510,33 +510,44 @@ export function PriceChart({
           </div>
           
           {/* Session filter buttons */}
-          <div className="flex items-center gap-1 border-l border-border/30 pl-3">
-            <button
-              onClick={() => handleSessionClick('all')}
-              className={cn(
-                "px-2 py-1 text-xs font-medium rounded transition-all",
-                selectedSession === 'all'
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Todas
-            </button>
-            {MARKET_SESSIONS.map((session) => (
+          <div className="flex flex-col gap-1 border-l border-border/30 pl-3">
+            <div className="flex items-center gap-1">
               <button
-                key={session.id}
-                onClick={() => handleSessionClick(session.id as SessionFilter)}
+                onClick={() => handleSessionClick('all')}
                 className={cn(
-                  "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
-                  selectedSession === session.id
-                    ? `${session.bgColor} ${session.textColor}`
+                  "px-2 py-1 text-xs font-medium rounded transition-all",
+                  selectedSession === 'all'
+                    ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <span>{session.emoji}</span>
-                <span className="hidden sm:inline">{session.name}</span>
+                Todas
               </button>
-            ))}
+              {MARKET_SESSIONS.map((session) => (
+                <button
+                  key={session.id}
+                  onClick={() => handleSessionClick(session.id as SessionFilter)}
+                  className={cn(
+                    "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
+                    selectedSession === session.id
+                      ? `${session.bgColor} ${session.textColor}`
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <span>{session.emoji}</span>
+                  <span className="hidden sm:inline">{session.name}</span>
+                </button>
+              ))}
+            </div>
+            {/* UTC time reference */}
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70">
+              {MARKET_SESSIONS.map((session) => (
+                <span key={session.id} className="flex items-center gap-1">
+                  <span style={{ color: session.borderColor }}>{session.emoji}</span>
+                  <span>{String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC</span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
         
