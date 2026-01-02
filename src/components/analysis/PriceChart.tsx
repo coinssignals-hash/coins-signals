@@ -315,6 +315,12 @@ export function PriceChart({
   const [panStartX, setPanStartX] = useState(0);
   const [panStartOffset, setPanStartOffset] = useState(0);
   
+  // Touch/pinch zoom state
+  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
+  const [initialZoomLevel, setInitialZoomLevel] = useState(1);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartOffset, setTouchStartOffset] = useState(0);
+  
   const MIN_ZOOM = 0.5;
   const MAX_ZOOM = 5;
   
@@ -1046,6 +1052,56 @@ export function PriceChart({
     setPanOffset(0);
   }, []);
 
+  // Calculate distance between two touch points
+  const getTouchDistance = (touches: React.TouchList): number => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // Handle touch start for pinch zoom and pan
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 2) {
+      // Pinch zoom start
+      e.preventDefault();
+      const distance = getTouchDistance(e.touches);
+      setInitialPinchDistance(distance);
+      setInitialZoomLevel(zoomLevel);
+    } else if (e.touches.length === 1) {
+      // Single touch pan start
+      setTouchStartX(e.touches[0].clientX);
+      setTouchStartOffset(panOffset);
+    }
+  }, [zoomLevel, panOffset]);
+
+  // Handle touch move for pinch zoom and pan
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 2 && initialPinchDistance !== null) {
+      // Pinch zoom
+      e.preventDefault();
+      const currentDistance = getTouchDistance(e.touches);
+      const scale = currentDistance / initialPinchDistance;
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, initialZoomLevel * scale));
+      setZoomLevel(newZoom);
+    } else if (e.touches.length === 1 && touchStartX !== null && finalData.length > 0) {
+      // Single touch pan
+      const deltaX = e.touches[0].clientX - touchStartX;
+      const chartWidth = dimensions.width - 80;
+      const pointsPerPixel = (finalData.length / zoomLevel) / chartWidth;
+      const offsetDelta = Math.round(-deltaX * pointsPerPixel);
+      
+      const maxOffset = Math.max(0, finalData.length - Math.ceil(finalData.length / zoomLevel));
+      const newOffset = Math.max(0, Math.min(maxOffset, touchStartOffset + offsetDelta));
+      setPanOffset(newOffset);
+    }
+  }, [initialPinchDistance, initialZoomLevel, touchStartX, touchStartOffset, finalData.length, dimensions.width, zoomLevel]);
+
+  // Handle touch end
+  const handleTouchEnd = useCallback(() => {
+    setInitialPinchDistance(null);
+    setTouchStartX(null);
+  }, []);
 
   // Format volume for display
   const formatVolume = (vol: number) => {
@@ -1280,7 +1336,7 @@ export function PriceChart({
       <div ref={containerRef} className="h-[220px] w-full relative">
         <canvas 
           ref={canvasRef} 
-          className={cn("w-full h-full", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
+          className={cn("w-full h-full touch-none", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
           style={{
             width: dimensions.width,
             height: dimensions.height
@@ -1290,6 +1346,9 @@ export function PriceChart({
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         />
       </div>
       
@@ -1298,7 +1357,7 @@ export function PriceChart({
           <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
           <canvas 
             ref={volumeCanvasRef} 
-            className={cn("w-full h-full", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
+            className={cn("w-full h-full touch-none", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
             style={{
               width: volumeDimensions.width,
               height: volumeDimensions.height
@@ -1308,6 +1367,9 @@ export function PriceChart({
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onWheel={handleWheel}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           />
         </div>}
       
