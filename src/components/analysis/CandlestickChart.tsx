@@ -719,13 +719,19 @@ export function CandlestickChart({
 
       <div className="flex justify-between text-xs flex-wrap gap-2">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <div className="w-8 h-0.5 border-t-2 border-dashed border-green-500"></div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-0.5 border-t-2 border-dashed border-green-500"></div>
             <span className="text-green-400">Resistencia</span>
+            <span className="font-mono font-semibold text-green-300 bg-green-500/20 px-1.5 py-0.5 rounded">
+              {resistance.toFixed(5)}
+            </span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-8 h-0.5 border-t-2 border-dashed border-red-500"></div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-0.5 border-t-2 border-dashed border-red-500"></div>
             <span className="text-red-400">Soporte</span>
+            <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded">
+              {support.toFixed(5)}
+            </span>
           </div>
         </div>
         {realtimePrice && (
