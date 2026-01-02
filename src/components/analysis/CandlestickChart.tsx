@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import type { AlertState } from '@/hooks/useSupportResistanceAlerts';
 
 interface CandleData {
   time: string;
@@ -17,6 +18,7 @@ interface CandlestickChartProps {
   realtimePrice?: number | null;
   isRealtimeConnected?: boolean;
   previousDayDate?: string;
+  alertState?: AlertState;
 }
 
 interface TooltipData {
@@ -57,7 +59,8 @@ export function CandlestickChart({
   loading,
   realtimePrice,
   isRealtimeConnected = false,
-  previousDayDate
+  previousDayDate,
+  alertState
 }: CandlestickChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const crosshairCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -396,9 +399,53 @@ export function CandlestickChart({
     );
   }
 
+  // Determine alert visual styles
+  const getAlertStyles = () => {
+    if (!alertState?.isActive) return null;
+    
+    const isResistance = alertState.type === 'resistance' || alertState.type === 'breakout-resistance';
+    const isBreakout = alertState.type?.startsWith('breakout-');
+    const isCritical = alertState.level === 'critical';
+    
+    return {
+      borderColor: isResistance ? 'border-green-500' : 'border-red-500',
+      glowColor: isResistance 
+        ? (isCritical ? 'shadow-[0_0_30px_rgba(34,197,94,0.6)]' : 'shadow-[0_0_20px_rgba(34,197,94,0.4)]')
+        : (isCritical ? 'shadow-[0_0_30px_rgba(239,68,68,0.6)]' : 'shadow-[0_0_20px_rgba(239,68,68,0.4)]'),
+      bgPulse: isResistance ? 'bg-green-500/10' : 'bg-red-500/10',
+      label: isBreakout 
+        ? (isResistance ? '🚀 RUPTURA RESISTENCIA' : '📉 RUPTURA SOPORTE')
+        : (isResistance ? '⚠️ CERCA DE RESISTENCIA' : '⚠️ CERCA DE SOPORTE'),
+      labelBg: isResistance ? 'bg-green-500' : 'bg-red-500',
+    };
+  };
+
+  const alertStyles = getAlertStyles();
+
   return (
-    <div className="bg-[#0a0a0a] border border-green-900/50 rounded-lg p-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className={cn(
+      "bg-[#0a0a0a] border rounded-lg p-4 transition-all duration-300 relative overflow-hidden",
+      alertStyles 
+        ? `${alertStyles.borderColor} ${alertStyles.glowColor} border-2` 
+        : "border-green-900/50"
+    )}>
+      {/* Alert overlay animation */}
+      {alertStyles && (
+        <>
+          <div className={cn(
+            "absolute inset-0 animate-pulse pointer-events-none",
+            alertStyles.bgPulse
+          )} />
+          <div className={cn(
+            "absolute top-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full text-xs font-bold text-white animate-bounce z-20",
+            alertStyles.labelBg
+          )}>
+            {alertStyles.label}
+          </div>
+        </>
+      )}
+
+      <div className="flex items-center justify-between mb-3 relative z-10">
         <div className="flex items-center gap-2">
           <h3 className="text-white font-semibold text-sm">Resistencia y Soporte día Anterior</h3>
           {previousDayDate && (
@@ -418,7 +465,7 @@ export function CandlestickChart({
       
       <div 
         ref={containerRef} 
-        className="h-72 relative"
+        className="h-72 relative z-10"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >

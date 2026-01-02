@@ -155,7 +155,7 @@ export default function Analysis() {
   }, [data?.priceData]);
 
   // Initialize support/resistance alerts (after marketStats is defined)
-  useSupportResistanceAlerts(
+  const { alertState } = useSupportResistanceAlerts(
     selectedPair,
     realtimeQuote?.price,
     previousDayData?.support || marketStats.support,
@@ -429,6 +429,7 @@ export default function Analysis() {
           realtimePrice={realtimeQuote?.price}
           isRealtimeConnected={isConnected}
           previousDayDate={previousDayData?.date}
+          alertState={alertState}
         />
 
         {/* Collapsible Sections */}
