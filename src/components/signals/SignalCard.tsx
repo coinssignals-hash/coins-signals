@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 import signalCardBg from '@/assets/signal-card-bg.png';
 
 interface SignalCardProps {
@@ -69,10 +70,55 @@ const ProbabilityBar = ({
 
 export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: SignalCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   
   const copyToClipboard = (value: number) => {
     navigator.clipboard.writeText(value.toString());
     toast.success('Precio copiado');
+  };
+
+  const analyzeWithAI = async () => {
+    if (isAnalyzing) return;
+    
+    setIsAnalyzing(true);
+    setShowAnalysis(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-signal', {
+        body: { 
+          signal: {
+            currencyPair: signal.currencyPair,
+            action: signal.action,
+            trend: signal.trend,
+            entryPrice: signal.entryPrice,
+            takeProfit: signal.takeProfit,
+            stopLoss: signal.stopLoss,
+            probability: signal.probability,
+            support: signal.support,
+            resistance: signal.resistance,
+          }
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data.error) {
+        toast.error(data.error);
+        setShowAnalysis(false);
+        return;
+      }
+
+      setAiAnalysis(data.analysis);
+      toast.success('Análisis completado');
+    } catch (error) {
+      console.error('Error analyzing signal:', error);
+      toast.error('Error al analizar la señal');
+      setShowAnalysis(false);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const isBuy = signal.action === 'BUY';
@@ -451,11 +497,58 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               <button className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 px-4 rounded-xl border-2 border-green-400/50 shadow-lg shadow-green-500/30 transition-all text-sm">
                 Ejecutar Orden
               </button>
-              <button className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 px-4 rounded-xl border-2 border-green-400/50 shadow-lg shadow-green-500/30 transition-all text-sm leading-tight">
-                Analisar Señal<br />Con AI
+              <button 
+                onClick={analyzeWithAI}
+                disabled={isAnalyzing}
+                className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-green-800 disabled:to-green-700 text-white font-bold py-3 px-4 rounded-xl border-2 border-green-400/50 shadow-lg shadow-green-500/30 transition-all text-sm leading-tight flex items-center justify-center gap-2"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Analizando...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Analisar Señal<br />Con AI
+                  </>
+                )}
               </button>
             </div>
           </div>
+
+          {/* AI Analysis Modal */}
+          {showAnalysis && (
+            <div className="mt-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl border border-primary/30 p-4 animate-in slide-in-from-bottom-2 duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold text-primary">Análisis IA</h3>
+                </div>
+                <button 
+                  onClick={() => setShowAnalysis(false)}
+                  className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+              
+              {isAnalyzing ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <p className="text-sm text-muted-foreground">Analizando señal con IA...</p>
+                  </div>
+                </div>
+              ) : aiAnalysis ? (
+                <div className="prose prose-invert prose-sm max-w-none">
+                  <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {aiAnalysis}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
       )}
     </div>
