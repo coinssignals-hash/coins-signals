@@ -30,6 +30,21 @@ interface PriceChartProps {
 // Market session times in UTC with detailed info
 const MARKET_SESSIONS = [
   { 
+    id: 'sydney', 
+    name: 'Sídney', 
+    start: 21, 
+    end: 6, 
+    color: 'rgba(168, 85, 247, 0.12)', 
+    borderColor: 'rgba(168, 85, 247, 0.6)', 
+    bgColor: 'bg-purple-500/20', 
+    textColor: 'text-purple-400', 
+    emoji: '🇦🇺',
+    markets: 'Sídney, Wellington',
+    volatility: 'Baja',
+    pairs: 'AUD, NZD',
+    description: 'Primera sesión del día. Baja liquidez pero buenos movimientos en AUD/NZD.'
+  },
+  { 
     id: 'asia', 
     name: 'Asia', 
     start: 0, 
@@ -39,9 +54,9 @@ const MARKET_SESSIONS = [
     bgColor: 'bg-amber-500/20', 
     textColor: 'text-amber-400', 
     emoji: '🌏',
-    markets: 'Tokio, Singapur, Hong Kong, Sídney',
+    markets: 'Tokio, Singapur, Hong Kong',
     volatility: 'Media-Baja',
-    pairs: 'JPY, AUD, NZD',
+    pairs: 'JPY, SGD, HKD',
     description: 'Sesión más tranquila. Ideal para pares asiáticos y commodities.'
   },
   { 
@@ -76,7 +91,7 @@ const MARKET_SESSIONS = [
   },
 ];
 
-type SessionFilter = 'all' | 'asia' | 'london' | 'ny';
+type SessionId = 'sydney' | 'asia' | 'london' | 'ny';
 
 const periodButtons: { value: ChartPeriod; label: string }[] = [
   { value: '1D', label: '1D' },
@@ -85,16 +100,16 @@ const periodButtons: { value: ChartPeriod; label: string }[] = [
   { value: '1Y', label: '1Y' },
 ];
 
-// Get session for a given UTC hour, optionally filtered
-function getSessionsForHour(utcHour: number, filter: SessionFilter = 'all') {
+// Get session for a given UTC hour, filtered by enabled sessions
+function getSessionsForHour(utcHour: number, enabledSessions: Set<SessionId>) {
   return MARKET_SESSIONS.filter(session => {
-    // Apply filter
-    if (filter !== 'all' && session.id !== filter) return false;
+    // Check if session is enabled
+    if (!enabledSessions.has(session.id as SessionId)) return false;
     
     if (session.start < session.end) {
       return utcHour >= session.start && utcHour < session.end;
     }
-    // Handle sessions that cross midnight
+    // Handle sessions that cross midnight (like Sydney 21:00-06:00)
     return utcHour >= session.start || utcHour < session.end;
   });
 }
@@ -120,15 +135,25 @@ export function PriceChart({
   const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
   const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number; sessions?: typeof MARKET_SESSIONS } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1D');
-  const [selectedSession, setSelectedSession] = useState<SessionFilter>('all');
+  const [enabledSessions, setEnabledSessions] = useState<Set<SessionId>>(new Set(['sydney', 'asia', 'london', 'ny']));
+  const [showSessions, setShowSessions] = useState(true);
+  const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
 
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
     onPeriodChange?.(period);
   };
 
-  const handleSessionClick = (session: SessionFilter) => {
-    setSelectedSession(session);
+  const toggleSession = (sessionId: SessionId) => {
+    setEnabledSessions(prev => {
+      const next = new Set(prev);
+      if (next.has(sessionId)) {
+        next.delete(sessionId);
+      } else {
+        next.add(sessionId);
+      }
+      return next;
+    });
   };
 
   // Calculate chart data with UTC hours for sessions
@@ -242,10 +267,11 @@ export function PriceChart({
     const paddedMax = maxPrice + priceRange * 0.05;
     const paddedRange = paddedMax - paddedMin;
 
-    // Draw session backgrounds
-    let prevSession: string | null = null;
-    finalData.forEach((point, i) => {
-      const sessions = getSessionsForHour(point.utcHour, selectedSession);
+    // Draw session backgrounds (only if sessions are enabled)
+    if (showSessions) {
+      let prevSession: string | null = null;
+      finalData.forEach((point, i) => {
+        const sessions = getSessionsForHour(point.utcHour, enabledSessions);
       const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
       const barWidth = chartWidth / (finalData.length - 1);
       
@@ -276,6 +302,7 @@ export function PriceChart({
       }
       prevSession = currentSessionName;
     });
+    }
 
     // Calculate close price for comparison
     const closePrice = previousClose || finalData[0]?.open || finalData[0]?.price;
@@ -403,7 +430,7 @@ export function PriceChart({
       ctx.fillText(hoveredData.price.toFixed(5), hoveredData.x + 15, hoveredData.y + 10);
     }
 
-  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, selectedSession]);
+  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions]);
 
   // Draw volume chart
   useEffect(() => {
@@ -492,8 +519,9 @@ export function PriceChart({
       const pointX = padding.left + (clampedIndex / (finalData.length - 1)) * chartWidth;
       const pointY = 20 + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
       
-      // Get sessions for this point (always get all for hover display)
-      const sessions = getSessionsForHour(point.utcHour, 'all');
+      // Get all sessions for this point for hover display
+      const allSessionIds = new Set<SessionId>(['sydney', 'asia', 'london', 'ny']);
+      const sessions = getSessionsForHour(point.utcHour, allSessionIds);
       
       setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time, volume: point.volume, index: clampedIndex, sessions });
     }
@@ -558,30 +586,49 @@ export function PriceChart({
             ))}
           </div>
           
-          {/* Session filter buttons */}
+          {/* Session toggle and filter buttons */}
           <div className="flex flex-col gap-1 border-l border-border/30 pl-3">
             <div className="flex items-center gap-1">
+              {/* Toggle sessions visibility */}
               <button
-                onClick={() => handleSessionClick('all')}
+                onClick={() => setShowSessions(!showSessions)}
                 className={cn(
-                  "px-2 py-1 text-xs font-medium rounded transition-all",
-                  selectedSession === 'all'
+                  "px-2 py-1 text-[10px] font-medium rounded transition-all",
+                  showSessions
                     ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    : "bg-muted/30 text-muted-foreground line-through"
                 )}
               >
-                Todas
+                Sesiones
               </button>
-              {MARKET_SESSIONS.map((session) => (
+              
+              {/* Toggle volume visibility */}
+              <button
+                onClick={() => setShowVolumeChart(!showVolumeChart)}
+                className={cn(
+                  "px-2 py-1 text-[10px] font-medium rounded transition-all",
+                  showVolumeChart
+                    ? "bg-muted text-foreground"
+                    : "bg-muted/30 text-muted-foreground line-through"
+                )}
+              >
+                Vol
+              </button>
+              
+              {/* Divider */}
+              <div className="w-px h-4 bg-border/30 mx-1" />
+              
+              {/* Session buttons */}
+              {showSessions && MARKET_SESSIONS.map((session) => (
                 <Tooltip key={session.id}>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() => handleSessionClick(session.id as SessionFilter)}
+                      onClick={() => toggleSession(session.id as SessionId)}
                       className={cn(
                         "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
-                        selectedSession === session.id
+                        enabledSessions.has(session.id as SessionId)
                           ? `${session.bgColor} ${session.textColor}`
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          : "text-muted-foreground/40 hover:text-muted-foreground bg-muted/20 line-through"
                       )}
                     >
                       <span>{session.emoji}</span>
@@ -614,7 +661,7 @@ export function PriceChart({
                           <span className="text-muted-foreground">Volatilidad: </span>
                           <span 
                             className="font-medium"
-                            style={{ color: session.volatility === 'Alta' ? '#ef4444' : '#fbbf24' }}
+                            style={{ color: session.volatility === 'Alta' ? '#ef4444' : session.volatility === 'Baja' ? '#22c55e' : '#fbbf24' }}
                           >
                             {session.volatility}
                           </span>
@@ -629,15 +676,17 @@ export function PriceChart({
                 </Tooltip>
               ))}
             </div>
-            {/* UTC time reference */}
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70">
-              {MARKET_SESSIONS.map((session) => (
-                <span key={session.id} className="flex items-center gap-1">
-                  <span style={{ color: session.borderColor }}>{session.emoji}</span>
-                  <span>{String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC</span>
-                </span>
-              ))}
-            </div>
+            {/* UTC time reference - only show if sessions enabled */}
+            {showSessions && (
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 flex-wrap">
+                {MARKET_SESSIONS.filter(s => enabledSessions.has(s.id as SessionId)).map((session) => (
+                  <span key={session.id} className="flex items-center gap-1">
+                    <span style={{ color: session.borderColor }}>{session.emoji}</span>
+                    <span>{String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC</span>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         
@@ -686,7 +735,7 @@ export function PriceChart({
       </div>
       
       {/* Volume chart */}
-      {showVolume && (
+      {showVolumeChart && (
         <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
           <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
           <canvas
