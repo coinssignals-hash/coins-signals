@@ -50,6 +50,27 @@ export type Database = {
         }
         Relationships: []
       }
+      favorite_currencies: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorite_signals: {
         Row: {
           created_at: string
