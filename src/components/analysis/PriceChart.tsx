@@ -23,10 +23,12 @@ interface PriceChartProps {
 
 // Market session times in UTC
 const MARKET_SESSIONS = [
-  { name: 'Asia', start: 0, end: 9, color: 'rgba(251, 191, 36, 0.08)', borderColor: 'rgba(251, 191, 36, 0.4)', emoji: '🌏' },
-  { name: 'Londres', start: 8, end: 17, color: 'rgba(59, 130, 246, 0.08)', borderColor: 'rgba(59, 130, 246, 0.4)', emoji: '🇬🇧' },
-  { name: 'Nueva York', start: 13, end: 22, color: 'rgba(34, 197, 94, 0.08)', borderColor: 'rgba(34, 197, 94, 0.4)', emoji: '🇺🇸' },
+  { id: 'asia', name: 'Asia', start: 0, end: 9, color: 'rgba(251, 191, 36, 0.12)', borderColor: 'rgba(251, 191, 36, 0.6)', bgColor: 'bg-amber-500/20', textColor: 'text-amber-400', emoji: '🌏' },
+  { id: 'london', name: 'Londres', start: 8, end: 17, color: 'rgba(59, 130, 246, 0.12)', borderColor: 'rgba(59, 130, 246, 0.6)', bgColor: 'bg-blue-500/20', textColor: 'text-blue-400', emoji: '🇬🇧' },
+  { id: 'ny', name: 'Nueva York', start: 13, end: 22, color: 'rgba(34, 197, 94, 0.12)', borderColor: 'rgba(34, 197, 94, 0.6)', bgColor: 'bg-green-500/20', textColor: 'text-green-400', emoji: '🇺🇸' },
 ];
+
+type SessionFilter = 'all' | 'asia' | 'london' | 'ny';
 
 const periodButtons: { value: ChartPeriod; label: string }[] = [
   { value: '1D', label: '1D' },
@@ -35,9 +37,12 @@ const periodButtons: { value: ChartPeriod; label: string }[] = [
   { value: '1Y', label: '1Y' },
 ];
 
-// Get session for a given UTC hour
-function getSessionsForHour(utcHour: number) {
+// Get session for a given UTC hour, optionally filtered
+function getSessionsForHour(utcHour: number, filter: SessionFilter = 'all') {
   return MARKET_SESSIONS.filter(session => {
+    // Apply filter
+    if (filter !== 'all' && session.id !== filter) return false;
+    
     if (session.start < session.end) {
       return utcHour >= session.start && utcHour < session.end;
     }
@@ -67,10 +72,15 @@ export function PriceChart({
   const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
   const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number; sessions?: typeof MARKET_SESSIONS } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1D');
+  const [selectedSession, setSelectedSession] = useState<SessionFilter>('all');
 
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
     onPeriodChange?.(period);
+  };
+
+  const handleSessionClick = (session: SessionFilter) => {
+    setSelectedSession(session);
   };
 
   // Calculate chart data with UTC hours for sessions
@@ -187,7 +197,7 @@ export function PriceChart({
     // Draw session backgrounds
     let prevSession: string | null = null;
     finalData.forEach((point, i) => {
-      const sessions = getSessionsForHour(point.utcHour);
+      const sessions = getSessionsForHour(point.utcHour, selectedSession);
       const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
       const barWidth = chartWidth / (finalData.length - 1);
       
@@ -204,7 +214,7 @@ export function PriceChart({
         ctx.beginPath();
         ctx.setLineDash([4, 4]);
         ctx.strokeStyle = mainSession.borderColor;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
         ctx.moveTo(x, padding.top);
         ctx.lineTo(x, padding.top + chartHeight);
         ctx.stroke();
@@ -212,9 +222,9 @@ export function PriceChart({
         
         // Session label at top
         ctx.fillStyle = mainSession.borderColor;
-        ctx.font = 'bold 9px sans-serif';
+        ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText(`${mainSession.emoji} ${mainSession.name}`, x + 3, padding.top + 12);
+        ctx.fillText(`${mainSession.emoji} ${mainSession.name}`, x + 4, padding.top + 14);
       }
       prevSession = currentSessionName;
     });
@@ -345,7 +355,7 @@ export function PriceChart({
       ctx.fillText(hoveredData.price.toFixed(5), hoveredData.x + 15, hoveredData.y + 10);
     }
 
-  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData]);
+  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, selectedSession]);
 
   // Draw volume chart
   useEffect(() => {
@@ -434,8 +444,8 @@ export function PriceChart({
       const pointX = padding.left + (clampedIndex / (finalData.length - 1)) * chartWidth;
       const pointY = 20 + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
       
-      // Get sessions for this point
-      const sessions = getSessionsForHour(point.utcHour);
+      // Get sessions for this point (always get all for hover display)
+      const sessions = getSessionsForHour(point.utcHour, 'all');
       
       setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time, volume: point.volume, index: clampedIndex, sessions });
     }
@@ -478,23 +488,56 @@ export function PriceChart({
 
   return (
     <div className="w-full relative bg-background">
-      {/* TradingView-style period selector */}
-      <div className="flex items-center justify-between px-2 py-2 border-b border-border/30">
-        <div className="flex items-center gap-1">
-          {periodButtons.map((btn) => (
+      {/* TradingView-style period and session selector */}
+      <div className="flex items-center justify-between px-2 py-2 border-b border-border/30 flex-wrap gap-2">
+        <div className="flex items-center gap-3">
+          {/* Period buttons */}
+          <div className="flex items-center gap-1">
+            {periodButtons.map((btn) => (
+              <button
+                key={btn.value}
+                onClick={() => handlePeriodClick(btn.value)}
+                className={cn(
+                  "px-3 py-1 text-xs font-medium rounded transition-all",
+                  selectedPeriod === btn.value
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                {btn.label}
+              </button>
+            ))}
+          </div>
+          
+          {/* Session filter buttons */}
+          <div className="flex items-center gap-1 border-l border-border/30 pl-3">
             <button
-              key={btn.value}
-              onClick={() => handlePeriodClick(btn.value)}
+              onClick={() => handleSessionClick('all')}
               className={cn(
-                "px-3 py-1 text-xs font-medium rounded transition-all",
-                selectedPeriod === btn.value
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                "px-2 py-1 text-xs font-medium rounded transition-all",
+                selectedSession === 'all'
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
-              {btn.label}
+              Todas
             </button>
-          ))}
+            {MARKET_SESSIONS.map((session) => (
+              <button
+                key={session.id}
+                onClick={() => handleSessionClick(session.id as SessionFilter)}
+                className={cn(
+                  "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
+                  selectedSession === session.id
+                    ? `${session.bgColor} ${session.textColor}`
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
+              >
+                <span>{session.emoji}</span>
+                <span className="hidden sm:inline">{session.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
         
         {/* Session and volume indicators when hovering */}
