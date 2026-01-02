@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.ai-analysis]
 verify_jwt = false
+
+[functions.realtime-market]
+verify_jwt = false
