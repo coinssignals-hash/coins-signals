@@ -779,15 +779,16 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                               fill={`url(#${gradientId})`}
                               stroke={`rgba(${color.main}, 0.9)`}
                               strokeWidth="2"
+                              className="radar-polygon"
                             />
-                            {/* Data points with pulse animation */}
+                            {/* Data points with staggered animation */}
                             {analysisValues.map((v, i) => {
                               const angle = (i * 90 - 90) * (Math.PI / 180);
                               const r = (v / 100) * 80;
                               const x = 100 + Math.cos(angle) * r;
                               const y = 100 + Math.sin(angle) * r;
                               return (
-                                <g key={i}>
+                                <g key={i} className={`radar-point radar-point-${i}`}>
                                   <circle
                                     cx={x}
                                     cy={y}
@@ -810,34 +811,34 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                       })()}
                     </svg>
                     
-                    {/* Labels with real values */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 text-center">
+                    {/* Labels with staggered animation */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 text-center radar-label radar-label-0">
                       <span className={cn("text-[10px] font-bold", isBullish ? "text-emerald-400" : "text-rose-400")}>
                         {Math.round(analysisValues[0])}%
                       </span>
                       <span className="block text-[8px] text-slate-400">{labels[0]}</span>
                     </div>
-                    <div className="absolute top-1/2 right-0 translate-x-1 -translate-y-1/2 text-center">
+                    <div className="absolute top-1/2 right-0 translate-x-1 -translate-y-1/2 text-center radar-label radar-label-1">
                       <span className={cn("text-[10px] font-bold", isBullish ? "text-emerald-400" : "text-rose-400")}>
                         {Math.round(analysisValues[1])}%
                       </span>
                       <span className="block text-[8px] text-slate-400">{labels[1]}</span>
                     </div>
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 text-center">
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 text-center radar-label radar-label-2">
                       <span className={cn("text-[10px] font-bold", isBullish ? "text-emerald-400" : "text-rose-400")}>
                         {Math.round(analysisValues[2])}%
                       </span>
                       <span className="block text-[8px] text-slate-400">{labels[2]}</span>
                     </div>
-                    <div className="absolute top-1/2 left-0 -translate-x-1 -translate-y-1/2 text-center">
+                    <div className="absolute top-1/2 left-0 -translate-x-1 -translate-y-1/2 text-center radar-label radar-label-3">
                       <span className={cn("text-[10px] font-bold", isBullish ? "text-emerald-400" : "text-rose-400")}>
                         {Math.round(analysisValues[3])}%
                       </span>
                       <span className="block text-[8px] text-slate-400">{labels[3]}</span>
                     </div>
                     
-                    {/* Center score */}
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    {/* Center score with animation */}
+                    <div className="absolute inset-0 flex items-center justify-center radar-center">
                       <div className="text-center">
                         <span className={cn("text-2xl font-bold", isBullish ? "text-emerald-400" : "text-rose-400")}>
                           {average}
