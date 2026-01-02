@@ -178,15 +178,15 @@ export function MarketSentiment({
 
             {/* Large Pie Chart */}
             <div className="flex-1">
-              <div className="h-40">
+              <div className="h-52">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={35}
-                      outerRadius={60}
+                      innerRadius={50}
+                      outerRadius={85}
                       paddingAngle={3}
                       dataKey="value"
                     >
@@ -198,7 +198,7 @@ export function MarketSentiment({
                 </ResponsiveContainer>
               </div>
               {/* Legend */}
-              <div className="flex justify-center gap-4 mt-1">
+              <div className="flex justify-center gap-4 mt-2">
                 {chartData.map((item) => (
                   <div key={item.name} className="flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
