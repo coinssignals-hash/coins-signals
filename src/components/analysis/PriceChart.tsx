@@ -21,12 +21,30 @@ interface PriceChartProps {
   showVolume?: boolean;
 }
 
+// Market session times in UTC
+const MARKET_SESSIONS = [
+  { name: 'Asia', start: 0, end: 9, color: 'rgba(251, 191, 36, 0.08)', borderColor: 'rgba(251, 191, 36, 0.4)', emoji: '🌏' },
+  { name: 'Londres', start: 8, end: 17, color: 'rgba(59, 130, 246, 0.08)', borderColor: 'rgba(59, 130, 246, 0.4)', emoji: '🇬🇧' },
+  { name: 'Nueva York', start: 13, end: 22, color: 'rgba(34, 197, 94, 0.08)', borderColor: 'rgba(34, 197, 94, 0.4)', emoji: '🇺🇸' },
+];
+
 const periodButtons: { value: ChartPeriod; label: string }[] = [
   { value: '1D', label: '1D' },
   { value: '1W', label: '1W' },
   { value: '1M', label: '1M' },
   { value: '1Y', label: '1Y' },
 ];
+
+// Get session for a given UTC hour
+function getSessionsForHour(utcHour: number) {
+  return MARKET_SESSIONS.filter(session => {
+    if (session.start < session.end) {
+      return utcHour >= session.start && utcHour < session.end;
+    }
+    // Handle sessions that cross midnight
+    return utcHour >= session.start || utcHour < session.end;
+  });
+}
 
 export function PriceChart({ 
   pair, 
@@ -47,7 +65,7 @@ export function PriceChart({
   const volumeContainerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
-  const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number } | null>(null);
+  const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number; sessions?: typeof MARKET_SESSIONS } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1D');
 
   const handlePeriodClick = (period: ChartPeriod) => {
@@ -55,13 +73,14 @@ export function PriceChart({
     onPeriodChange?.(period);
   };
 
-  // Calculate chart data
+  // Calculate chart data with UTC hours for sessions
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
     
     return priceData.map((price, index) => {
       // Extract time from ISO string or other formats
       let timeLabel = '';
+      let utcHour = 0;
       try {
         const date = new Date(price.time);
         if (!isNaN(date.getTime())) {
@@ -71,9 +90,13 @@ export function PriceChart({
             minute: '2-digit',
             hour12: false 
           });
+          utcHour = date.getUTCHours();
         } else {
           // Fallback: try to extract time from string
           timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+          // Try to parse hour from timeLabel
+          const hourMatch = timeLabel.match(/^(\d{1,2}):/);
+          if (hourMatch) utcHour = parseInt(hourMatch[1]);
         }
       } catch {
         timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
@@ -83,6 +106,7 @@ export function PriceChart({
       const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
       return {
         time: timeLabel,
+        utcHour,
         price: price.price,
         open: price.open,
         high: price.high,
@@ -100,6 +124,7 @@ export function PriceChart({
       ...chartData,
       {
         time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+        utcHour: now.getUTCHours(),
         price: realtimePrice,
         open: realtimePrice,
         high: realtimePrice,
@@ -158,6 +183,41 @@ export function PriceChart({
     const paddedMin = minPrice - priceRange * 0.05;
     const paddedMax = maxPrice + priceRange * 0.05;
     const paddedRange = paddedMax - paddedMin;
+
+    // Draw session backgrounds
+    let prevSession: string | null = null;
+    finalData.forEach((point, i) => {
+      const sessions = getSessionsForHour(point.utcHour);
+      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
+      const barWidth = chartWidth / (finalData.length - 1);
+      
+      // Draw session background bands
+      sessions.forEach(session => {
+        ctx.fillStyle = session.color;
+        ctx.fillRect(x - barWidth / 2, padding.top, barWidth + 1, chartHeight);
+      });
+      
+      // Draw session start marker
+      const currentSessionName = sessions.map(s => s.name).join(',');
+      if (currentSessionName !== prevSession && sessions.length > 0 && i > 0) {
+        const mainSession = sessions[0];
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = mainSession.borderColor;
+        ctx.lineWidth = 1;
+        ctx.moveTo(x, padding.top);
+        ctx.lineTo(x, padding.top + chartHeight);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Session label at top
+        ctx.fillStyle = mainSession.borderColor;
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`${mainSession.emoji} ${mainSession.name}`, x + 3, padding.top + 12);
+      }
+      prevSession = currentSessionName;
+    });
 
     // Calculate close price for comparison
     const closePrice = previousClose || finalData[0]?.open || finalData[0]?.price;
@@ -374,7 +434,10 @@ export function PriceChart({
       const pointX = padding.left + (clampedIndex / (finalData.length - 1)) * chartWidth;
       const pointY = 20 + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
       
-      setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time, volume: point.volume, index: clampedIndex });
+      // Get sessions for this point
+      const sessions = getSessionsForHour(point.utcHour);
+      
+      setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time, volume: point.volume, index: clampedIndex, sessions });
     }
   };
 
@@ -434,13 +497,29 @@ export function PriceChart({
           ))}
         </div>
         
-        {/* Volume indicator when hovering */}
-        {hoveredData?.volume && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Vol:</span>
-            <span className="font-mono font-medium text-foreground">{formatVolume(hoveredData.volume)}</span>
-          </div>
-        )}
+        {/* Session and volume indicators when hovering */}
+        <div className="flex items-center gap-3">
+          {hoveredData?.sessions && hoveredData.sessions.length > 0 && (
+            <div className="flex items-center gap-1">
+              {hoveredData.sessions.map(session => (
+                <span 
+                  key={session.name}
+                  className="text-xs px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: session.color, color: session.borderColor, border: `1px solid ${session.borderColor}` }}
+                >
+                  {session.emoji} {session.name}
+                </span>
+              ))}
+            </div>
+          )}
+          
+          {hoveredData?.volume && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Vol:</span>
+              <span className="font-mono font-medium text-foreground">{formatVolume(hoveredData.volume)}</span>
+            </div>
+          )}
+        </div>
         
         {/* Realtime indicator */}
         {isRealtimeConnected && realtimePrice && (
