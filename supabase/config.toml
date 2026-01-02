@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.realtime-market]
 verify_jwt = false
+
+[functions.cleanup-ai-cache]
+verify_jwt = false
