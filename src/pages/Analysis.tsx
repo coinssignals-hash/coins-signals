@@ -378,6 +378,8 @@ export default function Analysis() {
           lowPrice={marketStats.low}
           dailyChange={marketStats.changePercent}
           pipsChange={marketStats.change}
+          realtimePrice={realtimeQuote?.price}
+          isRealtimeConnected={isConnected}
         />
 
         {/* Price Prediction */}
