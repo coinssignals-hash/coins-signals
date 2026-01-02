@@ -1,65 +1,167 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Currency/Asset symbol mapping
-const symbolMap: Record<string, { symbol: string; color: string }> = {
-  // Fiat currencies
-  EUR: { symbol: '€', color: 'bg-blue-600' },
-  USD: { symbol: '$', color: 'bg-green-600' },
-  GBP: { symbol: '£', color: 'bg-purple-600' },
-  JPY: { symbol: '¥', color: 'bg-red-600' },
-  CHF: { symbol: '₣', color: 'bg-red-500' },
-  AUD: { symbol: 'A$', color: 'bg-yellow-600' },
-  CAD: { symbol: 'C$', color: 'bg-red-600' },
-  NZD: { symbol: 'NZ$', color: 'bg-black' },
-  CNY: { symbol: '¥', color: 'bg-red-700' },
-  HKD: { symbol: 'HK$', color: 'bg-red-500' },
-  SGD: { symbol: 'S$', color: 'bg-red-600' },
-  SEK: { symbol: 'kr', color: 'bg-blue-500' },
-  NOK: { symbol: 'kr', color: 'bg-red-600' },
-  DKK: { symbol: 'kr', color: 'bg-red-500' },
-  MXN: { symbol: '$', color: 'bg-green-700' },
-  ZAR: { symbol: 'R', color: 'bg-green-600' },
-  TRY: { symbol: '₺', color: 'bg-red-600' },
-  RUB: { symbol: '₽', color: 'bg-blue-600' },
-  INR: { symbol: '₹', color: 'bg-orange-600' },
-  BRL: { symbol: 'R$', color: 'bg-green-500' },
-  PLN: { symbol: 'zł', color: 'bg-red-600' },
-  // Cryptocurrencies
-  BTC: { symbol: '₿', color: 'bg-orange-500' },
-  ETH: { symbol: 'Ξ', color: 'bg-indigo-600' },
-  XRP: { symbol: 'XRP', color: 'bg-gray-700' },
-  SOL: { symbol: 'SOL', color: 'bg-gradient-to-r from-purple-500 to-teal-400' },
-  BNB: { symbol: 'BNB', color: 'bg-yellow-500' },
-  ADA: { symbol: 'ADA', color: 'bg-blue-500' },
-  DOGE: { symbol: 'Ð', color: 'bg-yellow-600' },
-  DOT: { symbol: 'DOT', color: 'bg-pink-600' },
-  AVAX: { symbol: 'AVAX', color: 'bg-red-600' },
-  MATIC: { symbol: 'MATIC', color: 'bg-purple-600' },
-  LINK: { symbol: 'LINK', color: 'bg-blue-600' },
-  UNI: { symbol: 'UNI', color: 'bg-pink-500' },
-  ATOM: { symbol: 'ATOM', color: 'bg-indigo-700' },
-  LTC: { symbol: 'Ł', color: 'bg-gray-500' },
-  XLM: { symbol: 'XLM', color: 'bg-black' },
-  SHIB: { symbol: 'SHIB', color: 'bg-orange-600' },
-  PEPE: { symbol: '🐸', color: 'bg-green-600' },
+// Currency/Asset visual mapping with flags and logos
+const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: string; textColor?: string }> = {
+  // Fiat currencies with flag emojis
+  EUR: { flag: '🇪🇺', bgColor: 'bg-blue-600' },
+  USD: { flag: '🇺🇸', bgColor: 'bg-blue-700' },
+  GBP: { flag: '🇬🇧', bgColor: 'bg-blue-800' },
+  JPY: { flag: '🇯🇵', bgColor: 'bg-white', textColor: 'text-red-600' },
+  CHF: { flag: '🇨🇭', bgColor: 'bg-red-600' },
+  AUD: { flag: '🇦🇺', bgColor: 'bg-blue-900' },
+  CAD: { flag: '🇨🇦', bgColor: 'bg-red-600' },
+  NZD: { flag: '🇳🇿', bgColor: 'bg-blue-800' },
+  CNY: { flag: '🇨🇳', bgColor: 'bg-red-600' },
+  HKD: { flag: '🇭🇰', bgColor: 'bg-red-500' },
+  SGD: { flag: '🇸🇬', bgColor: 'bg-red-600' },
+  SEK: { flag: '🇸🇪', bgColor: 'bg-blue-500' },
+  NOK: { flag: '🇳🇴', bgColor: 'bg-red-600' },
+  DKK: { flag: '🇩🇰', bgColor: 'bg-red-500' },
+  MXN: { flag: '🇲🇽', bgColor: 'bg-green-700' },
+  ZAR: { flag: '🇿🇦', bgColor: 'bg-green-600' },
+  TRY: { flag: '🇹🇷', bgColor: 'bg-red-600' },
+  RUB: { flag: '🇷🇺', bgColor: 'bg-blue-600' },
+  INR: { flag: '🇮🇳', bgColor: 'bg-orange-500' },
+  BRL: { flag: '🇧🇷', bgColor: 'bg-green-500' },
+  PLN: { flag: '🇵🇱', bgColor: 'bg-red-600' },
+  CZK: { flag: '🇨🇿', bgColor: 'bg-blue-600' },
+  HUF: { flag: '🇭🇺', bgColor: 'bg-red-600' },
+  ILS: { flag: '🇮🇱', bgColor: 'bg-blue-500' },
+  THB: { flag: '🇹🇭', bgColor: 'bg-blue-600' },
+  KRW: { flag: '🇰🇷', bgColor: 'bg-white', textColor: 'text-red-600' },
+  PHP: { flag: '🇵🇭', bgColor: 'bg-blue-600' },
+  IDR: { flag: '🇮🇩', bgColor: 'bg-red-600' },
+  MYR: { flag: '🇲🇾', bgColor: 'bg-blue-600' },
+  CLP: { flag: '🇨🇱', bgColor: 'bg-blue-600' },
+  COP: { flag: '🇨🇴', bgColor: 'bg-yellow-500' },
+  ARS: { flag: '🇦🇷', bgColor: 'bg-blue-400' },
+  PEN: { flag: '🇵🇪', bgColor: 'bg-red-600' },
+  SAR: { flag: '🇸🇦', bgColor: 'bg-green-600' },
+  AED: { flag: '🇦🇪', bgColor: 'bg-green-600' },
+  KWD: { flag: '🇰🇼', bgColor: 'bg-green-600' },
+  QAR: { flag: '🇶🇦', bgColor: 'bg-purple-800' },
+  OMR: { flag: '🇴🇲', bgColor: 'bg-red-600' },
+  BHD: { flag: '🇧🇭', bgColor: 'bg-red-600' },
+  JOD: { flag: '🇯🇴', bgColor: 'bg-green-600' },
+  EGP: { flag: '🇪🇬', bgColor: 'bg-red-600' },
+  NGN: { flag: '🇳🇬', bgColor: 'bg-green-600' },
+  KES: { flag: '🇰🇪', bgColor: 'bg-black' },
+  
+  // Cryptocurrencies with symbols
+  BTC: { symbol: '₿', bgColor: 'bg-orange-500' },
+  ETH: { symbol: 'Ξ', bgColor: 'bg-indigo-600' },
+  XRP: { symbol: '✕', bgColor: 'bg-gray-800' },
+  SOL: { symbol: '◎', bgColor: 'bg-gradient-to-br from-purple-500 to-teal-400' },
+  BNB: { symbol: '◆', bgColor: 'bg-yellow-500', textColor: 'text-black' },
+  ADA: { symbol: '₳', bgColor: 'bg-blue-500' },
+  DOGE: { symbol: 'Ð', bgColor: 'bg-yellow-500', textColor: 'text-black' },
+  DOT: { symbol: '●', bgColor: 'bg-pink-600' },
+  AVAX: { symbol: 'A', bgColor: 'bg-red-600' },
+  MATIC: { symbol: '⬡', bgColor: 'bg-purple-600' },
+  POL: { symbol: '⬡', bgColor: 'bg-purple-600' },
+  LINK: { symbol: '⬡', bgColor: 'bg-blue-600' },
+  UNI: { symbol: '🦄', bgColor: 'bg-pink-500' },
+  ATOM: { symbol: '⚛', bgColor: 'bg-indigo-700' },
+  LTC: { symbol: 'Ł', bgColor: 'bg-gray-500' },
+  XLM: { symbol: '✦', bgColor: 'bg-black' },
+  SHIB: { symbol: '🐕', bgColor: 'bg-orange-600' },
+  PEPE: { symbol: '🐸', bgColor: 'bg-green-600' },
+  ARB: { symbol: 'A', bgColor: 'bg-blue-500' },
+  OP: { symbol: 'O', bgColor: 'bg-red-500' },
+  APT: { symbol: 'A', bgColor: 'bg-teal-500' },
+  SUI: { symbol: 'S', bgColor: 'bg-blue-400' },
+  FTM: { symbol: '👻', bgColor: 'bg-blue-600' },
+  NEAR: { symbol: 'N', bgColor: 'bg-black' },
+  INJ: { symbol: '💉', bgColor: 'bg-blue-500' },
+  TIA: { symbol: '◐', bgColor: 'bg-purple-500' },
+  SEI: { symbol: 'S', bgColor: 'bg-red-500' },
+  AAVE: { symbol: '👻', bgColor: 'bg-purple-600' },
+  MKR: { symbol: 'M', bgColor: 'bg-teal-600' },
+  CRV: { symbol: '↺', bgColor: 'bg-red-500' },
+  SNX: { symbol: 'S', bgColor: 'bg-blue-600' },
+  COMP: { symbol: 'C', bgColor: 'bg-green-500' },
+  SUSHI: { symbol: '🍣', bgColor: 'bg-pink-500' },
+  YFI: { symbol: 'Y', bgColor: 'bg-blue-500' },
+  CAKE: { symbol: '🥞', bgColor: 'bg-yellow-600' },
+  GMX: { symbol: 'G', bgColor: 'bg-blue-600' },
+  USDT: { symbol: '₮', bgColor: 'bg-green-500' },
+  USDC: { symbol: '$', bgColor: 'bg-blue-500' },
+  DAI: { symbol: '◈', bgColor: 'bg-yellow-500', textColor: 'text-black' },
+  FRAX: { symbol: 'F', bgColor: 'bg-gray-800' },
+  TUSD: { symbol: 'T', bgColor: 'bg-blue-600' },
+  BUSD: { symbol: 'B', bgColor: 'bg-yellow-500', textColor: 'text-black' },
+  HBAR: { symbol: 'ℏ', bgColor: 'bg-black' },
+  FIL: { symbol: '⌘', bgColor: 'bg-blue-500' },
+  LDO: { symbol: 'L', bgColor: 'bg-blue-400' },
+  RNDR: { symbol: 'R', bgColor: 'bg-red-500' },
+  IMX: { symbol: 'I', bgColor: 'bg-blue-600' },
+  GRT: { symbol: 'G', bgColor: 'bg-purple-600' },
+  STX: { symbol: 'S', bgColor: 'bg-orange-500' },
+  ALGO: { symbol: 'A', bgColor: 'bg-black' },
+  VET: { symbol: 'V', bgColor: 'bg-blue-500' },
+  SAND: { symbol: 'S', bgColor: 'bg-blue-400' },
+  MANA: { symbol: 'M', bgColor: 'bg-red-500' },
+  AXS: { symbol: 'A', bgColor: 'bg-blue-600' },
+  ENJ: { symbol: 'E', bgColor: 'bg-purple-500' },
+  
   // Commodities & Indices
-  XAU: { symbol: '🥇', color: 'bg-yellow-500' },
-  XAG: { symbol: '🥈', color: 'bg-gray-400' },
-  OIL: { symbol: '🛢️', color: 'bg-black' },
-  // Stocks (examples)
-  AAPL: { symbol: '', color: 'bg-gray-800' },
-  GOOGL: { symbol: 'G', color: 'bg-blue-500' },
-  MSFT: { symbol: 'M', color: 'bg-blue-600' },
-  AMZN: { symbol: 'A', color: 'bg-orange-500' },
-  TSLA: { symbol: 'T', color: 'bg-red-600' },
-  NVDA: { symbol: 'NV', color: 'bg-green-600' },
-  META: { symbol: 'M', color: 'bg-blue-600' },
+  XAU: { symbol: '🥇', bgColor: 'bg-yellow-500' },
+  XAG: { symbol: '🥈', bgColor: 'bg-gray-400' },
+  OIL: { symbol: '🛢️', bgColor: 'bg-black' },
+  BRENT: { symbol: '🛢️', bgColor: 'bg-gray-800' },
+  WTI: { symbol: '🛢️', bgColor: 'bg-black' },
+  NATGAS: { symbol: '🔥', bgColor: 'bg-blue-500' },
+  COPPER: { symbol: '🟤', bgColor: 'bg-orange-700' },
+  WHEAT: { symbol: '🌾', bgColor: 'bg-yellow-600' },
+  CORN: { symbol: '🌽', bgColor: 'bg-yellow-500' },
+  
+  // Major Stocks
+  AAPL: { symbol: '', bgColor: 'bg-gray-800' },
+  GOOGL: { symbol: 'G', bgColor: 'bg-blue-500' },
+  MSFT: { symbol: '⊞', bgColor: 'bg-blue-600' },
+  AMZN: { symbol: 'a', bgColor: 'bg-orange-500' },
+  TSLA: { symbol: 'T', bgColor: 'bg-red-600' },
+  NVDA: { symbol: 'NV', bgColor: 'bg-green-600' },
+  META: { symbol: '∞', bgColor: 'bg-blue-600' },
 };
 
-const getSymbolInfo = (code: string): { symbol: string; color: string } => {
+const getSymbolVisual = (code: string): { flag?: string; symbol?: string; bgColor: string; textColor?: string } => {
   const upperCode = code?.toUpperCase() || '';
-  return symbolMap[upperCode] || { symbol: upperCode.slice(0, 2), color: 'bg-gray-600' };
+  return symbolVisuals[upperCode] || { symbol: upperCode.slice(0, 2), bgColor: 'bg-gray-600' };
+};
+
+// Currency pair icon component with overlapping circles
+const CurrencyPairIcon = ({ base, quote }: { base: string; quote: string }) => {
+  const baseVisual = getSymbolVisual(base);
+  const quoteVisual = getSymbolVisual(quote);
+  
+  return (
+    <div className="relative flex items-center">
+      {/* Base currency (front) */}
+      <div 
+        className={cn(
+          "w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 border-background shadow-lg",
+          baseVisual.bgColor
+        )}
+      >
+        <span className={cn("text-lg", baseVisual.textColor || "text-white")}>
+          {baseVisual.flag || baseVisual.symbol}
+        </span>
+      </div>
+      {/* Quote currency (back, offset) */}
+      <div 
+        className={cn(
+          "w-10 h-10 rounded-full flex items-center justify-center -ml-4 border-2 border-background shadow-lg",
+          quoteVisual.bgColor
+        )}
+      >
+        <span className={cn("text-lg", quoteVisual.textColor || "text-white")}>
+          {quoteVisual.flag || quoteVisual.symbol}
+        </span>
+      </div>
+    </div>
+  );
 };
 
 interface CurrencyHeaderProps {
@@ -83,7 +185,6 @@ export function CurrencyHeader({
 }: CurrencyHeaderProps) {
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
-  const baseInfo = getSymbolInfo(base);
 
   if (loading) {
     return (
@@ -96,17 +197,15 @@ export function CurrencyHeader({
   return (
     <div className="bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-lg p-4">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        {/* Currency Info */}
+        {/* Currency Pair Icons */}
         <div className="flex items-center gap-4">
-          <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", baseInfo.color)}>
-            <span className="text-white font-bold text-lg">{baseInfo.symbol}</span>
-          </div>
+          <CurrencyPairIcon base={base} quote={quote} />
           <div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-bold text-white">
                 {currentPrice.toFixed(4)}
               </span>
-              <span className="text-gray-400 text-sm">{quote}</span>
+              <span className="text-gray-400 text-sm">{symbol}</span>
             </div>
             <div className={cn(
               "flex items-center gap-2 text-sm",
