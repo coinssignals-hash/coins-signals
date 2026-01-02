@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart, ReferenceLine } from 'recharts';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,35 +14,8 @@ interface PriceChartProps {
   error?: string | null;
   realtimePrice?: number | null;
   isRealtimeConnected?: boolean;
+  previousClose?: number;
 }
-
-// Custom label for realtime price line
-const RealtimePriceLabel = ({ viewBox, value, isConnected }: { viewBox: any; value: number; isConnected: boolean }) => {
-  const { x, y, width } = viewBox;
-  return (
-    <g>
-      <rect
-        x={width + 5}
-        y={y - 10}
-        width={70}
-        height={20}
-        rx={4}
-        fill={isConnected ? "#22c55e" : "#3b82f6"}
-        className={isConnected ? "animate-pulse" : ""}
-      />
-      <text
-        x={width + 40}
-        y={y + 4}
-        fill="white"
-        textAnchor="middle"
-        fontSize={11}
-        fontWeight="bold"
-      >
-        {value?.toFixed(5)}
-      </text>
-    </g>
-  );
-};
 
 export function PriceChart({ 
   pair, 
@@ -53,40 +25,251 @@ export function PriceChart({
   loading, 
   error,
   realtimePrice,
-  isRealtimeConnected = false
+  isRealtimeConnected = false,
+  previousClose
 }: PriceChartProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string } | null>(null);
+
+  // Calculate chart data
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
     
-    return priceData.map((price, index) => {
-      const sma20Value = smaData?.sma20?.[index]?.sma;
-      const sma50Value = smaData?.sma50?.[index]?.sma;
-      
-      const timeLabel = price.time.split(' ')[1] || price.time.split('T')[0];
-      
+    return priceData.map((price) => {
+      const timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
       return {
         time: timeLabel,
         price: price.price,
-        sma20: sma20Value || null,
-        sma50: sma50Value || null,
+        open: price.open,
+        high: price.high,
+        low: price.low,
       };
     });
-  }, [priceData, smaData]);
+  }, [priceData]);
 
-  // Add realtime price as last data point if connected
-  const chartDataWithRealtime = useMemo(() => {
+  // Add realtime price
+  const finalData = useMemo(() => {
     if (!realtimePrice || chartData.length === 0) return chartData;
-    
-    const lastDataPoint = chartData[chartData.length - 1];
+    const now = new Date();
     return [
-      ...chartData.slice(0, -1),
+      ...chartData,
       {
-        ...lastDataPoint,
+        time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
         price: realtimePrice,
-        realtime: realtimePrice,
+        open: realtimePrice,
+        high: realtimePrice,
+        low: realtimePrice,
       }
     ];
   }, [chartData, realtimePrice]);
+
+  // Handle resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight
+        });
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Draw chart
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || finalData.length === 0 || dimensions.width === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = dimensions.width * dpr;
+    canvas.height = dimensions.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const padding = { top: 20, right: 70, bottom: 30, left: 10 };
+    const chartWidth = dimensions.width - padding.left - padding.right;
+    const chartHeight = dimensions.height - padding.top - padding.bottom;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+
+    // Calculate price range
+    const prices = finalData.map(d => d.price);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const priceRange = maxPrice - minPrice || 1;
+    const paddedMin = minPrice - priceRange * 0.05;
+    const paddedMax = maxPrice + priceRange * 0.05;
+    const paddedRange = paddedMax - paddedMin;
+
+    // Calculate close price for comparison
+    const closePrice = previousClose || finalData[0]?.open || finalData[0]?.price;
+
+    // Draw previous close line (dashed red)
+    if (closePrice) {
+      const closeY = padding.top + chartHeight - ((closePrice - paddedMin) / paddedRange) * chartHeight;
+      ctx.beginPath();
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(padding.left, closeY);
+      ctx.lineTo(dimensions.width - padding.right, closeY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Previous close label
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+      ctx.fillRect(dimensions.width - padding.right + 5, closeY - 10, 60, 20);
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('Cierre ant.', dimensions.width - padding.right + 35, closeY - 2);
+      ctx.fillText(closePrice.toFixed(4), dimensions.width - padding.right + 35, closeY + 8);
+    }
+
+    // Draw Y-axis labels
+    ctx.fillStyle = 'rgba(156, 163, 175, 0.8)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'right';
+    const ySteps = 5;
+    for (let i = 0; i <= ySteps; i++) {
+      const price = paddedMin + (paddedRange / ySteps) * i;
+      const y = padding.top + chartHeight - (i / ySteps) * chartHeight;
+      ctx.fillText(price.toFixed(4), dimensions.width - 5, y + 3);
+    }
+
+    // Draw X-axis labels
+    ctx.textAlign = 'center';
+    const xLabelCount = Math.min(8, finalData.length);
+    const xStep = Math.floor(finalData.length / xLabelCount);
+    for (let i = 0; i < finalData.length; i += xStep) {
+      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
+      ctx.fillText(finalData[i].time, x, dimensions.height - 5);
+    }
+
+    // Draw price line - TradingView style (red/pink line)
+    ctx.beginPath();
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    finalData.forEach((point, i) => {
+      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
+      const y = padding.top + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.stroke();
+
+    // Draw area fill under line with gradient
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, dimensions.height - padding.bottom);
+    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.15)');
+    gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+
+    ctx.beginPath();
+    finalData.forEach((point, i) => {
+      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
+      const y = padding.top + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.lineTo(padding.left + chartWidth, dimensions.height - padding.bottom);
+    ctx.lineTo(padding.left, dimensions.height - padding.bottom);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Draw current price label (right side)
+    const currentPrice = realtimePrice || finalData[finalData.length - 1]?.price;
+    if (currentPrice) {
+      const currentY = padding.top + chartHeight - ((currentPrice - paddedMin) / paddedRange) * chartHeight;
+      
+      // Current price box
+      ctx.fillStyle = isRealtimeConnected ? '#ef4444' : '#3b82f6';
+      ctx.fillRect(dimensions.width - padding.right + 5, currentY - 10, 60, 20);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentPrice.toFixed(5), dimensions.width - padding.right + 35, currentY + 4);
+    }
+
+    // Draw hover crosshair
+    if (hoveredData) {
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(156, 163, 175, 0.5)';
+      ctx.lineWidth = 1;
+      
+      // Vertical line
+      ctx.moveTo(hoveredData.x, padding.top);
+      ctx.lineTo(hoveredData.x, dimensions.height - padding.bottom);
+      
+      // Horizontal line
+      ctx.moveTo(padding.left, hoveredData.y);
+      ctx.lineTo(dimensions.width - padding.right, hoveredData.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Price tooltip
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      ctx.fillRect(hoveredData.x + 10, hoveredData.y - 20, 80, 35);
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(hoveredData.time, hoveredData.x + 15, hoveredData.y - 5);
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText(hoveredData.price.toFixed(5), hoveredData.x + 15, hoveredData.y + 10);
+    }
+
+  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData]);
+
+  // Handle mouse move
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (finalData.length === 0 || !containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const padding = { left: 10, right: 70 };
+    const chartWidth = dimensions.width - padding.left - padding.right;
+    
+    const dataIndex = Math.round(((x - padding.left) / chartWidth) * (finalData.length - 1));
+    const clampedIndex = Math.max(0, Math.min(dataIndex, finalData.length - 1));
+    const point = finalData[clampedIndex];
+    
+    if (point) {
+      const prices = finalData.map(d => d.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      const priceRange = maxPrice - minPrice || 1;
+      const paddedMin = minPrice - priceRange * 0.05;
+      const paddedMax = maxPrice + priceRange * 0.05;
+      const paddedRange = paddedMax - paddedMin;
+      
+      const chartHeight = dimensions.height - 50;
+      const pointX = padding.left + (clampedIndex / (finalData.length - 1)) * chartWidth;
+      const pointY = 20 + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
+      
+      setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredData(null);
+  };
 
   if (loading) {
     return (
@@ -104,7 +287,7 @@ export function PriceChart({
     );
   }
 
-  if (chartDataWithRealtime.length === 0) {
+  if (chartData.length === 0) {
     return (
       <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
         <p className="text-sm">No hay datos disponibles</p>
@@ -112,115 +295,23 @@ export function PriceChart({
     );
   }
 
-  const prices = chartDataWithRealtime.map(d => d.price).filter(Boolean);
-  const allValues = [
-    ...prices,
-    ...chartDataWithRealtime.map(d => d.sma20).filter(Boolean) as number[],
-    ...chartDataWithRealtime.map(d => d.sma50).filter(Boolean) as number[],
-    realtimePrice || 0,
-  ].filter(v => v > 0);
-  
-  const minPrice = Math.min(...allValues);
-  const maxPrice = Math.max(...allValues);
-  const padding = (maxPrice - minPrice) * 0.1;
-
   return (
-    <div className="h-[300px] w-full relative">
+    <div ref={containerRef} className="h-[300px] w-full relative bg-background">
       {/* Realtime indicator */}
       {isRealtimeConnected && realtimePrice && (
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-2 bg-green-500/20 px-2 py-1 rounded-full">
-          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-          <span className="text-xs text-green-400 font-medium">LIVE</span>
+        <div className="absolute top-2 right-20 z-10 flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
+          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+          <span className="text-xs text-red-400 font-medium">LIVE</span>
         </div>
       )}
       
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={chartDataWithRealtime} margin={{ top: 10, right: 80, left: 0, bottom: 0 }}>
-          <defs>
-            <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="realtimeGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-          <XAxis 
-            dataKey="time" 
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
-            axisLine={{ stroke: 'hsl(var(--border))' }}
-            tickLine={false}
-            interval="preserveStartEnd"
-          />
-          <YAxis 
-            domain={[minPrice - padding, maxPrice + padding]}
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
-            axisLine={{ stroke: 'hsl(var(--border))' }}
-            tickLine={false}
-            tickFormatter={(value) => value.toFixed(4)}
-            width={70}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px',
-              fontSize: '12px',
-            }}
-            labelStyle={{ color: 'hsl(var(--foreground))' }}
-            formatter={(value: number, name: string) => {
-              const labels: Record<string, string> = {
-                price: 'Precio',
-                sma20: 'SMA 20',
-                sma50: 'SMA 50',
-                realtime: '🔴 LIVE',
-              };
-              return [value?.toFixed(5), labels[name] || name];
-            }}
-          />
-          
-          {/* Realtime price horizontal line */}
-          {realtimePrice && (
-            <ReferenceLine 
-              y={realtimePrice} 
-              stroke={isRealtimeConnected ? "#22c55e" : "#3b82f6"}
-              strokeWidth={2}
-              strokeDasharray={isRealtimeConnected ? "0" : "5 5"}
-              className={isRealtimeConnected ? "animate-pulse" : ""}
-              label={<RealtimePriceLabel viewBox={{}} value={realtimePrice} isConnected={isRealtimeConnected} />}
-            />
-          )}
-          
-          <Area
-            type="monotone"
-            dataKey="price"
-            stroke="hsl(var(--primary))"
-            strokeWidth={2}
-            fill="url(#priceGradient)"
-            name="Precio"
-          />
-          <Line
-            type="monotone"
-            dataKey="sma20"
-            stroke="#3b82f6"
-            strokeWidth={1.5}
-            dot={false}
-            name="SMA 20"
-            connectNulls
-          />
-          <Line
-            type="monotone"
-            dataKey="sma50"
-            stroke="#eab308"
-            strokeWidth={1.5}
-            dot={false}
-            name="SMA 50"
-            connectNulls
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full cursor-crosshair"
+        style={{ width: dimensions.width, height: dimensions.height }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      />
     </div>
   );
 }

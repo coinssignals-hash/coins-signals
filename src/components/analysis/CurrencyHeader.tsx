@@ -132,38 +132,40 @@ const getSymbolVisual = (code: string): { flag?: string; symbol?: string; bgColo
   return symbolVisuals[upperCode] || { symbol: upperCode.slice(0, 2), bgColor: 'bg-gray-600' };
 };
 
-// Currency pair icon component with overlapping circles and animation
+// TradingView-style currency pair icon with large overlapping circles
 const CurrencyPairIcon = ({ base, quote, animate }: { base: string; quote: string; animate?: boolean }) => {
   const baseVisual = getSymbolVisual(base);
   const quoteVisual = getSymbolVisual(quote);
   
   return (
     <div className={cn(
-      "relative flex items-center transition-all duration-500",
+      "relative w-20 h-20 transition-all duration-500",
       animate && "animate-scale-in"
     )}>
-      {/* Base currency (front) */}
+      {/* Quote currency (back - positioned top-right) */}
       <div 
         className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 border-background shadow-lg transition-all duration-300",
-          baseVisual.bgColor,
-          animate && "animate-fade-in"
-        )}
-      >
-        <span className={cn("text-lg transition-opacity duration-300", baseVisual.textColor || "text-white")}>
-          {baseVisual.flag || baseVisual.symbol}
-        </span>
-      </div>
-      {/* Quote currency (back, offset) */}
-      <div 
-        className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center -ml-4 border-2 border-background shadow-lg transition-all duration-300 delay-75",
+          "absolute top-0 right-0 w-14 h-14 rounded-full flex items-center justify-center border-3 border-background shadow-xl transition-all duration-300",
           quoteVisual.bgColor,
           animate && "animate-fade-in"
         )}
+        style={{ borderWidth: '3px' }}
       >
-        <span className={cn("text-lg transition-opacity duration-300", quoteVisual.textColor || "text-white")}>
+        <span className={cn("text-2xl transition-opacity duration-300", quoteVisual.textColor || "text-white")}>
           {quoteVisual.flag || quoteVisual.symbol}
+        </span>
+      </div>
+      {/* Base currency (front - positioned bottom-left) */}
+      <div 
+        className={cn(
+          "absolute bottom-0 left-0 w-14 h-14 rounded-full flex items-center justify-center z-10 border-3 border-background shadow-xl transition-all duration-300",
+          baseVisual.bgColor,
+          animate && "animate-fade-in"
+        )}
+        style={{ borderWidth: '3px' }}
+      >
+        <span className={cn("text-2xl transition-opacity duration-300", baseVisual.textColor || "text-white")}>
+          {baseVisual.flag || baseVisual.symbol}
         </span>
       </div>
     </div>
