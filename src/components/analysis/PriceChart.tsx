@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-type ChartPeriod = '1D' | '1W' | '1M' | '1Y';
+type ChartPeriod = '5m' | '15m' | '30m' | '1h' | '4h' | '1w';
 
 interface PriceChartProps {
   pair: string;
@@ -93,11 +93,13 @@ const MARKET_SESSIONS = [
 
 type SessionId = 'sydney' | 'asia' | 'london' | 'ny';
 
-const periodButtons: { value: ChartPeriod; label: string }[] = [
-  { value: '1D', label: '1D' },
-  { value: '1W', label: '1W' },
-  { value: '1M', label: '1M' },
-  { value: '1Y', label: '1Y' },
+const periodButtons: { value: ChartPeriod; label: string; minutes: number }[] = [
+  { value: '5m', label: '5m', minutes: 5 },
+  { value: '15m', label: '15m', minutes: 15 },
+  { value: '30m', label: '30m', minutes: 30 },
+  { value: '1h', label: '1h', minutes: 60 },
+  { value: '4h', label: '4h', minutes: 240 },
+  { value: '1w', label: '1S', minutes: 10080 }, // 1 week = 7 * 24 * 60
 ];
 
 // Get session for a given UTC hour, filtered by enabled sessions
@@ -134,7 +136,7 @@ export function PriceChart({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
   const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number; sessions?: typeof MARKET_SESSIONS } | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1D');
+  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('4h');
   const [enabledSessions, setEnabledSessions] = useState<Set<SessionId>>(new Set(['sydney', 'asia', 'london', 'ny']));
   const [showSessions, setShowSessions] = useState(true);
   const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
@@ -156,48 +158,81 @@ export function PriceChart({
     });
   };
 
-  // Calculate chart data with UTC hours for sessions
+  // Get time range for selected period
+  const getTimeRange = useMemo(() => {
+    const now = new Date();
+    const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
+    const minutes = periodConfig?.minutes || 240;
+    const startTime = new Date(now.getTime() - minutes * 60 * 1000);
+    return { startTime, endTime: now };
+  }, [selectedPeriod]);
+
+  // Calculate chart data with UTC hours for sessions, filtered by period
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
     
-    return priceData.map((price, index) => {
-      // Extract time from ISO string or other formats
-      let timeLabel = '';
-      let utcHour = 0;
-      try {
-        const date = new Date(price.time);
-        if (!isNaN(date.getTime())) {
-          // Format as HH:MM in local timezone
-          timeLabel = date.toLocaleTimeString('es-ES', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false 
-          });
-          utcHour = date.getUTCHours();
-        } else {
-          // Fallback: try to extract time from string
+    const { startTime, endTime } = getTimeRange;
+    
+    return priceData
+      .map((price, index) => {
+        // Extract time from ISO string or other formats
+        let timeLabel = '';
+        let utcHour = 0;
+        let timestamp: Date | null = null;
+        
+        try {
+          const date = new Date(price.time);
+          if (!isNaN(date.getTime())) {
+            timestamp = date;
+            // Format based on period - show date for longer periods
+            if (selectedPeriod === '1w') {
+              timeLabel = date.toLocaleDateString('es-ES', { 
+                weekday: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false 
+              });
+            } else {
+              timeLabel = date.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              });
+            }
+            utcHour = date.getUTCHours();
+          } else {
+            // Fallback: try to extract time from string
+            timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+            // Try to parse hour from timeLabel
+            const hourMatch = timeLabel.match(/^(\d{1,2}):/);
+            if (hourMatch) utcHour = parseInt(hourMatch[1]);
+          }
+        } catch {
           timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
-          // Try to parse hour from timeLabel
-          const hourMatch = timeLabel.match(/^(\d{1,2}):/);
-          if (hourMatch) utcHour = parseInt(hourMatch[1]);
         }
-      } catch {
-        timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
-      }
-      
-      // Generate synthetic volume if not provided (based on price movement)
-      const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
-      return {
-        time: timeLabel,
-        utcHour,
-        price: price.price,
-        open: price.open,
-        high: price.high,
-        low: price.low,
-        volume: syntheticVolume,
-      };
-    });
-  }, [priceData]);
+        
+        // Generate synthetic volume if not provided (based on price movement)
+        const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
+        return {
+          time: timeLabel,
+          timestamp,
+          utcHour,
+          price: price.price,
+          open: price.open,
+          high: price.high,
+          low: price.low,
+          volume: syntheticVolume,
+        };
+      })
+      .filter(item => {
+        // Filter by time range if timestamp is available
+        if (item.timestamp) {
+          return item.timestamp >= startTime && item.timestamp <= endTime;
+        }
+        return true; // Keep items without valid timestamp
+      });
+  }, [priceData, getTimeRange, selectedPeriod]);
 
   // Add realtime price
   const finalData = useMemo(() => {
@@ -207,6 +242,7 @@ export function PriceChart({
       ...chartData,
       {
         time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+        timestamp: now,
         utcHour: now.getUTCHours(),
         price: realtimePrice,
         open: realtimePrice,
@@ -216,6 +252,19 @@ export function PriceChart({
       }
     ];
   }, [chartData, realtimePrice]);
+
+  // Format time range description
+  const timeRangeDescription = useMemo(() => {
+    const { startTime, endTime } = getTimeRange;
+    const formatDate = (date: Date) => date.toLocaleDateString('es-ES', { 
+      weekday: 'short', 
+      day: 'numeric', 
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return `${formatDate(startTime)} → ${formatDate(endTime)}`;
+  }, [getTimeRange]);
 
   // Handle resize
   useEffect(() => {
@@ -571,19 +620,30 @@ export function PriceChart({
           {/* Period buttons */}
           <div className="flex items-center gap-1">
             {periodButtons.map((btn) => (
-              <button
-                key={btn.value}
-                onClick={() => handlePeriodClick(btn.value)}
-                className={cn(
-                  "px-3 py-1 text-xs font-medium rounded transition-all",
-                  selectedPeriod === btn.value
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                {btn.label}
-              </button>
+              <Tooltip key={btn.value}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => handlePeriodClick(btn.value)}
+                    className={cn(
+                      "px-2 py-1 text-xs font-medium rounded transition-all",
+                      selectedPeriod === btn.value
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    )}
+                  >
+                    {btn.label}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">
+                  Últimos {btn.value === '1w' ? '7 días' : btn.label}
+                </TooltipContent>
+              </Tooltip>
             ))}
+          </div>
+          
+          {/* Time range indicator */}
+          <div className="hidden md:flex items-center text-[10px] text-muted-foreground/70 bg-muted/30 px-2 py-1 rounded">
+            {timeRangeDescription}
           </div>
           
           {/* Session toggle and filter buttons */}
