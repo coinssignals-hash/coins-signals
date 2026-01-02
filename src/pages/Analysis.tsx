@@ -386,6 +386,8 @@ export default function Analysis() {
         <PricePrediction
           symbol={selectedPair}
           currentPrice={marketStats.currentPrice}
+          realtimePrice={realtimeQuote?.price}
+          isRealtimeConnected={isConnected}
         />
 
         {/* Technical Levels */}
