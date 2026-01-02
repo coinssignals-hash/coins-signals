@@ -31,6 +31,7 @@ import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateBu
 import { useMarketData } from '@/hooks/useMarketData';
 import { usePreviousDayCandles } from '@/hooks/usePreviousDayCandles';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
+import { useSupportResistanceAlerts } from '@/hooks/useSupportResistanceAlerts';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import {
   Sheet,
@@ -146,6 +147,15 @@ export default function Analysis() {
       pips,
     };
   }, [data?.priceData]);
+
+  // Initialize support/resistance alerts (after marketStats is defined)
+  useSupportResistanceAlerts(
+    selectedPair,
+    realtimeQuote?.price,
+    previousDayData?.support || marketStats.support,
+    previousDayData?.resistance || marketStats.resistance,
+    { enabled: true, proximityPercent: 5, enableSound: true }
+  );
 
   // Candlestick data for chart
   const candleData = useMemo(() => {
