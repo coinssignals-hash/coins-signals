@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import signalCardBg from '@/assets/signal-card-bg.png';
+import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 
 interface SignalCardProps {
   signal: TradingSignal;
@@ -73,6 +74,38 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+
+  // Convert currency pair to Polygon format (e.g., "EUR/USD" -> "C:EURUSD")
+  const polygonSymbol = useMemo(() => {
+    const pair = signal.currencyPair.replace('/', '');
+    // Check if it's a crypto pair
+    if (['BTC', 'ETH', 'XRP', 'LTC', 'ADA'].some(c => pair.includes(c))) {
+      return `X:${pair}`;
+    }
+    // Check if it's a commodity
+    if (pair.includes('XAU') || pair.includes('XAG')) {
+      return `C:${pair}`;
+    }
+    // Default to forex
+    return `C:${pair}`;
+  }, [signal.currencyPair]);
+
+  const { getQuote, isConnected, subscribe, unsubscribe } = useRealtimeMarket([]);
+
+  // Subscribe to this signal's symbol when expanded
+  useEffect(() => {
+    if (expanded) {
+      subscribe([polygonSymbol]);
+    }
+    return () => {
+      if (expanded) {
+        unsubscribe([polygonSymbol]);
+      }
+    };
+  }, [expanded, polygonSymbol, subscribe, unsubscribe]);
+
+  const realtimeQuote = getQuote(polygonSymbol);
+  const livePrice = realtimeQuote?.price;
   
   const copyToClipboard = (value: number) => {
     navigator.clipboard.writeText(value.toString());
@@ -360,17 +393,34 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           {(() => {
             const support = signal.support || signal.stopLoss;
             const resistance = signal.resistance || signal.takeProfit;
-            const currentPrice = signal.entryPrice;
+            const currentPrice = livePrice ?? signal.entryPrice;
+            const hasLivePrice = livePrice !== undefined;
             const range = resistance - support;
             const position = range > 0 ? ((currentPrice - support) / range) * 100 : 50;
             const clampedPosition = Math.max(0, Math.min(100, position));
             const isNearSupport = clampedPosition < 30;
             const isNearResistance = clampedPosition > 70;
+            const priceChange = hasLivePrice ? currentPrice - signal.entryPrice : 0;
+            const priceChangePercent = hasLivePrice ? ((currentPrice - signal.entryPrice) / signal.entryPrice) * 100 : 0;
             
             return (
               <div className="bg-[#0a1628] rounded-xl p-4 border border-slate-700/50">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs text-slate-400 uppercase tracking-wider">Posición del Precio</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider">Posición del Precio</span>
+                    {/* Live indicator */}
+                    {hasLivePrice && isConnected ? (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
+                        <Wifi className="w-3 h-3 text-emerald-400" />
+                        <span className="text-[10px] text-emerald-400 font-medium animate-pulse">LIVE</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">
+                        <WifiOff className="w-3 h-3 text-slate-400" />
+                        <span className="text-[10px] text-slate-400 font-medium">ENTRY</span>
+                      </div>
+                    )}
+                  </div>
                   <span className={cn(
                     "text-xs font-medium px-2 py-0.5 rounded-full",
                     isNearSupport && "bg-emerald-500/20 text-emerald-400",
@@ -390,9 +440,19 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                   <div className="absolute inset-y-0 left-0 w-[30%] border-r border-dashed border-emerald-500/30" />
                   <div className="absolute inset-y-0 right-0 w-[30%] border-l border-dashed border-rose-500/30" />
                   
+                  {/* Entry price marker (static reference) */}
+                  {hasLivePrice && (
+                    <div 
+                      className="absolute top-0 bottom-0 w-px bg-blue-400/50"
+                      style={{ 
+                        left: `${Math.max(0, Math.min(100, ((signal.entryPrice - support) / range) * 100))}%` 
+                      }}
+                    />
+                  )}
+                  
                   {/* Current price indicator */}
                   <div 
-                    className="absolute top-0 bottom-0 w-1 transition-all duration-500"
+                    className="absolute top-0 bottom-0 w-1 transition-all duration-300"
                     style={{ left: `${clampedPosition}%`, transform: 'translateX(-50%)' }}
                   >
                     <div className={cn(
@@ -402,7 +462,8 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                       !isNearSupport && !isNearResistance && "bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.8)]"
                     )} />
                     <div className={cn(
-                      "absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse",
+                      "absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full",
+                      hasLivePrice && "animate-pulse",
                       isNearSupport && "bg-emerald-400",
                       isNearResistance && "bg-rose-400",
                       !isNearSupport && !isNearResistance && "bg-amber-400"
@@ -417,13 +478,27 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                     <div className="text-[10px] text-emerald-400/60 uppercase">Soporte</div>
                   </div>
                   <div className="text-center">
-                    <div className={cn(
-                      "font-bold tabular-nums",
-                      isNearSupport && "text-emerald-300",
-                      isNearResistance && "text-rose-300",
-                      !isNearSupport && !isNearResistance && "text-amber-300"
-                    )}>{currentPrice}</div>
-                    <div className="text-[10px] text-slate-500 uppercase">Precio Actual</div>
+                    <div className="flex flex-col items-center">
+                      <div className={cn(
+                        "font-bold tabular-nums transition-colors duration-300",
+                        isNearSupport && "text-emerald-300",
+                        isNearResistance && "text-rose-300",
+                        !isNearSupport && !isNearResistance && "text-amber-300"
+                      )}>
+                        {currentPrice.toFixed(currentPrice < 10 ? 5 : 2)}
+                      </div>
+                      {hasLivePrice && (
+                        <div className={cn(
+                          "text-[10px] font-medium tabular-nums",
+                          priceChange >= 0 ? "text-emerald-400" : "text-rose-400"
+                        )}>
+                          {priceChange >= 0 ? "+" : ""}{priceChange.toFixed(currentPrice < 10 ? 5 : 2)} ({priceChangePercent >= 0 ? "+" : ""}{priceChangePercent.toFixed(2)}%)
+                        </div>
+                      )}
+                      <div className="text-[10px] text-slate-500 uppercase">
+                        {hasLivePrice ? "Precio en Vivo" : "Precio Entrada"}
+                      </div>
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="text-rose-400 font-bold tabular-nums">{resistance}</div>
