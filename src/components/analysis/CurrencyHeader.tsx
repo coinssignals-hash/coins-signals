@@ -1,6 +1,6 @@
-import { TrendingUp, TrendingDown, Wifi, WifiOff } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wifi, WifiOff, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 // Currency/Asset visual mapping with flags and logos
 const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: string; textColor?: string }> = {
@@ -132,43 +132,107 @@ const getSymbolVisual = (code: string): { flag?: string; symbol?: string; bgColo
   return symbolVisuals[upperCode] || { symbol: upperCode.slice(0, 2), bgColor: 'bg-gray-600' };
 };
 
-// TradingView-style currency pair icon with large overlapping circles
-const CurrencyPairIcon = ({ base, quote, animate }: { base: string; quote: string; animate?: boolean }) => {
-  const baseVisual = getSymbolVisual(base);
-  const quoteVisual = getSymbolVisual(quote);
+// Animated currency icon with elaborate entrance
+const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: { code: string; isAnimating: boolean; delay?: number; position: 'base' | 'quote' }) => {
+  const visual = getSymbolVisual(code);
+  const [show, setShow] = useState(!isAnimating);
   
+  useEffect(() => {
+    if (isAnimating) {
+      setShow(false);
+      const timer = setTimeout(() => setShow(true), delay);
+      return () => clearTimeout(timer);
+    } else {
+      setShow(true);
+    }
+  }, [isAnimating, delay]);
+  
+  return (
+    <div 
+      className={cn(
+        "absolute w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all",
+        visual.bgColor,
+        position === 'base' ? "bottom-0 left-0 z-10" : "top-0 right-0",
+        show ? "opacity-100" : "opacity-0",
+        isAnimating && show && position === 'base' && "animate-scale-bounce",
+        isAnimating && show && position === 'quote' && "animate-flip-in"
+      )}
+      style={{ 
+        borderWidth: '3px', 
+        borderColor: 'hsl(var(--background))',
+        animationDelay: `${delay}ms`,
+        perspective: '1000px'
+      }}
+    >
+      <span className={cn(
+        "text-2xl transition-all duration-300",
+        visual.textColor || "text-white",
+        isAnimating && show && "animate-pop-in"
+      )} style={{ animationDelay: `${delay + 100}ms` }}>
+        {visual.flag || visual.symbol}
+      </span>
+    </div>
+  );
+};
+
+// TradingView-style currency pair icon with elaborate animations
+const CurrencyPairIcon = ({ base, quote, animate }: { base: string; quote: string; animate?: boolean }) => {
   return (
     <div className={cn(
       "relative w-20 h-20 transition-all duration-500",
       animate && "animate-scale-in"
     )}>
-      {/* Quote currency (back - positioned top-right) */}
-      <div 
-        className={cn(
-          "absolute top-0 right-0 w-14 h-14 rounded-full flex items-center justify-center border-3 border-background shadow-xl transition-all duration-300",
-          quoteVisual.bgColor,
-          animate && "animate-fade-in"
-        )}
-        style={{ borderWidth: '3px' }}
-      >
-        <span className={cn("text-2xl transition-opacity duration-300", quoteVisual.textColor || "text-white")}>
-          {quoteVisual.flag || quoteVisual.symbol}
-        </span>
-      </div>
-      {/* Base currency (front - positioned bottom-left) */}
-      <div 
-        className={cn(
-          "absolute bottom-0 left-0 w-14 h-14 rounded-full flex items-center justify-center z-10 border-3 border-background shadow-xl transition-all duration-300",
-          baseVisual.bgColor,
-          animate && "animate-fade-in"
-        )}
-        style={{ borderWidth: '3px' }}
-      >
-        <span className={cn("text-2xl transition-opacity duration-300", baseVisual.textColor || "text-white")}>
-          {baseVisual.flag || baseVisual.symbol}
-        </span>
-      </div>
+      {/* Glow effect when animating */}
+      {animate && (
+        <div className="absolute inset-0 rounded-full bg-green-500/20 blur-xl animate-pulse" />
+      )}
+      
+      <CurrencyIcon code={quote} isAnimating={!!animate} delay={100} position="quote" />
+      <CurrencyIcon code={base} isAnimating={!!animate} delay={200} position="base" />
     </div>
+  );
+};
+
+// Animated number display with rolling effect
+const AnimatedPrice = ({ value, decimals = 5, isAnimating, flash }: { value: number; decimals?: number; isAnimating: boolean; flash: 'up' | 'down' | null }) => {
+  const [displayValue, setDisplayValue] = useState(value);
+  const [isRolling, setIsRolling] = useState(false);
+  
+  useEffect(() => {
+    if (isAnimating) {
+      setIsRolling(true);
+      const timer = setTimeout(() => {
+        setDisplayValue(value);
+        setIsRolling(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayValue(value);
+    }
+  }, [value, isAnimating]);
+  
+  const priceString = displayValue.toFixed(decimals);
+  
+  return (
+    <span className={cn(
+      "text-2xl sm:text-3xl font-bold tabular-nums transition-colors duration-300 inline-flex overflow-hidden",
+      flash === 'up' && "text-green-400",
+      flash === 'down' && "text-red-400",
+      !flash && "text-white"
+    )}>
+      {priceString.split('').map((char, i) => (
+        <span 
+          key={`${i}-${char}`}
+          className={cn(
+            "inline-block transition-transform",
+            isRolling && "animate-number-roll"
+          )}
+          style={{ animationDelay: `${i * 20}ms` }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
   );
 };
 
@@ -180,7 +244,6 @@ interface CurrencyHeaderProps {
   high: number;
   low: number;
   loading?: boolean;
-  // Realtime data
   realtimePrice?: number | null;
   isRealtimeConnected?: boolean;
 }
@@ -198,13 +261,12 @@ export function CurrencyHeader({
 }: CurrencyHeaderProps) {
   const [flash, setFlash] = useState<'up' | 'down' | null>(null);
   const [lastPrice, setLastPrice] = useState<number | null>(null);
-  
-  // Use realtime price if available, otherwise fallback to currentPrice
   const displayPrice = realtimePrice ?? currentPrice;
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
   const [isAnimating, setIsAnimating] = useState(false);
   const [displaySymbol, setDisplaySymbol] = useState(symbol);
+  const prevSymbolRef = useRef(symbol);
 
   // Flash animation when price changes
   useEffect(() => {
@@ -219,62 +281,102 @@ export function CurrencyHeader({
     }
   }, [realtimePrice, lastPrice]);
 
-  // Trigger animation when symbol changes
+  // Elaborate animation when symbol changes
   useEffect(() => {
-    if (symbol !== displaySymbol) {
+    if (symbol !== prevSymbolRef.current) {
       setIsAnimating(true);
-      setDisplaySymbol(symbol);
-      const timer = setTimeout(() => setIsAnimating(false), 500);
-      return () => clearTimeout(timer);
+      prevSymbolRef.current = symbol;
+      
+      // Staggered update for smooth transition
+      const timer1 = setTimeout(() => setDisplaySymbol(symbol), 150);
+      const timer2 = setTimeout(() => setIsAnimating(false), 800);
+      
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
     }
-  }, [symbol, displaySymbol]);
+  }, [symbol]);
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-lg p-4 animate-pulse">
-        <div className="h-12 bg-green-900/20 rounded"></div>
+      <div className="bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-xl p-5 overflow-hidden">
+        <div className="flex items-center gap-4 animate-pulse">
+          <div className="w-20 h-20 rounded-full bg-green-900/30" />
+          <div className="space-y-3 flex-1">
+            <div className="h-8 bg-green-900/20 rounded w-40" />
+            <div className="h-4 bg-green-900/20 rounded w-32" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={cn(
-      "bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-lg p-4 transition-all duration-300",
-      isAnimating && "border-green-500/50",
-      flash === 'up' && "border-green-500/70",
-      flash === 'down' && "border-red-500/70"
+      "relative bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border rounded-xl p-5 transition-all duration-500 overflow-hidden",
+      isAnimating && "border-green-500/70 animate-border-glow shadow-glow-green",
+      !isAnimating && flash === 'up' && "border-green-500/50",
+      !isAnimating && flash === 'down' && "border-red-500/50",
+      !isAnimating && !flash && "border-green-900/50"
     )}>
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      {/* Animated background particles when changing */}
+      {isAnimating && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-green-500/30 rounded-full animate-ping"
+              style={{
+                left: `${20 + i * 15}%`,
+                top: `${30 + (i % 2) * 40}%`,
+                animationDelay: `${i * 100}ms`,
+                animationDuration: '1s'
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
+      <div className="relative flex items-center justify-between flex-wrap gap-4">
         {/* Currency Pair Icons */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <CurrencyPairIcon base={base} quote={quote} animate={isAnimating} />
+          
           <div className={cn(
-            "transition-all duration-300",
-            isAnimating && "animate-fade-in"
+            "transition-all duration-500",
+            isAnimating && "animate-slide-in-right"
           )}>
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <AnimatedPrice 
+                value={displayPrice} 
+                decimals={realtimePrice ? 5 : 4}
+                isAnimating={isAnimating}
+                flash={flash}
+              />
+              
               <span className={cn(
-                "text-2xl sm:text-3xl font-bold transition-colors duration-300",
-                flash === 'up' && "text-green-400",
-                flash === 'down' && "text-red-400",
-                !flash && "text-white"
-              )}>
-                {displayPrice.toFixed(realtimePrice ? 5 : 4)}
+                "text-gray-400 text-sm font-medium",
+                isAnimating && "animate-fade-in"
+              )} style={{ animationDelay: '300ms' }}>
+                {displaySymbol}
               </span>
-              <span className="text-gray-400 text-sm">{symbol}</span>
               
               {/* Realtime indicator */}
               <div className={cn(
-                "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ml-2",
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
                 isRealtimeConnected 
                   ? "bg-green-500/20 text-green-400" 
-                  : "bg-gray-500/20 text-gray-400"
-              )}>
+                  : "bg-gray-500/20 text-gray-400",
+                isAnimating && "animate-pop-in"
+              )} style={{ animationDelay: '400ms' }}>
                 {isRealtimeConnected ? (
                   <>
-                    <Wifi className="w-3 h-3" />
-                    <span className="hidden sm:inline animate-pulse">LIVE</span>
-                    <span className="sm:hidden">●</span>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span className="hidden sm:inline">LIVE</span>
                   </>
                 ) : (
                   <>
@@ -284,38 +386,66 @@ export function CurrencyHeader({
                 )}
               </div>
             </div>
+            
             <div className={cn(
-              "flex items-center gap-2 text-sm",
-              isPositive ? "text-green-400" : "text-red-400"
-            )}>
-              {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-              <span>{isPositive ? '+' : ''}{change.toFixed(5)}</span>
-              <span>({isPositive ? '+' : ''}{changePercent.toFixed(2)}%)</span>
+              "flex items-center gap-2 text-sm mt-1",
+              isPositive ? "text-green-400" : "text-red-400",
+              isAnimating && "animate-slide-up"
+            )} style={{ animationDelay: '350ms' }}>
+              {isPositive ? (
+                <ArrowUpRight className="w-4 h-4" />
+              ) : (
+                <ArrowDownRight className="w-4 h-4" />
+              )}
+              <span className="font-medium tabular-nums">{isPositive ? '+' : ''}{change.toFixed(5)}</span>
+              <span className={cn(
+                "px-1.5 py-0.5 rounded text-xs font-bold",
+                isPositive ? "bg-green-500/20" : "bg-red-500/20"
+              )}>
+                {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Mini sparkline placeholder + High/Low */}
-        <div className="flex items-center gap-6">
+        {/* High/Low with animations */}
+        <div className={cn(
+          "flex items-center gap-6",
+          isAnimating && "animate-slide-in-left"
+        )} style={{ animationDelay: '250ms' }}>
           <div className="hidden sm:block">
-            <svg width="60" height="30" viewBox="0 0 60 30" className={cn(
-              flash === 'up' ? "text-green-500" : flash === 'down' ? "text-red-500" : "text-green-500"
-            )}>
+            <svg width="70" height="35" viewBox="0 0 70 35" className="text-green-500/50">
+              <defs>
+                <linearGradient id="sparklineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="currentColor" stopOpacity="1" />
+                </linearGradient>
+              </defs>
               <path
-                d="M0 25 Q15 20, 20 15 T35 10 T50 5 T60 8"
+                d="M0 30 Q10 28, 15 22 T30 18 T45 12 T55 8 T70 10"
                 fill="none"
-                stroke="currentColor"
+                stroke="url(#sparklineGrad)"
                 strokeWidth="2"
+                strokeLinecap="round"
+                className={cn(isAnimating && "animate-fade-in")}
               />
             </svg>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-400">Alto Alcanzado</div>
-            <div className="text-green-400 font-mono text-sm">{high.toFixed(4)}</div>
+          
+          <div className={cn(
+            "text-right transition-all",
+            isAnimating && "animate-pop-in"
+          )} style={{ animationDelay: '400ms' }}>
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">Máximo</div>
+            <div className="text-green-400 font-mono text-sm font-semibold tabular-nums">{high.toFixed(4)}</div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-400">Bajo Alcanzado</div>
-            <div className="text-red-400 font-mono text-sm">{low.toFixed(4)}</div>
+          
+          <div className={cn(
+            "text-right transition-all",
+            isAnimating && "animate-pop-in"
+          )} style={{ animationDelay: '450ms' }}>
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">Mínimo</div>
+            <div className="text-red-400 font-mono text-sm font-semibold tabular-nums">{low.toFixed(4)}</div>
           </div>
         </div>
       </div>
