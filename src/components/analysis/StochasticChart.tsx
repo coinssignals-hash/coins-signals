@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ComposedChart, Line, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, Minus, Wifi } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface StochasticChartProps {
   pair: string;
@@ -10,6 +11,8 @@ interface StochasticChartProps {
   priceData?: Array<{ time: string; price: number; high: number; low: number; open: number }>;
   loading?: boolean;
   error?: string | null;
+  realtimePrice?: number | null;
+  isRealtimeConnected?: boolean;
 }
 
 // Calculate Stochastic Oscillator
@@ -30,7 +33,31 @@ const calculateStochastic = (
   return { k: isNaN(k) ? 50 : k };
 };
 
-export function StochasticChart({ pair, timeframe, priceData, loading, error }: StochasticChartProps) {
+// Calculate realtime stochastic %K
+const calculateRealtimeStochastic = (
+  priceData: Array<{ high: number; low: number; price: number }>,
+  realtimePrice: number,
+  period: number = 14
+) => {
+  if (priceData.length < period) return null;
+  
+  const recentData = priceData.slice(-period);
+  const highestHigh = Math.max(...recentData.map(p => p.high), realtimePrice);
+  const lowestLow = Math.min(...recentData.map(p => p.low), realtimePrice);
+  
+  const k = ((realtimePrice - lowestLow) / (highestHigh - lowestLow)) * 100;
+  return isNaN(k) ? 50 : Math.max(0, Math.min(100, k));
+};
+
+export function StochasticChart({ 
+  pair, 
+  timeframe, 
+  priceData, 
+  loading, 
+  error,
+  realtimePrice,
+  isRealtimeConnected = false
+}: StochasticChartProps) {
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) {
       // Generate mock data
@@ -70,6 +97,12 @@ export function StochasticChart({ pair, timeframe, priceData, loading, error }: 
     });
   }, [priceData]);
 
+  // Calculate realtime stochastic value
+  const realtimeStochastic = useMemo(() => {
+    if (!realtimePrice || !priceData || priceData.length === 0) return null;
+    return calculateRealtimeStochastic(priceData, realtimePrice);
+  }, [priceData, realtimePrice]);
+
   // Determine current stochastic status
   const currentStatus = useMemo(() => {
     if (chartData.length === 0) return { status: 'neutral', k: 50, d: 50, signal: 'hold' };
@@ -77,18 +110,21 @@ export function StochasticChart({ pair, timeframe, priceData, loading, error }: 
     const latest = chartData[chartData.length - 1];
     const prev = chartData[chartData.length - 2] || latest;
     
+    // Use realtime stochastic if available
+    const currentK = realtimeStochastic ?? latest.k;
+    
     let status: 'overbought' | 'oversold' | 'neutral' = 'neutral';
     let signal: 'buy' | 'sell' | 'hold' = 'hold';
     
-    if (latest.k > 80) status = 'overbought';
-    else if (latest.k < 20) status = 'oversold';
+    if (currentK > 80) status = 'overbought';
+    else if (currentK < 20) status = 'oversold';
     
     // Crossover signals
     if (prev.k < prev.d && latest.k > latest.d && latest.k < 30) signal = 'buy';
     else if (prev.k > prev.d && latest.k < latest.d && latest.k > 70) signal = 'sell';
     
-    return { status, k: latest.k, d: latest.d, signal };
-  }, [chartData]);
+    return { status, k: currentK, d: latest.d, signal };
+  }, [chartData, realtimeStochastic]);
 
   if (loading) {
     return (
@@ -111,7 +147,7 @@ export function StochasticChart({ pair, timeframe, priceData, loading, error }: 
   return (
     <div className="space-y-3">
       {/* Status indicator */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Estocástico (14,3,3)</span>
           <span className={`text-xs px-2 py-0.5 rounded ${
@@ -133,9 +169,22 @@ export function StochasticChart({ pair, timeframe, priceData, loading, error }: 
               {currentStatus.signal === 'buy' ? '↑ Compra' : '↓ Venta'}
             </span>
           )}
+          {/* Realtime indicator */}
+          {isRealtimeConnected && realtimePrice && (
+            <div className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="text-xs text-green-400">LIVE</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-3 text-sm">
-          <span className="text-purple-400">%K: {currentStatus.k.toFixed(1)}</span>
+          <span className={cn(
+            "text-purple-400",
+            isRealtimeConnected && realtimeStochastic && "font-bold"
+          )}>
+            %K: {currentStatus.k.toFixed(1)}
+            {isRealtimeConnected && realtimeStochastic && " ●"}
+          </span>
           <span className="text-orange-400">%D: {currentStatus.d.toFixed(1)}</span>
         </div>
       </div>
@@ -180,6 +229,24 @@ export function StochasticChart({ pair, timeframe, priceData, loading, error }: 
               name === 'k' ? '%K' : '%D'
             ]}
           />
+          
+          {/* Realtime stochastic horizontal line */}
+          {realtimeStochastic !== null && (
+            <ReferenceLine 
+              y={realtimeStochastic} 
+              stroke={isRealtimeConnected ? "#22c55e" : "#3b82f6"}
+              strokeWidth={2}
+              strokeDasharray={isRealtimeConnected ? "0" : "5 5"}
+              label={{ 
+                value: `${isRealtimeConnected ? '● ' : ''}${realtimeStochastic.toFixed(1)}%`, 
+                position: 'right',
+                fill: isRealtimeConnected ? '#22c55e' : '#3b82f6',
+                fontSize: 10,
+                fontWeight: 'bold'
+              }}
+            />
+          )}
+          
           {/* Overbought/Oversold zones */}
           <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.5} />
           <ReferenceLine y={20} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.5} />

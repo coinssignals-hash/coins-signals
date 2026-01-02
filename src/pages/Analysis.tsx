@@ -341,6 +341,8 @@ export default function Analysis() {
                 priceData={data?.priceData}
                 loading={loading}
                 error={error}
+                realtimePrice={realtimeQuote?.price}
+                isRealtimeConnected={isConnected}
               />
             </div>
           </TabsContent>
@@ -353,6 +355,8 @@ export default function Analysis() {
                 priceData={data?.priceData}
                 loading={loading}
                 error={error}
+                realtimePrice={realtimeQuote?.price}
+                isRealtimeConnected={isConnected}
               />
             </div>
           </TabsContent>
