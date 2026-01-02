@@ -308,6 +308,16 @@ export function PriceChart({
   const [showPatterns, setShowPatterns] = useState(true);
   const [patternFilter, setPatternFilter] = useState<'all' | 'bullish' | 'bearish' | 'neutral'>('all');
   
+  // Zoom and pan state
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [panOffset, setPanOffset] = useState(0); // Offset in data points
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStartX, setPanStartX] = useState(0);
+  const [panStartOffset, setPanStartOffset] = useState(0);
+  
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 5;
+  
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
     onPeriodChange?.(period);
@@ -548,10 +558,21 @@ export function PriceChart({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Calculate visible data based on zoom and pan
+  const visibleData = useMemo(() => {
+    if (finalData.length === 0) return finalData;
+    
+    const visibleCount = Math.ceil(finalData.length / zoomLevel);
+    const start = Math.min(panOffset, finalData.length - visibleCount);
+    const end = Math.min(start + visibleCount, finalData.length);
+    
+    return finalData.slice(Math.max(0, start), end);
+  }, [finalData, zoomLevel, panOffset]);
+
   // Draw chart
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || finalData.length === 0 || dimensions.width === 0) return;
+    if (!canvas || visibleData.length === 0 || dimensions.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const dpr = window.devicePixelRatio || 1;
@@ -571,8 +592,8 @@ export function PriceChart({
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
     // Calculate price range using OHLC for candlestick accuracy
-    const allHighs = finalData.map(d => d.high);
-    const allLows = finalData.map(d => d.low);
+    const allHighs = visibleData.map(d => d.high);
+    const allLows = visibleData.map(d => d.low);
     const minPrice = Math.min(...allLows);
     const maxPrice = Math.max(...allHighs);
     const priceRange = maxPrice - minPrice || 1;
@@ -583,10 +604,10 @@ export function PriceChart({
     // Draw session backgrounds (only if sessions are enabled)
     if (showSessions) {
       let prevSession: string | null = null;
-      finalData.forEach((point, i) => {
+      visibleData.forEach((point, i) => {
         const sessions = getSessionsForHour(point.utcHour, enabledSessions);
-        const x = padding.left + i / (finalData.length - 1) * chartWidth;
-        const barWidth = chartWidth / (finalData.length - 1);
+        const x = padding.left + i / (visibleData.length - 1) * chartWidth;
+        const barWidth = chartWidth / (visibleData.length - 1);
 
         // Draw session background bands
         sessions.forEach(session => {
@@ -618,7 +639,7 @@ export function PriceChart({
     }
 
     // Calculate close price for comparison
-    const closePrice = previousClose || finalData[0]?.open || finalData[0]?.price;
+    const closePrice = previousClose || visibleData[0]?.open || visibleData[0]?.price;
 
     // Draw previous close line (dashed red)
     if (closePrice) {
@@ -655,21 +676,21 @@ export function PriceChart({
 
     // Draw X-axis labels
     ctx.textAlign = 'center';
-    const xLabelCount = Math.min(8, finalData.length);
-    const xStep = Math.floor(finalData.length / xLabelCount);
-    for (let i = 0; i < finalData.length; i += xStep) {
-      const x = padding.left + i / (finalData.length - 1) * chartWidth;
-      ctx.fillText(finalData[i].time, x, dimensions.height - 5);
+    const xLabelCount = Math.min(8, visibleData.length);
+    const xStep = Math.max(1, Math.floor(visibleData.length / xLabelCount));
+    for (let i = 0; i < visibleData.length; i += xStep) {
+      const x = padding.left + i / (visibleData.length - 1) * chartWidth;
+      ctx.fillText(visibleData[i].time, x, dimensions.height - 5);
     }
 
     // Draw chart based on type
     if (chartType === 'candle') {
       // Draw Japanese Candlesticks
-      const candleWidth = Math.max(3, (chartWidth / finalData.length) * 0.7);
+      const candleWidth = Math.max(3, (chartWidth / visibleData.length) * 0.7);
       const wickWidth = 1;
       
-      finalData.forEach((point, i) => {
-        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+      visibleData.forEach((point, i) => {
+        const x = padding.left + i / (visibleData.length - 1) * chartWidth;
         
         // Calculate Y positions for OHLC
         const openY = padding.top + chartHeight - (point.open - paddedMin) / paddedRange * chartHeight;
@@ -706,10 +727,10 @@ export function PriceChart({
       // Draw pattern labels on candlesticks
       if (showPatterns && detectedPatterns.length > 0) {
         detectedPatterns.forEach(pattern => {
-          const point = finalData[pattern.index];
+          const point = visibleData[pattern.index];
           if (!point) return;
           
-          const x = padding.left + pattern.index / (finalData.length - 1) * chartWidth;
+          const x = padding.left + pattern.index / (visibleData.length - 1) * chartWidth;
           const highY = padding.top + chartHeight - (point.high - paddedMin) / paddedRange * chartHeight;
           const lowY = padding.top + chartHeight - (point.low - paddedMin) / paddedRange * chartHeight;
           
@@ -744,8 +765,8 @@ export function PriceChart({
       ctx.lineWidth = 1.5;
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
-      finalData.forEach((point, i) => {
-        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+      visibleData.forEach((point, i) => {
+        const x = padding.left + i / (visibleData.length - 1) * chartWidth;
         const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
         if (i === 0) {
           ctx.moveTo(x, y);
@@ -760,8 +781,8 @@ export function PriceChart({
       gradient.addColorStop(0, 'rgba(239, 68, 68, 0.15)');
       gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
       ctx.beginPath();
-      finalData.forEach((point, i) => {
-        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+      visibleData.forEach((point, i) => {
+        const x = padding.left + i / (visibleData.length - 1) * chartWidth;
         const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
         if (i === 0) {
           ctx.moveTo(x, y);
@@ -777,7 +798,7 @@ export function PriceChart({
     }
 
     // Draw current price label (right side)
-    const currentPrice = realtimePrice || finalData[finalData.length - 1]?.price;
+    const currentPrice = realtimePrice || visibleData[visibleData.length - 1]?.price;
     if (currentPrice) {
       const currentY = padding.top + chartHeight - (currentPrice - paddedMin) / paddedRange * chartHeight;
 
@@ -863,13 +884,13 @@ export function PriceChart({
         ctx.fillText(hoveredData.price.toFixed(5), tooltipX + 8, tooltipY + 28);
       }
     }
-  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions, chartType, showPatterns, detectedPatterns]);
+  }, [visibleData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions, chartType, showPatterns, detectedPatterns, zoomLevel]);
 
   // Draw volume chart
   useEffect(() => {
     if (!showVolume) return;
     const canvas = volumeCanvasRef.current;
-    if (!canvas || finalData.length === 0 || volumeDimensions.width === 0) return;
+    if (!canvas || visibleData.length === 0 || volumeDimensions.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const dpr = window.devicePixelRatio || 1;
@@ -889,18 +910,18 @@ export function PriceChart({
     ctx.clearRect(0, 0, volumeDimensions.width, volumeDimensions.height);
 
     // Calculate volume range
-    const volumes = finalData.map(d => d.volume || 0);
+    const volumes = visibleData.map(d => d.volume || 0);
     const maxVolume = Math.max(...volumes) || 1;
 
     // Draw volume bars
-    const barWidth = Math.max(1, chartWidth / finalData.length - 1);
-    finalData.forEach((point, i) => {
-      const x = padding.left + i / (finalData.length - 1) * chartWidth - barWidth / 2;
+    const barWidth = Math.max(1, chartWidth / visibleData.length - 1);
+    visibleData.forEach((point, i) => {
+      const x = padding.left + i / (visibleData.length - 1) * chartWidth - barWidth / 2;
       const barHeight = (point.volume || 0) / maxVolume * chartHeight;
       const y = padding.top + chartHeight - barHeight;
 
       // Color based on price change
-      const prevPrice = i > 0 ? finalData[i - 1].price : point.open;
+      const prevPrice = i > 0 ? visibleData[i - 1].price : point.open;
       const isUp = point.price >= prevPrice;
       ctx.fillStyle = isUp ? 'rgba(34, 197, 94, 0.6)' : 'rgba(239, 68, 68, 0.6)';
       ctx.fillRect(x, y, barWidth, barHeight);
@@ -923,11 +944,11 @@ export function PriceChart({
       ctx.stroke();
       ctx.setLineDash([]);
     }
-  }, [finalData, volumeDimensions, showVolume, hoveredData]);
+  }, [visibleData, volumeDimensions, showVolume, hoveredData]);
 
   // Handle mouse move
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (finalData.length === 0 || !containerRef.current) return;
+    if (visibleData.length === 0 || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const padding = {
@@ -935,11 +956,11 @@ export function PriceChart({
       right: 70
     };
     const chartWidth = dimensions.width - padding.left - padding.right;
-    const dataIndex = Math.round((x - padding.left) / chartWidth * (finalData.length - 1));
-    const clampedIndex = Math.max(0, Math.min(dataIndex, finalData.length - 1));
-    const point = finalData[clampedIndex];
+    const dataIndex = Math.round((x - padding.left) / chartWidth * (visibleData.length - 1));
+    const clampedIndex = Math.max(0, Math.min(dataIndex, visibleData.length - 1));
+    const point = visibleData[clampedIndex];
     if (point) {
-      const prices = finalData.map(d => d.price);
+      const prices = visibleData.map(d => d.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
       const priceRange = maxPrice - minPrice || 1;
@@ -947,7 +968,7 @@ export function PriceChart({
       const paddedMax = maxPrice + priceRange * 0.05;
       const paddedRange = paddedMax - paddedMin;
       const chartHeight = dimensions.height - 50;
-      const pointX = padding.left + clampedIndex / (finalData.length - 1) * chartWidth;
+      const pointX = padding.left + clampedIndex / (visibleData.length - 1) * chartWidth;
       const pointY = 20 + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
 
       // Get all sessions for this point for hover display
@@ -969,7 +990,62 @@ export function PriceChart({
   };
   const handleMouseLeave = () => {
     setHoveredData(null);
+    setIsPanning(false);
   };
+
+  // Handle wheel zoom
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoomLevel(prev => {
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta));
+      return newZoom;
+    });
+  }, []);
+
+  // Handle mouse down for pan
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (e.button === 0) { // Left click
+      setIsPanning(true);
+      setPanStartX(e.clientX);
+      setPanStartOffset(panOffset);
+    }
+  }, [panOffset]);
+
+  // Handle mouse up
+  const handleMouseUp = useCallback(() => {
+    setIsPanning(false);
+  }, []);
+
+  // Handle pan during mouse move
+  const handlePanMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isPanning || finalData.length === 0) return;
+    
+    const deltaX = e.clientX - panStartX;
+    const chartWidth = dimensions.width - 80; // padding
+    const pointsPerPixel = (finalData.length / zoomLevel) / chartWidth;
+    const offsetDelta = Math.round(-deltaX * pointsPerPixel);
+    
+    const maxOffset = Math.max(0, finalData.length - Math.ceil(finalData.length / zoomLevel));
+    const newOffset = Math.max(0, Math.min(maxOffset, panStartOffset + offsetDelta));
+    setPanOffset(newOffset);
+  }, [isPanning, panStartX, panStartOffset, finalData.length, dimensions.width, zoomLevel]);
+
+  // Combined mouse move handler
+  const handleCombinedMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (isPanning) {
+      handlePanMove(e);
+    } else {
+      handleMouseMove(e);
+    }
+  }, [isPanning, handlePanMove]);
+
+  // Reset zoom and pan
+  const handleResetZoom = useCallback(() => {
+    setZoomLevel(1);
+    setPanOffset(0);
+  }, []);
+
 
   // Format volume for display
   const formatVolume = (vol: number) => {
@@ -1171,21 +1247,68 @@ export function PriceChart({
           </div>}
       </div>
       
+      {/* Zoom controls */}
+      <div className="flex items-center justify-between px-2 py-1 border-t border-border/30 bg-muted/20">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground">Zoom:</span>
+          <button 
+            onClick={() => setZoomLevel(prev => Math.max(MIN_ZOOM, prev - 0.25))}
+            className="px-2 py-0.5 text-xs rounded bg-muted hover:bg-muted/80 text-foreground"
+          >
+            −
+          </button>
+          <span className="text-xs font-mono text-foreground w-12 text-center">{(zoomLevel * 100).toFixed(0)}%</span>
+          <button 
+            onClick={() => setZoomLevel(prev => Math.min(MAX_ZOOM, prev + 0.25))}
+            className="px-2 py-0.5 text-xs rounded bg-muted hover:bg-muted/80 text-foreground"
+          >
+            +
+          </button>
+          <button 
+            onClick={handleResetZoom}
+            className="px-2 py-0.5 text-[10px] rounded bg-primary/20 hover:bg-primary/30 text-primary"
+          >
+            Reset
+          </button>
+        </div>
+        <div className="text-[10px] text-muted-foreground">
+          Scroll: zoom • Arrastrar: pan
+        </div>
+      </div>
+
       {/* Price chart */}
       <div ref={containerRef} className="h-[220px] w-full relative">
-        <canvas ref={canvasRef} className="w-full h-full cursor-crosshair" style={{
-          width: dimensions.width,
-          height: dimensions.height
-        }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} />
+        <canvas 
+          ref={canvasRef} 
+          className={cn("w-full h-full", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
+          style={{
+            width: dimensions.width,
+            height: dimensions.height
+          }} 
+          onMouseMove={handleCombinedMouseMove} 
+          onMouseLeave={handleMouseLeave}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onWheel={handleWheel}
+        />
       </div>
       
       {/* Volume chart */}
       {showVolumeChart && <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
           <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
-          <canvas ref={volumeCanvasRef} className="w-full h-full cursor-crosshair" style={{
-          width: volumeDimensions.width,
-          height: volumeDimensions.height
-        }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} />
+          <canvas 
+            ref={volumeCanvasRef} 
+            className={cn("w-full h-full", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
+            style={{
+              width: volumeDimensions.width,
+              height: volumeDimensions.height
+            }} 
+            onMouseMove={handleCombinedMouseMove} 
+            onMouseLeave={handleMouseLeave}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onWheel={handleWheel}
+          />
         </div>}
       
       {/* Patterns Legend - Expandable */}
