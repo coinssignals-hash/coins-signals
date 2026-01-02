@@ -356,39 +356,71 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
             </div>
           </div>
 
-          {/* Charts Row */}
+          {/* Support & Resistance Cards */}
           <div className="grid grid-cols-2 gap-3">
-            {/* Support Chart */}
-            <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30">
-              <div className="h-16 flex items-end gap-0.5 mb-2">
+            {/* Support Card */}
+            <div className="relative bg-gradient-to-br from-emerald-950/80 to-emerald-900/40 rounded-xl p-4 border border-emerald-500/40 overflow-hidden group hover:border-emerald-400/60 transition-all duration-300">
+              {/* Background glow effect */}
+              <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl group-hover:bg-emerald-500/30 transition-all" />
+              
+              {/* Mini chart with gradient bars */}
+              <div className="relative h-14 flex items-end gap-0.5 mb-3">
                 {[35, 45, 40, 55, 50, 60, 55, 65, 60, 70, 65, 75, 70, 80].map((h, i) => (
                   <div 
                     key={i} 
-                    className="flex-1 bg-green-500/70 rounded-t-sm" 
-                    style={{ height: `${h}%` }} 
+                    className="flex-1 rounded-t-sm transition-all duration-300 group-hover:opacity-90" 
+                    style={{ 
+                      height: `${h}%`,
+                      background: `linear-gradient(to top, rgba(16, 185, 129, 0.9), rgba(52, 211, 153, 0.5))`
+                    }} 
                   />
                 ))}
+                {/* Trend line */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
               </div>
-              <div className="flex justify-between items-end">
-                <span className="text-green-400 italic font-semibold text-sm">Soporte</span>
-                <span className="text-green-400 font-bold text-lg">{signal.support || signal.stopLoss}</span>
+              
+              {/* Label and Value */}
+              <div className="relative flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50" />
+                  <span className="text-emerald-300/80 font-medium text-xs uppercase tracking-wider">Soporte</span>
+                </div>
+                <span className="text-emerald-400 font-bold text-xl tabular-nums drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                  {signal.support || signal.stopLoss}
+                </span>
               </div>
             </div>
 
-            {/* Resistance Chart */}
-            <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30">
-              <div className="h-16 flex items-end gap-0.5 mb-2">
+            {/* Resistance Card */}
+            <div className="relative bg-gradient-to-br from-rose-950/80 to-rose-900/40 rounded-xl p-4 border border-rose-500/40 overflow-hidden group hover:border-rose-400/60 transition-all duration-300">
+              {/* Background glow effect */}
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-rose-500/20 rounded-full blur-2xl group-hover:bg-rose-500/30 transition-all" />
+              
+              {/* Mini chart with gradient bars */}
+              <div className="relative h-14 flex items-end gap-0.5 mb-3">
                 {[75, 70, 80, 65, 75, 60, 70, 55, 65, 50, 60, 45, 55, 40].map((h, i) => (
                   <div 
                     key={i} 
-                    className="flex-1 bg-green-500/70 rounded-t-sm" 
-                    style={{ height: `${h}%` }} 
+                    className="flex-1 rounded-t-sm transition-all duration-300 group-hover:opacity-90" 
+                    style={{ 
+                      height: `${h}%`,
+                      background: `linear-gradient(to top, rgba(244, 63, 94, 0.9), rgba(251, 113, 133, 0.5))`
+                    }} 
                   />
                 ))}
+                {/* Trend line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-400/50 to-transparent" />
               </div>
-              <div className="flex justify-between items-end">
-                <span className="text-red-400 italic font-semibold text-sm">Resistencia</span>
-                <span className="text-red-400 font-bold text-lg">{signal.resistance || signal.takeProfit}</span>
+              
+              {/* Label and Value */}
+              <div className="relative flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-rose-400 animate-pulse shadow-lg shadow-rose-500/50" />
+                  <span className="text-rose-300/80 font-medium text-xs uppercase tracking-wider">Resistencia</span>
+                </div>
+                <span className="text-rose-400 font-bold text-xl tabular-nums drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">
+                  {signal.resistance || signal.takeProfit}
+                </span>
               </div>
             </div>
           </div>
