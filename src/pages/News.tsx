@@ -4,44 +4,51 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useNewsByDate, useRefreshNews } from '@/hooks/useNews';
+import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, Clock } from 'lucide-react';
+import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Currency, CURRENCIES, NewsListItem } from '@/types/news';
+import { Currency, CURRENCIES, NewsListItem, EconomicCategory } from '@/types/news';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-// Generate mock historical data for a news item
-function generateHistoricalData() {
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-  return months.map(month => ({
-    month,
-    impact: Math.round((Math.random() - 0.5) * 60) // -30 to +30
-  }));
-}
+// Mini historical chart component with real data
+function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoading?: boolean }) {
+  if (isLoading) {
+    return (
+      <div className="flex items-end gap-0.5 h-8">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div key={i} className="flex-1 h-full bg-muted/30 rounded-t-sm animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
-// Mini historical chart component
-function MiniHistoricalChart({ data }: { data: { month: string; impact: number }[] }) {
-  const maxAbsValue = Math.max(...data.map(d => Math.abs(d.impact)));
+  const maxAbsValue = Math.max(...data.map(d => Math.abs(d.impact)), 1);
   
   return (
     <div className="flex items-end gap-0.5 h-8">
       {data.map((point, i) => {
-        const height = maxAbsValue > 0 ? (Math.abs(point.impact) / maxAbsValue) * 100 : 0;
+        const height = (Math.abs(point.impact) / maxAbsValue) * 100;
         const isPositive = point.impact >= 0;
         
         return (
           <div
             key={i}
-            className="flex flex-col items-center justify-end flex-1"
+            className="flex flex-col items-center justify-end flex-1 group relative"
+            title={`${point.month}: ${point.impact > 0 ? '+' : ''}${point.impact}%`}
           >
             <div
               className={cn(
                 'w-full rounded-t-sm transition-all',
-                isPositive ? 'bg-green-500' : 'bg-red-500'
+                isPositive ? 'bg-green-500' : 'bg-red-500',
+                'opacity-70 group-hover:opacity-100'
               )}
-              style={{ height: `${Math.max(height, 10)}%` }}
+              style={{ 
+                height: `${Math.max(height, 10)}%`,
+                opacity: 0.5 + (point.confidence || 0.7) * 0.5
+              }}
             />
           </div>
         );
@@ -50,33 +57,76 @@ function MiniHistoricalChart({ data }: { data: { month: string; impact: number }
   );
 }
 
-// Historical impact section for cards
-function HistoricalImpactSection({ newsId }: { newsId: string }) {
-  const historicalData = useMemo(() => generateHistoricalData(), [newsId]);
-  const avgImpact = historicalData.reduce((sum, d) => sum + d.impact, 0) / historicalData.length;
+// Historical impact section for cards with real data
+function HistoricalImpactSection({ 
+  newsId, 
+  title, 
+  category, 
+  currencies 
+}: { 
+  newsId: string; 
+  title: string;
+  category: EconomicCategory;
+  currencies: Currency[];
+}) {
+  const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
+  
+  const avgImpact = data?.averageImpact ?? 0;
   const isPositiveAvg = avgImpact >= 0;
+  const trend = data?.trend ?? 'neutral';
+  
+  const TrendIcon = trend === 'bullish' ? TrendingUp : trend === 'bearish' ? TrendingDown : Minus;
   
   return (
     <div className="mt-3 pt-3 border-t border-border/30">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-          Impacto Histórico
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+            Impacto Histórico
+          </span>
+          <TrendIcon className={cn(
+            'w-3 h-3',
+            trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-muted-foreground'
+          )} />
+        </div>
         <span className={cn(
           'text-xs font-bold',
-          isPositiveAvg ? 'text-green-400' : 'text-red-400'
+          isLoading ? 'text-muted-foreground' : isPositiveAvg ? 'text-green-400' : 'text-red-400'
         )}>
-          Promedio: {isPositiveAvg ? '+' : ''}{avgImpact.toFixed(1)}%
+          {isLoading ? '...' : `Promedio: ${isPositiveAvg ? '+' : ''}${avgImpact.toFixed(1)}%`}
         </span>
       </div>
-      <MiniHistoricalChart data={historicalData} />
-      <div className="flex justify-between mt-1">
-        {historicalData.map((point, i) => (
-          <span key={i} className="text-[9px] text-muted-foreground/70 flex-1 text-center">
-            {point.month}
-          </span>
-        ))}
-      </div>
+      <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
+      {!isLoading && data?.monthlyData && (
+        <div className="flex justify-between mt-1">
+          {data.monthlyData.map((point, i) => (
+            <span key={i} className="text-[9px] text-muted-foreground/70 flex-1 text-center">
+              {point.month}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Mini chart for featured card
+function FeaturedHistoricalChart({ 
+  newsId, 
+  title, 
+  category, 
+  currencies 
+}: { 
+  newsId: string; 
+  title: string;
+  category: EconomicCategory;
+  currencies: Currency[];
+}) {
+  const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
+  
+  return (
+    <div className="absolute bottom-3 right-3 w-24 bg-black/60 backdrop-blur-sm rounded-lg p-2">
+      <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
     </div>
   );
 }
@@ -161,7 +211,12 @@ function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) 
           ))}
         </div>
         {/* Historical Impact */}
-        <HistoricalImpactSection newsId={news.id} />
+        <HistoricalImpactSection 
+          newsId={news.id} 
+          title={news.title}
+          category={news.category}
+          currencies={news.affected_currencies}
+        />
       </div>
     </Link>
   );
@@ -224,10 +279,8 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
             </div>
           </div>
           
-          {/* Historical Impact Mini Chart */}
-          <div className="absolute bottom-3 right-3 w-24 bg-black/60 backdrop-blur-sm rounded-lg p-2">
-            <MiniHistoricalChart data={generateHistoricalData()} />
-          </div>
+          {/* Historical Impact Mini Chart - Use inline hook for featured card */}
+          <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category} currencies={news.affected_currencies} />
         </div>
       </div>
     </Link>

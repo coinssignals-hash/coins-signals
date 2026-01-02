@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.cleanup-ai-cache]
 verify_jwt = false
+
+[functions.news-historical-impact]
+verify_jwt = false
