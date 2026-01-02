@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
 import { Loader2, TrendingUp, TrendingDown, Minus, ChevronUp, ChevronDown } from 'lucide-react';
 import { useMarketSentiment } from '@/hooks/useAnalysisData';
@@ -6,6 +6,7 @@ import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { ConfettiEffect, SparkleEffect } from './ConfettiEffect';
 import { cn } from '@/lib/utils';
 
 interface MarketSentimentProps {
@@ -26,6 +27,25 @@ export function MarketSentiment({
   const { data: sentimentData, isLoading, error } = useMarketSentiment(symbol);
   const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
   const [aiSentiment, setAISentiment] = useState<Record<string, unknown> | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const prevSentimentRef = useRef<string | null>(null);
+
+  // Check for strong bullish sentiment change
+  const isStrongBullish = sentimentData?.overall === 'bullish' && (sentimentData?.bullishPercent || 0) >= 60;
+  
+  useEffect(() => {
+    if (sentimentData?.overall) {
+      const wasNotBullish = prevSentimentRef.current !== 'bullish';
+      const isNowStrongBullish = sentimentData.overall === 'bullish' && (sentimentData.bullishPercent || 0) >= 60;
+      
+      if (wasNotBullish && isNowStrongBullish) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 100);
+      }
+      
+      prevSentimentRef.current = sentimentData.overall;
+    }
+  }, [sentimentData?.overall, sentimentData?.bullishPercent]);
 
   const handleRegenerateWithAI = async () => {
     const result = await generateAnalysis('sentiment', symbol, {
@@ -77,7 +97,10 @@ export function MarketSentiment({
 
   return (
     <AIRefreshOverlay isRefreshing={isAILoading}>
-      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
+      <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4 relative overflow-hidden">
+        {/* Confetti Effect for Strong Bullish */}
+        <ConfettiEffect trigger={showConfetti} />
+        <SparkleEffect active={isStrongBullish} />
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-semibold text-lg">Sentimiento del Mercado</h3>
