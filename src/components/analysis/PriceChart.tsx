@@ -287,6 +287,7 @@ export function PriceChart({
   const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
   const [chartType, setChartType] = useState<'candle' | 'line'>('candle');
   const [showPatterns, setShowPatterns] = useState(true);
+  const [patternFilter, setPatternFilter] = useState<'all' | 'bullish' | 'bearish' | 'neutral'>('all');
   
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
@@ -1106,7 +1107,59 @@ export function PriceChart({
               </svg>
             </summary>
             <div className="px-3 pb-3 space-y-2 animate-fade-in">
-              {detectedPatterns.map((pattern, idx) => {
+              {/* Filter buttons */}
+              <div className="flex items-center gap-1 pb-2 border-b border-border/20">
+                <span className="text-[10px] text-muted-foreground mr-2">Filtrar:</span>
+                <button
+                  onClick={() => setPatternFilter('all')}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all",
+                    patternFilter === 'all'
+                      ? "bg-amber-500/20 text-amber-400"
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  Todos ({detectedPatterns.length})
+                </button>
+                <button
+                  onClick={() => setPatternFilter('bullish')}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                    patternFilter === 'bullish'
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  ↑ Alcistas ({detectedPatterns.filter(p => p.signal === 'bullish').length})
+                </button>
+                <button
+                  onClick={() => setPatternFilter('bearish')}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                    patternFilter === 'bearish'
+                      ? "bg-red-500/20 text-red-400"
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  ↓ Bajistas ({detectedPatterns.filter(p => p.signal === 'bearish').length})
+                </button>
+                <button
+                  onClick={() => setPatternFilter('neutral')}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                    patternFilter === 'neutral'
+                      ? "bg-amber-500/20 text-amber-400"
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  → Neutrales ({detectedPatterns.filter(p => p.signal === 'neutral').length})
+                </button>
+              </div>
+              
+              {/* Filtered patterns */}
+              {detectedPatterns
+                .filter(p => patternFilter === 'all' || p.signal === patternFilter)
+                .map((pattern, idx) => {
                 const point = finalData[pattern.index];
                 const patternDescriptions: Record<string, { title: string; desc: string; action: string }> = {
                   doji: {
@@ -1199,6 +1252,13 @@ export function PriceChart({
                   </div>
                 );
               })}
+              
+              {/* Empty state when filter has no results */}
+              {detectedPatterns.filter(p => patternFilter === 'all' || p.signal === patternFilter).length === 0 && (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  No hay patrones {patternFilter === 'bullish' ? 'alcistas' : patternFilter === 'bearish' ? 'bajistas' : 'neutrales'} detectados
+                </div>
+              )}
             </div>
           </details>
         </div>
