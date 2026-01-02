@@ -1,0 +1,191 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+// Polygon.io WebSocket endpoint
+const POLYGON_WS_URL = 'wss://socket.polygon.io';
+
+serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const { headers } = req;
+  const upgradeHeader = headers.get('upgrade') || '';
+
+  // WebSocket upgrade request
+  if (upgradeHeader.toLowerCase() === 'websocket') {
+    const POLYGON_API_KEY = Deno.env.get('POLYGON_API_KEY');
+    
+    if (!POLYGON_API_KEY) {
+      return new Response(JSON.stringify({ error: 'POLYGON_API_KEY not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { socket: clientSocket, response } = Deno.upgradeWebSocket(req);
+    
+    // Connect to Polygon WebSocket
+    const polygonSocket = new WebSocket(`${POLYGON_WS_URL}/forex`);
+    
+    polygonSocket.onopen = () => {
+      console.log('Connected to Polygon.io');
+      // Authenticate
+      polygonSocket.send(JSON.stringify({ action: 'auth', params: POLYGON_API_KEY }));
+    };
+
+    polygonSocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log('Polygon message:', data);
+      
+      // Handle authentication success
+      if (Array.isArray(data)) {
+        for (const msg of data) {
+          if (msg.ev === 'status' && msg.status === 'auth_success') {
+            console.log('Polygon authenticated');
+            clientSocket.send(JSON.stringify({ type: 'connected', status: 'authenticated' }));
+          } else if (msg.ev === 'C' || msg.ev === 'CA' || msg.ev === 'CAS') {
+            // Forex quote/aggregate data
+            clientSocket.send(JSON.stringify({
+              type: 'quote',
+              symbol: msg.p,
+              price: msg.c || msg.a,
+              bid: msg.b,
+              ask: msg.a,
+              timestamp: msg.t,
+            }));
+          } else if (msg.ev === 'XQ') {
+            // Crypto quote
+            clientSocket.send(JSON.stringify({
+              type: 'crypto_quote',
+              symbol: msg.pair,
+              price: msg.lp,
+              bid: msg.bp,
+              ask: msg.ap,
+              timestamp: msg.t,
+            }));
+          } else if (msg.ev === 'T' || msg.ev === 'Q') {
+            // Stock trade/quote
+            clientSocket.send(JSON.stringify({
+              type: 'stock_quote',
+              symbol: msg.sym,
+              price: msg.p || msg.bp,
+              size: msg.s,
+              timestamp: msg.t,
+            }));
+          }
+        }
+      }
+    };
+
+    polygonSocket.onerror = (error) => {
+      console.error('Polygon WebSocket error:', error);
+      clientSocket.send(JSON.stringify({ type: 'error', message: 'Polygon connection error' }));
+    };
+
+    polygonSocket.onclose = () => {
+      console.log('Polygon WebSocket closed');
+      clientSocket.send(JSON.stringify({ type: 'disconnected' }));
+    };
+
+    // Handle client messages (subscriptions)
+    clientSocket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        console.log('Client message:', message);
+        
+        if (message.action === 'subscribe') {
+          const symbols = message.symbols || [];
+          
+          // Subscribe to Forex pairs
+          const forexSymbols = symbols.filter((s: string) => s.includes('/') && !s.includes('BTC') && !s.includes('ETH'));
+          if (forexSymbols.length > 0) {
+            const forexSubscription = forexSymbols.map((s: string) => `C.${s.replace('/', '')}`).join(',');
+            polygonSocket.send(JSON.stringify({ action: 'subscribe', params: forexSubscription }));
+          }
+          
+          // Subscribe to Crypto pairs
+          const cryptoSymbols = symbols.filter((s: string) => s.includes('BTC') || s.includes('ETH') || s.includes('USDT'));
+          if (cryptoSymbols.length > 0) {
+            const cryptoSubscription = cryptoSymbols.map((s: string) => `XQ.${s.replace('/', '-')}`).join(',');
+            polygonSocket.send(JSON.stringify({ action: 'subscribe', params: cryptoSubscription }));
+          }
+          
+          // Subscribe to Stocks
+          const stockSymbols = symbols.filter((s: string) => !s.includes('/') && !s.includes('BTC') && !s.includes('ETH'));
+          if (stockSymbols.length > 0) {
+            const stockSubscription = stockSymbols.map((s: string) => `Q.${s}`).join(',');
+            polygonSocket.send(JSON.stringify({ action: 'subscribe', params: stockSubscription }));
+          }
+        }
+        
+        if (message.action === 'unsubscribe') {
+          polygonSocket.send(JSON.stringify({ action: 'unsubscribe', params: message.symbols.join(',') }));
+        }
+      } catch (error) {
+        console.error('Error processing client message:', error);
+      }
+    };
+
+    clientSocket.onclose = () => {
+      console.log('Client disconnected');
+      polygonSocket.close();
+    };
+
+    return response;
+  }
+
+  // REST API fallback for non-WebSocket requests
+  try {
+    const { symbol, type = 'quote' } = await req.json();
+    const POLYGON_API_KEY = Deno.env.get('POLYGON_API_KEY');
+    
+    if (!POLYGON_API_KEY) {
+      return new Response(JSON.stringify({ error: 'POLYGON_API_KEY not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    let url = '';
+    
+    // Determine asset type and build URL
+    if (symbol.includes('/')) {
+      // Forex pair
+      const pair = symbol.replace('/', '');
+      if (type === 'aggregates') {
+        url = `https://api.polygon.io/v2/aggs/ticker/C:${pair}/prev?apiKey=${POLYGON_API_KEY}`;
+      } else {
+        url = `https://api.polygon.io/v1/last_quote/currencies/${pair}?apiKey=${POLYGON_API_KEY}`;
+      }
+    } else if (symbol.includes('BTC') || symbol.includes('ETH')) {
+      // Crypto
+      const pair = symbol.replace('/', '-');
+      url = `https://api.polygon.io/v1/last/crypto/${pair}?apiKey=${POLYGON_API_KEY}`;
+    } else {
+      // Stock
+      url = `https://api.polygon.io/v2/last/trade/${symbol}?apiKey=${POLYGON_API_KEY}`;
+    }
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    console.log('Polygon REST response:', data);
+
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error in realtime-market:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});
