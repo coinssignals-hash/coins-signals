@@ -6,7 +6,7 @@ import { usePrefetch } from '@/hooks/usePrefetch';
 import { useEffect } from 'react';
 
 const navItems = [
-  { icon: Brain, label: 'Markets', href: '/' },
+  { icon: Brain, label: 'Ideas', href: '/' },
   { icon: TrendingUp, label: 'Señales', href: '/signals', showBadge: true },
   { icon: Newspaper, label: 'Noticias', href: '/news' },
   { icon: GraduationCap, label: 'Cursos', href: '/courses' },
