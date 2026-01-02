@@ -5,12 +5,81 @@ import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useNewsByDate, useRefreshNews } from '@/hooks/useNews';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, ChevronDown, TrendingUp, TrendingDown, Clock, ExternalLink } from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
+import { AlertCircle, Filter, Clock } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Currency, CURRENCIES, NewsListItem } from '@/types/news';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+
+// Generate mock historical data for a news item
+function generateHistoricalData() {
+  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+  return months.map(month => ({
+    month,
+    impact: Math.round((Math.random() - 0.5) * 60) // -30 to +30
+  }));
+}
+
+// Mini historical chart component
+function MiniHistoricalChart({ data }: { data: { month: string; impact: number }[] }) {
+  const maxAbsValue = Math.max(...data.map(d => Math.abs(d.impact)));
+  
+  return (
+    <div className="flex items-end gap-0.5 h-8">
+      {data.map((point, i) => {
+        const height = maxAbsValue > 0 ? (Math.abs(point.impact) / maxAbsValue) * 100 : 0;
+        const isPositive = point.impact >= 0;
+        
+        return (
+          <div
+            key={i}
+            className="flex flex-col items-center justify-end flex-1"
+          >
+            <div
+              className={cn(
+                'w-full rounded-t-sm transition-all',
+                isPositive ? 'bg-green-500' : 'bg-red-500'
+              )}
+              style={{ height: `${Math.max(height, 10)}%` }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Historical impact section for cards
+function HistoricalImpactSection({ newsId }: { newsId: string }) {
+  const historicalData = useMemo(() => generateHistoricalData(), [newsId]);
+  const avgImpact = historicalData.reduce((sum, d) => sum + d.impact, 0) / historicalData.length;
+  const isPositiveAvg = avgImpact >= 0;
+  
+  return (
+    <div className="mt-3 pt-3 border-t border-border/30">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+          Impacto Histórico
+        </span>
+        <span className={cn(
+          'text-xs font-bold',
+          isPositiveAvg ? 'text-green-400' : 'text-red-400'
+        )}>
+          Promedio: {isPositiveAvg ? '+' : ''}{avgImpact.toFixed(1)}%
+        </span>
+      </div>
+      <MiniHistoricalChart data={historicalData} />
+      <div className="flex justify-between mt-1">
+        {historicalData.map((point, i) => (
+          <span key={i} className="text-[9px] text-muted-foreground/70 flex-1 text-center">
+            {point.month}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // Currency pills for quick filter
 const QUICK_CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'];
@@ -91,6 +160,8 @@ function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) 
             <ImpactBadge key={currency} currency={currency} impact={impact} />
           ))}
         </div>
+        {/* Historical Impact */}
+        <HistoricalImpactSection newsId={news.id} />
       </div>
     </Link>
   );
@@ -151,6 +222,11 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
                 <ImpactBadge key={currency} currency={currency} impact={impact} />
               ))}
             </div>
+          </div>
+          
+          {/* Historical Impact Mini Chart */}
+          <div className="absolute bottom-3 right-3 w-24 bg-black/60 backdrop-blur-sm rounded-lg p-2">
+            <MiniHistoricalChart data={generateHistoricalData()} />
           </div>
         </div>
       </div>
