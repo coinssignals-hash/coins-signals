@@ -135,8 +135,11 @@ const periodButtons: {
   value: '1w',
   label: '1S',
   minutes: 10080
-} // 1 week = 7 * 24 * 60
-];
+}];
+
+// Always show 5 days of data
+const CHART_DAYS = 5;
+const CHART_MINUTES = CHART_DAYS * 24 * 60; // 5 days in minutes
 
 // Get session for a given UTC hour, filtered by enabled sessions
 function getSessionsForHour(utcHour: number, enabledSessions: Set<SessionId>) {
@@ -321,82 +324,120 @@ export function PriceChart({
     });
   };
 
-  // Get time range for selected period
+  // Get time range - always 5 days
   const getTimeRange = useMemo(() => {
     const now = new Date();
-    const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
-    const minutes = periodConfig?.minutes || 240;
-    const startTime = new Date(now.getTime() - minutes * 60 * 1000);
+    const startTime = new Date(now.getTime() - CHART_MINUTES * 60 * 1000);
     return {
       startTime,
       endTime: now
     };
-  }, [selectedPeriod]);
+  }, []);
 
-  // Calculate chart data with UTC hours for sessions, filtered by period
+  // Aggregate data into candles based on selected period
+  const aggregateCandles = useCallback((data: typeof priceData, periodMinutes: number) => {
+    if (!data || data.length === 0) return [];
+    
+    const aggregated: Array<{
+      time: string;
+      timestamp: Date;
+      utcHour: number;
+      price: number;
+      open: number;
+      high: number;
+      low: number;
+      volume: number;
+    }> = [];
+
+    // Group data by period
+    const groups = new Map<number, typeof data>();
+    
+    data.forEach(item => {
+      const date = new Date(item.time);
+      if (isNaN(date.getTime())) return;
+      
+      // Calculate period bucket (floor to period interval)
+      const periodMs = periodMinutes * 60 * 1000;
+      const bucket = Math.floor(date.getTime() / periodMs) * periodMs;
+      
+      if (!groups.has(bucket)) {
+        groups.set(bucket, []);
+      }
+      groups.get(bucket)!.push(item);
+    });
+
+    // Convert groups to aggregated candles
+    const sortedBuckets = Array.from(groups.keys()).sort((a, b) => a - b);
+    
+    sortedBuckets.forEach(bucket => {
+      const items = groups.get(bucket)!;
+      if (items.length === 0) return;
+      
+      const bucketDate = new Date(bucket);
+      const open = items[0].open;
+      const close = items[items.length - 1].price;
+      const high = Math.max(...items.map(i => i.high));
+      const low = Math.min(...items.map(i => i.low));
+      const volume = items.reduce((sum, i) => sum + (i.volume || 0), 0);
+      
+      // Format time label based on period
+      let timeLabel = '';
+      if (periodMinutes >= 1440) { // 1 day or more
+        timeLabel = bucketDate.toLocaleDateString('es-ES', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short'
+        });
+      } else if (periodMinutes >= 60) { // 1 hour or more
+        timeLabel = bucketDate.toLocaleDateString('es-ES', {
+          weekday: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+      } else {
+        timeLabel = bucketDate.toLocaleTimeString('es-ES', {
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+      }
+      
+      aggregated.push({
+        time: timeLabel,
+        timestamp: bucketDate,
+        utcHour: bucketDate.getUTCHours(),
+        price: close,
+        open,
+        high,
+        low,
+        volume: volume || Math.abs(high - low) * 1000000 * (0.5 + Math.random())
+      });
+    });
+
+    return aggregated;
+  }, []);
+
+  // Calculate chart data with UTC hours for sessions, filtered to 5 days and aggregated by period
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
-    const {
-      startTime,
-      endTime
-    } = getTimeRange;
-    return priceData.map((price, index) => {
-      // Extract time from ISO string or other formats
-      let timeLabel = '';
-      let utcHour = 0;
-      let timestamp: Date | null = null;
-      try {
-        const date = new Date(price.time);
-        if (!isNaN(date.getTime())) {
-          timestamp = date;
-          // Format based on period - show date for longer periods
-          if (selectedPeriod === '1w') {
-            timeLabel = date.toLocaleDateString('es-ES', {
-              weekday: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
-            });
-          } else {
-            timeLabel = date.toLocaleTimeString('es-ES', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
-            });
-          }
-          utcHour = date.getUTCHours();
-        } else {
-          // Fallback: try to extract time from string
-          timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
-          // Try to parse hour from timeLabel
-          const hourMatch = timeLabel.match(/^(\d{1,2}):/);
-          if (hourMatch) utcHour = parseInt(hourMatch[1]);
-        }
-      } catch {
-        timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
-      }
-
-      // Generate synthetic volume if not provided (based on price movement)
-      const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
-      return {
-        time: timeLabel,
-        timestamp,
-        utcHour,
-        price: price.price,
-        open: price.open,
-        high: price.high,
-        low: price.low,
-        volume: syntheticVolume
-      };
-    }).filter(item => {
-      // Filter by time range if timestamp is available
-      if (item.timestamp) {
-        return item.timestamp >= startTime && item.timestamp <= endTime;
-      }
-      return true; // Keep items without valid timestamp
+    
+    const { startTime, endTime } = getTimeRange;
+    const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
+    const periodMinutes = periodConfig?.minutes || 60;
+    
+    // Filter data to 5 days range first
+    const filteredData = priceData.filter(item => {
+      const date = new Date(item.time);
+      if (isNaN(date.getTime())) return false;
+      return date >= startTime && date <= endTime;
     });
-  }, [priceData, getTimeRange, selectedPeriod]);
+    
+    // Aggregate into candles based on selected period
+    return aggregateCandles(filteredData, periodMinutes);
+  }, [priceData, getTimeRange, selectedPeriod, aggregateCandles]);
 
   // Add realtime price
   const finalData = useMemo(() => {
@@ -474,21 +515,17 @@ export function PriceChart({
     prevPatternsRef.current = currentPatternIds;
   }, [detectedPatterns, patternAlertConfig, pair, finalData]);
 
-  // Format time range description
+  // Format time range description - always shows 5 days with selected candle interval
   const timeRangeDescription = useMemo(() => {
-    const {
-      startTime,
-      endTime
-    } = getTimeRange;
+    const { startTime, endTime } = getTimeRange;
+    const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
     const formatDate = (date: Date) => date.toLocaleDateString('es-ES', {
       weekday: 'short',
       day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
+      month: 'short'
     });
-    return `${formatDate(startTime)} → ${formatDate(endTime)}`;
-  }, [getTimeRange]);
+    return `${formatDate(startTime)} → ${formatDate(endTime)} (velas de ${periodConfig?.label || '1h'})`;
+  }, [getTimeRange, selectedPeriod]);
 
   // Handle resize
   useEffect(() => {
