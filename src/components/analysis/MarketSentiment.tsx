@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
-import { Loader2 } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, Minus, ChevronUp, ChevronDown } from 'lucide-react';
 import { useMarketSentiment } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { cn } from '@/lib/utils';
 
 interface MarketSentimentProps {
   symbol: string;
@@ -93,20 +94,84 @@ export function MarketSentiment({
           </div>
         )}
 
-        {/* Overall Sentiment Badge - Prominent */}
+        {/* Animated Trend Indicator */}
         {sentimentData && (
           <div className="flex justify-center mb-4">
-            <div className={`px-6 py-2 rounded-full text-lg font-bold flex items-center gap-2 ${
-              sentimentData.overall === 'bullish' ? 'bg-green-900/40 text-green-400 border border-green-500/30' :
-              sentimentData.overall === 'bearish' ? 'bg-red-900/40 text-red-400 border border-red-500/30' :
-              'bg-yellow-900/40 text-yellow-400 border border-yellow-500/30'
-            }`}>
-              <span className={`w-3 h-3 rounded-full ${
-                sentimentData.overall === 'bullish' ? 'bg-green-400' :
-                sentimentData.overall === 'bearish' ? 'bg-red-400' : 'bg-yellow-400'
-              }`} />
-              {sentimentData.overall === 'bullish' ? 'Alcista' :
-               sentimentData.overall === 'bearish' ? 'Bajista' : 'Neutral'}
+            <div className={cn(
+              "relative flex flex-col items-center px-8 py-4 rounded-2xl border-2 transition-all duration-500",
+              sentimentData.overall === 'bullish' 
+                ? 'bg-gradient-to-b from-green-900/40 to-green-900/10 border-green-500/50' 
+                : sentimentData.overall === 'bearish' 
+                ? 'bg-gradient-to-b from-red-900/40 to-red-900/10 border-red-500/50'
+                : 'bg-gradient-to-b from-yellow-900/40 to-yellow-900/10 border-yellow-500/50'
+            )}>
+              {/* Animated Arrows */}
+              <div className="relative h-12 w-12 flex items-center justify-center">
+                {sentimentData.overall === 'bullish' && (
+                  <>
+                    <ChevronUp className="absolute w-8 h-8 text-green-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <ChevronUp className="absolute w-8 h-8 text-green-400/60 -top-2 animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <ChevronUp className="absolute w-8 h-8 text-green-400/30 -top-4 animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </>
+                )}
+                {sentimentData.overall === 'bearish' && (
+                  <>
+                    <ChevronDown className="absolute w-8 h-8 text-red-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <ChevronDown className="absolute w-8 h-8 text-red-400/60 top-2 animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <ChevronDown className="absolute w-8 h-8 text-red-400/30 top-4 animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </>
+                )}
+                {sentimentData.overall === 'neutral' && (
+                  <div className="flex items-center gap-1">
+                    <Minus className="w-6 h-6 text-yellow-400 animate-pulse" />
+                    <Minus className="w-6 h-6 text-yellow-400/60 animate-pulse" style={{ animationDelay: '200ms' }} />
+                  </div>
+                )}
+              </div>
+              
+              {/* Trend Label */}
+              <div className={cn(
+                "text-xl font-bold mt-1",
+                sentimentData.overall === 'bullish' ? 'text-green-400' :
+                sentimentData.overall === 'bearish' ? 'text-red-400' : 'text-yellow-400'
+              )}>
+                {sentimentData.overall === 'bullish' ? 'ALCISTA' :
+                 sentimentData.overall === 'bearish' ? 'BAJISTA' : 'NEUTRAL'}
+              </div>
+              
+              {/* Confidence indicator */}
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((i) => {
+                    const strength = sentimentData.overall === 'bullish' 
+                      ? sentimentData.bullishPercent 
+                      : sentimentData.overall === 'bearish' 
+                      ? sentimentData.bearishPercent 
+                      : sentimentData.neutralPercent;
+                    const filled = i <= Math.ceil(strength / 20);
+                    return (
+                      <div 
+                        key={i}
+                        className={cn(
+                          "w-2 h-4 rounded-sm transition-all",
+                          filled ? (
+                            sentimentData.overall === 'bullish' ? 'bg-green-400' :
+                            sentimentData.overall === 'bearish' ? 'bg-red-400' : 'bg-yellow-400'
+                          ) : 'bg-gray-700'
+                        )}
+                        style={{ 
+                          animationDelay: `${i * 100}ms`,
+                          opacity: filled ? 1 : 0.3
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <span className="text-xs text-gray-400">
+                  {sentimentData.overall === 'bullish' ? sentimentData.bullishPercent :
+                   sentimentData.overall === 'bearish' ? sentimentData.bearishPercent : sentimentData.neutralPercent}%
+                </span>
+              </div>
             </div>
           </div>
         )}
