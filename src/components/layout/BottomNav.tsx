@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Newspaper, GraduationCap, Building2, Settings, BarChart2, TrendingUp } from 'lucide-react';
+import { Newspaper, GraduationCap, Building2, Settings, Brain, TrendingUp } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useEffect } from 'react';
 
 const navItems = [
-  { icon: BarChart2, label: 'Markets', href: '/' },
+  { icon: Brain, label: 'Markets', href: '/' },
   { icon: TrendingUp, label: 'Señales', href: '/signals', showBadge: true },
   { icon: Newspaper, label: 'Noticias', href: '/news' },
   { icon: GraduationCap, label: 'Cursos', href: '/courses' },
