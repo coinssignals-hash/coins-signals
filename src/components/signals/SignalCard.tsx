@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -8,6 +8,7 @@ import { es } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import signalCardBg from '@/assets/signal-card-bg.png';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
+import { PriceSparkline } from './PriceSparkline';
 
 interface SignalCardProps {
   signal: TradingSignal;
@@ -74,6 +75,8 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [priceHistory, setPriceHistory] = useState<number[]>([]);
+  const maxHistoryLength = 60; // Keep last 60 price points
 
   // Convert currency pair to Polygon format (e.g., "EUR/USD" -> "C:EURUSD")
   const polygonSymbol = useMemo(() => {
@@ -96,16 +99,32 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   useEffect(() => {
     if (expanded) {
       subscribe([polygonSymbol]);
+      // Reset price history when expanding
+      setPriceHistory([signal.entryPrice]);
     }
     return () => {
       if (expanded) {
         unsubscribe([polygonSymbol]);
       }
     };
-  }, [expanded, polygonSymbol, subscribe, unsubscribe]);
+  }, [expanded, polygonSymbol, subscribe, unsubscribe, signal.entryPrice]);
 
   const realtimeQuote = getQuote(polygonSymbol);
   const livePrice = realtimeQuote?.price;
+
+  // Accumulate price history
+  useEffect(() => {
+    if (livePrice !== undefined && expanded) {
+      setPriceHistory(prev => {
+        const newHistory = [...prev, livePrice];
+        // Keep only the last N prices
+        if (newHistory.length > maxHistoryLength) {
+          return newHistory.slice(-maxHistoryLength);
+        }
+        return newHistory;
+      });
+    }
+  }, [livePrice, expanded]);
   
   const copyToClipboard = (value: number) => {
     navigator.clipboard.writeText(value.toString());
@@ -508,6 +527,22 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               </div>
             );
           })()}
+
+          {/* Live Price Sparkline */}
+          <div className="bg-[#0a1628] rounded-xl p-4 border border-slate-700/50">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-blue-400" />
+                <span className="text-xs text-slate-400 uppercase tracking-wider">Movimiento en Tiempo Real</span>
+              </div>
+              <span className="text-[10px] text-slate-500">{priceHistory.length} puntos</span>
+            </div>
+            <PriceSparkline 
+              prices={priceHistory} 
+              entryPrice={signal.entryPrice}
+              className="h-16"
+            />
+          </div>
 
           {/* Support & Resistance Cards */}
           <div className="grid grid-cols-2 gap-3">
