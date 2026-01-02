@@ -176,6 +176,50 @@ async function fetchPolygonNews(apiKey: string): Promise<NewsItem[]> {
   }
 }
 
+// Fetch from NewsAPI.org
+async function fetchNewsApiNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    // Search for business/financial news
+    const response = await fetch(
+      `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=20&apiKey=${apiKey}`
+    );
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[fetch-news] NewsAPI error:', response.status, errorData);
+      return [];
+    }
+    
+    const data = await response.json();
+    
+    if (data.status !== 'ok' || !data.articles) {
+      console.error('[fetch-news] NewsAPI invalid response:', data);
+      return [];
+    }
+    
+    return data.articles
+      .filter((item: any) => item.title && item.title !== '[Removed]')
+      .map((item: any, index: number) => ({
+        id: `newsapi-${index}-${Date.now()}`,
+        title: item.title,
+        summary: item.description || '',
+        source: item.source?.name || 'NewsAPI',
+        source_logo: SOURCE_LOGOS[item.source?.name] || `https://logo.clearbit.com/${new URL(item.url || 'https://newsapi.org').hostname}`,
+        url: item.url,
+        image_url: item.urlToImage || null,
+        published_at: item.publishedAt,
+        time_ago: getTimeAgo(item.publishedAt),
+        category: detectCategory(item.title + ' ' + (item.description || '')),
+        affected_currencies: detectCurrencies(item.title + ' ' + (item.description || '') + ' ' + (item.content || '')),
+        sentiment: detectSentiment(item.title + ' ' + (item.description || '')),
+        relevance_score: 0.75 + Math.random() * 0.25,
+      }));
+  } catch (error) {
+    console.error('[fetch-news] NewsAPI fetch error:', error);
+    return [];
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -188,6 +232,7 @@ serve(async (req) => {
 
     const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
     const polygonKey = Deno.env.get('POLYGON_API_KEY');
+    const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
 
     const newsPromises: Promise<NewsItem[]>[] = [];
 
@@ -197,6 +242,10 @@ serve(async (req) => {
 
     if (polygonKey) {
       newsPromises.push(fetchPolygonNews(polygonKey));
+    }
+
+    if (newsApiKey) {
+      newsPromises.push(fetchNewsApiNews(newsApiKey));
     }
 
     if (newsPromises.length === 0) {
@@ -234,7 +283,11 @@ serve(async (req) => {
     // Limit results
     allNews = allNews.slice(0, limit);
 
-    console.log('[fetch-news] Returning', allNews.length, 'news items');
+    console.log('[fetch-news] Returning', allNews.length, 'news items from sources:', {
+      finnhub: !!finnhubKey,
+      polygon: !!polygonKey,
+      newsapi: !!newsApiKey,
+    });
 
     return new Response(
       JSON.stringify({ 
@@ -243,6 +296,7 @@ serve(async (req) => {
         sources: {
           finnhub: !!finnhubKey,
           polygon: !!polygonKey,
+          newsapi: !!newsApiKey,
         },
         total: allNews.length,
       }),
