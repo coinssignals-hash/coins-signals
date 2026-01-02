@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,6 +30,7 @@ import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
 import { useMarketData } from '@/hooks/useMarketData';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
+import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import {
   Sheet,
   SheetContent,
@@ -53,6 +54,22 @@ interface AlertConfig {
   enableSMACross: boolean;
 }
 
+// Convert symbol format for Polygon.io API
+function formatSymbolForPolygon(symbol: string): string {
+  // EUR/USD -> C:EURUSD (Forex)
+  // BTC/USD -> X:BTCUSD (Crypto)
+  const [base, quote] = symbol.split('/');
+  
+  const cryptos = ['BTC', 'ETH', 'XRP', 'SOL', 'BNB', 'ADA', 'DOGE', 'DOT', 'AVAX', 'MATIC', 'LINK', 'UNI', 'ATOM', 'LTC', 'XLM', 'SHIB', 'PEPE'];
+  
+  if (cryptos.includes(base)) {
+    return `X:${base}${quote || 'USD'}`;
+  }
+  
+  // Default to Forex
+  return `C:${base}${quote || 'USD'}`;
+}
+
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('4h');
@@ -66,6 +83,23 @@ export default function Analysis() {
   });
   
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
+  
+  // Realtime market data from Polygon.io
+  const polygonSymbol = formatSymbolForPolygon(selectedPair);
+  const { quotes, isConnected, subscribe, unsubscribe, getQuote } = useRealtimeMarket([polygonSymbol]);
+  
+  // Get realtime quote for current symbol
+  const realtimeQuote = getQuote(polygonSymbol);
+  
+  // Subscribe/unsubscribe when symbol changes
+  useEffect(() => {
+    const newSymbol = formatSymbolForPolygon(selectedPair);
+    subscribe([newSymbol]);
+    
+    return () => {
+      unsubscribe([newSymbol]);
+    };
+  }, [selectedPair, subscribe, unsubscribe]);
   
   // Initialize indicator alerts hook
   useIndicatorAlerts(data, selectedPair, alertConfig);
@@ -222,7 +256,7 @@ export default function Analysis() {
           </div>
         )}
 
-        {/* Currency Header Card */}
+        {/* Currency Header Card with Realtime Price */}
         <CurrencyHeader
           symbol={selectedPair}
           currentPrice={marketStats.currentPrice}
@@ -231,6 +265,8 @@ export default function Analysis() {
           high={marketStats.high}
           low={marketStats.low}
           loading={loading}
+          realtimePrice={realtimeQuote?.price}
+          isRealtimeConnected={isConnected}
         />
 
         {/* Charts Tabs */}
