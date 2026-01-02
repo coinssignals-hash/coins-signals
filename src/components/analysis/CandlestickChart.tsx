@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 interface CandleData {
@@ -18,6 +18,20 @@ interface CandlestickChartProps {
   isRealtimeConnected?: boolean;
 }
 
+interface TooltipData {
+  x: number;
+  y: number;
+  candle: CandleData;
+  isUp: boolean;
+}
+
+interface CandlePosition {
+  x: number;
+  width: number;
+  candle: CandleData;
+  isUp: boolean;
+}
+
 export function CandlestickChart({ 
   data, 
   resistance, 
@@ -28,8 +42,11 @@ export function CandlestickChart({
 }: CandlestickChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const candlePositionsRef = useRef<CandlePosition[]>([]);
+  const paddingRef = useRef({ top: 20, right: 80, bottom: 30, left: 50 });
 
-  useEffect(() => {
+  const drawChart = useCallback(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container || !data.length) return;
@@ -48,7 +65,7 @@ export function CandlestickChart({
 
     const width = rect.width;
     const height = rect.height;
-    const padding = { top: 20, right: 80, bottom: 30, left: 50 };
+    const padding = paddingRef.current;
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
@@ -69,10 +86,13 @@ export function CandlestickChart({
       return padding.top + chartHeight - ((price - minPrice) / priceRange) * chartHeight;
     };
 
+    const candleWidth = chartWidth / data.length;
     const indexToX = (index: number) => {
-      const candleWidth = chartWidth / data.length;
       return padding.left + index * candleWidth + candleWidth / 2;
     };
+
+    // Store candle positions for tooltip detection
+    const positions: CandlePosition[] = [];
 
     // Draw grid lines
     ctx.strokeStyle = '#1a1a1a';
@@ -127,7 +147,7 @@ export function CandlestickChart({
     ctx.fillText('Soporte', width - padding.right + 5, supportY + 4);
 
     // Draw candlesticks
-    const candleWidth = Math.max(4, (chartWidth / data.length) * 0.6);
+    const bodyWidth = Math.max(4, candleWidth * 0.6);
     const wickWidth = 1;
 
     data.forEach((candle, index) => {
@@ -139,6 +159,14 @@ export function CandlestickChart({
       const closeY = priceToY(candle.close);
       const highY = priceToY(candle.high);
       const lowY = priceToY(candle.low);
+
+      // Store position for tooltip
+      positions.push({
+        x: x - bodyWidth / 2,
+        width: bodyWidth,
+        candle,
+        isUp
+      });
 
       // Draw wick (thin line from high to low)
       ctx.strokeStyle = color;
@@ -154,8 +182,10 @@ export function CandlestickChart({
       const bodyHeight = Math.max(1, Math.abs(closeY - openY));
       
       ctx.fillStyle = color;
-      ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+      ctx.fillRect(x - bodyWidth / 2, bodyTop, bodyWidth, bodyHeight);
     });
+
+    candlePositionsRef.current = positions;
 
     // Draw time labels
     ctx.fillStyle = '#6b7280';
@@ -174,7 +204,6 @@ export function CandlestickChart({
     if (realtimePrice) {
       const realtimeY = priceToY(realtimePrice);
       
-      // Pulsing effect for live connection
       ctx.strokeStyle = isRealtimeConnected ? '#3b82f6' : '#6366f1';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 2]);
@@ -196,8 +225,40 @@ export function CandlestickChart({
       const priceText = realtimePrice.toFixed(4);
       ctx.fillText(isRealtimeConnected ? `● ${priceText}` : priceText, width - padding.right + 6, realtimeY + 3);
     }
-
   }, [data, resistance, support, realtimePrice, isRealtimeConnected]);
+
+  useEffect(() => {
+    drawChart();
+  }, [drawChart]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas || !candlePositionsRef.current.length) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Find if mouse is over any candle
+    const hoveredCandle = candlePositionsRef.current.find(pos => 
+      x >= pos.x && x <= pos.x + pos.width
+    );
+
+    if (hoveredCandle) {
+      setTooltip({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+        candle: hoveredCandle.candle,
+        isUp: hoveredCandle.isUp
+      });
+    } else {
+      setTooltip(null);
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setTooltip(null);
+  }, []);
 
   if (loading) {
     return (
@@ -221,7 +282,55 @@ export function CandlestickChart({
       </div>
       
       <div ref={containerRef} className="h-72 relative">
-        <canvas ref={canvasRef} className="w-full h-full" />
+        <canvas 
+          ref={canvasRef} 
+          className="w-full h-full cursor-crosshair" 
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        />
+        
+        {/* OHLC Tooltip */}
+        {tooltip && (
+          <div 
+            className="absolute z-50 pointer-events-none"
+            style={{
+              left: Math.min(tooltip.x + 10, (containerRef.current?.clientWidth || 300) - 160),
+              top: Math.max(tooltip.y - 100, 10)
+            }}
+          >
+            <div className="bg-[#1a1a2e] border border-gray-700 rounded-lg p-3 shadow-xl min-w-[140px]">
+              <div className="text-xs text-gray-400 mb-2 font-medium">
+                {tooltip.candle.time.split(' ')[1]?.substring(0, 5) || tooltip.candle.time.substring(11, 16)}
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Open:</span>
+                  <span className="text-white font-mono">{tooltip.candle.open.toFixed(5)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">High:</span>
+                  <span className="text-green-400 font-mono">{tooltip.candle.high.toFixed(5)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Low:</span>
+                  <span className="text-red-400 font-mono">{tooltip.candle.low.toFixed(5)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Close:</span>
+                  <span className={cn("font-mono font-semibold", tooltip.isUp ? "text-green-400" : "text-red-400")}>
+                    {tooltip.candle.close.toFixed(5)}
+                  </span>
+                </div>
+              </div>
+              <div className={cn(
+                "mt-2 pt-2 border-t border-gray-700 text-xs font-medium text-center",
+                tooltip.isUp ? "text-green-400" : "text-red-400"
+              )}>
+                {tooltip.isUp ? "▲ Alcista" : "▼ Bajista"}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-between mt-3 text-xs flex-wrap gap-2">
