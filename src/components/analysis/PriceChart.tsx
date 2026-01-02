@@ -173,6 +173,8 @@ export function PriceChart({
   const [enabledSessions, setEnabledSessions] = useState<Set<SessionId>>(new Set(['sydney', 'asia', 'london', 'ny']));
   const [showSessions, setShowSessions] = useState(true);
   const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
+  const [chartType, setChartType] = useState<'candle' | 'line'>('candle');
+  
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
     onPeriodChange?.(period);
@@ -341,10 +343,11 @@ export function PriceChart({
     // Clear canvas
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
-    // Calculate price range
-    const prices = finalData.map(d => d.price);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
+    // Calculate price range using OHLC for candlestick accuracy
+    const allHighs = finalData.map(d => d.high);
+    const allLows = finalData.map(d => d.low);
+    const minPrice = Math.min(...allLows);
+    const maxPrice = Math.max(...allHighs);
     const priceRange = maxPrice - minPrice || 1;
     const paddedMin = minPrice - priceRange * 0.05;
     const paddedMax = maxPrice + priceRange * 0.05;
@@ -432,42 +435,84 @@ export function PriceChart({
       ctx.fillText(finalData[i].time, x, dimensions.height - 5);
     }
 
-    // Draw price line - TradingView style (red/pink line)
-    ctx.beginPath();
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    finalData.forEach((point, i) => {
-      const x = padding.left + i / (finalData.length - 1) * chartWidth;
-      const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-    ctx.stroke();
+    // Draw chart based on type
+    if (chartType === 'candle') {
+      // Draw Japanese Candlesticks
+      const candleWidth = Math.max(3, (chartWidth / finalData.length) * 0.7);
+      const wickWidth = 1;
+      
+      finalData.forEach((point, i) => {
+        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+        
+        // Calculate Y positions for OHLC
+        const openY = padding.top + chartHeight - (point.open - paddedMin) / paddedRange * chartHeight;
+        const closeY = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
+        const highY = padding.top + chartHeight - (point.high - paddedMin) / paddedRange * chartHeight;
+        const lowY = padding.top + chartHeight - (point.low - paddedMin) / paddedRange * chartHeight;
+        
+        // Determine if bullish (green) or bearish (red)
+        const isBullish = point.price >= point.open;
+        const candleColor = isBullish ? '#22c55e' : '#ef4444';
+        const wickColor = isBullish ? '#22c55e' : '#ef4444';
+        
+        // Draw wick (high-low line)
+        ctx.beginPath();
+        ctx.strokeStyle = wickColor;
+        ctx.lineWidth = wickWidth;
+        ctx.moveTo(x, highY);
+        ctx.lineTo(x, lowY);
+        ctx.stroke();
+        
+        // Draw candle body
+        const bodyTop = Math.min(openY, closeY);
+        const bodyHeight = Math.abs(closeY - openY) || 1;
+        
+        ctx.fillStyle = candleColor;
+        ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+        
+        // Draw candle border for better visibility
+        ctx.strokeStyle = candleColor;
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+      });
+    } else {
+      // Draw price line - TradingView style (red/pink line)
+      ctx.beginPath();
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 1.5;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      finalData.forEach((point, i) => {
+        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+        const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
 
-    // Draw area fill under line with gradient
-    const gradient = ctx.createLinearGradient(0, padding.top, 0, dimensions.height - padding.bottom);
-    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.15)');
-    gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
-    ctx.beginPath();
-    finalData.forEach((point, i) => {
-      const x = padding.left + i / (finalData.length - 1) * chartWidth;
-      const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-    ctx.lineTo(padding.left + chartWidth, dimensions.height - padding.bottom);
-    ctx.lineTo(padding.left, dimensions.height - padding.bottom);
-    ctx.closePath();
-    ctx.fillStyle = gradient;
-    ctx.fill();
+      // Draw area fill under line with gradient
+      const gradient = ctx.createLinearGradient(0, padding.top, 0, dimensions.height - padding.bottom);
+      gradient.addColorStop(0, 'rgba(239, 68, 68, 0.15)');
+      gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+      ctx.beginPath();
+      finalData.forEach((point, i) => {
+        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+        const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.lineTo(padding.left + chartWidth, dimensions.height - padding.bottom);
+      ctx.lineTo(padding.left, dimensions.height - padding.bottom);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
 
     // Draw current price label (right side)
     const currentPrice = realtimePrice || finalData[finalData.length - 1]?.price;
@@ -510,7 +555,7 @@ export function PriceChart({
       ctx.font = 'bold 11px monospace';
       ctx.fillText(hoveredData.price.toFixed(5), hoveredData.x + 15, hoveredData.y + 10);
     }
-  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions]);
+  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions, chartType]);
 
   // Draw volume chart
   useEffect(() => {
@@ -665,6 +710,32 @@ export function PriceChart({
             <div className="flex items-center gap-1">
               {/* Toggle sessions visibility */}
               
+              
+              {/* Chart type toggle */}
+              <div className="flex items-center border border-border/50 rounded overflow-hidden">
+                <button 
+                  onClick={() => setChartType('candle')} 
+                  className={cn(
+                    "px-2 py-1 text-[10px] font-medium transition-all",
+                    chartType === 'candle' 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  🕯️ Velas
+                </button>
+                <button 
+                  onClick={() => setChartType('line')} 
+                  className={cn(
+                    "px-2 py-1 text-[10px] font-medium transition-all",
+                    chartType === 'line' 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  📈 Línea
+                </button>
+              </div>
               
               {/* Toggle volume visibility */}
               <button onClick={() => setShowVolumeChart(!showVolumeChart)} className={cn("px-2 py-1 text-[10px] font-medium rounded transition-all", showVolumeChart ? "bg-muted text-foreground" : "bg-muted/30 text-muted-foreground line-through")}>
