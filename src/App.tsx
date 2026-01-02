@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 // Lazy load all pages
 const Index = lazy(() => import("./pages/Index"));
 const News = lazy(() => import("./pages/News"));
+const SavedNews = lazy(() => import("./pages/SavedNews"));
 const Signals = lazy(() => import("./pages/Signals"));
 const NewsDetail = lazy(() => import("./pages/NewsDetail"));
 const Monitoring = lazy(() => import("./pages/Monitoring"));
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/signals" element={<Signals />} />
               <Route path="/news" element={<News />} />
+              <Route path="/news/saved" element={<SavedNews />} />
               <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/monitoring" element={<Monitoring />} />
               <Route path="/settings" element={<Settings />} />
