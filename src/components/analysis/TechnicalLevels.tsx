@@ -54,7 +54,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
       previousClose: effectivePrice * 0.998,
       high: effectivePrice * 1.01,
       low: effectivePrice * 0.99
-    });
+    }, undefined, undefined, true); // forceRefresh = true
     if (result?.analysis) {
       setAILevels(result.analysis);
     }
