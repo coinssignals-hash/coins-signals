@@ -2,6 +2,8 @@ import { useMemo, useRef, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type ChartPeriod = '1D' | '1W' | '1M' | '1Y';
+
 interface PriceChartProps {
   pair: string;
   timeframe: string;
@@ -15,7 +17,15 @@ interface PriceChartProps {
   realtimePrice?: number | null;
   isRealtimeConnected?: boolean;
   previousClose?: number;
+  onPeriodChange?: (period: ChartPeriod) => void;
 }
+
+const periodButtons: { value: ChartPeriod; label: string }[] = [
+  { value: '1D', label: '1D' },
+  { value: '1W', label: '1W' },
+  { value: '1M', label: '1M' },
+  { value: '1Y', label: '1Y' },
+];
 
 export function PriceChart({ 
   pair, 
@@ -26,12 +36,19 @@ export function PriceChart({
   error,
   realtimePrice,
   isRealtimeConnected = false,
-  previousClose
+  previousClose,
+  onPeriodChange
 }: PriceChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string } | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1D');
+
+  const handlePeriodClick = (period: ChartPeriod) => {
+    setSelectedPeriod(period);
+    onPeriodChange?.(period);
+  };
 
   // Calculate chart data
   const chartData = useMemo(() => {
@@ -296,22 +313,44 @@ export function PriceChart({
   }
 
   return (
-    <div ref={containerRef} className="h-[300px] w-full relative bg-background">
-      {/* Realtime indicator */}
-      {isRealtimeConnected && realtimePrice && (
-        <div className="absolute top-2 right-20 z-10 flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
-          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-          <span className="text-xs text-red-400 font-medium">LIVE</span>
+    <div className="w-full relative bg-background">
+      {/* TradingView-style period selector */}
+      <div className="flex items-center justify-between px-2 py-2 border-b border-border/30">
+        <div className="flex items-center gap-1">
+          {periodButtons.map((btn) => (
+            <button
+              key={btn.value}
+              onClick={() => handlePeriodClick(btn.value)}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded transition-all",
+                selectedPeriod === btn.value
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              {btn.label}
+            </button>
+          ))}
         </div>
-      )}
+        
+        {/* Realtime indicator */}
+        {isRealtimeConnected && realtimePrice && (
+          <div className="flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
+            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            <span className="text-xs text-red-400 font-medium">LIVE</span>
+          </div>
+        )}
+      </div>
       
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full cursor-crosshair"
-        style={{ width: dimensions.width, height: dimensions.height }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      />
+      <div ref={containerRef} className="h-[280px] w-full relative">
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full cursor-crosshair"
+          style={{ width: dimensions.width, height: dimensions.height }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        />
+      </div>
     </div>
   );
 }
