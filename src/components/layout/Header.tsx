@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { TrendingUp, Newspaper, Star, BarChart3, Menu, Search, Bell } from 'lucide-react';
+import { TrendingUp, Newspaper, Star, Brain, Menu, Search, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { MainDrawer } from './MainDrawer';
 import { usePrefetch } from '@/hooks/usePrefetch';
 
 const navItems = [
-  { icon: BarChart3, label: 'Markets', href: '/markets' },
+  { icon: Brain, label: 'Ideas', href: '/markets' },
   { icon: Newspaper, label: 'News', href: '/' },
   { icon: TrendingUp, label: 'Ideas', href: '/ideas' },
   { icon: Star, label: 'Watchlist', href: '/watchlist' },
