@@ -527,6 +527,9 @@ const News = () => {
               <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px] font-medium">
                 Polygon
               </span>
+              <span className="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 text-[10px] font-medium">
+                NewsAPI
+              </span>
             </div>
           </div>
         </div>
