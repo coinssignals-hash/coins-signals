@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_analysis_cache: {
+        Row: {
+          analysis_data: Json
+          analysis_type: string
+          created_at: string
+          current_price: number | null
+          expires_at: string
+          id: string
+          symbol: string
+        }
+        Insert: {
+          analysis_data: Json
+          analysis_type: string
+          created_at?: string
+          current_price?: number | null
+          expires_at?: string
+          id?: string
+          symbol: string
+        }
+        Update: {
+          analysis_data?: Json
+          analysis_type?: string
+          created_at?: string
+          current_price?: number | null
+          expires_at?: string
+          id?: string
+          symbol?: string
+        }
+        Relationships: []
+      }
       course_progress: {
         Row: {
           completed: boolean

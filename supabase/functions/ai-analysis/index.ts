@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,6 +7,8 @@ const corsHeaders = {
 };
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 interface AnalysisRequest {
   type: 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels';
@@ -24,6 +27,7 @@ interface AnalysisRequest {
     sma20?: number;
     sma50?: number;
   };
+  forceRefresh?: boolean;
 }
 
 const SYSTEM_PROMPTS: Record<string, string> = {
@@ -43,12 +47,11 @@ Responde SIEMPRE en formato JSON con esta estructura exacta:
 Responde SIEMPRE en formato JSON con esta estructura exacta:
 {
   "direction": "up" | "down" | "sideways",
-  "target_price": número,
-  "confidence": número entre 0 y 1,
-  "timeframe": "1-3 days" | "1 week" | "2 weeks" | "1 month",
-  "support_levels": [array de 3 números],
-  "resistance_levels": [array de 3 números],
-  "reasoning": "breve explicación"
+  "predicted_high": número,
+  "predicted_low": número,
+  "predicted_close": número,
+  "confidence": número entre 0 y 100,
+  "summary": "resumen de 1-2 oraciones sobre la perspectiva del día"
 }`,
 
   conclusions: `Eres un estratega de mercados financieros. Genera conclusiones y perspectivas de mercado.
@@ -101,6 +104,15 @@ Responde SIEMPRE en formato JSON con esta estructura exacta:
 }`
 };
 
+// Cache expiration times per analysis type (in minutes)
+const CACHE_EXPIRATION: Record<string, number> = {
+  sentiment: 30,
+  prediction: 60,
+  conclusions: 60,
+  recommendations: 60,
+  technical_levels: 30
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -111,7 +123,8 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const { type, symbol, marketData, newsContext, technicalIndicators }: AnalysisRequest = await req.json();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { type, symbol, marketData, newsContext, technicalIndicators, forceRefresh }: AnalysisRequest = await req.json();
 
     if (!type || !symbol) {
       return new Response(
@@ -127,6 +140,33 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Check cache first (unless forceRefresh is true)
+    if (!forceRefresh) {
+      const { data: cachedData } = await supabase
+        .from('ai_analysis_cache')
+        .select('*')
+        .eq('symbol', symbol)
+        .eq('analysis_type', type)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+      if (cachedData) {
+        console.log(`Cache hit for ${symbol} (${type})`);
+        return new Response(
+          JSON.stringify({
+            type,
+            symbol,
+            analysis: cachedData.analysis_data,
+            generated_at: cachedData.created_at,
+            cached: true
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    console.log(`AI Analysis request: ${type} for ${symbol}${forceRefresh ? ' (force refresh)' : ''}`);
 
     // Build context message
     let userMessage = `Analiza el par ${symbol}.\n\n`;
@@ -156,8 +196,6 @@ serve(async (req) => {
     }
 
     userMessage += `Genera el análisis de tipo "${type}" para ${symbol}.`;
-
-    console.log(`AI Analysis request: ${type} for ${symbol}`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -205,14 +243,34 @@ serve(async (req) => {
     // Parse JSON from response
     let analysisResult;
     try {
-      // Extract JSON from markdown code blocks if present
       const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
       const jsonStr = jsonMatch[1].trim();
       analysisResult = JSON.parse(jsonStr);
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', content);
-      // Return raw content if parsing fails
       analysisResult = { raw_response: content };
+    }
+
+    // Save to cache
+    const expirationMinutes = CACHE_EXPIRATION[type] || 60;
+    const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000).toISOString();
+    
+    const { error: upsertError } = await supabase
+      .from('ai_analysis_cache')
+      .upsert({
+        symbol,
+        analysis_type: type,
+        analysis_data: analysisResult,
+        current_price: marketData?.currentPrice,
+        expires_at: expiresAt
+      }, {
+        onConflict: 'symbol,analysis_type'
+      });
+
+    if (upsertError) {
+      console.error('Failed to cache analysis:', upsertError);
+    } else {
+      console.log(`Cached ${type} analysis for ${symbol} (expires in ${expirationMinutes}min)`);
     }
 
     console.log(`AI Analysis completed for ${symbol} (${type})`);
@@ -222,7 +280,8 @@ serve(async (req) => {
         type,
         symbol,
         analysis: analysisResult,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
+        cached: false
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

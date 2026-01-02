@@ -58,7 +58,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
       previousClose: price * 0.998,
       high: price * 1.005,
       low: price * 0.995
-    });
+    }, undefined, undefined, true); // forceRefresh = true
     if (result?.analysis) {
       setAIPrediction(result.analysis);
     }

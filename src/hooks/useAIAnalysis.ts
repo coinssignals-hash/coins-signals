@@ -24,6 +24,7 @@ interface AIAnalysisResult {
   symbol: string;
   analysis: Record<string, unknown>;
   generated_at: string;
+  cached?: boolean;
 }
 
 interface UseAIAnalysisReturn {
@@ -32,7 +33,8 @@ interface UseAIAnalysisReturn {
     symbol: string,
     marketData?: MarketData,
     technicalIndicators?: TechnicalIndicators,
-    newsContext?: string[]
+    newsContext?: string[],
+    forceRefresh?: boolean
   ) => Promise<AIAnalysisResult | null>;
   isLoading: boolean;
   error: string | null;
@@ -49,7 +51,8 @@ export function useAIAnalysis(): UseAIAnalysisReturn {
     symbol: string,
     marketData?: MarketData,
     technicalIndicators?: TechnicalIndicators,
-    newsContext?: string[]
+    newsContext?: string[],
+    forceRefresh: boolean = false
   ): Promise<AIAnalysisResult | null> => {
     setIsLoading(true);
     setError(null);
@@ -61,7 +64,8 @@ export function useAIAnalysis(): UseAIAnalysisReturn {
           symbol,
           marketData,
           technicalIndicators,
-          newsContext
+          newsContext,
+          forceRefresh
         }
       });
 
@@ -87,10 +91,14 @@ export function useAIAnalysis(): UseAIAnalysisReturn {
       }
 
       setLastResult(data);
-      toast({
-        title: 'Análisis generado',
-        description: `Análisis de ${type} actualizado con IA`,
-      });
+      
+      // Only show toast for fresh generations, not cached results
+      if (!data.cached) {
+        toast({
+          title: 'Análisis generado',
+          description: `Análisis de ${type} actualizado con IA`,
+        });
+      }
 
       return data;
     } catch (err) {
