@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 
 // Lazy load all pages
 const Index = lazy(() => import("./pages/Index"));
+const News = lazy(() => import("./pages/News"));
 const Signals = lazy(() => import("./pages/Signals"));
 const NewsDetail = lazy(() => import("./pages/NewsDetail"));
 const Monitoring = lazy(() => import("./pages/Monitoring"));
@@ -48,9 +49,9 @@ const App = () => (
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              <Route path="/" element={<Analysis />} />
+              <Route path="/" element={<Index />} />
               <Route path="/signals" element={<Signals />} />
-              <Route path="/news" element={<Index />} />
+              <Route path="/news" element={<News />} />
               <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/monitoring" element={<Monitoring />} />
               <Route path="/settings" element={<Settings />} />
