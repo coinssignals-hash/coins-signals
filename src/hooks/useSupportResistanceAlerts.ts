@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { playNotificationSound } from '@/utils/notificationSound';
@@ -19,6 +19,13 @@ interface Alert {
   symbol: string;
 }
 
+export interface AlertState {
+  isActive: boolean;
+  type: 'support' | 'resistance' | 'breakout-support' | 'breakout-resistance' | null;
+  level: 'warning' | 'critical' | null;
+  timestamp: number | null;
+}
+
 const DEFAULT_CONFIG: SupportResistanceAlertConfig = {
   enabled: true,
   proximityPercent: 0.1, // 0.1% of range
@@ -35,6 +42,22 @@ export function useSupportResistanceAlerts(
   const mergedConfig = { ...DEFAULT_CONFIG, ...config };
   const lastAlerts = useRef<Record<string, number>>({});
   const previousZone = useRef<'support' | 'resistance' | 'middle' | null>(null);
+  const [alertState, setAlertState] = useState<AlertState>({
+    isActive: false,
+    type: null,
+    level: null,
+    timestamp: null,
+  });
+
+  // Clear alert state after animation duration
+  useEffect(() => {
+    if (alertState.isActive) {
+      const timer = setTimeout(() => {
+        setAlertState(prev => ({ ...prev, isActive: false }));
+      }, 3000); // Alert animation lasts 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [alertState.isActive, alertState.timestamp]);
 
   const sendPushNotification = useCallback(async (alert: Alert) => {
     try {
@@ -80,9 +103,17 @@ export function useSupportResistanceAlerts(
     }
   }, [symbol, mergedConfig.enableSound]);
 
-  const triggerAlert = useCallback((alert: Alert) => {
+  const triggerAlert = useCallback((alert: Alert, alertType: AlertState['type']) => {
     showToastAlert(alert);
     sendPushNotification(alert);
+    
+    // Update visual alert state
+    setAlertState({
+      isActive: true,
+      type: alertType,
+      level: alert.level,
+      timestamp: Date.now(),
+    });
   }, [showToastAlert, sendPushNotification]);
 
   const checkPriceProximity = useCallback(() => {
@@ -119,7 +150,7 @@ export function useSupportResistanceAlerts(
           level: isCritical ? 'critical' : 'warning',
           timestamp: new Date(),
           symbol,
-        });
+        }, 'resistance');
       } else if (currentZone === 'support') {
         const isCritical = positionPercent <= 5;
         triggerAlert({
@@ -130,7 +161,7 @@ export function useSupportResistanceAlerts(
           level: isCritical ? 'critical' : 'warning',
           timestamp: new Date(),
           symbol,
-        });
+        }, 'support');
       }
 
       previousZone.current = currentZone;
@@ -152,7 +183,7 @@ export function useSupportResistanceAlerts(
           level: 'critical',
           timestamp: new Date(),
           symbol,
-        });
+        }, 'breakout-resistance');
       }
     } else if (realtimePrice < support) {
       const breakoutKey = `breakout-support-${symbol}`;
@@ -169,7 +200,7 @@ export function useSupportResistanceAlerts(
           level: 'critical',
           timestamp: new Date(),
           symbol,
-        });
+        }, 'breakout-support');
       }
     }
   }, [mergedConfig, realtimePrice, support, resistance, symbol, triggerAlert]);
@@ -178,6 +209,7 @@ export function useSupportResistanceAlerts(
   useEffect(() => {
     previousZone.current = null;
     lastAlerts.current = {};
+    setAlertState({ isActive: false, type: null, level: null, timestamp: null });
   }, [symbol]);
 
   // Check price proximity whenever price updates
@@ -187,5 +219,6 @@ export function useSupportResistanceAlerts(
 
   return {
     config: mergedConfig,
+    alertState,
   };
 }
