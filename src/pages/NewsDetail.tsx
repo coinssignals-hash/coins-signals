@@ -26,6 +26,12 @@ const NewsDetail = () => {
 
   // Fetch AI analysis for the news
   const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
+
+  // Get recent news to show as suggestions when news not found
+  const recentNews = useMemo(() => {
+    if (news || !allNews) return [];
+    return allNews.slice(0, 5);
+  }, [news, allNews]);
   
   // Map sentiment to bias format
   const getBiasFromSentiment = (sentiment: string): 'bullish' | 'bearish' | 'neutral' => {
@@ -80,8 +86,9 @@ const NewsDetail = () => {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Header />
-        <main className="container py-4 flex flex-col items-center justify-center min-h-[50vh]">
-          <div className="p-6 rounded-xl bg-card border border-border max-w-md w-full text-center space-y-4">
+        <main className="container py-4 space-y-6 max-w-4xl">
+          {/* Error message */}
+          <div className="p-6 rounded-xl bg-card border border-border text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
               <AlertCircle className="w-8 h-8 text-muted-foreground" />
             </div>
@@ -91,21 +98,74 @@ const NewsDetail = () => {
             <p className="text-muted-foreground text-sm">
               {error instanceof Error 
                 ? error.message 
-                : 'Esta noticia ya no está disponible en el feed. Las noticias se actualizan frecuentemente con información más reciente.'}
+                : 'Esta noticia ya no está en el feed. Te mostramos las noticias más recientes.'}
             </p>
-            <div className="flex flex-col gap-2 pt-2">
-              <Link to="/news">
-                <Button className="w-full gap-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  Ver noticias recientes
-                </Button>
-              </Link>
-              <Link to="/">
-                <Button variant="ghost" className="w-full text-muted-foreground">
-                  Ir al inicio
-                </Button>
-              </Link>
+          </div>
+
+          {/* Related/Recent news suggestions */}
+          {recentNews.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                Noticias Recientes
+              </h3>
+              <div className="space-y-3">
+                {recentNews.map((item) => (
+                  <Link 
+                    key={item.id} 
+                    to={`/news/${item.id}`}
+                    className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group"
+                  >
+                    {item.image_url && (
+                      <img 
+                        src={item.image_url} 
+                        alt="" 
+                        className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <h4 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                        {item.title}
+                      </h4>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{item.source}</span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {item.time_ago}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {item.affected_currencies.slice(0, 3).map((currency) => (
+                          <span 
+                            key={currency}
+                            className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-medium"
+                          >
+                            {currency}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
+          )}
+
+          {/* Navigation buttons */}
+          <div className="flex flex-col gap-2">
+            <Link to="/news">
+              <Button className="w-full gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Ver todas las noticias
+              </Button>
+            </Link>
+            <Link to="/">
+              <Button variant="ghost" className="w-full text-muted-foreground">
+                Ir al inicio
+              </Button>
+            </Link>
           </div>
         </main>
         <BottomNav />
@@ -119,7 +179,7 @@ const NewsDetail = () => {
       
       <main className="container py-4 space-y-6 max-w-4xl">
         {/* Back button */}
-        <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/news" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Volver a noticias</span>
         </Link>
