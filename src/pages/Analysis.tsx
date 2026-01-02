@@ -303,6 +303,8 @@ export default function Analysis() {
                 smaData={data?.smaData}
                 loading={loading}
                 error={error}
+                realtimePrice={realtimeQuote?.price}
+                isRealtimeConnected={isConnected}
               />
             </div>
           </TabsContent>
@@ -392,6 +394,8 @@ export default function Analysis() {
           resistance={marketStats.resistance}
           support={marketStats.support}
           loading={loading}
+          realtimePrice={realtimeQuote?.price}
+          isRealtimeConnected={isConnected}
         />
 
         {/* Collapsible Sections */}
