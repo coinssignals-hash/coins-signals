@@ -157,6 +157,33 @@ export type Database = {
         }
         Relationships: []
       }
+      news_ai_analysis_cache: {
+        Row: {
+          analysis_data: Json
+          created_at: string
+          expires_at: string
+          id: string
+          news_id: string
+          news_title: string
+        }
+        Insert: {
+          analysis_data: Json
+          created_at?: string
+          expires_at?: string
+          id?: string
+          news_id: string
+          news_title: string
+        }
+        Update: {
+          analysis_data?: Json
+          created_at?: string
+          expires_at?: string
+          id?: string
+          news_id?: string
+          news_title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
