@@ -1,6 +1,92 @@
 // TypeScript types matching the API schemas
 
-export type Currency = 'EUR' | 'USD' | 'AUD' | 'CAD' | 'GBP' | 'JPY' | 'CHF' | 'NZD';
+// 30 Major world currencies
+export type Currency = 
+  // G10 Currencies (Major)
+  | 'EUR'  // Euro
+  | 'USD'  // US Dollar
+  | 'GBP'  // British Pound
+  | 'JPY'  // Japanese Yen
+  | 'AUD'  // Australian Dollar
+  | 'CAD'  // Canadian Dollar
+  | 'CHF'  // Swiss Franc
+  | 'NZD'  // New Zealand Dollar
+  | 'SEK'  // Swedish Krona
+  | 'NOK'  // Norwegian Krone
+  // Emerging Market Currencies
+  | 'CNY'  // Chinese Yuan
+  | 'HKD'  // Hong Kong Dollar
+  | 'SGD'  // Singapore Dollar
+  | 'KRW'  // South Korean Won
+  | 'INR'  // Indian Rupee
+  | 'MXN'  // Mexican Peso
+  | 'BRL'  // Brazilian Real
+  | 'ZAR'  // South African Rand
+  | 'RUB'  // Russian Ruble
+  | 'TRY'  // Turkish Lira
+  | 'PLN'  // Polish Zloty
+  | 'THB'  // Thai Baht
+  | 'MYR'  // Malaysian Ringgit
+  | 'IDR'  // Indonesian Rupiah
+  | 'PHP'  // Philippine Peso
+  // Middle East & Others
+  | 'AED'  // UAE Dirham
+  | 'SAR'  // Saudi Riyal
+  | 'ILS'  // Israeli Shekel
+  | 'CZK'  // Czech Koruna
+  | 'DKK'; // Danish Krone
+
+export interface CurrencyInfo {
+  code: Currency;
+  name: string;
+  flag: string;
+  color: string;
+  region: 'major' | 'europe' | 'asia' | 'americas' | 'middle_east' | 'africa';
+}
+
+export const CURRENCIES: Record<Currency, CurrencyInfo> = {
+  // G10 / Major Currencies
+  EUR: { code: 'EUR', name: 'Euro', flag: '🇪🇺', color: 'currency-eur', region: 'major' },
+  USD: { code: 'USD', name: 'Dólar Estadounidense', flag: '🇺🇸', color: 'currency-usd', region: 'major' },
+  GBP: { code: 'GBP', name: 'Libra Esterlina', flag: '🇬🇧', color: 'currency-gbp', region: 'major' },
+  JPY: { code: 'JPY', name: 'Yen Japonés', flag: '🇯🇵', color: 'currency-jpy', region: 'asia' },
+  AUD: { code: 'AUD', name: 'Dólar Australiano', flag: '🇦🇺', color: 'currency-aud', region: 'major' },
+  CAD: { code: 'CAD', name: 'Dólar Canadiense', flag: '🇨🇦', color: 'currency-cad', region: 'major' },
+  CHF: { code: 'CHF', name: 'Franco Suizo', flag: '🇨🇭', color: 'currency-chf', region: 'europe' },
+  NZD: { code: 'NZD', name: 'Dólar Neozelandés', flag: '🇳🇿', color: 'currency-nzd', region: 'major' },
+  SEK: { code: 'SEK', name: 'Corona Sueca', flag: '🇸🇪', color: 'currency-sek', region: 'europe' },
+  NOK: { code: 'NOK', name: 'Corona Noruega', flag: '🇳🇴', color: 'currency-nok', region: 'europe' },
+  DKK: { code: 'DKK', name: 'Corona Danesa', flag: '🇩🇰', color: 'currency-dkk', region: 'europe' },
+  
+  // Asia Pacific
+  CNY: { code: 'CNY', name: 'Yuan Chino', flag: '🇨🇳', color: 'currency-cny', region: 'asia' },
+  HKD: { code: 'HKD', name: 'Dólar Hong Kong', flag: '🇭🇰', color: 'currency-hkd', region: 'asia' },
+  SGD: { code: 'SGD', name: 'Dólar Singapur', flag: '🇸🇬', color: 'currency-sgd', region: 'asia' },
+  KRW: { code: 'KRW', name: 'Won Surcoreano', flag: '🇰🇷', color: 'currency-krw', region: 'asia' },
+  INR: { code: 'INR', name: 'Rupia India', flag: '🇮🇳', color: 'currency-inr', region: 'asia' },
+  THB: { code: 'THB', name: 'Baht Tailandés', flag: '🇹🇭', color: 'currency-thb', region: 'asia' },
+  MYR: { code: 'MYR', name: 'Ringgit Malayo', flag: '🇲🇾', color: 'currency-myr', region: 'asia' },
+  IDR: { code: 'IDR', name: 'Rupia Indonesia', flag: '🇮🇩', color: 'currency-idr', region: 'asia' },
+  PHP: { code: 'PHP', name: 'Peso Filipino', flag: '🇵🇭', color: 'currency-php', region: 'asia' },
+  
+  // Americas
+  MXN: { code: 'MXN', name: 'Peso Mexicano', flag: '🇲🇽', color: 'currency-mxn', region: 'americas' },
+  BRL: { code: 'BRL', name: 'Real Brasileño', flag: '🇧🇷', color: 'currency-brl', region: 'americas' },
+  
+  // Europe (Non-G10)
+  PLN: { code: 'PLN', name: 'Zloty Polaco', flag: '🇵🇱', color: 'currency-pln', region: 'europe' },
+  CZK: { code: 'CZK', name: 'Corona Checa', flag: '🇨🇿', color: 'currency-czk', region: 'europe' },
+  TRY: { code: 'TRY', name: 'Lira Turca', flag: '🇹🇷', color: 'currency-try', region: 'europe' },
+  RUB: { code: 'RUB', name: 'Rublo Ruso', flag: '🇷🇺', color: 'currency-rub', region: 'europe' },
+  
+  // Middle East
+  AED: { code: 'AED', name: 'Dirham Emiratos', flag: '🇦🇪', color: 'currency-aed', region: 'middle_east' },
+  SAR: { code: 'SAR', name: 'Riyal Saudí', flag: '🇸🇦', color: 'currency-sar', region: 'middle_east' },
+  ILS: { code: 'ILS', name: 'Shekel Israelí', flag: '🇮🇱', color: 'currency-ils', region: 'middle_east' },
+  
+  // Africa
+  ZAR: { code: 'ZAR', name: 'Rand Sudafricano', flag: '🇿🇦', color: 'currency-zar', region: 'africa' },
+};
 
 export type EconomicCategory = 
   | 'monetary_policy'
@@ -112,25 +198,6 @@ export interface NewsDetailResponse {
   cached: boolean;
 }
 
-// Currency metadata
-export interface CurrencyInfo {
-  code: Currency;
-  name: string;
-  flag: string;
-  color: string;
-}
-
-export const CURRENCIES: Record<Currency, CurrencyInfo> = {
-  EUR: { code: 'EUR', name: 'Euro', flag: '🇪🇺', color: 'currency-eur' },
-  USD: { code: 'USD', name: 'US Dollar', flag: '🇺🇸', color: 'currency-usd' },
-  GBP: { code: 'GBP', name: 'British Pound', flag: '🇬🇧', color: 'currency-gbp' },
-  JPY: { code: 'JPY', name: 'Japanese Yen', flag: '🇯🇵', color: 'currency-jpy' },
-  AUD: { code: 'AUD', name: 'Australian Dollar', flag: '🇦🇺', color: 'currency-aud' },
-  CAD: { code: 'CAD', name: 'Canadian Dollar', flag: '🇨🇦', color: 'currency-cad' },
-  CHF: { code: 'CHF', name: 'Swiss Franc', flag: '🇨🇭', color: 'currency-chf' },
-  NZD: { code: 'NZD', name: 'New Zealand Dollar', flag: '🇳🇿', color: 'currency-nzd' },
-};
-
 // Category metadata
 export interface CategoryInfo {
   id: EconomicCategory;
@@ -139,15 +206,15 @@ export interface CategoryInfo {
 }
 
 export const CATEGORIES: Record<EconomicCategory, CategoryInfo> = {
-  monetary_policy: { id: 'monetary_policy', label: 'Monetary Policy', icon: '🏦' },
-  inflation: { id: 'inflation', label: 'Inflation', icon: '📈' },
-  employment: { id: 'employment', label: 'Employment', icon: '👔' },
-  gdp: { id: 'gdp', label: 'GDP', icon: '📊' },
-  trade: { id: 'trade', label: 'Trade', icon: '🌐' },
-  central_bank: { id: 'central_bank', label: 'Central Bank', icon: '🏛️' },
-  geopolitics: { id: 'geopolitics', label: 'Geopolitics', icon: '🌍' },
-  commodities: { id: 'commodities', label: 'Commodities', icon: '⛽' },
-  stocks: { id: 'stocks', label: 'Stocks', icon: '📉' },
-  crypto: { id: 'crypto', label: 'Crypto', icon: '₿' },
-  other: { id: 'other', label: 'Other', icon: '📰' },
+  monetary_policy: { id: 'monetary_policy', label: 'Política Monetaria', icon: '🏦' },
+  inflation: { id: 'inflation', label: 'Inflación', icon: '📈' },
+  employment: { id: 'employment', label: 'Empleo', icon: '👔' },
+  gdp: { id: 'gdp', label: 'PIB', icon: '📊' },
+  trade: { id: 'trade', label: 'Comercio', icon: '🌐' },
+  central_bank: { id: 'central_bank', label: 'Banco Central', icon: '🏛️' },
+  geopolitics: { id: 'geopolitics', label: 'Geopolítica', icon: '🌍' },
+  commodities: { id: 'commodities', label: 'Materias Primas', icon: '⛽' },
+  stocks: { id: 'stocks', label: 'Acciones', icon: '📉' },
+  crypto: { id: 'crypto', label: 'Cripto', icon: '₿' },
+  other: { id: 'other', label: 'Otros', icon: '📰' },
 };
