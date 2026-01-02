@@ -8,7 +8,7 @@ const corsHeaders = {
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
 interface AnalysisRequest {
-  type: 'sentiment' | 'prediction' | 'conclusions' | 'recommendations';
+  type: 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels';
   symbol: string;
   marketData?: {
     currentPrice: number;
@@ -76,6 +76,28 @@ Responde SIEMPRE en formato JSON con esta estructura exacta:
   },
   "medium_term": { mismo formato },
   "long_term": { mismo formato }
+}`,
+
+  technical_levels: `Eres un analista técnico experto especializado en soportes y resistencias. Calcula niveles técnicos precisos.
+Responde SIEMPRE en formato JSON con esta estructura exacta:
+{
+  "pivot": número (punto pivote calculado),
+  "resistances": [
+    {"level": número, "strength": "strong" | "moderate" | "weak", "description": "breve descripción"},
+    {"level": número, "strength": "strong" | "moderate" | "weak", "description": "breve descripción"},
+    {"level": número, "strength": "strong" | "moderate" | "weak", "description": "breve descripción"}
+  ],
+  "supports": [
+    {"level": número, "strength": "strong" | "moderate" | "weak", "description": "breve descripción"},
+    {"level": número, "strength": "strong" | "moderate" | "weak", "description": "breve descripción"},
+    {"level": número, "strength": "strong" | "moderate" | "weak", "description": "breve descripción"}
+  ],
+  "fibonacci": [
+    {"level": "23.6%", "price": número},
+    {"level": "38.2%", "price": número},
+    {"level": "50.0%", "price": número},
+    {"level": "61.8%", "price": número}
+  ]
 }`
 };
 
