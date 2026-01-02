@@ -314,15 +314,25 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           backgroundPosition: 'center',
         }}
       >
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/60 via-blue-800/40 to-blue-900/70" />
+        {/* Overlay gradient - darker */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-900/85 to-slate-950/95" />
+        
+        {/* Subtle glow effects */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl" />
         
         {/* Content */}
         <div className="relative z-10">
           {/* Date and Favorite */}
           <div className="flex items-center justify-between mb-3">
-            <div className="text-xs text-blue-200/80 capitalize">
-              {formattedDateShort} (UTC+01:00)
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs text-slate-400 font-medium">
+                {formattedDateShort}
+              </span>
+              <span className="text-[10px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-800/50">
+                UTC+01:00
+              </span>
             </div>
             {onToggleFavorite && (
               <button
@@ -335,7 +345,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 <Heart
                   className={cn(
                     "w-5 h-5 transition-colors",
-                    isFavorite ? "fill-red-500 text-red-500" : "text-white/60 hover:text-red-400"
+                    isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-500 hover:text-rose-400"
                   )}
                 />
               </button>
@@ -348,23 +358,36 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
             <div className="flex items-center gap-3">
               <div className="relative">
                 <FlagIcon currency={base} />
-                <FlagIcon currency={quote} className="absolute -bottom-1 -right-3 w-8 h-8 border-2" />
+                <FlagIcon currency={quote} className="absolute -bottom-1 -right-3 w-8 h-8 border-2 border-slate-900" />
               </div>
-              <span className="text-2xl font-bold text-white ml-2">{base}-{quote}</span>
+              <div className="ml-2">
+                <span className="text-2xl font-bold text-white tracking-tight">{base}-{quote}</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className={cn(
+                    "text-[10px] font-semibold px-1.5 py-0.5 rounded",
+                    isBuy ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+                  )}>
+                    {signal.trend.toUpperCase()}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Status Badge & Probability Circle */}
-            <div className="flex flex-col items-end gap-1">
-              <span className="text-green-400 font-semibold text-sm italic drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]">
-                Señal Activa
-              </span>
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-emerald-400 font-semibold text-[11px] uppercase tracking-wide">
+                  Activa
+                </span>
+              </div>
               <div className="relative w-14 h-14">
                 <svg className="w-14 h-14 -rotate-90">
                   <circle
                     cx="28"
                     cy="28"
                     r="24"
-                    stroke="rgba(59, 130, 246, 0.3)"
+                    stroke="rgba(100, 116, 139, 0.2)"
                     strokeWidth="4"
                     fill="none"
                   />
@@ -372,15 +395,18 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                     cx="28"
                     cy="28"
                     r="24"
-                    stroke="#3b82f6"
+                    stroke={isBuy ? "#10b981" : "#f43f5e"}
                     strokeWidth="4"
                     fill="none"
                     strokeDasharray={`${(signal.probability / 100) * 150.8} 150.8`}
                     strokeLinecap="round"
-                    className="drop-shadow-[0_0_6px_rgba(59,130,246,0.8)]"
+                    className={isBuy ? "drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "drop-shadow-[0_0_8px_rgba(244,63,94,0.6)]"}
                   />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-blue-400">
+                <span className={cn(
+                  "absolute inset-0 flex items-center justify-center text-sm font-bold",
+                  isBuy ? "text-emerald-400" : "text-rose-400"
+                )}>
                   {signal.probability}%
                 </span>
               </div>
@@ -389,28 +415,28 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
           {/* Trend/Action/Session Row */}
           <div className="grid grid-cols-3 gap-2 mt-4">
-            <div className="bg-blue-900/60 backdrop-blur-sm rounded-lg p-2 text-center border border-blue-500/30">
-              <div className="text-[10px] text-blue-300 uppercase font-medium">Tendencia</div>
+            <div className="bg-slate-800/60 rounded-xl p-2.5 text-center border border-slate-700/50">
+              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">Tendencia</div>
               <div className={cn(
                 "flex items-center justify-center gap-1 font-bold text-lg",
-                isBuy ? "text-green-400" : "text-red-400"
+                isBuy ? "text-emerald-400" : "text-rose-400"
               )}>
                 {isBuy ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
                 {signal.probability}%
               </div>
             </div>
-            <div className="bg-blue-900/60 backdrop-blur-sm rounded-lg p-2 text-center border border-blue-500/30">
-              <div className="text-[10px] text-blue-300 uppercase font-medium">Acción</div>
+            <div className="bg-slate-800/60 rounded-xl p-2.5 text-center border border-slate-700/50">
+              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">Acción</div>
               <div className={cn(
                 "font-bold text-lg",
-                isBuy ? "text-green-400" : "text-red-400"
+                isBuy ? "text-emerald-400" : "text-rose-400"
               )}>
                 {signal.action === 'BUY' ? 'Comprar' : 'Vender'}
               </div>
             </div>
-            <div className="bg-blue-900/60 backdrop-blur-sm rounded-lg p-2 text-center border border-blue-500/30">
-              <div className="text-[10px] text-blue-300 uppercase font-medium">Sección</div>
-              <div className="text-blue-100 text-xs leading-tight">
+            <div className="bg-slate-800/60 rounded-xl p-2.5 text-center border border-slate-700/50">
+              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">Sesión</div>
+              <div className="text-slate-300 text-xs font-medium leading-tight">
                 {sessions.split(' / ').map((s, i) => (
                   <div key={i}>{s}</div>
                 ))}
