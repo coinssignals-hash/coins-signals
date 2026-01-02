@@ -22,7 +22,8 @@ import {
   Globe,
   Cloud,
   Download,
-  Brain
+  Brain,
+  Newspaper
 } from 'lucide-react';
 import {
   Sheet,
@@ -42,6 +43,7 @@ interface MainDrawerProps {
 
 const menuItems = [
   { icon: Brain, label: 'Ideas', href: '/' },
+  { icon: Newspaper, label: 'Noticias', href: '/news' },
   { icon: UserIcon, label: 'Ajuste De Perfil', href: '/settings' },
   { icon: FileText, label: 'Suscripciones', href: '/subscriptions' },
   { icon: Gift, label: 'Bonos Por Referidos', href: '/referrals' },
