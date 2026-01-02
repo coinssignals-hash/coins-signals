@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 // Currency/Asset visual mapping with flags and logos
 const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: string; textColor?: string }> = {
@@ -131,32 +132,37 @@ const getSymbolVisual = (code: string): { flag?: string; symbol?: string; bgColo
   return symbolVisuals[upperCode] || { symbol: upperCode.slice(0, 2), bgColor: 'bg-gray-600' };
 };
 
-// Currency pair icon component with overlapping circles
-const CurrencyPairIcon = ({ base, quote }: { base: string; quote: string }) => {
+// Currency pair icon component with overlapping circles and animation
+const CurrencyPairIcon = ({ base, quote, animate }: { base: string; quote: string; animate?: boolean }) => {
   const baseVisual = getSymbolVisual(base);
   const quoteVisual = getSymbolVisual(quote);
   
   return (
-    <div className="relative flex items-center">
+    <div className={cn(
+      "relative flex items-center transition-all duration-500",
+      animate && "animate-scale-in"
+    )}>
       {/* Base currency (front) */}
       <div 
         className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 border-background shadow-lg",
-          baseVisual.bgColor
+          "w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 border-background shadow-lg transition-all duration-300",
+          baseVisual.bgColor,
+          animate && "animate-fade-in"
         )}
       >
-        <span className={cn("text-lg", baseVisual.textColor || "text-white")}>
+        <span className={cn("text-lg transition-opacity duration-300", baseVisual.textColor || "text-white")}>
           {baseVisual.flag || baseVisual.symbol}
         </span>
       </div>
       {/* Quote currency (back, offset) */}
       <div 
         className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center -ml-4 border-2 border-background shadow-lg",
-          quoteVisual.bgColor
+          "w-10 h-10 rounded-full flex items-center justify-center -ml-4 border-2 border-background shadow-lg transition-all duration-300 delay-75",
+          quoteVisual.bgColor,
+          animate && "animate-fade-in"
         )}
       >
-        <span className={cn("text-lg", quoteVisual.textColor || "text-white")}>
+        <span className={cn("text-lg transition-opacity duration-300", quoteVisual.textColor || "text-white")}>
           {quoteVisual.flag || quoteVisual.symbol}
         </span>
       </div>
@@ -185,6 +191,18 @@ export function CurrencyHeader({
 }: CurrencyHeaderProps) {
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [displaySymbol, setDisplaySymbol] = useState(symbol);
+
+  // Trigger animation when symbol changes
+  useEffect(() => {
+    if (symbol !== displaySymbol) {
+      setIsAnimating(true);
+      setDisplaySymbol(symbol);
+      const timer = setTimeout(() => setIsAnimating(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [symbol, displaySymbol]);
 
   if (loading) {
     return (
@@ -195,12 +213,18 @@ export function CurrencyHeader({
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-lg p-4">
+    <div className={cn(
+      "bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-lg p-4 transition-all duration-300",
+      isAnimating && "border-green-500/50"
+    )}>
       <div className="flex items-center justify-between flex-wrap gap-4">
         {/* Currency Pair Icons */}
         <div className="flex items-center gap-4">
-          <CurrencyPairIcon base={base} quote={quote} />
-          <div>
+          <CurrencyPairIcon base={base} quote={quote} animate={isAnimating} />
+          <div className={cn(
+            "transition-all duration-300",
+            isAnimating && "animate-fade-in"
+          )}>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-bold text-white">
                 {currentPrice.toFixed(4)}
