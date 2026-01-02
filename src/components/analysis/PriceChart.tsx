@@ -1084,6 +1084,125 @@ export function PriceChart({
           height: volumeDimensions.height
         }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} />
         </div>}
+      
+      {/* Patterns Legend - Expandable */}
+      {chartType === 'candle' && showPatterns && detectedPatterns.length > 0 && (
+        <div className="border-t border-border/30 bg-muted/10">
+          <details className="group">
+            <summary className="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-muted/20 transition-colors">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-foreground">🕯️ Patrones Detectados</span>
+                <span className="bg-amber-500/20 text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                  {detectedPatterns.length}
+                </span>
+              </div>
+              <svg 
+                className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="px-3 pb-3 space-y-2 animate-fade-in">
+              {detectedPatterns.map((pattern, idx) => {
+                const point = finalData[pattern.index];
+                const patternDescriptions: Record<string, { title: string; desc: string; action: string }> = {
+                  doji: {
+                    title: 'Doji - Indecisión',
+                    desc: 'El precio de apertura y cierre son prácticamente iguales, indicando indecisión en el mercado.',
+                    action: 'Esperar confirmación de la próxima vela antes de actuar.'
+                  },
+                  hammer: {
+                    title: 'Hammer - Reversión Alcista',
+                    desc: 'Cuerpo pequeño en la parte superior con mecha inferior larga. Señal de posible reversión alcista.',
+                    action: 'Considerar posición larga si aparece después de tendencia bajista.'
+                  },
+                  inverted_hammer: {
+                    title: 'Martillo Invertido - Potencial Alcista',
+                    desc: 'Cuerpo pequeño en la parte inferior con mecha superior larga. Posible cambio de tendencia.',
+                    action: 'Buscar confirmación alcista en la siguiente vela.'
+                  },
+                  bullish_engulfing: {
+                    title: 'Envolvente Alcista - Señal Fuerte',
+                    desc: 'Una vela verde grande envuelve completamente la vela roja anterior. Fuerte señal de compra.',
+                    action: 'Considerar entrada en largo con stop bajo el mínimo del patrón.'
+                  },
+                  bearish_engulfing: {
+                    title: 'Envolvente Bajista - Señal Fuerte',
+                    desc: 'Una vela roja grande envuelve completamente la vela verde anterior. Fuerte señal de venta.',
+                    action: 'Considerar entrada en corto con stop sobre el máximo del patrón.'
+                  },
+                  morning_star: {
+                    title: 'Estrella de la Mañana - Reversión Alcista',
+                    desc: 'Patrón de tres velas que indica fin de tendencia bajista.',
+                    action: 'Señal de compra con confirmación.'
+                  },
+                  evening_star: {
+                    title: 'Estrella de la Tarde - Reversión Bajista',
+                    desc: 'Patrón de tres velas que indica fin de tendencia alcista.',
+                    action: 'Señal de venta con confirmación.'
+                  }
+                };
+                
+                const info = patternDescriptions[pattern.type] || { 
+                  title: pattern.label, 
+                  desc: 'Patrón de vela detectado.',
+                  action: 'Analizar contexto del mercado.'
+                };
+                
+                return (
+                  <div 
+                    key={`${pattern.type}-${idx}`}
+                    className="flex items-start gap-3 p-2 rounded-lg bg-background/50 border border-border/30"
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0"
+                      style={{ backgroundColor: `${pattern.color}20` }}
+                    >
+                      {pattern.emoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-semibold text-foreground">{info.title}</span>
+                        <span 
+                          className="text-[9px] px-1.5 py-0.5 rounded font-medium"
+                          style={{ 
+                            backgroundColor: `${pattern.color}20`,
+                            color: pattern.color 
+                          }}
+                        >
+                          {pattern.signal === 'bullish' ? '↑ ALCISTA' : pattern.signal === 'bearish' ? '↓ BAJISTA' : '→ NEUTRAL'}
+                        </span>
+                        {point && (
+                          <span className="text-[10px] text-muted-foreground">
+                            @ {point.time}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">
+                        {info.desc}
+                      </p>
+                      <p className="text-[10px] mt-1 font-medium" style={{ color: pattern.color }}>
+                        💡 {info.action}
+                      </p>
+                      {point && (
+                        <div className="flex items-center gap-3 mt-1.5 text-[9px] text-muted-foreground">
+                          <span>O: <span className="text-foreground font-mono">{point.open.toFixed(5)}</span></span>
+                          <span>H: <span className="text-green-400 font-mono">{point.high.toFixed(5)}</span></span>
+                          <span>L: <span className="text-red-400 font-mono">{point.low.toFixed(5)}</span></span>
+                          <span>C: <span className="text-foreground font-mono">{point.price.toFixed(5)}</span></span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+        </div>
+      )}
     </div>
     </TooltipProvider>;
 }
