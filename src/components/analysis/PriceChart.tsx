@@ -1,22 +1,28 @@
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 type ChartPeriod = '5m' | '15m' | '30m' | '1h' | '4h' | '1w';
-
 interface PriceChartProps {
   pair: string;
   timeframe: string;
-  priceData?: Array<{ time: string; price: number; open: number; high: number; low: number; volume?: number }>;
+  priceData?: Array<{
+    time: string;
+    price: number;
+    open: number;
+    high: number;
+    low: number;
+    volume?: number;
+  }>;
   smaData?: {
-    sma20: Array<{ datetime: string; sma: number }>;
-    sma50: Array<{ datetime: string; sma: number }>;
+    sma20: Array<{
+      datetime: string;
+      sma: number;
+    }>;
+    sma50: Array<{
+      datetime: string;
+      sma: number;
+    }>;
   };
   loading?: boolean;
   error?: string | null;
@@ -28,78 +34,93 @@ interface PriceChartProps {
 }
 
 // Market session times in UTC with detailed info
-const MARKET_SESSIONS = [
-  { 
-    id: 'sydney', 
-    name: 'Sídney', 
-    start: 21, 
-    end: 6, 
-    color: 'rgba(168, 85, 247, 0.12)', 
-    borderColor: 'rgba(168, 85, 247, 0.6)', 
-    bgColor: 'bg-purple-500/20', 
-    textColor: 'text-purple-400', 
-    emoji: '🇦🇺',
-    markets: 'Sídney, Wellington',
-    volatility: 'Baja',
-    pairs: 'AUD, NZD',
-    description: 'Primera sesión del día. Baja liquidez pero buenos movimientos en AUD/NZD.'
-  },
-  { 
-    id: 'asia', 
-    name: 'Asia', 
-    start: 0, 
-    end: 9, 
-    color: 'rgba(251, 191, 36, 0.12)', 
-    borderColor: 'rgba(251, 191, 36, 0.6)', 
-    bgColor: 'bg-amber-500/20', 
-    textColor: 'text-amber-400', 
-    emoji: '🌏',
-    markets: 'Tokio, Singapur, Hong Kong',
-    volatility: 'Media-Baja',
-    pairs: 'JPY, SGD, HKD',
-    description: 'Sesión más tranquila. Ideal para pares asiáticos y commodities.'
-  },
-  { 
-    id: 'london', 
-    name: 'Londres', 
-    start: 8, 
-    end: 17, 
-    color: 'rgba(59, 130, 246, 0.12)', 
-    borderColor: 'rgba(59, 130, 246, 0.6)', 
-    bgColor: 'bg-blue-500/20', 
-    textColor: 'text-blue-400', 
-    emoji: '🇬🇧',
-    markets: 'Londres, Frankfurt, Zúrich, París',
-    volatility: 'Alta',
-    pairs: 'EUR, GBP, CHF',
-    description: 'Mayor liquidez del día. Movimientos significativos en EUR y GBP.'
-  },
-  { 
-    id: 'ny', 
-    name: 'Nueva York', 
-    start: 13, 
-    end: 22, 
-    color: 'rgba(34, 197, 94, 0.12)', 
-    borderColor: 'rgba(34, 197, 94, 0.6)', 
-    bgColor: 'bg-green-500/20', 
-    textColor: 'text-green-400', 
-    emoji: '🇺🇸',
-    markets: 'Nueva York, Chicago, Toronto',
-    volatility: 'Alta',
-    pairs: 'USD, CAD',
-    description: 'Solapamiento con Londres genera máxima volatilidad. Noticias económicas clave.'
-  },
-];
-
+const MARKET_SESSIONS = [{
+  id: 'sydney',
+  name: 'Sídney',
+  start: 21,
+  end: 6,
+  color: 'rgba(168, 85, 247, 0.12)',
+  borderColor: 'rgba(168, 85, 247, 0.6)',
+  bgColor: 'bg-purple-500/20',
+  textColor: 'text-purple-400',
+  emoji: '🇦🇺',
+  markets: 'Sídney, Wellington',
+  volatility: 'Baja',
+  pairs: 'AUD, NZD',
+  description: 'Primera sesión del día. Baja liquidez pero buenos movimientos en AUD/NZD.'
+}, {
+  id: 'asia',
+  name: 'Asia',
+  start: 0,
+  end: 9,
+  color: 'rgba(251, 191, 36, 0.12)',
+  borderColor: 'rgba(251, 191, 36, 0.6)',
+  bgColor: 'bg-amber-500/20',
+  textColor: 'text-amber-400',
+  emoji: '🌏',
+  markets: 'Tokio, Singapur, Hong Kong',
+  volatility: 'Media-Baja',
+  pairs: 'JPY, SGD, HKD',
+  description: 'Sesión más tranquila. Ideal para pares asiáticos y commodities.'
+}, {
+  id: 'london',
+  name: 'Londres',
+  start: 8,
+  end: 17,
+  color: 'rgba(59, 130, 246, 0.12)',
+  borderColor: 'rgba(59, 130, 246, 0.6)',
+  bgColor: 'bg-blue-500/20',
+  textColor: 'text-blue-400',
+  emoji: '🇬🇧',
+  markets: 'Londres, Frankfurt, Zúrich, París',
+  volatility: 'Alta',
+  pairs: 'EUR, GBP, CHF',
+  description: 'Mayor liquidez del día. Movimientos significativos en EUR y GBP.'
+}, {
+  id: 'ny',
+  name: 'Nueva York',
+  start: 13,
+  end: 22,
+  color: 'rgba(34, 197, 94, 0.12)',
+  borderColor: 'rgba(34, 197, 94, 0.6)',
+  bgColor: 'bg-green-500/20',
+  textColor: 'text-green-400',
+  emoji: '🇺🇸',
+  markets: 'Nueva York, Chicago, Toronto',
+  volatility: 'Alta',
+  pairs: 'USD, CAD',
+  description: 'Solapamiento con Londres genera máxima volatilidad. Noticias económicas clave.'
+}];
 type SessionId = 'sydney' | 'asia' | 'london' | 'ny';
-
-const periodButtons: { value: ChartPeriod; label: string; minutes: number }[] = [
-  { value: '5m', label: '5m', minutes: 5 },
-  { value: '15m', label: '15m', minutes: 15 },
-  { value: '30m', label: '30m', minutes: 30 },
-  { value: '1h', label: '1h', minutes: 60 },
-  { value: '4h', label: '4h', minutes: 240 },
-  { value: '1w', label: '1S', minutes: 10080 }, // 1 week = 7 * 24 * 60
+const periodButtons: {
+  value: ChartPeriod;
+  label: string;
+  minutes: number;
+}[] = [{
+  value: '5m',
+  label: '5m',
+  minutes: 5
+}, {
+  value: '15m',
+  label: '15m',
+  minutes: 15
+}, {
+  value: '30m',
+  label: '30m',
+  minutes: 30
+}, {
+  value: '1h',
+  label: '1h',
+  minutes: 60
+}, {
+  value: '4h',
+  label: '4h',
+  minutes: 240
+}, {
+  value: '1w',
+  label: '1S',
+  minutes: 10080
+} // 1 week = 7 * 24 * 60
 ];
 
 // Get session for a given UTC hour, filtered by enabled sessions
@@ -107,7 +128,6 @@ function getSessionsForHour(utcHour: number, enabledSessions: Set<SessionId>) {
   return MARKET_SESSIONS.filter(session => {
     // Check if session is enabled
     if (!enabledSessions.has(session.id as SessionId)) return false;
-    
     if (session.start < session.end) {
       return utcHour >= session.start && utcHour < session.end;
     }
@@ -115,13 +135,12 @@ function getSessionsForHour(utcHour: number, enabledSessions: Set<SessionId>) {
     return utcHour >= session.start || utcHour < session.end;
   });
 }
-
-export function PriceChart({ 
-  pair, 
-  timeframe, 
-  priceData, 
-  smaData, 
-  loading, 
+export function PriceChart({
+  pair,
+  timeframe,
+  priceData,
+  smaData,
+  loading,
   error,
   realtimePrice,
   isRealtimeConnected = false,
@@ -133,19 +152,31 @@ export function PriceChart({
   const volumeCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const volumeContainerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
-  const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number; sessions?: typeof MARKET_SESSIONS } | null>(null);
+  const [dimensions, setDimensions] = useState({
+    width: 0,
+    height: 0
+  });
+  const [volumeDimensions, setVolumeDimensions] = useState({
+    width: 0,
+    height: 0
+  });
+  const [hoveredData, setHoveredData] = useState<{
+    x: number;
+    y: number;
+    price: number;
+    time: string;
+    volume?: number;
+    index: number;
+    sessions?: typeof MARKET_SESSIONS;
+  } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('4h');
   const [enabledSessions, setEnabledSessions] = useState<Set<SessionId>>(new Set(['sydney', 'asia', 'london', 'ny']));
   const [showSessions, setShowSessions] = useState(true);
   const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
-
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
     onPeriodChange?.(period);
   };
-
   const toggleSession = (sessionId: SessionId) => {
     setEnabledSessions(prev => {
       const next = new Set(prev);
@@ -164,101 +195,102 @@ export function PriceChart({
     const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
     const minutes = periodConfig?.minutes || 240;
     const startTime = new Date(now.getTime() - minutes * 60 * 1000);
-    return { startTime, endTime: now };
+    return {
+      startTime,
+      endTime: now
+    };
   }, [selectedPeriod]);
 
   // Calculate chart data with UTC hours for sessions, filtered by period
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
-    
-    const { startTime, endTime } = getTimeRange;
-    
-    return priceData
-      .map((price, index) => {
-        // Extract time from ISO string or other formats
-        let timeLabel = '';
-        let utcHour = 0;
-        let timestamp: Date | null = null;
-        
-        try {
-          const date = new Date(price.time);
-          if (!isNaN(date.getTime())) {
-            timestamp = date;
-            // Format based on period - show date for longer periods
-            if (selectedPeriod === '1w') {
-              timeLabel = date.toLocaleDateString('es-ES', { 
-                weekday: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false 
-              });
-            } else {
-              timeLabel = date.toLocaleTimeString('es-ES', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: false 
-              });
-            }
-            utcHour = date.getUTCHours();
+    const {
+      startTime,
+      endTime
+    } = getTimeRange;
+    return priceData.map((price, index) => {
+      // Extract time from ISO string or other formats
+      let timeLabel = '';
+      let utcHour = 0;
+      let timestamp: Date | null = null;
+      try {
+        const date = new Date(price.time);
+        if (!isNaN(date.getTime())) {
+          timestamp = date;
+          // Format based on period - show date for longer periods
+          if (selectedPeriod === '1w') {
+            timeLabel = date.toLocaleDateString('es-ES', {
+              weekday: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
           } else {
-            // Fallback: try to extract time from string
-            timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
-            // Try to parse hour from timeLabel
-            const hourMatch = timeLabel.match(/^(\d{1,2}):/);
-            if (hourMatch) utcHour = parseInt(hourMatch[1]);
+            timeLabel = date.toLocaleTimeString('es-ES', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
           }
-        } catch {
+          utcHour = date.getUTCHours();
+        } else {
+          // Fallback: try to extract time from string
           timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+          // Try to parse hour from timeLabel
+          const hourMatch = timeLabel.match(/^(\d{1,2}):/);
+          if (hourMatch) utcHour = parseInt(hourMatch[1]);
         }
-        
-        // Generate synthetic volume if not provided (based on price movement)
-        const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
-        return {
-          time: timeLabel,
-          timestamp,
-          utcHour,
-          price: price.price,
-          open: price.open,
-          high: price.high,
-          low: price.low,
-          volume: syntheticVolume,
-        };
-      })
-      .filter(item => {
-        // Filter by time range if timestamp is available
-        if (item.timestamp) {
-          return item.timestamp >= startTime && item.timestamp <= endTime;
-        }
-        return true; // Keep items without valid timestamp
-      });
+      } catch {
+        timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+      }
+
+      // Generate synthetic volume if not provided (based on price movement)
+      const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
+      return {
+        time: timeLabel,
+        timestamp,
+        utcHour,
+        price: price.price,
+        open: price.open,
+        high: price.high,
+        low: price.low,
+        volume: syntheticVolume
+      };
+    }).filter(item => {
+      // Filter by time range if timestamp is available
+      if (item.timestamp) {
+        return item.timestamp >= startTime && item.timestamp <= endTime;
+      }
+      return true; // Keep items without valid timestamp
+    });
   }, [priceData, getTimeRange, selectedPeriod]);
 
   // Add realtime price
   const finalData = useMemo(() => {
     if (!realtimePrice || chartData.length === 0) return chartData;
     const now = new Date();
-    return [
-      ...chartData,
-      {
-        time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
-        timestamp: now,
-        utcHour: now.getUTCHours(),
-        price: realtimePrice,
-        open: realtimePrice,
-        high: realtimePrice,
-        low: realtimePrice,
-        volume: chartData[chartData.length - 1]?.volume || 0,
-      }
-    ];
+    return [...chartData, {
+      time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+      timestamp: now,
+      utcHour: now.getUTCHours(),
+      price: realtimePrice,
+      open: realtimePrice,
+      high: realtimePrice,
+      low: realtimePrice,
+      volume: chartData[chartData.length - 1]?.volume || 0
+    }];
   }, [chartData, realtimePrice]);
 
   // Format time range description
   const timeRangeDescription = useMemo(() => {
-    const { startTime, endTime } = getTimeRange;
-    const formatDate = (date: Date) => date.toLocaleDateString('es-ES', { 
-      weekday: 'short', 
-      day: 'numeric', 
+    const {
+      startTime,
+      endTime
+    } = getTimeRange;
+    const formatDate = (date: Date) => date.toLocaleDateString('es-ES', {
+      weekday: 'short',
+      day: 'numeric',
       month: 'short',
       hour: '2-digit',
       minute: '2-digit'
@@ -291,16 +323,18 @@ export function PriceChart({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || finalData.length === 0 || dimensions.width === 0) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     const dpr = window.devicePixelRatio || 1;
     canvas.width = dimensions.width * dpr;
     canvas.height = dimensions.height * dpr;
     ctx.scale(dpr, dpr);
-
-    const padding = { top: 20, right: 70, bottom: 30, left: 10 };
+    const padding = {
+      top: 20,
+      right: 70,
+      bottom: 30,
+      left: 10
+    };
     const chartWidth = dimensions.width - padding.left - padding.right;
     const chartHeight = dimensions.height - padding.top - padding.bottom;
 
@@ -321,36 +355,36 @@ export function PriceChart({
       let prevSession: string | null = null;
       finalData.forEach((point, i) => {
         const sessions = getSessionsForHour(point.utcHour, enabledSessions);
-      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
-      const barWidth = chartWidth / (finalData.length - 1);
-      
-      // Draw session background bands
-      sessions.forEach(session => {
-        ctx.fillStyle = session.color;
-        ctx.fillRect(x - barWidth / 2, padding.top, barWidth + 1, chartHeight);
+        const x = padding.left + i / (finalData.length - 1) * chartWidth;
+        const barWidth = chartWidth / (finalData.length - 1);
+
+        // Draw session background bands
+        sessions.forEach(session => {
+          ctx.fillStyle = session.color;
+          ctx.fillRect(x - barWidth / 2, padding.top, barWidth + 1, chartHeight);
+        });
+
+        // Draw session start marker
+        const currentSessionName = sessions.map(s => s.name).join(',');
+        if (currentSessionName !== prevSession && sessions.length > 0 && i > 0) {
+          const mainSession = sessions[0];
+          ctx.beginPath();
+          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = mainSession.borderColor;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(x, padding.top);
+          ctx.lineTo(x, padding.top + chartHeight);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Session label at top
+          ctx.fillStyle = mainSession.borderColor;
+          ctx.font = 'bold 10px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`${mainSession.emoji} ${mainSession.name}`, x + 4, padding.top + 14);
+        }
+        prevSession = currentSessionName;
       });
-      
-      // Draw session start marker
-      const currentSessionName = sessions.map(s => s.name).join(',');
-      if (currentSessionName !== prevSession && sessions.length > 0 && i > 0) {
-        const mainSession = sessions[0];
-        ctx.beginPath();
-        ctx.setLineDash([4, 4]);
-        ctx.strokeStyle = mainSession.borderColor;
-        ctx.lineWidth = 1.5;
-        ctx.moveTo(x, padding.top);
-        ctx.lineTo(x, padding.top + chartHeight);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        // Session label at top
-        ctx.fillStyle = mainSession.borderColor;
-        ctx.font = 'bold 10px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(`${mainSession.emoji} ${mainSession.name}`, x + 4, padding.top + 14);
-      }
-      prevSession = currentSessionName;
-    });
     }
 
     // Calculate close price for comparison
@@ -358,7 +392,7 @@ export function PriceChart({
 
     // Draw previous close line (dashed red)
     if (closePrice) {
-      const closeY = padding.top + chartHeight - ((closePrice - paddedMin) / paddedRange) * chartHeight;
+      const closeY = padding.top + chartHeight - (closePrice - paddedMin) / paddedRange * chartHeight;
       ctx.beginPath();
       ctx.setLineDash([5, 5]);
       ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
@@ -384,8 +418,8 @@ export function PriceChart({
     ctx.textAlign = 'right';
     const ySteps = 5;
     for (let i = 0; i <= ySteps; i++) {
-      const price = paddedMin + (paddedRange / ySteps) * i;
-      const y = padding.top + chartHeight - (i / ySteps) * chartHeight;
+      const price = paddedMin + paddedRange / ySteps * i;
+      const y = padding.top + chartHeight - i / ySteps * chartHeight;
       ctx.fillText(price.toFixed(4), dimensions.width - 5, y + 3);
     }
 
@@ -394,7 +428,7 @@ export function PriceChart({
     const xLabelCount = Math.min(8, finalData.length);
     const xStep = Math.floor(finalData.length / xLabelCount);
     for (let i = 0; i < finalData.length; i += xStep) {
-      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
+      const x = padding.left + i / (finalData.length - 1) * chartWidth;
       ctx.fillText(finalData[i].time, x, dimensions.height - 5);
     }
 
@@ -404,10 +438,9 @@ export function PriceChart({
     ctx.lineWidth = 1.5;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
-
     finalData.forEach((point, i) => {
-      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
-      const y = padding.top + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
+      const x = padding.left + i / (finalData.length - 1) * chartWidth;
+      const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
       if (i === 0) {
         ctx.moveTo(x, y);
       } else {
@@ -420,11 +453,10 @@ export function PriceChart({
     const gradient = ctx.createLinearGradient(0, padding.top, 0, dimensions.height - padding.bottom);
     gradient.addColorStop(0, 'rgba(239, 68, 68, 0.15)');
     gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
-
     ctx.beginPath();
     finalData.forEach((point, i) => {
-      const x = padding.left + (i / (finalData.length - 1)) * chartWidth;
-      const y = padding.top + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
+      const x = padding.left + i / (finalData.length - 1) * chartWidth;
+      const y = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
       if (i === 0) {
         ctx.moveTo(x, y);
       } else {
@@ -440,8 +472,8 @@ export function PriceChart({
     // Draw current price label (right side)
     const currentPrice = realtimePrice || finalData[finalData.length - 1]?.price;
     if (currentPrice) {
-      const currentY = padding.top + chartHeight - ((currentPrice - paddedMin) / paddedRange) * chartHeight;
-      
+      const currentY = padding.top + chartHeight - (currentPrice - paddedMin) / paddedRange * chartHeight;
+
       // Current price box
       ctx.fillStyle = isRealtimeConnected ? '#ef4444' : '#3b82f6';
       ctx.fillRect(dimensions.width - padding.right + 5, currentY - 10, 60, 20);
@@ -457,11 +489,11 @@ export function PriceChart({
       ctx.setLineDash([3, 3]);
       ctx.strokeStyle = 'rgba(156, 163, 175, 0.5)';
       ctx.lineWidth = 1;
-      
+
       // Vertical line
       ctx.moveTo(hoveredData.x, padding.top);
       ctx.lineTo(hoveredData.x, dimensions.height - padding.bottom);
-      
+
       // Horizontal line
       ctx.moveTo(padding.left, hoveredData.y);
       ctx.lineTo(dimensions.width - padding.right, hoveredData.y);
@@ -478,7 +510,6 @@ export function PriceChart({
       ctx.font = 'bold 11px monospace';
       ctx.fillText(hoveredData.price.toFixed(5), hoveredData.x + 15, hoveredData.y + 10);
     }
-
   }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions]);
 
   // Draw volume chart
@@ -486,16 +517,18 @@ export function PriceChart({
     if (!showVolume) return;
     const canvas = volumeCanvasRef.current;
     if (!canvas || finalData.length === 0 || volumeDimensions.width === 0) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     const dpr = window.devicePixelRatio || 1;
     canvas.width = volumeDimensions.width * dpr;
     canvas.height = volumeDimensions.height * dpr;
     ctx.scale(dpr, dpr);
-
-    const padding = { top: 5, right: 70, bottom: 5, left: 10 };
+    const padding = {
+      top: 5,
+      right: 70,
+      bottom: 5,
+      left: 10
+    };
     const chartWidth = volumeDimensions.width - padding.left - padding.right;
     const chartHeight = volumeDimensions.height - padding.top - padding.bottom;
 
@@ -508,19 +541,17 @@ export function PriceChart({
 
     // Draw volume bars
     const barWidth = Math.max(1, chartWidth / finalData.length - 1);
-    
     finalData.forEach((point, i) => {
-      const x = padding.left + (i / (finalData.length - 1)) * chartWidth - barWidth / 2;
-      const barHeight = ((point.volume || 0) / maxVolume) * chartHeight;
+      const x = padding.left + i / (finalData.length - 1) * chartWidth - barWidth / 2;
+      const barHeight = (point.volume || 0) / maxVolume * chartHeight;
       const y = padding.top + chartHeight - barHeight;
-      
+
       // Color based on price change
       const prevPrice = i > 0 ? finalData[i - 1].price : point.open;
       const isUp = point.price >= prevPrice;
-      
       ctx.fillStyle = isUp ? 'rgba(34, 197, 94, 0.6)' : 'rgba(239, 68, 68, 0.6)';
       ctx.fillRect(x, y, barWidth, barHeight);
-      
+
       // Highlight hovered bar
       if (hoveredData && hoveredData.index === i) {
         ctx.fillStyle = isUp ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)';
@@ -539,22 +570,21 @@ export function PriceChart({
       ctx.stroke();
       ctx.setLineDash([]);
     }
-
   }, [finalData, volumeDimensions, showVolume, hoveredData]);
 
   // Handle mouse move
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (finalData.length === 0 || !containerRef.current) return;
-    
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const padding = { left: 10, right: 70 };
+    const padding = {
+      left: 10,
+      right: 70
+    };
     const chartWidth = dimensions.width - padding.left - padding.right;
-    
-    const dataIndex = Math.round(((x - padding.left) / chartWidth) * (finalData.length - 1));
+    const dataIndex = Math.round((x - padding.left) / chartWidth * (finalData.length - 1));
     const clampedIndex = Math.max(0, Math.min(dataIndex, finalData.length - 1));
     const point = finalData[clampedIndex];
-    
     if (point) {
       const prices = finalData.map(d => d.price);
       const minPrice = Math.min(...prices);
@@ -563,19 +593,24 @@ export function PriceChart({
       const paddedMin = minPrice - priceRange * 0.05;
       const paddedMax = maxPrice + priceRange * 0.05;
       const paddedRange = paddedMax - paddedMin;
-      
       const chartHeight = dimensions.height - 50;
-      const pointX = padding.left + (clampedIndex / (finalData.length - 1)) * chartWidth;
-      const pointY = 20 + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
-      
+      const pointX = padding.left + clampedIndex / (finalData.length - 1) * chartWidth;
+      const pointY = 20 + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
+
       // Get all sessions for this point for hover display
       const allSessionIds = new Set<SessionId>(['sydney', 'asia', 'london', 'ny']);
       const sessions = getSessionsForHour(point.utcHour, allSessionIds);
-      
-      setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time, volume: point.volume, index: clampedIndex, sessions });
+      setHoveredData({
+        x: pointX,
+        y: pointY,
+        price: point.price,
+        time: point.time,
+        volume: point.volume,
+        index: clampedIndex,
+        sessions
+      });
     }
   };
-
   const handleMouseLeave = () => {
     setHoveredData(null);
   };
@@ -586,59 +621,38 @@ export function PriceChart({
     if (vol >= 1000) return `${(vol / 1000).toFixed(1)}K`;
     return vol.toFixed(0);
   };
-
   if (loading) {
-    return (
-      <div className="h-[300px] w-full flex items-center justify-center">
+    return <div className="h-[300px] w-full flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+      </div>;
   }
-
   if (error) {
-    return (
-      <div className="h-[300px] w-full flex items-center justify-center text-destructive">
+    return <div className="h-[300px] w-full flex items-center justify-center text-destructive">
         <p className="text-sm">{error}</p>
-      </div>
-    );
+      </div>;
   }
-
   if (chartData.length === 0) {
-    return (
-      <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
+    return <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
         <p className="text-sm">No hay datos disponibles</p>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <TooltipProvider>
+  return <TooltipProvider>
     <div className="w-full relative bg-background">
       {/* TradingView-style period and session selector */}
       <div className="flex items-center justify-between px-2 py-2 border-b border-border/30 flex-wrap gap-2">
         <div className="flex items-center gap-3">
           {/* Period buttons */}
           <div className="flex items-center gap-1">
-            {periodButtons.map((btn) => (
-              <Tooltip key={btn.value}>
+            {periodButtons.map(btn => <Tooltip key={btn.value}>
                 <TooltipTrigger asChild>
-                  <button
-                    onClick={() => handlePeriodClick(btn.value)}
-                    className={cn(
-                      "px-2 py-1 text-xs font-medium rounded transition-all",
-                      selectedPeriod === btn.value
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    )}
-                  >
+                  <button onClick={() => handlePeriodClick(btn.value)} className={cn("px-2 py-1 text-xs font-medium rounded transition-all", selectedPeriod === btn.value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
                     {btn.label}
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="text-xs">
                   Últimos {btn.value === '1w' ? '7 días' : btn.label}
                 </TooltipContent>
-              </Tooltip>
-            ))}
+              </Tooltip>)}
           </div>
           
           {/* Time range indicator */}
@@ -650,28 +664,10 @@ export function PriceChart({
           <div className="flex flex-col gap-1 border-l border-border/30 pl-3">
             <div className="flex items-center gap-1">
               {/* Toggle sessions visibility */}
-              <button
-                onClick={() => setShowSessions(!showSessions)}
-                className={cn(
-                  "px-2 py-1 text-[10px] font-medium rounded transition-all",
-                  showSessions
-                    ? "bg-muted text-foreground"
-                    : "bg-muted/30 text-muted-foreground line-through"
-                )}
-              >
-                Sesiones
-              </button>
+              
               
               {/* Toggle volume visibility */}
-              <button
-                onClick={() => setShowVolumeChart(!showVolumeChart)}
-                className={cn(
-                  "px-2 py-1 text-[10px] font-medium rounded transition-all",
-                  showVolumeChart
-                    ? "bg-muted text-foreground"
-                    : "bg-muted/30 text-muted-foreground line-through"
-                )}
-              >
+              <button onClick={() => setShowVolumeChart(!showVolumeChart)} className={cn("px-2 py-1 text-[10px] font-medium rounded transition-all", showVolumeChart ? "bg-muted text-foreground" : "bg-muted/30 text-muted-foreground line-through")}>
                 Vol
               </button>
               
@@ -679,34 +675,23 @@ export function PriceChart({
               <div className="w-px h-4 bg-border/30 mx-1" />
               
               {/* Session buttons */}
-              {showSessions && MARKET_SESSIONS.map((session) => (
-                <Tooltip key={session.id}>
+              {showSessions && MARKET_SESSIONS.map(session => <Tooltip key={session.id}>
                   <TooltipTrigger asChild>
-                    <button
-                      onClick={() => toggleSession(session.id as SessionId)}
-                      className={cn(
-                        "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
-                        enabledSessions.has(session.id as SessionId)
-                          ? `${session.bgColor} ${session.textColor}`
-                          : "text-muted-foreground/40 hover:text-muted-foreground bg-muted/20 line-through"
-                      )}
-                    >
+                    <button onClick={() => toggleSession(session.id as SessionId)} className={cn("px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1", enabledSessions.has(session.id as SessionId) ? `${session.bgColor} ${session.textColor}` : "text-muted-foreground/40 hover:text-muted-foreground bg-muted/20 line-through")}>
                       <span>{session.emoji}</span>
                       <span className="hidden sm:inline">{session.name}</span>
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent 
-                    side="bottom" 
-                    className="max-w-[280px] p-3"
-                    style={{ 
-                      backgroundColor: 'rgba(0, 0, 0, 0.95)',
-                      borderColor: session.borderColor 
-                    }}
-                  >
+                  <TooltipContent side="bottom" className="max-w-[280px] p-3" style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                  borderColor: session.borderColor
+                }}>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{session.emoji}</span>
-                        <span className="font-semibold" style={{ color: session.borderColor }}>{session.name}</span>
+                        <span className="font-semibold" style={{
+                        color: session.borderColor
+                      }}>{session.name}</span>
                         <span className="text-[10px] text-muted-foreground ml-auto">
                           {String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC
                         </span>
@@ -719,10 +704,9 @@ export function PriceChart({
                         </div>
                         <div>
                           <span className="text-muted-foreground">Volatilidad: </span>
-                          <span 
-                            className="font-medium"
-                            style={{ color: session.volatility === 'Alta' ? '#ef4444' : session.volatility === 'Baja' ? '#22c55e' : '#fbbf24' }}
-                          >
+                          <span className="font-medium" style={{
+                          color: session.volatility === 'Alta' ? '#ef4444' : session.volatility === 'Baja' ? '#22c55e' : '#fbbf24'
+                        }}>
                             {session.volatility}
                           </span>
                         </div>
@@ -733,81 +717,61 @@ export function PriceChart({
                       </div>
                     </div>
                   </TooltipContent>
-                </Tooltip>
-              ))}
+                </Tooltip>)}
             </div>
             {/* UTC time reference - only show if sessions enabled */}
-            {showSessions && (
-              <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 flex-wrap">
-                {MARKET_SESSIONS.filter(s => enabledSessions.has(s.id as SessionId)).map((session) => (
-                  <span key={session.id} className="flex items-center gap-1">
-                    <span style={{ color: session.borderColor }}>{session.emoji}</span>
+            {showSessions && <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 flex-wrap">
+                {MARKET_SESSIONS.filter(s => enabledSessions.has(s.id as SessionId)).map(session => <span key={session.id} className="flex items-center gap-1">
+                    <span style={{
+                  color: session.borderColor
+                }}>{session.emoji}</span>
                     <span>{String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC</span>
-                  </span>
-                ))}
-              </div>
-            )}
+                  </span>)}
+              </div>}
           </div>
         </div>
         
         {/* Session and volume indicators when hovering */}
         <div className="flex items-center gap-3">
-          {hoveredData?.sessions && hoveredData.sessions.length > 0 && (
-            <div className="flex items-center gap-1">
-              {hoveredData.sessions.map(session => (
-                <span 
-                  key={session.name}
-                  className="text-xs px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: session.color, color: session.borderColor, border: `1px solid ${session.borderColor}` }}
-                >
+          {hoveredData?.sessions && hoveredData.sessions.length > 0 && <div className="flex items-center gap-1">
+              {hoveredData.sessions.map(session => <span key={session.name} className="text-xs px-2 py-0.5 rounded-full" style={{
+              backgroundColor: session.color,
+              color: session.borderColor,
+              border: `1px solid ${session.borderColor}`
+            }}>
                   {session.emoji} {session.name}
-                </span>
-              ))}
-            </div>
-          )}
+                </span>)}
+            </div>}
           
-          {hoveredData?.volume && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {hoveredData?.volume && <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>Vol:</span>
               <span className="font-mono font-medium text-foreground">{formatVolume(hoveredData.volume)}</span>
-            </div>
-          )}
+            </div>}
         </div>
         
         {/* Realtime indicator */}
-        {isRealtimeConnected && realtimePrice && (
-          <div className="flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
+        {isRealtimeConnected && realtimePrice && <div className="flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
             <span className="text-xs text-red-400 font-medium">LIVE</span>
-          </div>
-        )}
+          </div>}
       </div>
       
       {/* Price chart */}
       <div ref={containerRef} className="h-[220px] w-full relative">
-        <canvas
-          ref={canvasRef}
-          className="w-full h-full cursor-crosshair"
-          style={{ width: dimensions.width, height: dimensions.height }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        />
+        <canvas ref={canvasRef} className="w-full h-full cursor-crosshair" style={{
+          width: dimensions.width,
+          height: dimensions.height
+        }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} />
       </div>
       
       {/* Volume chart */}
-      {showVolumeChart && (
-        <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
+      {showVolumeChart && <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
           <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
-          <canvas
-            ref={volumeCanvasRef}
-            className="w-full h-full cursor-crosshair"
-            style={{ width: volumeDimensions.width, height: volumeDimensions.height }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          />
-        </div>
-      )}
+          <canvas ref={volumeCanvasRef} className="w-full h-full cursor-crosshair" style={{
+          width: volumeDimensions.width,
+          height: volumeDimensions.height
+        }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} />
+        </div>}
     </div>
-    </TooltipProvider>
-  );
+    </TooltipProvider>;
 }
