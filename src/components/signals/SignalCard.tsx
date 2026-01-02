@@ -356,6 +356,84 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
             </div>
           </div>
 
+          {/* Price Position Bar */}
+          {(() => {
+            const support = signal.support || signal.stopLoss;
+            const resistance = signal.resistance || signal.takeProfit;
+            const currentPrice = signal.entryPrice;
+            const range = resistance - support;
+            const position = range > 0 ? ((currentPrice - support) / range) * 100 : 50;
+            const clampedPosition = Math.max(0, Math.min(100, position));
+            const isNearSupport = clampedPosition < 30;
+            const isNearResistance = clampedPosition > 70;
+            
+            return (
+              <div className="bg-[#0a1628] rounded-xl p-4 border border-slate-700/50">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs text-slate-400 uppercase tracking-wider">Posición del Precio</span>
+                  <span className={cn(
+                    "text-xs font-medium px-2 py-0.5 rounded-full",
+                    isNearSupport && "bg-emerald-500/20 text-emerald-400",
+                    isNearResistance && "bg-rose-500/20 text-rose-400",
+                    !isNearSupport && !isNearResistance && "bg-amber-500/20 text-amber-400"
+                  )}>
+                    {isNearSupport ? "Cerca de Soporte" : isNearResistance ? "Cerca de Resistencia" : "Zona Neutral"}
+                  </span>
+                </div>
+                
+                {/* Progress bar */}
+                <div className="relative h-8 rounded-lg overflow-hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-rose-950">
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-transparent to-rose-500/20" />
+                  
+                  {/* Zone markers */}
+                  <div className="absolute inset-y-0 left-0 w-[30%] border-r border-dashed border-emerald-500/30" />
+                  <div className="absolute inset-y-0 right-0 w-[30%] border-l border-dashed border-rose-500/30" />
+                  
+                  {/* Current price indicator */}
+                  <div 
+                    className="absolute top-0 bottom-0 w-1 transition-all duration-500"
+                    style={{ left: `${clampedPosition}%`, transform: 'translateX(-50%)' }}
+                  >
+                    <div className={cn(
+                      "absolute inset-0 w-1 rounded-full",
+                      isNearSupport && "bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.8)]",
+                      isNearResistance && "bg-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.8)]",
+                      !isNearSupport && !isNearResistance && "bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.8)]"
+                    )} />
+                    <div className={cn(
+                      "absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse",
+                      isNearSupport && "bg-emerald-400",
+                      isNearResistance && "bg-rose-400",
+                      !isNearSupport && !isNearResistance && "bg-amber-400"
+                    )} />
+                  </div>
+                </div>
+                
+                {/* Labels */}
+                <div className="flex justify-between mt-2">
+                  <div className="text-left">
+                    <div className="text-emerald-400 font-bold tabular-nums">{support}</div>
+                    <div className="text-[10px] text-emerald-400/60 uppercase">Soporte</div>
+                  </div>
+                  <div className="text-center">
+                    <div className={cn(
+                      "font-bold tabular-nums",
+                      isNearSupport && "text-emerald-300",
+                      isNearResistance && "text-rose-300",
+                      !isNearSupport && !isNearResistance && "text-amber-300"
+                    )}>{currentPrice}</div>
+                    <div className="text-[10px] text-slate-500 uppercase">Precio Actual</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-rose-400 font-bold tabular-nums">{resistance}</div>
+                    <div className="text-[10px] text-rose-400/60 uppercase">Resistencia</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Support & Resistance Cards */}
           <div className="grid grid-cols-2 gap-3">
             {/* Support Card */}
