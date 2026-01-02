@@ -1,7 +1,8 @@
 import { Currency, CURRENCIES } from '@/types/news';
 import { cn } from '@/lib/utils';
 import { useFavoriteCurrencies } from '@/hooks/useFavoriteCurrencies';
-import { Star } from 'lucide-react';
+import { Star, Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CurrencyFilterProps {
   selected: Currency[];
@@ -19,7 +20,7 @@ const CURRENCY_REGIONS = {
 };
 
 export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
-  const { favorites, toggleFavorite, isFavorite } = useFavoriteCurrencies();
+  const { favorites, toggleFavorite, isFavorite, loading } = useFavoriteCurrencies();
 
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
@@ -80,6 +81,28 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
     label: region.label,
     currencies: region.currencies.filter(c => !favorites.includes(c))
   })).filter(region => region.currencies.length > 0);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Filtrar por divisa
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          <span>Sincronizando favoritos...</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <Skeleton key={i} className="h-8 w-16 rounded-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
