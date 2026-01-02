@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.cleanup-news-ai-cache]
 verify_jwt = false
+
+[functions.analyze-signal]
+verify_jwt = false
