@@ -416,6 +416,8 @@ export default function Analysis() {
           <MarketConclusions
             symbol={selectedPair}
             currentPrice={marketStats.currentPrice}
+            realtimePrice={realtimeQuote?.price}
+            isRealtimeConnected={isConnected}
           />
 
           <MonetaryPolicies symbol={selectedPair} />
