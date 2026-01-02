@@ -411,6 +411,8 @@ export default function Analysis() {
           <StrategicRecommendations
             symbol={selectedPair}
             currentPrice={marketStats.currentPrice}
+            realtimePrice={realtimeQuote?.price}
+            isRealtimeConnected={isConnected}
           />
 
           <MarketConclusions
