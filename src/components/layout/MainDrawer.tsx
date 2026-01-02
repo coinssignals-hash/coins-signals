@@ -21,7 +21,8 @@ import {
   Palette,
   Globe,
   Cloud,
-  Download
+  Download,
+  Brain
 } from 'lucide-react';
 import {
   Sheet,
@@ -40,6 +41,7 @@ interface MainDrawerProps {
 }
 
 const menuItems = [
+  { icon: Brain, label: 'Ideas', href: '/' },
   { icon: UserIcon, label: 'Ajuste De Perfil', href: '/settings' },
   { icon: FileText, label: 'Suscripciones', href: '/subscriptions' },
   { icon: Gift, label: 'Bonos Por Referidos', href: '/referrals' },
