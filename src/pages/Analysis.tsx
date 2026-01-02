@@ -18,7 +18,7 @@ import { MonetaryPolicies } from '@/components/analysis/MonetaryPolicies';
 import { MajorNews } from '@/components/analysis/MajorNews';
 import { EconomicEvents } from '@/components/analysis/EconomicEvents';
 import { RelevantNews } from '@/components/analysis/RelevantNews';
-import { PreviousDayChart } from '@/components/analysis/PreviousDayChart';
+
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
@@ -450,11 +450,6 @@ export default function Analysis() {
 
           <MonetaryPolicies symbol={selectedPair} />
 
-          {/* Previous Day Chart */}
-          <PreviousDayChart 
-            symbol={selectedPair} 
-            currentPrice={marketStats.currentPrice} 
-          />
 
           {/* Relevant News with Images */}
           <RelevantNews symbol={selectedPair} />
