@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity, History, Clock, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -70,11 +70,23 @@ const ProbabilityBar = ({
   );
 };
 
+interface AIAnalysisHistoryItem {
+  id: string;
+  analysis_text: string;
+  confidence_level: number | null;
+  recommendation: string | null;
+  risk_level: string | null;
+  created_at: string;
+}
+
 export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: SignalCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analysisHistory, setAnalysisHistory] = useState<AIAnalysisHistoryItem[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [priceHistory, setPriceHistory] = useState<number[]>([]);
   const maxHistoryLength = 60; // Keep last 60 price points
 
@@ -131,6 +143,88 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
     toast.success('Precio copiado');
   };
 
+  // Fetch analysis history
+  const fetchAnalysisHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('signal_ai_analysis_history')
+        .select('*')
+        .eq('signal_id', signal.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      setAnalysisHistory(data || []);
+    } catch (error) {
+      console.error('Error fetching analysis history:', error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  // Save analysis to history
+  const saveAnalysisToHistory = async (analysisText: string) => {
+    try {
+      // Extract confidence level from text (simple regex)
+      const confidenceMatch = analysisText.match(/confianza[:\s]*(\d+)/i);
+      const confidence = confidenceMatch ? parseInt(confidenceMatch[1]) : null;
+      
+      // Extract recommendation
+      let recommendation = 'HOLD';
+      if (analysisText.toLowerCase().includes('recomendación: comprar') || analysisText.toLowerCase().includes('buy')) {
+        recommendation = 'BUY';
+      } else if (analysisText.toLowerCase().includes('recomendación: vender') || analysisText.toLowerCase().includes('sell')) {
+        recommendation = 'SELL';
+      }
+
+      // Extract risk level
+      let riskLevel = 'MEDIUM';
+      if (analysisText.toLowerCase().includes('riesgo alto') || analysisText.toLowerCase().includes('high risk')) {
+        riskLevel = 'HIGH';
+      } else if (analysisText.toLowerCase().includes('riesgo bajo') || analysisText.toLowerCase().includes('low risk')) {
+        riskLevel = 'LOW';
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { error } = await supabase
+        .from('signal_ai_analysis_history')
+        .insert({
+          signal_id: signal.id,
+          user_id: user?.id || null,
+          analysis_text: analysisText,
+          confidence_level: confidence,
+          recommendation: recommendation,
+          risk_level: riskLevel
+        });
+
+      if (error) throw error;
+      
+      // Refresh history
+      fetchAnalysisHistory();
+    } catch (error) {
+      console.error('Error saving analysis:', error);
+    }
+  };
+
+  // Delete analysis from history
+  const deleteAnalysis = async (analysisId: string) => {
+    try {
+      const { error } = await supabase
+        .from('signal_ai_analysis_history')
+        .delete()
+        .eq('id', analysisId);
+
+      if (error) throw error;
+      setAnalysisHistory(prev => prev.filter(a => a.id !== analysisId));
+      toast.success('Análisis eliminado');
+    } catch (error) {
+      console.error('Error deleting analysis:', error);
+      toast.error('Error al eliminar análisis');
+    }
+  };
+
   const analyzeWithAI = async () => {
     if (isAnalyzing) return;
     
@@ -163,7 +257,11 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
       }
 
       setAiAnalysis(data.analysis);
-      toast.success('Análisis completado');
+      
+      // Save to history
+      await saveAnalysisToHistory(data.analysis);
+      
+      toast.success('Análisis completado y guardado');
     } catch (error) {
       console.error('Error analyzing signal:', error);
       toast.error('Error al analizar la señal');
@@ -172,6 +270,13 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
       setIsAnalyzing(false);
     }
   };
+
+  // Load history when showing history panel
+  useEffect(() => {
+    if (showHistory && analysisHistory.length === 0) {
+      fetchAnalysisHistory();
+    }
+  }, [showHistory]);
 
   const isBuy = signal.action === 'BUY';
   const formattedDate = format(new Date(signal.datetime), "EEEE dd 'de' MMMM yyyy HH:mm", { locale: es });
@@ -873,8 +978,114 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                   </>
                 )}
               </button>
+              {/* History Button */}
+              <button 
+                onClick={() => setShowHistory(!showHistory)}
+                className={cn(
+                  "flex items-center justify-center gap-2 py-2 px-3 rounded-lg border transition-all text-xs font-medium",
+                  showHistory 
+                    ? "bg-blue-500/20 border-blue-500/50 text-blue-400" 
+                    : "bg-slate-800/50 border-slate-600/50 text-slate-400 hover:bg-slate-700/50"
+                )}
+              >
+                <History className="w-3.5 h-3.5" />
+                Historial ({analysisHistory.length})
+              </button>
             </div>
           </div>
+
+          {/* AI Analysis History Panel */}
+          {showHistory && (
+            <div className="mt-4 bg-gradient-to-br from-blue-950/40 to-slate-900/40 rounded-xl border border-blue-500/30 p-4 animate-in slide-in-from-bottom-2 duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <History className="w-5 h-5 text-blue-400" />
+                  <h3 className="font-semibold text-blue-400">Historial de Análisis IA</h3>
+                </div>
+                <button 
+                  onClick={() => setShowHistory(false)}
+                  className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+
+              {loadingHistory ? (
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
+                </div>
+              ) : analysisHistory.length === 0 ? (
+                <div className="text-center py-6">
+                  <History className="w-10 h-10 text-slate-600 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500">No hay análisis guardados</p>
+                  <p className="text-xs text-slate-600 mt-1">Genera un análisis IA para comenzar</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                  {analysisHistory.map((item) => (
+                    <div 
+                      key={item.id}
+                      className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 group"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                            <Clock className="w-3 h-3" />
+                            {format(new Date(item.created_at), "dd MMM yyyy HH:mm", { locale: es })}
+                          </div>
+                          {item.recommendation && (
+                            <span className={cn(
+                              "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                              item.recommendation === 'BUY' && "bg-emerald-500/20 text-emerald-400",
+                              item.recommendation === 'SELL' && "bg-rose-500/20 text-rose-400",
+                              item.recommendation === 'HOLD' && "bg-amber-500/20 text-amber-400"
+                            )}>
+                              {item.recommendation}
+                            </span>
+                          )}
+                          {item.risk_level && (
+                            <span className={cn(
+                              "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                              item.risk_level === 'LOW' && "bg-emerald-500/20 text-emerald-400",
+                              item.risk_level === 'MEDIUM' && "bg-amber-500/20 text-amber-400",
+                              item.risk_level === 'HIGH' && "bg-rose-500/20 text-rose-400"
+                            )}>
+                              Riesgo: {item.risk_level === 'LOW' ? 'Bajo' : item.risk_level === 'MEDIUM' ? 'Medio' : 'Alto'}
+                            </span>
+                          )}
+                          {item.confidence_level && (
+                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">
+                              {item.confidence_level}% Confianza
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => deleteAnalysis(item.id)}
+                          className="p-1 rounded hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                          title="Eliminar análisis"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-slate-300 line-clamp-3 whitespace-pre-wrap">
+                        {item.analysis_text}
+                      </p>
+                      <button
+                        onClick={() => {
+                          setAiAnalysis(item.analysis_text);
+                          setShowAnalysis(true);
+                          setShowHistory(false);
+                        }}
+                        className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        Ver análisis completo →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* AI Analysis Modal */}
           {showAnalysis && (

@@ -256,6 +256,47 @@ export type Database = {
         }
         Relationships: []
       }
+      signal_ai_analysis_history: {
+        Row: {
+          analysis_text: string
+          confidence_level: number | null
+          created_at: string
+          id: string
+          recommendation: string | null
+          risk_level: string | null
+          signal_id: string
+          user_id: string | null
+        }
+        Insert: {
+          analysis_text: string
+          confidence_level?: number | null
+          created_at?: string
+          id?: string
+          recommendation?: string | null
+          risk_level?: string | null
+          signal_id: string
+          user_id?: string | null
+        }
+        Update: {
+          analysis_text?: string
+          confidence_level?: number | null
+          created_at?: string
+          id?: string
+          recommendation?: string | null
+          risk_level?: string | null
+          signal_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_ai_analysis_history_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "trading_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trading_signals: {
         Row: {
           action: string
