@@ -6,23 +6,52 @@ import { CurrencyBadgeList } from '@/components/news/CurrencyBadge';
 import { BiasBadge } from '@/components/news/BiasBadge';
 import { useRealNews, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsAIAnalysis } from '@/hooks/useNewsAIAnalysis';
-import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2 } from 'lucide-react';
+import { useNewsCache } from '@/hooks/useNewsCache';
+import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { EconomicCategory } from '@/types/news';
 
 const NewsDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { cacheNews, getCachedNews } = useNewsCache();
+  const [isFromCache, setIsFromCache] = useState(false);
   
   // Fetch all news and find the one matching the ID
   const { data: allNews, isLoading, error, refetch } = useRealNews(undefined, undefined, 100);
   
+  // First try to find in API response, then fallback to cache
   const news = useMemo(() => {
-    if (!allNews || !id) return null;
-    return allNews.find((item: RealNewsItem) => item.id === id) || null;
-  }, [allNews, id]);
+    if (!id) return null;
+    
+    // Try to find in fresh API data
+    if (allNews) {
+      const freshNews = allNews.find((item: RealNewsItem) => item.id === id);
+      if (freshNews) {
+        setIsFromCache(false);
+        return freshNews;
+      }
+    }
+    
+    // Fallback to cached version
+    const cachedNews = getCachedNews(id);
+    if (cachedNews) {
+      setIsFromCache(true);
+      return cachedNews;
+    }
+    
+    setIsFromCache(false);
+    return null;
+  }, [allNews, id, getCachedNews]);
+
+  // Cache the news when viewing it
+  useEffect(() => {
+    if (news && !isFromCache) {
+      cacheNews(news);
+    }
+  }, [news, isFromCache, cacheNews]);
 
   // Fetch AI analysis for the news
   const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
@@ -189,6 +218,14 @@ const NewsDetail = () => {
       <Header />
       
       <main className="container py-4 space-y-6 max-w-4xl">
+        {/* Cached indicator */}
+        {isFromCache && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
+            <Archive className="w-4 h-4" />
+            <span>Mostrando versión guardada. Esta noticia ya no está en el feed actual.</span>
+          </div>
+        )}
+        
         {/* Back button */}
         <Link to="/news" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
