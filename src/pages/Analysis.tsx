@@ -60,6 +60,13 @@ interface AlertConfig {
   enableSupportResistance: boolean;
   srProximityPercent: number;
   srEnableSound: boolean;
+  enablePatternAlerts: boolean;
+  patternAlertTypes: {
+    bullish: boolean;
+    bearish: boolean;
+    neutral: boolean;
+  };
+  patternEnableSound: boolean;
 }
 
 // Convert symbol format for Polygon.io API
@@ -91,6 +98,13 @@ export default function Analysis() {
     enableSupportResistance: true,
     srProximityPercent: 5,
     srEnableSound: true,
+    enablePatternAlerts: true,
+    patternAlertTypes: {
+      bullish: true,
+      bearish: true,
+      neutral: false,
+    },
+    patternEnableSound: true,
   });
   
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
@@ -358,6 +372,11 @@ export default function Analysis() {
                 error={error}
                 realtimePrice={realtimeQuote?.price}
                 isRealtimeConnected={isConnected}
+                patternAlertConfig={{
+                  enabled: alertConfig.enablePatternAlerts,
+                  types: alertConfig.patternAlertTypes,
+                  enableSound: alertConfig.patternEnableSound,
+                }}
               />
             </div>
           </TabsContent>

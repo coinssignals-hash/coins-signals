@@ -8,7 +8,7 @@ const getAudioContext = (): AudioContext => {
   return audioContext;
 };
 
-export type SoundType = 'signal' | 'alert' | 'buy' | 'sell';
+export type SoundType = 'signal' | 'alert' | 'buy' | 'sell' | 'pattern_bullish' | 'pattern_bearish' | 'pattern_neutral';
 
 export const playNotificationSound = (type: SoundType = 'signal') => {
   try {
@@ -66,6 +66,50 @@ export const playNotificationSound = (type: SoundType = 'signal') => {
         
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.4);
+        break;
+
+      case 'pattern_bullish':
+        // Bullish pattern - bright ascending chime
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, ctx.currentTime); // A4
+        oscillator.frequency.setValueAtTime(554.37, ctx.currentTime + 0.08); // C#5
+        oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.16); // E5
+        oscillator.frequency.setValueAtTime(880, ctx.currentTime + 0.24); // A5
+        
+        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.5);
+        break;
+
+      case 'pattern_bearish':
+        // Bearish pattern - descending warning tone
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+        oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(440, ctx.currentTime + 0.2); // A4
+        oscillator.frequency.setValueAtTime(329.63, ctx.currentTime + 0.3); // E4
+        
+        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.5);
+        break;
+
+      case 'pattern_neutral':
+        // Neutral pattern - gentle two-tone chime
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.15); // E5
+        oscillator.frequency.setValueAtTime(523.25, ctx.currentTime + 0.3); // C5
+        
+        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.45);
         break;
 
       case 'signal':
