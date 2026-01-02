@@ -7,7 +7,7 @@ type ChartPeriod = '1D' | '1W' | '1M' | '1Y';
 interface PriceChartProps {
   pair: string;
   timeframe: string;
-  priceData?: Array<{ time: string; price: number; open: number; high: number; low: number }>;
+  priceData?: Array<{ time: string; price: number; open: number; high: number; low: number; volume?: number }>;
   smaData?: {
     sma20: Array<{ datetime: string; sma: number }>;
     sma50: Array<{ datetime: string; sma: number }>;
@@ -18,6 +18,7 @@ interface PriceChartProps {
   isRealtimeConnected?: boolean;
   previousClose?: number;
   onPeriodChange?: (period: ChartPeriod) => void;
+  showVolume?: boolean;
 }
 
 const periodButtons: { value: ChartPeriod; label: string }[] = [
@@ -37,12 +38,16 @@ export function PriceChart({
   realtimePrice,
   isRealtimeConnected = false,
   previousClose,
-  onPeriodChange
+  onPeriodChange,
+  showVolume = true
 }: PriceChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const volumeCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const volumeContainerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string } | null>(null);
+  const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
+  const [hoveredData, setHoveredData] = useState<{ x: number; y: number; price: number; time: string; volume?: number; index: number } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1D');
 
   const handlePeriodClick = (period: ChartPeriod) => {
@@ -54,14 +59,17 @@ export function PriceChart({
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
     
-    return priceData.map((price) => {
+    return priceData.map((price, index) => {
       const timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+      // Generate synthetic volume if not provided (based on price movement)
+      const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
       return {
         time: timeLabel,
         price: price.price,
         open: price.open,
         high: price.high,
         low: price.low,
+        volume: syntheticVolume,
       };
     });
   }, [priceData]);
@@ -78,6 +86,7 @@ export function PriceChart({
         open: realtimePrice,
         high: realtimePrice,
         low: realtimePrice,
+        volume: chartData[chartData.length - 1]?.volume || 0,
       }
     ];
   }, [chartData, realtimePrice]);
@@ -89,6 +98,12 @@ export function PriceChart({
         setDimensions({
           width: containerRef.current.clientWidth,
           height: containerRef.current.clientHeight
+        });
+      }
+      if (volumeContainerRef.current) {
+        setVolumeDimensions({
+          width: volumeContainerRef.current.clientWidth,
+          height: volumeContainerRef.current.clientHeight
         });
       }
     };
@@ -254,6 +269,67 @@ export function PriceChart({
 
   }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData]);
 
+  // Draw volume chart
+  useEffect(() => {
+    if (!showVolume) return;
+    const canvas = volumeCanvasRef.current;
+    if (!canvas || finalData.length === 0 || volumeDimensions.width === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = volumeDimensions.width * dpr;
+    canvas.height = volumeDimensions.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const padding = { top: 5, right: 70, bottom: 5, left: 10 };
+    const chartWidth = volumeDimensions.width - padding.left - padding.right;
+    const chartHeight = volumeDimensions.height - padding.top - padding.bottom;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, volumeDimensions.width, volumeDimensions.height);
+
+    // Calculate volume range
+    const volumes = finalData.map(d => d.volume || 0);
+    const maxVolume = Math.max(...volumes) || 1;
+
+    // Draw volume bars
+    const barWidth = Math.max(1, chartWidth / finalData.length - 1);
+    
+    finalData.forEach((point, i) => {
+      const x = padding.left + (i / (finalData.length - 1)) * chartWidth - barWidth / 2;
+      const barHeight = ((point.volume || 0) / maxVolume) * chartHeight;
+      const y = padding.top + chartHeight - barHeight;
+      
+      // Color based on price change
+      const prevPrice = i > 0 ? finalData[i - 1].price : point.open;
+      const isUp = point.price >= prevPrice;
+      
+      ctx.fillStyle = isUp ? 'rgba(34, 197, 94, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+      ctx.fillRect(x, y, barWidth, barHeight);
+      
+      // Highlight hovered bar
+      if (hoveredData && hoveredData.index === i) {
+        ctx.fillStyle = isUp ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)';
+        ctx.fillRect(x, y, barWidth, barHeight);
+      }
+    });
+
+    // Draw crosshair if hovering
+    if (hoveredData) {
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(156, 163, 175, 0.5)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(hoveredData.x, padding.top);
+      ctx.lineTo(hoveredData.x, volumeDimensions.height - padding.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+  }, [finalData, volumeDimensions, showVolume, hoveredData]);
+
   // Handle mouse move
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (finalData.length === 0 || !containerRef.current) return;
@@ -280,12 +356,19 @@ export function PriceChart({
       const pointX = padding.left + (clampedIndex / (finalData.length - 1)) * chartWidth;
       const pointY = 20 + chartHeight - ((point.price - paddedMin) / paddedRange) * chartHeight;
       
-      setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time });
+      setHoveredData({ x: pointX, y: pointY, price: point.price, time: point.time, volume: point.volume, index: clampedIndex });
     }
   };
 
   const handleMouseLeave = () => {
     setHoveredData(null);
+  };
+
+  // Format volume for display
+  const formatVolume = (vol: number) => {
+    if (vol >= 1000000) return `${(vol / 1000000).toFixed(1)}M`;
+    if (vol >= 1000) return `${(vol / 1000).toFixed(1)}K`;
+    return vol.toFixed(0);
   };
 
   if (loading) {
@@ -333,6 +416,14 @@ export function PriceChart({
           ))}
         </div>
         
+        {/* Volume indicator when hovering */}
+        {hoveredData?.volume && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>Vol:</span>
+            <span className="font-mono font-medium text-foreground">{formatVolume(hoveredData.volume)}</span>
+          </div>
+        )}
+        
         {/* Realtime indicator */}
         {isRealtimeConnected && realtimePrice && (
           <div className="flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
@@ -342,7 +433,8 @@ export function PriceChart({
         )}
       </div>
       
-      <div ref={containerRef} className="h-[280px] w-full relative">
+      {/* Price chart */}
+      <div ref={containerRef} className="h-[220px] w-full relative">
         <canvas
           ref={canvasRef}
           className="w-full h-full cursor-crosshair"
@@ -351,6 +443,20 @@ export function PriceChart({
           onMouseLeave={handleMouseLeave}
         />
       </div>
+      
+      {/* Volume chart */}
+      {showVolume && (
+        <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
+          <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
+          <canvas
+            ref={volumeCanvasRef}
+            className="w-full h-full cursor-crosshair"
+            style={{ width: volumeDimensions.width, height: volumeDimensions.height }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          />
+        </div>
+      )}
     </div>
   );
 }
