@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent } from 'lucide-react';
+import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent, WifiOff } from 'lucide-react';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { MarketSentiment } from '@/components/analysis/MarketSentiment';
@@ -100,7 +100,7 @@ export default function Analysis() {
   
   // Realtime market data from Polygon.io
   const polygonSymbol = formatSymbolForPolygon(selectedPair);
-  const { quotes, isConnected, subscribe, unsubscribe, getQuote } = useRealtimeMarket([polygonSymbol]);
+  const { quotes, isConnected, isReconnecting, reconnectAttempt, error: wsError, subscribe, unsubscribe, getQuote } = useRealtimeMarket([polygonSymbol]);
   
   // Get realtime quote for current symbol
   const realtimeQuote = getQuote(polygonSymbol);
@@ -271,6 +271,32 @@ export default function Analysis() {
           <Card className="border-red-500/50 bg-red-500/10">
             <CardContent className="p-3">
               <p className="text-sm text-red-400">{error}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* WebSocket reconnecting message */}
+        {isReconnecting && (
+          <Card className="border-orange-500/50 bg-orange-500/10 animate-pulse">
+            <CardContent className="p-3 flex items-center gap-3">
+              <WifiOff className="h-5 w-5 text-orange-500 shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-orange-400 font-medium">Reconectando datos en tiempo real...</p>
+                <p className="text-xs text-gray-400">Intento {reconnectAttempt} de 5 - Reintentando automáticamente</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* WebSocket error message */}
+        {wsError && !isReconnecting && (
+          <Card className="border-red-500/50 bg-red-500/10">
+            <CardContent className="p-3 flex items-center gap-3">
+              <WifiOff className="h-5 w-5 text-red-500 shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-red-400 font-medium">Conexión en tiempo real perdida</p>
+                <p className="text-xs text-gray-400">{wsError}</p>
+              </div>
             </CardContent>
           </Card>
         )}

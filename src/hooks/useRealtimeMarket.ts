@@ -13,6 +13,8 @@ interface RealtimeQuote {
 interface UseRealtimeMarketReturn {
   quotes: Map<string, RealtimeQuote>;
   isConnected: boolean;
+  isReconnecting: boolean;
+  reconnectAttempt: number;
   error: string | null;
   subscribe: (symbols: string[]) => void;
   unsubscribe: (symbols: string[]) => void;
@@ -24,10 +26,13 @@ const WS_URL = `wss://fkaziwfwangiwnduxymf.supabase.co/functions/v1/realtime-mar
 export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMarketReturn {
   const [quotes, setQuotes] = useState<Map<string, RealtimeQuote>>(new Map());
   const [isConnected, setIsConnected] = useState(false);
+  const [isReconnecting, setIsReconnecting] = useState(false);
+  const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const subscribedSymbolsRef = useRef<Set<string>>(new Set(initialSymbols));
+  const maxReconnectAttempts = 5;
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -39,6 +44,8 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
       wsRef.current.onopen = () => {
         console.log('WebSocket connected');
         setIsConnected(true);
+        setIsReconnecting(false);
+        setReconnectAttempt(0);
         setError(null);
         
         // Subscribe to initial symbols
@@ -91,11 +98,22 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
         console.log('WebSocket disconnected');
         setIsConnected(false);
         
-        // Attempt to reconnect after 5 seconds
-        reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('Attempting to reconnect...');
-          connect();
-        }, 5000);
+        // Attempt to reconnect with exponential backoff
+        setReconnectAttempt(prev => {
+          const newAttempt = prev + 1;
+          if (newAttempt <= maxReconnectAttempts) {
+            setIsReconnecting(true);
+            const delay = Math.min(5000 * Math.pow(1.5, newAttempt - 1), 30000);
+            console.log(`Attempting to reconnect (${newAttempt}/${maxReconnectAttempts}) in ${delay/1000}s...`);
+            reconnectTimeoutRef.current = setTimeout(() => {
+              connect();
+            }, delay);
+          } else {
+            setIsReconnecting(false);
+            setError('No se pudo reconectar. Por favor recarga la página.');
+          }
+          return newAttempt;
+        });
       };
     } catch (e) {
       console.error('Error creating WebSocket:', e);
@@ -152,6 +170,8 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
   return {
     quotes,
     isConnected,
+    isReconnecting,
+    reconnectAttempt,
     error,
     subscribe,
     unsubscribe,
