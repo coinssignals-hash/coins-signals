@@ -70,14 +70,41 @@ export function CandlestickChart({
   const candlePositionsRef = useRef<CandlePosition[]>([]);
   const chartDimensionsRef = useRef<ChartDimensions | null>(null);
   const paddingRef = useRef({ top: 20, right: 80, bottom: 30, left: 50 });
+  const animationFrameRef = useRef<number | null>(null);
+  const pulsePhaseRef = useRef(0);
 
-  const drawChart = useCallback(() => {
+  // Calculate proximity to S/R levels
+  const getProximityInfo = useCallback(() => {
+    if (!realtimePrice || support <= 0 || resistance <= 0) {
+      return { nearSupport: false, nearResistance: false, supportDistance: 0, resistanceDistance: 0 };
+    }
+    
+    const range = resistance - support;
+    if (range <= 0) return { nearSupport: false, nearResistance: false, supportDistance: 0, resistanceDistance: 0 };
+    
+    const proximityThreshold = range * 0.10; // 10% of range
+    const distanceToResistance = resistance - realtimePrice;
+    const distanceToSupport = realtimePrice - support;
+    
+    return {
+      nearSupport: distanceToSupport <= proximityThreshold && distanceToSupport >= 0,
+      nearResistance: distanceToResistance <= proximityThreshold && distanceToResistance >= 0,
+      supportDistance: Math.max(0, 1 - (distanceToSupport / proximityThreshold)), // 0-1 intensity
+      resistanceDistance: Math.max(0, 1 - (distanceToResistance / proximityThreshold)), // 0-1 intensity
+      breakoutSupport: realtimePrice < support,
+      breakoutResistance: realtimePrice > resistance,
+    };
+  }, [realtimePrice, support, resistance]);
+
+  const drawChart = useCallback((pulsePhase: number = 0) => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container || !data.length) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    const proximity = getProximityInfo();
 
     // Set canvas size
     const rect = container.getBoundingClientRect();
@@ -149,38 +176,123 @@ export function CandlestickChart({
       ctx.fillText(price.toFixed(4), 5, y + 3);
     }
 
-    // Draw resistance line (GREEN dotted at top)
+    // Calculate pulse effect (0-1 sine wave)
+    const pulseValue = (Math.sin(pulsePhase) + 1) / 2;
+
+    // Draw resistance line with glow effect when price is near
     const resistanceY = priceToY(resistance);
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 2;
+    const isNearResistance = proximity.nearResistance || proximity.breakoutResistance;
+    
+    if (isNearResistance) {
+      // Draw glow effect
+      const glowIntensity = proximity.breakoutResistance ? 1 : proximity.resistanceDistance;
+      const glowSize = 8 + pulseValue * 6;
+      const glowAlpha = 0.3 + pulseValue * 0.4 * glowIntensity;
+      
+      ctx.save();
+      ctx.shadowColor = '#22c55e';
+      ctx.shadowBlur = glowSize * glowIntensity;
+      ctx.strokeStyle = `rgba(34, 197, 94, ${glowAlpha})`;
+      ctx.lineWidth = 4 + pulseValue * 2;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(padding.left, resistanceY);
+      ctx.lineTo(width - padding.right, resistanceY);
+      ctx.stroke();
+      ctx.restore();
+      
+      // Draw pulsing circles along the line
+      const numCircles = 5;
+      for (let i = 0; i < numCircles; i++) {
+        const circleX = padding.left + (chartWidth / (numCircles - 1)) * i;
+        const circleRadius = 3 + pulseValue * 3 * glowIntensity;
+        const circleAlpha = 0.5 + pulseValue * 0.5;
+        
+        ctx.beginPath();
+        ctx.arc(circleX, resistanceY, circleRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(34, 197, 94, ${circleAlpha * glowIntensity})`;
+        ctx.fill();
+      }
+    }
+    
+    // Main resistance line
+    ctx.strokeStyle = isNearResistance ? '#4ade80' : '#22c55e';
+    ctx.lineWidth = isNearResistance ? 3 : 2;
     ctx.setLineDash([8, 4]);
     ctx.beginPath();
     ctx.moveTo(padding.left, resistanceY);
     ctx.lineTo(width - padding.right, resistanceY);
     ctx.stroke();
     
-    // Resistance label
+    // Resistance label with enhanced styling when near
     ctx.setLineDash([]);
-    ctx.fillStyle = '#22c55e';
-    ctx.font = 'bold 11px sans-serif';
+    if (isNearResistance) {
+      const labelAlpha = 0.7 + pulseValue * 0.3;
+      ctx.fillStyle = `rgba(34, 197, 94, ${labelAlpha})`;
+      ctx.font = 'bold 12px sans-serif';
+    } else {
+      ctx.fillStyle = '#22c55e';
+      ctx.font = 'bold 11px sans-serif';
+    }
     ctx.textAlign = 'left';
-    ctx.fillText('Resistencia', width - padding.right + 5, resistanceY + 4);
+    ctx.fillText(proximity.breakoutResistance ? '🚀 RUPTURA!' : 'Resistencia', width - padding.right + 5, resistanceY + 4);
 
-    // Draw support line (RED dotted at bottom)
+    // Draw support line with glow effect when price is near
     const supportY = priceToY(support);
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 2;
+    const isNearSupport = proximity.nearSupport || proximity.breakoutSupport;
+    
+    if (isNearSupport) {
+      // Draw glow effect
+      const glowIntensity = proximity.breakoutSupport ? 1 : proximity.supportDistance;
+      const glowSize = 8 + pulseValue * 6;
+      const glowAlpha = 0.3 + pulseValue * 0.4 * glowIntensity;
+      
+      ctx.save();
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = glowSize * glowIntensity;
+      ctx.strokeStyle = `rgba(239, 68, 68, ${glowAlpha})`;
+      ctx.lineWidth = 4 + pulseValue * 2;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(padding.left, supportY);
+      ctx.lineTo(width - padding.right, supportY);
+      ctx.stroke();
+      ctx.restore();
+      
+      // Draw pulsing circles along the line
+      const numCircles = 5;
+      for (let i = 0; i < numCircles; i++) {
+        const circleX = padding.left + (chartWidth / (numCircles - 1)) * i;
+        const circleRadius = 3 + pulseValue * 3 * glowIntensity;
+        const circleAlpha = 0.5 + pulseValue * 0.5;
+        
+        ctx.beginPath();
+        ctx.arc(circleX, supportY, circleRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(239, 68, 68, ${circleAlpha * glowIntensity})`;
+        ctx.fill();
+      }
+    }
+    
+    // Main support line
+    ctx.strokeStyle = isNearSupport ? '#f87171' : '#ef4444';
+    ctx.lineWidth = isNearSupport ? 3 : 2;
     ctx.setLineDash([8, 4]);
     ctx.beginPath();
     ctx.moveTo(padding.left, supportY);
     ctx.lineTo(width - padding.right, supportY);
     ctx.stroke();
     
-    // Support label
+    // Support label with enhanced styling when near
     ctx.setLineDash([]);
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.fillText('Soporte', width - padding.right + 5, supportY + 4);
+    if (isNearSupport) {
+      const labelAlpha = 0.7 + pulseValue * 0.3;
+      ctx.fillStyle = `rgba(239, 68, 68, ${labelAlpha})`;
+      ctx.font = 'bold 12px sans-serif';
+    } else {
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 11px sans-serif';
+    }
+    ctx.fillText(proximity.breakoutSupport ? '📉 RUPTURA!' : 'Soporte', width - padding.right + 5, supportY + 4);
 
     // Draw candlesticks
     const bodyWidth = Math.max(4, candleWidth * 0.6);
@@ -261,11 +373,31 @@ export function CandlestickChart({
       const priceText = realtimePrice.toFixed(4);
       ctx.fillText(isRealtimeConnected ? `● ${priceText}` : priceText, width - padding.right + 6, realtimeY + 3);
     }
-  }, [data, resistance, support, realtimePrice, isRealtimeConnected]);
+  }, [data, resistance, support, realtimePrice, isRealtimeConnected, getProximityInfo]);
 
+  // Animation loop for pulsing effects when near S/R
   useEffect(() => {
-    drawChart();
-  }, [drawChart]);
+    const proximity = getProximityInfo();
+    const needsAnimation = proximity.nearSupport || proximity.nearResistance || 
+                          proximity.breakoutSupport || proximity.breakoutResistance;
+    
+    if (needsAnimation) {
+      const animate = () => {
+        pulsePhaseRef.current += 0.1;
+        drawChart(pulsePhaseRef.current);
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
+      animationFrameRef.current = requestAnimationFrame(animate);
+      
+      return () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      };
+    } else {
+      drawChart(0);
+    }
+  }, [drawChart, getProximityInfo]);
 
   // Draw crosshair on separate canvas
   const drawCrosshair = useCallback((mouseX: number, mouseY: number) => {
