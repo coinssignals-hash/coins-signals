@@ -4,6 +4,7 @@ import { TrendingUp, Newspaper, Star, BarChart3, Menu, Search, Bell } from 'luci
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { MainDrawer } from './MainDrawer';
+import { usePrefetch } from '@/hooks/usePrefetch';
 
 const navItems = [
   { icon: BarChart3, label: 'Markets', href: '/markets' },
@@ -15,6 +16,7 @@ const navItems = [
 export function Header() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { onMouseEnter, onTouchStart } = usePrefetch();
   
   return (
     <>
@@ -26,7 +28,11 @@ export function Header() {
           </Button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-1">
+          <Link 
+            to="/" 
+            className="flex items-center gap-1"
+            onMouseEnter={onMouseEnter('/')}
+          >
             <span className="text-xl font-bold text-primary">Coins</span>
             <span className="text-xl font-bold text-accent">$ignals</span>
           </Link>
@@ -41,6 +47,8 @@ export function Header() {
                 <Link
                   key={item.href}
                   to={item.href}
+                  onMouseEnter={onMouseEnter(item.href)}
+                  onTouchStart={onTouchStart(item.href)}
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
