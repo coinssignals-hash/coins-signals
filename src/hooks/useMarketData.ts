@@ -49,6 +49,9 @@ interface MarketData {
 }
 
 const timeframeMap: Record<string, string> = {
+  '5min': '5min',
+  '15min': '15min',
+  '30min': '30min',
   '1h': '1h',
   '4h': '4h',
   '1day': '1day',
