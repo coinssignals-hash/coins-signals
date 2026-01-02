@@ -164,6 +164,9 @@ export function PriceChart({
     x: number;
     y: number;
     price: number;
+    open: number;
+    high: number;
+    low: number;
     time: string;
     volume?: number;
     index: number;
@@ -545,15 +548,61 @@ export function PriceChart({
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Price tooltip
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-      ctx.fillRect(hoveredData.x + 10, hoveredData.y - 20, 80, 35);
+      // OHLC tooltip for candlesticks
+      const tooltipWidth = chartType === 'candle' ? 130 : 80;
+      const tooltipHeight = chartType === 'candle' ? 85 : 35;
+      
+      // Adjust tooltip position to stay within canvas
+      let tooltipX = hoveredData.x + 10;
+      let tooltipY = hoveredData.y - 20;
+      
+      if (tooltipX + tooltipWidth > dimensions.width - 20) {
+        tooltipX = hoveredData.x - tooltipWidth - 10;
+      }
+      if (tooltipY < 10) {
+        tooltipY = 10;
+      }
+      if (tooltipY + tooltipHeight > dimensions.height - 10) {
+        tooltipY = dimensions.height - tooltipHeight - 10;
+      }
+      
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+      ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
+      
+      // Border based on candle color
+      const isBullish = hoveredData.price >= hoveredData.open;
+      ctx.strokeStyle = isBullish ? '#22c55e' : '#ef4444';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
+      
       ctx.fillStyle = '#fff';
       ctx.font = '10px sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(hoveredData.time, hoveredData.x + 15, hoveredData.y - 5);
-      ctx.font = 'bold 11px monospace';
-      ctx.fillText(hoveredData.price.toFixed(5), hoveredData.x + 15, hoveredData.y + 10);
+      ctx.fillText(hoveredData.time, tooltipX + 8, tooltipY + 14);
+      
+      if (chartType === 'candle') {
+        // OHLC labels
+        ctx.font = '9px sans-serif';
+        ctx.fillStyle = '#9ca3af';
+        ctx.fillText('O:', tooltipX + 8, tooltipY + 30);
+        ctx.fillText('H:', tooltipX + 8, tooltipY + 44);
+        ctx.fillText('L:', tooltipX + 8, tooltipY + 58);
+        ctx.fillText('C:', tooltipX + 8, tooltipY + 72);
+        
+        // OHLC values
+        ctx.font = 'bold 10px monospace';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(hoveredData.open.toFixed(5), tooltipX + 22, tooltipY + 30);
+        ctx.fillStyle = '#22c55e';
+        ctx.fillText(hoveredData.high.toFixed(5), tooltipX + 22, tooltipY + 44);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText(hoveredData.low.toFixed(5), tooltipX + 22, tooltipY + 58);
+        ctx.fillStyle = isBullish ? '#22c55e' : '#ef4444';
+        ctx.fillText(hoveredData.price.toFixed(5), tooltipX + 22, tooltipY + 72);
+      } else {
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(hoveredData.price.toFixed(5), tooltipX + 8, tooltipY + 28);
+      }
     }
   }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions, chartType]);
 
@@ -649,6 +698,9 @@ export function PriceChart({
         x: pointX,
         y: pointY,
         price: point.price,
+        open: point.open,
+        high: point.high,
+        low: point.low,
         time: point.time,
         volume: point.volume,
         index: clampedIndex,
