@@ -107,7 +107,7 @@ export function Header() {
               <button
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
                 className={cn(
-                  'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   moreMenuOpen
                     ? 'bg-secondary text-foreground'
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
@@ -115,40 +115,55 @@ export function Header() {
               >
                 Más
                 <ChevronDown className={cn(
-                  'w-4 h-4 transition-transform duration-200',
+                  'w-4 h-4 transition-transform duration-300 ease-out',
                   moreMenuOpen && 'rotate-180'
                 )} />
               </button>
 
               {/* Dropdown Menu */}
-              {moreMenuOpen && (
-                <div className="absolute top-full right-0 mt-2 w-56 z-50 bg-popover border border-border rounded-xl shadow-xl overflow-hidden animate-fade-in">
-                  <div className="py-2">
-                    {moreNavItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = location.pathname === item.href;
-                      
-                      return (
-                        <Link
-                          key={item.href}
-                          to={item.href}
-                          onMouseEnter={onMouseEnter(item.href)}
-                          onClick={() => setMoreMenuOpen(false)}
-                          className={cn(
-                            'flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors',
-                            isActive
-                              ? 'bg-primary/10 text-primary'
-                              : 'text-foreground hover:bg-secondary'
-                          )}
-                        >
-                          <Icon className="w-4 h-4" />
+              <div 
+                className={cn(
+                  'absolute top-full right-0 mt-2 w-56 z-50 bg-popover border border-border rounded-xl shadow-xl overflow-hidden',
+                  'transition-all duration-200 ease-out origin-top-right',
+                  moreMenuOpen 
+                    ? 'opacity-100 scale-100 translate-y-0' 
+                    : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                )}
+              >
+                <div className="py-2">
+                  {moreNavItems.map((item, index) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
+                    
+                    return (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        onMouseEnter={onMouseEnter(item.href)}
+                        onClick={() => setMoreMenuOpen(false)}
+                        className={cn(
+                          'group flex items-center gap-3 px-4 py-2.5 text-sm font-medium',
+                          'transition-all duration-150 ease-out',
+                          isActive
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-foreground hover:bg-secondary hover:pl-5'
+                        )}
+                        style={{ 
+                          transitionDelay: moreMenuOpen ? `${index * 30}ms` : '0ms' 
+                        }}
+                      >
+                        <Icon className={cn(
+                          'w-4 h-4 transition-transform duration-200',
+                          'group-hover:scale-110'
+                        )} />
+                        <span className="transition-transform duration-200 group-hover:translate-x-0.5">
                           {item.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
+                        </span>
+                      </Link>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
             </div>
           </nav>
           
