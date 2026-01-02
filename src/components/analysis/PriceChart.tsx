@@ -135,6 +135,115 @@ function getSessionsForHour(utcHour: number, enabledSessions: Set<SessionId>) {
     return utcHour >= session.start || utcHour < session.end;
   });
 }
+
+// Candlestick pattern detection
+interface CandlePattern {
+  index: number;
+  type: 'doji' | 'hammer' | 'inverted_hammer' | 'bullish_engulfing' | 'bearish_engulfing' | 'morning_star' | 'evening_star';
+  label: string;
+  emoji: string;
+  color: string;
+  signal: 'bullish' | 'bearish' | 'neutral';
+}
+
+interface CandleData {
+  open: number;
+  high: number;
+  low: number;
+  price: number; // close
+}
+
+function detectCandlePatterns(data: CandleData[]): CandlePattern[] {
+  const patterns: CandlePattern[] = [];
+  if (data.length < 2) return patterns;
+
+  for (let i = 0; i < data.length; i++) {
+    const candle = data[i];
+    const body = Math.abs(candle.price - candle.open);
+    const range = candle.high - candle.low;
+    const upperWick = candle.high - Math.max(candle.open, candle.price);
+    const lowerWick = Math.min(candle.open, candle.price) - candle.low;
+    const isBullish = candle.price > candle.open;
+
+    // Doji: very small body relative to range
+    if (range > 0 && body / range < 0.1) {
+      patterns.push({
+        index: i,
+        type: 'doji',
+        label: 'Doji',
+        emoji: '⚖️',
+        color: '#fbbf24',
+        signal: 'neutral'
+      });
+      continue;
+    }
+
+    // Hammer: small body at top, long lower wick (bullish reversal)
+    if (range > 0 && lowerWick > body * 2 && upperWick < body * 0.5 && body / range < 0.4) {
+      patterns.push({
+        index: i,
+        type: 'hammer',
+        label: 'Hammer',
+        emoji: '🔨',
+        color: '#22c55e',
+        signal: 'bullish'
+      });
+      continue;
+    }
+
+    // Inverted Hammer: small body at bottom, long upper wick (bullish reversal)
+    if (range > 0 && upperWick > body * 2 && lowerWick < body * 0.5 && body / range < 0.4) {
+      patterns.push({
+        index: i,
+        type: 'inverted_hammer',
+        label: 'Inv Hammer',
+        emoji: '⬆️',
+        color: '#22c55e',
+        signal: 'bullish'
+      });
+      continue;
+    }
+
+    // Engulfing patterns: need previous candle
+    if (i > 0) {
+      const prev = data[i - 1];
+      const prevBody = Math.abs(prev.price - prev.open);
+      const prevIsBullish = prev.price > prev.open;
+
+      // Bullish Engulfing: bearish candle followed by larger bullish candle that engulfs it
+      if (!prevIsBullish && isBullish && 
+          candle.open < prev.price && candle.price > prev.open && 
+          body > prevBody * 1.2) {
+        patterns.push({
+          index: i,
+          type: 'bullish_engulfing',
+          label: 'Bull Engulf',
+          emoji: '🟢',
+          color: '#22c55e',
+          signal: 'bullish'
+        });
+        continue;
+      }
+
+      // Bearish Engulfing: bullish candle followed by larger bearish candle that engulfs it
+      if (prevIsBullish && !isBullish && 
+          candle.open > prev.price && candle.price < prev.open && 
+          body > prevBody * 1.2) {
+        patterns.push({
+          index: i,
+          type: 'bearish_engulfing',
+          label: 'Bear Engulf',
+          emoji: '🔴',
+          color: '#ef4444',
+          signal: 'bearish'
+        });
+        continue;
+      }
+    }
+  }
+
+  return patterns;
+}
 export function PriceChart({
   pair,
   timeframe,
@@ -177,6 +286,7 @@ export function PriceChart({
   const [showSessions, setShowSessions] = useState(true);
   const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
   const [chartType, setChartType] = useState<'candle' | 'line'>('candle');
+  const [showPatterns, setShowPatterns] = useState(true);
   
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
@@ -286,6 +396,17 @@ export function PriceChart({
       volume: chartData[chartData.length - 1]?.volume || 0
     }];
   }, [chartData, realtimePrice]);
+
+  // Detect candlestick patterns
+  const detectedPatterns = useMemo(() => {
+    if (!showPatterns || chartType !== 'candle' || finalData.length < 2) return [];
+    return detectCandlePatterns(finalData.map(d => ({
+      open: d.open,
+      high: d.high,
+      low: d.low,
+      price: d.price
+    })));
+  }, [finalData, showPatterns, chartType]);
 
   // Format time range description
   const timeRangeDescription = useMemo(() => {
@@ -478,6 +599,41 @@ export function PriceChart({
         ctx.lineWidth = 0.5;
         ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
       });
+      
+      // Draw pattern labels on candlesticks
+      if (showPatterns && detectedPatterns.length > 0) {
+        detectedPatterns.forEach(pattern => {
+          const point = finalData[pattern.index];
+          if (!point) return;
+          
+          const x = padding.left + pattern.index / (finalData.length - 1) * chartWidth;
+          const highY = padding.top + chartHeight - (point.high - paddedMin) / paddedRange * chartHeight;
+          const lowY = padding.top + chartHeight - (point.low - paddedMin) / paddedRange * chartHeight;
+          
+          // Position label above or below candle based on signal
+          const labelY = pattern.signal === 'bullish' ? lowY + 18 : highY - 8;
+          
+          // Draw emoji marker
+          ctx.font = '12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(pattern.emoji, x, labelY);
+          
+          // Draw connecting line
+          ctx.beginPath();
+          ctx.strokeStyle = pattern.color;
+          ctx.lineWidth = 1;
+          ctx.setLineDash([2, 2]);
+          if (pattern.signal === 'bullish') {
+            ctx.moveTo(x, lowY + 2);
+            ctx.lineTo(x, labelY - 10);
+          } else {
+            ctx.moveTo(x, highY - 2);
+            ctx.lineTo(x, labelY + 4);
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+        });
+      }
     } else {
       // Draw price line - TradingView style (red/pink line)
       ctx.beginPath();
@@ -604,7 +760,7 @@ export function PriceChart({
         ctx.fillText(hoveredData.price.toFixed(5), tooltipX + 8, tooltipY + 28);
       }
     }
-  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions, chartType]);
+  }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData, enabledSessions, showSessions, chartType, showPatterns, detectedPatterns]);
 
   // Draw volume chart
   useEffect(() => {
@@ -793,6 +949,39 @@ export function PriceChart({
               <button onClick={() => setShowVolumeChart(!showVolumeChart)} className={cn("px-2 py-1 text-[10px] font-medium rounded transition-all", showVolumeChart ? "bg-muted text-foreground" : "bg-muted/30 text-muted-foreground line-through")}>
                 Vol
               </button>
+              
+              {/* Toggle patterns visibility - only show when candle chart */}
+              {chartType === 'candle' && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      onClick={() => setShowPatterns(!showPatterns)} 
+                      className={cn(
+                        "px-2 py-1 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                        showPatterns 
+                          ? "bg-amber-500/20 text-amber-400" 
+                          : "bg-muted/30 text-muted-foreground line-through"
+                      )}
+                    >
+                      🕯️ Patrones
+                      {showPatterns && detectedPatterns.length > 0 && (
+                        <span className="bg-amber-500 text-black text-[9px] px-1 rounded-full font-bold">
+                          {detectedPatterns.length}
+                        </span>
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs max-w-[200px]">
+                    <p className="font-medium mb-1">Patrones detectados:</p>
+                    <ul className="text-[10px] space-y-0.5">
+                      <li>🔨 Hammer - Reversión alcista</li>
+                      <li>⚖️ Doji - Indecisión</li>
+                      <li>🟢 Bull Engulfing - Alcista fuerte</li>
+                      <li>🔴 Bear Engulfing - Bajista fuerte</li>
+                    </ul>
+                  </TooltipContent>
+                </Tooltip>
+              )}
               
               {/* Divider */}
               <div className="w-px h-4 bg-border/30 mx-1" />
