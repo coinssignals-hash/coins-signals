@@ -475,15 +475,35 @@ export function CandlestickChart({
         )}
       </div>
 
-      <div className="flex justify-between mt-3 text-xs flex-wrap gap-2">
+      {/* Range indicator */}
+      <div className="flex items-center justify-center gap-3 mt-3 mb-2">
+        <div className="flex items-center gap-2 bg-gradient-to-r from-green-900/30 to-red-900/30 border border-gray-700 rounded-lg px-4 py-2">
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-gray-500 uppercase">Máximo</span>
+            <span className="text-green-400 font-mono text-sm font-semibold">{resistance.toFixed(4)}</span>
+          </div>
+          <div className="flex flex-col items-center px-3 border-x border-gray-700">
+            <span className="text-[10px] text-gray-500 uppercase">Rango</span>
+            <span className="text-yellow-400 font-mono text-sm font-bold">
+              {((resistance - support) * (resistance > 10 ? 100 : 10000)).toFixed(1)} pips
+            </span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-gray-500 uppercase">Mínimo</span>
+            <span className="text-red-400 font-mono text-sm font-semibold">{support.toFixed(4)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between text-xs flex-wrap gap-2">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <div className="w-8 h-0.5 border-t-2 border-dashed border-green-500"></div>
-            <span className="text-green-400">Resistencia {resistance.toFixed(4)}</span>
+            <span className="text-green-400">Resistencia</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-8 h-0.5 border-t-2 border-dashed border-red-500"></div>
-            <span className="text-red-400">Soporte {support.toFixed(4)}</span>
+            <span className="text-red-400">Soporte</span>
           </div>
         </div>
         {realtimePrice && (
@@ -493,7 +513,7 @@ export function CandlestickChart({
               isRealtimeConnected ? "bg-blue-500 animate-pulse" : "bg-indigo-500"
             )}></div>
             <span className={isRealtimeConnected ? "text-blue-400" : "text-indigo-400"}>
-              Precio Actual {realtimePrice.toFixed(5)}
+              Actual {realtimePrice.toFixed(5)}
             </span>
           </div>
         )}
