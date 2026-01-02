@@ -1,8 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { TrendingUp, Newspaper, Brain, Menu, Search, Bell } from 'lucide-react';
+import { 
+  TrendingUp, Newspaper, Brain, Menu, Search, Bell, 
+  ChevronDown, GraduationCap, Building2, BarChart3, 
+  Gift, MessageCircle, Info 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MainDrawer } from './MainDrawer';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
@@ -13,11 +17,38 @@ const navItems = [
   { icon: TrendingUp, label: 'Señales', href: '/signals', badgeType: 'signals' },
 ];
 
+const moreNavItems = [
+  { icon: GraduationCap, label: 'Cursos', href: '/courses' },
+  { icon: Building2, label: 'Brokers', href: '/broker' },
+  { icon: BarChart3, label: 'Rendimientos', href: '/performance' },
+  { icon: Gift, label: 'Referidos', href: '/referrals' },
+  { icon: MessageCircle, label: 'Soporte', href: '/support' },
+  { icon: Info, label: 'Sobre Nosotros', href: '/about' },
+];
+
 export function Header() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
   const { onMouseEnter, onTouchStart } = usePrefetch();
   const { newCount: newsCount } = useNewNewsCount();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setMoreMenuOpen(false);
+  }, [location.pathname]);
   
   return (
     <>
@@ -70,6 +101,55 @@ export function Header() {
                 </Link>
               );
             })}
+
+            {/* More Dropdown */}
+            <div className="relative" ref={moreMenuRef}>
+              <button
+                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                className={cn(
+                  'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                  moreMenuOpen
+                    ? 'bg-secondary text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                )}
+              >
+                Más
+                <ChevronDown className={cn(
+                  'w-4 h-4 transition-transform duration-200',
+                  moreMenuOpen && 'rotate-180'
+                )} />
+              </button>
+
+              {/* Dropdown Menu */}
+              {moreMenuOpen && (
+                <div className="absolute top-full right-0 mt-2 w-56 z-50 bg-popover border border-border rounded-xl shadow-xl overflow-hidden animate-fade-in">
+                  <div className="py-2">
+                    {moreNavItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.href;
+                      
+                      return (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onMouseEnter={onMouseEnter(item.href)}
+                          onClick={() => setMoreMenuOpen(false)}
+                          className={cn(
+                            'flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors',
+                            isActive
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-foreground hover:bg-secondary'
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
           
           {/* Actions */}
