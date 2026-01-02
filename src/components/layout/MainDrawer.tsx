@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { usePrefetch } from '@/hooks/usePrefetch';
+import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import {
   User as UserIcon,
   FileText,
@@ -67,6 +68,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { onMouseEnter, onTouchStart } = usePrefetch();
+  const { newCount: newsCount } = useNewNewsCount();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
@@ -155,6 +157,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.href;
+            const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
 
             return (
               <Link
@@ -171,8 +174,20 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 )}
                 style={{ animationDelay: `${index * 0.03}s` }}
               >
-                <Icon className="w-5 h-5" />
+                <div className="relative">
+                  <Icon className="w-5 h-5" />
+                  {showNewsBadge && (
+                    <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
+                      {newsCount > 99 ? '99+' : newsCount}
+                    </span>
+                  )}
+                </div>
                 {item.label}
+                {showNewsBadge && (
+                  <span className="ml-auto px-1.5 py-0.5 text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full">
+                    {newsCount > 99 ? '99+' : newsCount} nuevas
+                  </span>
+                )}
               </Link>
             );
           })}
