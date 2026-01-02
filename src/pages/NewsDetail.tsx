@@ -81,19 +81,32 @@ const NewsDetail = () => {
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Header />
         <main className="container py-4 flex flex-col items-center justify-center min-h-[50vh]">
-          <AlertCircle className="w-12 h-12 text-destructive mb-4" />
-          <h2 className="text-lg font-semibold text-foreground mb-2">
-            {error ? 'Error al cargar la noticia' : 'Noticia no encontrada'}
-          </h2>
-          <p className="text-muted-foreground text-sm mb-4">
-            {error instanceof Error ? error.message : 'La noticia que buscas no existe o ha expirado'}
-          </p>
-          <Link to="/">
-            <Button variant="outline" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Volver a noticias
-            </Button>
-          </Link>
+          <div className="p-6 rounded-xl bg-card border border-border max-w-md w-full text-center space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">
+              {error ? 'Error al cargar la noticia' : 'Noticia no disponible'}
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              {error instanceof Error 
+                ? error.message 
+                : 'Esta noticia ya no está disponible en el feed. Las noticias se actualizan frecuentemente con información más reciente.'}
+            </p>
+            <div className="flex flex-col gap-2 pt-2">
+              <Link to="/news">
+                <Button className="w-full gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  Ver noticias recientes
+                </Button>
+              </Link>
+              <Link to="/">
+                <Button variant="ghost" className="w-full text-muted-foreground">
+                  Ir al inicio
+                </Button>
+              </Link>
+            </div>
+          </div>
         </main>
         <BottomNav />
       </div>
