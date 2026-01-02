@@ -1,6 +1,12 @@
 import { useMemo, useRef, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type ChartPeriod = '1D' | '1W' | '1M' | '1Y';
 
@@ -21,11 +27,53 @@ interface PriceChartProps {
   showVolume?: boolean;
 }
 
-// Market session times in UTC
+// Market session times in UTC with detailed info
 const MARKET_SESSIONS = [
-  { id: 'asia', name: 'Asia', start: 0, end: 9, color: 'rgba(251, 191, 36, 0.12)', borderColor: 'rgba(251, 191, 36, 0.6)', bgColor: 'bg-amber-500/20', textColor: 'text-amber-400', emoji: '🌏' },
-  { id: 'london', name: 'Londres', start: 8, end: 17, color: 'rgba(59, 130, 246, 0.12)', borderColor: 'rgba(59, 130, 246, 0.6)', bgColor: 'bg-blue-500/20', textColor: 'text-blue-400', emoji: '🇬🇧' },
-  { id: 'ny', name: 'Nueva York', start: 13, end: 22, color: 'rgba(34, 197, 94, 0.12)', borderColor: 'rgba(34, 197, 94, 0.6)', bgColor: 'bg-green-500/20', textColor: 'text-green-400', emoji: '🇺🇸' },
+  { 
+    id: 'asia', 
+    name: 'Asia', 
+    start: 0, 
+    end: 9, 
+    color: 'rgba(251, 191, 36, 0.12)', 
+    borderColor: 'rgba(251, 191, 36, 0.6)', 
+    bgColor: 'bg-amber-500/20', 
+    textColor: 'text-amber-400', 
+    emoji: '🌏',
+    markets: 'Tokio, Singapur, Hong Kong, Sídney',
+    volatility: 'Media-Baja',
+    pairs: 'JPY, AUD, NZD',
+    description: 'Sesión más tranquila. Ideal para pares asiáticos y commodities.'
+  },
+  { 
+    id: 'london', 
+    name: 'Londres', 
+    start: 8, 
+    end: 17, 
+    color: 'rgba(59, 130, 246, 0.12)', 
+    borderColor: 'rgba(59, 130, 246, 0.6)', 
+    bgColor: 'bg-blue-500/20', 
+    textColor: 'text-blue-400', 
+    emoji: '🇬🇧',
+    markets: 'Londres, Frankfurt, Zúrich, París',
+    volatility: 'Alta',
+    pairs: 'EUR, GBP, CHF',
+    description: 'Mayor liquidez del día. Movimientos significativos en EUR y GBP.'
+  },
+  { 
+    id: 'ny', 
+    name: 'Nueva York', 
+    start: 13, 
+    end: 22, 
+    color: 'rgba(34, 197, 94, 0.12)', 
+    borderColor: 'rgba(34, 197, 94, 0.6)', 
+    bgColor: 'bg-green-500/20', 
+    textColor: 'text-green-400', 
+    emoji: '🇺🇸',
+    markets: 'Nueva York, Chicago, Toronto',
+    volatility: 'Alta',
+    pairs: 'USD, CAD',
+    description: 'Solapamiento con Londres genera máxima volatilidad. Noticias económicas clave.'
+  },
 ];
 
 type SessionFilter = 'all' | 'asia' | 'london' | 'ny';
@@ -487,6 +535,7 @@ export function PriceChart({
   }
 
   return (
+    <TooltipProvider>
     <div className="w-full relative bg-background">
       {/* TradingView-style period and session selector */}
       <div className="flex items-center justify-between px-2 py-2 border-b border-border/30 flex-wrap gap-2">
@@ -524,19 +573,60 @@ export function PriceChart({
                 Todas
               </button>
               {MARKET_SESSIONS.map((session) => (
-                <button
-                  key={session.id}
-                  onClick={() => handleSessionClick(session.id as SessionFilter)}
-                  className={cn(
-                    "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
-                    selectedSession === session.id
-                      ? `${session.bgColor} ${session.textColor}`
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
-                >
-                  <span>{session.emoji}</span>
-                  <span className="hidden sm:inline">{session.name}</span>
-                </button>
+                <Tooltip key={session.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => handleSessionClick(session.id as SessionFilter)}
+                      className={cn(
+                        "px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1",
+                        selectedSession === session.id
+                          ? `${session.bgColor} ${session.textColor}`
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      )}
+                    >
+                      <span>{session.emoji}</span>
+                      <span className="hidden sm:inline">{session.name}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent 
+                    side="bottom" 
+                    className="max-w-[280px] p-3"
+                    style={{ 
+                      backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                      borderColor: session.borderColor 
+                    }}
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{session.emoji}</span>
+                        <span className="font-semibold" style={{ color: session.borderColor }}>{session.name}</span>
+                        <span className="text-[10px] text-muted-foreground ml-auto">
+                          {String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{session.description}</p>
+                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        <div>
+                          <span className="text-muted-foreground">Mercados: </span>
+                          <span className="text-foreground">{session.markets}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Volatilidad: </span>
+                          <span 
+                            className="font-medium"
+                            style={{ color: session.volatility === 'Alta' ? '#ef4444' : '#fbbf24' }}
+                          >
+                            {session.volatility}
+                          </span>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-muted-foreground">Pares clave: </span>
+                          <span className="text-foreground">{session.pairs}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               ))}
             </div>
             {/* UTC time reference */}
@@ -609,5 +699,6 @@ export function PriceChart({
         </div>
       )}
     </div>
+    </TooltipProvider>
   );
 }
