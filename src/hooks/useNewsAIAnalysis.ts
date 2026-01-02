@@ -34,6 +34,7 @@ interface AIAnalysisResponse {
 async function fetchNewsAIAnalysis(news: RealNewsItem): Promise<NewsAIAnalysis> {
   const { data, error } = await supabase.functions.invoke<AIAnalysisResponse>('news-ai-analysis', {
     body: {
+      newsId: news.id, // Include news ID for caching
       title: news.title,
       summary: news.summary,
       source: news.source,

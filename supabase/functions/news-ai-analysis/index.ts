@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,6 +7,7 @@ const corsHeaders = {
 };
 
 interface NewsAnalysisRequest {
+  newsId: string;
   title: string;
   summary: string;
   source: string;
@@ -44,13 +46,57 @@ serve(async (req) => {
 
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const { title, summary, source, category, affectedCurrencies, sentiment }: NewsAnalysisRequest = await req.json();
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('Supabase configuration is missing');
+    }
 
-    console.log('[news-ai-analysis] Analyzing news:', title.substring(0, 50) + '...');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    const { newsId, title, summary, source, category, affectedCurrencies, sentiment }: NewsAnalysisRequest = await req.json();
+
+    if (!newsId) {
+      throw new Error('newsId is required');
+    }
+
+    console.log('[news-ai-analysis] Checking cache for news:', newsId);
+
+    // Check cache first
+    const { data: cachedAnalysis, error: cacheError } = await supabase
+      .from('news_ai_analysis_cache')
+      .select('analysis_data, expires_at')
+      .eq('news_id', newsId)
+      .single();
+
+    if (cachedAnalysis && !cacheError) {
+      const expiresAt = new Date(cachedAnalysis.expires_at);
+      if (expiresAt > new Date()) {
+        console.log('[news-ai-analysis] Cache HIT for:', newsId);
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: cachedAnalysis.analysis_data,
+            cached: true,
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } else {
+        console.log('[news-ai-analysis] Cache expired for:', newsId);
+        // Delete expired cache entry
+        await supabase
+          .from('news_ai_analysis_cache')
+          .delete()
+          .eq('news_id', newsId);
+      }
+    }
+
+    console.log('[news-ai-analysis] Cache MISS - generating analysis for:', title.substring(0, 50) + '...');
 
     const systemPrompt = `Eres un analista financiero experto especializado en forex y mercados financieros. 
 Tu tarea es analizar noticias financieras y proporcionar insights accionables para traders.
@@ -201,12 +247,35 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
 
     const analysisData: NewsAnalysisResponse = JSON.parse(toolCall.function.arguments);
 
+    // Store in cache (7 days expiration)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    const { error: insertError } = await supabase
+      .from('news_ai_analysis_cache')
+      .upsert({
+        news_id: newsId,
+        news_title: title.substring(0, 500), // Limit title length
+        analysis_data: analysisData,
+        expires_at: expiresAt.toISOString(),
+      }, {
+        onConflict: 'news_id'
+      });
+
+    if (insertError) {
+      console.error('[news-ai-analysis] Failed to cache analysis:', insertError);
+      // Continue even if caching fails
+    } else {
+      console.log('[news-ai-analysis] Analysis cached for:', newsId);
+    }
+
     console.log('[news-ai-analysis] Analysis complete for:', title.substring(0, 30) + '...');
 
     return new Response(
       JSON.stringify({
         success: true,
         data: analysisData,
+        cached: false,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
