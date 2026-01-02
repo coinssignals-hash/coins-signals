@@ -60,7 +60,25 @@ export function PriceChart({
     if (!priceData || priceData.length === 0) return [];
     
     return priceData.map((price, index) => {
-      const timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+      // Extract time from ISO string or other formats
+      let timeLabel = '';
+      try {
+        const date = new Date(price.time);
+        if (!isNaN(date.getTime())) {
+          // Format as HH:MM in local timezone
+          timeLabel = date.toLocaleTimeString('es-ES', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          });
+        } else {
+          // Fallback: try to extract time from string
+          timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+        }
+      } catch {
+        timeLabel = price.time.split(' ')[1] || price.time.split('T')[1]?.substring(0, 5) || price.time;
+      }
+      
       // Generate synthetic volume if not provided (based on price movement)
       const syntheticVolume = price.volume || Math.abs(price.high - price.low) * 1000000 * (0.5 + Math.random());
       return {
