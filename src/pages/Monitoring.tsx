@@ -5,6 +5,7 @@ import { ServiceCard } from '@/components/monitoring/ServiceCard';
 import { ResourceChart } from '@/components/monitoring/ResourceChart';
 import { LogsViewer } from '@/components/monitoring/LogsViewer';
 import { ContainerStats } from '@/components/monitoring/ContainerStats';
+import { CacheStatsPanel } from '@/components/monitoring/CacheStatsPanel';
 import { mockServices, mockContainerStats, generateResourceHistory, generateMockLogs } from '@/data/mockMonitoring';
 import { ResourceUsage, LogEntry } from '@/types/monitoring';
 import { RefreshCw, Activity } from 'lucide-react';
@@ -85,6 +86,12 @@ const Monitoring = () => {
             Refresh
           </Button>
         </div>
+        
+        {/* AI Cache Stats */}
+        <section>
+          <h2 className="text-sm font-medium text-muted-foreground mb-3">AI Analysis Cache</h2>
+          <CacheStatsPanel />
+        </section>
         
         {/* Service Status Grid */}
         <section>
