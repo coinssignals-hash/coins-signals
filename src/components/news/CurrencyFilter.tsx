@@ -1,12 +1,26 @@
 import { Currency, CURRENCIES } from '@/types/news';
 import { cn } from '@/lib/utils';
+import { useFavoriteCurrencies } from '@/hooks/useFavoriteCurrencies';
+import { Star } from 'lucide-react';
 
 interface CurrencyFilterProps {
   selected: Currency[];
   onChange: (currencies: Currency[]) => void;
 }
 
+// Group currencies by region
+const CURRENCY_REGIONS = {
+  major: { label: 'Principales', currencies: ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'] as Currency[] },
+  europe: { label: 'Europa', currencies: ['SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'TRY', 'RUB'] as Currency[] },
+  asia: { label: 'Asia-Pacífico', currencies: ['CNY', 'HKD', 'SGD', 'KRW', 'INR', 'THB', 'MYR', 'IDR', 'PHP'] as Currency[] },
+  americas: { label: 'Américas', currencies: ['MXN', 'BRL'] as Currency[] },
+  middle_east: { label: 'Medio Oriente', currencies: ['AED', 'SAR', 'ILS'] as Currency[] },
+  africa: { label: 'África', currencies: ['ZAR'] as Currency[] },
+};
+
 export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
+  const { favorites, toggleFavorite, isFavorite } = useFavoriteCurrencies();
+
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
       onChange(selected.filter((c) => c !== currency));
@@ -17,8 +31,58 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
 
   const clearAll = () => onChange([]);
 
+  const renderCurrencyButton = (currency: Currency, showFavoriteStar = false) => {
+    const isSelected = selected.includes(currency);
+    const currencyInfo = CURRENCIES[currency];
+    const isFav = isFavorite(currency);
+
+    return (
+      <div key={currency} className="relative group">
+        <button
+          onClick={() => toggleCurrency(currency)}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all',
+            'border',
+            isSelected
+              ? 'bg-primary/20 border-primary text-primary'
+              : 'bg-card border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+          )}
+        >
+          <span>{currencyInfo.flag}</span>
+          <span>{currency}</span>
+          {showFavoriteStar && isFav && (
+            <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+          )}
+        </button>
+        {/* Favorite toggle on long press / right click */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(currency);
+          }}
+          className={cn(
+            'absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center',
+            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'bg-background border border-border shadow-sm hover:bg-accent',
+            isFav && 'opacity-100'
+          )}
+          title={isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+        >
+          <Star className={cn('w-3 h-3', isFav ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground')} />
+        </button>
+      </div>
+    );
+  };
+
+  // Get non-favorite currencies grouped by region
+  const nonFavoriteCurrencies = Object.entries(CURRENCY_REGIONS).map(([key, region]) => ({
+    key,
+    label: region.label,
+    currencies: region.currencies.filter(c => !favorites.includes(c))
+  })).filter(region => region.currencies.length > 0);
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           Filtrar por divisa
@@ -32,29 +96,29 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
           </button>
         )}
       </div>
-      <div className="flex flex-wrap gap-2">
-        {(Object.keys(CURRENCIES) as Currency[]).map((currency) => {
-          const isSelected = selected.includes(currency);
-          const currencyInfo = CURRENCIES[currency];
-          
-          return (
-            <button
-              key={currency}
-              onClick={() => toggleCurrency(currency)}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all',
-                'border',
-                isSelected
-                  ? 'bg-primary/20 border-primary text-primary'
-                  : 'bg-card border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
-              )}
-            >
-              <span>{currencyInfo.flag}</span>
-              <span>{currency}</span>
-            </button>
-          );
-        })}
-      </div>
+
+      {/* Favorite currencies section */}
+      {favorites.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5 text-xs text-yellow-500">
+            <Star className="w-3 h-3 fill-yellow-500" />
+            <span className="font-medium">Favoritas</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {favorites.map(currency => renderCurrencyButton(currency, true))}
+          </div>
+        </div>
+      )}
+
+      {/* Other currencies by region */}
+      {nonFavoriteCurrencies.map(region => (
+        <div key={region.key} className="space-y-1.5">
+          <span className="text-xs text-muted-foreground">{region.label}</span>
+          <div className="flex flex-wrap gap-2">
+            {region.currencies.map(currency => renderCurrencyButton(currency))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
