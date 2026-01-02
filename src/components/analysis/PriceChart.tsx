@@ -1,8 +1,22 @@
-import { useMemo, useRef, useEffect, useState } from 'react';
+import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { playNotificationSound } from '@/utils/notificationSound';
+import { toast } from 'sonner';
+
 type ChartPeriod = '5m' | '15m' | '30m' | '1h' | '4h' | '1w';
+
+interface PatternAlertConfig {
+  enabled: boolean;
+  types: {
+    bullish: boolean;
+    bearish: boolean;
+    neutral: boolean;
+  };
+  enableSound: boolean;
+}
+
 interface PriceChartProps {
   pair: string;
   timeframe: string;
@@ -31,6 +45,7 @@ interface PriceChartProps {
   previousClose?: number;
   onPeriodChange?: (period: ChartPeriod) => void;
   showVolume?: boolean;
+  patternAlertConfig?: PatternAlertConfig;
 }
 
 // Market session times in UTC with detailed info
@@ -255,7 +270,8 @@ export function PriceChart({
   isRealtimeConnected = false,
   previousClose,
   onPeriodChange,
-  showVolume = true
+  showVolume = true,
+  patternAlertConfig
 }: PriceChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const volumeCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -408,6 +424,55 @@ export function PriceChart({
       price: d.price
     })));
   }, [finalData, showPatterns, chartType]);
+
+  // Track previously detected patterns to only alert on new ones
+  const prevPatternsRef = useRef<string[]>([]);
+
+  // Pattern alert notification effect
+  useEffect(() => {
+    if (!patternAlertConfig?.enabled || detectedPatterns.length === 0) return;
+
+    // Create unique identifiers for current patterns
+    const currentPatternIds = detectedPatterns.map(p => `${p.type}-${p.index}`);
+    
+    // Find new patterns that weren't in the previous detection
+    const newPatterns = detectedPatterns.filter((p, i) => 
+      !prevPatternsRef.current.includes(currentPatternIds[i])
+    );
+
+    // Alert for each new pattern
+    newPatterns.forEach(pattern => {
+      const shouldAlert = 
+        (pattern.signal === 'bullish' && patternAlertConfig.types.bullish) ||
+        (pattern.signal === 'bearish' && patternAlertConfig.types.bearish) ||
+        (pattern.signal === 'neutral' && patternAlertConfig.types.neutral);
+
+      if (shouldAlert) {
+        // Play sound if enabled
+        if (patternAlertConfig.enableSound) {
+          playNotificationSound(`pattern_${pattern.signal}`);
+        }
+
+        // Show toast notification
+        const point = finalData[pattern.index];
+        const timeStr = point?.time || '';
+        
+        toast(pattern.label, {
+          description: `${pattern.signal === 'bullish' ? '↑ Señal Alcista' : pattern.signal === 'bearish' ? '↓ Señal Bajista' : '→ Indecisión'} detectada en ${pair} @ ${timeStr}`,
+          icon: pattern.emoji,
+          duration: 5000,
+          className: pattern.signal === 'bullish' 
+            ? 'border-green-500/50 bg-green-500/10' 
+            : pattern.signal === 'bearish' 
+              ? 'border-red-500/50 bg-red-500/10' 
+              : 'border-amber-500/50 bg-amber-500/10',
+        });
+      }
+    });
+
+    // Update the ref with current pattern ids
+    prevPatternsRef.current = currentPatternIds;
+  }, [detectedPatterns, patternAlertConfig, pair, finalData]);
 
   // Format time range description
   const timeRangeDescription = useMemo(() => {
