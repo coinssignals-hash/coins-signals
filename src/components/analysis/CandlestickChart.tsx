@@ -16,6 +16,7 @@ interface CandlestickChartProps {
   loading?: boolean;
   realtimePrice?: number | null;
   isRealtimeConnected?: boolean;
+  previousDayDate?: string;
 }
 
 interface TooltipData {
@@ -55,7 +56,8 @@ export function CandlestickChart({
   support, 
   loading,
   realtimePrice,
-  isRealtimeConnected = false
+  isRealtimeConnected = false,
+  previousDayDate
 }: CandlestickChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const crosshairCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -397,7 +399,14 @@ export function CandlestickChart({
   return (
     <div className="bg-[#0a0a0a] border border-green-900/50 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white font-semibold text-sm">Resistencia y Soporte día Anterior</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-white font-semibold text-sm">Resistencia y Soporte día Anterior</h3>
+          {previousDayDate && (
+            <span className="text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded">
+              {previousDayDate}
+            </span>
+          )}
+        </div>
         
         {isRealtimeConnected && realtimePrice && (
           <div className="flex items-center gap-2 bg-blue-500/20 px-2 py-1 rounded-full">

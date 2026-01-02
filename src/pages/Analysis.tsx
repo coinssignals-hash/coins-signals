@@ -29,6 +29,7 @@ import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
 import { useMarketData } from '@/hooks/useMarketData';
+import { usePreviousDayCandles } from '@/hooks/usePreviousDayCandles';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import {
@@ -83,6 +84,9 @@ export default function Analysis() {
   });
   
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
+  
+  // Previous day candles for resistance/support chart
+  const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(selectedPair);
   
   // Realtime market data from Polygon.io
   const polygonSymbol = formatSymbolForPolygon(selectedPair);
@@ -396,14 +400,15 @@ export default function Analysis() {
           currentPrice={marketStats.currentPrice}
         />
 
-        {/* Candlestick Chart */}
+        {/* Candlestick Chart - Previous Day Only */}
         <CandlestickChart
-          data={candleData}
-          resistance={marketStats.resistance}
-          support={marketStats.support}
-          loading={loading}
+          data={previousDayData?.candles || []}
+          resistance={previousDayData?.resistance || marketStats.resistance}
+          support={previousDayData?.support || marketStats.support}
+          loading={previousDayLoading}
           realtimePrice={realtimeQuote?.price}
           isRealtimeConnected={isConnected}
+          previousDayDate={previousDayData?.date}
         />
 
         {/* Collapsible Sections */}
