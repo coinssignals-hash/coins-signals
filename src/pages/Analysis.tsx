@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2 } from 'lucide-react';
+import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent } from 'lucide-react';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { MarketSentiment } from '@/components/analysis/MarketSentiment';
@@ -22,6 +22,9 @@ import { PreviousDayChart } from '@/components/analysis/PreviousDayChart';
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
+import { BollingerChart } from '@/components/analysis/BollingerChart';
+import { StochasticChart } from '@/components/analysis/StochasticChart';
+import { IndicatorsSummaryChart } from '@/components/analysis/IndicatorsSummaryChart';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
@@ -232,7 +235,7 @@ export default function Analysis() {
 
         {/* Charts Tabs */}
         <Tabs defaultValue="price" className="space-y-3">
-          <TabsList className="bg-[#0a1a0a] border border-green-900/50 w-full justify-start">
+          <TabsList className="bg-[#0a1a0a] border border-green-900/50 w-full justify-start overflow-x-auto flex-nowrap">
             <TabsTrigger value="price" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <Activity className="w-3 h-3 mr-1" />
               Precio
@@ -244,6 +247,14 @@ export default function Analysis() {
             <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <BarChart2 className="w-3 h-3 mr-1" />
               MACD
+            </TabsTrigger>
+            <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+              <Waves className="w-3 h-3 mr-1" />
+              Bollinger
+            </TabsTrigger>
+            <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+              <Percent className="w-3 h-3 mr-1" />
+              Estocástico
             </TabsTrigger>
           </TabsList>
 
@@ -283,7 +294,40 @@ export default function Analysis() {
               />
             </div>
           </TabsContent>
+
+          <TabsContent value="bollinger">
+            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+              <BollingerChart 
+                pair={selectedPair} 
+                timeframe={selectedTimeframe}
+                priceData={data?.priceData}
+                loading={loading}
+                error={error}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="stochastic">
+            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+              <StochasticChart 
+                pair={selectedPair} 
+                timeframe={selectedTimeframe}
+                priceData={data?.priceData}
+                loading={loading}
+                error={error}
+              />
+            </div>
+          </TabsContent>
         </Tabs>
+
+        {/* Indicators Summary Chart */}
+        <IndicatorsSummaryChart 
+          priceData={data?.priceData}
+          rsiData={data?.rsiData}
+          macdData={data?.macdData}
+          smaData={data?.smaData}
+          loading={loading}
+        />
 
         {/* Market Sentiment */}
         <MarketSentiment
