@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ComposedChart, Line, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, Minus, Wifi } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface BollingerChartProps {
   pair: string;
@@ -10,6 +11,8 @@ interface BollingerChartProps {
   priceData?: Array<{ time: string; price: number; high: number; low: number; open: number }>;
   loading?: boolean;
   error?: string | null;
+  realtimePrice?: number | null;
+  isRealtimeConnected?: boolean;
 }
 
 // Calculate Bollinger Bands from price data
@@ -28,7 +31,15 @@ const calculateBollingerBands = (prices: number[], period: number = 20, multipli
   };
 };
 
-export function BollingerChart({ pair, timeframe, priceData, loading, error }: BollingerChartProps) {
+export function BollingerChart({ 
+  pair, 
+  timeframe, 
+  priceData, 
+  loading, 
+  error,
+  realtimePrice,
+  isRealtimeConnected = false
+}: BollingerChartProps) {
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) {
       // Generate mock data
@@ -61,19 +72,20 @@ export function BollingerChart({ pair, timeframe, priceData, loading, error }: B
     });
   }, [priceData]);
 
-  // Calculate current position relative to bands
+  // Calculate current position relative to bands (use realtime if available)
   const currentPosition = useMemo(() => {
     if (chartData.length === 0) return { status: 'neutral', percent: 50 };
     const latest = chartData[chartData.length - 1];
+    const currentPrice = realtimePrice ?? latest.price;
     const range = latest.upper - latest.lower;
-    const position = ((latest.price - latest.lower) / range) * 100;
+    const position = ((currentPrice - latest.lower) / range) * 100;
     
     let status: 'overbought' | 'oversold' | 'neutral' = 'neutral';
     if (position > 80) status = 'overbought';
     else if (position < 20) status = 'oversold';
     
     return { status, percent: Math.round(position) };
-  }, [chartData]);
+  }, [chartData, realtimePrice]);
 
   if (loading) {
     return (
@@ -96,7 +108,7 @@ export function BollingerChart({ pair, timeframe, priceData, loading, error }: B
   return (
     <div className="space-y-3">
       {/* Status indicator */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">Bollinger Bands</span>
           <span className={`text-xs px-2 py-0.5 rounded ${
@@ -109,12 +121,29 @@ export function BollingerChart({ pair, timeframe, priceData, loading, error }: B
             {currentPosition.status === 'overbought' ? 'Sobrecompra' : 
              currentPosition.status === 'oversold' ? 'Sobreventa' : 'Neutral'}
           </span>
+          {/* Realtime indicator */}
+          {isRealtimeConnected && realtimePrice && (
+            <div className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="text-xs text-green-400">LIVE</span>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-1">
-          {currentPosition.status === 'overbought' && <TrendingDown className="w-4 h-4 text-red-400" />}
-          {currentPosition.status === 'oversold' && <TrendingUp className="w-4 h-4 text-green-400" />}
-          {currentPosition.status === 'neutral' && <Minus className="w-4 h-4 text-gray-400" />}
-          <span className="text-sm font-medium text-white">{currentPosition.percent}%</span>
+        <div className="flex items-center gap-2">
+          {realtimePrice && (
+            <span className={cn(
+              "text-xs font-mono px-2 py-0.5 rounded",
+              isRealtimeConnected ? "bg-green-500/20 text-green-400" : "bg-blue-500/20 text-blue-400"
+            )}>
+              {realtimePrice.toFixed(5)}
+            </span>
+          )}
+          <div className="flex items-center gap-1">
+            {currentPosition.status === 'overbought' && <TrendingDown className="w-4 h-4 text-red-400" />}
+            {currentPosition.status === 'oversold' && <TrendingUp className="w-4 h-4 text-green-400" />}
+            {currentPosition.status === 'neutral' && <Minus className="w-4 h-4 text-gray-400" />}
+            <span className="text-sm font-medium text-white">{currentPosition.percent}%</span>
+          </div>
         </div>
       </div>
 
@@ -156,6 +185,24 @@ export function BollingerChart({ pair, timeframe, priceData, loading, error }: B
               name === 'lower' ? 'Banda Inferior' : 'SMA'
             ]}
           />
+          
+          {/* Realtime price horizontal line */}
+          {realtimePrice && (
+            <ReferenceLine 
+              y={realtimePrice} 
+              stroke={isRealtimeConnected ? "#22c55e" : "#3b82f6"}
+              strokeWidth={2}
+              strokeDasharray={isRealtimeConnected ? "0" : "5 5"}
+              label={{ 
+                value: `${isRealtimeConnected ? '● ' : ''}${realtimePrice.toFixed(4)}`, 
+                position: 'right',
+                fill: isRealtimeConnected ? '#22c55e' : '#3b82f6',
+                fontSize: 10,
+                fontWeight: 'bold'
+              }}
+            />
+          )}
+          
           {/* Bollinger band area */}
           <Area
             type="monotone"
