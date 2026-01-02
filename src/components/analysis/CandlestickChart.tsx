@@ -32,6 +32,23 @@ interface CandlePosition {
   isUp: boolean;
 }
 
+interface CrosshairData {
+  x: number;
+  y: number;
+  price: number;
+  time: string;
+}
+
+interface ChartDimensions {
+  width: number;
+  height: number;
+  chartWidth: number;
+  chartHeight: number;
+  minPrice: number;
+  maxPrice: number;
+  priceRange: number;
+}
+
 export function CandlestickChart({ 
   data, 
   resistance, 
@@ -41,9 +58,12 @@ export function CandlestickChart({
   isRealtimeConnected = false
 }: CandlestickChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const crosshairCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const [crosshair, setCrosshair] = useState<CrosshairData | null>(null);
   const candlePositionsRef = useRef<CandlePosition[]>([]);
+  const chartDimensionsRef = useRef<ChartDimensions | null>(null);
   const paddingRef = useRef({ top: 20, right: 80, bottom: 30, left: 50 });
 
   const drawChart = useCallback(() => {
@@ -76,6 +96,17 @@ export function CandlestickChart({
     const minPrice = Math.min(...allPrices) * 0.9995;
     const maxPrice = Math.max(...allPrices) * 1.0005;
     const priceRange = maxPrice - minPrice;
+
+    // Store dimensions for crosshair calculations
+    chartDimensionsRef.current = {
+      width,
+      height,
+      chartWidth,
+      chartHeight,
+      minPrice,
+      maxPrice,
+      priceRange
+    };
 
     // Clear canvas
     ctx.fillStyle = '#0a0a0a';
@@ -231,13 +262,106 @@ export function CandlestickChart({
     drawChart();
   }, [drawChart]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas || !candlePositionsRef.current.length) return;
+  // Draw crosshair on separate canvas
+  const drawCrosshair = useCallback((mouseX: number, mouseY: number) => {
+    const canvas = crosshairCanvasRef.current;
+    const container = containerRef.current;
+    const dims = chartDimensionsRef.current;
+    if (!canvas || !container || !dims || !data.length) return;
 
-    const rect = canvas.getBoundingClientRect();
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
+    ctx.scale(dpr, dpr);
+
+    const padding = paddingRef.current;
+
+    // Check if mouse is in chart area
+    if (mouseX < padding.left || mouseX > dims.width - padding.right ||
+        mouseY < padding.top || mouseY > dims.height - padding.bottom) {
+      return;
+    }
+
+    // Calculate price at cursor position
+    const priceAtCursor = dims.maxPrice - ((mouseY - padding.top) / dims.chartHeight) * dims.priceRange;
+
+    // Find closest candle for time
+    const candleWidth = dims.chartWidth / data.length;
+    const candleIndex = Math.floor((mouseX - padding.left) / candleWidth);
+    const clampedIndex = Math.max(0, Math.min(data.length - 1, candleIndex));
+    const closestCandle = data[clampedIndex];
+    const timeStr = closestCandle?.time.split(' ')[1]?.substring(0, 5) || closestCandle?.time.substring(11, 16) || '';
+
+    // Draw vertical line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(mouseX, padding.top);
+    ctx.lineTo(mouseX, dims.height - padding.bottom);
+    ctx.stroke();
+
+    // Draw horizontal line
+    ctx.beginPath();
+    ctx.moveTo(padding.left, mouseY);
+    ctx.lineTo(dims.width - padding.right, mouseY);
+    ctx.stroke();
+
+    // Draw price label on left
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#3b82f6';
+    const priceLabelWidth = 55;
+    const priceLabelHeight = 18;
+    ctx.fillRect(0, mouseY - priceLabelHeight / 2, priceLabelWidth, priceLabelHeight);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(priceAtCursor.toFixed(4), priceLabelWidth / 2, mouseY + 3);
+
+    // Draw time label on bottom
+    ctx.fillStyle = '#3b82f6';
+    const timeLabelWidth = 45;
+    const timeLabelHeight = 16;
+    ctx.fillRect(mouseX - timeLabelWidth / 2, dims.height - padding.bottom + 2, timeLabelWidth, timeLabelHeight);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(timeStr, mouseX, dims.height - padding.bottom + 13);
+
+    return { price: priceAtCursor, time: timeStr };
+  }, [data]);
+
+  const clearCrosshair = useCallback(() => {
+    const canvas = crosshairCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const container = containerRef.current;
+    if (!container || !candlePositionsRef.current.length) return;
+
+    const rect = container.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
+    // Draw crosshair
+    const crosshairInfo = drawCrosshair(x, y);
+    if (crosshairInfo) {
+      setCrosshair({ x, y, price: crosshairInfo.price, time: crosshairInfo.time });
+    } else {
+      setCrosshair(null);
+      clearCrosshair();
+    }
 
     // Find if mouse is over any candle
     const hoveredCandle = candlePositionsRef.current.find(pos => 
@@ -246,19 +370,21 @@ export function CandlestickChart({
 
     if (hoveredCandle) {
       setTooltip({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x,
+        y,
         candle: hoveredCandle.candle,
         isUp: hoveredCandle.isUp
       });
     } else {
       setTooltip(null);
     }
-  }, []);
+  }, [drawCrosshair, clearCrosshair]);
 
   const handleMouseLeave = useCallback(() => {
     setTooltip(null);
-  }, []);
+    setCrosshair(null);
+    clearCrosshair();
+  }, [clearCrosshair]);
 
   if (loading) {
     return (
@@ -281,12 +407,19 @@ export function CandlestickChart({
         )}
       </div>
       
-      <div ref={containerRef} className="h-72 relative">
+      <div 
+        ref={containerRef} 
+        className="h-72 relative"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
         <canvas 
           ref={canvasRef} 
-          className="w-full h-full cursor-crosshair" 
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          className="w-full h-full absolute inset-0" 
+        />
+        <canvas 
+          ref={crosshairCanvasRef} 
+          className="w-full h-full absolute inset-0 pointer-events-none cursor-crosshair" 
         />
         
         {/* OHLC Tooltip */}
