@@ -3,15 +3,18 @@ import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
-import { useNewsByDate, useRefreshNews } from '@/hooks/useNews';
+import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Currency, CURRENCIES, NewsListItem, EconomicCategory } from '@/types/news';
+import { Currency, CURRENCIES, EconomicCategory } from '@/types/news';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+
+// Use RealNewsItem as NewsListItem for compatibility
+type NewsListItem = RealNewsItem;
 
 // Mini historical chart component with real data and tooltips
 function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoading?: boolean }) {
@@ -233,12 +236,35 @@ function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) 
         
         {/* Source and Date */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+          {news.source_logo ? (
+            <img 
+              src={news.source_logo} 
+              alt={news.source}
+              className="w-4 h-4 rounded-sm object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            <Rss className="w-3 h-3 text-primary" />
+          )}
           <span className="font-medium text-foreground/70">{news.source}</span>
           <span className="text-border">•</span>
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {news.time_ago}
           </span>
+          {news.url && (
+            <a 
+              href={news.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="ml-auto text-primary hover:text-primary/80"
+            >
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
         </div>
         
         {/* Currency Impacts */}
@@ -251,7 +277,7 @@ function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) 
         <HistoricalImpactSection 
           newsId={news.id} 
           title={news.title}
-          category={news.category}
+          category={news.category as EconomicCategory}
           currencies={news.affected_currencies}
         />
       </div>
@@ -289,11 +315,21 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
         
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3">
+        {/* Source Badge */}
+        <div className="absolute top-3 left-3 flex items-center gap-2">
           <span className="px-3 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold backdrop-blur-sm">
             🔥 Top News
           </span>
+          {news.source_logo && (
+            <div className="px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm flex items-center gap-1.5">
+              <img 
+                src={news.source_logo} 
+                alt={news.source}
+                className="w-4 h-4 rounded-sm object-contain"
+              />
+              <span className="text-xs text-white font-medium">{news.source}</span>
+            </div>
+          )}
         </div>
         
         {/* Content Overlay */}
@@ -304,9 +340,26 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
           
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 text-sm text-gray-300">
-              <span className="font-medium">{news.source}</span>
-              <span>•</span>
+              {!news.source_logo && (
+                <>
+                  <Rss className="w-3 h-3 text-primary" />
+                  <span className="font-medium">{news.source}</span>
+                  <span>•</span>
+                </>
+              )}
+              <Clock className="w-3 h-3" />
               <span>{news.time_ago}</span>
+              {news.url && (
+                <a 
+                  href={news.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-primary hover:text-primary/80"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
             
             <div className="flex items-center gap-2 flex-wrap">
@@ -317,7 +370,7 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
           </div>
           
           {/* Historical Impact Mini Chart - Use inline hook for featured card */}
-          <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category} currencies={news.affected_currencies} />
+          <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
     </Link>
@@ -371,9 +424,9 @@ const News = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
-  const { data: news, isLoading, error, dataUpdatedAt } = useNewsByDate(selectedDate);
-  const { mutate: refreshNews, isPending: isRefreshing } = useRefreshNews();
+  const { data: news, isLoading, error, dataUpdatedAt, refetch } = useRealNewsByDate(selectedDate);
   
   // Filter news by selected currencies
   const filteredNews = useMemo(() => {
@@ -387,8 +440,10 @@ const News = () => {
     );
   }, [news, selectedCurrencies]);
   
-  const handleRefresh = () => {
-    refreshNews();
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
   };
   
   const featuredNews = filteredNews[0];
@@ -457,10 +512,23 @@ const News = () => {
           </div>
         )}
         
-        {/* Last Updated */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="w-3 h-3" />
-          <span>Última actualización: {lastUpdated}</span>
+        {/* Sources and Last Updated */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Clock className="w-3 h-3" />
+            <span>Última actualización: {lastUpdated}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-wider">Fuentes:</span>
+            <div className="flex items-center gap-1">
+              <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-medium">
+                Finnhub
+              </span>
+              <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[10px] font-medium">
+                Polygon
+              </span>
+            </div>
+          </div>
         </div>
         
         {/* Loading State */}
