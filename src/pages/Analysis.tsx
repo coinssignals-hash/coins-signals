@@ -42,10 +42,11 @@ import {
 } from '@/components/ui/sheet';
 
 const timeframes = [
+  { value: '5min', label: '5 Min' },
+  { value: '15min', label: '15 Min' },
+  { value: '30min', label: '30 Min' },
   { value: '1h', label: '1 Hora' },
   { value: '4h', label: '4 Horas' },
-  { value: '1day', label: '1 Día' },
-  { value: '1week', label: '1 Semana' },
 ];
 
 interface AlertConfig {
@@ -77,7 +78,7 @@ function formatSymbolForPolygon(symbol: string): string {
 
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('4h');
+  const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [alertConfig, setAlertConfig] = useState<AlertConfig>({
     rsiOverbought: 70,
