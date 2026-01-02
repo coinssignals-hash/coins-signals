@@ -5,7 +5,8 @@ import { CategoryBadge } from '@/components/news/CategoryBadge';
 import { CurrencyBadgeList } from '@/components/news/CurrencyBadge';
 import { BiasBadge } from '@/components/news/BiasBadge';
 import { useRealNews, RealNewsItem } from '@/hooks/useRealNews';
-import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useNewsAIAnalysis } from '@/hooks/useNewsAIAnalysis';
+import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
@@ -22,6 +23,9 @@ const NewsDetail = () => {
     if (!allNews || !id) return null;
     return allNews.find((item: RealNewsItem) => item.id === id) || null;
   }, [allNews, id]);
+
+  // Fetch AI analysis for the news
+  const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
   
   // Map sentiment to bias format
   const getBiasFromSentiment = (sentiment: string): 'bullish' | 'bearish' | 'neutral' => {
@@ -34,6 +38,24 @@ const NewsDetail = () => {
     if (sentiment === 'bullish') return <TrendingUp className="w-5 h-5 text-green-500" />;
     if (sentiment === 'bearish') return <TrendingDown className="w-5 h-5 text-red-500" />;
     return <Minus className="w-5 h-5 text-muted-foreground" />;
+  };
+
+  const getRiskIcon = (risk: string) => {
+    if (risk === 'high') return <AlertTriangle className="w-4 h-4 text-red-500" />;
+    if (risk === 'medium') return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+    return <AlertTriangle className="w-4 h-4 text-green-500" />;
+  };
+
+  const getTimeHorizonLabel = (horizon: string) => {
+    if (horizon === 'short_term') return 'Corto Plazo';
+    if (horizon === 'medium_term') return 'Mediano Plazo';
+    return 'Largo Plazo';
+  };
+
+  const getImportanceColor = (importance: string) => {
+    if (importance === 'high') return 'border-l-red-500 bg-red-500/5';
+    if (importance === 'medium') return 'border-l-yellow-500 bg-yellow-500/5';
+    return 'border-l-green-500 bg-green-500/5';
   };
   
   if (isLoading) {
@@ -101,7 +123,10 @@ const NewsDetail = () => {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <CategoryBadge category={news.category as EconomicCategory} />
-            <BiasBadge bias={getBiasFromSentiment(news.sentiment)} strength="moderate" />
+            <BiasBadge 
+              bias={aiAnalysis?.traderConclusion.bias || getBiasFromSentiment(news.sentiment)} 
+              strength={aiAnalysis?.traderConclusion.biasStrength || 'moderate'} 
+            />
           </div>
           
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">{news.title}</h1>
@@ -124,28 +149,131 @@ const NewsDetail = () => {
           
           <CurrencyBadgeList currencies={news.affected_currencies} size="md" />
         </div>
-        
-        {/* Summary */}
-        <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Resumen</h2>
-          <p className="text-foreground leading-relaxed">{news.summary}</p>
-        </div>
-        
-        {/* Sentiment Analysis */}
-        <div className="p-4 rounded-lg bg-secondary/50 border border-primary/20 space-y-3">
-          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Análisis de Sentimiento</h2>
-          <div className="flex items-center gap-3">
-            {getSentimentIcon(news.sentiment)}
-            <div>
-              <p className="font-medium text-foreground capitalize">{news.sentiment}</p>
-              <p className="text-sm text-muted-foreground">
-                {news.sentiment === 'bullish' && 'Esta noticia tiene un sesgo positivo para los mercados'}
-                {news.sentiment === 'bearish' && 'Esta noticia tiene un sesgo negativo para los mercados'}
-                {news.sentiment === 'neutral' && 'Esta noticia tiene un impacto neutral en los mercados'}
-              </p>
+
+        {/* AI Analysis Section */}
+        {isLoadingAI ? (
+          <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4">
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              <span className="text-sm font-medium text-primary">Analizando con IA...</span>
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-5/6" />
             </div>
           </div>
-        </div>
+        ) : aiAnalysis ? (
+          <>
+            {/* AI Summary */}
+            <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Análisis IA</h2>
+              </div>
+              <p className="text-foreground leading-relaxed">{aiAnalysis.aiSummary}</p>
+            </div>
+
+            {/* Key Points */}
+            <div className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Puntos Clave</h2>
+              <div className="space-y-2">
+                {aiAnalysis.keyPoints.map((point, i) => (
+                  <div 
+                    key={i} 
+                    className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${getImportanceColor(point.importance)}`}
+                  >
+                    <span className="text-lg flex-shrink-0">{point.icon}</span>
+                    <span className="text-foreground">{point.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Trader Conclusion */}
+            <div className="p-4 rounded-lg bg-secondary/50 border border-primary/20 space-y-4">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-primary" />
+                <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Conclusión para Traders</h2>
+              </div>
+              
+              <p className="text-foreground">{aiAnalysis.traderConclusion.summary}</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="p-2 rounded bg-background/50">
+                  <div className="text-xs text-muted-foreground mb-1">Riesgo</div>
+                  <div className="flex items-center gap-1.5">
+                    {getRiskIcon(aiAnalysis.traderConclusion.riskLevel)}
+                    <span className="text-sm font-medium capitalize">
+                      {aiAnalysis.traderConclusion.riskLevel === 'high' ? 'Alto' : 
+                       aiAnalysis.traderConclusion.riskLevel === 'medium' ? 'Medio' : 'Bajo'}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-2 rounded bg-background/50">
+                  <div className="text-xs text-muted-foreground mb-1">Horizonte</div>
+                  <div className="flex items-center gap-1.5">
+                    <Timer className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">
+                      {getTimeHorizonLabel(aiAnalysis.traderConclusion.timeHorizon)}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-2 rounded bg-background/50 col-span-2 md:col-span-1">
+                  <div className="text-xs text-muted-foreground mb-1">Sesgo</div>
+                  <div className="flex items-center gap-1.5">
+                    {getSentimentIcon(aiAnalysis.traderConclusion.bias)}
+                    <span className="text-sm font-medium capitalize">
+                      {aiAnalysis.traderConclusion.bias === 'bullish' ? 'Alcista' :
+                       aiAnalysis.traderConclusion.bias === 'bearish' ? 'Bajista' : 'Neutral'}
+                      {' '}({aiAnalysis.traderConclusion.biasStrength === 'strong' ? 'Fuerte' :
+                             aiAnalysis.traderConclusion.biasStrength === 'moderate' ? 'Moderado' : 'Débil'})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {aiAnalysis.traderConclusion.recommendedPairs.length > 0 && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-2">Pares Recomendados</div>
+                  <div className="flex flex-wrap gap-2">
+                    {aiAnalysis.traderConclusion.recommendedPairs.map((pair) => (
+                      <span 
+                        key={pair} 
+                        className="px-2 py-1 rounded bg-primary/10 text-primary text-sm font-medium"
+                      >
+                        {pair}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Market Impact & Strategy */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-card border border-border space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Impacto en Mercado</h3>
+                <p className="text-foreground text-sm">{aiAnalysis.marketImpact}</p>
+              </div>
+              <div className="p-4 rounded-lg bg-card border border-border space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Estrategia Sugerida</h3>
+                <p className="text-foreground text-sm">{aiAnalysis.tradingStrategy}</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Fallback to basic summary if AI analysis fails */
+          <div className="p-4 rounded-lg bg-card border border-border space-y-3">
+            <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Resumen</h2>
+            <p className="text-foreground leading-relaxed">{news.summary}</p>
+            {aiError && (
+              <p className="text-xs text-muted-foreground">
+                El análisis IA no está disponible en este momento.
+              </p>
+            )}
+          </div>
+        )}
         
         {/* Affected Currencies Detail */}
         {news.affected_currencies.length > 0 && (
