@@ -418,6 +418,8 @@ export default function Analysis() {
         <TechnicalLevels
           symbol={selectedPair}
           currentPrice={marketStats.currentPrice}
+          realtimePrice={realtimeQuote?.price}
+          isRealtimeConnected={isConnected}
         />
 
         {/* Candlestick Chart - Previous Day Only */}

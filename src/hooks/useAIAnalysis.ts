@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-export type AIAnalysisType = 'sentiment' | 'prediction' | 'conclusions' | 'recommendations';
+export type AIAnalysisType = 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels';
 
 interface MarketData {
   currentPrice: number;
