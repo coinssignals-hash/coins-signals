@@ -47,6 +47,8 @@ const timeframes = [
   { value: '30min', label: '30 Min' },
   { value: '1h', label: '1 Hora' },
   { value: '4h', label: '4 Horas' },
+  { value: '1day', label: '1 Día' },
+  { value: '1week', label: '1 Semana' },
 ];
 
 interface AlertConfig {
