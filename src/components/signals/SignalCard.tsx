@@ -688,27 +688,118 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
             </div>
           </div>
 
-          {/* Analysis Chart */}
+          {/* Market Sentiment Radar Chart */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30">
-              <div className="flex items-end justify-around h-24 mb-2">
-                {[
-                  { label: 'Inteligencia\nArtificial', value: 55 },
-                  { label: 'Sentimiento\ndel Mercado', value: 72 },
-                  { label: 'Paginas\nTrader', value: 65 },
-                  { label: 'Análisis\nPrefecionales', value: 58 },
-                ].map((item, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 flex-1">
-                    <div className="text-[8px] text-blue-300 mb-1">{Math.round(item.value)}%</div>
-                    <div 
-                      className="w-6 bg-blue-500 rounded-t"
-                      style={{ height: `${item.value}%` }}
+            <div className="bg-gradient-to-br from-[#0d1a2d] to-[#0a1420] rounded-xl p-4 border border-blue-500/30">
+              <div className="text-xs text-slate-400 uppercase tracking-wider mb-3 text-center">Análisis de Sentimiento</div>
+              
+              {/* Radar-style chart */}
+              <div className="relative w-full aspect-square max-w-[160px] mx-auto">
+                <svg viewBox="0 0 200 200" className="w-full h-full">
+                  {/* Background circles */}
+                  {[20, 40, 60, 80, 100].map((r, i) => (
+                    <circle
+                      key={i}
+                      cx="100"
+                      cy="100"
+                      r={r * 0.8}
+                      fill="none"
+                      stroke="rgba(59, 130, 246, 0.15)"
+                      strokeWidth="1"
                     />
-                    <span className="text-[7px] text-center text-muted-foreground whitespace-pre-line leading-tight mt-1">
-                      {item.label}
-                    </span>
+                  ))}
+                  
+                  {/* Axis lines */}
+                  {[0, 1, 2, 3].map((i) => {
+                    const angle = (i * 90 - 90) * (Math.PI / 180);
+                    const x2 = 100 + Math.cos(angle) * 80;
+                    const y2 = 100 + Math.sin(angle) * 80;
+                    return (
+                      <line
+                        key={i}
+                        x1="100"
+                        y1="100"
+                        x2={x2}
+                        y2={y2}
+                        stroke="rgba(59, 130, 246, 0.2)"
+                        strokeWidth="1"
+                      />
+                    );
+                  })}
+                  
+                  {/* Data polygon */}
+                  {(() => {
+                    const values = [55, 72, 65, 58];
+                    const points = values.map((v, i) => {
+                      const angle = (i * 90 - 90) * (Math.PI / 180);
+                      const r = (v / 100) * 80;
+                      return `${100 + Math.cos(angle) * r},${100 + Math.sin(angle) * r}`;
+                    }).join(' ');
+                    
+                    return (
+                      <>
+                        <polygon
+                          points={points}
+                          fill="url(#radarGradient)"
+                          stroke="rgba(16, 185, 129, 0.8)"
+                          strokeWidth="2"
+                        />
+                        {/* Data points */}
+                        {values.map((v, i) => {
+                          const angle = (i * 90 - 90) * (Math.PI / 180);
+                          const r = (v / 100) * 80;
+                          const x = 100 + Math.cos(angle) * r;
+                          const y = 100 + Math.sin(angle) * r;
+                          return (
+                            <circle
+                              key={i}
+                              cx={x}
+                              cy={y}
+                              r="4"
+                              fill="#10b981"
+                              stroke="#0d1a2d"
+                              strokeWidth="2"
+                            />
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
+                  
+                  {/* Gradient definition */}
+                  <defs>
+                    <radialGradient id="radarGradient" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="rgba(16, 185, 129, 0.4)" />
+                      <stop offset="100%" stopColor="rgba(16, 185, 129, 0.1)" />
+                    </radialGradient>
+                  </defs>
+                </svg>
+                
+                {/* Labels */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 text-center">
+                  <span className="text-[10px] text-emerald-400 font-bold">55%</span>
+                  <span className="block text-[8px] text-slate-400">IA</span>
+                </div>
+                <div className="absolute top-1/2 right-0 translate-x-1 -translate-y-1/2 text-center">
+                  <span className="text-[10px] text-emerald-400 font-bold">72%</span>
+                  <span className="block text-[8px] text-slate-400">Mercado</span>
+                </div>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 text-center">
+                  <span className="text-[10px] text-emerald-400 font-bold">65%</span>
+                  <span className="block text-[8px] text-slate-400">Traders</span>
+                </div>
+                <div className="absolute top-1/2 left-0 -translate-x-1 -translate-y-1/2 text-center">
+                  <span className="text-[10px] text-emerald-400 font-bold">58%</span>
+                  <span className="block text-[8px] text-slate-400">Análisis</span>
+                </div>
+                
+                {/* Center score */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-2xl font-bold text-emerald-400">63</span>
+                    <span className="block text-[8px] text-slate-400 uppercase">Promedio</span>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
 
