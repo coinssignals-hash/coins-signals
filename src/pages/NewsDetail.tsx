@@ -4,17 +4,37 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { CategoryBadge } from '@/components/news/CategoryBadge';
 import { CurrencyBadgeList } from '@/components/news/CurrencyBadge';
 import { BiasBadge } from '@/components/news/BiasBadge';
-import { ImpactChart } from '@/components/news/ImpactChart';
-import { HistoricalChart } from '@/components/news/HistoricalChart';
-import { useNewsDetail } from '@/hooks/useNews';
-import { ArrowLeft, Clock, ExternalLink, BookOpen } from 'lucide-react';
+import { useRealNews, RealNewsItem } from '@/hooks/useRealNews';
+import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
+import { useMemo } from 'react';
+import { EconomicCategory } from '@/types/news';
 
 const NewsDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: news, isLoading, error } = useNewsDetail(id || '');
+  
+  // Fetch all news and find the one matching the ID
+  const { data: allNews, isLoading, error } = useRealNews(undefined, undefined, 100);
+  
+  const news = useMemo(() => {
+    if (!allNews || !id) return null;
+    return allNews.find((item: RealNewsItem) => item.id === id) || null;
+  }, [allNews, id]);
+  
+  // Map sentiment to bias format
+  const getBiasFromSentiment = (sentiment: string): 'bullish' | 'bearish' | 'neutral' => {
+    if (sentiment === 'bullish') return 'bullish';
+    if (sentiment === 'bearish') return 'bearish';
+    return 'neutral';
+  };
+  
+  const getSentimentIcon = (sentiment: string) => {
+    if (sentiment === 'bullish') return <TrendingUp className="w-5 h-5 text-green-500" />;
+    if (sentiment === 'bearish') return <TrendingDown className="w-5 h-5 text-red-500" />;
+    return <Minus className="w-5 h-5 text-muted-foreground" />;
+  };
   
   if (isLoading) {
     return (
@@ -27,7 +47,6 @@ const NewsDetail = () => {
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
             <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-48 w-full" />
           </div>
         </main>
         <BottomNav />
@@ -45,7 +64,7 @@ const NewsDetail = () => {
             {error ? 'Error al cargar la noticia' : 'Noticia no encontrada'}
           </h2>
           <p className="text-muted-foreground text-sm mb-4">
-            {error instanceof Error ? error.message : 'La noticia que buscas no existe'}
+            {error instanceof Error ? error.message : 'La noticia que buscas no existe o ha expirado'}
           </p>
           <Link to="/">
             <Button variant="outline" className="gap-2">
@@ -81,72 +100,91 @@ const NewsDetail = () => {
         {/* Header */}
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <CategoryBadge category={news.category} />
-            <BiasBadge bias={news.trader_conclusion.bias} strength={news.trader_conclusion.bias_strength} />
+            <CategoryBadge category={news.category as EconomicCategory} />
+            <BiasBadge bias={getBiasFromSentiment(news.sentiment)} strength="moderate" />
           </div>
           
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">{news.title}</h1>
           
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            {news.source_logo && (
+              <img 
+                src={news.source_logo} 
+                alt={news.source} 
+                className="w-5 h-5 rounded object-contain"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            )}
             <span className="font-medium text-foreground">{news.source}</span>
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
-              {news.formatted_date}
-            </span>
-            <span className="flex items-center gap-1">
-              <BookOpen className="w-4 h-4" />
-              {news.reading_time_minutes} min lectura
+              {news.time_ago}
             </span>
           </div>
           
           <CurrencyBadgeList currencies={news.affected_currencies} size="md" />
         </div>
         
-        {/* AI Summary */}
+        {/* Summary */}
         <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Resumen IA</h2>
-          <p className="text-foreground leading-relaxed whitespace-pre-line">{news.ai_summary}</p>
+          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Resumen</h2>
+          <p className="text-foreground leading-relaxed">{news.summary}</p>
         </div>
         
-        {/* Key Points */}
-        <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Puntos Clave</h2>
-          <ul className="space-y-2">
-            {news.key_points.map((point, i) => (
-              <li key={i} className="flex items-start gap-3 p-3 rounded-lg bg-card border border-border">
-                <span className="text-lg">{point.icon}</span>
-                <span className="text-foreground">{point.text}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        
-        {/* Trader Conclusion */}
+        {/* Sentiment Analysis */}
         <div className="p-4 rounded-lg bg-secondary/50 border border-primary/20 space-y-3">
-          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Conclusión para Traders</h2>
-          <p className="text-foreground">{news.trader_conclusion.summary}</p>
-          <div className="flex flex-wrap gap-2">
-            {news.trader_conclusion.recommended_pairs.map((pair) => (
-              <span key={pair} className="px-2 py-1 rounded bg-primary/10 text-primary text-sm font-medium">{pair}</span>
-            ))}
+          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Análisis de Sentimiento</h2>
+          <div className="flex items-center gap-3">
+            {getSentimentIcon(news.sentiment)}
+            <div>
+              <p className="font-medium text-foreground capitalize">{news.sentiment}</p>
+              <p className="text-sm text-muted-foreground">
+                {news.sentiment === 'bullish' && 'Esta noticia tiene un sesgo positivo para los mercados'}
+                {news.sentiment === 'bearish' && 'Esta noticia tiene un sesgo negativo para los mercados'}
+                {news.sentiment === 'neutral' && 'Esta noticia tiene un impacto neutral en los mercados'}
+              </p>
+            </div>
           </div>
         </div>
         
-        {/* Impact Chart */}
-        <div className="p-4 rounded-lg bg-card border border-border">
-          <ImpactChart impacts={news.currency_impacts} />
-        </div>
+        {/* Affected Currencies Detail */}
+        {news.affected_currencies.length > 0 && (
+          <div className="p-4 rounded-lg bg-card border border-border space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Divisas Afectadas</h2>
+            <div className="flex flex-wrap gap-2">
+              {news.affected_currencies.map((currency) => (
+                <span 
+                  key={currency} 
+                  className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
+                >
+                  {currency}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         
-        {/* Historical Analysis */}
-        <div className="p-4 rounded-lg bg-card border border-border">
-          <HistoricalChart analysis={news.historical_analysis} />
+        {/* Relevance Score */}
+        <div className="p-4 rounded-lg bg-card border border-border space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Relevancia</h2>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-secondary rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all"
+                style={{ width: `${news.relevance_score * 100}%` }}
+              />
+            </div>
+            <span className="text-sm font-medium text-foreground">
+              {Math.round(news.relevance_score * 100)}%
+            </span>
+          </div>
         </div>
         
         {/* Source Link */}
-        <a href={news.original_url} target="_blank" rel="noopener noreferrer" className="block">
+        <a href={news.url} target="_blank" rel="noopener noreferrer" className="block">
           <Button variant="outline" className="w-full gap-2">
             <ExternalLink className="w-4 h-4" />
-            Ver fuente original: {news.source}
+            Ver artículo completo en {news.source}
           </Button>
         </a>
       </main>
