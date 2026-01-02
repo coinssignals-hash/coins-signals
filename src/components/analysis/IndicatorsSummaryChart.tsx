@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
-import { TrendingUp, TrendingDown, Minus, Gauge, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Gauge, Activity, BarChart3 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface IndicatorResult {
   name: string;
   signal: 'buy' | 'sell' | 'neutral';
   value: number; // -100 to 100 scale
   weight: number;
+  icon: React.ReactNode;
 }
 
 interface IndicatorsSummaryChartProps {
@@ -41,9 +42,9 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
         rsiValue = ((latestRSI - 50) / 20) * -30;
       }
       
-      results.push({ name: 'RSI', signal: rsiSignal, value: rsiValue, weight: 1 });
+      results.push({ name: 'RSI', signal: rsiSignal, value: rsiValue, weight: 1, icon: <Activity className="w-3.5 h-3.5" /> });
     } else {
-      results.push({ name: 'RSI', signal: 'neutral', value: 0, weight: 1 });
+      results.push({ name: 'RSI', signal: 'neutral', value: 0, weight: 1, icon: <Activity className="w-3.5 h-3.5" /> });
     }
     
     // MACD Analysis
@@ -53,7 +54,6 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
       let macdSignal: 'buy' | 'sell' | 'neutral' = 'neutral';
       let macdValue = 0;
       
-      // Crossover detection
       if (prev.macd < prev.signal && latest.macd > latest.signal) {
         macdSignal = 'buy';
         macdValue = 80;
@@ -68,12 +68,12 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
         macdValue = Math.max(-50, latest.histogram * 1000);
       }
       
-      results.push({ name: 'MACD', signal: macdSignal, value: macdValue, weight: 1.2 });
+      results.push({ name: 'MACD', signal: macdSignal, value: macdValue, weight: 1.2, icon: <BarChart3 className="w-3.5 h-3.5" /> });
     } else {
-      results.push({ name: 'MACD', signal: 'neutral', value: 0, weight: 1.2 });
+      results.push({ name: 'MACD', signal: 'neutral', value: 0, weight: 1.2, icon: <BarChart3 className="w-3.5 h-3.5" /> });
     }
     
-    // Bollinger Bands Analysis (calculated from price data)
+    // Bollinger Bands Analysis
     if (priceData && priceData.length >= 20) {
       const prices = priceData.slice(-20).map(p => p.price);
       const sma = prices.reduce((a, b) => a + b, 0) / 20;
@@ -97,12 +97,12 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
         bbValue = (50 - position) * 0.6;
       }
       
-      results.push({ name: 'Bollinger', signal: bbSignal, value: bbValue, weight: 0.8 });
+      results.push({ name: 'Bollinger', signal: bbSignal, value: bbValue, weight: 0.8, icon: <Activity className="w-3.5 h-3.5" /> });
     } else {
-      results.push({ name: 'Bollinger', signal: 'neutral', value: 0, weight: 0.8 });
+      results.push({ name: 'Bollinger', signal: 'neutral', value: 0, weight: 0.8, icon: <Activity className="w-3.5 h-3.5" /> });
     }
     
-    // Stochastic Analysis (calculated from price data)
+    // Stochastic Analysis
     if (priceData && priceData.length >= 14) {
       const recent = priceData.slice(-14);
       const highestHigh = Math.max(...recent.map(p => p.high));
@@ -123,9 +123,9 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
         stochValue = (50 - k) * 0.5;
       }
       
-      results.push({ name: 'Estocástico', signal: stochSignal, value: stochValue, weight: 0.9 });
+      results.push({ name: 'Stoch', signal: stochSignal, value: stochValue, weight: 0.9, icon: <Activity className="w-3.5 h-3.5" /> });
     } else {
-      results.push({ name: 'Estocástico', signal: 'neutral', value: 0, weight: 0.9 });
+      results.push({ name: 'Stoch', signal: 'neutral', value: 0, weight: 0.9, icon: <Activity className="w-3.5 h-3.5" /> });
     }
     
     // SMA Trend Analysis
@@ -147,9 +147,9 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
         smaValue = priceDiff * 50;
       }
       
-      results.push({ name: 'SMA', signal: smaSignal, value: smaValue, weight: 0.7 });
+      results.push({ name: 'SMA', signal: smaSignal, value: smaValue, weight: 0.7, icon: <TrendingUp className="w-3.5 h-3.5" /> });
     } else {
-      results.push({ name: 'SMA', signal: 'neutral', value: 0, weight: 0.7 });
+      results.push({ name: 'SMA', signal: 'neutral', value: 0, weight: 0.7, icon: <TrendingUp className="w-3.5 h-3.5" /> });
     }
     
     return results;
@@ -175,129 +175,187 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
     return { buyCount, sellCount, neutralCount, overallSignal };
   }, [indicatorResults, overallScore]);
 
-  const pieData = [
-    { name: 'Compra', value: summary.buyCount, color: '#22c55e' },
-    { name: 'Venta', value: summary.sellCount, color: '#ef4444' },
-    { name: 'Neutral', value: summary.neutralCount, color: '#6b7280' },
-  ].filter(d => d.value > 0);
-
-  const barData = indicatorResults.map(ind => ({
-    name: ind.name,
-    value: ind.value,
-    fill: ind.signal === 'buy' ? '#22c55e' : ind.signal === 'sell' ? '#ef4444' : '#6b7280',
-  }));
-
   if (loading) {
     return (
-      <Card className="bg-[#0a1a0a] border-green-900/50">
-        <CardContent className="p-4">
+      <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/30 overflow-hidden">
+        <CardContent className="p-5">
           <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-gray-700 rounded w-1/3"></div>
-            <div className="h-[200px] bg-gray-800 rounded"></div>
+            <div className="h-6 bg-green-900/20 rounded w-1/3"></div>
+            <div className="h-[200px] bg-green-900/10 rounded"></div>
           </div>
         </CardContent>
       </Card>
     );
   }
 
+  // Calculate gauge rotation (-90 to 90 degrees)
+  const gaugeRotation = (overallScore / 100) * 90;
+
   return (
-    <Card className="bg-[#0a1a0a] border-green-900/50">
-      <CardContent className="p-4 space-y-4">
-        {/* Header with overall result */}
+    <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/30 overflow-hidden">
+      <CardContent className="p-5 space-y-5">
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Gauge className="w-5 h-5 text-green-400" />
-            <span className="text-sm font-medium text-white">Resumen de Indicadores</span>
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-green-500/10">
+              <Gauge className="w-4 h-4 text-green-400" />
+            </div>
+            <span className="text-sm font-semibold text-white">Resumen de Indicadores</span>
           </div>
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-            summary.overallSignal === 'buy' 
-              ? 'bg-green-500/20 border border-green-500/50' 
-              : summary.overallSignal === 'sell'
-              ? 'bg-red-500/20 border border-red-500/50'
-              : 'bg-gray-500/20 border border-gray-500/50'
-          }`}>
-            {summary.overallSignal === 'buy' && <TrendingUp className="w-4 h-4 text-green-400" />}
-            {summary.overallSignal === 'sell' && <TrendingDown className="w-4 h-4 text-red-400" />}
-            {summary.overallSignal === 'neutral' && <Minus className="w-4 h-4 text-gray-400" />}
-            <span className={`text-sm font-bold ${
-              summary.overallSignal === 'buy' ? 'text-green-400' : 
-              summary.overallSignal === 'sell' ? 'text-red-400' : 'text-gray-400'
-            }`}>
-              {summary.overallSignal === 'buy' ? 'COMPRA' : 
-               summary.overallSignal === 'sell' ? 'VENTA' : 'NEUTRAL'}
-            </span>
+          <div className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
+            summary.overallSignal === 'buy' && "bg-green-500/20 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.3)]",
+            summary.overallSignal === 'sell' && "bg-red-500/20 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]",
+            summary.overallSignal === 'neutral' && "bg-gray-500/20 text-gray-400"
+          )}>
+            {summary.overallSignal === 'buy' && <TrendingUp className="w-3.5 h-3.5" />}
+            {summary.overallSignal === 'sell' && <TrendingDown className="w-3.5 h-3.5" />}
+            {summary.overallSignal === 'neutral' && <Minus className="w-3.5 h-3.5" />}
+            {summary.overallSignal === 'buy' ? 'COMPRA' : summary.overallSignal === 'sell' ? 'VENTA' : 'NEUTRAL'}
           </div>
         </div>
 
-        {/* Score gauge */}
-        <div className="flex items-center justify-center py-2">
-          <div className="relative w-32 h-16 overflow-hidden">
-            {/* Gauge background */}
-            <div className="absolute inset-0 rounded-t-full bg-gradient-to-r from-red-500 via-gray-500 to-green-500 opacity-30" />
-            {/* Gauge needle */}
+        {/* Speedometer Gauge */}
+        <div className="flex flex-col items-center py-3">
+          <div className="relative w-40 h-20">
+            {/* Background arc */}
+            <svg viewBox="0 0 100 50" className="w-full h-full">
+              <defs>
+                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ef4444" />
+                  <stop offset="35%" stopColor="#f97316" />
+                  <stop offset="50%" stopColor="#6b7280" />
+                  <stop offset="65%" stopColor="#84cc16" />
+                  <stop offset="100%" stopColor="#22c55e" />
+                </linearGradient>
+              </defs>
+              {/* Gauge background arc */}
+              <path
+                d="M 10 50 A 40 40 0 0 1 90 50"
+                fill="none"
+                stroke="url(#gaugeGradient)"
+                strokeWidth="8"
+                strokeLinecap="round"
+                opacity="0.3"
+              />
+              {/* Active arc based on score */}
+              <path
+                d="M 10 50 A 40 40 0 0 1 90 50"
+                fill="none"
+                stroke="url(#gaugeGradient)"
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeDasharray="126"
+                strokeDashoffset={126 - (126 * ((overallScore + 100) / 200))}
+                className="transition-all duration-700 ease-out"
+              />
+              {/* Tick marks */}
+              {[-90, -45, 0, 45, 90].map((angle, i) => (
+                <line
+                  key={i}
+                  x1={50 + 35 * Math.cos((angle - 90) * Math.PI / 180)}
+                  y1={50 + 35 * Math.sin((angle - 90) * Math.PI / 180)}
+                  x2={50 + 40 * Math.cos((angle - 90) * Math.PI / 180)}
+                  y2={50 + 40 * Math.sin((angle - 90) * Math.PI / 180)}
+                  stroke="#4b5563"
+                  strokeWidth="1"
+                />
+              ))}
+            </svg>
+            {/* Needle */}
             <div 
-              className="absolute bottom-0 left-1/2 w-1 h-12 bg-white origin-bottom transition-transform duration-500"
-              style={{ 
-                transform: `translateX(-50%) rotate(${(overallScore / 100) * 90}deg)`,
-              }}
-            />
-            {/* Center circle */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white shadow-lg" />
+              className="absolute bottom-0 left-1/2 origin-bottom transition-transform duration-700 ease-out"
+              style={{ transform: `translateX(-50%) rotate(${gaugeRotation}deg)` }}
+            >
+              <div className="w-0.5 h-14 bg-gradient-to-t from-white to-white/60 rounded-full shadow-lg" />
+            </div>
+            {/* Center dot */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white shadow-lg border-2 border-gray-800" />
+          </div>
+          
+          {/* Score display */}
+          <div className="mt-3 text-center">
+            <span className={cn(
+              "text-4xl font-bold tabular-nums transition-colors",
+              overallScore > 25 && "text-green-400",
+              overallScore < -25 && "text-red-400",
+              overallScore >= -25 && overallScore <= 25 && "text-gray-400"
+            )}>
+              {overallScore > 0 ? '+' : ''}{overallScore.toFixed(0)}
+            </span>
+            <span className="text-sm text-gray-500 ml-1">/ 100</span>
           </div>
         </div>
 
-        {/* Score value */}
-        <div className="text-center">
-          <span className={`text-3xl font-bold ${
-            overallScore > 25 ? 'text-green-400' : 
-            overallScore < -25 ? 'text-red-400' : 'text-gray-400'
-          }`}>
-            {overallScore > 0 ? '+' : ''}{overallScore.toFixed(0)}
-          </span>
-          <span className="text-sm text-gray-500 ml-1">/ 100</span>
+        {/* Signal counts with animated bars */}
+        <div className="flex justify-center gap-4 py-2">
+          {[
+            { label: 'Compra', count: summary.buyCount, color: 'bg-green-500', textColor: 'text-green-400' },
+            { label: 'Neutral', count: summary.neutralCount, color: 'bg-gray-500', textColor: 'text-gray-400' },
+            { label: 'Venta', count: summary.sellCount, color: 'bg-red-500', textColor: 'text-red-400' },
+          ].map((item) => (
+            <div key={item.label} className="flex flex-col items-center gap-1">
+              <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white", item.color)}>
+                {item.count}
+              </div>
+              <span className={cn("text-[10px]", item.textColor)}>{item.label}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Signal counts */}
-        <div className="flex justify-center gap-6 py-2">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="text-xs text-gray-400">Compra: {summary.buyCount}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-gray-500" />
-            <span className="text-xs text-gray-400">Neutral: {summary.neutralCount}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
-            <span className="text-xs text-gray-400">Venta: {summary.sellCount}</span>
-          </div>
-        </div>
-
-        {/* Indicator bars */}
-        <div className="space-y-2">
-          {indicatorResults.map((ind) => (
-            <div key={ind.name} className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 w-20 shrink-0">{ind.name}</span>
-              <div className="flex-1 h-4 bg-gray-800 rounded-full overflow-hidden relative">
-                {/* Center line */}
-                <div className="absolute top-0 bottom-0 left-1/2 w-px bg-gray-600" />
-                {/* Value bar */}
+        {/* Indicator cards grid */}
+        <div className="grid grid-cols-5 gap-2">
+          {indicatorResults.map((ind, index) => (
+            <div 
+              key={ind.name}
+              className={cn(
+                "relative p-3 rounded-xl text-center transition-all duration-300 animate-fade-in",
+                ind.signal === 'buy' && "bg-green-500/10 border border-green-500/30",
+                ind.signal === 'sell' && "bg-red-500/10 border border-red-500/30",
+                ind.signal === 'neutral' && "bg-gray-500/10 border border-gray-500/30"
+              )}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {/* Glow effect */}
+              <div className={cn(
+                "absolute inset-0 rounded-xl blur-xl opacity-20 -z-10",
+                ind.signal === 'buy' && "bg-green-500",
+                ind.signal === 'sell' && "bg-red-500"
+              )} />
+              
+              <div className={cn(
+                "mx-auto mb-1.5 w-6 h-6 rounded-full flex items-center justify-center",
+                ind.signal === 'buy' && "bg-green-500/20 text-green-400",
+                ind.signal === 'sell' && "bg-red-500/20 text-red-400",
+                ind.signal === 'neutral' && "bg-gray-500/20 text-gray-400"
+              )}>
+                {ind.signal === 'buy' ? <TrendingUp className="w-3 h-3" /> : 
+                 ind.signal === 'sell' ? <TrendingDown className="w-3 h-3" /> : 
+                 <Minus className="w-3 h-3" />}
+              </div>
+              
+              <div className="text-[10px] font-medium text-gray-400 mb-0.5">{ind.name}</div>
+              <div className={cn(
+                "text-[9px] font-bold uppercase",
+                ind.signal === 'buy' && "text-green-400",
+                ind.signal === 'sell' && "text-red-400",
+                ind.signal === 'neutral' && "text-gray-500"
+              )}>
+                {ind.signal === 'buy' ? 'Compra' : ind.signal === 'sell' ? 'Venta' : 'Neutral'}
+              </div>
+              
+              {/* Mini progress bar */}
+              <div className="mt-2 h-1 bg-gray-800 rounded-full overflow-hidden">
                 <div 
-                  className={`absolute top-0.5 bottom-0.5 rounded-full transition-all duration-500 ${
-                    ind.value > 0 ? 'bg-green-500' : 'bg-red-500'
-                  }`}
-                  style={{
-                    left: ind.value > 0 ? '50%' : `${50 + ind.value / 2}%`,
-                    width: `${Math.abs(ind.value) / 2}%`,
-                  }}
+                  className={cn(
+                    "h-full rounded-full transition-all duration-500",
+                    ind.signal === 'buy' && "bg-green-500",
+                    ind.signal === 'sell' && "bg-red-500",
+                    ind.signal === 'neutral' && "bg-gray-500"
+                  )}
+                  style={{ width: `${Math.abs(ind.value)}%` }}
                 />
               </div>
-              <span className={`text-xs font-medium w-10 text-right ${
-                ind.signal === 'buy' ? 'text-green-400' : 
-                ind.signal === 'sell' ? 'text-red-400' : 'text-gray-400'
-              }`}>
-                {ind.signal === 'buy' ? 'Compra' : ind.signal === 'sell' ? 'Venta' : 'Neutral'}
-              </span>
             </div>
           ))}
         </div>
