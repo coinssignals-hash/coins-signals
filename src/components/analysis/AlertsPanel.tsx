@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Bell, TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { Bell, TrendingUp, TrendingDown, Activity, Shield, Volume2 } from 'lucide-react';
 
 interface AlertConfig {
   rsiOverbought: number;
@@ -11,6 +11,9 @@ interface AlertConfig {
   enableRSI: boolean;
   enableMACD: boolean;
   enableSMACross: boolean;
+  enableSupportResistance: boolean;
+  srProximityPercent: number;
+  srEnableSound: boolean;
 }
 
 interface AlertsPanelProps {
@@ -36,6 +39,60 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Support/Resistance Alerts */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-green-500" />
+              <Label htmlFor="enableSR" className="font-medium">Alertas Soporte/Resistencia</Label>
+            </div>
+            <Switch
+              id="enableSR"
+              checked={localConfig.enableSupportResistance}
+              onCheckedChange={(checked) => handleChange('enableSupportResistance', checked)}
+            />
+          </div>
+          
+          {localConfig.enableSupportResistance && (
+            <div className="pl-6 space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Proximidad para alertar</span>
+                  <span className="font-mono text-yellow-400">{localConfig.srProximityPercent}%</span>
+                </div>
+                <Slider
+                  value={[localConfig.srProximityPercent]}
+                  onValueChange={([value]) => handleChange('srProximityPercent', value)}
+                  min={1}
+                  max={20}
+                  step={1}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Alertar cuando el precio esté dentro del {localConfig.srProximityPercent}% del rango
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Volume2 className="h-4 w-4 text-blue-400" />
+                  <Label htmlFor="srSound" className="text-sm">Sonido de alerta</Label>
+                </div>
+                <Switch
+                  id="srSound"
+                  checked={localConfig.srEnableSound}
+                  onCheckedChange={(checked) => handleChange('srEnableSound', checked)}
+                />
+              </div>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground pl-6">
+            Alertar cuando el precio se acerque al soporte o resistencia del día anterior
+          </p>
+        </div>
+
+        <div className="border-t border-border/50 pt-4" />
+
         {/* RSI Alerts */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">

@@ -54,6 +54,9 @@ interface AlertConfig {
   enableRSI: boolean;
   enableMACD: boolean;
   enableSMACross: boolean;
+  enableSupportResistance: boolean;
+  srProximityPercent: number;
+  srEnableSound: boolean;
 }
 
 // Convert symbol format for Polygon.io API
@@ -82,6 +85,9 @@ export default function Analysis() {
     enableRSI: true,
     enableMACD: true,
     enableSMACross: true,
+    enableSupportResistance: true,
+    srProximityPercent: 5,
+    srEnableSound: true,
   });
   
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
@@ -154,7 +160,11 @@ export default function Analysis() {
     realtimeQuote?.price,
     previousDayData?.support || marketStats.support,
     previousDayData?.resistance || marketStats.resistance,
-    { enabled: true, proximityPercent: 5, enableSound: true }
+    { 
+      enabled: alertConfig.enableSupportResistance, 
+      proximityPercent: alertConfig.srProximityPercent, 
+      enableSound: alertConfig.srEnableSound 
+    }
   );
 
   // Candlestick data for chart
