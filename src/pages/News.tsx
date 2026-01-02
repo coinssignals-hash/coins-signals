@@ -13,7 +13,7 @@ import { Currency, CURRENCIES, NewsListItem, EconomicCategory } from '@/types/ne
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-// Mini historical chart component with real data
+// Mini historical chart component with real data and tooltips
 function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoading?: boolean }) {
   if (isLoading) {
     return (
@@ -32,18 +32,55 @@ function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoa
       {data.map((point, i) => {
         const height = (Math.abs(point.impact) / maxAbsValue) * 100;
         const isPositive = point.impact >= 0;
+        const confidencePercent = Math.round((point.confidence || 0.7) * 100);
         
         return (
           <div
             key={i}
-            className="flex flex-col items-center justify-end flex-1 group relative"
-            title={`${point.month}: ${point.impact > 0 ? '+' : ''}${point.impact}%`}
+            className="flex flex-col items-center justify-end flex-1 group relative cursor-pointer"
           >
+            {/* Tooltip */}
+            <div className={cn(
+              'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50',
+              'opacity-0 group-hover:opacity-100 pointer-events-none',
+              'transition-all duration-200 scale-90 group-hover:scale-100'
+            )}>
+              <div className={cn(
+                'px-2.5 py-1.5 rounded-lg text-xs whitespace-nowrap',
+                'bg-popover border border-border shadow-xl',
+                'flex flex-col items-center gap-0.5'
+              )}>
+                <span className="font-semibold text-foreground">{point.month}</span>
+                <span className={cn(
+                  'font-bold text-sm',
+                  isPositive ? 'text-green-400' : 'text-red-400'
+                )}>
+                  {isPositive ? '+' : ''}{point.impact}%
+                </span>
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  <span className="text-[10px]">Confianza:</span>
+                  <span className={cn(
+                    'text-[10px] font-medium',
+                    confidencePercent >= 80 ? 'text-green-400' : 
+                    confidencePercent >= 60 ? 'text-yellow-400' : 'text-red-400'
+                  )}>
+                    {confidencePercent}%
+                  </span>
+                </div>
+              </div>
+              {/* Arrow */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
+              </div>
+            </div>
+            
+            {/* Bar */}
             <div
               className={cn(
-                'w-full rounded-t-sm transition-all',
+                'w-full rounded-t-sm transition-all duration-200',
                 isPositive ? 'bg-green-500' : 'bg-red-500',
-                'opacity-70 group-hover:opacity-100'
+                'group-hover:scale-110 group-hover:shadow-lg',
+                isPositive ? 'group-hover:shadow-green-500/30' : 'group-hover:shadow-red-500/30'
               )}
               style={{ 
                 height: `${Math.max(height, 10)}%`,
