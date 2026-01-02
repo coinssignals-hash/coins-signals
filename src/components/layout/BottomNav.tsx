@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Newspaper, GraduationCap, Building2, Settings, BarChart2, TrendingUp } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
+import { usePrefetch } from '@/hooks/usePrefetch';
 import { useEffect } from 'react';
 
 const navItems = [
@@ -16,6 +17,7 @@ const navItems = [
 export function BottomNav() {
   const location = useLocation();
   const { newCount, markAsSeen } = useNewSignalsCount();
+  const { onMouseEnter, onTouchStart } = usePrefetch();
 
   // Mark signals as seen when visiting the signals page
   useEffect(() => {
@@ -36,6 +38,8 @@ export function BottomNav() {
             <Link
               key={item.href}
               to={item.href}
+              onMouseEnter={onMouseEnter(item.href)}
+              onTouchStart={onTouchStart(item.href)}
               className={cn(
                 'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors relative',
                 isActive

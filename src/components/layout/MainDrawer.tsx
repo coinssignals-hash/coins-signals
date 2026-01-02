@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
+import { usePrefetch } from '@/hooks/usePrefetch';
 import {
   User as UserIcon,
   FileText,
@@ -61,6 +62,7 @@ const settingsItems = [
 export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { onMouseEnter, onTouchStart } = usePrefetch();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
@@ -155,6 +157,8 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 key={item.href}
                 to={item.href}
                 onClick={() => onOpenChange(false)}
+                onMouseEnter={onMouseEnter(item.href)}
+                onTouchStart={onTouchStart(item.href)}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
                   isActive
@@ -184,6 +188,8 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 key={item.href}
                 to={item.href}
                 onClick={() => onOpenChange(false)}
+                onMouseEnter={onMouseEnter(item.href)}
+                onTouchStart={onTouchStart(item.href)}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
                   isActive
