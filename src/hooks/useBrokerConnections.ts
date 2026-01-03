@@ -202,92 +202,36 @@ export function useBrokerConnections() {
     }
   };
 
-  // Direct test to broker API for preview mode
+  // Test broker connection via Edge Function (no auth required for validation)
   const testBrokerDirectly = async (
     brokerCode: string,
     credentials: ConnectionCredentials,
     environment: 'demo' | 'live'
   ): Promise<{ success: boolean; message: string; account_info?: Record<string, unknown> }> => {
     try {
-      switch (brokerCode) {
-        case 'alpaca': {
-          const baseUrl = environment === 'live' 
-            ? 'https://api.alpaca.markets' 
-            : 'https://paper-api.alpaca.markets';
-          
-          const response = await fetch(`${baseUrl}/v2/account`, {
-            headers: {
-              'APCA-API-KEY-ID': credentials.api_key || '',
-              'APCA-API-SECRET-KEY': credentials.api_secret || '',
-            },
-          });
-          
-          if (response.ok) {
-            const account = await response.json();
-            return {
-              success: true,
-              message: '¡Conexión exitosa!',
-              account_info: {
-                account_number: account.account_number,
-                status: account.status,
-                currency: account.currency,
-                buying_power: account.buying_power,
-                equity: account.equity,
-              },
-            };
-          } else {
-            const errorData = await response.json().catch(() => ({}));
-            return {
-              success: false,
-              message: errorData.message || 'Credenciales inválidas',
-            };
-          }
-        }
-        
-        case 'oanda': {
-          const baseUrl = environment === 'live'
-            ? 'https://api-fxtrade.oanda.com'
-            : 'https://api-fxpractice.oanda.com';
-          
-          const response = await fetch(`${baseUrl}/v3/accounts`, {
-            headers: {
-              'Authorization': `Bearer ${credentials.api_key}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            return {
-              success: true,
-              message: '¡Conexión exitosa!',
-              account_info: data.accounts?.[0] ? {
-                account_id: data.accounts[0].id,
-              } : undefined,
-            };
-          } else {
-            return {
-              success: false,
-              message: 'Token de API inválido',
-            };
-          }
-        }
-        
-        case 'binance': {
-          // For Binance, we need HMAC signature which requires crypto
-          // In browser, we'll let the edge function handle this
-          return {
-            success: true,
-            message: 'Credenciales recibidas. Usa "Guardar Conexión" para verificar con el servidor.',
-          };
-        }
-        
-        default:
-          return {
-            success: true,
-            message: 'Credenciales guardadas. La conexión se verificará al operar.',
-          };
+      // Use the edge function with 'validate' action - no auth required
+      const { data, error } = await supabase.functions.invoke('broker-connections', {
+        body: {
+          action: 'validate',
+          broker_code: brokerCode,
+          credentials,
+          environment,
+        },
+      });
+
+      if (error) {
+        console.error('Validate error:', error);
+        return {
+          success: false,
+          message: error.message || 'Error al validar conexión',
+        };
       }
+
+      return {
+        success: data?.success ?? false,
+        message: data?.message || (data?.success ? '¡Conexión exitosa!' : 'Credenciales inválidas'),
+        account_info: data?.account_info,
+      };
     } catch (err) {
       console.error('Direct broker test error:', err);
       return {
