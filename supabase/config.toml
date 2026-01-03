@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.broker-connections]
 verify_jwt = false
+
+[functions.broker-portfolio]
+verify_jwt = false

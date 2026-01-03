@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Switch } from '@/components/ui/switch';
@@ -31,6 +31,10 @@ export default function LinkBroker() {
     deleteConnection,
     refetch 
   } = useBrokerConnections();
+
+  // Count connected accounts
+  const connectedCount = connections.filter(c => c.is_connected).length;
+  const accounts = connections;
 
   const [brokerSlots, setBrokerSlots] = useState<BrokerSlot[]>([
     { id: '1', name: '', connected: false },
@@ -326,6 +330,19 @@ export default function LinkBroker() {
             </button>
           ))}
         </div>
+
+        {/* Quick Actions */}
+        {accounts.length > 0 && (
+          <div className="mb-6">
+            <button
+              onClick={() => navigate('/portfolio')}
+              className="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+            >
+              <BarChart3 className="w-5 h-5" />
+              Ver Portfolio Unificado
+            </button>
+          </div>
+        )}
 
         {/* Vincular Broker Section */}
         <section className="mb-6">

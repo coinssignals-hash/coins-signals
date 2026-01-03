@@ -32,6 +32,7 @@ const About = lazy(() => import("./pages/About"));
 const BrokerRating = lazy(() => import("./pages/BrokerRating"));
 const LinkBroker = lazy(() => import("./pages/LinkBroker"));
 const Analysis = lazy(() => import("./pages/Analysis"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/broker-rating" element={<BrokerRating />} />
               <Route path="/link-broker" element={<LinkBroker />} />
               <Route path="/analysis" element={<Analysis />} />
+              <Route path="/portfolio" element={<Portfolio />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
