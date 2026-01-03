@@ -12,6 +12,8 @@ interface Profile {
   push_notifications_enabled: boolean;
   email_notifications_enabled: boolean;
   signal_alerts_enabled: boolean;
+  whatsapp_number: string | null;
+  whatsapp_notifications_enabled: boolean;
 }
 
 export function useAuth() {

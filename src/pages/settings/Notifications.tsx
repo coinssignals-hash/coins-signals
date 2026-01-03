@@ -5,9 +5,12 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Bell, MessageCircle, Volume2, Play, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ArrowLeft, Bell, MessageCircle, Volume2, Play, TrendingUp, TrendingDown, AlertTriangle, Phone, Loader2, Check } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { playNotificationSound, enableAudio, SoundType } from '@/utils/notificationSound';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const soundPreviews: { type: SoundType; label: string; description: string; icon: typeof TrendingUp; color: string }[] = [
   { type: 'buy', label: 'Señal BUY', description: 'Tono ascendente alcista', icon: TrendingUp, color: 'text-green-500' },
@@ -17,6 +20,7 @@ const soundPreviews: { type: SoundType; label: string; description: string; icon
 
 export default function Notifications() {
   const { soundEnabled, toggleSound } = useNewSignalsCount();
+  const { profile, updateProfile, user } = useAuth();
   
   const [settings, setSettings] = useState({
     pushNotifications: true,
@@ -31,6 +35,20 @@ export default function Notifications() {
     stopLoss: true,
     brokerAccount: false,
   });
+
+  // WhatsApp configuration
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [savingWhatsapp, setSavingWhatsapp] = useState(false);
+  const [whatsappSaved, setWhatsappSaved] = useState(false);
+
+  // Load WhatsApp settings from profile
+  useEffect(() => {
+    if (profile) {
+      setWhatsappNumber(profile.whatsapp_number || '');
+      setWhatsappEnabled(profile.whatsapp_notifications_enabled || false);
+    }
+  }, [profile]);
 
   // Enable audio on page load (user already interacted to get here)
   useEffect(() => {
@@ -52,6 +70,65 @@ export default function Notifications() {
   const handlePreviewSound = (type: SoundType) => {
     enableAudio();
     playNotificationSound(type);
+  };
+
+  const handleWhatsappToggle = async (enabled: boolean) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para activar WhatsApp');
+      return;
+    }
+
+    if (enabled && !whatsappNumber) {
+      toast.error('Primero ingresa tu número de WhatsApp');
+      return;
+    }
+
+    setWhatsappEnabled(enabled);
+    
+    try {
+      await updateProfile({
+        whatsapp_notifications_enabled: enabled,
+      });
+      toast.success(enabled ? 'Alertas WhatsApp activadas' : 'Alertas WhatsApp desactivadas');
+    } catch {
+      toast.error('Error al actualizar configuración');
+      setWhatsappEnabled(!enabled);
+    }
+  };
+
+  const handleSaveWhatsappNumber = async () => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para guardar tu número');
+      return;
+    }
+
+    if (!whatsappNumber) {
+      toast.error('Ingresa un número de WhatsApp válido');
+      return;
+    }
+
+    // Basic validation for phone number format
+    const cleanNumber = whatsappNumber.replace(/\s/g, '');
+    if (!/^\+?[1-9]\d{7,14}$/.test(cleanNumber)) {
+      toast.error('Formato inválido. Usa formato internacional: +1234567890');
+      return;
+    }
+
+    setSavingWhatsapp(true);
+    
+    try {
+      await updateProfile({
+        whatsapp_number: cleanNumber.startsWith('+') ? cleanNumber : `+${cleanNumber}`,
+      });
+      setWhatsappSaved(true);
+      toast.success('Número de WhatsApp guardado');
+      
+      setTimeout(() => setWhatsappSaved(false), 2000);
+    } catch {
+      toast.error('Error al guardar número');
+    } finally {
+      setSavingWhatsapp(false);
+    }
   };
 
   return (
@@ -87,6 +164,71 @@ export default function Notifications() {
                   onCheckedChange={() => toggleSetting('pushNotifications')}
                   className="data-[state=checked]:bg-primary"
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* WhatsApp Configuration Card */}
+          <Card className="bg-card border-border border-green-500/20">
+            <CardHeader>
+              <CardTitle className="text-sm text-green-500 flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                Alertas WhatsApp (Portfolio)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Recibe alertas críticas de tu portfolio por WhatsApp: cambios significativos de PnL (±10%), uso de margen alto (≥90%).
+              </p>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1.5 block">
+                    Número de WhatsApp (formato internacional)
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="tel"
+                      placeholder="+1234567890"
+                      value={whatsappNumber}
+                      onChange={(e) => setWhatsappNumber(e.target.value)}
+                      className="flex-1 bg-secondary/50"
+                    />
+                    <Button 
+                      onClick={handleSaveWhatsappNumber}
+                      disabled={savingWhatsapp || !whatsappNumber}
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {savingWhatsapp ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : whatsappSaved ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        'Guardar'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between py-3 bg-secondary/30 rounded-lg px-3">
+                  <div>
+                    <span className="text-sm text-foreground">Activar alertas WhatsApp</span>
+                    <p className="text-xs text-muted-foreground">Solo para alertas críticas</p>
+                  </div>
+                  <Switch 
+                    checked={whatsappEnabled} 
+                    onCheckedChange={handleWhatsappToggle}
+                    disabled={!whatsappNumber}
+                    className="data-[state=checked]:bg-green-500"
+                  />
+                </div>
+
+                <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                    <strong>Nota:</strong> Para recibir mensajes, primero debes enviar "join" al número de WhatsApp sandbox de Twilio para unirte.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
