@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TrendingUp, TrendingDown, Wallet, ArrowRight, Activity, AlertCircle } from 'lucide-react';
-import { usePortfolio, Position } from '@/hooks/usePortfolio';
+import { TrendingUp, TrendingDown, Wallet, ArrowRight, Activity, AlertCircle, ChevronDown } from 'lucide-react';
+import { usePortfolio } from '@/hooks/usePortfolio';
 import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { EquitySparkline } from './EquitySparkline';
@@ -12,6 +12,7 @@ export function PortfolioWidget() {
   const { session } = useAuth();
   const { summary, loading, error, isLive, accounts, getAllPositions } = usePortfolio();
   const { stats: historyStats, snapshots } = usePortfolioHistory('1W');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Get top 3 positions by absolute PnL
   const topPositions = useMemo(() => {
@@ -20,6 +21,12 @@ export function PortfolioWidget() {
       .sort((a, b) => Math.abs(b.unrealized_pnl) - Math.abs(a.unrealized_pnl))
       .slice(0, 3);
   }, [getAllPositions]);
+
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
 
   // Si no hay sesión, mostrar invitación a conectar
   if (!session) {
@@ -118,11 +125,12 @@ export function PortfolioWidget() {
 
   const hasHistoryData = snapshots.length >= 2;
   const weeklyChangePositive = historyStats.equityChange >= 0;
+  const hasPositions = topPositions.length > 0;
 
   return (
-    <Link to="/portfolio">
-      <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/50 hover:border-green-500/50 transition-all duration-300 cursor-pointer group overflow-hidden">
-        <CardContent className="p-4">
+    <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/50 hover:border-green-500/50 transition-all duration-300 overflow-hidden">
+      <CardContent className="p-4">
+        <Link to="/portfolio" className="block group">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -171,17 +179,20 @@ export function PortfolioWidget() {
               <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-green-500 group-hover:translate-x-1 transition-all" />
             </div>
           </div>
+        </Link>
 
-          {/* Sparkline - mobile only */}
-          {hasHistoryData && (
-            <div className="mt-3 sm:hidden">
-              <EquitySparkline width={280} height={28} className="w-full" />
-            </div>
-          )}
+        {/* Sparkline - mobile only */}
+        {hasHistoryData && (
+          <div className="mt-3 sm:hidden">
+            <EquitySparkline width={280} height={28} className="w-full" />
+          </div>
+        )}
 
-          {/* Top 3 Positions */}
-          {topPositions.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-green-900/30 space-y-1.5">
+        {/* Top 3 Positions - Desktop: always visible, Mobile: collapsible */}
+        {hasPositions && (
+          <>
+            {/* Desktop - always visible */}
+            <div className="hidden sm:block mt-3 pt-3 border-t border-green-900/30 space-y-1.5">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider">Top Posiciones</p>
               <div className="grid grid-cols-3 gap-2">
                 {topPositions.map((pos, idx) => {
@@ -202,25 +213,61 @@ export function PortfolioWidget() {
                 })}
               </div>
             </div>
-          )}
 
-          <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
-            <span>
-              {summary.total_positions > 0 
-                ? `${summary.total_positions} posición${summary.total_positions !== 1 ? 'es' : ''}`
-                : 'Sin posiciones'}
+            {/* Mobile - collapsible */}
+            <div className="sm:hidden mt-3 pt-3 border-t border-green-900/30">
+              <button
+                onClick={handleToggleExpand}
+                className="w-full flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
+              >
+                <span>Top Posiciones ({topPositions.length})</span>
+                <ChevronDown 
+                  className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+                />
+              </button>
+              
+              <div 
+                className={`grid grid-cols-3 gap-2 overflow-hidden transition-all duration-200 ${
+                  isExpanded ? 'mt-2 max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                }`}
+              >
+                {topPositions.map((pos, idx) => {
+                  const isPositive = pos.unrealized_pnl >= 0;
+                  return (
+                    <div 
+                      key={`mobile-${pos.symbol}-${idx}`}
+                      className={`px-2 py-1.5 rounded-md ${
+                        isPositive ? 'bg-green-500/10' : 'bg-red-500/10'
+                      }`}
+                    >
+                      <p className="text-[11px] font-medium text-white truncate">{pos.symbol}</p>
+                      <p className={`text-[10px] font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCompact(pos.unrealized_pnl)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
+          <span>
+            {summary.total_positions > 0 
+              ? `${summary.total_positions} posición${summary.total_positions !== 1 ? 'es' : ''}`
+              : 'Sin posiciones'}
+          </span>
+          
+          {hasHistoryData && (
+            <span className={weeklyChangePositive ? 'text-green-400' : 'text-red-400'}>
+              7d: {formatPercent(historyStats.equityChangePercent)}
             </span>
-            
-            {hasHistoryData && (
-              <span className={weeklyChangePositive ? 'text-green-400' : 'text-red-400'}>
-                7d: {formatPercent(historyStats.equityChangePercent)}
-              </span>
-            )}
-            
-            <span>{accounts.length} broker{accounts.length !== 1 ? 's' : ''}</span>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+          )}
+          
+          <span>{accounts.length} broker{accounts.length !== 1 ? 's' : ''}</span>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
