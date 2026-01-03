@@ -273,6 +273,15 @@ export function useBrokerConnections() {
           }
         }
         
+        case 'binance': {
+          // For Binance, we need HMAC signature which requires crypto
+          // In browser, we'll let the edge function handle this
+          return {
+            success: true,
+            message: 'Credenciales recibidas. Usa "Guardar Conexión" para verificar con el servidor.',
+          };
+        }
+        
         default:
           return {
             success: true,
