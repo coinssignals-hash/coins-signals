@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Switch } from '@/components/ui/switch';
@@ -260,7 +260,25 @@ export default function LinkBroker() {
           </button>
         </div>
 
-        {/* Broker Slots */}
+        {/* Auth Banner for non-authenticated users */}
+        {!user && (
+          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
+            <LogIn className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-amber-200 text-sm font-medium">Modo vista previa</p>
+              <p className="text-amber-200/70 text-xs mt-0.5">
+                Puedes explorar la configuración, pero necesitas iniciar sesión para guardar conexiones.
+              </p>
+              <button
+                onClick={() => navigate('/auth')}
+                className="mt-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-full text-xs font-semibold transition-colors"
+              >
+                Iniciar Sesión
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-center gap-3 mb-8 overflow-x-auto pb-2">
           {brokerSlots.map((slot, index) => (
             <button
