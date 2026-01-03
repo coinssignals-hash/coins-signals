@@ -1,16 +1,25 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, Wallet, ArrowRight, Activity, AlertCircle } from 'lucide-react';
-import { usePortfolio } from '@/hooks/usePortfolio';
+import { usePortfolio, Position } from '@/hooks/usePortfolio';
 import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { EquitySparkline } from './EquitySparkline';
 
 export function PortfolioWidget() {
   const { session } = useAuth();
-  const { summary, loading, error, isLive, accounts } = usePortfolio();
+  const { summary, loading, error, isLive, accounts, getAllPositions } = usePortfolio();
   const { stats: historyStats, snapshots } = usePortfolioHistory('1W');
+
+  // Get top 3 positions by absolute PnL
+  const topPositions = useMemo(() => {
+    const positions = getAllPositions();
+    return positions
+      .sort((a, b) => Math.abs(b.unrealized_pnl) - Math.abs(a.unrealized_pnl))
+      .slice(0, 3);
+  }, [getAllPositions]);
 
   // Si no hay sesión, mostrar invitación a conectar
   if (!session) {
@@ -90,6 +99,14 @@ export function PortfolioWidget() {
     }).format(value);
   };
 
+  const formatCompact = (value: number) => {
+    const abs = Math.abs(value);
+    if (abs >= 1000) {
+      return `${value >= 0 ? '+' : '-'}$${(abs / 1000).toFixed(1)}k`;
+    }
+    return `${value >= 0 ? '+' : '-'}$${abs.toFixed(0)}`;
+  };
+
   const formatPercent = (value: number) => {
     const sign = value >= 0 ? '+' : '';
     return `${sign}${value.toFixed(2)}%`;
@@ -159,6 +176,31 @@ export function PortfolioWidget() {
           {hasHistoryData && (
             <div className="mt-3 sm:hidden">
               <EquitySparkline width={280} height={28} className="w-full" />
+            </div>
+          )}
+
+          {/* Top 3 Positions */}
+          {topPositions.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-green-900/30 space-y-1.5">
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Top Posiciones</p>
+              <div className="grid grid-cols-3 gap-2">
+                {topPositions.map((pos, idx) => {
+                  const isPositive = pos.unrealized_pnl >= 0;
+                  return (
+                    <div 
+                      key={`${pos.symbol}-${idx}`}
+                      className={`px-2 py-1.5 rounded-md ${
+                        isPositive ? 'bg-green-500/10' : 'bg-red-500/10'
+                      }`}
+                    >
+                      <p className="text-[11px] font-medium text-white truncate">{pos.symbol}</p>
+                      <p className={`text-[10px] font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                        {formatCompact(pos.unrealized_pnl)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
