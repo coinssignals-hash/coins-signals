@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 // Simple encryption using base64 encoding with a key-based XOR
-// In production, consider using Web Crypto API for AES encryption
 function encryptCredentials(credentials: Record<string, string>, key: string): string {
   const json = JSON.stringify(credentials);
   const keyBytes = new TextEncoder().encode(key);
@@ -34,6 +33,98 @@ function decryptCredentials(encrypted: string, key: string): Record<string, stri
     return JSON.parse(new TextDecoder().decode(decrypted));
   } catch {
     return {};
+  }
+}
+
+// Test broker connection directly
+async function testBrokerConnection(
+  brokerCode: string,
+  credentials: Record<string, string>,
+  environment: string
+): Promise<{ success: boolean; message: string; account_info: Record<string, unknown> | null }> {
+  try {
+    switch (brokerCode) {
+      case 'alpaca': {
+        const baseUrl = environment === 'live' 
+          ? 'https://api.alpaca.markets' 
+          : 'https://paper-api.alpaca.markets';
+        
+        const response = await fetch(`${baseUrl}/v2/account`, {
+          headers: {
+            'APCA-API-KEY-ID': credentials.api_key,
+            'APCA-API-SECRET-KEY': credentials.api_secret,
+          },
+        });
+        
+        if (response.ok) {
+          const account = await response.json();
+          return {
+            success: true,
+            message: 'Conexión exitosa',
+            account_info: {
+              account_number: account.account_number,
+              status: account.status,
+              currency: account.currency,
+              buying_power: account.buying_power,
+              equity: account.equity,
+            },
+          };
+        } else {
+          const error = await response.json().catch(() => ({ message: 'Authentication failed' }));
+          return {
+            success: false,
+            message: error.message || 'Credenciales inválidas',
+            account_info: null,
+          };
+        }
+      }
+      
+      case 'oanda': {
+        const baseUrl = environment === 'live'
+          ? 'https://api-fxtrade.oanda.com'
+          : 'https://api-fxpractice.oanda.com';
+        
+        const response = await fetch(`${baseUrl}/v3/accounts`, {
+          headers: {
+            'Authorization': `Bearer ${credentials.api_key}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const account = data.accounts?.[0];
+          return {
+            success: true,
+            message: 'Conexión exitosa',
+            account_info: account ? {
+              account_id: account.id,
+              tags: account.tags,
+            } : null,
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Token de API inválido',
+            account_info: null,
+          };
+        }
+      }
+      
+      default:
+        return {
+          success: true,
+          message: 'Credenciales guardadas. La conexión se verificará al operar.',
+          account_info: null,
+        };
+    }
+  } catch (err) {
+    console.error('Broker test error:', err);
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : 'Error de conexión',
+      account_info: null,
+    };
   }
 }
 
@@ -66,64 +157,134 @@ serve(async (req) => {
       });
     }
 
-    const url = new URL(req.url);
-    const path = url.pathname.split('/').pop();
-    
-    // GET /broker-connections - List all brokers
-    if (req.method === 'GET' && path === 'brokers') {
-      const { data: brokers, error } = await supabase
-        .from('brokers')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_name');
+    // Parse body for POST/PUT requests
+    let body: Record<string, unknown> = {};
+    if (req.method === 'POST' || req.method === 'PUT') {
+      body = await req.json();
+    }
+
+    const action = body.action as string | undefined;
+
+    // TEST CONNECTION
+    if (action === 'test') {
+      const { connection_id, broker_code, credentials, environment } = body;
       
-      if (error) throw error;
+      let testCredentials = credentials as Record<string, string>;
+      let brokerCode = broker_code as string;
+      let testEnvironment = (environment as string) || 'demo';
       
-      return new Response(JSON.stringify(brokers), {
+      // If connection_id provided, get credentials from DB
+      if (connection_id) {
+        const { data: conn, error } = await supabase
+          .from('user_broker_connections')
+          .select(`
+            *,
+            broker:brokers(code)
+          `)
+          .eq('id', connection_id)
+          .eq('user_id', user.id)
+          .single();
+        
+        if (error || !conn) {
+          return new Response(JSON.stringify({ error: 'Connection not found' }), {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        
+        const encryptedStr = new TextDecoder().decode(conn.encrypted_credentials);
+        testCredentials = decryptCredentials(encryptedStr, encryptionKey);
+        brokerCode = conn.broker?.code;
+        testEnvironment = conn.environment;
+      }
+      
+      const testResult = await testBrokerConnection(brokerCode, testCredentials, testEnvironment);
+      
+      // Update connection status if connection_id provided
+      if (connection_id) {
+        await supabase
+          .from('user_broker_connections')
+          .update({
+            is_connected: testResult.success,
+            last_connected_at: testResult.success ? new Date().toISOString() : null,
+            connection_error: testResult.success ? null : testResult.message,
+          })
+          .eq('id', connection_id);
+      }
+      
+      return new Response(JSON.stringify(testResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // GET /broker-connections - List user connections
-    if (req.method === 'GET' && (path === 'broker-connections' || path === 'connections')) {
-      const { data: connections, error } = await supabase
+    // UPDATE CONNECTION
+    if (action === 'update' || req.method === 'PUT') {
+      const { id, connection_name, environment, credentials, config, is_active } = body;
+      
+      if (!id) {
+        return new Response(JSON.stringify({ error: 'Connection ID required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const updateData: Record<string, unknown> = {};
+      if (connection_name) updateData.connection_name = connection_name;
+      if (environment) updateData.environment = environment;
+      if (config) updateData.config = config;
+      if (typeof is_active === 'boolean') updateData.is_active = is_active;
+      
+      if (credentials) {
+        const encryptedCreds = encryptCredentials(credentials as Record<string, string>, encryptionKey);
+        updateData.encrypted_credentials = new TextEncoder().encode(encryptedCreds);
+        updateData.is_connected = false;
+      }
+      
+      const { data: connection, error } = await supabase
         .from('user_broker_connections')
-        .select(`
-          *,
-          broker:brokers(id, code, display_name, logo_url, auth_type, supported_assets)
-        `)
+        .update(updateData)
+        .eq('id', id)
         .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .select(`*, broker:brokers(id, code, display_name, logo_url)`)
+        .single();
       
       if (error) throw error;
       
-      // Don't return encrypted credentials
-      const sanitized = connections?.map(c => ({
-        ...c,
+      return new Response(JSON.stringify({
+        ...connection,
         encrypted_credentials: undefined,
-        credentials_iv: undefined,
-      }));
-      
-      return new Response(JSON.stringify(sanitized), {
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // POST /broker-connections - Create new connection
-    if (req.method === 'POST') {
-      const body = await req.json();
+    // CREATE CONNECTION (POST without action)
+    if (req.method === 'POST' && !action) {
       const { broker_id, connection_name, environment, credentials, config } = body;
       
       if (!broker_id || !connection_name || !credentials) {
-        return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+        return new Response(JSON.stringify({ error: 'Campos requeridos: broker_id, connection_name, credentials' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
+      // Get broker info for testing
+      const { data: broker } = await supabase
+        .from('brokers')
+        .select('code')
+        .eq('id', broker_id)
+        .single();
+
+      // Test connection before saving
+      const testResult = await testBrokerConnection(
+        broker?.code || '',
+        credentials as Record<string, string>,
+        (environment as string) || 'demo'
+      );
+
       // Encrypt credentials
-      const encryptedCreds = encryptCredentials(credentials, encryptionKey);
+      const encryptedCreds = encryptCredentials(credentials as Record<string, string>, encryptionKey);
       const encryptedBytes = new TextEncoder().encode(encryptedCreds);
       
       const { data: connection, error } = await supabase
@@ -136,18 +297,17 @@ serve(async (req) => {
           encrypted_credentials: encryptedBytes,
           config: config || {},
           is_active: true,
-          is_connected: false,
+          is_connected: testResult.success,
+          last_connected_at: testResult.success ? new Date().toISOString() : null,
+          connection_error: testResult.success ? null : testResult.message,
         })
-        .select(`
-          *,
-          broker:brokers(id, code, display_name, logo_url, auth_type)
-        `)
+        .select(`*, broker:brokers(id, code, display_name, logo_url, auth_type)`)
         .single();
       
       if (error) {
         console.error('Error creating connection:', error);
         if (error.code === '23505') {
-          return new Response(JSON.stringify({ error: 'Connection with this name already exists' }), {
+          return new Response(JSON.stringify({ error: 'Ya existe una conexión con este nombre' }), {
             status: 409,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
@@ -161,174 +321,50 @@ serve(async (req) => {
         action: 'broker_connection_created',
         resource_type: 'user_broker_connections',
         resource_id: connection.id,
-        details: { broker_id, connection_name, environment },
+        details: { 
+          broker_id, 
+          connection_name, 
+          environment,
+          test_success: testResult.success,
+        },
         success: true,
       });
       
       return new Response(JSON.stringify({
         ...connection,
         encrypted_credentials: undefined,
-        credentials_iv: undefined,
+        test_result: testResult,
       }), {
         status: 201,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // POST /broker-connections/test - Test connection
-    if (req.method === 'POST' && path === 'test') {
-      const body = await req.json();
-      const { connection_id, broker_code, credentials, environment } = body;
+    // GET requests
+    if (req.method === 'GET') {
+      const { data: connections, error } = await supabase
+        .from('user_broker_connections')
+        .select(`*, broker:brokers(id, code, display_name, logo_url, auth_type, supported_assets)`)
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
       
-      // If connection_id provided, get credentials from DB
-      let testCredentials = credentials;
-      let brokerCode = broker_code;
-      let testEnvironment = environment || 'demo';
+      if (error) throw error;
       
-      if (connection_id) {
-        const { data: conn, error } = await supabase
-          .from('user_broker_connections')
-          .select(`
-            *,
-            broker:brokers(code, base_url_live, base_url_demo)
-          `)
-          .eq('id', connection_id)
-          .eq('user_id', user.id)
-          .single();
-        
-        if (error || !conn) {
-          return new Response(JSON.stringify({ error: 'Connection not found' }), {
-            status: 404,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        
-        // Decrypt credentials
-        const encryptedStr = new TextDecoder().decode(conn.encrypted_credentials);
-        testCredentials = decryptCredentials(encryptedStr, encryptionKey);
-        brokerCode = conn.broker?.code;
-        testEnvironment = conn.environment;
-      }
+      const sanitized = connections?.map(c => ({
+        ...c,
+        encrypted_credentials: undefined,
+        credentials_iv: undefined,
+      }));
       
-      // Test connection based on broker type
-      let testResult = { success: false, message: '', account_info: null as Record<string, unknown> | null };
-      
-      try {
-        switch (brokerCode) {
-          case 'alpaca': {
-            const baseUrl = testEnvironment === 'live' 
-              ? 'https://api.alpaca.markets' 
-              : 'https://paper-api.alpaca.markets';
-            
-            const response = await fetch(`${baseUrl}/v2/account`, {
-              headers: {
-                'APCA-API-KEY-ID': testCredentials.api_key,
-                'APCA-API-SECRET-KEY': testCredentials.api_secret,
-              },
-            });
-            
-            if (response.ok) {
-              const account = await response.json();
-              testResult = {
-                success: true,
-                message: 'Connection successful',
-                account_info: {
-                  account_number: account.account_number,
-                  status: account.status,
-                  currency: account.currency,
-                  buying_power: account.buying_power,
-                  equity: account.equity,
-                },
-              };
-            } else {
-              const error = await response.json();
-              testResult = {
-                success: false,
-                message: error.message || 'Authentication failed',
-                account_info: null,
-              };
-            }
-            break;
-          }
-          
-          case 'oanda': {
-            const baseUrl = testEnvironment === 'live'
-              ? 'https://api-fxtrade.oanda.com'
-              : 'https://api-fxpractice.oanda.com';
-            
-            const response = await fetch(`${baseUrl}/v3/accounts`, {
-              headers: {
-                'Authorization': `Bearer ${testCredentials.api_key}`,
-                'Content-Type': 'application/json',
-              },
-            });
-            
-            if (response.ok) {
-              const data = await response.json();
-              const account = data.accounts?.[0];
-              testResult = {
-                success: true,
-                message: 'Connection successful',
-                account_info: account ? {
-                  account_id: account.id,
-                  tags: account.tags,
-                } : null,
-              };
-            } else {
-              testResult = {
-                success: false,
-                message: 'Authentication failed',
-                account_info: null,
-              };
-            }
-            break;
-          }
-          
-          default:
-            // For brokers without direct API test, simulate success
-            testResult = {
-              success: true,
-              message: 'Credentials saved. Connection will be tested on first trade.',
-              account_info: null,
-            };
-        }
-        
-        // Update connection status if connection_id provided
-        if (connection_id && testResult.success) {
-          await supabase
-            .from('user_broker_connections')
-            .update({
-              is_connected: true,
-              last_connected_at: new Date().toISOString(),
-              connection_error: null,
-            })
-            .eq('id', connection_id);
-        } else if (connection_id && !testResult.success) {
-          await supabase
-            .from('user_broker_connections')
-            .update({
-              is_connected: false,
-              connection_error: testResult.message,
-            })
-            .eq('id', connection_id);
-        }
-        
-      } catch (err) {
-        console.error('Connection test error:', err);
-        testResult = {
-          success: false,
-          message: err instanceof Error ? err.message : 'Connection test failed',
-          account_info: null,
-        };
-      }
-      
-      return new Response(JSON.stringify(testResult), {
+      return new Response(JSON.stringify(sanitized), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // DELETE /broker-connections/:id
+    // DELETE
     if (req.method === 'DELETE') {
+      const url = new URL(req.url);
       const connectionId = url.searchParams.get('id');
       
       if (!connectionId) {
@@ -346,7 +382,6 @@ serve(async (req) => {
       
       if (error) throw error;
       
-      // Log audit
       await supabase.from('audit_logs').insert({
         user_id: user.id,
         action: 'broker_connection_deleted',
@@ -360,52 +395,6 @@ serve(async (req) => {
       });
     }
 
-    // PUT /broker-connections - Update connection
-    if (req.method === 'PUT') {
-      const body = await req.json();
-      const { id, connection_name, environment, credentials, config, is_active } = body;
-      
-      if (!id) {
-        return new Response(JSON.stringify({ error: 'Connection ID required' }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-      
-      const updateData: Record<string, unknown> = {};
-      if (connection_name) updateData.connection_name = connection_name;
-      if (environment) updateData.environment = environment;
-      if (config) updateData.config = config;
-      if (typeof is_active === 'boolean') updateData.is_active = is_active;
-      
-      if (credentials) {
-        const encryptedCreds = encryptCredentials(credentials, encryptionKey);
-        updateData.encrypted_credentials = new TextEncoder().encode(encryptedCreds);
-        updateData.is_connected = false; // Require re-test after credential update
-      }
-      
-      const { data: connection, error } = await supabase
-        .from('user_broker_connections')
-        .update(updateData)
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .select(`
-          *,
-          broker:brokers(id, code, display_name, logo_url)
-        `)
-        .single();
-      
-      if (error) throw error;
-      
-      return new Response(JSON.stringify({
-        ...connection,
-        encrypted_credentials: undefined,
-        credentials_iv: undefined,
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -413,7 +402,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in broker-connections:', error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Internal server error' }), {
+    return new Response(JSON.stringify({ 
+      error: error instanceof Error ? error.message : 'Internal server error' 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

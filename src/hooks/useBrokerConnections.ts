@@ -46,53 +46,29 @@ export function useBrokerConnections() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch available brokers (public - no auth required)
   const fetchBrokers = useCallback(async () => {
-    if (!session?.access_token) return;
-    
     try {
-      const { data, error } = await supabase.functions.invoke('broker-connections', {
-        body: {},
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        method: 'GET',
-      });
+      const { data, error: queryError } = await supabase
+        .from('brokers')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_name');
       
-      // Fallback to direct query if edge function fails
-      if (error) {
-        const { data: directData, error: directError } = await supabase
-          .from('brokers')
-          .select('*')
-          .eq('is_active', true)
-          .order('display_name');
-        
-        if (directError) throw directError;
-        setBrokers(directData || []);
-        return;
-      }
-      
-      setBrokers(Array.isArray(data) ? data : []);
+      if (queryError) throw queryError;
+      setBrokers(data || []);
     } catch (err) {
       console.error('Error fetching brokers:', err);
-      // Try direct query as fallback
-      try {
-        const { data, error: directError } = await supabase
-          .from('brokers')
-          .select('*')
-          .eq('is_active', true)
-          .order('display_name');
-        
-        if (!directError) {
-          setBrokers(data || []);
-        }
-      } catch {
-        setError('Failed to load brokers');
-      }
+      setError('Failed to load brokers');
     }
-  }, [session?.access_token]);
+  }, []);
 
+  // Fetch user connections (requires auth)
   const fetchConnections = useCallback(async () => {
-    if (!user || !session?.access_token) return;
+    if (!user) {
+      setConnections([]);
+      return;
+    }
     
     try {
       const { data, error: queryError } = await supabase
@@ -111,21 +87,22 @@ export function useBrokerConnections() {
       console.error('Error fetching connections:', err);
       setError('Failed to load connections');
     }
-  }, [user, session?.access_token]);
+  }, [user]);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchBrokers(), fetchConnections()]);
+      // Always fetch brokers (public data)
+      await fetchBrokers();
+      // Only fetch connections if user is authenticated
+      if (user) {
+        await fetchConnections();
+      }
       setLoading(false);
     };
     
-    if (user && session) {
-      loadData();
-    } else {
-      setLoading(false);
-    }
-  }, [user, session, fetchBrokers, fetchConnections]);
+    loadData();
+  }, [user, fetchBrokers, fetchConnections]);
 
   const createConnection = async (
     brokerId: string,
@@ -135,7 +112,7 @@ export function useBrokerConnections() {
     config?: Record<string, unknown>
   ): Promise<BrokerConnection | null> => {
     if (!session?.access_token || !user) {
-      toast.error('You must be logged in to connect a broker');
+      toast.error('Debes iniciar sesión para conectar un broker');
       return null;
     }
 
@@ -153,14 +130,21 @@ export function useBrokerConnections() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Error al conectar broker');
+      }
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
       
       await fetchConnections();
-      toast.success('Broker connected successfully');
+      toast.success('¡Broker conectado exitosamente!');
       return data;
     } catch (err) {
       console.error('Error creating connection:', err);
-      const message = err instanceof Error ? err.message : 'Failed to connect broker';
+      const message = err instanceof Error ? err.message : 'Error al conectar broker';
       toast.error(message);
       return null;
     }
@@ -172,35 +156,134 @@ export function useBrokerConnections() {
     credentials?: ConnectionCredentials,
     environment?: 'demo' | 'live'
   ): Promise<{ success: boolean; message: string; account_info?: Record<string, unknown> }> => {
-    if (!session?.access_token) {
-      return { success: false, message: 'Not authenticated' };
+    // Allow testing without auth for preview
+    const headers: Record<string, string> = {};
+    if (session?.access_token) {
+      headers.Authorization = `Bearer ${session.access_token}`;
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('broker-connections/test', {
+      // For non-authenticated users, we'll simulate the test
+      if (!session?.access_token && credentials && brokerCode) {
+        // Direct test to broker API
+        return await testBrokerDirectly(brokerCode, credentials, environment || 'demo');
+      }
+
+      const { data, error } = await supabase.functions.invoke('broker-connections', {
         body: {
+          action: 'test',
           connection_id: connectionId,
           broker_code: brokerCode,
           credentials,
           environment,
         },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+        headers,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Test connection error:', error);
+        return {
+          success: false,
+          message: error.message || 'Error en la conexión',
+        };
+      }
       
-      if (connectionId) {
+      if (connectionId && data?.success) {
         await fetchConnections();
       }
       
-      return data;
+      return data || { success: false, message: 'No response from server' };
     } catch (err) {
       console.error('Error testing connection:', err);
       return {
         success: false,
-        message: err instanceof Error ? err.message : 'Connection test failed',
+        message: err instanceof Error ? err.message : 'Error al probar conexión',
+      };
+    }
+  };
+
+  // Direct test to broker API for preview mode
+  const testBrokerDirectly = async (
+    brokerCode: string,
+    credentials: ConnectionCredentials,
+    environment: 'demo' | 'live'
+  ): Promise<{ success: boolean; message: string; account_info?: Record<string, unknown> }> => {
+    try {
+      switch (brokerCode) {
+        case 'alpaca': {
+          const baseUrl = environment === 'live' 
+            ? 'https://api.alpaca.markets' 
+            : 'https://paper-api.alpaca.markets';
+          
+          const response = await fetch(`${baseUrl}/v2/account`, {
+            headers: {
+              'APCA-API-KEY-ID': credentials.api_key || '',
+              'APCA-API-SECRET-KEY': credentials.api_secret || '',
+            },
+          });
+          
+          if (response.ok) {
+            const account = await response.json();
+            return {
+              success: true,
+              message: '¡Conexión exitosa!',
+              account_info: {
+                account_number: account.account_number,
+                status: account.status,
+                currency: account.currency,
+                buying_power: account.buying_power,
+                equity: account.equity,
+              },
+            };
+          } else {
+            const errorData = await response.json().catch(() => ({}));
+            return {
+              success: false,
+              message: errorData.message || 'Credenciales inválidas',
+            };
+          }
+        }
+        
+        case 'oanda': {
+          const baseUrl = environment === 'live'
+            ? 'https://api-fxtrade.oanda.com'
+            : 'https://api-fxpractice.oanda.com';
+          
+          const response = await fetch(`${baseUrl}/v3/accounts`, {
+            headers: {
+              'Authorization': `Bearer ${credentials.api_key}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            return {
+              success: true,
+              message: '¡Conexión exitosa!',
+              account_info: data.accounts?.[0] ? {
+                account_id: data.accounts[0].id,
+              } : undefined,
+            };
+          } else {
+            return {
+              success: false,
+              message: 'Token de API inválido',
+            };
+          }
+        }
+        
+        default:
+          return {
+            success: true,
+            message: 'Credenciales guardadas. La conexión se verificará al operar.',
+          };
+      }
+    } catch (err) {
+      console.error('Direct broker test error:', err);
+      return {
+        success: false,
+        message: 'Error de red. Verifica tu conexión.',
       };
     }
   };
@@ -216,34 +299,37 @@ export function useBrokerConnections() {
     }>
   ): Promise<boolean> => {
     if (!session?.access_token) {
-      toast.error('Not authenticated');
+      toast.error('Debes iniciar sesión');
       return false;
     }
 
     try {
       const { error } = await supabase.functions.invoke('broker-connections', {
-        body: { id: connectionId, ...updates },
+        body: { 
+          action: 'update',
+          id: connectionId, 
+          ...updates 
+        },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-        method: 'PUT',
       });
 
       if (error) throw error;
       
       await fetchConnections();
-      toast.success('Connection updated');
+      toast.success('Conexión actualizada');
       return true;
     } catch (err) {
       console.error('Error updating connection:', err);
-      toast.error('Failed to update connection');
+      toast.error('Error al actualizar conexión');
       return false;
     }
   };
 
   const deleteConnection = async (connectionId: string): Promise<boolean> => {
-    if (!session?.access_token) {
-      toast.error('Not authenticated');
+    if (!session?.access_token || !user) {
+      toast.error('Debes iniciar sesión');
       return false;
     }
 
@@ -252,19 +338,28 @@ export function useBrokerConnections() {
         .from('user_broker_connections')
         .delete()
         .eq('id', connectionId)
-        .eq('user_id', user?.id);
+        .eq('user_id', user.id);
 
       if (error) throw error;
       
       setConnections(prev => prev.filter(c => c.id !== connectionId));
-      toast.success('Connection removed');
+      toast.success('Conexión eliminada');
       return true;
     } catch (err) {
       console.error('Error deleting connection:', err);
-      toast.error('Failed to remove connection');
+      toast.error('Error al eliminar conexión');
       return false;
     }
   };
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    await fetchBrokers();
+    if (user) {
+      await fetchConnections();
+    }
+    setLoading(false);
+  }, [fetchBrokers, fetchConnections, user]);
 
   return {
     brokers,
@@ -275,6 +370,6 @@ export function useBrokerConnections() {
     testConnection,
     updateConnection,
     deleteConnection,
-    refetch: () => Promise.all([fetchBrokers(), fetchConnections()]),
+    refetch,
   };
 }
