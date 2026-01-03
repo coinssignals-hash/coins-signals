@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, User, FileText, Shield, Bell, Palette, Globe } from 'lucide-react';
+import { ChevronRight, User, FileText, Shield, Bell, Palette, Globe, HelpCircle } from 'lucide-react';
+import { useOnboardingTour } from '@/components/onboarding/OnboardingTour';
 
 const settingsSections = [
   {
@@ -29,6 +30,8 @@ const settingsSections = [
 ];
 
 export default function Settings() {
+  const { startTour } = useOnboardingTour();
+
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
@@ -72,6 +75,30 @@ export default function Settings() {
               </Card>
             </div>
           ))}
+
+          {/* Tour button */}
+          <div>
+            <h2 className="text-sm font-semibold text-primary mb-3">Ayuda</h2>
+            <Card className="bg-card border-border">
+              <CardContent className="p-0">
+                <button
+                  onClick={startTour}
+                  className="w-full flex items-center justify-between p-4 hover:bg-secondary transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+                      <HelpCircle className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-foreground">Tour de la App</p>
+                      <p className="text-xs text-muted-foreground">Revisa las funciones principales</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
 
