@@ -203,6 +203,41 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const encryptionKey = Deno.env.get('ENCRYPTION_KEY') || 'default-key-change-in-production';
     
+    // Parse body for POST/PUT requests
+    let body: Record<string, unknown> = {};
+    if (req.method === 'POST' || req.method === 'PUT') {
+      body = await req.json();
+    }
+
+    const action = body.action as string | undefined;
+
+    // VALIDATE - Public action (no auth required)
+    // Only tests credentials against the broker API, doesn't save anything
+    if (action === 'validate') {
+      const { broker_code, credentials, environment } = body;
+      
+      if (!broker_code || !credentials) {
+        return new Response(JSON.stringify({ 
+          success: false,
+          error: 'broker_code y credentials son requeridos' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const testResult = await testBrokerConnection(
+        broker_code as string,
+        credentials as Record<string, string>,
+        (environment as string) || 'demo'
+      );
+      
+      return new Response(JSON.stringify(testResult), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // All other actions require authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
@@ -221,14 +256,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    // Parse body for POST/PUT requests
-    let body: Record<string, unknown> = {};
-    if (req.method === 'POST' || req.method === 'PUT') {
-      body = await req.json();
-    }
-
-    const action = body.action as string | undefined;
 
     // TEST CONNECTION
     if (action === 'test') {
