@@ -43,6 +43,8 @@ const PageLoader = () => (
   </div>
 );
 
+import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -50,6 +52,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <OnboardingTour />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
