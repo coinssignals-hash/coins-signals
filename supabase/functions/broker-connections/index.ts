@@ -111,6 +111,71 @@ async function testBrokerConnection(
         }
       }
       
+      case 'binance': {
+        const baseUrl = environment === 'live' 
+          ? 'https://api.binance.com' 
+          : 'https://testnet.binance.vision';
+        
+        // Create signature for authenticated endpoint
+        const timestamp = Date.now();
+        const queryString = `timestamp=${timestamp}`;
+        
+        // HMAC-SHA256 signature
+        const encoder = new TextEncoder();
+        const keyData = encoder.encode(credentials.api_secret);
+        const messageData = encoder.encode(queryString);
+        
+        const cryptoKey = await crypto.subtle.importKey(
+          'raw',
+          keyData,
+          { name: 'HMAC', hash: 'SHA-256' },
+          false,
+          ['sign']
+        );
+        
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+        const signatureHex = Array.from(new Uint8Array(signature))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+        
+        const response = await fetch(
+          `${baseUrl}/api/v3/account?${queryString}&signature=${signatureHex}`,
+          {
+            headers: {
+              'X-MBX-APIKEY': credentials.api_key,
+            },
+          }
+        );
+        
+        if (response.ok) {
+          const account = await response.json();
+          // Calculate total balance
+          const balances = account.balances?.filter((b: { free: string; locked: string }) => 
+            parseFloat(b.free) > 0 || parseFloat(b.locked) > 0
+          ) || [];
+          
+          return {
+            success: true,
+            message: 'Conexión exitosa',
+            account_info: {
+              account_type: account.accountType,
+              can_trade: account.canTrade,
+              can_withdraw: account.canWithdraw,
+              can_deposit: account.canDeposit,
+              assets_count: balances.length,
+              permissions: account.permissions,
+            },
+          };
+        } else {
+          const error = await response.json().catch(() => ({ msg: 'Authentication failed' }));
+          return {
+            success: false,
+            message: error.msg || 'API Key o Secret inválidos',
+            account_info: null,
+          };
+        }
+      }
+      
       default:
         return {
           success: true,
