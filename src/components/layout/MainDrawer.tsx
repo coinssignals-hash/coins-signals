@@ -51,7 +51,7 @@ const menuItems = [
   { icon: UserIcon, label: 'Ajuste De Perfil', href: '/settings' },
   { icon: FileText, label: 'Suscripciones', href: '/subscriptions' },
   { icon: Gift, label: 'Bonos Por Referidos', href: '/referrals' },
-  { icon: Link2, label: 'Vincular Broker', href: '/broker' },
+  { icon: Link2, label: 'Vincular Broker', href: '/link-broker' },
   { icon: Shield, label: 'Seguridad', href: '/settings/security' },
   { icon: BookOpen, label: 'Cursos y Tutoriales', href: '/courses' },
   { icon: TrendingUp, label: 'Rendimientos Y Ganancias', href: '/performance' },
