@@ -97,33 +97,33 @@ export default function Portfolio() {
       value: Math.abs(p.market_value),
     }));
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
-        <Header />
-        <main className="container max-w-4xl mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-            <h2 className="text-white text-xl font-semibold mb-2">Inicia sesión para ver tu portfolio</h2>
-            <p className="text-slate-400 mb-6">Conecta tus brokers y visualiza tu portfolio unificado</p>
-            <button
-              onClick={() => navigate('/auth')}
-              className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full font-semibold transition-colors"
-            >
-              Iniciar Sesión
-            </button>
-          </div>
-        </main>
-        <BottomNav />
-      </div>
-    );
-  }
+  // Show auth banner for non-authenticated users
+  const showAuthBanner = !user;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
       <Header />
       
       <main className="container max-w-4xl mx-auto px-4 py-4">
+        {/* Auth Banner for non-authenticated users */}
+        {showAuthBanner && (
+          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+              <div>
+                <p className="text-amber-200 text-sm font-medium">Inicia sesión para guardar tu portfolio</p>
+                <p className="text-amber-200/70 text-xs">Conecta tus brokers y sincroniza tus datos</p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/auth')}
+              className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded-full text-sm font-medium transition-colors whitespace-nowrap"
+            >
+              Iniciar Sesión
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
