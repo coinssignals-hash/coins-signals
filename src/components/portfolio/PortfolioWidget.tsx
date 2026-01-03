@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,11 +8,21 @@ import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { EquitySparkline } from './EquitySparkline';
 
+const WIDGET_EXPANDED_KEY = 'portfolio-widget-expanded';
+
 export function PortfolioWidget() {
   const { session } = useAuth();
   const { summary, loading, error, isLive, accounts, getAllPositions } = usePortfolio();
   const { stats: historyStats, snapshots } = usePortfolioHistory('1W');
-  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem(WIDGET_EXPANDED_KEY);
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(WIDGET_EXPANDED_KEY, JSON.stringify(isExpanded));
+  }, [isExpanded]);
 
   // Get top 3 positions by absolute PnL
   const topPositions = useMemo(() => {
