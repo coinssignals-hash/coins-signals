@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, User, Loader2, Heart } from 'lucide-react';
+import { Menu, User, Loader2, Heart, LayoutGrid, List } from 'lucide-react';
 import { SignalCard } from '@/components/signals/SignalCard';
+import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
@@ -13,6 +14,8 @@ import { format, addDays, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+
+type ViewMode = 'full' | 'compact';
 
 // Generate week days dynamically
 const generateWeekDays = () => {
@@ -34,10 +37,19 @@ export default function Signals() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    return (localStorage.getItem('signals-view-mode') as ViewMode) || 'full';
+  });
+  const [expandedSignalId, setExpandedSignalId] = useState<string | null>(null);
   
   const { signals, loading, error } = useSignals();
   const { isFavorite, toggleFavorite, favoriteIds, isAuthenticated } = useFavoriteSignals();
   const { user, profile } = useAuth();
+
+  // Persist view mode
+  useEffect(() => {
+    localStorage.setItem('signals-view-mode', viewMode);
+  }, [viewMode]);
 
   const filteredSignals = showFavoritesOnly 
     ? signals.filter(s => favoriteIds.has(s.id))
@@ -70,6 +82,34 @@ export default function Signals() {
           </h1>
           
           <div className="flex items-center gap-1">
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-slate-800/50 rounded-lg p-0.5 border border-slate-700/50">
+              <button
+                onClick={() => setViewMode('full')}
+                className={cn(
+                  "p-1.5 rounded-md transition-all",
+                  viewMode === 'full' 
+                    ? "bg-slate-700 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-slate-300"
+                )}
+                title="Vista completa"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('compact')}
+                className={cn(
+                  "p-1.5 rounded-md transition-all",
+                  viewMode === 'compact' 
+                    ? "bg-slate-700 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-slate-300"
+                )}
+                title="Vista compacta"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+            
             <NotificationToggle />
             {isAuthenticated && (
               <button
@@ -83,7 +123,7 @@ export default function Signals() {
                 <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
               </button>
             )}
-            <button 
+            <button
               onClick={() => navigate(user ? '/settings' : '/auth')}
               className="p-2 text-blue-300 hover:text-blue-100"
             >
@@ -143,6 +183,34 @@ export default function Signals() {
                 Ver todas las señales
               </button>
             )}
+          </div>
+        ) : viewMode === 'compact' ? (
+          <div className="space-y-2">
+            {filteredSignals.map((signal) => (
+              expandedSignalId === signal.id ? (
+                <div key={signal.id} className="animate-in fade-in duration-200">
+                  <SignalCard 
+                    signal={signal}
+                    isFavorite={isFavorite(signal.id)}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                  <button
+                    onClick={() => setExpandedSignalId(null)}
+                    className="w-full mt-1 py-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    Cerrar vista expandida
+                  </button>
+                </div>
+              ) : (
+                <SignalCardCompact
+                  key={signal.id}
+                  signal={signal}
+                  isFavorite={isFavorite(signal.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onExpand={() => setExpandedSignalId(signal.id)}
+                />
+              )
+            ))}
           </div>
         ) : (
           filteredSignals.map((signal) => (
