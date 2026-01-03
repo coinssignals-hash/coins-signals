@@ -4,7 +4,7 @@ Main application entry point
 """
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
@@ -21,8 +21,13 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 Starting Economic News API...")
     await Database.connect()
-    await Cache.connect()
-    print("✅ Database and cache connected")
+    cache_connected = await Cache.connect()
+    
+    # Print connection status
+    db_status = "✅ Connected" if Database.client else "⚠️ Not available"
+    cache_status = "✅ Connected" if Cache.client else "⚠️ Not available (running without cache)"
+    print(f"📊 MongoDB: {db_status}")
+    print(f"📦 Redis: {cache_status}")
     
     yield
     

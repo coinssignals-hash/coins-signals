@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     
     # CORS
-    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
     
     # Scraping
     scrape_interval_minutes: int = 30

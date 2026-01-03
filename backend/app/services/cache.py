@@ -2,24 +2,25 @@
 Redis Cache Service
 """
 
-import redis.asyncio as redis
+from redis.asyncio import Redis
 import json
 from typing import Optional, Any
 from app.config import get_settings
 
 class Cache:
-    client: redis.Redis = None
+    client: Redis = None
     
     @classmethod
     async def connect(cls):
         settings = get_settings()
         try:
-            cls.client = redis.from_url(settings.redis_url)
+            cls.client = Redis.from_url(settings.redis_url)
             await cls.client.ping()
-            print("✅ Connected to Redis")
+            return True
         except Exception as e:
             print(f"⚠️ Redis not available: {e}")
             cls.client = None
+            return False
     
     @classmethod
     async def disconnect(cls):
