@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
@@ -39,6 +39,12 @@ export interface PortfolioSummary {
   total_positions: number;
 }
 
+export interface RealtimePriceUpdate {
+  symbol: string;
+  price: number;
+  timestamp: number;
+}
+
 export function usePortfolio() {
   const { session } = useAuth();
   const [accounts, setAccounts] = useState<AccountData[]>([]);
@@ -52,6 +58,10 @@ export function usePortfolio() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [isLive, setIsLive] = useState(false);
+  const [realtimePrices, setRealtimePrices] = useState<Map<string, RealtimePriceUpdate>>(new Map());
+  const wsRef = useRef<WebSocket | null>(null);
+  const liveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchPortfolio = useCallback(async () => {
     if (!session?.access_token) {
@@ -78,6 +88,11 @@ export function usePortfolio() {
         total_positions: 0,
       });
       setLastRefresh(new Date());
+      
+      // Trigger live indicator
+      setIsLive(true);
+      if (liveTimeoutRef.current) clearTimeout(liveTimeoutRef.current);
+      liveTimeoutRef.current = setTimeout(() => setIsLive(false), 2000);
     } catch (err) {
       console.error('Error fetching portfolio:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch portfolio');
@@ -85,6 +100,62 @@ export function usePortfolio() {
       setLoading(false);
     }
   }, [session?.access_token]);
+
+  // Connect to realtime price WebSocket for position symbols
+  useEffect(() => {
+    if (accounts.length === 0) return;
+    
+    const symbols = accounts.flatMap(a => a.positions.map(p => p.symbol));
+    const uniqueSymbols = [...new Set(symbols)];
+    
+    if (uniqueSymbols.length === 0) return;
+
+    const connectWebSocket = async () => {
+      try {
+        const { data } = await supabase.functions.invoke('realtime-market', {
+          body: { symbols: uniqueSymbols.slice(0, 10) }, // Limit to 10 symbols
+        });
+        
+        if (data?.wsUrl) {
+          wsRef.current = new WebSocket(data.wsUrl);
+          
+          wsRef.current.onmessage = (event) => {
+            try {
+              const msg = JSON.parse(event.data);
+              if (msg.ev === 'C' || msg.ev === 'A' || msg.ev === 'T') { // Forex, Crypto, Stock quotes
+                const symbol = msg.pair || msg.sym || msg.S;
+                const price = msg.c || msg.p || msg.bp || 0;
+                
+                if (symbol && price) {
+                  setRealtimePrices(prev => {
+                    const next = new Map(prev);
+                    next.set(symbol, { symbol, price, timestamp: Date.now() });
+                    return next;
+                  });
+                  
+                  // Trigger live indicator
+                  setIsLive(true);
+                  if (liveTimeoutRef.current) clearTimeout(liveTimeoutRef.current);
+                  liveTimeoutRef.current = setTimeout(() => setIsLive(false), 1000);
+                }
+              }
+            } catch (e) {
+              console.error('WS parse error:', e);
+            }
+          };
+        }
+      } catch (err) {
+        console.error('WebSocket connection failed:', err);
+      }
+    };
+
+    connectWebSocket();
+
+    return () => {
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [accounts]);
 
   useEffect(() => {
     fetchPortfolio();
@@ -101,21 +172,73 @@ export function usePortfolio() {
     return () => clearInterval(interval);
   }, [session?.access_token, fetchPortfolio]);
 
+  // Compute positions with realtime prices
+  const getAccountsWithRealtimePrices = useCallback((): AccountData[] => {
+    if (realtimePrices.size === 0) return accounts;
+    
+    return accounts.map(account => ({
+      ...account,
+      positions: account.positions.map(pos => {
+        const rtPrice = realtimePrices.get(pos.symbol);
+        if (!rtPrice) return pos;
+        
+        const current_price = rtPrice.price;
+        const market_value = pos.quantity * current_price;
+        const cost_basis = pos.quantity * pos.average_entry_price;
+        const unrealized_pnl = pos.side === 'long' 
+          ? market_value - cost_basis 
+          : cost_basis - market_value;
+        const unrealized_pnl_percent = cost_basis !== 0 
+          ? (unrealized_pnl / Math.abs(cost_basis)) * 100 
+          : 0;
+        
+        return {
+          ...pos,
+          current_price,
+          market_value,
+          unrealized_pnl,
+          unrealized_pnl_percent,
+        };
+      }),
+    }));
+  }, [accounts, realtimePrices]);
+
   const getAllPositions = useCallback((): (Position & { broker: string })[] => {
-    return accounts.flatMap(account => 
+    const accountsWithRT = getAccountsWithRealtimePrices();
+    return accountsWithRT.flatMap(account => 
       account.positions.map(pos => ({
         ...pos,
         broker: account.broker_name,
       }))
     );
-  }, [accounts]);
+  }, [getAccountsWithRealtimePrices]);
+
+  // Compute summary with realtime prices
+  const getRealtimeSummary = useCallback((): PortfolioSummary => {
+    const accountsWithRT = getAccountsWithRealtimePrices();
+    
+    if (accountsWithRT.length === 0) return summary;
+    
+    const total_unrealized_pnl = accountsWithRT.reduce((sum, acc) => 
+      sum + acc.positions.reduce((pSum, p) => pSum + p.unrealized_pnl, 0), 0);
+    
+    const total_positions = accountsWithRT.reduce((sum, acc) => sum + acc.positions.length, 0);
+    
+    return {
+      ...summary,
+      total_unrealized_pnl,
+      total_positions,
+    };
+  }, [summary, getAccountsWithRealtimePrices]);
 
   return {
-    accounts,
-    summary,
+    accounts: getAccountsWithRealtimePrices(),
+    summary: getRealtimeSummary(),
     loading,
     error,
     lastRefresh,
+    isLive,
+    realtimePrices,
     refetch: fetchPortfolio,
     getAllPositions,
   };
