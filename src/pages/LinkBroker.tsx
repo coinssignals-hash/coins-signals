@@ -227,27 +227,8 @@ export default function LinkBroker() {
     return emojiMap[code || ''] || '🏦';
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
-        <Header />
-        <main className="container max-w-lg mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-            <h2 className="text-white text-xl font-semibold mb-2">Inicia sesión para continuar</h2>
-            <p className="text-slate-400 mb-6">Necesitas una cuenta para vincular brokers</p>
-            <button
-              onClick={() => navigate('/auth')}
-              className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full font-semibold transition-colors"
-            >
-              Iniciar Sesión
-            </button>
-          </div>
-        </main>
-        <BottomNav />
-      </div>
-    );
-  }
+  // Remove authentication wall - allow viewing without login
+  // Authentication is only required when saving a connection (handled in handleSaveConnection)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
