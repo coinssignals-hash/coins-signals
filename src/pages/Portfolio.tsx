@@ -21,7 +21,8 @@ import { usePortfolio, AccountData, Position } from '@/hooks/usePortfolio';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { Tooltip as RechartsTooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
 
 const COLORS = ['#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -139,11 +140,18 @@ export default function Portfolio() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Demo indicator */}
+            {/* Demo indicator with tooltip */}
             {isDemo && (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/20 rounded-full border border-amber-500/30">
-                <span className="text-amber-400 text-xs font-medium">DEMO</span>
-              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/20 rounded-full border border-amber-500/30 cursor-help">
+                    <span className="text-amber-400 text-xs font-medium">DEMO</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-[200px] text-center">
+                  <p>Estos datos son ficticios. Inicia sesión para ver tu portfolio real.</p>
+                </TooltipContent>
+              </Tooltip>
             )}
             {/* Live indicator */}
             {isLive && !isDemo && (
@@ -241,7 +249,7 @@ export default function Portfolio() {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <RechartsTooltip 
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{ 
                           backgroundColor: '#1e293b', 
@@ -286,7 +294,7 @@ export default function Portfolio() {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <RechartsTooltip 
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{ 
                           backgroundColor: '#1e293b', 
