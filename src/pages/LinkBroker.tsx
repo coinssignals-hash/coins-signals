@@ -1,41 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
+import { useAuth } from '@/hooks/useAuth';
 
 interface BrokerSlot {
   id: string;
   name: string;
   logo?: string;
   connected: boolean;
+  connectionId?: string;
+  brokerId?: string;
 }
-
-interface BrokerOption {
-  id: string;
-  name: string;
-  logo: string;
-}
-
-const availableBrokers: BrokerOption[] = [
-  { id: 'icmarket', name: 'IC Markets', logo: '🤝' },
-  { id: 'oanda', name: 'OANDA', logo: '📊' },
-  { id: 'interactive', name: 'Interactive Brokers', logo: '📈' },
-  { id: 'metatrader4', name: 'MetaTrader 4', logo: '📉' },
-  { id: 'metatrader5', name: 'MetaTrader 5', logo: '💹' },
-  { id: 'alpaca', name: 'Alpaca', logo: '🦙' },
-  { id: 'etoro', name: 'eToro', logo: '🌐' },
-  { id: 'plus500', name: 'Plus500', logo: '➕' },
-];
 
 export default function LinkBroker() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { 
+    brokers, 
+    connections, 
+    loading, 
+    createConnection, 
+    testConnection, 
+    deleteConnection,
+    refetch 
+  } = useBrokerConnections();
+
   const [brokerSlots, setBrokerSlots] = useState<BrokerSlot[]>([
-    { id: '1', name: 'IC Markets', connected: true },
+    { id: '1', name: '', connected: false },
     { id: '2', name: '', connected: false },
     { id: '3', name: '', connected: false },
     { id: '4', name: '', connected: false },
@@ -46,16 +44,18 @@ export default function LinkBroker() {
   // Form states
   const [connectionMethod, setConnectionMethod] = useState<'api' | 'oauth'>('api');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBroker, setSelectedBroker] = useState<BrokerOption | null>(null);
+  const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
   const [showBrokerDropdown, setShowBrokerDropdown] = useState(false);
   const [formData, setFormData] = useState({
-    emailOrId: '',
+    connectionName: '',
     apiKey: '',
     apiSecret: '',
+    accountId: '',
   });
   const [showApiKey, setShowApiKey] = useState(false);
   const [showApiSecret, setShowApiSecret] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Permissions
   const [permissions, setPermissions] = useState({
@@ -66,16 +66,51 @@ export default function LinkBroker() {
     historial: true,
     operacionesAbiertas: true,
   });
-  const [isLiveMode, setIsLiveMode] = useState(true);
+  const [isLiveMode, setIsLiveMode] = useState(false);
 
-  const filteredBrokers = availableBrokers.filter(b => 
-    b.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Sync connections to slots
+  useEffect(() => {
+    if (connections.length > 0) {
+      const newSlots: BrokerSlot[] = [];
+      
+      // Fill with existing connections
+      connections.slice(0, 5).forEach((conn, index) => {
+        newSlots.push({
+          id: String(index + 1),
+          name: conn.broker?.display_name || conn.connection_name,
+          logo: conn.broker?.logo_url || undefined,
+          connected: conn.is_connected,
+          connectionId: conn.id,
+          brokerId: conn.broker_id,
+        });
+      });
+      
+      // Fill remaining slots
+      while (newSlots.length < 5) {
+        newSlots.push({
+          id: String(newSlots.length + 1),
+          name: '',
+          connected: false,
+        });
+      }
+      
+      setBrokerSlots(newSlots);
+    }
+  }, [connections]);
+
+  const filteredBrokers = brokers.filter(b => 
+    b.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSelectBroker = (broker: BrokerOption) => {
+  const handleSelectBroker = (broker: Broker) => {
     setSelectedBroker(broker);
-    setSearchQuery(broker.name);
+    setSearchQuery(broker.display_name);
     setShowBrokerDropdown(false);
+    setFormData(prev => ({
+      ...prev,
+      connectionName: `${broker.display_name} - ${isLiveMode ? 'Live' : 'Demo'}`,
+    }));
   };
 
   const handleTestConnection = async () => {
@@ -90,51 +125,125 @@ export default function LinkBroker() {
 
     setIsTestingConnection(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    const result = await testConnection(
+      undefined,
+      selectedBroker.code,
+      {
+        api_key: formData.apiKey,
+        api_secret: formData.apiSecret,
+        account_id: formData.accountId || undefined,
+      },
+      isLiveMode ? 'live' : 'demo'
+    );
     
     setIsTestingConnection(false);
-    toast.success('Conexión exitosa con ' + selectedBroker.name);
     
-    // Update broker slot
-    if (selectedSlotIndex !== null) {
-      const newSlots = [...brokerSlots];
-      newSlots[selectedSlotIndex] = {
-        ...newSlots[selectedSlotIndex],
-        name: selectedBroker.name,
-        connected: true,
-      };
-      setBrokerSlots(newSlots);
-    } else {
-      // Find first empty slot
-      const emptyIndex = brokerSlots.findIndex(s => !s.connected);
-      if (emptyIndex !== -1) {
-        const newSlots = [...brokerSlots];
-        newSlots[emptyIndex] = {
-          ...newSlots[emptyIndex],
-          name: selectedBroker.name,
-          connected: true,
-        };
-        setBrokerSlots(newSlots);
+    if (result.success) {
+      toast.success(result.message || 'Conexión exitosa');
+      if (result.account_info) {
+        console.log('Account info:', result.account_info);
       }
+    } else {
+      toast.error(result.message || 'Error en la conexión');
+    }
+  };
+
+  const handleSaveConnection = async () => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para conectar un broker');
+      navigate('/auth');
+      return;
+    }
+
+    if (!selectedBroker) {
+      toast.error('Selecciona un broker primero');
+      return;
+    }
+    if (connectionMethod === 'api' && (!formData.apiKey || !formData.apiSecret)) {
+      toast.error('Completa los campos de API Key');
+      return;
+    }
+
+    setIsSaving(true);
+    
+    const connection = await createConnection(
+      selectedBroker.id,
+      formData.connectionName || `${selectedBroker.display_name} Account`,
+      isLiveMode ? 'live' : 'demo',
+      {
+        api_key: formData.apiKey,
+        api_secret: formData.apiSecret,
+        account_id: formData.accountId || undefined,
+      },
+      { permissions }
+    );
+    
+    setIsSaving(false);
+    
+    if (connection) {
+      // Reset form
+      setFormData({ connectionName: '', apiKey: '', apiSecret: '', accountId: '' });
+      setSelectedBroker(null);
+      setSearchQuery('');
+      setSelectedSlotIndex(null);
+    }
+  };
+
+  const handleDeleteConnection = async (connectionId: string) => {
+    if (confirm('¿Estás seguro de que deseas eliminar esta conexión?')) {
+      await deleteConnection(connectionId);
     }
   };
 
   const handleSlotClick = (index: number) => {
     setSelectedSlotIndex(index);
     const slot = brokerSlots[index];
-    if (slot.connected) {
-      // Pre-fill with existing broker
-      const broker = availableBrokers.find(b => b.name === slot.name);
+    if (slot.connected && slot.brokerId) {
+      const broker = brokers.find(b => b.id === slot.brokerId);
       if (broker) {
         setSelectedBroker(broker);
-        setSearchQuery(broker.name);
+        setSearchQuery(broker.display_name);
       }
     } else {
       setSelectedBroker(null);
       setSearchQuery('');
     }
   };
+
+  const getBrokerEmoji = (code?: string): string => {
+    const emojiMap: Record<string, string> = {
+      alpaca: '🦙',
+      oanda: '📊',
+      interactive_brokers: '📈',
+      metatrader4: '📉',
+      metatrader5: '💹',
+      ig_markets: '🎯',
+      forex_com: '💱',
+    };
+    return emojiMap[code || ''] || '🏦';
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
+        <Header />
+        <main className="container max-w-lg mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+            <h2 className="text-white text-xl font-semibold mb-2">Inicia sesión para continuar</h2>
+            <p className="text-slate-400 mb-6">Necesitas una cuenta para vincular brokers</p>
+            <button
+              onClick={() => navigate('/auth')}
+              className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full font-semibold transition-colors"
+            >
+              Iniciar Sesión
+            </button>
+          </div>
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
@@ -157,6 +266,13 @@ export default function LinkBroker() {
               Invierte de manera segura, Rápido y con mejores resultados
             </p>
           </div>
+          <button 
+            onClick={() => refetch()} 
+            className="p-2 text-slate-400 hover:text-white transition-colors"
+            title="Actualizar"
+          >
+            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+          </button>
         </div>
 
         {/* Broker Slots */}
@@ -166,26 +282,46 @@ export default function LinkBroker() {
               key={slot.id}
               onClick={() => handleSlotClick(index)}
               className={cn(
-                "flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px]",
+                "flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px] relative group",
                 selectedSlotIndex === index && "ring-2 ring-cyan-500",
                 slot.connected 
                   ? "bg-slate-800/60 border border-cyan-500/40" 
                   : "bg-slate-800/40 border border-slate-700/50 hover:border-slate-600"
               )}
             >
+              {slot.connected && slot.connectionId && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteConnection(slot.connectionId!);
+                  }}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 className="w-3 h-3 text-white" />
+                </button>
+              )}
               <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center text-lg",
+                "w-10 h-10 rounded-full flex items-center justify-center text-lg overflow-hidden",
                 slot.connected 
                   ? "bg-gradient-to-br from-cyan-500/30 to-emerald-500/30 border border-cyan-400/50" 
                   : "bg-slate-700/50 border border-dashed border-slate-600"
               )}>
-                {slot.connected ? '🤝' : <Plus className="w-4 h-4 text-slate-500" />}
+                {slot.connected ? (
+                  slot.logo ? (
+                    <img src={slot.logo} alt="" className="w-full h-full object-cover" onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).parentElement!.textContent = getBrokerEmoji();
+                    }} />
+                  ) : getBrokerEmoji()
+                ) : (
+                  <Plus className="w-4 h-4 text-slate-500" />
+                )}
               </div>
               <span className={cn(
                 "text-[9px] text-center leading-tight max-w-[56px] truncate",
                 slot.connected ? "text-cyan-400" : "text-slate-500"
               )}>
-                {slot.connected ? slot.name : 'Añadir Broker'}
+                {slot.connected ? slot.name : 'Añadir'}
               </span>
             </button>
           ))}
@@ -200,7 +336,7 @@ export default function LinkBroker() {
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Buscar tu Broker"
+                placeholder={loading ? 'Cargando brokers...' : 'Buscar tu Broker'}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -208,11 +344,12 @@ export default function LinkBroker() {
                 }}
                 onFocus={() => setShowBrokerDropdown(true)}
                 className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500 pr-10"
+                disabled={loading}
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               
               {/* Dropdown */}
-              {showBrokerDropdown && searchQuery && (
+              {showBrokerDropdown && (searchQuery || brokers.length > 0) && (
                 <div className="absolute z-20 w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-xl max-h-48 overflow-y-auto">
                   {filteredBrokers.length > 0 ? (
                     filteredBrokers.map(broker => (
@@ -221,22 +358,29 @@ export default function LinkBroker() {
                         onClick={() => handleSelectBroker(broker)}
                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-left"
                       >
-                        <span className="text-lg">{broker.logo}</span>
-                        <span className="text-white text-sm">{broker.name}</span>
+                        <span className="text-lg">{getBrokerEmoji(broker.code)}</span>
+                        <div className="flex-1">
+                          <span className="text-white text-sm block">{broker.display_name}</span>
+                          <span className="text-slate-500 text-xs">{broker.supported_assets?.join(', ')}</span>
+                        </div>
                         {selectedBroker?.id === broker.id && (
-                          <Check className="w-4 h-4 text-cyan-400 ml-auto" />
+                          <Check className="w-4 h-4 text-cyan-400" />
                         )}
                       </button>
                     ))
                   ) : (
-                    <div className="px-4 py-3 text-slate-500 text-sm">No se encontraron brokers</div>
+                    <div className="px-4 py-3 text-slate-500 text-sm">
+                      {loading ? 'Cargando...' : 'No se encontraron brokers'}
+                    </div>
                   )}
                 </div>
               )}
             </div>
-            <p className="text-slate-500 text-xs mt-2">
-              Conecta tu cuenta, Opera de la mano de los Profesionales
-            </p>
+            {selectedBroker && (
+              <p className="text-slate-500 text-xs mt-2">
+                {selectedBroker.description}
+              </p>
+            )}
           </div>
         </section>
 
@@ -274,12 +418,12 @@ export default function LinkBroker() {
             {connectionMethod === 'api' ? (
               <div className="space-y-4">
                 <div>
-                  <label className="text-slate-400 text-sm mb-1.5 block">ID o Correo</label>
+                  <label className="text-slate-400 text-sm mb-1.5 block">Nombre de Conexión</label>
                   <Input
                     type="text"
-                    placeholder="Introduce tu correo o número ID"
-                    value={formData.emailOrId}
-                    onChange={(e) => setFormData({ ...formData, emailOrId: e.target.value })}
+                    placeholder="Mi cuenta Alpaca Demo"
+                    value={formData.connectionName}
+                    onChange={(e) => setFormData({ ...formData, connectionName: e.target.value })}
                     className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500"
                   />
                 </div>
@@ -323,6 +467,19 @@ export default function LinkBroker() {
                     </button>
                   </div>
                 </div>
+
+                {selectedBroker?.code === 'oanda' && (
+                  <div>
+                    <label className="text-slate-400 text-sm mb-1.5 block">Account ID (opcional)</label>
+                    <Input
+                      type="text"
+                      placeholder="Ej: 101-001-12345678-001"
+                      value={formData.accountId}
+                      onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
+                      className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500"
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-6">
@@ -335,21 +492,37 @@ export default function LinkBroker() {
               </div>
             )}
 
-            {/* Test Connection Button */}
-            <button
-              onClick={handleTestConnection}
-              disabled={isTestingConnection}
-              className="w-full py-3 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-800 text-white rounded-full font-semibold transition-colors flex items-center justify-center gap-2"
-            >
-              {isTestingConnection ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Probando Conexión...
-                </>
-              ) : (
-                'Probar Conexión'
-              )}
-            </button>
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleTestConnection}
+                disabled={isTestingConnection || !selectedBroker}
+                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-full font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                {isTestingConnection ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Probando...
+                  </>
+                ) : (
+                  'Probar'
+                )}
+              </button>
+              <button
+                onClick={handleSaveConnection}
+                disabled={isSaving || !selectedBroker || !formData.apiKey}
+                className="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-800 disabled:text-cyan-300 text-white rounded-full font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  'Guardar Conexión'
+                )}
+              </button>
+            </div>
           </div>
         </section>
 
@@ -358,14 +531,25 @@ export default function LinkBroker() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-white text-lg font-semibold">Permisos y Alcances</h2>
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 text-sm">Live</span>
+              <span className={cn("text-sm", isLiveMode ? "text-amber-400" : "text-slate-400")}>
+                {isLiveMode ? 'Live' : 'Demo'}
+              </span>
               <Switch
                 checked={isLiveMode}
                 onCheckedChange={setIsLiveMode}
-                className="data-[state=checked]:bg-cyan-600"
+                className="data-[state=checked]:bg-amber-600"
               />
             </div>
           </div>
+          
+          {isLiveMode && (
+            <div className="mb-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+              <p className="text-amber-400 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Modo Live: Las operaciones afectarán tu cuenta real
+              </p>
+            </div>
+          )}
           
           <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 divide-y divide-slate-700/50">
             <PermissionRow
