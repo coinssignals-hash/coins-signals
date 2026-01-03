@@ -133,7 +133,7 @@ export function PortfolioWidget() {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Sparkline */}
+              {/* Sparkline - desktop only */}
               {hasHistoryData && (
                 <div className="hidden sm:block">
                   <EquitySparkline width={80} height={32} />
@@ -154,6 +154,13 @@ export function PortfolioWidget() {
               <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-green-500 group-hover:translate-x-1 transition-all" />
             </div>
           </div>
+
+          {/* Sparkline - mobile only */}
+          {hasHistoryData && (
+            <div className="mt-3 sm:hidden">
+              <EquitySparkline width={280} height={28} className="w-full" />
+            </div>
+          )}
 
           <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
             <span>
