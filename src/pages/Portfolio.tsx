@@ -21,6 +21,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
 
 const COLORS = ['#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
@@ -174,6 +175,13 @@ export default function Portfolio() {
             loading={loading}
           />
         </div>
+
+        {/* History Chart */}
+        {!loading && accounts.length > 0 && (
+          <div className="mb-6">
+            <PortfolioHistoryChart />
+          </div>
+        )}
 
         {/* Charts Row */}
         {!loading && (accountsChartData.length > 0 || positionsChartData.length > 0) && (
