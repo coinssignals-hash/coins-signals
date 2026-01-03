@@ -475,22 +475,22 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
       {/* Expanded Content */}
       {expanded && (
-        <div className="bg-gradient-to-b from-[#0a1628] to-[#0d1f3c] px-4 pb-4 space-y-3 animate-in slide-in-from-top-2 duration-300">
+        <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 pb-4 space-y-3 animate-in slide-in-from-top-2 duration-300">
           {/* Take Profit 1 */}
-          <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30 mt-3">
+          <div className="bg-slate-800/60 rounded-xl p-3 border border-slate-700/50 mt-3 hover:border-emerald-500/30 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-white font-semibold">Takeprofit 1</span>
+              <span className="text-slate-200 font-semibold">Takeprofit 1</span>
               <div className="flex items-center gap-2 flex-1 mx-4">
                 <ProbabilityBar probability={87} type="profit" />
                 <div className="text-right min-w-[60px]">
-                  <div className="text-[10px] text-blue-300">Probabilida</div>
-                  <div className="text-xs text-blue-400 font-medium">87%</div>
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Probabilidad</div>
+                  <div className="text-xs text-emerald-400 font-medium">87%</div>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-green-400 text-xs">+{tp1Diff.toFixed(3)}</span>
-                <span className="text-white font-bold text-lg">{takeProfit1}</span>
-                <button onClick={() => copyToClipboard(takeProfit1)} className="text-blue-400 hover:text-blue-300 p-1">
+                <span className="text-emerald-400 text-xs font-medium">+{tp1Diff.toFixed(3)}</span>
+                <span className="text-white font-bold text-lg tabular-nums">{takeProfit1}</span>
+                <button onClick={() => copyToClipboard(takeProfit1)} className="text-slate-500 hover:text-emerald-400 p-1 transition-colors">
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
@@ -498,20 +498,20 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           </div>
 
           {/* Take Profit 2 */}
-          <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30">
+          <div className="bg-slate-800/60 rounded-xl p-3 border border-slate-700/50 hover:border-emerald-500/30 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-white font-semibold">Takrprofit 2</span>
+              <span className="text-slate-200 font-semibold">Takeprofit 2</span>
               <div className="flex items-center gap-2 flex-1 mx-4">
                 <ProbabilityBar probability={68} type="profit" />
                 <div className="text-right min-w-[60px]">
-                  <div className="text-[10px] text-blue-300">Probabilida</div>
-                  <div className="text-xs text-blue-400 font-medium">68%</div>
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Probabilidad</div>
+                  <div className="text-xs text-emerald-400 font-medium">68%</div>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-green-400 text-xs">+{tp2Diff.toFixed(3)}</span>
-                <span className="text-white font-bold text-lg">{takeProfit2}</span>
-                <button onClick={() => copyToClipboard(takeProfit2)} className="text-blue-400 hover:text-blue-300 p-1">
+                <span className="text-emerald-400 text-xs font-medium">+{tp2Diff.toFixed(3)}</span>
+                <span className="text-white font-bold text-lg tabular-nums">{takeProfit2}</span>
+                <button onClick={() => copyToClipboard(takeProfit2)} className="text-slate-500 hover:text-emerald-400 p-1 transition-colors">
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
@@ -519,20 +519,20 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           </div>
 
           {/* Stop Loss */}
-          <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30">
+          <div className="bg-slate-800/60 rounded-xl p-3 border border-slate-700/50 hover:border-rose-500/30 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-white font-semibold">Stop Loss</span>
+              <span className="text-slate-200 font-semibold">Stop Loss</span>
               <div className="flex items-center gap-2 flex-1 mx-4">
                 <ProbabilityBar probability={25} type="loss" />
                 <div className="text-right min-w-[60px]">
-                  <div className="text-[10px] text-blue-300">Probabilida</div>
-                  <div className="text-xs text-blue-400 font-medium">25%</div>
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Probabilidad</div>
+                  <div className="text-xs text-rose-400 font-medium">25%</div>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-red-400 text-xs">-{slDiff.toFixed(3)}</span>
-                <span className="text-white font-bold text-lg">{signal.stopLoss}</span>
-                <button onClick={() => copyToClipboard(signal.stopLoss)} className="text-blue-400 hover:text-blue-300 p-1">
+                <span className="text-rose-400 text-xs font-medium">-{slDiff.toFixed(3)}</span>
+                <span className="text-white font-bold text-lg tabular-nums">{signal.stopLoss}</span>
+                <button onClick={() => copyToClipboard(signal.stopLoss)} className="text-slate-500 hover:text-rose-400 p-1 transition-colors">
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
@@ -554,10 +554,10 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
             const priceChangePercent = hasLivePrice ? ((currentPrice - signal.entryPrice) / signal.entryPrice) * 100 : 0;
             
             return (
-              <div className="bg-[#0a1628] rounded-xl p-4 border border-slate-700/50">
+              <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/50">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider">Posición del Precio</span>
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Posición del Precio</span>
                     {/* Live indicator */}
                     {hasLivePrice && isConnected ? (
                       <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
@@ -565,35 +565,35 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                         <span className="text-[10px] text-emerald-400 font-medium animate-pulse">LIVE</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-500/20 border border-slate-500/30">
-                        <WifiOff className="w-3 h-3 text-slate-400" />
-                        <span className="text-[10px] text-slate-400 font-medium">ENTRY</span>
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50">
+                        <WifiOff className="w-3 h-3 text-slate-500" />
+                        <span className="text-[10px] text-slate-500 font-medium">ENTRY</span>
                       </div>
                     )}
                   </div>
                   <span className={cn(
                     "text-xs font-medium px-2 py-0.5 rounded-full",
-                    isNearSupport && "bg-emerald-500/20 text-emerald-400",
-                    isNearResistance && "bg-rose-500/20 text-rose-400",
-                    !isNearSupport && !isNearResistance && "bg-amber-500/20 text-amber-400"
+                    isNearSupport && "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
+                    isNearResistance && "bg-rose-500/20 text-rose-400 border border-rose-500/30",
+                    !isNearSupport && !isNearResistance && "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                   )}>
                     {isNearSupport ? "Cerca de Soporte" : isNearResistance ? "Cerca de Resistencia" : "Zona Neutral"}
                   </span>
                 </div>
                 
                 {/* Progress bar */}
-                <div className="relative h-8 rounded-lg overflow-hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-rose-950">
+                <div className="relative h-8 rounded-lg overflow-hidden bg-gradient-to-r from-emerald-950/60 via-slate-800 to-rose-950/60 border border-slate-700/30">
                   {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-transparent to-rose-500/20" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-rose-500/10" />
                   
                   {/* Zone markers */}
-                  <div className="absolute inset-y-0 left-0 w-[30%] border-r border-dashed border-emerald-500/30" />
-                  <div className="absolute inset-y-0 right-0 w-[30%] border-l border-dashed border-rose-500/30" />
+                  <div className="absolute inset-y-0 left-0 w-[30%] border-r border-dashed border-emerald-500/20" />
+                  <div className="absolute inset-y-0 right-0 w-[30%] border-l border-dashed border-rose-500/20" />
                   
                   {/* Entry price marker (static reference) */}
                   {hasLivePrice && (
                     <div 
-                      className="absolute top-0 bottom-0 w-px bg-blue-400/50"
+                      className="absolute top-0 bottom-0 w-px bg-blue-400/40"
                       style={{ 
                         left: `${Math.max(0, Math.min(100, ((signal.entryPrice - support) / range) * 100))}%` 
                       }}
@@ -625,7 +625,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 <div className="flex justify-between mt-2">
                   <div className="text-left">
                     <div className="text-emerald-400 font-bold tabular-nums">{support}</div>
-                    <div className="text-[10px] text-emerald-400/60 uppercase">Soporte</div>
+                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Soporte</div>
                   </div>
                   <div className="text-center">
                     <div className="flex flex-col items-center">
@@ -645,14 +645,14 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                           {priceChange >= 0 ? "+" : ""}{priceChange.toFixed(currentPrice < 10 ? 5 : 2)} ({priceChangePercent >= 0 ? "+" : ""}{priceChangePercent.toFixed(2)}%)
                         </div>
                       )}
-                      <div className="text-[10px] text-slate-500 uppercase">
+                      <div className="text-[10px] text-slate-500 uppercase tracking-wider">
                         {hasLivePrice ? "Precio en Vivo" : "Precio Entrada"}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-rose-400 font-bold tabular-nums">{resistance}</div>
-                    <div className="text-[10px] text-rose-400/60 uppercase">Resistencia</div>
+                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Resistencia</div>
                   </div>
                 </div>
               </div>
@@ -660,13 +660,13 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           })()}
 
           {/* Live Price Sparkline */}
-          <div className="bg-[#0a1628] rounded-xl p-4 border border-slate-700/50">
+          <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/50">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-blue-400" />
-                <span className="text-xs text-slate-400 uppercase tracking-wider">Movimiento en Tiempo Real</span>
+                <Activity className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Movimiento en Tiempo Real</span>
               </div>
-              <span className="text-[10px] text-slate-500">{priceHistory.length} puntos</span>
+              <span className="text-[10px] text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded">{priceHistory.length} puntos</span>
             </div>
             <PriceSparkline 
               prices={priceHistory} 
@@ -747,16 +747,16 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           {/* Gauge and Session Info */}
           <div className="grid grid-cols-2 gap-3">
             {/* Gauge */}
-            <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30 flex items-center justify-center">
+            <div className="bg-slate-800/60 rounded-xl p-3 border border-slate-700/50 flex items-center justify-center">
               <div className="relative w-full max-w-[140px] h-20">
                 <svg viewBox="0 0 140 70" className="w-full h-full">
                   <defs>
                     <linearGradient id={`gaugeGrad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#ef4444" />
+                      <stop offset="0%" stopColor="#f43f5e" />
                       <stop offset="25%" stopColor="#f97316" />
                       <stop offset="50%" stopColor="#eab308" />
                       <stop offset="75%" stopColor="#84cc16" />
-                      <stop offset="100%" stopColor="#22c55e" />
+                      <stop offset="100%" stopColor="#10b981" />
                     </linearGradient>
                   </defs>
                   {/* Gauge arc */}
@@ -781,36 +781,36 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 </svg>
                 <div className="absolute bottom-0 w-full flex justify-between text-[9px] px-2">
                   <div className="text-center">
-                    <div className="text-muted-foreground">Muy Alta</div>
-                    <div className="text-red-400 font-medium">Vender</div>
+                    <div className="text-slate-500">Muy Alta</div>
+                    <div className="text-rose-400 font-medium">Vender</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-muted-foreground">Muy Alta</div>
-                    <div className="text-green-400 font-medium">Comprar</div>
+                    <div className="text-slate-500">Muy Alta</div>
+                    <div className="text-emerald-400 font-medium">Comprar</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Session Price Info */}
-            <div className="bg-[#0d1a2d] rounded-xl p-3 border border-blue-500/30">
-              <div className="text-[10px] text-blue-300 mb-2 font-medium">
-                Precio Apertura y Cierre De Seccion
+            <div className="bg-slate-800/60 rounded-xl p-3 border border-slate-700/50">
+              <div className="text-[10px] text-slate-400 mb-2 font-medium uppercase tracking-wider">
+                Precio Apertura y Cierre
               </div>
               <div className="space-y-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-red-400 italic">Cierre</span>
-                  <span className="text-red-400 font-bold">{(signal.entryPrice + 0.005).toFixed(4)}</span>
+                  <span className="text-rose-400 italic">Cierre</span>
+                  <span className="text-rose-400 font-bold tabular-nums">{(signal.entryPrice + 0.005).toFixed(4)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-green-400 italic">Apertura</span>
-                  <span className="text-green-400 font-bold">{signal.entryPrice.toFixed(4)}</span>
+                  <span className="text-emerald-400 italic">Apertura</span>
+                  <span className="text-emerald-400 font-bold tabular-nums">{signal.entryPrice.toFixed(4)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-blue-300 italic">Diferencia de Pips</span>
+                  <span className="text-slate-400 italic">Diferencia Pips</span>
                   <span className={cn(
-                    "font-bold",
-                    isBuy ? "text-green-400" : "text-red-400"
+                    "font-bold tabular-nums",
+                    isBuy ? "text-emerald-400" : "text-rose-400"
                   )}>
                     {isBuy ? '+' : '-'} {Math.abs(Math.round((signal.takeProfit - signal.stopLoss) * 10000))}
                   </span>
@@ -840,12 +840,12 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               const isBullish = average >= 50;
               
               return (
-                <div className="bg-gradient-to-br from-[#0d1a2d] to-[#0a1420] rounded-xl p-4 border border-blue-500/30">
+                <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider">Análisis de Sentimiento</span>
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Análisis de Sentimiento</span>
                     <span className={cn(
-                      "text-[10px] font-medium px-2 py-0.5 rounded-full",
-                      isBullish ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+                      "text-[10px] font-medium px-2 py-0.5 rounded-full border",
+                      isBullish ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border-rose-500/30"
                     )}>
                       {isBullish ? "Alcista" : "Bajista"}
                     </span>
@@ -984,13 +984,13 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-2">
-              <button className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-3 px-4 rounded-xl border-2 border-green-400/50 shadow-lg shadow-green-500/30 transition-all text-sm">
+              <button className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-3 px-4 rounded-xl border border-emerald-400/30 shadow-lg shadow-emerald-500/20 transition-all text-sm">
                 Ejecutar Orden
               </button>
               <button 
                 onClick={analyzeWithAI}
                 disabled={isAnalyzing}
-                className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-green-800 disabled:to-green-700 text-white font-bold py-3 px-4 rounded-xl border-2 border-green-400/50 shadow-lg shadow-green-500/30 transition-all text-sm leading-tight flex items-center justify-center gap-2"
+                className="flex-1 bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 disabled:from-slate-700 disabled:to-slate-600 text-white font-bold py-3 px-4 rounded-xl border border-violet-400/30 shadow-lg shadow-violet-500/20 transition-all text-sm leading-tight flex items-center justify-center gap-2"
               >
                 {isAnalyzing ? (
                   <>
@@ -1000,7 +1000,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    Analisar Señal<br />Con AI
+                    Analizar Señal<br />Con AI
                   </>
                 )}
               </button>
@@ -1008,10 +1008,10 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               <button 
                 onClick={() => setShowHistory(!showHistory)}
                 className={cn(
-                  "flex items-center justify-center gap-2 py-2 px-3 rounded-lg border transition-all text-xs font-medium",
+                  "flex items-center justify-center gap-2 py-2 px-3 rounded-xl border transition-all text-xs font-medium",
                   showHistory 
-                    ? "bg-blue-500/20 border-blue-500/50 text-blue-400" 
-                    : "bg-slate-800/50 border-slate-600/50 text-slate-400 hover:bg-slate-700/50"
+                    ? "bg-slate-700/80 border-slate-600/50 text-slate-300" 
+                    : "bg-slate-800/60 border-slate-700/50 text-slate-400 hover:bg-slate-700/60 hover:text-slate-300"
                 )}
               >
                 <History className="w-3.5 h-3.5" />
@@ -1022,27 +1022,27 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
           {/* AI Analysis History Panel */}
           {showHistory && (
-            <div className="mt-4 bg-gradient-to-br from-blue-950/40 to-slate-900/40 rounded-xl border border-blue-500/30 p-4 animate-in slide-in-from-bottom-2 duration-300">
+            <div className="mt-4 bg-slate-800/60 rounded-xl border border-slate-700/50 p-4 animate-in slide-in-from-bottom-2 duration-300">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <History className="w-5 h-5 text-blue-400" />
-                  <h3 className="font-semibold text-blue-400">Historial de Análisis IA</h3>
+                  <History className="w-5 h-5 text-slate-400" />
+                  <h3 className="font-semibold text-slate-200">Historial de Análisis IA</h3>
                 </div>
                 <button 
                   onClick={() => setShowHistory(false)}
-                  className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
                 >
-                  <X className="w-4 h-4 text-muted-foreground" />
+                  <X className="w-4 h-4 text-slate-500" />
                 </button>
               </div>
 
               {loadingHistory ? (
                 <div className="flex items-center justify-center py-6">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
                 </div>
               ) : analysisHistory.length === 0 ? (
                 <div className="text-center py-6">
-                  <History className="w-10 h-10 text-slate-600 mx-auto mb-2" />
+                  <History className="w-10 h-10 text-slate-700 mx-auto mb-2" />
                   <p className="text-sm text-slate-500">No hay análisis guardados</p>
                   <p className="text-xs text-slate-600 mt-1">Genera un análisis IA para comenzar</p>
                 </div>
@@ -1051,49 +1051,49 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                   {analysisHistory.map((item) => (
                     <div 
                       key={item.id}
-                      className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 group"
+                      className="bg-slate-900/60 rounded-xl p-3 border border-slate-700/40 group hover:border-slate-600/50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                          <div className="flex items-center gap-1 text-[10px] text-slate-500">
                             <Clock className="w-3 h-3" />
                             {format(new Date(item.created_at), "dd MMM yyyy HH:mm", { locale: es })}
                           </div>
                           {item.recommendation && (
                             <span className={cn(
-                              "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                              item.recommendation === 'BUY' && "bg-emerald-500/20 text-emerald-400",
-                              item.recommendation === 'SELL' && "bg-rose-500/20 text-rose-400",
-                              item.recommendation === 'HOLD' && "bg-amber-500/20 text-amber-400"
+                              "text-[10px] font-medium px-1.5 py-0.5 rounded border",
+                              item.recommendation === 'BUY' && "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+                              item.recommendation === 'SELL' && "bg-rose-500/15 text-rose-400 border-rose-500/30",
+                              item.recommendation === 'HOLD' && "bg-amber-500/15 text-amber-400 border-amber-500/30"
                             )}>
                               {item.recommendation}
                             </span>
                           )}
                           {item.risk_level && (
                             <span className={cn(
-                              "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                              item.risk_level === 'LOW' && "bg-emerald-500/20 text-emerald-400",
-                              item.risk_level === 'MEDIUM' && "bg-amber-500/20 text-amber-400",
-                              item.risk_level === 'HIGH' && "bg-rose-500/20 text-rose-400"
+                              "text-[10px] font-medium px-1.5 py-0.5 rounded border",
+                              item.risk_level === 'LOW' && "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+                              item.risk_level === 'MEDIUM' && "bg-amber-500/15 text-amber-400 border-amber-500/30",
+                              item.risk_level === 'HIGH' && "bg-rose-500/15 text-rose-400 border-rose-500/30"
                             )}>
                               Riesgo: {item.risk_level === 'LOW' ? 'Bajo' : item.risk_level === 'MEDIUM' ? 'Medio' : 'Alto'}
                             </span>
                           )}
                           {item.confidence_level && (
-                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">
+                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-400 border border-violet-500/30">
                               {item.confidence_level}% Confianza
                             </span>
                           )}
                         </div>
                         <button
                           onClick={() => deleteAnalysis(item.id)}
-                          className="p-1 rounded hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                          className="p-1.5 rounded-lg hover:bg-rose-500/20 text-slate-600 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
                           title="Eliminar análisis"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                      <p className="text-xs text-slate-300 line-clamp-3 whitespace-pre-wrap">
+                      <p className="text-xs text-slate-400 line-clamp-3 whitespace-pre-wrap leading-relaxed">
                         {item.analysis_text}
                       </p>
                       <button
@@ -1102,7 +1102,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                           setShowAnalysis(true);
                           setShowHistory(false);
                         }}
-                        className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 transition-colors"
+                        className="mt-2 text-[10px] text-violet-400 hover:text-violet-300 transition-colors font-medium"
                       >
                         Ver análisis completo →
                       </button>
@@ -1115,30 +1115,30 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
           {/* AI Analysis Modal */}
           {showAnalysis && (
-            <div className="mt-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl border border-primary/30 p-4 animate-in slide-in-from-bottom-2 duration-300">
+            <div className="mt-4 bg-gradient-to-br from-violet-950/40 to-slate-900/60 rounded-xl border border-violet-500/30 p-4 animate-in slide-in-from-bottom-2 duration-300">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold text-primary">Análisis IA</h3>
+                  <Sparkles className="w-5 h-5 text-violet-400" />
+                  <h3 className="font-semibold text-violet-300">Análisis IA</h3>
                 </div>
                 <button 
                   onClick={() => setShowAnalysis(false)}
-                  className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
                 >
-                  <X className="w-4 h-4 text-muted-foreground" />
+                  <X className="w-4 h-4 text-slate-500" />
                 </button>
               </div>
               
               {isAnalyzing ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    <p className="text-sm text-muted-foreground">Analizando señal con IA...</p>
+                    <Loader2 className="w-8 h-8 animate-spin text-violet-400" />
+                    <p className="text-sm text-slate-400">Analizando señal con IA...</p>
                   </div>
                 </div>
               ) : aiAnalysis ? (
                 <div className="prose prose-invert prose-sm max-w-none">
-                  <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  <div className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
                     {aiAnalysis}
                   </div>
                 </div>
