@@ -45,6 +45,57 @@ export interface RealtimePriceUpdate {
   timestamp: number;
 }
 
+// Demo data for non-authenticated users
+const DEMO_ACCOUNTS: AccountData[] = [
+  {
+    connection_id: 'demo-1',
+    broker_code: 'alpaca',
+    broker_name: 'Alpaca (Demo)',
+    environment: 'paper',
+    cash_balance: 25420.50,
+    equity: 48750.25,
+    buying_power: 50000,
+    unrealized_pnl: 1823.45,
+    realized_pnl_today: 342.80,
+    margin_used: 12500,
+    margin_available: 37500,
+    currency: 'USD',
+    last_updated: new Date().toISOString(),
+    positions: [
+      { symbol: 'AAPL', quantity: 50, average_entry_price: 178.50, current_price: 192.30, market_value: 9615, unrealized_pnl: 690, unrealized_pnl_percent: 7.72, side: 'long' },
+      { symbol: 'TSLA', quantity: 25, average_entry_price: 245.00, current_price: 268.40, market_value: 6710, unrealized_pnl: 585, unrealized_pnl_percent: 9.55, side: 'long' },
+      { symbol: 'NVDA', quantity: 30, average_entry_price: 485.20, current_price: 512.80, market_value: 15384, unrealized_pnl: 828, unrealized_pnl_percent: 5.69, side: 'long' },
+    ],
+  },
+  {
+    connection_id: 'demo-2',
+    broker_code: 'ibkr',
+    broker_name: 'Interactive Brokers (Demo)',
+    environment: 'paper',
+    cash_balance: 15320.75,
+    equity: 32180.50,
+    buying_power: 40000,
+    unrealized_pnl: -456.30,
+    realized_pnl_today: 128.50,
+    margin_used: 8000,
+    margin_available: 32000,
+    currency: 'USD',
+    last_updated: new Date().toISOString(),
+    positions: [
+      { symbol: 'EUR/USD', quantity: 10000, average_entry_price: 1.0892, current_price: 1.0845, market_value: 10845, unrealized_pnl: -470, unrealized_pnl_percent: -4.31, side: 'long' },
+      { symbol: 'BTC/USD', quantity: 0.15, average_entry_price: 42500, current_price: 43200, market_value: 6480, unrealized_pnl: 105, unrealized_pnl_percent: 1.65, side: 'long' },
+    ],
+  },
+];
+
+const DEMO_SUMMARY: PortfolioSummary = {
+  total_equity: 80930.75,
+  total_cash: 40741.25,
+  total_unrealized_pnl: 1367.15,
+  total_realized_pnl: 471.30,
+  total_positions: 5,
+};
+
 export function usePortfolio() {
   const { session } = useAuth();
   const [accounts, setAccounts] = useState<AccountData[]>([]);
@@ -62,9 +113,14 @@ export function usePortfolio() {
   const [realtimePrices, setRealtimePrices] = useState<Map<string, RealtimePriceUpdate>>(new Map());
   const wsRef = useRef<WebSocket | null>(null);
   const liveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isDemo = !session?.access_token;
 
   const fetchPortfolio = useCallback(async () => {
+    // Return demo data for non-authenticated users
     if (!session?.access_token) {
+      setAccounts(DEMO_ACCOUNTS);
+      setSummary(DEMO_SUMMARY);
+      setLastRefresh(new Date());
       setLoading(false);
       return;
     }
@@ -238,6 +294,7 @@ export function usePortfolio() {
     error,
     lastRefresh,
     isLive,
+    isDemo,
     realtimePrices,
     refetch: fetchPortfolio,
     getAllPositions,
