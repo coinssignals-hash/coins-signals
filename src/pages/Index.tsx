@@ -28,6 +28,7 @@ import { IndicatorsSummaryChart } from '@/components/analysis/IndicatorsSummaryC
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
+import { PortfolioWidget } from '@/components/portfolio/PortfolioWidget';
 import { useMarketData } from '@/hooks/useMarketData';
 import { usePreviousDayCandles } from '@/hooks/usePreviousDayCandles';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
@@ -201,6 +202,7 @@ const Index = () => {
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
       
       <main className="container py-4 px-2 sm:px-4 max-w-4xl mx-auto space-y-4">
+        <PortfolioWidget />
         <div className="flex items-center gap-2 flex-wrap">
           <SymbolSearch 
             value={selectedPair} 
