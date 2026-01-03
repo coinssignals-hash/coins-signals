@@ -3,11 +3,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, Wallet, ArrowRight, Activity, AlertCircle } from 'lucide-react';
 import { usePortfolio } from '@/hooks/usePortfolio';
+import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
 import { useAuth } from '@/hooks/useAuth';
+import { EquitySparkline } from './EquitySparkline';
 
 export function PortfolioWidget() {
   const { session } = useAuth();
   const { summary, loading, error, isLive, accounts } = usePortfolio();
+  const { stats: historyStats, snapshots } = usePortfolioHistory('1W');
 
   // Si no hay sesión, mostrar invitación a conectar
   if (!session) {
@@ -96,6 +99,9 @@ export function PortfolioWidget() {
     ? (summary.total_unrealized_pnl / summary.total_equity) * 100 
     : 0;
 
+  const hasHistoryData = snapshots.length >= 2;
+  const weeklyChangePositive = historyStats.equityChange >= 0;
+
   return (
     <Link to="/portfolio">
       <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/50 hover:border-green-500/50 transition-all duration-300 cursor-pointer group overflow-hidden">
@@ -126,7 +132,14 @@ export function PortfolioWidget() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Sparkline */}
+              {hasHistoryData && (
+                <div className="hidden sm:block">
+                  <EquitySparkline width={80} height={32} />
+                </div>
+              )}
+              
               <div className="text-right">
                 <div className={`flex items-center gap-1 ${pnlColor}`}>
                   <PnlIcon className="w-4 h-4" />
@@ -142,12 +155,21 @@ export function PortfolioWidget() {
             </div>
           </div>
 
-          {summary.total_positions > 0 && (
-            <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
-              <span>{summary.total_positions} posición{summary.total_positions !== 1 ? 'es' : ''} abiertas</span>
-              <span>{accounts.length} broker{accounts.length !== 1 ? 's' : ''}</span>
-            </div>
-          )}
+          <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
+            <span>
+              {summary.total_positions > 0 
+                ? `${summary.total_positions} posición${summary.total_positions !== 1 ? 'es' : ''}`
+                : 'Sin posiciones'}
+            </span>
+            
+            {hasHistoryData && (
+              <span className={weeklyChangePositive ? 'text-green-400' : 'text-red-400'}>
+                7d: {formatPercent(historyStats.equityChangePercent)}
+              </span>
+            )}
+            
+            <span>{accounts.length} broker{accounts.length !== 1 ? 's' : ''}</span>
+          </div>
         </CardContent>
       </Card>
     </Link>
