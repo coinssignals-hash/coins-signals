@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Bell, MessageCircle, Volume2, Play, TrendingUp, TrendingDown, AlertTriangle, Phone, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, Bell, MessageCircle, Volume2, Play, TrendingUp, TrendingDown, AlertTriangle, Phone, Loader2, Check, Send } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { playNotificationSound, enableAudio, SoundType } from '@/utils/notificationSound';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,6 +41,7 @@ export default function Notifications() {
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [savingWhatsapp, setSavingWhatsapp] = useState(false);
   const [whatsappSaved, setWhatsappSaved] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
 
   // Load WhatsApp settings from profile
   useEffect(() => {
@@ -128,6 +129,51 @@ export default function Notifications() {
       toast.error('Error al guardar número');
     } finally {
       setSavingWhatsapp(false);
+    }
+  };
+
+  const handleSendTestMessage = async () => {
+    if (!whatsappNumber) {
+      toast.error('Primero ingresa y guarda tu número de WhatsApp');
+      return;
+    }
+
+    const cleanNumber = whatsappNumber.replace(/\s/g, '');
+    if (!/^\+?[1-9]\d{7,14}$/.test(cleanNumber)) {
+      toast.error('Número de WhatsApp inválido');
+      return;
+    }
+
+    setSendingTest(true);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-whatsapp`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
+          },
+          body: JSON.stringify({
+            to: cleanNumber.startsWith('+') ? cleanNumber : `+${cleanNumber}`,
+            message: '🧪 ¡Mensaje de prueba!\n\nTu configuración de WhatsApp está funcionando correctamente. Recibirás alertas críticas de portfolio aquí.',
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.details || result.error || 'Error al enviar');
+      }
+
+      toast.success('¡Mensaje de prueba enviado! Revisa tu WhatsApp.');
+    } catch (error) {
+      console.error('Error sending test message:', error);
+      toast.error(error instanceof Error ? error.message : 'Error al enviar mensaje de prueba');
+    } finally {
+      setSendingTest(false);
     }
   };
 
@@ -223,6 +269,26 @@ export default function Notifications() {
                     className="data-[state=checked]:bg-green-500"
                   />
                 </div>
+
+                {/* Test Message Button */}
+                <Button
+                  onClick={handleSendTestMessage}
+                  disabled={sendingTest || !whatsappNumber}
+                  variant="outline"
+                  className="w-full border-green-500/50 text-green-600 hover:bg-green-500/10"
+                >
+                  {sendingTest ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Enviar mensaje de prueba
+                    </>
+                  )}
+                </Button>
 
                 <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                   <p className="text-xs text-yellow-600 dark:text-yellow-400">
