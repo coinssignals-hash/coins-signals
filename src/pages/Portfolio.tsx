@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -12,7 +12,8 @@ import {
   AlertCircle,
   Plus,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Radio
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -40,13 +41,30 @@ function formatPercent(value: number): string {
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// Hook to track value changes for animation
+function useValueFlash(value: number) {
+  const prevRef = useRef(value);
+  const [flash, setFlash] = useState<'up' | 'down' | null>(null);
+  
+  useEffect(() => {
+    if (value !== prevRef.current) {
+      setFlash(value > prevRef.current ? 'up' : 'down');
+      prevRef.current = value;
+      const timeout = setTimeout(() => setFlash(null), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [value]);
+  
+  return flash;
 }
 
 export default function Portfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { accounts, summary, loading, error, lastRefresh, refetch, getAllPositions } = usePortfolio();
+  const { accounts, summary, loading, error, lastRefresh, isLive, refetch, getAllPositions } = usePortfolio();
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
 
   const toggleAccount = (connectionId: string) => {
@@ -121,6 +139,13 @@ export default function Portfolio() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Live indicator */}
+            {isLive && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30">
+                <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
+                <span className="text-emerald-400 text-xs font-medium">LIVE</span>
+              </div>
+            )}
             {lastRefresh && (
               <span className="text-slate-500 text-xs flex items-center gap-1">
                 <Clock className="w-3 h-3" />
@@ -149,28 +174,32 @@ export default function Portfolio() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <SummaryCard
+          <AnimatedSummaryCard
             title="Equity Total"
-            value={formatCurrency(summary.total_equity)}
+            value={summary.total_equity}
+            formatFn={formatCurrency}
             icon={<Wallet className="w-5 h-5" />}
             loading={loading}
           />
-          <SummaryCard
+          <AnimatedSummaryCard
             title="Cash Disponible"
-            value={formatCurrency(summary.total_cash)}
+            value={summary.total_cash}
+            formatFn={formatCurrency}
             icon={<BarChart3 className="w-5 h-5" />}
             loading={loading}
           />
-          <SummaryCard
+          <AnimatedSummaryCard
             title="PnL No Realizado"
-            value={formatCurrency(summary.total_unrealized_pnl)}
+            value={summary.total_unrealized_pnl}
+            formatFn={formatCurrency}
             icon={summary.total_unrealized_pnl >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
             valueColor={summary.total_unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}
             loading={loading}
           />
-          <SummaryCard
+          <AnimatedSummaryCard
             title="Posiciones"
-            value={summary.total_positions.toString()}
+            value={summary.total_positions}
+            formatFn={(v) => v.toString()}
             icon={<PieChartIcon className="w-5 h-5" />}
             loading={loading}
           />
@@ -384,21 +413,30 @@ export default function Portfolio() {
   );
 }
 
-function SummaryCard({
+function AnimatedSummaryCard({
   title,
   value,
+  formatFn,
   icon,
   valueColor = 'text-white',
   loading,
 }: {
   title: string;
-  value: string;
+  value: number;
+  formatFn: (v: number) => string;
   icon: React.ReactNode;
   valueColor?: string;
   loading?: boolean;
 }) {
+  const flash = useValueFlash(value);
+  
   return (
-    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+    <div className={cn(
+      "bg-slate-800/50 rounded-xl p-4 border transition-all duration-300",
+      flash === 'up' && "border-emerald-500/50 bg-emerald-500/10",
+      flash === 'down' && "border-red-500/50 bg-red-500/10",
+      !flash && "border-slate-700/50"
+    )}>
       <div className="flex items-center gap-2 text-slate-400 mb-2">
         {icon}
         <span className="text-xs">{title}</span>
@@ -406,7 +444,14 @@ function SummaryCard({
       {loading ? (
         <Skeleton className="h-7 w-24" />
       ) : (
-        <div className={cn("text-lg font-bold", valueColor)}>{value}</div>
+        <div className={cn(
+          "text-lg font-bold transition-colors duration-300",
+          flash === 'up' && "text-emerald-400",
+          flash === 'down' && "text-red-400",
+          !flash && valueColor
+        )}>
+          {formatFn(value)}
+        </div>
       )}
     </div>
   );
