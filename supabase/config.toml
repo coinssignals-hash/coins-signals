@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.broker-portfolio]
 verify_jwt = false
+
+[functions.sync-portfolio]
+verify_jwt = false
