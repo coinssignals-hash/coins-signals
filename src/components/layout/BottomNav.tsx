@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Newspaper, GraduationCap, Building2, Settings, Brain, TrendingUp } from 'lucide-react';
+import { Newspaper, GraduationCap, Building2, Settings, Brain, TrendingUp, Wallet } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { usePrefetch } from '@/hooks/usePrefetch';
@@ -8,9 +8,9 @@ import { useEffect } from 'react';
 
 const navItems = [
   { icon: Brain, label: 'Ideas', href: '/', badgeType: null },
+  { icon: Wallet, label: 'Portfolio', href: '/portfolio', badgeType: null },
   { icon: TrendingUp, label: 'Señales', href: '/signals', badgeType: 'signals' },
   { icon: Newspaper, label: 'Noticias', href: '/news', badgeType: 'news' },
-  { icon: GraduationCap, label: 'Cursos', href: '/courses', badgeType: null },
   { icon: Building2, label: 'Brokers', href: '/broker', badgeType: null },
   { icon: Settings, label: 'Ajustes', href: '/settings', badgeType: null },
 ];

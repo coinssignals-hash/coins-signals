@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { 
   TrendingUp, Newspaper, Brain, Menu, Search, Bell, 
   ChevronDown, GraduationCap, Building2, BarChart3, 
-  Gift, MessageCircle, Info 
+  Gift, MessageCircle, Info, Wallet 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useRef, useEffect } from 'react';
@@ -13,6 +13,7 @@ import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 
 const navItems = [
   { icon: Brain, label: 'Ideas', href: '/', badgeType: null },
+  { icon: Wallet, label: 'Portfolio', href: '/portfolio', badgeType: null },
   { icon: Newspaper, label: 'Noticias', href: '/news', badgeType: 'news' },
   { icon: TrendingUp, label: 'Señales', href: '/signals', badgeType: 'signals' },
 ];
