@@ -30,6 +30,7 @@ const Install = lazy(() => import("./pages/Install"));
 const Performance = lazy(() => import("./pages/Performance"));
 const About = lazy(() => import("./pages/About"));
 const BrokerRating = lazy(() => import("./pages/BrokerRating"));
+const LinkBroker = lazy(() => import("./pages/LinkBroker"));
 const Analysis = lazy(() => import("./pages/Analysis"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -75,6 +76,8 @@ const App = () => (
               <Route path="/performance" element={<Performance />} />
               <Route path="/about" element={<About />} />
               <Route path="/broker-rating" element={<BrokerRating />} />
+              <Route path="/link-broker" element={<LinkBroker />} />
+              <Route path="/analysis" element={<Analysis />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
