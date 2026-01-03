@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_snapshots: {
+        Row: {
+          buying_power: number | null
+          cash_balance: number
+          connection_id: string
+          created_at: string | null
+          equity: number
+          id: string
+          long_exposure: number | null
+          maintenance_margin: number | null
+          margin_available: number | null
+          margin_used: number | null
+          net_exposure: number | null
+          portfolio_value: number
+          realized_pnl_today: number | null
+          realized_pnl_total: number | null
+          short_exposure: number | null
+          snapshot_at: string
+          snapshot_data: Json | null
+          total_open_orders_count: number | null
+          total_positions_count: number | null
+          unrealized_pnl: number | null
+          user_id: string
+        }
+        Insert: {
+          buying_power?: number | null
+          cash_balance?: number
+          connection_id: string
+          created_at?: string | null
+          equity?: number
+          id?: string
+          long_exposure?: number | null
+          maintenance_margin?: number | null
+          margin_available?: number | null
+          margin_used?: number | null
+          net_exposure?: number | null
+          portfolio_value?: number
+          realized_pnl_today?: number | null
+          realized_pnl_total?: number | null
+          short_exposure?: number | null
+          snapshot_at?: string
+          snapshot_data?: Json | null
+          total_open_orders_count?: number | null
+          total_positions_count?: number | null
+          unrealized_pnl?: number | null
+          user_id: string
+        }
+        Update: {
+          buying_power?: number | null
+          cash_balance?: number
+          connection_id?: string
+          created_at?: string | null
+          equity?: number
+          id?: string
+          long_exposure?: number | null
+          maintenance_margin?: number | null
+          margin_available?: number | null
+          margin_used?: number | null
+          net_exposure?: number | null
+          portfolio_value?: number
+          realized_pnl_today?: number | null
+          realized_pnl_total?: number | null
+          short_exposure?: number | null
+          snapshot_at?: string
+          snapshot_data?: Json | null
+          total_open_orders_count?: number | null
+          total_positions_count?: number | null
+          unrealized_pnl?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_snapshots_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "user_broker_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_analysis_cache: {
         Row: {
           analysis_data: Json
@@ -41,6 +121,120 @@ export type Database = {
           expires_at?: string
           id?: string
           symbol?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          error_message: string | null
+          id: string
+          ip_address: unknown
+          resource_id: string | null
+          resource_type: string
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown
+          resource_id?: string | null
+          resource_type: string
+          success: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown
+          resource_id?: string | null
+          resource_type?: string
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      brokers: {
+        Row: {
+          api_documentation_url: string | null
+          auth_type: string
+          base_url_demo: string | null
+          base_url_live: string | null
+          code: string
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          metadata: Json | null
+          min_deposit: number | null
+          requires_2fa: boolean | null
+          supported_assets: string[]
+          supported_order_types: string[]
+          supports_websocket: boolean | null
+          trading_fees_description: string | null
+          updated_at: string | null
+          websocket_url_demo: string | null
+          websocket_url_live: string | null
+        }
+        Insert: {
+          api_documentation_url?: string | null
+          auth_type: string
+          base_url_demo?: string | null
+          base_url_live?: string | null
+          code: string
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          metadata?: Json | null
+          min_deposit?: number | null
+          requires_2fa?: boolean | null
+          supported_assets?: string[]
+          supported_order_types?: string[]
+          supports_websocket?: boolean | null
+          trading_fees_description?: string | null
+          updated_at?: string | null
+          websocket_url_demo?: string | null
+          websocket_url_live?: string | null
+        }
+        Update: {
+          api_documentation_url?: string | null
+          auth_type?: string
+          base_url_demo?: string | null
+          base_url_live?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          metadata?: Json | null
+          min_deposit?: number | null
+          requires_2fa?: boolean | null
+          supported_assets?: string[]
+          supported_order_types?: string[]
+          supports_websocket?: boolean | null
+          trading_fees_description?: string | null
+          updated_at?: string | null
+          websocket_url_demo?: string | null
+          websocket_url_live?: string | null
         }
         Relationships: []
       }
@@ -184,6 +378,184 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          asset_type: string
+          average_fill_price: number | null
+          broker_order_id: string | null
+          cancelled_at: string | null
+          client_order_id: string
+          connection_id: string
+          created_at: string | null
+          expires_at: string | null
+          filled_at: string | null
+          filled_quantity: number | null
+          id: string
+          limit_price: number | null
+          metadata: Json | null
+          order_type: string
+          quantity: number
+          rejection_reason: string | null
+          side: string
+          status: string
+          stop_loss_price: number | null
+          stop_price: number | null
+          submitted_at: string | null
+          symbol: string
+          take_profit_price: number | null
+          time_in_force: string
+          trailing_amount: number | null
+          trailing_percent: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          asset_type: string
+          average_fill_price?: number | null
+          broker_order_id?: string | null
+          cancelled_at?: string | null
+          client_order_id: string
+          connection_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          filled_at?: string | null
+          filled_quantity?: number | null
+          id?: string
+          limit_price?: number | null
+          metadata?: Json | null
+          order_type: string
+          quantity: number
+          rejection_reason?: string | null
+          side: string
+          status?: string
+          stop_loss_price?: number | null
+          stop_price?: number | null
+          submitted_at?: string | null
+          symbol: string
+          take_profit_price?: number | null
+          time_in_force?: string
+          trailing_amount?: number | null
+          trailing_percent?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          asset_type?: string
+          average_fill_price?: number | null
+          broker_order_id?: string | null
+          cancelled_at?: string | null
+          client_order_id?: string
+          connection_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          filled_at?: string | null
+          filled_quantity?: number | null
+          id?: string
+          limit_price?: number | null
+          metadata?: Json | null
+          order_type?: string
+          quantity?: number
+          rejection_reason?: string | null
+          side?: string
+          status?: string
+          stop_loss_price?: number | null
+          stop_price?: number | null
+          submitted_at?: string | null
+          symbol?: string
+          take_profit_price?: number | null
+          time_in_force?: string
+          trailing_amount?: number | null
+          trailing_percent?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "user_broker_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      positions: {
+        Row: {
+          asset_type: string
+          available_quantity: number
+          average_entry_price: number
+          connection_id: string
+          created_at: string | null
+          current_price: number | null
+          id: string
+          last_price_update_at: string | null
+          market_value: number | null
+          metadata: Json | null
+          quantity: number
+          realized_pnl: number | null
+          symbol: string
+          total_commission: number | null
+          total_cost: number
+          total_fees: number | null
+          unrealized_pnl: number | null
+          unrealized_pnl_percent: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          asset_type: string
+          available_quantity?: number
+          average_entry_price: number
+          connection_id: string
+          created_at?: string | null
+          current_price?: number | null
+          id?: string
+          last_price_update_at?: string | null
+          market_value?: number | null
+          metadata?: Json | null
+          quantity: number
+          realized_pnl?: number | null
+          symbol: string
+          total_commission?: number | null
+          total_cost?: number
+          total_fees?: number | null
+          unrealized_pnl?: number | null
+          unrealized_pnl_percent?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          asset_type?: string
+          available_quantity?: number
+          average_entry_price?: number
+          connection_id?: string
+          created_at?: string | null
+          current_price?: number | null
+          id?: string
+          last_price_update_at?: string | null
+          market_value?: number | null
+          metadata?: Json | null
+          quantity?: number
+          realized_pnl?: number | null
+          symbol?: string
+          total_commission?: number | null
+          total_cost?: number
+          total_fees?: number | null
+          unrealized_pnl?: number | null
+          unrealized_pnl_percent?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "positions_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "user_broker_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -297,6 +669,72 @@ export type Database = {
           },
         ]
       }
+      trades: {
+        Row: {
+          broker_trade_id: string | null
+          commission: number | null
+          connection_id: string
+          created_at: string | null
+          executed_at: string
+          fees: number | null
+          id: string
+          metadata: Json | null
+          order_id: string
+          price: number
+          quantity: number
+          side: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          broker_trade_id?: string | null
+          commission?: number | null
+          connection_id: string
+          created_at?: string | null
+          executed_at?: string
+          fees?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id: string
+          price: number
+          quantity: number
+          side: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          broker_trade_id?: string | null
+          commission?: number | null
+          connection_id?: string
+          created_at?: string | null
+          executed_at?: string
+          fees?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string
+          price?: number
+          quantity?: number
+          side?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "user_broker_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trading_signals: {
         Row: {
           action: string
@@ -353,6 +791,68 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      user_broker_connections: {
+        Row: {
+          broker_id: string
+          config: Json | null
+          connection_error: string | null
+          connection_name: string
+          created_at: string | null
+          credentials_iv: string | null
+          encrypted_credentials: string
+          environment: string
+          id: string
+          is_active: boolean | null
+          is_connected: boolean | null
+          last_connected_at: string | null
+          last_sync_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          broker_id: string
+          config?: Json | null
+          connection_error?: string | null
+          connection_name: string
+          created_at?: string | null
+          credentials_iv?: string | null
+          encrypted_credentials: string
+          environment?: string
+          id?: string
+          is_active?: boolean | null
+          is_connected?: boolean | null
+          last_connected_at?: string | null
+          last_sync_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          broker_id?: string
+          config?: Json | null
+          connection_error?: string | null
+          connection_name?: string
+          created_at?: string | null
+          credentials_iv?: string | null
+          encrypted_credentials?: string
+          environment?: string
+          id?: string
+          is_active?: boolean | null
+          is_connected?: boolean | null
+          last_connected_at?: string | null
+          last_sync_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_broker_connections_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "brokers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
