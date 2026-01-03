@@ -569,6 +569,8 @@ export type Database = {
           signal_alerts_enabled: boolean | null
           timezone: string | null
           updated_at: string
+          whatsapp_notifications_enabled: boolean | null
+          whatsapp_number: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -582,6 +584,8 @@ export type Database = {
           signal_alerts_enabled?: boolean | null
           timezone?: string | null
           updated_at?: string
+          whatsapp_notifications_enabled?: boolean | null
+          whatsapp_number?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -595,6 +599,8 @@ export type Database = {
           signal_alerts_enabled?: boolean | null
           timezone?: string | null
           updated_at?: string
+          whatsapp_notifications_enabled?: boolean | null
+          whatsapp_number?: string | null
         }
         Relationships: []
       }

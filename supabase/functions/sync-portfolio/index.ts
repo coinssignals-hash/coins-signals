@@ -403,12 +403,44 @@ async function sendPortfolioNotification(alert: PortfolioAlert, apiKey: string, 
     });
 
     if (!response.ok) {
-      console.error('Failed to send notification:', await response.text());
+      console.error('Failed to send push notification:', await response.text());
     } else {
-      console.log(`[sync-portfolio] Notification sent: ${alert.title}`);
+      console.log(`[sync-portfolio] Push notification sent: ${alert.title}`);
     }
   } catch (error) {
-    console.error('Error sending notification:', error);
+    console.error('Error sending push notification:', error);
+  }
+}
+
+// Send WhatsApp notification for critical alerts
+async function sendWhatsAppNotification(
+  alert: PortfolioAlert, 
+  whatsappNumber: string, 
+  apiKey: string, 
+  supabaseUrl: string
+): Promise<void> {
+  try {
+    const message = `🚨 ${alert.title}\n\n${alert.body}\n\n📊 Ver portfolio: ${supabaseUrl.replace('.supabase.co', '')}/portfolio`;
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        to: whatsappNumber,
+        message,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to send WhatsApp:', await response.text());
+    } else {
+      console.log(`[sync-portfolio] WhatsApp sent to ${whatsappNumber}: ${alert.title}`);
+    }
+  } catch (error) {
+    console.error('Error sending WhatsApp:', error);
   }
 }
 
@@ -533,9 +565,36 @@ serve(async (req) => {
       });
     }
 
-    // Send push notifications for all alerts
+    // Send notifications for all alerts
+    // Group alerts by userId to fetch profile once per user
+    const alertsByUser = new Map<string, PortfolioAlert[]>();
     for (const alert of allAlerts) {
-      await sendPortfolioNotification(alert, signalsApiKey, supabaseUrl);
+      const userAlerts = alertsByUser.get(alert.userId) || [];
+      userAlerts.push(alert);
+      alertsByUser.set(alert.userId, userAlerts);
+    }
+
+    for (const [userId, userAlerts] of alertsByUser) {
+      // Get user profile for WhatsApp number
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('whatsapp_number, whatsapp_notifications_enabled')
+        .eq('id', userId)
+        .single();
+
+      for (const alert of userAlerts) {
+        // Always send push notification
+        await sendPortfolioNotification(alert, signalsApiKey, supabaseUrl);
+
+        // Send WhatsApp only for critical alerts if enabled
+        if (
+          alert.severity === 'critical' && 
+          profile?.whatsapp_notifications_enabled && 
+          profile?.whatsapp_number
+        ) {
+          await sendWhatsAppNotification(alert, profile.whatsapp_number, signalsApiKey, supabaseUrl);
+        }
+      }
     }
 
     const successCount = results.filter(r => r.success).length;
