@@ -64,7 +64,7 @@ function useValueFlash(value: number) {
 export default function Portfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { accounts, summary, loading, error, lastRefresh, isLive, refetch, getAllPositions } = usePortfolio();
+  const { accounts, summary, loading, error, lastRefresh, isLive, isDemo, refetch, getAllPositions } = usePortfolio();
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
 
   const toggleAccount = (connectionId: string) => {
@@ -139,8 +139,14 @@ export default function Portfolio() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Demo indicator */}
+            {isDemo && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/20 rounded-full border border-amber-500/30">
+                <span className="text-amber-400 text-xs font-medium">DEMO</span>
+              </div>
+            )}
             {/* Live indicator */}
-            {isLive && (
+            {isLive && !isDemo && (
               <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30">
                 <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
                 <span className="text-emerald-400 text-xs font-medium">LIVE</span>
