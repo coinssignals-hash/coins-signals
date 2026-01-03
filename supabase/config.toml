@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.analyze-signal]
 verify_jwt = false
+
+[functions.broker-connections]
+verify_jwt = false
