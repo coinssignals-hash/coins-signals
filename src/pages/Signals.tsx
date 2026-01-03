@@ -1,21 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, User, Loader2, Heart, LayoutGrid, List } from 'lucide-react';
+import { Menu, User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target } from 'lucide-react';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
-import { useSignals } from '@/hooks/useSignals';
+import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type ViewMode = 'full' | 'compact';
+type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
+
+const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] = [
+  { value: 'date-desc', label: 'Más recientes', icon: <Clock className="w-4 h-4" /> },
+  { value: 'date-asc', label: 'Más antiguas', icon: <Clock className="w-4 h-4" /> },
+  { value: 'probability-desc', label: 'Mayor probabilidad', icon: <TrendingUp className="w-4 h-4" /> },
+  { value: 'probability-asc', label: 'Menor probabilidad', icon: <TrendingUp className="w-4 h-4" /> },
+  { value: 'pips-desc', label: 'Más pips', icon: <Target className="w-4 h-4" /> },
+  { value: 'pips-asc', label: 'Menos pips', icon: <Target className="w-4 h-4" /> },
+];
+
+// Calculate pips for a signal
+const calculatePips = (signal: TradingSignal): number => {
+  const isBuy = signal.action === 'BUY';
+  return isBuy 
+    ? Math.round((signal.takeProfit - signal.entryPrice) * 10000)
+    : Math.round((signal.entryPrice - signal.takeProfit) * 10000);
+};
 
 // Generate week days dynamically
 const generateWeekDays = () => {
@@ -40,6 +64,9 @@ export default function Signals() {
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     return (localStorage.getItem('signals-view-mode') as ViewMode) || 'full';
   });
+  const [sortBy, setSortBy] = useState<SortOption>(() => {
+    return (localStorage.getItem('signals-sort-by') as SortOption) || 'date-desc';
+  });
   const [expandedSignalId, setExpandedSignalId] = useState<string | null>(null);
   
   const { signals, loading, error } = useSignals();
@@ -51,9 +78,41 @@ export default function Signals() {
     localStorage.setItem('signals-view-mode', viewMode);
   }, [viewMode]);
 
-  const filteredSignals = showFavoritesOnly 
-    ? signals.filter(s => favoriteIds.has(s.id))
-    : signals;
+  // Persist sort option
+  useEffect(() => {
+    localStorage.setItem('signals-sort-by', sortBy);
+  }, [sortBy]);
+
+  // Filter and sort signals
+  const filteredAndSortedSignals = useMemo(() => {
+    let result = showFavoritesOnly 
+      ? signals.filter(s => favoriteIds.has(s.id))
+      : signals;
+
+    // Sort signals
+    result = [...result].sort((a, b) => {
+      switch (sortBy) {
+        case 'date-desc':
+          return new Date(b.datetime).getTime() - new Date(a.datetime).getTime();
+        case 'date-asc':
+          return new Date(a.datetime).getTime() - new Date(b.datetime).getTime();
+        case 'probability-desc':
+          return b.probability - a.probability;
+        case 'probability-asc':
+          return a.probability - b.probability;
+        case 'pips-desc':
+          return calculatePips(b) - calculatePips(a);
+        case 'pips-asc':
+          return calculatePips(a) - calculatePips(b);
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [signals, showFavoritesOnly, favoriteIds, sortBy]);
+
+  const currentSortOption = sortOptions.find(opt => opt.value === sortBy);
 
   const getInitials = () => {
     if (profile?.first_name) {
@@ -151,15 +210,46 @@ export default function Signals() {
         />
       </header>
 
-      {/* Favorites Filter Indicator */}
-      {showFavoritesOnly && (
-        <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2">
-          <div className="flex items-center justify-center gap-2 text-sm text-red-300">
-            <Heart className="w-4 h-4 fill-current" />
-            <span>Mostrando solo favoritos ({favoriteIds.size})</span>
+      {/* Filters Bar */}
+      <div className="bg-slate-900/50 border-b border-slate-700/50 px-4 py-2">
+        <div className="flex items-center justify-between gap-3">
+          {/* Sort Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors text-sm">
+                <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                <span className="text-slate-300">{currentSortOption?.label}</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 bg-slate-900 border-slate-700">
+              {sortOptions.map((option) => (
+                <DropdownMenuItem
+                  key={option.value}
+                  onClick={() => setSortBy(option.value)}
+                  className={cn(
+                    "flex items-center gap-2 cursor-pointer",
+                    sortBy === option.value && "bg-slate-800 text-white"
+                  )}
+                >
+                  {option.icon}
+                  <span>{option.label}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Results count */}
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            {showFavoritesOnly && (
+              <div className="flex items-center gap-1 text-rose-400">
+                <Heart className="w-3 h-3 fill-current" />
+                <span>Favoritos</span>
+              </div>
+            )}
+            <span>{filteredAndSortedSignals.length} señales</span>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Signals List */}
       <main className="p-4 space-y-4">
@@ -168,12 +258,12 @@ export default function Signals() {
             <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-red-400">
+          <div className="text-center py-12 text-rose-400">
             <p>Error al cargar señales</p>
-            <p className="text-sm text-muted-foreground mt-1">{error}</p>
+            <p className="text-sm text-slate-500 mt-1">{error}</p>
           </div>
-        ) : filteredSignals.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
+        ) : filteredAndSortedSignals.length === 0 ? (
+          <div className="text-center py-12 text-slate-500">
             <p>{showFavoritesOnly ? 'No tienes señales favoritas' : 'No hay señales disponibles'}</p>
             {showFavoritesOnly && (
               <button
@@ -186,7 +276,7 @@ export default function Signals() {
           </div>
         ) : viewMode === 'compact' ? (
           <div className="space-y-2">
-            {filteredSignals.map((signal) => (
+            {filteredAndSortedSignals.map((signal) => (
               expandedSignalId === signal.id ? (
                 <div key={signal.id} className="animate-in fade-in duration-200">
                   <SignalCard 
@@ -213,7 +303,7 @@ export default function Signals() {
             ))}
           </div>
         ) : (
-          filteredSignals.map((signal) => (
+          filteredAndSortedSignals.map((signal) => (
             <SignalCard 
               key={signal.id} 
               signal={signal}
