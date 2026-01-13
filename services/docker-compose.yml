@@ -1,0 +1,72 @@
+# =============================================================================
+# Trading Signals Platform - Docker Compose
+# =============================================================================
+# Stack: FastAPI REST + FastAPI WS/SSE + Worker + PostgreSQL/TimescaleDB + Redis
+# Version: 1.0.0
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # DATABASE: TimescaleDB (PostgreSQL with time-series extensions)
+  # ---------------------------------------------------------------------------
+  db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: trading_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trading}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trading_secret_2024}
+      POSTGRES_DB: ${POSTGRES_DB:-trading_signals}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./infra/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trading} -d ${POSTGRES_DB:-trading_signals}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - trading_network
+
+  # ---------------------------------------------------------------------------
+  # CACHE: Redis for Pub/Sub and caching
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: trading_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - trading_network
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  timescale_data:
+    driver: local
+    name: trading_timescale_data
+  redis_data:
+    driver: local
+    name: trading_redis_data
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  trading_network:
+    driver: bridge
+    name: trading_network
