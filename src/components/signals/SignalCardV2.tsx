@@ -62,11 +62,64 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
   );
 }
 
+// Individual price row bar matching the reference design
+function PriceRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="relative rounded-md overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)',
+        border: '1px solid hsla(210, 100%, 50%, 0.15)',
+      }}
+    >
+      {/* Top cyan glow line */}
+      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)' }}
+      />
+      {/* Blue side glow */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }}
+      />
+      <div className="flex items-center justify-between px-4 py-2">
+        <span className="text-xs font-medium text-white/90">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-white">{value}</span>
+          <button className="text-cyan-400/50 hover:text-cyan-300 transition-colors">
+            <Copy className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Take Profit / Stop Loss section with 3 bars
+function TakeProfitStopLossSection() {
+  return (
+    <div
+      className="relative rounded-lg overflow-hidden p-3"
+      style={{
+        background: 'radial-gradient(ellipse at center, hsl(210, 60%, 10%) 0%, hsl(210, 80%, 6%) 100%)',
+        border: '1px solid hsla(200, 60%, 35%, 0.25)',
+      }}
+    >
+      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }}
+      />
+      <div className="space-y-2">
+        <PriceRow label="Take Profit 1" value="158.450" />
+        <PriceRow label="Take Profit 2" value="159.100" />
+        <PriceRow label="Stop Loss" value="156.320" />
+      </div>
+    </div>
+  );
+}
+
 // Placeholder section for the expanded card
 function ExpandedSection({ label }: { label: string }) {
   return (
     <div
-      className="rounded-lg overflow-hidden"
+      className="rounded-lg overflow-hidden relative"
       style={{
         background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
         border: '1px solid hsla(200, 60%, 35%, 0.25)',
@@ -78,7 +131,6 @@ function ExpandedSection({ label }: { label: string }) {
       <div className="px-4 py-3">
         <span className="text-[10px] text-cyan-300/50 uppercase tracking-widest">{label}</span>
       </div>
-      {/* Placeholder space for future content */}
       <div className="h-20" />
     </div>
   );
@@ -93,7 +145,6 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
   ];
 
   const expandedSections = [
-    'Take Profit / Stop Loss',
     'Indicadores Técnicos',
     'Análisis de Tendencia',
     'Niveles Clave',
@@ -251,6 +302,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
             <div className="h-[1px] mb-3 opacity-30"
               style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(200, 80%, 55%) 50%, transparent 100%)' }}
             />
+            <TakeProfitStopLossSection />
             {expandedSections.map((section) => (
               <ExpandedSection key={section} label={section} />
             ))}
