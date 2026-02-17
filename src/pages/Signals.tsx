@@ -254,68 +254,7 @@ export default function Signals() {
 
       {/* Signals List */}
       <main className="p-4 space-y-4">
-        {/* Preview: New card design V2 */}
         <SignalCardV2 />
-
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12 text-rose-400">
-            <p>Error al cargar señales</p>
-            <p className="text-sm text-slate-500 mt-1">{error}</p>
-          </div>
-        ) : filteredAndSortedSignals.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            <p>{showFavoritesOnly ? 'No tienes señales favoritas' : 'No hay señales disponibles'}</p>
-            {showFavoritesOnly && (
-              <button
-                onClick={() => setShowFavoritesOnly(false)}
-                className="mt-2 text-blue-400 hover:underline text-sm"
-              >
-                Ver todas las señales
-              </button>
-            )}
-          </div>
-        ) : viewMode === 'compact' ? (
-          <div className="space-y-2">
-            {filteredAndSortedSignals.map((signal) => (
-              expandedSignalId === signal.id ? (
-                <div key={signal.id} className="animate-in fade-in duration-200">
-                  <SignalCard 
-                    signal={signal}
-                    isFavorite={isFavorite(signal.id)}
-                    onToggleFavorite={toggleFavorite}
-                  />
-                  <button
-                    onClick={() => setExpandedSignalId(null)}
-                    className="w-full mt-1 py-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
-                  >
-                    Cerrar vista expandida
-                  </button>
-                </div>
-              ) : (
-                <SignalCardCompact
-                  key={signal.id}
-                  signal={signal}
-                  isFavorite={isFavorite(signal.id)}
-                  onToggleFavorite={toggleFavorite}
-                  onExpand={() => setExpandedSignalId(signal.id)}
-                />
-              )
-            ))}
-          </div>
-        ) : (
-          filteredAndSortedSignals.map((signal) => (
-            <SignalCard 
-              key={signal.id} 
-              signal={signal}
-              isFavorite={isFavorite(signal.id)}
-              onToggleFavorite={toggleFavorite}
-            />
-          ))
-        )}
       </main>
 
       {/* Drawer */}
