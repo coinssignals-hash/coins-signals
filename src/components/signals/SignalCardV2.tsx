@@ -81,11 +81,11 @@ function PriceRow({ label, value }: { label: string; value: string }) {
         style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }}
       />
       <div className="flex items-center justify-between px-4 py-2.5">
-        <span className="text-xs font-medium text-white/90">{label}</span>
+        <span className="text-sm font-semibold text-white">{label}</span>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-white">{value}</span>
-          <button className="text-cyan-400/50 hover:text-cyan-300 transition-colors">
-            <Copy className="w-3.5 h-3.5" />
+          <span className="text-lg font-bold text-white">{value}</span>
+          <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
+            <Copy className="w-4 h-4" />
           </button>
         </div>
       </div>
