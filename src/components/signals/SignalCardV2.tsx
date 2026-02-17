@@ -80,7 +80,7 @@ function PriceRow({ label, value }: { label: string; value: string }) {
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }}
       />
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center justify-between px-4 py-2.5">
         <span className="text-xs font-medium text-white/90">{label}</span>
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-white">{value}</span>
@@ -96,21 +96,10 @@ function PriceRow({ label, value }: { label: string; value: string }) {
 // Take Profit / Stop Loss section with 3 bars
 function TakeProfitStopLossSection() {
   return (
-    <div
-      className="relative rounded-lg overflow-hidden p-3"
-      style={{
-        background: 'radial-gradient(ellipse at center, hsl(210, 60%, 10%) 0%, hsl(210, 80%, 6%) 100%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.25)',
-      }}
-    >
-      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }}
-      />
-      <div className="space-y-2">
-        <PriceRow label="Take Profit 1" value="158.450" />
-        <PriceRow label="Take Profit 2" value="159.100" />
-        <PriceRow label="Stop Loss" value="156.320" />
-      </div>
+    <div className="space-y-2">
+      <PriceRow label="Take Profit 1" value="158.450" />
+      <PriceRow label="Take Profit 2" value="159.100" />
+      <PriceRow label="Stop Loss" value="156.320" />
     </div>
   );
 }
