@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus, ChevronDown } from 'lucide-react';
 import bullBg from '@/assets/bull-card-bg.svg';
 import currencyIcon from '@/assets/jpy-usd-icon.svg';
 
@@ -61,10 +62,43 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
   );
 }
 
+// Placeholder section for the expanded card
+function ExpandedSection({ label }: { label: string }) {
+  return (
+    <div
+      className="rounded-lg overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
+        border: '1px solid hsla(200, 60%, 35%, 0.25)',
+      }}
+    >
+      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }}
+      />
+      <div className="px-4 py-3">
+        <span className="text-[10px] text-cyan-300/50 uppercase tracking-widest">{label}</span>
+      </div>
+      {/* Placeholder space for future content */}
+      <div className="h-20" />
+    </div>
+  );
+}
+
 export function SignalCardV2({ className }: SignalCardV2Props) {
+  const [expanded, setExpanded] = useState(false);
+
   const impactData: CurrencyImpact[] = [
     { currency: 'USD', positive: 62, negative: 23, neutral: 15 },
     { currency: 'JPY', positive: 28, negative: 51, neutral: 21 },
+  ];
+
+  const expandedSections = [
+    'Take Profit / Stop Loss',
+    'Indicadores Técnicos',
+    'Análisis de Tendencia',
+    'Niveles Clave',
+    'Sesión de Mercado',
+    'Noticias Relacionadas',
   ];
 
   return (
@@ -201,6 +235,27 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         <div className="mx-3 mb-3 h-[3px] rounded-full"
           style={{ background: 'linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)' }}
         />
+
+        {/* Expand toggle button */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors"
+        >
+          <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", expanded && "rotate-180")} />
+        </button>
+
+        {/* Expanded content */}
+        {expanded && (
+          <div className="relative px-3 pb-4 space-y-2 animate-in slide-in-from-top-2 duration-300">
+            {/* Separator */}
+            <div className="h-[1px] mb-3 opacity-30"
+              style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(200, 80%, 55%) 50%, transparent 100%)' }}
+            />
+            {expandedSections.map((section) => (
+              <ExpandedSection key={section} label={section} />
+            ))}
+          </div>
+        )}
 
         {/* Bottom glow */}
         <div className="absolute bottom-0 left-[10%] right-[10%] h-[1px]"
