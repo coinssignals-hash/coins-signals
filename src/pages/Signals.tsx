@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target } from 'lucide-react';
 import { SignalCard } from '@/components/signals/SignalCard';
+import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -253,6 +254,11 @@ export default function Signals() {
 
       {/* Signals List */}
       <main className="p-4 space-y-4">
+        {/* Preview: New card design V2 - empty background */}
+        <SignalCardV2 />
+        <SignalCardV2 />
+        <SignalCardV2 />
+
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
