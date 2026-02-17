@@ -254,9 +254,7 @@ export default function Signals() {
 
       {/* Signals List */}
       <main className="p-4 space-y-4">
-        {/* Preview: New card design V2 - empty background */}
-        <SignalCardV2 />
-        <SignalCardV2 />
+        {/* Preview: New card design V2 */}
         <SignalCardV2 />
 
         {loading ? (
