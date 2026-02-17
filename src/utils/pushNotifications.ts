@@ -54,7 +54,7 @@ export async function subscribeToPush(registration: ServiceWorkerRegistration): 
 
   try {
     const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-    const subscription = await registration.pushManager.subscribe({
+    const subscription = await (registration as any).pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: applicationServerKey as BufferSource,
     });
@@ -86,7 +86,7 @@ async function saveSubscription(subscription: PushSubscription): Promise<void> {
 
 export async function unsubscribeFromPush(): Promise<void> {
   const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.getSubscription();
+  const subscription = await (registration as any).pushManager.getSubscription();
 
   if (subscription) {
     await subscription.unsubscribe();
@@ -100,7 +100,7 @@ export async function getExistingSubscription(): Promise<PushSubscription | null
   }
 
   const registration = await navigator.serviceWorker.ready;
-  return registration.pushManager.getSubscription();
+  return (registration as any).pushManager.getSubscription();
 }
 
 export function isPushSupported(): boolean {
