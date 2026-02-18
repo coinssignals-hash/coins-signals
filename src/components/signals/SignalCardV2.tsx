@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus, ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import bullBg from '@/assets/bull-card-bg.svg';
+import chartSignal from '@/assets/chart-signal.jpg';
 
 interface SignalCardV2Props {
   className?: string;
