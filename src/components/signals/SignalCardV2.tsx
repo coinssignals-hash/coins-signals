@@ -400,8 +400,8 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         {/* TP / SL bars - always visible */}
         <TakeProfitStopLossSection />
 
-        {/* Candlestick chart with zoom */}
-        <CandlestickChart entryPrice={157.210} takeProfit={156.500} stopLoss={158.100} />
+        {/* Zoomable chart image */}
+        <ZoomableChart />
 
         {/* Bottom green BUY accent line */}
         <div className="mx-3 mb-3 h-[3px] rounded-full"
