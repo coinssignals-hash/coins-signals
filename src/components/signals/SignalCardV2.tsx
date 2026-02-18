@@ -398,87 +398,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           </div>
         </div>
 
-        {/* TP / SL bars - always visible */}
-        <TakeProfitStopLossSection />
-
-        {/* Zoomable chart image */}
-        <ZoomableChart />
-
-        {/* Sentimiento del Mercado + Informacion + Estrategia */}
-        <div className="mx-3 mb-3 flex gap-2">
-          {/* Izquierda: gráfico sentimiento */}
-          <div className="flex-1 rounded-lg overflow-hidden"
-            style={{
-              border: '1px solid hsla(200, 60%, 35%, 0.3)',
-              background: 'hsl(215, 100%, 4%)',
-            }}>
-            <img
-              src={marketSentimentChart}
-              alt="Sentimiento del Mercado"
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
-          </div>
-
-          {/* Derecha: Informacion + Estrategia */}
-          <div className="flex-1 flex flex-col gap-2">
-            {/* Informacion */}
-            <div className="rounded-lg p-2.5 relative overflow-hidden"
-              style={{
-                background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-                border: '1px solid hsla(200, 60%, 35%, 0.3)'
-              }}>
-              <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-              <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
-              <div className="space-y-1">
-                {[
-                  { label: 'Resistencia', value: '152.350', color: 'hsl(0, 70%, 55%)' },
-                  { label: 'Soporte', value: '152.300', color: 'hsl(135, 70%, 50%)' },
-                  { label: 'Mayor Del Dia', value: '152.366', color: 'hsl(0, 0%, 85%)' },
-                  { label: 'Menos Del Dia', value: '152.280', color: 'hsl(0, 0%, 85%)' },
-                  { label: 'Pips', value: '+0.135', color: 'hsl(135, 70%, 50%)' },
-                ].map(row => (
-                  <div key={row.label} className="flex justify-between items-center">
-                    <span className="text-[9px] text-cyan-300/60">{row.label}</span>
-                    <span className="text-[9px] font-bold" style={{ color: row.color }}>{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Estrategia */}
-            <div className="rounded-lg p-2.5 relative overflow-hidden"
-              style={{
-                background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-                border: '1px solid hsla(200, 60%, 35%, 0.3)'
-              }}>
-              <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-              <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Estrategia</p>
-              <div className="space-y-1">
-                {[
-                  { label: 'Duracion', value: 'Intradia' },
-                  { label: 'Enfoque', value: 'Smart Money' },
-                  { label: 'Velas Comf', value: 'Pin Bar' },
-                  { label: 'Mejor Session', value: 'New York' },
-                  { label: 'Mejor Hora', value: '10:00-14:00' },
-                ].map(row => (
-                  <div key={row.label} className="flex justify-between items-center">
-                    <span className="text-[9px] text-cyan-300/60">{row.label}</span>
-                    <span className="text-[9px] font-bold text-cyan-200">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom green BUY accent line */}
-        <div className="mx-3 mb-3 h-[3px] rounded-full"
-        style={{ background: 'linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)' }} />
-
-        {/* Expand toggle button */}
+        {/* Expand toggle button - justo debajo de Precio de Entrada */}
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
@@ -486,12 +406,85 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         </button>
 
         {/* Expanded content */}
-        {expanded &&
-        <div className="relative px-3 pb-4 space-y-2 animate-in slide-in-from-top-2 duration-300">
-            <div className="h-[1px] mb-3 opacity-30"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(200, 80%, 55%) 50%, transparent 100%)' }} />
+        {expanded && (
+          <div className="animate-in slide-in-from-top-2 duration-300">
+            {/* TP / SL bars */}
+            <TakeProfitStopLossSection />
+
+            {/* Zoomable chart image */}
+            <ZoomableChart />
+
+            {/* Sentimiento del Mercado + Informacion + Estrategia */}
+            <div className="mx-3 mb-3 flex gap-2">
+              <div className="flex-1 rounded-lg overflow-hidden"
+                style={{
+                  border: '1px solid hsla(200, 60%, 35%, 0.3)',
+                  background: 'hsl(215, 100%, 4%)',
+                }}>
+                <img
+                  src={marketSentimentChart}
+                  alt="Sentimiento del Mercado"
+                  className="w-full h-full object-cover"
+                  draggable={false}
+                />
+              </div>
+
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="rounded-lg p-2.5 relative overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
+                    border: '1px solid hsla(200, 60%, 35%, 0.3)'
+                  }}>
+                  <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                    style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+                  <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
+                  <div className="space-y-1">
+                    {[
+                      { label: 'Resistencia', value: '152.350', color: 'hsl(0, 70%, 55%)' },
+                      { label: 'Soporte', value: '152.300', color: 'hsl(135, 70%, 50%)' },
+                      { label: 'Mayor Del Dia', value: '152.366', color: 'hsl(0, 0%, 85%)' },
+                      { label: 'Menos Del Dia', value: '152.280', color: 'hsl(0, 0%, 85%)' },
+                      { label: 'Pips', value: '+0.135', color: 'hsl(135, 70%, 50%)' },
+                    ].map(row => (
+                      <div key={row.label} className="flex justify-between items-center">
+                        <span className="text-[9px] text-cyan-300/60">{row.label}</span>
+                        <span className="text-[9px] font-bold" style={{ color: row.color }}>{row.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-lg p-2.5 relative overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
+                    border: '1px solid hsla(200, 60%, 35%, 0.3)'
+                  }}>
+                  <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                    style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+                  <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Estrategia</p>
+                  <div className="space-y-1">
+                    {[
+                      { label: 'Duracion', value: 'Intradia' },
+                      { label: 'Enfoque', value: 'Smart Money' },
+                      { label: 'Velas Comf', value: 'Pin Bar' },
+                      { label: 'Mejor Session', value: 'New York' },
+                      { label: 'Mejor Hora', value: '10:00-14:00' },
+                    ].map(row => (
+                      <div key={row.label} className="flex justify-between items-center">
+                        <span className="text-[9px] text-cyan-300/60">{row.label}</span>
+                        <span className="text-[9px] font-bold text-cyan-200">{row.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom green BUY accent line */}
+            <div className="mx-3 mb-3 h-[3px] rounded-full"
+              style={{ background: 'linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)' }} />
           </div>
-        }
+        )}
 
         {/* Bottom glow */}
         <div className="absolute bottom-0 left-[10%] right-[10%] h-[1px]"
