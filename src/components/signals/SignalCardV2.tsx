@@ -81,9 +81,9 @@ function PriceRow({ label, value }: {label: string;value: string;}) {
       style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }} />
 
       <div className="flex items-center justify-between px-4 py-2.5">
-        <span className="text-sm font-semibold text-white">{label}</span>
+        <span className="font-semibold text-white text-2xl">{label}</span>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-white">{value}</span>
+          <span className="font-bold text-white text-2xl">{value}</span>
           <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
             <Copy className="w-4 h-4" />
           </button>
@@ -243,7 +243,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                 <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
                 <div className="flex items-center gap-1">
                   {badge.icon}
-                  <span className={cn("text-lg font-bold", badge.valueClass)}>{badge.value}</span>
+                  <span className={cn("font-bold text-2xl", badge.valueClass)}>{badge.value}</span>
                 </div>
               </div>
             )}
@@ -271,9 +271,9 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
 
           <div className="flex items-center justify-between px-4 py-2.5">
-            <span className="text-sm font-semibold text-white">Precio de Entrada</span>
+            <span className="font-semibold text-white text-2xl">Precio de Entrada</span>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-white">157.210</span>
+              <span className="font-bold text-white text-2xl">157.210</span>
               <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
                 <Copy className="w-4 h-4" />
               </button>
