@@ -176,7 +176,17 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         {/* Upper section - currency pair */}
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={currencyIcon} alt="USD-JPY" className="w-14 h-14 drop-shadow-lg object-scale-down" />
+            {/* Overlapping circular flags like reference */}
+            <div className="relative w-20 h-16 flex-shrink-0">
+              {/* USD flag - left/back */}
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
+                <img src="https://flagcdn.com/w160/us.png" alt="USD" className="w-full h-full object-cover" />
+              </div>
+              {/* JPY flag - right/front */}
+              <div className="absolute left-7 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
+                <img src="https://flagcdn.com/w160/jp.png" alt="JPY" className="w-full h-full object-cover" />
+              </div>
+            </div>
             <span className="text-3xl font-extrabold text-white tracking-wide">USD-JPY</span>
           </div>
           <div className="flex flex-col items-center gap-1">
