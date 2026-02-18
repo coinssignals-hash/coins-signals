@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus, ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import bullBg from '@/assets/bull-card-bg.svg';
 import chartSignal from '@/assets/chart-signal.jpg';
+import marketSentimentChart from '@/assets/market-sentiment-chart.jpg';
 
 interface SignalCardV2Props {
   className?: string;
@@ -402,6 +403,23 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
         {/* Zoomable chart image */}
         <ZoomableChart />
+
+        {/* Sentimiento del Mercado */}
+        <div className="mx-3 mb-3">
+          <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">Sentimiento del Mercado</p>
+          <div className="rounded-lg overflow-hidden"
+            style={{
+              border: '1px solid hsla(200, 60%, 35%, 0.3)',
+              background: 'hsl(215, 100%, 4%)',
+            }}>
+            <img
+              src={marketSentimentChart}
+              alt="Sentimiento del Mercado"
+              className="w-full object-contain"
+              draggable={false}
+            />
+          </div>
+        </div>
 
         {/* Bottom green BUY accent line */}
         <div className="mx-3 mb-3 h-[3px] rounded-full"
