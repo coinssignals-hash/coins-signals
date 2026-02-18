@@ -371,14 +371,6 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           </div>
         </div>
 
-        {/* Per-currency impact scoring */}
-        <div className="relative px-3 pb-3">
-          <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">Impacto por Divisa</p>
-          <div className="flex gap-2">
-            {impactData.map((d) => <CurrencyImpactPanel key={d.currency} data={d} />)}
-          </div>
-        </div>
-
         {/* Entry price bar */}
         <div className="relative mx-3 mb-3 rounded-lg overflow-hidden"
         style={{
@@ -398,7 +390,15 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           </div>
         </div>
 
-        {/* Expand toggle button - justo debajo de Precio de Entrada */}
+        {/* Per-currency impact scoring */}
+        <div className="relative px-3 pb-3">
+          <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">Impacto por Divisa</p>
+          <div className="flex gap-2">
+            {impactData.map((d) => <CurrencyImpactPanel key={d.currency} data={d} />)}
+          </div>
+        </div>
+
+        {/* Expand toggle button - justo debajo de Impacto por Divisa */}
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
