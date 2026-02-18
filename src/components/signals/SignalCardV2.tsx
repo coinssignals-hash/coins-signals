@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus, ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import bullBg from '@/assets/bull-card-bg.svg';
+import chartSignal from '@/assets/chart-signal.jpg';
 
 interface SignalCardV2Props {
   className?: string;
@@ -14,216 +15,68 @@ interface CurrencyImpact {
   neutral: number;
 }
 
-// --- Candlestick Chart with zoom/pan ---
-interface Candle {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
-function generateMockCandles(base: number, count: number): Candle[] {
-  const candles: Candle[] = [];
-  let price = base;
-  const now = new Date('2025-10-07T01:00:00');
-  for (let i = 0; i < count; i++) {
-    const change = (Math.random() - 0.48) * 0.15;
-    const open = price;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * 0.08;
-    const low = Math.min(open, close) - Math.random() * 0.08;
-    const d = new Date(now.getTime() + i * 60 * 60 * 1000);
-    const label = `${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:00`;
-    candles.push({ time: label, open, high, low, close, volume: Math.random() * 100 + 20 });
-    price = close;
-  }
-  return candles;
-}
-
-function CandlestickChart({ entryPrice, takeProfit, stopLoss }: {entryPrice: number;takeProfit: number;stopLoss: number;}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+// --- Zoomable Image Chart ---
+function ZoomableChart() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const candles = useRef(generateMockCandles(152.35, 120));
-  const zoom = useRef(3);
-  const offsetX = useRef(0);
+  const scale = useRef(1);
+  const posX = useRef(0);
+  const posY = useRef(0);
   const isDragging = useRef(false);
   const lastX = useRef(0);
+  const lastY = useRef(0);
   const lastPinchDist = useRef<number | null>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
 
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  const applyTransform = useCallback(() => {
+    if (!imgRef.current) return;
+    imgRef.current.style.transform = `translate(${posX.current}px, ${posY.current}px) scale(${scale.current})`;
+  }, []);
 
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
+  const clampPosition = useCallback(() => {
+    const container = containerRef.current;
+    const img = imgRef.current;
+    if (!container || !img) return;
+    const cW = container.clientWidth;
+    const cH = container.clientHeight;
+    const maxX = Math.max(0, (cW * scale.current - cW) / 2);
+    const maxY = Math.max(0, (cH * scale.current - cH) / 2);
+    posX.current = Math.max(-maxX, Math.min(maxX, posX.current));
+    posY.current = Math.max(-maxY, Math.min(maxY, posY.current));
+  }, []);
 
-    const W = rect.width;
-    const H = rect.height;
-    const padL = 4;
-    const padR = 52;
-    const padT = 10;
-    const padB = 28;
-    const chartW = W - padL - padR;
-    const chartH = H - padT - padB;
-
-    // Background
-    ctx.fillStyle = 'hsl(215, 100%, 4%)';
-    ctx.fillRect(0, 0, W, H);
-
-    const data = candles.current;
-    const candleWidth = Math.max(2, chartW / data.length * zoom.current);
-    const totalWidth = candleWidth * data.length;
-    const maxOffset = Math.max(0, totalWidth - chartW);
-    offsetX.current = Math.max(-maxOffset, Math.min(0, offsetX.current));
-
-    const startIdx = Math.max(0, Math.floor(-offsetX.current / candleWidth));
-    const endIdx = Math.min(data.length - 1, startIdx + Math.ceil(chartW / candleWidth) + 1);
-    const visible = data.slice(startIdx, endIdx + 1);
-
-    if (visible.length === 0) return;
-
-    const allPrices = visible.flatMap((c) => [c.high, c.low]);
-    const minPrice = Math.min(...allPrices, stopLoss * 0.999);
-    const maxPrice = Math.max(...allPrices, takeProfit * 1.001);
-    const priceRange = maxPrice - minPrice || 0.001;
-
-    const toX = (i: number) => padL + (i - startIdx) * candleWidth + offsetX.current + startIdx * candleWidth;
-    const toY = (p: number) => padT + chartH - (p - minPrice) / priceRange * chartH;
-
-    // Grid lines
-    const gridCount = 5;
-    ctx.setLineDash([2, 4]);
-    ctx.strokeStyle = 'hsla(200, 60%, 40%, 0.2)';
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= gridCount; i++) {
-      const y = padT + i / gridCount * chartH;
-      ctx.beginPath();
-      ctx.moveTo(padL, y);
-      ctx.lineTo(W - padR, y);
-      ctx.stroke();
-      const price = maxPrice - i / gridCount * priceRange;
-      ctx.fillStyle = 'hsla(200, 80%, 70%, 0.7)';
-      ctx.font = `${8 * dpr / dpr}px monospace`;
-      ctx.textAlign = 'left';
-      ctx.fillText(price.toFixed(3), W - padR + 3, y + 3);
-    }
-    ctx.setLineDash([]);
-
-    // Reference lines: TP, Entry, SL
-    const refLines = [
-    { price: takeProfit, color: 'hsl(135, 80%, 50%)', label: 'Soporte' },
-    { price: entryPrice, color: 'hsl(210, 100%, 60%)', label: '' },
-    { price: stopLoss, color: 'hsl(0, 80%, 55%)', label: 'Resistencia' }];
-
-    refLines.forEach(({ price, color, label }) => {
-      const y = toY(price);
-      ctx.beginPath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
-      ctx.moveTo(padL, y);
-      ctx.lineTo(W - padR, y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      if (label) {
-        ctx.fillStyle = color;
-        ctx.font = `bold 8px sans-serif`;
-        ctx.textAlign = 'right';
-        ctx.fillText(label, W - padR - 2, y - 2);
-      }
-    });
-
-    // Candles
-    visible.forEach((c, idx) => {
-      const realIdx = startIdx + idx;
-      const x = padL + realIdx * candleWidth + offsetX.current;
-      if (x + candleWidth < padL || x > W - padR) return;
-
-      const isUp = c.close >= c.open;
-      const color = isUp ? 'hsl(135, 70%, 45%)' : 'hsl(0, 70%, 50%)';
-      const cx = x + candleWidth / 2;
-      const bodyTop = toY(Math.max(c.open, c.close));
-      const bodyBot = toY(Math.min(c.open, c.close));
-      const bodyH = Math.max(1, bodyBot - bodyTop);
-      const wickW = Math.max(0.5, candleWidth * 0.08);
-
-      // Wick
-      ctx.fillStyle = color;
-      ctx.fillRect(cx - wickW / 2, toY(c.high), wickW, toY(c.low) - toY(c.high));
-      // Body
-      const bodyW = Math.max(1, candleWidth * 0.65);
-      ctx.fillStyle = color;
-      ctx.fillRect(cx - bodyW / 2, bodyTop, bodyW, bodyH);
-
-      // Volume bar at bottom
-      const maxVol = Math.max(...visible.map((v) => v.volume));
-      const volH = c.volume / maxVol * (padB * 0.5);
-      ctx.fillStyle = isUp ? 'hsla(135, 70%, 45%, 0.4)' : 'hsla(0, 70%, 50%, 0.4)';
-      ctx.fillRect(cx - bodyW / 2, H - padB, bodyW, volH);
-    });
-
-    // Time labels
-    const labelStep = Math.max(1, Math.floor(12 / zoom.current));
-    ctx.fillStyle = 'hsla(200, 60%, 70%, 0.6)';
-    ctx.font = '8px monospace';
-    ctx.textAlign = 'center';
-    visible.forEach((c, idx) => {
-      if (idx % labelStep !== 0) return;
-      const realIdx = startIdx + idx;
-      const x = padL + realIdx * candleWidth + candleWidth / 2 + offsetX.current;
-      if (x < padL || x > W - padR) return;
-      ctx.fillText(c.time, x, H - padB + 10);
-    });
-
-    // Zoom indicator
-    ctx.fillStyle = 'hsla(200, 80%, 70%, 0.5)';
-    ctx.font = '9px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${zoom.current.toFixed(1)}x`, W - padR - 4, padT + 12);
-
-  }, [entryPrice, takeProfit, stopLoss]);
-
-  useEffect(() => {
-    draw();
-  }, [draw]);
-
-  // Mouse wheel zoom
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const factor = e.deltaY > 0 ? 0.85 : 1.15;
-    zoom.current = Math.max(0.5, Math.min(8, zoom.current * factor));
-    draw();
-  }, [draw]);
+    scale.current = Math.max(1, Math.min(5, scale.current * factor));
+    clampPosition();
+    applyTransform();
+  }, [applyTransform, clampPosition]);
 
-  // Mouse drag
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     lastX.current = e.clientX;
+    lastY.current = e.clientY;
   };
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging.current) return;
-    offsetX.current += e.clientX - lastX.current;
+    posX.current += e.clientX - lastX.current;
+    posY.current += e.clientY - lastY.current;
     lastX.current = e.clientX;
-    draw();
+    lastY.current = e.clientY;
+    clampPosition();
+    applyTransform();
   };
-  const handleMouseUp = () => {isDragging.current = false;};
+  const handleMouseUp = () => { isDragging.current = false; };
 
-  // Touch pinch/pan
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       lastPinchDist.current = Math.sqrt(dx * dx + dy * dy);
-    } else if (e.touches.length === 1) {
+    } else {
       isDragging.current = true;
       lastX.current = e.touches[0].clientX;
+      lastY.current = e.touches[0].clientY;
     }
   };
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -232,14 +85,17 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: {entryPrice: num
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const factor = dist / lastPinchDist.current;
-      zoom.current = Math.max(0.5, Math.min(8, zoom.current * factor));
+      scale.current = Math.max(1, Math.min(5, scale.current * (dist / lastPinchDist.current)));
       lastPinchDist.current = dist;
-      draw();
+      clampPosition();
+      applyTransform();
     } else if (e.touches.length === 1 && isDragging.current) {
-      offsetX.current += e.touches[0].clientX - lastX.current;
+      posX.current += e.touches[0].clientX - lastX.current;
+      posY.current += e.touches[0].clientY - lastY.current;
       lastX.current = e.touches[0].clientX;
-      draw();
+      lastY.current = e.touches[0].clientY;
+      clampPosition();
+      applyTransform();
     }
   };
   const handleTouchEnd = () => {
@@ -247,71 +103,72 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: {entryPrice: num
     lastPinchDist.current = null;
   };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.addEventListener('wheel', handleWheel, { passive: false });
-    return () => canvas.removeEventListener('wheel', handleWheel);
+  const attachWheel = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    node.addEventListener('wheel', handleWheel, { passive: false });
   }, [handleWheel]);
 
-  const resetZoom = () => {
-    zoom.current = 1;
-    offsetX.current = 0;
-    draw();
-  };
+  const zoomIn = () => { scale.current = Math.min(5, scale.current * 1.3); clampPosition(); applyTransform(); };
+  const zoomOut = () => { scale.current = Math.max(1, scale.current * 0.77); clampPosition(); applyTransform(); };
+  const reset = () => { scale.current = 1; posX.current = 0; posY.current = 0; applyTransform(); };
 
   return (
     <div
-      ref={containerRef}
-      className="relative rounded-lg overflow-hidden mx-3 mb-3"
+      ref={attachWheel}
+      className="relative rounded-lg overflow-hidden mx-3 mb-3 cursor-grab active:cursor-grabbing select-none"
       style={{
         background: 'hsl(215, 100%, 4%)',
         border: '1px solid hsla(200, 60%, 35%, 0.3)',
-        height: 200
-      }}>
-
+        height: 200,
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
 
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full cursor-crosshair select-none"
-        style={{ display: 'block', touchAction: 'none' }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd} />
-
+      <div
+        ref={imgRef}
+        className="w-full h-full origin-center transition-none"
+        style={{ willChange: 'transform' }}
+      >
+        <img
+          src={chartSignal}
+          alt="Signal Chart"
+          className="w-full h-full object-cover"
+          draggable={false}
+        />
+      </div>
 
       {/* Controls */}
-      <div className="absolute top-2 right-2 flex flex-col gap-1">
+      <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
         <button
-          onClick={() => {zoom.current = Math.min(8, zoom.current * 1.3);draw();}}
+          onClick={zoomIn}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
           style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
-
           <ZoomIn className="w-3 h-3" />
         </button>
         <button
-          onClick={() => {zoom.current = Math.max(0.5, zoom.current * 0.77);draw();}}
+          onClick={zoomOut}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
           style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
-
           <ZoomOut className="w-3 h-3" />
         </button>
         <button
-          onClick={resetZoom}
+          onClick={reset}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
           style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
-
           <RotateCcw className="w-3 h-3" />
         </button>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
 // --- Impact Bar ---
@@ -543,8 +400,8 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         {/* TP / SL bars - always visible */}
         <TakeProfitStopLossSection />
 
-        {/* Candlestick chart with zoom */}
-        <CandlestickChart entryPrice={157.210} takeProfit={156.500} stopLoss={158.100} />
+        {/* Zoomable chart image */}
+        <ZoomableChart />
 
         {/* Bottom green BUY accent line */}
         <div className="mx-3 mb-3 h-[3px] rounded-full"
