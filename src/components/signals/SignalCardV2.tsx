@@ -380,7 +380,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
       <div className="flex items-center justify-between px-4 py-2.5">
         <span className="font-semibold text-white text-sm w-24 flex-shrink-0">{label}</span>
         <div className="flex items-center gap-3 flex-1 justify-center">
-          <span className="text-xs font-bold" style={{ color: accentColor }}>{pips} Pips</span>
+          <span className="text-xs font-bold text-primary" style={{ color: accentColor }}>{pips} Pips</span>
           <span className="text-xs font-bold" style={{ color: accentColor }}>{percent} %</span>
         </div>
         <div className="flex items-center gap-2">
