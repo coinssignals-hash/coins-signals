@@ -35,14 +35,14 @@ function generateMockCandles(base: number, count: number): Candle[] {
     const high = Math.max(open, close) + Math.random() * 0.08;
     const low = Math.min(open, close) - Math.random() * 0.08;
     const d = new Date(now.getTime() + i * 60 * 60 * 1000);
-    const label = `${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:00`;
+    const label = `${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:00`;
     candles.push({ time: label, open, high, low, close, volume: Math.random() * 100 + 20 });
     price = close;
   }
   return candles;
 }
 
-function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: number; takeProfit: number; stopLoss: number }) {
+function CandlestickChart({ entryPrice, takeProfit, stopLoss }: {entryPrice: number;takeProfit: number;stopLoss: number;}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const candles = useRef(generateMockCandles(152.35, 120));
@@ -78,7 +78,7 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
     ctx.fillRect(0, 0, W, H);
 
     const data = candles.current;
-    const candleWidth = Math.max(2, (chartW / data.length) * zoom.current);
+    const candleWidth = Math.max(2, chartW / data.length * zoom.current);
     const totalWidth = candleWidth * data.length;
     const maxOffset = Math.max(0, totalWidth - chartW);
     offsetX.current = Math.max(-maxOffset, Math.min(0, offsetX.current));
@@ -89,13 +89,13 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
 
     if (visible.length === 0) return;
 
-    const allPrices = visible.flatMap(c => [c.high, c.low]);
+    const allPrices = visible.flatMap((c) => [c.high, c.low]);
     const minPrice = Math.min(...allPrices, stopLoss * 0.999);
     const maxPrice = Math.max(...allPrices, takeProfit * 1.001);
     const priceRange = maxPrice - minPrice || 0.001;
 
-    const toX = (i: number) => padL + (i - startIdx) * candleWidth + offsetX.current + (startIdx * candleWidth);
-    const toY = (p: number) => padT + chartH - ((p - minPrice) / priceRange) * chartH;
+    const toX = (i: number) => padL + (i - startIdx) * candleWidth + offsetX.current + startIdx * candleWidth;
+    const toY = (p: number) => padT + chartH - (p - minPrice) / priceRange * chartH;
 
     // Grid lines
     const gridCount = 5;
@@ -103,12 +103,12 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
     ctx.strokeStyle = 'hsla(200, 60%, 40%, 0.2)';
     ctx.lineWidth = 0.5;
     for (let i = 0; i <= gridCount; i++) {
-      const y = padT + (i / gridCount) * chartH;
+      const y = padT + i / gridCount * chartH;
       ctx.beginPath();
       ctx.moveTo(padL, y);
       ctx.lineTo(W - padR, y);
       ctx.stroke();
-      const price = maxPrice - (i / gridCount) * priceRange;
+      const price = maxPrice - i / gridCount * priceRange;
       ctx.fillStyle = 'hsla(200, 80%, 70%, 0.7)';
       ctx.font = `${8 * dpr / dpr}px monospace`;
       ctx.textAlign = 'left';
@@ -118,10 +118,10 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
 
     // Reference lines: TP, Entry, SL
     const refLines = [
-      { price: takeProfit, color: 'hsl(135, 80%, 50%)', label: 'Soporte' },
-      { price: entryPrice, color: 'hsl(210, 100%, 60%)', label: '' },
-      { price: stopLoss, color: 'hsl(0, 80%, 55%)', label: 'Resistencia' },
-    ];
+    { price: takeProfit, color: 'hsl(135, 80%, 50%)', label: 'Soporte' },
+    { price: entryPrice, color: 'hsl(210, 100%, 60%)', label: '' },
+    { price: stopLoss, color: 'hsl(0, 80%, 55%)', label: 'Resistencia' }];
+
     refLines.forEach(({ price, color, label }) => {
       const y = toY(price);
       ctx.beginPath();
@@ -163,8 +163,8 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
       ctx.fillRect(cx - bodyW / 2, bodyTop, bodyW, bodyH);
 
       // Volume bar at bottom
-      const maxVol = Math.max(...visible.map(v => v.volume));
-      const volH = (c.volume / maxVol) * (padB * 0.5);
+      const maxVol = Math.max(...visible.map((v) => v.volume));
+      const volH = c.volume / maxVol * (padB * 0.5);
       ctx.fillStyle = isUp ? 'hsla(135, 70%, 45%, 0.4)' : 'hsla(0, 70%, 50%, 0.4)';
       ctx.fillRect(cx - bodyW / 2, H - padB, bodyW, volH);
     });
@@ -213,7 +213,7 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
     lastX.current = e.clientX;
     draw();
   };
-  const handleMouseUp = () => { isDragging.current = false; };
+  const handleMouseUp = () => {isDragging.current = false;};
 
   // Touch pinch/pan
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -267,11 +267,11 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
       style={{
         background: 'hsl(215, 100%, 4%)',
         border: '1px solid hsla(200, 60%, 35%, 0.3)',
-        height: 200,
-      }}
-    >
+        height: 200
+      }}>
+
       <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+      style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
 
       <canvas
         ref={canvasRef}
@@ -283,39 +283,39 @@ function CandlestickChart({ entryPrice, takeProfit, stopLoss }: { entryPrice: nu
         onMouseLeave={handleMouseUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      />
+        onTouchEnd={handleTouchEnd} />
+
 
       {/* Controls */}
       <div className="absolute top-2 right-2 flex flex-col gap-1">
         <button
-          onClick={() => { zoom.current = Math.min(8, zoom.current * 1.3); draw(); }}
+          onClick={() => {zoom.current = Math.min(8, zoom.current * 1.3);draw();}}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
-          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}
-        >
+          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
+
           <ZoomIn className="w-3 h-3" />
         </button>
         <button
-          onClick={() => { zoom.current = Math.max(0.5, zoom.current * 0.77); draw(); }}
+          onClick={() => {zoom.current = Math.max(0.5, zoom.current * 0.77);draw();}}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
-          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}
-        >
+          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
+
           <ZoomOut className="w-3 h-3" />
         </button>
         <button
           onClick={resetZoom}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
-          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}
-        >
+          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
+
           <RotateCcw className="w-3 h-3" />
         </button>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // --- Impact Bar ---
-function ImpactBar({ label, value, color }: { label: string; value: number; color: string }) {
+function ImpactBar({ label, value, color }: {label: string;value: number;color: string;}) {
   return (
     <div className="flex items-center gap-2">
       <span className="text-[10px] w-16 text-right" style={{ color }}>{label}</span>
@@ -323,23 +323,23 @@ function ImpactBar({ label, value, color }: { label: string; value: number; colo
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${value}%`, background: color }} />
       </div>
       <span className="text-[11px] font-semibold w-9 text-right" style={{ color }}>{value}%</span>
-    </div>
-  );
+    </div>);
+
 }
 
-function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
+function CurrencyImpactPanel({ data }: {data: CurrencyImpact;}) {
   const overall = data.positive > data.negative ? 'Positive' : data.negative > data.positive ? 'Negative' : 'Neutral';
   const overallColor = overall === 'Positive' ? 'hsl(135, 70%, 50%)' : overall === 'Negative' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
   const OverallIcon = overall === 'Positive' ? TrendingUp : overall === 'Negative' ? TrendingDown : Minus;
 
   return (
     <div className="flex-1 rounded-lg p-2.5 relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.3)'
-      }}>
+    style={{
+      background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
+      border: '1px solid hsla(200, 60%, 35%, 0.3)'
+    }}>
       <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+      style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-bold text-cyan-200">{data.currency}</span>
         <div className="flex items-center gap-1">
@@ -352,8 +352,8 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
         <ImpactBar label="Negativo" value={data.negative} color="hsl(0, 70%, 55%)" />
         <ImpactBar label="Neutral" value={data.neutral} color="hsl(45, 80%, 55%)" />
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // --- TP/SL Price Row with Pips + % ---
@@ -369,14 +369,14 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
   const accentColor = isPositive ? 'hsl(135, 70%, 50%)' : 'hsl(0, 70%, 55%)';
   return (
     <div className="relative rounded-md overflow-hidden"
-      style={{
-        background: 'linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)',
-        border: '1px solid hsla(210, 100%, 50%, 0.15)'
-      }}>
+    style={{
+      background: 'linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)',
+      border: '1px solid hsla(210, 100%, 50%, 0.15)'
+    }}>
       <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)' }} />
+      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)' }} />
       <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }} />
+      style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }} />
       <div className="flex items-center justify-between px-4 py-2.5">
         <span className="font-semibold text-white text-sm w-24 flex-shrink-0">{label}</span>
         <div className="flex items-center gap-3 flex-1 justify-center">
@@ -390,8 +390,8 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 function TakeProfitStopLossSection() {
@@ -399,9 +399,9 @@ function TakeProfitStopLossSection() {
     <div className="space-y-2 mx-3 mb-3">
       <PriceRowFull label="TakeProfit 1" pips="+ 0.290" percent="+ 0.116" price="156.500" isPositive={true} />
       <PriceRowFull label="TakeProfit 2" pips="+ 0.390" percent="+ 0.216" price="156.400" isPositive={true} />
-      <PriceRowFull label="Stop Loss"   pips="- 0.890" percent="- 0.116" price="158.100" isPositive={false} />
-    </div>
-  );
+      <PriceRowFull label="Stop Loss" pips="- 0.890" percent="- 0.116" price="158.100" isPositive={false} />
+    </div>);
+
 }
 
 // --- Main Card ---
@@ -409,31 +409,31 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
 
   const impactData: CurrencyImpact[] = [
-    { currency: 'USD', positive: 62, negative: 23, neutral: 15 },
-    { currency: 'JPY', positive: 28, negative: 51, neutral: 21 },
-  ];
+  { currency: 'USD', positive: 62, negative: 23, neutral: 15 },
+  { currency: 'JPY', positive: 28, negative: 51, neutral: 21 }];
+
 
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
       <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)'
-        }}>
+      style={{
+        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)'
+      }}>
 
         {/* Bull background overlay */}
         <div className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${bullBg})`,
-            backgroundSize: '55%',
-            backgroundPosition: '65% center',
-            backgroundRepeat: 'no-repeat',
-            opacity: 0.3,
-            mixBlendMode: 'screen'
-          }} />
+        style={{
+          backgroundImage: `url(${bullBg})`,
+          backgroundSize: '55%',
+          backgroundPosition: '65% center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.3,
+          mixBlendMode: 'screen'
+        }} />
 
         {/* Top glow line */}
         <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-          style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
         {/* Date header */}
         <div className="relative text-center pt-3 pb-1">
@@ -460,7 +460,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="14" fill="none" stroke="hsl(200, 60%, 15%)" strokeWidth="3" />
                 <circle cx="18" cy="18" r="14" fill="none" stroke="url(#probGradient)" strokeWidth="3"
-                  strokeLinecap="round" strokeDasharray={`${85 * 0.88} ${100 * 0.88}`} />
+                strokeLinecap="round" strokeDasharray={`${85 * 0.88} ${100 * 0.88}`} />
                 <defs>
                   <linearGradient id="probGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="hsl(200, 100%, 55%)" />
@@ -485,28 +485,28 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
         {/* Accent line */}
         <div className="mx-4 h-[2px] opacity-40 mb-3"
-          style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)' }} />
+        style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)' }} />
 
         {/* Middle section - 3 badges */}
         <div className="relative px-3 pb-3">
           <div className="flex gap-2">
             {[
-              { label: 'Tendencia', icon: <TrendingUp className="w-5 h-5 text-green-400" />, value: '78%', valueClass: 'text-cyan-200' },
-              { label: 'Decisión', icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />, value: 'Compra', valueClass: 'text-green-400' },
-              { label: 'Riesgo', icon: <Flame className="w-5 h-5 text-orange-400" />, value: '35%', valueClass: 'text-cyan-200' },
-            ].map((badge) =>
-              <div key={badge.label}
-                className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
-                style={{
-                  background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-                  border: '1px solid hsla(200, 60%, 35%, 0.3)'
-                }}>
+            { label: 'Tendencia', icon: <TrendingUp className="w-5 h-5 text-green-400" />, value: '78%', valueClass: 'text-cyan-200' },
+            { label: 'Decisión', icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />, value: 'Compra', valueClass: 'text-green-400' },
+            { label: 'Riesgo', icon: <Flame className="w-5 h-5 text-orange-400" />, value: '35%', valueClass: 'text-cyan-200' }].
+            map((badge) =>
+            <div key={badge.label}
+            className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
+            style={{
+              background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
+              border: '1px solid hsla(200, 60%, 35%, 0.3)'
+            }}>
                 <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                  style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+              style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
                 <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
                 <div className="flex items-center gap-1">
                   {badge.icon}
-                  <span className={cn("font-bold text-2xl", badge.valueClass)}>{badge.value}</span>
+                  <span className={cn("font-bold text-base", badge.valueClass)}>{badge.value}</span>
                 </div>
               </div>
             )}
@@ -523,12 +523,12 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
         {/* Entry price bar */}
         <div className="relative mx-3 mb-3 rounded-lg overflow-hidden"
-          style={{
-            background: 'linear-gradient(180deg, hsl(210, 50%, 10%) 0%, hsl(200, 60%, 14%) 100%)',
-            border: '1px solid hsla(200, 60%, 35%, 0.25)'
-          }}>
+        style={{
+          background: 'linear-gradient(180deg, hsl(210, 50%, 10%) 0%, hsl(200, 60%, 14%) 100%)',
+          border: '1px solid hsla(200, 60%, 35%, 0.25)'
+        }}>
           <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-            style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
           <div className="flex items-center justify-between px-4 py-2.5">
             <span className="font-semibold text-white text-sm">Precio de Entrada</span>
             <div className="flex items-center gap-2">
@@ -548,7 +548,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
         {/* Bottom green BUY accent line */}
         <div className="mx-3 mb-3 h-[3px] rounded-full"
-          style={{ background: 'linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)' }} />
+        style={{ background: 'linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)' }} />
 
         {/* Expand toggle button */}
         <button
@@ -559,16 +559,16 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
         {/* Expanded content */}
         {expanded &&
-          <div className="relative px-3 pb-4 space-y-2 animate-in slide-in-from-top-2 duration-300">
+        <div className="relative px-3 pb-4 space-y-2 animate-in slide-in-from-top-2 duration-300">
             <div className="h-[1px] mb-3 opacity-30"
-              style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(200, 80%, 55%) 50%, transparent 100%)' }} />
+          style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(200, 80%, 55%) 50%, transparent 100%)' }} />
           </div>
         }
 
         {/* Bottom glow */}
         <div className="absolute bottom-0 left-[10%] right-[10%] h-[1px]"
-          style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 40%) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 40%) 0%, transparent 70%)' }} />
       </div>
-    </div>
-  );
+    </div>);
+
 }
