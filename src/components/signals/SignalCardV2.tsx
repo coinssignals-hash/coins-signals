@@ -390,15 +390,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           </div>
         </div>
 
-        {/* Per-currency impact scoring */}
-        <div className="relative px-3 pb-3">
-          <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">Impacto por Divisa</p>
-          <div className="flex gap-2">
-            {impactData.map((d) => <CurrencyImpactPanel key={d.currency} data={d} />)}
-          </div>
-        </div>
-
-        {/* Expand toggle button - justo debajo de Impacto por Divisa */}
+        {/* Expand toggle button - justo debajo de Precio de Entrada */}
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
@@ -408,6 +400,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         {/* Expanded content */}
         {expanded && (
           <div className="animate-in slide-in-from-top-2 duration-300">
+            {/* Per-currency impact scoring */}
+            <div className="relative px-3 pb-3">
+              <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">Impacto por Divisa</p>
+              <div className="flex gap-2">
+                {impactData.map((d) => <CurrencyImpactPanel key={d.currency} data={d} />)}
+              </div>
+            </div>
             {/* TP / SL bars */}
             <TakeProfitStopLossSection />
 
