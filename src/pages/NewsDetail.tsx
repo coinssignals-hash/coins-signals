@@ -7,7 +7,8 @@ import { BiasBadge } from '@/components/news/BiasBadge';
 import { useRealNews, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsAIAnalysis } from '@/hooks/useNewsAIAnalysis';
 import { useNewsCache } from '@/hooks/useNewsCache';
-import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2, Archive } from 'lucide-react';
+import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2, Archive, Activity } from 'lucide-react';
+import { CurrencyImpactModal } from '@/components/news/CurrencyImpactModal';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
@@ -398,19 +399,27 @@ const NewsDetail = () => {
         
         {/* Affected Currencies Detail */}
         {news.affected_currencies.length > 0 && (
-          <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Divisas Afectadas</h2>
-            <div className="flex flex-wrap gap-2">
-              {news.affected_currencies.map((currency) => (
-                <span 
-                  key={currency} 
-                  className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
-                >
-                  {currency}
+          <CurrencyImpactModal currencies={news.affected_currencies}>
+            <div className="p-4 rounded-lg bg-card border border-border space-y-3 cursor-pointer hover:border-primary/50 transition-colors group">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Divisas Afectadas</h2>
+                <span className="flex items-center gap-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Activity className="w-3 h-3" />
+                  Ver impacto en vivo
                 </span>
-              ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {news.affected_currencies.map((currency) => (
+                  <span 
+                    key={currency} 
+                    className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
+                  >
+                    {currency}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          </CurrencyImpactModal>
         )}
         
         {/* Relevance Score */}
