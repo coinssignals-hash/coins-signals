@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus, ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import bullBg from '@/assets/bull-card-bg.svg';
 import chartSignal from '@/assets/chart-signal.jpg';
 import marketSentimentChart from '@/assets/market-sentiment-chart.jpg';
@@ -265,6 +266,20 @@ function TakeProfitStopLossSection() {
 // --- Main Card ---
 export function SignalCardV2({ className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
+  const entryPrice = 157.210;
+  const symbol = 'C:USDJPY';
+
+  const { getQuote, isConnected } = useRealtimeMarket([symbol]);
+  const quote = getQuote(symbol);
+
+  const priceDiff = useMemo(() => {
+    if (!quote?.price) return { percent: 0, isPositive: true, hasData: false };
+    const diff = ((quote.price - entryPrice) / entryPrice) * 100;
+    return { percent: diff, isPositive: diff >= 0, hasData: true };
+  }, [quote?.price, entryPrice]);
+
+  // Clamp circle fill to 0-100 range (map ±1% to full circle)
+  const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
 
   const impactData: CurrencyImpact[] = [
   { currency: 'USD', positive: 62, negative: 23, neutral: 15 },
@@ -317,8 +332,15 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
             <div className="relative w-16 h-16">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="14" fill="none" stroke="hsl(200, 60%, 15%)" strokeWidth="3" />
-                <circle cx="18" cy="18" r="14" fill="none" stroke="url(#probGradient)" strokeWidth="3"
-                strokeLinecap="round" strokeDasharray={`${85 * 0.88} ${100 * 0.88}`} />
+                <circle cx="18" cy="18" r="14" fill="none"
+                  stroke={priceDiff.hasData
+                    ? priceDiff.isPositive ? 'hsl(135, 70%, 50%)' : 'hsl(0, 70%, 55%)'
+                    : 'url(#probGradient)'}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={`${circlePercent * 0.88} ${100 * 0.88}`}
+                  className="transition-all duration-500"
+                />
                 <defs>
                   <linearGradient id="probGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="hsl(200, 100%, 55%)" />
@@ -327,7 +349,14 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                 </defs>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-bold text-cyan-300">85%</span>
+                <span className={cn("text-sm font-bold transition-colors duration-300",
+                  !priceDiff.hasData ? "text-cyan-300" :
+                  priceDiff.isPositive ? "text-green-400" : "text-red-400"
+                )}>
+                  {priceDiff.hasData
+                    ? `${priceDiff.isPositive ? '+' : ''}${priceDiff.percent.toFixed(2)}%`
+                    : '—'}
+                </span>
               </div>
             </div>
             <div className="text-center">
@@ -335,8 +364,14 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
               <p className="text-[8px] text-cyan-300/50 leading-tight">Entrada</p>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]" />
-              <span className="text-sm font-bold text-cyan-300 italic">Active</span>
+              <div className={cn("w-2.5 h-2.5 rounded-full",
+                isConnected
+                  ? "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]"
+                  : "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse"
+              )} />
+              <span className="text-sm font-bold text-cyan-300 italic">
+                {isConnected ? 'Live' : 'Connecting'}
+              </span>
             </div>
           </div>
         </div>
