@@ -181,12 +181,12 @@ serve(async (req) => {
     
     // Determine asset type and build URL
     if (symbol.includes('/')) {
-      // Forex pair
-      const pair = symbol.replace('/', '');
+      // Forex pair - e.g. "USD/JPY"
+      const [base, quote] = symbol.split('/');
       if (type === 'aggregates') {
-        url = `https://api.polygon.io/v2/aggs/ticker/C:${pair}/prev?apiKey=${POLYGON_API_KEY}`;
+        url = `https://api.polygon.io/v2/aggs/ticker/C:${base}${quote}/prev?apiKey=${POLYGON_API_KEY}`;
       } else {
-        url = `https://api.polygon.io/v1/last_quote/currencies/${pair}?apiKey=${POLYGON_API_KEY}`;
+        url = `https://api.polygon.io/v1/last_quote/currencies/${base}/${quote}?apiKey=${POLYGON_API_KEY}`;
       }
     } else if (symbol.includes('BTC') || symbol.includes('ETH')) {
       // Crypto
