@@ -56,3 +56,12 @@ verify_jwt = false
 
 [functions.send-whatsapp]
 verify_jwt = false
+
+[functions.mobile-signals]
+verify_jwt = false
+
+[functions.currency-impact]
+verify_jwt = false
+
+[functions.news-impact-charts]
+verify_jwt = false
