@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { NewsListItem } from '@/types/news';
 import { CurrencyBadgeList } from './CurrencyBadge';
 import { CategoryBadge } from './CategoryBadge';
+import { LivePriceCircle } from './LivePriceCircle';
 import { cn } from '@/lib/utils';
 import { Clock, ExternalLink } from 'lucide-react';
 
@@ -47,9 +48,12 @@ export function NewsCard({ news, variant = 'default', className }: NewsCardProps
       
       {/* Content */}
       <div className="p-4 space-y-3">
-        <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-          {news.title}
-        </h3>
+        <div className="flex items-start gap-2">
+          <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors flex-1">
+            {news.title}
+          </h3>
+          <LivePriceCircle currencies={news.affected_currencies} size="sm" />
+        </div>
         
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
@@ -91,9 +95,12 @@ function FeaturedNewsCard({ news, className }: { news: NewsListItem; className?:
         <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 space-y-3">
           <CategoryBadge category={news.category} />
           
-          <h2 className="text-xl md:text-2xl font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-            {news.title}
-          </h2>
+          <div className="flex items-start gap-2">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors flex-1">
+              {news.title}
+            </h2>
+            <LivePriceCircle currencies={news.affected_currencies} size="md" />
+          </div>
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -133,9 +140,12 @@ function CompactNewsCard({ news, className }: { news: NewsListItem; className?: 
       )}
       
       <div className="flex-1 min-w-0 space-y-1.5">
-        <h4 className="font-medium text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-          {news.title}
-        </h4>
+        <div className="flex items-start gap-2">
+          <h4 className="font-medium text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors flex-1">
+            {news.title}
+          </h4>
+          <LivePriceCircle currencies={news.affected_currencies} size="sm" />
+        </div>
         
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>{news.source}</span>
