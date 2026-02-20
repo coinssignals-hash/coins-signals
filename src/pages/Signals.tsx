@@ -27,6 +27,7 @@ import {
 
 type ViewMode = 'full' | 'compact';
 type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
+type DayTab = 'today' | 'tomorrow' | 'all';
 
 const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] = [
   { value: 'date-desc', label: 'Más recientes', icon: <Clock className="w-4 h-4" /> },
@@ -61,8 +62,7 @@ const generateWeekDays = () => {
 
 export default function Signals() {
   const navigate = useNavigate();
-  const weekDays = generateWeekDays();
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [dayTab, setDayTab] = useState<DayTab>('today');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -230,12 +230,38 @@ export default function Signals() {
           </div>
         </div>
 
-        {/* Day Tabs */}
-        <SignalsDayTabs
-          days={weekDays}
-          selectedDate={selectedDate}
-          onSelectDate={setSelectedDate}
-        />
+        {/* Day Tab Switcher */}
+        <div className="flex gap-1 px-3 py-2">
+          {([
+            { key: 'today' as DayTab, label: 'Hoy', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+            { key: 'tomorrow' as DayTab, label: 'Mañana', icon: <Clock className="w-3.5 h-3.5" /> },
+            { key: 'all' as DayTab, label: 'Todos', icon: <LayoutGrid className="w-3.5 h-3.5" /> },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setDayTab(tab.key)}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
+                dayTab === tab.key
+                  ? tab.key === 'today'
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                    : tab.key === 'tomorrow'
+                      ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
+                      : "bg-slate-600 text-white shadow-lg shadow-slate-500/30"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              )}
+            >
+              {tab.icon}
+              {tab.label}
+              {tab.key === 'today' && todaySignals.length > 0 && (
+                <span className="ml-1 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{todaySignals.length}</span>
+              )}
+              {tab.key === 'tomorrow' && tomorrowSignals.length > 0 && (
+                <span className="ml-1 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tomorrowSignals.length}</span>
+              )}
+            </button>
+          ))}
+        </div>
       </header>
 
       {/* Filters Bar */}
@@ -289,26 +315,27 @@ export default function Signals() {
         {error && (
           <p className="text-red-400 text-center py-4">{error}</p>
         )}
-        {!loading && todaySignals.length === 0 && tomorrowSignals.length === 0 && otherDayGroups.length === 0 && (
-          <p className="text-slate-500 text-center py-10">No hay señales para esta fecha</p>
+        {!loading && filteredAndSortedSignals.length === 0 && (
+          <p className="text-slate-500 text-center py-10">No hay señales disponibles</p>
         )}
 
-        {/* Today */}
-        <TodaySignalsGroup signals={todaySignals} />
+        {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
 
-        {/* Tomorrow */}
-        {tomorrowSignals.length > 0 && (
-          <TomorrowSignalsGroup signals={tomorrowSignals} />
-        )}
+        {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
 
-        {/* Other days */}
-        {otherDayGroups.map(([day, daySignals]) => (
-          <SignalsDayGroup key={day} date={day} count={daySignals.length}>
-            {daySignals.map((signal) => (
-              <SignalCardV2 key={signal.id} signal={signal} />
+        {dayTab === 'all' && (
+          <>
+            <TodaySignalsGroup signals={todaySignals} />
+            {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
+            {otherDayGroups.map(([day, daySignals]) => (
+              <SignalsDayGroup key={day} date={day} count={daySignals.length}>
+                {daySignals.map((signal) => (
+                  <SignalCardV2 key={signal.id} signal={signal} />
+                ))}
+              </SignalsDayGroup>
             ))}
-          </SignalsDayGroup>
-        ))}
+          </>
+        )}
       </main>
 
       {/* Drawer */}
