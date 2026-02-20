@@ -621,17 +621,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {/* Expanded content */}
         {expanded && (
           <div className="animate-in slide-in-from-top-2 duration-300">
-            {/* Per-currency impact scoring */}
-            <div className="relative px-3 pb-3">
-              <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">
-                Impacto por Divisa
-              </p>
-              <div className="flex gap-2">
-                {impactData.map((d) => (
-                  <CurrencyImpactPanel key={d.currency} data={d} />
-                ))}
-              </div>
-            </div>
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
@@ -717,6 +706,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Per-currency impact scoring */}
+            <div className="relative px-3 pb-3">
+              <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">
+                Impacto por Divisa
+              </p>
+              <div className="flex gap-2">
+                {impactData.map((d) => (
+                  <CurrencyImpactPanel key={d.currency} data={d} />
+                ))}
               </div>
             </div>
 
