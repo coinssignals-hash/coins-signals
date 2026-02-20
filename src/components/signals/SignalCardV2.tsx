@@ -12,7 +12,7 @@ import {
   ZoomOut,
   RotateCcw,
 } from "lucide-react";
-import { useRealtimeMarket } from "@/hooks/useRealtimeMarket";
+import { useRestPrice } from "@/hooks/useRestPrice";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import marketSentimentChart from "@/assets/market-sentiment-chart.jpg";
@@ -319,10 +319,10 @@ function TakeProfitStopLossSection() {
 export function SignalCardV2({ className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
   const entryPrice = 157.21;
-  const symbol = "C:USDJPY";
+  const symbol = "USD/JPY";
 
-  const { getQuote, isConnected } = useRealtimeMarket([symbol]);
-  const quote = getQuote(symbol);
+  const { quote, loading: priceLoading } = useRestPrice(symbol, 30_000);
+  const isConnected = !!quote;
 
   const priceDiff = useMemo(() => {
     if (!quote?.price) return { percent: 0, isPositive: true, hasData: false };
@@ -433,10 +433,14 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                   "w-2.5 h-2.5 rounded-full",
                   isConnected
                     ? "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]"
-                    : "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse",
+                    : priceLoading
+                      ? "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse"
+                      : "bg-red-400 shadow-[0_0_6px_hsl(0,80%,50%)]",
                 )}
               />
-              <span className="text-sm font-bold text-cyan-300 italic">{isConnected ? "Live" : "Connecting"}</span>
+              <span className="text-sm font-bold text-cyan-300 italic">
+                {isConnected ? "Live" : priceLoading ? "Cargando..." : "Sin datos"}
+              </span>
             </div>
           </div>
         </div>
