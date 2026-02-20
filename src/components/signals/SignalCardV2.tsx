@@ -308,9 +308,9 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
 function TakeProfitStopLossSection() {
   return (
     <div className="space-y-2 mx-3 mb-3">
-      <PriceRowFull label="TakeProfit 1" pips="+ 0.290" percent="+ 0.116" price="155.100" isPositive={true} />
-      <PriceRowFull label="TakeProfit 2" pips="+ 0.390" percent="+ 0.216" price="155.250" isPositive={true} />
-      <PriceRowFull label="Stop Loss" pips="- 0.890" percent="- 0.116" price="154.950" isPositive={false} />
+      <PriceRowFull label="TakeProfit 1" pips="+ 15.0" percent="+ 0.097" price="155.100" isPositive={true} />
+      <PriceRowFull label="TakeProfit 2" pips="+ 30.0" percent="+ 0.194" price="155.250" isPositive={true} />
+      <PriceRowFull label="Stop Loss" pips="- 25.0" percent="- 0.161" price="154.700" isPositive={false} />
     </div>
   );
 }
@@ -318,7 +318,7 @@ function TakeProfitStopLossSection() {
 // --- Main Card ---
 export function SignalCardV2({ className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
-  const entryPrice = 157.21;
+  const entryPrice = 154.950;
   const symbol = "USD/JPY";
 
   const { quote, loading: priceLoading } = useRestPrice(symbol, 30_000);
