@@ -308,9 +308,9 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
 function TakeProfitStopLossSection() {
   return (
     <div className="space-y-2 mx-3 mb-3">
-      <PriceRowFull label="TakeProfit 1" pips="+ 0.290" percent="+ 0.116" price="156.500" isPositive={true} />
-      <PriceRowFull label="TakeProfit 2" pips="+ 0.390" percent="+ 0.216" price="156.400" isPositive={true} />
-      <PriceRowFull label="Stop Loss" pips="- 0.890" percent="- 0.116" price="158.100" isPositive={false} />
+      <PriceRowFull label="TakeProfit 1" pips="+ 0.290" percent="+ 0.116" price="155.100" isPositive={true} />
+      <PriceRowFull label="TakeProfit 2" pips="+ 0.390" percent="+ 0.216" price="155.250" isPositive={true} />
+      <PriceRowFull label="Stop Loss" pips="- 0.890" percent="- 0.116" price="154.950" isPositive={false} />
     </div>
   );
 }
