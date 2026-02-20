@@ -50,10 +50,12 @@ serve(async (req) => {
             console.log('Polygon authenticated');
             clientSocket.send(JSON.stringify({ type: 'connected', status: 'authenticated' }));
           } else if (msg.ev === 'C' || msg.ev === 'CA' || msg.ev === 'CAS') {
-            // Forex quote/aggregate data
+            // Forex quote/aggregate data - map back to C:XXXYYY format
+            const rawPair = msg.p || '';
+            const mappedSymbol = rawPair ? `C:${rawPair}` : rawPair;
             clientSocket.send(JSON.stringify({
               type: 'quote',
-              symbol: msg.p,
+              symbol: mappedSymbol,
               price: msg.c || msg.a,
               bid: msg.b,
               ask: msg.a,
@@ -102,24 +104,39 @@ serve(async (req) => {
         if (message.action === 'subscribe') {
           const symbols = message.symbols || [];
           
+          // Normalize symbols: "C:USDJPY" -> "USD/JPY", keep others as-is
+          const normalized = symbols.map((s: string) => {
+            if (s.startsWith('C:')) {
+              const clean = s.slice(2);
+              return { original: s, normalized: `${clean.slice(0, 3)}/${clean.slice(3)}`, type: 'forex' };
+            }
+            if (s.includes('/') && !s.includes('BTC') && !s.includes('ETH')) {
+              return { original: s, normalized: s, type: 'forex' };
+            }
+            if (s.includes('BTC') || s.includes('ETH') || s.includes('USDT')) {
+              return { original: s, normalized: s, type: 'crypto' };
+            }
+            return { original: s, normalized: s, type: 'stock' };
+          });
+
           // Subscribe to Forex pairs
-          const forexSymbols = symbols.filter((s: string) => s.includes('/') && !s.includes('BTC') && !s.includes('ETH'));
+          const forexSymbols = normalized.filter((s: any) => s.type === 'forex');
           if (forexSymbols.length > 0) {
-            const forexSubscription = forexSymbols.map((s: string) => `C.${s.replace('/', '')}`).join(',');
+            const forexSubscription = forexSymbols.map((s: any) => `C.${s.normalized.replace('/', '')}`).join(',');
             polygonSocket.send(JSON.stringify({ action: 'subscribe', params: forexSubscription }));
           }
           
           // Subscribe to Crypto pairs
-          const cryptoSymbols = symbols.filter((s: string) => s.includes('BTC') || s.includes('ETH') || s.includes('USDT'));
+          const cryptoSymbols = normalized.filter((s: any) => s.type === 'crypto');
           if (cryptoSymbols.length > 0) {
-            const cryptoSubscription = cryptoSymbols.map((s: string) => `XQ.${s.replace('/', '-')}`).join(',');
+            const cryptoSubscription = cryptoSymbols.map((s: any) => `XQ.${s.normalized.replace('/', '-')}`).join(',');
             polygonSocket.send(JSON.stringify({ action: 'subscribe', params: cryptoSubscription }));
           }
           
           // Subscribe to Stocks
-          const stockSymbols = symbols.filter((s: string) => !s.includes('/') && !s.includes('BTC') && !s.includes('ETH'));
+          const stockSymbols = normalized.filter((s: any) => s.type === 'stock');
           if (stockSymbols.length > 0) {
-            const stockSubscription = stockSymbols.map((s: string) => `Q.${s}`).join(',');
+            const stockSubscription = stockSymbols.map((s: any) => `Q.${s.normalized}`).join(',');
             polygonSocket.send(JSON.stringify({ action: 'subscribe', params: stockSubscription }));
           }
         }
@@ -142,7 +159,9 @@ serve(async (req) => {
 
   // REST API fallback for non-WebSocket requests
   try {
-    const { symbol, type = 'quote' } = await req.json();
+    const body = await req.json();
+    let symbol = body.symbol || '';
+    const type = body.type || 'quote';
     const POLYGON_API_KEY = Deno.env.get('POLYGON_API_KEY');
     
     if (!POLYGON_API_KEY) {
@@ -150,6 +169,12 @@ serve(async (req) => {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Normalize C: prefix
+    if (symbol.startsWith('C:')) {
+      const clean = symbol.slice(2);
+      symbol = `${clean.slice(0, 3)}/${clean.slice(3)}`;
     }
 
     let url = '';
