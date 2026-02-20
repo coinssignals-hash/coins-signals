@@ -255,7 +255,20 @@ export default function Signals() {
 
       {/* Signals List */}
       <main className="p-4 space-y-4">
-        <SignalCardV2 />
+        {loading && (
+          <div className="flex justify-center py-10">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+          </div>
+        )}
+        {error && (
+          <p className="text-red-400 text-center py-4">{error}</p>
+        )}
+        {!loading && filteredAndSortedSignals.length === 0 && (
+          <p className="text-slate-500 text-center py-10">No hay señales para esta fecha</p>
+        )}
+        {filteredAndSortedSignals.map((signal) => (
+          <SignalCardV2 key={signal.id} signal={signal} />
+        ))}
       </main>
 
       {/* Drawer */}
