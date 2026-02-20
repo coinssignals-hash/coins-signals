@@ -33,7 +33,7 @@ interface CurrencyImpact {
 }
 
 // --- Zoomable Image Chart ---
-function ZoomableChart() {
+function ZoomableChart({ pair, support, resistance, signalId }: { pair: string; support?: number; resistance?: number; signalId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scale = useRef(1);
   const posX = useRef(0);
@@ -174,7 +174,24 @@ function ZoomableChart() {
       />
 
       <div ref={imgRef} className="w-full h-full origin-center transition-none" style={{ willChange: "transform" }}>
-        <img src={chartSignal} alt="Signal Chart" className="w-full h-full object-cover" draggable={false} />
+        {(() => {
+          const params = new URLSearchParams({ pair });
+          if (support !== undefined) params.set('support', String(support));
+          if (resistance !== undefined) params.set('resistance', String(resistance));
+          if (signalId) params.set('signal_id', signalId);
+          const chartUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
+          return (
+            <img
+              src={chartUrl}
+              alt={`${pair} Candlestick Chart`}
+              className="w-full h-full object-contain"
+              draggable={false}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = chartSignal;
+              }}
+            />
+          );
+        })()}
       </div>
 
       {/* Controls */}
@@ -625,7 +642,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* Zoomable chart image */}
-            <ZoomableChart />
+            <ZoomableChart pair={currencyPair} support={support} resistance={resistance} signalId={signal?.id} />
 
             {/* Sentimiento del Mercado + Informacion + Estrategia */}
             <div className="mx-3 mb-3 flex gap-2">
