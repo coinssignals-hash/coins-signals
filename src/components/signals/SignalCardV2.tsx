@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   TrendingUp,
@@ -13,11 +13,15 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
+import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import marketSentimentChart from "@/assets/market-sentiment-chart.jpg";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface SignalCardV2Props {
+  signal?: TradingSignal;
   className?: string;
 }
 
@@ -305,40 +309,97 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
   );
 }
 
-function TakeProfitStopLossSection() {
+// Helper: compute pips and percent between two prices
+function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
+  const pipMultiplier = isJpy ? 100 : 10000;
+  const pips = (target - entry) * pipMultiplier;
+  const percent = ((target - entry) / entry) * 100;
+  const isPositive = pips >= 0;
+  const sign = isPositive ? "+ " : "- ";
+  return {
+    pips: `${sign}${Math.abs(pips).toFixed(1)}`,
+    percent: `${sign}${Math.abs(percent).toFixed(3)}`,
+    price: target.toFixed(3),
+    isPositive,
+  };
+}
+
+// Currency code to country flag code
+const CURRENCY_FLAGS: Record<string, string> = {
+  USD: "us", EUR: "eu", GBP: "gb", JPY: "jp", AUD: "au", CAD: "ca",
+  CHF: "ch", NZD: "nz", CNY: "cn", SGD: "sg", HKD: "hk", SEK: "se",
+  NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr",
+};
+
+function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy }: {
+  entryPrice: number; takeProfit: number; stopLoss: number; isJpy: boolean;
+}) {
+  const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy);
+  const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
   return (
     <div className="space-y-2 mx-3 mb-3">
-      <PriceRowFull label="TakeProfit 1" pips="+ 15.0" percent="+ 0.097" price="155.100" isPositive={true} />
-      <PriceRowFull label="TakeProfit 2" pips="+ 30.0" percent="+ 0.194" price="155.250" isPositive={true} />
-      <PriceRowFull label="Stop Loss" pips="- 25.0" percent="- 0.161" price="154.700" isPositive={false} />
+      <PriceRowFull label="TakeProfit 1" {...tp1} />
+      <PriceRowFull label="Stop Loss" {...sl} />
     </div>
   );
 }
 
 // --- Main Card ---
-export function SignalCardV2({ className }: SignalCardV2Props) {
+export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
-  const entryPrice = 154.950;
-  const symbol = "USD/JPY";
 
+  // Derive values from signal prop or use defaults
+  const entryPrice = signal?.entryPrice ?? 154.950;
+  const takeProfit = signal?.takeProfit ?? 155.100;
+  const stopLoss = signal?.stopLoss ?? 154.700;
+  const currencyPair = signal?.currencyPair ?? "USD/JPY";
+  const action = signal?.action ?? "BUY";
+  const trend = signal?.trend ?? "bullish";
+  const probability = signal?.probability ?? 78;
+  const signalDate = signal?.datetime ? new Date(signal.datetime) : new Date();
+  const support = signal?.support;
+  const resistance = signal?.resistance;
+  const status = signal?.status ?? "active";
+
+  // Parse currency codes
+  const [baseCurrency, quoteCurrency] = currencyPair.includes("/")
+    ? currencyPair.split("/")
+    : [currencyPair.slice(0, 3), currencyPair.slice(3, 6)];
+  const isJpy = quoteCurrency === "JPY";
+  const displayPair = `${baseCurrency}-${quoteCurrency}`;
+  const baseFlag = CURRENCY_FLAGS[baseCurrency] ?? "un";
+  const quoteFlag = CURRENCY_FLAGS[quoteCurrency] ?? "un";
+
+  // Build polygon symbol for REST price
+  const symbol = `${baseCurrency}/${quoteCurrency}`;
   const { quote, loading: priceLoading } = useRestPrice(symbol, 30_000);
   const isConnected = !!quote;
+
+  // Log price source for debugging
+  useEffect(() => {
+    console.log(`[SignalCardV2] ${currencyPair} | entry=${entryPrice} tp=${takeProfit} sl=${stopLoss} status=${status}`);
+    if (quote) {
+      console.log(`[SignalCardV2] Live price for ${symbol}: ${quote.price} (age: ${Date.now() - quote.timestamp}ms)`);
+    }
+  }, [quote, currencyPair, entryPrice, takeProfit, stopLoss, status, symbol]);
 
   const priceDiff = useMemo(() => {
     if (!quote?.price) return { percent: 0, pips: 0, currentPrice: 0, isPositive: true, hasData: false };
     const diff = ((quote.price - entryPrice) / entryPrice) * 100;
-    // For JPY pairs, 1 pip = 0.01; for others 1 pip = 0.0001
-    const pipMultiplier = symbol.includes("JPY") ? 100 : 10000;
+    const pipMultiplier = isJpy ? 100 : 10000;
     const pips = (quote.price - entryPrice) * pipMultiplier;
     return { percent: diff, pips, currentPrice: quote.price, isPositive: diff >= 0, hasData: true };
-  }, [quote?.price, entryPrice, symbol]);
+  }, [quote?.price, entryPrice, isJpy]);
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
 
+  // Risk percent = SL distance / entry
+  const riskPercent = Math.abs(((stopLoss - entryPrice) / entryPrice) * 100).toFixed(0);
+
   const impactData: CurrencyImpact[] = [
-    { currency: "USD", positive: 62, negative: 23, neutral: 15 },
-    { currency: "JPY", positive: 28, negative: 51, neutral: 21 },
+    { currency: baseCurrency, positive: 62, negative: 23, neutral: 15 },
+    { currency: quoteCurrency, positive: 28, negative: 51, neutral: 21 },
   ];
 
   return (
@@ -371,7 +432,9 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
         {/* Date header */}
         <div className="relative text-center pt-3 pb-1">
-          <span className="text-[11px] text-cyan-300/70 tracking-wide">Jueves 08 Octubre 2025 12:48:35</span>
+          <span className="text-[11px] text-cyan-300/70 tracking-wide">
+            {format(signalDate, "EEEE dd MMMM yyyy HH:mm:ss", { locale: es })}
+          </span>
         </div>
 
         {/* Upper section - currency pair */}
@@ -379,13 +442,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           <div className="flex items-center gap-3">
             <div className="relative w-20 h-16 flex-shrink-0">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
-                <img src="https://flagcdn.com/w160/us.png" alt="USD" className="w-full h-full object-cover" />
+                <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
               </div>
               <div className="absolute left-7 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
-                <img src="https://flagcdn.com/w160/jp.png" alt="JPY" className="w-full h-full object-cover" />
+                <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
               </div>
             </div>
-            <span className="text-3xl font-extrabold text-white tracking-wide">USD-JPY</span>
+            <span className="text-3xl font-extrabold text-white tracking-wide">{displayPair}</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="relative w-16 h-16">
@@ -483,20 +546,22 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
             {[
               {
                 label: "Tendencia",
-                icon: <TrendingUp className="w-5 h-5 text-green-400" />,
-                value: "78%",
+                icon: trend === "bullish"
+                  ? <TrendingUp className="w-5 h-5 text-green-400" />
+                  : <TrendingDown className="w-5 h-5 text-red-400" />,
+                value: `${probability}%`,
                 valueClass: "text-cyan-200",
               },
               {
                 label: "Decisión",
                 icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
-                value: "Compra",
-                valueClass: "text-green-400",
+                value: action === "BUY" ? "Compra" : "Venta",
+                valueClass: action === "BUY" ? "text-green-400" : "text-red-400",
               },
               {
                 label: "Riesgo",
                 icon: <Flame className="w-5 h-5 text-orange-400" />,
-                value: "35%",
+                value: `${riskPercent}%`,
                 valueClass: "text-cyan-200",
               },
             ].map((badge) => (
@@ -537,7 +602,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           <div className="flex items-center justify-between px-4 py-2.5">
             <span className="font-semibold text-white text-sm">Precio de Entrada</span>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white text-sm">154.950</span>
+              <span className="font-bold text-white text-sm">{entryPrice.toFixed(3)}</span>
               <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
                 <Copy className="w-4 h-4" />
               </button>
@@ -568,7 +633,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
               </div>
             </div>
             {/* TP / SL bars */}
-            <TakeProfitStopLossSection />
+            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* Zoomable chart image */}
             <ZoomableChart />
@@ -607,11 +672,11 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                   <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
                   <div className="space-y-1">
                     {[
-                      { label: "Resistencia", value: "152.350", color: "hsl(0, 70%, 55%)" },
-                      { label: "Soporte", value: "152.300", color: "hsl(135, 70%, 50%)" },
-                      { label: "Mayor Del Dia", value: "152.366", color: "hsl(0, 0%, 85%)" },
-                      { label: "Menos Del Dia", value: "152.280", color: "hsl(0, 0%, 85%)" },
-                      { label: "Pips", value: "+0.135", color: "hsl(135, 70%, 50%)" },
+                      { label: "Resistencia", value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
+                      { label: "Soporte", value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
+                      { label: "TP", value: takeProfit.toFixed(3), color: "hsl(135, 70%, 50%)" },
+                      { label: "SL", value: stopLoss.toFixed(3), color: "hsl(0, 70%, 55%)" },
+                      { label: "Estado", value: status === "active" ? "Activa" : status === "pending" ? "Pendiente" : status, color: "hsl(45, 80%, 55%)" },
                     ].map((row) => (
                       <div key={row.label} className="flex justify-between items-center">
                         <span className="text-[9px] text-cyan-300/60">{row.label}</span>
@@ -655,12 +720,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
               </div>
             </div>
 
-            {/* Bottom green BUY accent line */}
+            {/* Bottom accent line */}
             <div
               className="mx-3 mb-3 h-[3px] rounded-full"
               style={{
-                background:
-                  "linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)",
+                background: action === "BUY"
+                  ? "linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)"
+                  : "linear-gradient(90deg, hsl(0, 80%, 45%) 0%, hsl(0, 60%, 30%) 30%, hsl(0, 80%, 50%) 60%, hsl(0, 90%, 55%) 100%)",
               }}
             />
           </div>
