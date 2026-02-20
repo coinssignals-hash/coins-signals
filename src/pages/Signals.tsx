@@ -5,13 +5,14 @@ import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
+import { SignalsDayGroup } from '@/components/signals/SignalsDayGroup';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
-import { format, addDays, startOfWeek } from 'date-fns';
+import { format, addDays, startOfWeek, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -112,6 +113,18 @@ export default function Signals() {
 
     return result;
   }, [signals, showFavoritesOnly, favoriteIds, sortBy]);
+
+  // Group signals by day
+  const signalsByDay = useMemo(() => {
+    const groups: Record<string, TradingSignal[]> = {};
+    filteredAndSortedSignals.forEach((signal) => {
+      const day = format(parseISO(signal.datetime), 'yyyy-MM-dd');
+      if (!groups[day]) groups[day] = [];
+      groups[day].push(signal);
+    });
+    // Sort days descending
+    return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
+  }, [filteredAndSortedSignals]);
 
   const currentSortOption = sortOptions.find(opt => opt.value === sortBy);
 
@@ -253,8 +266,8 @@ export default function Signals() {
         </div>
       </div>
 
-      {/* Signals List */}
-      <main className="p-4 space-y-4">
+      {/* Signals List grouped by day */}
+      <main className="p-4 space-y-6">
         {loading && (
           <div className="flex justify-center py-10">
             <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
@@ -263,11 +276,15 @@ export default function Signals() {
         {error && (
           <p className="text-red-400 text-center py-4">{error}</p>
         )}
-        {!loading && filteredAndSortedSignals.length === 0 && (
+        {!loading && signalsByDay.length === 0 && (
           <p className="text-slate-500 text-center py-10">No hay señales para esta fecha</p>
         )}
-        {filteredAndSortedSignals.map((signal) => (
-          <SignalCardV2 key={signal.id} signal={signal} />
+        {signalsByDay.map(([day, daySignals]) => (
+          <SignalsDayGroup key={day} date={day} count={daySignals.length}>
+            {daySignals.map((signal) => (
+              <SignalCardV2 key={signal.id} signal={signal} />
+            ))}
+          </SignalsDayGroup>
         ))}
       </main>
 
