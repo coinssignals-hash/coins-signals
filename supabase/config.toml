@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.news-impact-charts]
 verify_jwt = false
+
+[functions.candlestick-chart]
+verify_jwt = false
