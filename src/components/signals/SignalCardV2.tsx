@@ -1,10 +1,21 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
-import { cn } from '@/lib/utils';
-import { TrendingUp, ShieldCheck, Flame, Copy, TrendingDown, Minus, ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
-import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
-import bullBg from '@/assets/bull-card-bg.svg';
-import chartSignal from '@/assets/chart-signal.jpg';
-import marketSentimentChart from '@/assets/market-sentiment-chart.jpg';
+import { useState, useRef, useCallback, useMemo } from "react";
+import { cn } from "@/lib/utils";
+import {
+  TrendingUp,
+  ShieldCheck,
+  Flame,
+  Copy,
+  TrendingDown,
+  Minus,
+  ChevronDown,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+} from "lucide-react";
+import { useRealtimeMarket } from "@/hooks/useRealtimeMarket";
+import bullBg from "@/assets/bull-card-bg.svg";
+import chartSignal from "@/assets/chart-signal.jpg";
+import marketSentimentChart from "@/assets/market-sentiment-chart.jpg";
 
 interface SignalCardV2Props {
   className?: string;
@@ -46,13 +57,16 @@ function ZoomableChart() {
     posY.current = Math.max(-maxY, Math.min(maxY, posY.current));
   }, []);
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    const factor = e.deltaY > 0 ? 0.85 : 1.15;
-    scale.current = Math.max(1, Math.min(5, scale.current * factor));
-    clampPosition();
-    applyTransform();
-  }, [applyTransform, clampPosition]);
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 0.85 : 1.15;
+      scale.current = Math.max(1, Math.min(5, scale.current * factor));
+      clampPosition();
+      applyTransform();
+    },
+    [applyTransform, clampPosition],
+  );
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -68,7 +82,9 @@ function ZoomableChart() {
     clampPosition();
     applyTransform();
   };
-  const handleMouseUp = () => { isDragging.current = false; };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
@@ -105,23 +121,39 @@ function ZoomableChart() {
     lastPinchDist.current = null;
   };
 
-  const attachWheel = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
-    (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    node.addEventListener('wheel', handleWheel, { passive: false });
-  }, [handleWheel]);
+  const attachWheel = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      node.addEventListener("wheel", handleWheel, { passive: false });
+    },
+    [handleWheel],
+  );
 
-  const zoomIn = () => { scale.current = Math.min(5, scale.current * 1.3); clampPosition(); applyTransform(); };
-  const zoomOut = () => { scale.current = Math.max(1, scale.current * 0.77); clampPosition(); applyTransform(); };
-  const reset = () => { scale.current = 1; posX.current = 0; posY.current = 0; applyTransform(); };
+  const zoomIn = () => {
+    scale.current = Math.min(5, scale.current * 1.3);
+    clampPosition();
+    applyTransform();
+  };
+  const zoomOut = () => {
+    scale.current = Math.max(1, scale.current * 0.77);
+    clampPosition();
+    applyTransform();
+  };
+  const reset = () => {
+    scale.current = 1;
+    posX.current = 0;
+    posY.current = 0;
+    applyTransform();
+  };
 
   return (
     <div
       ref={attachWheel}
       className="relative rounded-lg overflow-hidden mx-3 mb-3 cursor-grab active:cursor-grabbing select-none"
       style={{
-        background: 'hsl(215, 100%, 4%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.3)',
+        background: "hsl(215, 100%, 4%)",
+        border: "1px solid hsla(200, 60%, 35%, 0.3)",
         height: 200,
       }}
       onMouseDown={handleMouseDown}
@@ -132,20 +164,13 @@ function ZoomableChart() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-
       <div
-        ref={imgRef}
-        className="w-full h-full origin-center transition-none"
-        style={{ willChange: 'transform' }}
-      >
-        <img
-          src={chartSignal}
-          alt="Signal Chart"
-          className="w-full h-full object-cover"
-          draggable={false}
-        />
+        className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+        style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
+      />
+
+      <div ref={imgRef} className="w-full h-full origin-center transition-none" style={{ willChange: "transform" }}>
+        <img src={chartSignal} alt="Signal Chart" className="w-full h-full object-cover" draggable={false} />
       </div>
 
       {/* Controls */}
@@ -153,19 +178,22 @@ function ZoomableChart() {
         <button
           onClick={zoomIn}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
-          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
+          style={{ background: "hsla(210, 100%, 8%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.4)" }}
+        >
           <ZoomIn className="w-3 h-3" />
         </button>
         <button
           onClick={zoomOut}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
-          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
+          style={{ background: "hsla(210, 100%, 8%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.4)" }}
+        >
           <ZoomOut className="w-3 h-3" />
         </button>
         <button
           onClick={reset}
           className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
-          style={{ background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' }}>
+          style={{ background: "hsla(210, 100%, 8%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.4)" }}
+        >
           <RotateCcw className="w-3 h-3" />
         </button>
       </div>
@@ -174,36 +202,50 @@ function ZoomableChart() {
 }
 
 // --- Impact Bar ---
-function ImpactBar({ label, value, color }: {label: string;value: number;color: string;}) {
+function ImpactBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[10px] w-16 text-right" style={{ color }}>{label}</span>
+      <span className="text-[10px] w-16 text-right" style={{ color }}>
+        {label}
+      </span>
       <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
-        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${value}%`, background: color }} />
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${value}%`, background: color }}
+        />
       </div>
-      <span className="text-[11px] font-semibold w-9 text-right" style={{ color }}>{value}%</span>
-    </div>);
-
+      <span className="text-[11px] font-semibold w-9 text-right" style={{ color }}>
+        {value}%
+      </span>
+    </div>
+  );
 }
 
-function CurrencyImpactPanel({ data }: {data: CurrencyImpact;}) {
-  const overall = data.positive > data.negative ? 'Positive' : data.negative > data.positive ? 'Negative' : 'Neutral';
-  const overallColor = overall === 'Positive' ? 'hsl(135, 70%, 50%)' : overall === 'Negative' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
-  const OverallIcon = overall === 'Positive' ? TrendingUp : overall === 'Negative' ? TrendingDown : Minus;
+function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
+  const overall = data.positive > data.negative ? "Positive" : data.negative > data.positive ? "Negative" : "Neutral";
+  const overallColor =
+    overall === "Positive" ? "hsl(135, 70%, 50%)" : overall === "Negative" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
+  const OverallIcon = overall === "Positive" ? TrendingUp : overall === "Negative" ? TrendingDown : Minus;
 
   return (
-    <div className="flex-1 rounded-lg p-2.5 relative overflow-hidden"
-    style={{
-      background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-      border: '1px solid hsla(200, 60%, 35%, 0.3)'
-    }}>
-      <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+    <div
+      className="flex-1 rounded-lg p-2.5 relative overflow-hidden"
+      style={{
+        background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+        border: "1px solid hsla(200, 60%, 35%, 0.3)",
+      }}
+    >
+      <div
+        className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+        style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
+      />
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-bold text-cyan-200">{data.currency}</span>
         <div className="flex items-center gap-1">
           <OverallIcon className="w-3.5 h-3.5" style={{ color: overallColor }} />
-          <span className="text-[10px] font-bold" style={{ color: overallColor }}>{overall}</span>
+          <span className="text-[10px] font-bold" style={{ color: overallColor }}>
+            {overall}
+          </span>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -211,8 +253,8 @@ function CurrencyImpactPanel({ data }: {data: CurrencyImpact;}) {
         <ImpactBar label="Negativo" value={data.negative} color="hsl(0, 70%, 55%)" />
         <ImpactBar label="Neutral" value={data.neutral} color="hsl(45, 80%, 55%)" />
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
 // --- TP/SL Price Row with Pips + % ---
@@ -225,22 +267,32 @@ interface PriceRowFullProps {
 }
 
 function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullProps) {
-  const accentColor = isPositive ? 'hsl(135, 70%, 50%)' : 'hsl(0, 70%, 55%)';
+  const accentColor = isPositive ? "hsl(135, 70%, 50%)" : "hsl(0, 70%, 55%)";
   return (
-    <div className="relative rounded-md overflow-hidden"
-    style={{
-      background: 'linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)',
-      border: '1px solid hsla(210, 100%, 50%, 0.15)'
-    }}>
-      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)' }} />
-      <div className="absolute inset-0 pointer-events-none"
-      style={{ background: 'linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)' }} />
+    <div
+      className="relative rounded-md overflow-hidden"
+      style={{
+        background: "linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)",
+        border: "1px solid hsla(210, 100%, 50%, 0.15)",
+      }}
+    >
+      <div
+        className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+        style={{ background: "radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)" }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)" }}
+      />
       <div className="flex items-center justify-between px-4 py-2.5">
         <span className="font-semibold text-white text-sm w-24 flex-shrink-0">{label}</span>
         <div className="flex items-center gap-3 flex-1 justify-center">
-          <span className="text-xs font-bold text-center text-primary" style={{ color: accentColor }}>{pips} Pips</span>
-          <span className="text-xs font-bold text-center text-primary" style={{ color: accentColor }}>{percent} %</span>
+          <span className="text-xs font-bold text-center text-primary" style={{ color: accentColor }}>
+            {pips} Pips
+          </span>
+          <span className="text-xs font-bold text-center text-primary" style={{ color: accentColor }}>
+            {percent} %
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="font-bold text-white text-sm">{price}</span>
@@ -249,8 +301,8 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
           </button>
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
 function TakeProfitStopLossSection() {
@@ -259,15 +311,15 @@ function TakeProfitStopLossSection() {
       <PriceRowFull label="TakeProfit 1" pips="+ 0.290" percent="+ 0.116" price="156.500" isPositive={true} />
       <PriceRowFull label="TakeProfit 2" pips="+ 0.390" percent="+ 0.216" price="156.400" isPositive={true} />
       <PriceRowFull label="Stop Loss" pips="- 0.890" percent="- 0.116" price="158.100" isPositive={false} />
-    </div>);
-
+    </div>
+  );
 }
 
 // --- Main Card ---
 export function SignalCardV2({ className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
-  const entryPrice = 157.210;
-  const symbol = 'C:USDJPY';
+  const entryPrice = 157.21;
+  const symbol = "C:USDJPY";
 
   const { getQuote, isConnected } = useRealtimeMarket([symbol]);
   const quote = getQuote(symbol);
@@ -282,37 +334,41 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
 
   const impactData: CurrencyImpact[] = [
-  { currency: 'USD', positive: 62, negative: 23, neutral: 15 },
-  { currency: 'JPY', positive: 28, negative: 51, neutral: 21 }];
-
+    { currency: "USD", positive: 62, negative: 23, neutral: 15 },
+    { currency: "JPY", positive: 28, negative: 51, neutral: 21 },
+  ];
 
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
-      <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
-      style={{
-        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)'
-      }}>
-
-        {/* Bull background overlay */}
-        <div className="absolute inset-0 pointer-events-none"
+      <div
+        className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
         style={{
-          backgroundImage: `url(${bullBg})`,
-          backgroundSize: '55%',
-          backgroundPosition: '65% center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.3,
-          mixBlendMode: 'screen'
-        }} />
+          background:
+            "radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)",
+        }}
+      >
+        {/* Bull background overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${bullBg})`,
+            backgroundSize: "55%",
+            backgroundPosition: "65% center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.3,
+            mixBlendMode: "screen",
+          }}
+        />
 
         {/* Top glow line */}
-        <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+        <div
+          className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+          style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }}
+        />
 
         {/* Date header */}
         <div className="relative text-center pt-3 pb-1">
-          <span className="text-[11px] text-cyan-300/70 tracking-wide">
-            Jueves 08 Octubre 2025 12:48:35
-          </span>
+          <span className="text-[11px] text-cyan-300/70 tracking-wide">Jueves 08 Octubre 2025 12:48:35</span>
         </div>
 
         {/* Upper section - currency pair */}
@@ -332,10 +388,18 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
             <div className="relative w-16 h-16">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <circle cx="18" cy="18" r="14" fill="none" stroke="hsl(200, 60%, 15%)" strokeWidth="3" />
-                <circle cx="18" cy="18" r="14" fill="none"
-                  stroke={priceDiff.hasData
-                    ? priceDiff.isPositive ? 'hsl(135, 70%, 50%)' : 'hsl(0, 70%, 55%)'
-                    : 'url(#probGradient)'}
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  stroke={
+                    priceDiff.hasData
+                      ? priceDiff.isPositive
+                        ? "hsl(135, 70%, 50%)"
+                        : "hsl(0, 70%, 55%)"
+                      : "url(#probGradient)"
+                  }
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeDasharray={`${circlePercent * 0.88} ${100 * 0.88}`}
@@ -349,13 +413,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                 </defs>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={cn("text-sm font-bold transition-colors duration-300",
-                  !priceDiff.hasData ? "text-cyan-300" :
-                  priceDiff.isPositive ? "text-green-400" : "text-red-400"
-                )}>
-                  {priceDiff.hasData
-                    ? `${priceDiff.isPositive ? '+' : ''}${priceDiff.percent.toFixed(2)}%`
-                    : '—'}
+                <span
+                  className={cn(
+                    "text-sm font-bold transition-colors duration-300",
+                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isPositive ? "text-green-400" : "text-red-400",
+                  )}
+                >
+                  {priceDiff.hasData ? `${priceDiff.isPositive ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                 </span>
               </div>
             </div>
@@ -364,60 +428,89 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
               <p className="text-[8px] text-cyan-300/50 leading-tight">Entrada</p>
             </div>
             <div className="flex items-center gap-1">
-              <div className={cn("w-2.5 h-2.5 rounded-full",
-                isConnected
-                  ? "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]"
-                  : "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse"
-              )} />
-              <span className="text-sm font-bold text-cyan-300 italic">
-                {isConnected ? 'Live' : 'Connecting'}
-              </span>
+              <div
+                className={cn(
+                  "w-2.5 h-2.5 rounded-full",
+                  isConnected
+                    ? "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]"
+                    : "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse",
+                )}
+              />
+              <span className="text-sm font-bold text-cyan-300 italic">{isConnected ? "Live" : "Connecting"}</span>
             </div>
           </div>
         </div>
 
         {/* Accent line */}
-        <div className="mx-4 h-[2px] opacity-40 mb-3"
-        style={{ background: 'linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)' }} />
+        <div
+          className="mx-4 h-[2px] opacity-40 mb-3"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)",
+          }}
+        />
 
         {/* Middle section - 3 badges */}
         <div className="relative px-3 pb-3">
           <div className="flex gap-2">
             {[
-            { label: 'Tendencia', icon: <TrendingUp className="w-5 h-5 text-green-400" />, value: '78%', valueClass: 'text-cyan-200' },
-            { label: 'Decisión', icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />, value: 'Compra', valueClass: 'text-green-400' },
-            { label: 'Riesgo', icon: <Flame className="w-5 h-5 text-orange-400" />, value: '35%', valueClass: 'text-cyan-200' }].
-            map((badge) =>
-            <div key={badge.label}
-            className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
-            style={{
-              background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-              border: '1px solid hsla(200, 60%, 35%, 0.3)'
-            }}>
-                <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-              style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+              {
+                label: "Tendencia",
+                icon: <TrendingUp className="w-5 h-5 text-green-400" />,
+                value: "78%",
+                valueClass: "text-cyan-200",
+              },
+              {
+                label: "Decisión",
+                icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
+                value: "Compra",
+                valueClass: "text-green-400",
+              },
+              {
+                label: "Riesgo",
+                icon: <Flame className="w-5 h-5 text-orange-400" />,
+                value: "35%",
+                valueClass: "text-cyan-200",
+              },
+            ].map((badge) => (
+              <div
+                key={badge.label}
+                className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
+                style={{
+                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                  border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                }}
+              >
+                <div
+                  className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                  style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
+                />
                 <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
                 <div className="flex items-center gap-1">
                   {badge.icon}
                   <span className={cn("font-bold text-base", badge.valueClass)}>{badge.value}</span>
                 </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
 
         {/* Entry price bar */}
-        <div className="relative mx-3 mb-3 rounded-lg overflow-hidden"
-        style={{
-          background: 'linear-gradient(180deg, hsl(210, 50%, 10%) 0%, hsl(200, 60%, 14%) 100%)',
-          border: '1px solid hsla(200, 60%, 35%, 0.25)'
-        }}>
-          <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-          style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+        <div
+          className="relative mx-3 mb-3 rounded-lg overflow-hidden"
+          style={{
+            background: "linear-gradient(180deg, hsl(210, 50%, 10%) 0%, hsl(200, 60%, 14%) 100%)",
+            border: "1px solid hsla(200, 60%, 35%, 0.25)",
+          }}
+        >
+          <div
+            className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+            style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
+          />
           <div className="flex items-center justify-between px-4 py-2.5">
             <span className="font-semibold text-white text-sm">Precio de Entrada</span>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white text-sm">157.210</span>
+              <span className="font-bold text-white text-sm">154.950</span>
               <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
                 <Copy className="w-4 h-4" />
               </button>
@@ -428,7 +521,8 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
         {/* Expand toggle button - justo debajo de Precio de Entrada */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
+          className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors"
+        >
           <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", expanded && "rotate-180")} />
         </button>
 
@@ -437,9 +531,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
           <div className="animate-in slide-in-from-top-2 duration-300">
             {/* Per-currency impact scoring */}
             <div className="relative px-3 pb-3">
-              <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">Impacto por Divisa</p>
+              <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">
+                Impacto por Divisa
+              </p>
               <div className="flex gap-2">
-                {impactData.map((d) => <CurrencyImpactPanel key={d.currency} data={d} />)}
+                {impactData.map((d) => (
+                  <CurrencyImpactPanel key={d.currency} data={d} />
+                ))}
               </div>
             </div>
             {/* TP / SL bars */}
@@ -450,11 +548,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
 
             {/* Sentimiento del Mercado + Informacion + Estrategia */}
             <div className="mx-3 mb-3 flex gap-2">
-              <div className="flex-1 rounded-lg overflow-hidden"
+              <div
+                className="flex-1 rounded-lg overflow-hidden"
                 style={{
-                  border: '1px solid hsla(200, 60%, 35%, 0.3)',
-                  background: 'hsl(215, 100%, 4%)',
-                }}>
+                  border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                  background: "hsl(215, 100%, 4%)",
+                }}
+              >
                 <img
                   src={marketSentimentChart}
                   alt="Sentimiento del Mercado"
@@ -464,46 +564,60 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
               </div>
 
               <div className="flex-1 flex flex-col gap-2">
-                <div className="rounded-lg p-2.5 relative overflow-hidden"
+                <div
+                  className="rounded-lg p-2.5 relative overflow-hidden"
                   style={{
-                    background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-                    border: '1px solid hsla(200, 60%, 35%, 0.3)'
-                  }}>
-                  <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                    style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+                    background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                    border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                  }}
+                >
+                  <div
+                    className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                    style={{
+                      background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
+                    }}
+                  />
                   <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
                   <div className="space-y-1">
                     {[
-                      { label: 'Resistencia', value: '152.350', color: 'hsl(0, 70%, 55%)' },
-                      { label: 'Soporte', value: '152.300', color: 'hsl(135, 70%, 50%)' },
-                      { label: 'Mayor Del Dia', value: '152.366', color: 'hsl(0, 0%, 85%)' },
-                      { label: 'Menos Del Dia', value: '152.280', color: 'hsl(0, 0%, 85%)' },
-                      { label: 'Pips', value: '+0.135', color: 'hsl(135, 70%, 50%)' },
-                    ].map(row => (
+                      { label: "Resistencia", value: "152.350", color: "hsl(0, 70%, 55%)" },
+                      { label: "Soporte", value: "152.300", color: "hsl(135, 70%, 50%)" },
+                      { label: "Mayor Del Dia", value: "152.366", color: "hsl(0, 0%, 85%)" },
+                      { label: "Menos Del Dia", value: "152.280", color: "hsl(0, 0%, 85%)" },
+                      { label: "Pips", value: "+0.135", color: "hsl(135, 70%, 50%)" },
+                    ].map((row) => (
                       <div key={row.label} className="flex justify-between items-center">
                         <span className="text-[9px] text-cyan-300/60">{row.label}</span>
-                        <span className="text-[9px] font-bold" style={{ color: row.color }}>{row.value}</span>
+                        <span className="text-[9px] font-bold" style={{ color: row.color }}>
+                          {row.value}
+                        </span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-lg p-2.5 relative overflow-hidden"
+                <div
+                  className="rounded-lg p-2.5 relative overflow-hidden"
                   style={{
-                    background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
-                    border: '1px solid hsla(200, 60%, 35%, 0.3)'
-                  }}>
-                  <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                    style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+                    background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                    border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                  }}
+                >
+                  <div
+                    className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                    style={{
+                      background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
+                    }}
+                  />
                   <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Estrategia</p>
                   <div className="space-y-1">
                     {[
-                      { label: 'Duracion', value: 'Intradia' },
-                      { label: 'Enfoque', value: 'Smart Money' },
-                      { label: 'Velas Comf', value: 'Pin Bar' },
-                      { label: 'Mejor Session', value: 'New York' },
-                      { label: 'Mejor Hora', value: '10:00-14:00' },
-                    ].map(row => (
+                      { label: "Duracion", value: "Intradia" },
+                      { label: "Enfoque", value: "Smart Money" },
+                      { label: "Velas Comf", value: "Pin Bar" },
+                      { label: "Mejor Session", value: "New York" },
+                      { label: "Mejor Hora", value: "10:00-14:00" },
+                    ].map((row) => (
                       <div key={row.label} className="flex justify-between items-center">
                         <span className="text-[9px] text-cyan-300/60">{row.label}</span>
                         <span className="text-[9px] font-bold text-cyan-200">{row.value}</span>
@@ -515,15 +629,22 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
             </div>
 
             {/* Bottom green BUY accent line */}
-            <div className="mx-3 mb-3 h-[3px] rounded-full"
-              style={{ background: 'linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)' }} />
+            <div
+              className="mx-3 mb-3 h-[3px] rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)",
+              }}
+            />
           </div>
         )}
 
         {/* Bottom glow */}
-        <div className="absolute bottom-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 40%) 0%, transparent 70%)' }} />
+        <div
+          className="absolute bottom-0 left-[10%] right-[10%] h-[1px]"
+          style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 40%) 0%, transparent 70%)" }}
+        />
       </div>
-    </div>);
-
+    </div>
+  );
 }
