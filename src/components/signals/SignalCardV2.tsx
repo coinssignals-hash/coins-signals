@@ -325,10 +325,13 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
   const isConnected = !!quote;
 
   const priceDiff = useMemo(() => {
-    if (!quote?.price) return { percent: 0, isPositive: true, hasData: false };
+    if (!quote?.price) return { percent: 0, pips: 0, currentPrice: 0, isPositive: true, hasData: false };
     const diff = ((quote.price - entryPrice) / entryPrice) * 100;
-    return { percent: diff, isPositive: diff >= 0, hasData: true };
-  }, [quote?.price, entryPrice]);
+    // For JPY pairs, 1 pip = 0.01; for others 1 pip = 0.0001
+    const pipMultiplier = symbol.includes("JPY") ? 100 : 10000;
+    const pips = (quote.price - entryPrice) * pipMultiplier;
+    return { percent: diff, pips, currentPrice: quote.price, isPositive: diff >= 0, hasData: true };
+  }, [quote?.price, entryPrice, symbol]);
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
@@ -412,20 +415,40 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                   </linearGradient>
                 </defs>
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span
                   className={cn(
-                    "text-sm font-bold transition-colors duration-300",
+                    "text-sm font-bold leading-none transition-colors duration-300",
                     !priceDiff.hasData ? "text-cyan-300" : priceDiff.isPositive ? "text-green-400" : "text-red-400",
                   )}
                 >
                   {priceDiff.hasData ? `${priceDiff.isPositive ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                 </span>
+                {priceDiff.hasData && (
+                  <span
+                    className={cn(
+                      "text-[8px] font-semibold leading-none mt-0.5",
+                      priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70",
+                    )}
+                  >
+                    {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
+                  </span>
+                )}
               </div>
             </div>
+            {/* Current price + status */}
             <div className="text-center">
-              <p className="text-[8px] text-cyan-300/50 leading-tight">Diferencia Precio</p>
-              <p className="text-[8px] text-cyan-300/50 leading-tight">Entrada</p>
+              {priceDiff.hasData ? (
+                <p className={cn(
+                  "text-[10px] font-bold",
+                  priceDiff.isPositive ? "text-green-400" : "text-red-400",
+                )}>
+                  {priceDiff.currentPrice.toFixed(3)}
+                </p>
+              ) : (
+                <p className="text-[8px] text-cyan-300/50 leading-tight">Diferencia Precio</p>
+              )}
+              <p className="text-[8px] text-cyan-300/50 leading-tight">vs Entrada</p>
             </div>
             <div className="flex items-center gap-1">
               <div
@@ -438,7 +461,7 @@ export function SignalCardV2({ className }: SignalCardV2Props) {
                       : "bg-red-400 shadow-[0_0_6px_hsl(0,80%,50%)]",
                 )}
               />
-              <span className="text-sm font-bold text-cyan-300 italic">
+              <span className="text-[10px] font-bold text-cyan-300 italic">
                 {isConnected ? "Live" : priceLoading ? "Cargando..." : "Sin datos"}
               </span>
             </div>
