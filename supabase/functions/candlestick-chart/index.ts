@@ -39,6 +39,37 @@ function dayKey(ts: number): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
 }
 
+/**
+ * Compute S/R from the last complete trading day (the day before the most recent day in bars).
+ * Returns { support, resistance } or nulls if not enough data.
+ */
+function computeLastCompleteDaySR(bars: Bar[]): { support: number | null; resistance: number | null } {
+  if (bars.length === 0) return { support: null, resistance: null };
+
+  // Collect unique days
+  const days = new Map<string, Bar[]>();
+  for (const b of bars) {
+    const dk = dayKey(b.t);
+    if (!days.has(dk)) days.set(dk, []);
+    days.get(dk)!.push(b);
+  }
+
+  const sortedDays = [...days.keys()].sort();
+  if (sortedDays.length < 2) return { support: null, resistance: null };
+
+  // The last complete day is the second-to-last day (the latest day may still be in progress)
+  const lastCompleteDay = sortedDays[sortedDays.length - 2];
+  const dayBars = days.get(lastCompleteDay)!;
+
+  let high = -Infinity, low = Infinity;
+  for (const b of dayBars) {
+    if (b.h > high) high = b.h;
+    if (b.l < low) low = b.l;
+  }
+
+  return { support: low, resistance: high };
+}
+
 function buildSvg(bars: Bar[], support: number | null, resistance: number | null, pair: string, hd = false): string {
   const W = hd ? W_HD : W_DEFAULT;
   const H = hd ? H_HD : H_DEFAULT;
@@ -241,9 +272,11 @@ Deno.serve(async (req) => {
 
     const signalId = url.searchParams.get('signal_id');
     const hd = url.searchParams.get('hd') === '1';
+    // sr_mode: 'manual' (default, use provided values), 'auto' (compute from last complete trading day)
+    const srMode = url.searchParams.get('sr_mode') || 'manual';
 
     // Check cache
-    const cacheKey = `${pair}_${support}_${resistance}_${signalId}_${hd ? 'hd' : 'sd'}`;
+    const cacheKey = `${pair}_${support}_${resistance}_${signalId}_${hd ? 'hd' : 'sd'}_${srMode}`;
     const cached = svgCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
       return new Response(cached.svg, {
@@ -306,6 +339,13 @@ Deno.serve(async (req) => {
       t: r.t,
       v: r.v || 0,
     }));
+
+    // Auto-compute S/R from last complete trading day if sr_mode=auto or no manual values provided
+    if (srMode === 'auto' || (support === null && resistance === null)) {
+      const computed = computeLastCompleteDaySR(bars);
+      if (support === null) support = computed.support;
+      if (resistance === null) resistance = computed.resistance;
+    }
 
     const svg = buildSvg(bars, support, resistance, pairLabel, hd);
 
