@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target } from 'lucide-react';
+import { Menu, User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X } from 'lucide-react';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
@@ -14,10 +14,12 @@ import { NotificationToggle } from '@/components/notifications/NotificationToggl
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
-import { format, addDays, startOfWeek, parseISO, isToday, isTomorrow } from 'date-fns';
+import { format, addDays, subDays, startOfWeek, startOfDay, parseISO, isToday, isTomorrow, isYesterday, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +29,7 @@ import {
 
 type ViewMode = 'full' | 'compact';
 type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
-type DayTab = 'today' | 'tomorrow' | 'all';
+type DayTab = 'today' | 'tomorrow' | 'yesterday' | 'calendar' | 'all';
 
 const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] = [
   { value: 'date-desc', label: 'Más recientes', icon: <Clock className="w-4 h-4" /> },
@@ -63,6 +65,8 @@ const generateWeekDays = () => {
 export default function Signals() {
   const navigate = useNavigate();
   const [dayTab, setDayTab] = useState<DayTab>('today');
+  const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -116,10 +120,11 @@ export default function Signals() {
     return result;
   }, [signals, showFavoritesOnly, favoriteIds, sortBy]);
 
-  // Separate today, tomorrow, and other days
-  const { todaySignals, tomorrowSignals, otherDayGroups } = useMemo(() => {
+  // Separate today, tomorrow, yesterday, and other days
+  const { todaySignals, tomorrowSignals, yesterdaySignals, otherDayGroups } = useMemo(() => {
     const today: TradingSignal[] = [];
     const tomorrow: TradingSignal[] = [];
+    const yesterday: TradingSignal[] = [];
     const others: Record<string, TradingSignal[]> = {};
 
     filteredAndSortedSignals.forEach((signal) => {
@@ -128,6 +133,8 @@ export default function Signals() {
         today.push(signal);
       } else if (isTomorrow(d)) {
         tomorrow.push(signal);
+      } else if (isYesterday(d)) {
+        yesterday.push(signal);
       } else {
         const day = format(d, 'yyyy-MM-dd');
         if (!others[day]) others[day] = [];
@@ -136,8 +143,14 @@ export default function Signals() {
     });
 
     const sortedOthers = Object.entries(others).sort(([a], [b]) => b.localeCompare(a));
-    return { todaySignals: today, tomorrowSignals: tomorrow, otherDayGroups: sortedOthers };
+    return { todaySignals: today, tomorrowSignals: tomorrow, yesterdaySignals: yesterday, otherDayGroups: sortedOthers };
   }, [filteredAndSortedSignals]);
+
+  // Signals for a specific calendar date
+  const calendarSignals = useMemo(() => {
+    if (!calendarDate) return [];
+    return filteredAndSortedSignals.filter((s) => isSameDay(parseISO(s.datetime), calendarDate));
+  }, [filteredAndSortedSignals, calendarDate]);
 
   const currentSortOption = sortOptions.find(opt => opt.value === sortBy);
 
@@ -233,35 +246,83 @@ export default function Signals() {
         {/* Day Tab Switcher */}
         <div className="flex gap-1 px-3 py-2">
           {([
-            { key: 'today' as DayTab, label: 'Hoy', icon: <TrendingUp className="w-3.5 h-3.5" /> },
-            { key: 'tomorrow' as DayTab, label: 'Mañana', icon: <Clock className="w-3.5 h-3.5" /> },
-            { key: 'all' as DayTab, label: 'Todos', icon: <LayoutGrid className="w-3.5 h-3.5" /> },
+            { key: 'today' as DayTab, label: 'Hoy', icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
+            { key: 'yesterday' as DayTab, label: 'Ayer', icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
+            { key: 'tomorrow' as DayTab, label: 'Mañana', icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
+            { key: 'all' as DayTab, label: 'Todos', icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
           ]).map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setDayTab(tab.key)}
+              onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
               className={cn(
-                "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
-                dayTab === tab.key
+                "flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
+                dayTab === tab.key && tab.key !== 'calendar'
                   ? tab.key === 'today'
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                    : tab.key === 'tomorrow'
-                      ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
-                      : "bg-slate-600 text-white shadow-lg shadow-slate-500/30"
+                    : tab.key === 'yesterday'
+                      ? "bg-violet-600 text-white shadow-lg shadow-violet-500/30"
+                      : tab.key === 'tomorrow'
+                        ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
+                        : "bg-slate-600 text-white shadow-lg shadow-slate-500/30"
                   : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               )}
             >
               {tab.icon}
               {tab.label}
-              {tab.key === 'today' && todaySignals.length > 0 && (
-                <span className="ml-1 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{todaySignals.length}</span>
-              )}
-              {tab.key === 'tomorrow' && tomorrowSignals.length > 0 && (
-                <span className="ml-1 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tomorrowSignals.length}</span>
+              {tab.count > 0 && (
+                <span className="ml-0.5 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tab.count}</span>
               )}
             </button>
           ))}
+
+          {/* Calendar picker */}
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all justify-center",
+                  dayTab === 'calendar'
+                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                )}
+              >
+                <CalendarIcon className="w-3.5 h-3.5" />
+                {dayTab === 'calendar' && calendarDate
+                  ? format(calendarDate, 'd MMM', { locale: es })
+                  : ''}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-700" align="end">
+              <Calendar
+                mode="single"
+                selected={calendarDate}
+                onSelect={(date) => {
+                  setCalendarDate(date);
+                  setDayTab('calendar');
+                  setCalendarOpen(false);
+                }}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+                locale={es}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
+
+        {/* Calendar date indicator */}
+        {dayTab === 'calendar' && calendarDate && (
+          <div className="flex items-center gap-2 px-4 pb-2">
+            <span className="text-xs text-emerald-400">
+              {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: es })}
+            </span>
+            <button
+              onClick={() => { setDayTab('today'); setCalendarDate(undefined); }}
+              className="text-slate-500 hover:text-slate-300"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Filters Bar */}
@@ -321,12 +382,37 @@ export default function Signals() {
 
         {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
 
+        {dayTab === 'yesterday' && (
+          <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+            {yesterdaySignals.length === 0 ? (
+              <p className="text-slate-500 text-center py-6 text-sm">No hay señales de ayer</p>
+            ) : (
+              yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
+            )}
+          </SignalsDayGroup>
+        )}
+
         {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
+
+        {dayTab === 'calendar' && calendarDate && (
+          <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
+            {calendarSignals.length === 0 ? (
+              <p className="text-slate-500 text-center py-6 text-sm">No hay señales para esta fecha</p>
+            ) : (
+              calendarSignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
+            )}
+          </SignalsDayGroup>
+        )}
 
         {dayTab === 'all' && (
           <>
             <TodaySignalsGroup signals={todaySignals} />
             {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
+            {yesterdaySignals.length > 0 && (
+              <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+                {yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)}
+              </SignalsDayGroup>
+            )}
             {otherDayGroups.map(([day, daySignals]) => (
               <SignalsDayGroup key={day} date={day} count={daySignals.length}>
                 {daySignals.map((signal) => (
