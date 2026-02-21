@@ -1148,12 +1148,9 @@ export function PriceChart({
             {timeRangeDescription}
           </div>
           
-          {/* Session toggle and filter buttons */}
+          {/* Chart type and filter buttons */}
           <div className="flex flex-col gap-1 border-l border-border/30 pl-3">
             <div className="flex items-center gap-1">
-              {/* Toggle sessions visibility */}
-              
-              
               {/* Chart type toggle */}
               <div className="flex items-center border border-border/50 rounded overflow-hidden">
                 <button 
@@ -1221,60 +1218,81 @@ export function PriceChart({
               {/* Divider */}
               <div className="w-px h-4 bg-border/30 mx-1" />
               
-              {/* Session buttons */}
-              {showSessions && MARKET_SESSIONS.map(session => <Tooltip key={session.id}>
-                  <TooltipTrigger asChild>
-                    <button onClick={() => toggleSession(session.id as SessionId)} className={cn("px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1", enabledSessions.has(session.id as SessionId) ? `${session.bgColor} ${session.textColor}` : "text-muted-foreground/40 hover:text-muted-foreground bg-muted/20 line-through")}>
-                      <span>{session.emoji}</span>
-                      <span className="hidden sm:inline">{session.name}</span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[280px] p-3" style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.95)',
-                  borderColor: session.borderColor
-                }}>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{session.emoji}</span>
-                        <span className="font-semibold" style={{
-                        color: session.borderColor
-                      }}>{session.name}</span>
-                        <span className="text-[10px] text-muted-foreground ml-auto">
-                          {String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{session.description}</p>
-                      <div className="grid grid-cols-2 gap-2 text-[11px]">
-                        <div>
-                          <span className="text-muted-foreground">Mercados: </span>
-                          <span className="text-foreground">{session.markets}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Volatilidad: </span>
-                          <span className="font-medium" style={{
-                          color: session.volatility === 'Alta' ? '#ef4444' : session.volatility === 'Baja' ? '#22c55e' : '#fbbf24'
-                        }}>
-                            {session.volatility}
+              {/* Toggle sessions panel */}
+              <button 
+                onClick={() => setShowSessions(!showSessions)} 
+                className={cn(
+                  "px-2 py-1 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                  showSessions 
+                    ? "bg-primary/20 text-primary" 
+                    : "bg-muted/30 text-muted-foreground"
+                )}
+              >
+                🌐 Zonas
+                <span className={cn("transition-transform duration-200 text-[8px]", showSessions ? "rotate-180" : "")}>▼</span>
+              </button>
+            </div>
+            
+            {/* Collapsible sessions section */}
+            <div className={cn(
+              "overflow-hidden transition-all duration-300 ease-in-out",
+              showSessions ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
+            )}>
+              <div className="flex items-center gap-1 flex-wrap">
+                {MARKET_SESSIONS.map(session => <Tooltip key={session.id}>
+                    <TooltipTrigger asChild>
+                      <button onClick={() => toggleSession(session.id as SessionId)} className={cn("px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1", enabledSessions.has(session.id as SessionId) ? `${session.bgColor} ${session.textColor}` : "text-muted-foreground/40 hover:text-muted-foreground bg-muted/20 line-through")}>
+                        <span>{session.emoji}</span>
+                        <span className="hidden sm:inline">{session.name}</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[280px] p-3" style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                    borderColor: session.borderColor
+                  }}>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{session.emoji}</span>
+                          <span className="font-semibold" style={{
+                          color: session.borderColor
+                        }}>{session.name}</span>
+                          <span className="text-[10px] text-muted-foreground ml-auto">
+                            {String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC
                           </span>
                         </div>
-                        <div className="col-span-2">
-                          <span className="text-muted-foreground">Pares clave: </span>
-                          <span className="text-foreground">{session.pairs}</span>
+                        <p className="text-xs text-muted-foreground">{session.description}</p>
+                        <div className="grid grid-cols-2 gap-2 text-[11px]">
+                          <div>
+                            <span className="text-muted-foreground">Mercados: </span>
+                            <span className="text-foreground">{session.markets}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Volatilidad: </span>
+                            <span className="font-medium" style={{
+                            color: session.volatility === 'Alta' ? '#ef4444' : session.volatility === 'Baja' ? '#22c55e' : '#fbbf24'
+                          }}>
+                              {session.volatility}
+                            </span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-muted-foreground">Pares clave: </span>
+                            <span className="text-foreground">{session.pairs}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>)}
-            </div>
-            {/* UTC time reference - only show if sessions enabled */}
-            {showSessions && <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 flex-wrap">
+                    </TooltipContent>
+                  </Tooltip>)}
+              </div>
+              {/* UTC time reference */}
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 flex-wrap mt-1">
                 {MARKET_SESSIONS.filter(s => enabledSessions.has(s.id as SessionId)).map(session => <span key={session.id} className="flex items-center gap-1">
                     <span style={{
                   color: session.borderColor
                 }}>{session.emoji}</span>
                     <span>{String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC</span>
                   </span>)}
-              </div>}
+              </div>
+            </div>
           </div>
         </div>
         
