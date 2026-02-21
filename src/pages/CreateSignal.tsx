@@ -12,19 +12,18 @@ const POPULAR_PAIRS = [
 export default function CreateSignal() {
   const navigate = useNavigate();
   const [currencyPair, setCurrencyPair] = useState('');
+  const [action, setAction] = useState<'BUY' | 'SELL'>('BUY');
   const [entryPrice, setEntryPrice] = useState('');
   const [takeProfit, setTakeProfit] = useState('');
   const [stopLoss, setStopLoss] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Auto-derive action & trend from TP/SL relative to entry
   const entry = parseFloat(entryPrice);
   const tp = parseFloat(takeProfit);
   const sl = parseFloat(stopLoss);
   const isValid = currencyPair && !isNaN(entry) && !isNaN(tp) && !isNaN(sl) && entry > 0;
 
-  const isBuy = isValid && tp > entry;
-  const action = isBuy ? 'BUY' : 'SELL';
+  const isBuy = action === 'BUY';
   const trend = isBuy ? 'bullish' : 'bearish';
 
   // Auto-calculate probability based on risk/reward ratio
@@ -109,6 +108,35 @@ export default function CreateSignal() {
             placeholder="O escribe el par..."
             className="w-full bg-card/60 border border-border/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
+        </div>
+
+        {/* BUY / SELL selector */}
+        <div className="mb-6">
+          <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Acción</label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setAction('BUY')}
+              className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${
+                action === 'BUY'
+                  ? 'bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500 shadow-lg shadow-emerald-500/20'
+                  : 'bg-card/60 text-muted-foreground border border-border/40 hover:bg-card'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              COMPRAR (BUY)
+            </button>
+            <button
+              onClick={() => setAction('SELL')}
+              className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${
+                action === 'SELL'
+                  ? 'bg-red-500/20 text-red-400 border-2 border-red-500 shadow-lg shadow-red-500/20'
+                  : 'bg-card/60 text-muted-foreground border border-border/40 hover:bg-card'
+              }`}
+            >
+              <TrendingDown className="w-4 h-4" />
+              VENDER (SELL)
+            </button>
+          </div>
         </div>
 
         {/* Price inputs */}
