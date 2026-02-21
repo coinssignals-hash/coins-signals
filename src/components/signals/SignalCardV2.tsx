@@ -11,14 +11,22 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
+  Info,
 } from "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import marketSentimentChart from "@/assets/market-sentiment-chart.jpg";
+import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SignalCardV2Props {
   signal?: TradingSignal;
@@ -723,18 +731,68 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   />
                   <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Estrategia</p>
                   <div className="space-y-1">
-                    {[
-                      { label: "Duracion", value: "Intradia" },
-                      { label: "Enfoque", value: "Smart Money" },
-                      { label: "Velas Comf", value: "Pin Bar" },
-                      { label: "Mejor Session", value: "New York" },
-                      { label: "Mejor Hora", value: "10:00-14:00" },
-                    ].map((row) => (
-                      <div key={row.label} className="flex justify-between items-center">
-                        <span className="text-[9px] text-cyan-300/60">{row.label}</span>
-                        <span className="text-[9px] font-bold text-cyan-200">{row.value}</span>
+                    <TooltipProvider delayDuration={100}>
+                      {/* Duracion */}
+                      <div className="flex justify-between items-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-[9px] text-cyan-300/60 flex items-center gap-1 cursor-help">
+                              Duracion <Info className="w-2.5 h-2.5 text-cyan-400/40" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[220px] bg-[hsl(225,25%,12%)] border-cyan-500/20 text-[10px] text-cyan-100 p-2.5">
+                            <p className="font-bold text-yellow-400 mb-1">Intradía</p>
+                            <p>Operaciones que se abren y cierran dentro del mismo día de trading. No se mantienen posiciones durante la noche, reduciendo riesgo de gaps.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <span className="text-[9px] font-bold text-cyan-200">Intradia</span>
                       </div>
-                    ))}
+
+                      {/* Enfoque */}
+                      <div className="flex justify-between items-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-[9px] text-cyan-300/60 flex items-center gap-1 cursor-help">
+                              Enfoque <Info className="w-2.5 h-2.5 text-cyan-400/40" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[220px] bg-[hsl(225,25%,12%)] border-cyan-500/20 text-[10px] text-cyan-100 p-2.5">
+                            <p className="font-bold text-yellow-400 mb-1">Smart Money</p>
+                            <p>Estrategia basada en seguir el flujo de capital institucional. Identifica zonas de liquidez, bloques de órdenes y manipulaciones del mercado para operar junto al "dinero inteligente".</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <span className="text-[9px] font-bold text-cyan-200">Smart Money</span>
+                      </div>
+
+                      {/* Velas Confirmacion */}
+                      <div className="flex justify-between items-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-[9px] text-cyan-300/60 flex items-center gap-1 cursor-help">
+                              Velas Comf <Info className="w-2.5 h-2.5 text-cyan-400/40" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[240px] bg-[hsl(225,25%,12%)] border-cyan-500/20 text-[10px] text-cyan-100 p-2.5">
+                            <p className="font-bold text-yellow-400 mb-1">Pin Bar</p>
+                            <p className="mb-2">Vela con mecha larga y cuerpo pequeño. Indica rechazo del precio en una zona clave. La mecha larga muestra que los compradores/vendedores defendieron ese nivel con fuerza.</p>
+                            <img src={pinbarPattern} alt="Patrón Pin Bar" className="w-full rounded-md border border-cyan-500/20" />
+                          </TooltipContent>
+                        </Tooltip>
+                        <span className="text-[9px] font-bold text-cyan-200">Pin Bar</span>
+                      </div>
+
+                      {/* Mejor Session */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] text-cyan-300/60">Mejor Session</span>
+                        <span className="text-[9px] font-bold text-cyan-200">New York</span>
+                      </div>
+
+                      {/* Mejor Hora */}
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] text-cyan-300/60">Mejor Hora</span>
+                        <span className="text-[9px] font-bold text-cyan-200">10:00-14:00</span>
+                      </div>
+                    </TooltipProvider>
                   </div>
                 </div>
               </div>
