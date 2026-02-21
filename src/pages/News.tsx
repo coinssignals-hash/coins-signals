@@ -382,9 +382,6 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 function QuickCurrencyFilter({
   selected,
   onChange
-
-
-
 }: {selected: Currency[];onChange: (currencies: Currency[]) => void;}) {
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
@@ -394,7 +391,45 @@ function QuickCurrencyFilter({
     }
   };
 
-  return null;
+  const isAll = selected.length === 0;
+
+  return (
+    <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+      {/* All button */}
+      <button
+        onClick={() => onChange([])}
+        className={cn(
+          'flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border',
+          isAll
+            ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
+            : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+        )}
+      >
+        🌍 Todas
+      </button>
+      
+      {/* Major currencies */}
+      {QUICK_CURRENCIES.map((currency) => {
+        const info = CURRENCIES[currency];
+        const isSelected = selected.includes(currency);
+        return (
+          <button
+            key={currency}
+            onClick={() => toggleCurrency(currency)}
+            className={cn(
+              'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
+              isSelected
+                ? 'bg-primary/15 border-primary/50 text-primary shadow-sm'
+                : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
+            )}
+          >
+            <span className="text-sm">{info.flag}</span>
+            <span>{currency}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 
 
 
