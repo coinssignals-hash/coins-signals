@@ -5,7 +5,7 @@ import { MainDrawer } from '@/components/layout/MainDrawer';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Menu, Brain, Activity, BarChart3, Clock, Wifi, WifiOff, TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react';
+import { Menu, Brain, Activity, BarChart3, Clock, Wifi, WifiOff, TrendingUp, TrendingDown, Minus, Loader2, Wallet, Newspaper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCurrencyStrength, CurrencyStrengthData, CorrelationEntry } from '@/hooks/useCurrencyStrength';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
@@ -367,21 +367,34 @@ const CurrencyImpact = () => {
             <button onClick={() => setDrawerOpen(true)} className="p-2 text-blue-300 hover:text-blue-100">
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-lg font-bold text-white tracking-wide">
-              Impacto <span className="text-yellow-400">$</span> Divisas
-            </h1>
-            <button onClick={() => navigate(user ? '/settings' : '/auth')} className="p-2 text-blue-300 hover:text-blue-100">
-              {user ? (
-                <Avatar className="w-8 h-8 border-2 border-blue-500/50">
-                  <AvatarImage src={profile?.avatar_url || ''} alt="Avatar" />
-                  <AvatarFallback className="bg-blue-600 text-white text-xs">{getInitials()}</AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
-                </div>
-              )}
-            </button>
+            <div className="flex items-center gap-1">
+              <h1 className="text-lg font-bold text-white tracking-wide">
+                Impacto <span className="text-yellow-400">$</span> Divisas
+              </h1>
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={() => navigate('/portfolio')} className="p-2 text-blue-300 hover:text-blue-100" title="Portafolio">
+                <Wallet className="w-5 h-5" />
+              </button>
+              <button onClick={() => navigate('/signals')} className="p-2 text-blue-300 hover:text-blue-100" title="Señales">
+                <TrendingUp className="w-5 h-5" />
+              </button>
+              <button onClick={() => navigate('/news')} className="p-2 text-blue-300 hover:text-blue-100" title="Noticias">
+                <Newspaper className="w-5 h-5" />
+              </button>
+              <button onClick={() => navigate(user ? '/settings' : '/auth')} className="p-2 text-blue-300 hover:text-blue-100">
+                {user ? (
+                  <Avatar className="w-8 h-8 border-2 border-blue-500/50">
+                    <AvatarImage src={profile?.avatar_url || ''} alt="Avatar" />
+                    <AvatarFallback className="bg-blue-600 text-white text-xs">{getInitials()}</AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-white" />
+                  </div>
+                )}
+              </button>
+            </div>
           </div>
         </header>
 
