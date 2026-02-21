@@ -6,7 +6,7 @@ import { SignalDetailView } from './SignalDetailView';
 export interface SignalData {
   id: string;
   time: string;
-  action: 'Comprar' | 'Vender';
+  action: string;
   currencyPair: string;
   pips: number;
   percentage: number;

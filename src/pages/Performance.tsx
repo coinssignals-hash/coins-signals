@@ -6,6 +6,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { WeeklySummary } from '@/components/performance/WeeklySummary';
 import { WeekFilter } from '@/components/performance/WeekFilter';
 import { DayTabs } from '@/components/performance/DayTabs';
@@ -31,7 +32,7 @@ const transformSignal = (signal: PerformanceSignal): SignalData => {
   return {
     id: signal.id,
     time: format(datetime, 'hh:mm a'),
-    action: signal.action === 'BUY' ? 'Comprar' : 'Vender',
+    action: signal.action,
     currencyPair: signal.currency_pair.replace('/', ' '),
     pips: isSuccessful ? pips : -pips,
     percentage: signal.probability,
@@ -42,7 +43,7 @@ const transformSignal = (signal: PerformanceSignal): SignalData => {
     signalTime: format(datetime, 'hh:mm a'),
     endTime: format(new Date(datetime.getTime() + 6 * 60 * 60 * 1000), 'hh:mm a'),
     executionTime: format(new Date(datetime.getTime() + 30 * 60 * 1000), 'hh:mm a'),
-    totalOperationTime: '06:00 Horas',
+    totalOperationTime: '06:00',
   };
 };
 
@@ -67,6 +68,7 @@ const defaultCurrencyPairs = [
 ];
 
 export default function Performance() {
+  const { t } = useTranslation();
   const [selectedDay, setSelectedDay] = useState('Viernes');
   const [selectedMarket, setSelectedMarket] = useState('Forex');
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
@@ -158,7 +160,7 @@ export default function Performance() {
           {isLoading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Cargando datos...
+              {t('perf_loading')}
             </div>
           )}
         </div>
@@ -196,7 +198,7 @@ export default function Performance() {
           />
         ) : (
           <div className="bg-card border border-border rounded-lg p-8 text-center mb-4">
-            <p className="text-muted-foreground">No hay señales para esta semana</p>
+            <p className="text-muted-foreground">{t('perf_no_signals_week')}</p>
           </div>
         )}
 
@@ -223,7 +225,7 @@ export default function Performance() {
 
         {/* Currency Pairs Section */}
         <div className="mb-4">
-          <h3 className="text-sm font-bold text-foreground text-center mb-3">Moneda Mas Movida</h3>
+          <h3 className="text-sm font-bold text-foreground text-center mb-3">{t('perf_most_moved')}</h3>
           {isLoadingPairs ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Skeleton className="h-40 w-full rounded-lg" />

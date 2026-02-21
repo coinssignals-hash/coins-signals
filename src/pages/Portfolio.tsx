@@ -20,6 +20,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { usePortfolio, AccountData, Position } from '@/hooks/usePortfolio';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip as RechartsTooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -63,6 +64,7 @@ function useValueFlash(value: number) {
 }
 
 export default function Portfolio() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { accounts, summary, loading, error, lastRefresh, isLive, isDemo, refetch, getAllPositions } = usePortfolio();
@@ -112,15 +114,15 @@ export default function Portfolio() {
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
               <div>
-                <p className="text-amber-200 text-sm font-medium">Inicia sesión para guardar tu portfolio</p>
-                <p className="text-amber-200/70 text-xs">Conecta tus brokers y sincroniza tus datos</p>
+                <p className="text-amber-200 text-sm font-medium">{t('portfolio_login_banner')}</p>
+                <p className="text-amber-200/70 text-xs">{t('portfolio_login_banner_desc')}</p>
               </div>
             </div>
             <button
               onClick={() => navigate('/auth')}
               className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded-full text-sm font-medium transition-colors whitespace-nowrap"
             >
-              Iniciar Sesión
+              {t('portfolio_login')}
             </button>
           </div>
         )}
@@ -135,8 +137,8 @@ export default function Portfolio() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-white text-xl font-bold">Portfolio</h1>
-              <p className="text-slate-400 text-sm">Vista unificada de todos tus brokers</p>
+              <h1 className="text-white text-xl font-bold">{t('portfolio_title')}</h1>
+              <p className="text-slate-400 text-sm">{t('portfolio_subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -149,7 +151,7 @@ export default function Portfolio() {
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                  <p>Estos datos son ficticios. Inicia sesión para ver tu portfolio real.</p>
+                  <p>{t('portfolio_demo_tooltip')}</p>
                 </TooltipContent>
               </Tooltip>
             )}
@@ -189,21 +191,21 @@ export default function Portfolio() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <AnimatedSummaryCard
-            title="Equity Total"
+            title={t('portfolio_equity')}
             value={summary.total_equity}
             formatFn={formatCurrency}
             icon={<Wallet className="w-5 h-5" />}
             loading={loading}
           />
           <AnimatedSummaryCard
-            title="Cash Disponible"
+            title={t('portfolio_cash')}
             value={summary.total_cash}
             formatFn={formatCurrency}
             icon={<BarChart3 className="w-5 h-5" />}
             loading={loading}
           />
           <AnimatedSummaryCard
-            title="PnL No Realizado"
+            title={t('portfolio_unrealized_pnl')}
             value={summary.total_unrealized_pnl}
             formatFn={formatCurrency}
             icon={summary.total_unrealized_pnl >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
@@ -211,7 +213,7 @@ export default function Portfolio() {
             loading={loading}
           />
           <AnimatedSummaryCard
-            title="Posiciones"
+            title={t('portfolio_positions')}
             value={summary.total_positions}
             formatFn={(v) => v.toString()}
             icon={<PieChartIcon className="w-5 h-5" />}
