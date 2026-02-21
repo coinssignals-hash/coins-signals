@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es, enUS, ptBR, fr } from 'date-fns/locale';
 import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface PricePredictionProps {
   symbol: string;
@@ -16,6 +17,10 @@ interface PricePredictionProps {
 }
 
 export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtimeConnected }: PricePredictionProps) {
+  const { t, language } = useTranslation();
+  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
+  const dateLocale = DATE_LOCALES[language] ?? es;
+
   const { data, isLoading, error } = usePricePrediction(symbol, currentPrice);
   const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
   const [aiPrediction, setAIPrediction] = useState<Record<string, unknown> | null>(null);
@@ -31,7 +36,6 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
     }
   }, [symbol]);
 
-  // Auto-generate AI analysis when we have price data and haven't generated yet
   useEffect(() => {
     const price = realtimePrice || currentPrice;
     
@@ -58,16 +62,15 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
       previousClose: price * 0.998,
       high: price * 1.005,
       low: price * 0.995
-    }, undefined, undefined, true); // forceRefresh = true
+    }, undefined, undefined, true);
     if (result?.analysis) {
       setAIPrediction(result.analysis);
     }
   };
 
   const today = new Date();
-  const dateStr = format(today, "d 'de' MMMM 'de' yyyy", { locale: es });
+  const dateStr = format(today, "PPP", { locale: dateLocale });
   
-  // Merge AI prediction with data if available
   const displayData = aiPrediction ? {
     ...data,
     predictedHigh: (aiPrediction.predicted_high as number) || data?.predictedHigh,
@@ -83,7 +86,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
       <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
-          <span className="ml-2 text-gray-400">Cargando predicción...</span>
+          <span className="ml-2 text-gray-400">{t('analysis_loading_prediction')}</span>
         </div>
       </div>
     );
@@ -92,7 +95,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
   if (error || !displayData) {
     return (
       <AnalysisError 
-        title="Predicción del Precio"
+        title={t('analysis_price_prediction')}
         error={error as Error}
         compact
       />
@@ -106,8 +109,8 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
   const trendColor = displayData.direction === 'up' ? 'text-green-400' : 
                      displayData.direction === 'down' ? 'text-red-400' : 'text-yellow-400';
   
-  const trendText = displayData.direction === 'up' ? 'Tendencia Alcista' : 
-                    displayData.direction === 'down' ? 'Tendencia Bajista' : 'Tendencia Lateral';
+  const trendText = displayData.direction === 'up' ? t('analysis_trend_bullish') : 
+                    displayData.direction === 'down' ? t('analysis_trend_bearish') : t('analysis_trend_sideways');
 
   return (
     <AIRefreshOverlay isRefreshing={isAILoading}>
@@ -115,7 +118,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <h3 className="text-white font-semibold flex items-center gap-2">
-              Predicción Del Precio
+              {t('analysis_price_prediction')}
               {aiPrediction && (
                 <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
               )}
@@ -136,26 +139,24 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
           </div>
         </div>
 
-        {/* Predicted range */}
         <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-[#0d1f0d] rounded-lg">
           <div className="text-center">
-            <p className="text-gray-400 text-xs mb-1">Mínimo Esperado</p>
+            <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_low')}</p>
             <p className="text-red-400 font-mono font-semibold">{displayData.predictedLow.toFixed(4)}</p>
           </div>
           <div className="text-center">
-            <p className="text-gray-400 text-xs mb-1">Cierre Esperado</p>
+            <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_close')}</p>
             <p className="text-white font-mono font-semibold">{displayData.predictedClose.toFixed(4)}</p>
           </div>
           <div className="text-center">
-            <p className="text-gray-400 text-xs mb-1">Máximo Esperado</p>
+            <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_high')}</p>
             <p className="text-green-400 font-mono font-semibold">{displayData.predictedHigh.toFixed(4)}</p>
           </div>
         </div>
 
-        {/* Confidence bar */}
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-400">Confianza de la predicción</span>
+            <span className="text-gray-400">{t('analysis_prediction_confidence')}</span>
             <span className={`font-semibold ${
               displayData.confidence >= 70 ? 'text-green-400' : 
               displayData.confidence >= 50 ? 'text-yellow-400' : 'text-red-400'
@@ -174,17 +175,17 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
 
         <div className="space-y-3 text-sm">
           <div>
-            <h4 className="text-white font-semibold mb-1">Síntesis del Día</h4>
+            <h4 className="text-white font-semibold mb-1">{t('analysis_day_synthesis')}</h4>
             <p className="text-gray-300 leading-relaxed">
-              El par <span className="text-green-400 underline">{displayData.symbol}</span> muestra una{' '}
-              <span className={trendColor}>{trendText}</span> el {dateStr}. {displayData.summary}
+              {displayData.symbol}{' '}
+              <span className={trendColor}>{trendText}</span> — {dateStr}. {displayData.summary}
             </p>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <span>Timeframe: {displayData.timeframe}</span>
             <span>•</span>
-            <span>Última actualización: {format(new Date(), 'HH:mm')}</span>
+            <span>{t('analysis_last_update')}: {format(new Date(), 'HH:mm')}</span>
           </div>
         </div>
       </div>

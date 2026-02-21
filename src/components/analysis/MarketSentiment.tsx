@@ -6,6 +6,7 @@ import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { cn } from '@/lib/utils';
 
 interface MarketSentimentProps {
@@ -27,6 +28,7 @@ export function MarketSentiment({
   realtimePrice,
   isRealtimeConnected,
 }: MarketSentimentProps) {
+  const { t } = useTranslation();
   const { data: sentimentData, isLoading, error } = useMarketSentiment(symbol);
   const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
   const [aiSentiment, setAISentiment] = useState<Record<string, unknown> | null>(null);
@@ -79,13 +81,13 @@ export function MarketSentiment({
   const displayData = aiSentiment || sentimentData;
 
   const chartData = [
-    { name: 'Alcista', value: aiSentiment 
+    { name: t('analysis_bullish'), value: aiSentiment 
       ? Math.round(((Number(aiSentiment.score) || 0) + 1) / 2 * 100) 
       : (sentimentData?.bullishPercent || 0) as number, color: '#22c55e' },
-    { name: 'Neutro', value: aiSentiment 
+    { name: t('analysis_neutral'), value: aiSentiment 
       ? Math.round((1 - Math.abs(Number(aiSentiment.score) || 0)) * 50) 
       : (sentimentData?.neutralPercent || 0) as number, color: '#eab308' },
-    { name: 'Bajista', value: aiSentiment 
+    { name: t('analysis_bearish'), value: aiSentiment 
       ? Math.round((1 - (Number(aiSentiment.score) || 0)) / 2 * 100) 
       : (sentimentData?.bearishPercent || 0) as number, color: '#ef4444' },
   ];
@@ -96,14 +98,14 @@ export function MarketSentiment({
   );
 
   const trendInfo = {
-    bullish: { icon: TrendingUp, label: 'ALCISTA', color: 'text-green-400' },
-    bearish: { icon: TrendingDown, label: 'BAJISTA', color: 'text-red-400' },
-    neutral: { icon: Minus, label: 'NEUTRAL', color: 'text-yellow-400' },
+    bullish: { icon: TrendingUp, label: t('analysis_bullish'), color: 'text-green-400' },
+    bearish: { icon: TrendingDown, label: t('analysis_bearish'), color: 'text-red-400' },
+    neutral: { icon: Minus, label: t('analysis_neutral'), color: 'text-yellow-400' },
   };
 
   const currentTrend = sentimentData?.overall || 
-    (dominantSentiment.name === 'Alcista' ? 'bullish' : 
-     dominantSentiment.name === 'Bajista' ? 'bearish' : 'neutral');
+    (dominantSentiment.name === t('analysis_bullish') ? 'bullish' : 
+     dominantSentiment.name === t('analysis_bearish') ? 'bearish' : 'neutral');
   
   const TrendIcon = trendInfo[currentTrend as keyof typeof trendInfo]?.icon || Minus;
 
@@ -112,7 +114,7 @@ export function MarketSentiment({
       <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
-          <span className="ml-2 text-gray-400">Cargando sentimiento...</span>
+          <span className="ml-2 text-gray-400">{t('analysis_loading_sentiment')}</span>
         </div>
       </div>
     );
@@ -121,7 +123,7 @@ export function MarketSentiment({
   if (error && !aiSentiment) {
     return (
       <AnalysisError 
-        title="Sentimiento del Mercado"
+        title={t('analysis_market_sentiment')}
         error={error as Error}
         compact
       />
@@ -133,7 +135,7 @@ export function MarketSentiment({
       <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4 relative overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold text-lg">Sentimiento del Mercado</h3>
+          <h3 className="text-white font-semibold text-lg">{t('analysis_market_sentiment')}</h3>
           <AIRegenerateButton 
             onClick={handleRegenerateWithAI} 
             isLoading={isAILoading}
@@ -143,7 +145,7 @@ export function MarketSentiment({
         {aiSentiment && (
           <div className="mb-3 text-xs text-purple-400 flex items-center gap-1">
             <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-            Análisis generado con IA
+            {t('analysis_ai_generated')}
           </div>
         )}
 
@@ -215,21 +217,21 @@ export function MarketSentiment({
             <div className="grid grid-cols-4 gap-2">
               {/* Price Stats */}
               <div className="bg-green-900/10 border border-green-900/30 rounded-lg p-2 text-center">
-                <span className="text-gray-400 text-[10px] block">Máximo</span>
+                <span className="text-gray-400 text-[10px] block">{t('analysis_high')}</span>
                 <div className="text-green-400 text-sm font-bold font-mono">{highPrice.toFixed(4)}</div>
               </div>
               <div className="bg-red-900/10 border border-red-900/30 rounded-lg p-2 text-center">
-                <span className="text-gray-400 text-[10px] block">Mínimo</span>
+                <span className="text-gray-400 text-[10px] block">{t('analysis_low')}</span>
                 <div className="text-red-400 text-sm font-bold font-mono">{lowPrice.toFixed(4)}</div>
               </div>
               <div className="bg-gray-900/30 border border-gray-700/30 rounded-lg p-2 text-center">
-                <span className="text-gray-400 text-[10px] block">Cambio</span>
+                <span className="text-gray-400 text-[10px] block">{t('analysis_change')}</span>
                 <div className={`text-sm font-bold ${dailyChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {dailyChange >= 0 ? '+' : ''}{dailyChange.toFixed(2)}%
                 </div>
               </div>
               <div className="bg-gray-900/30 border border-gray-700/30 rounded-lg p-2 text-center">
-                <span className="text-gray-400 text-[10px] block">Pips</span>
+                <span className="text-gray-400 text-[10px] block">{t('analysis_pips')}</span>
                 <div className={`text-sm font-bold ${pipsChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {pipsChange >= 0 ? '+' : ''}{(pipsChange * 10000).toFixed(0)}
                 </div>
@@ -250,7 +252,7 @@ export function MarketSentiment({
                     indicator.signal === 'buy' ? 'text-green-400' :
                     indicator.signal === 'sell' ? 'text-red-400' : 'text-yellow-400'
                   }`}>
-                    {indicator.signal === 'buy' ? 'Compra' : indicator.signal === 'sell' ? 'Venta' : 'Neutro'}
+                    {indicator.signal === 'buy' ? t('analysis_buy_signal') : indicator.signal === 'sell' ? t('analysis_sell_signal') : t('analysis_neutral_signal')}
                   </div>
                 </div>
               ))}

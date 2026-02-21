@@ -436,7 +436,7 @@ export function CurrencyHeader({
             "text-right transition-all",
             isAnimating && "animate-pop-in"
           )} style={{ animationDelay: '400ms' }}>
-            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">Máximo</div>
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">High</div>
             <div className="text-green-400 font-mono text-sm font-semibold tabular-nums">{high.toFixed(4)}</div>
           </div>
           
@@ -444,7 +444,7 @@ export function CurrencyHeader({
             "text-right transition-all",
             isAnimating && "animate-pop-in"
           )} style={{ animationDelay: '450ms' }}>
-            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">Mínimo</div>
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">Low</div>
             <div className="text-red-400 font-mono text-sm font-semibold tabular-nums">{low.toFixed(4)}</div>
           </div>
         </div>

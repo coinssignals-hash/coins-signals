@@ -6,6 +6,7 @@ import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface MarketConclusionsProps {
   symbol: string;
@@ -15,6 +16,7 @@ interface MarketConclusionsProps {
 }
 
 export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealtimeConnected }: MarketConclusionsProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { data, isLoading, error } = useMarketConclusions(symbol, currentPrice);
   const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
@@ -77,7 +79,7 @@ export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealt
       <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
       <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
         <div className="flex items-center gap-2">
-          <h3 className="text-white font-semibold text-sm">Conclusiones y Dirección Esperada Del Mercado</h3>
+          <h3 className="text-white font-semibold text-sm">{t('analysis_conclusions')}</h3>
           {aiConclusions && (
             <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
           )}
@@ -99,24 +101,23 @@ export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealt
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
-              <span className="ml-2 text-gray-400">Cargando conclusiones...</span>
+              <span className="ml-2 text-gray-400">{t('analysis_loading_conclusions')}</span>
             </div>
           ) : error || (!data && !aiConclusions) ? (
             <AnalysisError 
-              title="Conclusiones del Mercado"
+              title={t('analysis_conclusions')}
               error={error as Error}
               compact
             />
           ) : aiConclusions ? (
-            // AI-generated conclusions view
             <div className="space-y-4">
               <div>
-                <p className="text-gray-400 text-sm">Resumen:</p>
+                <p className="text-gray-400 text-sm">{t('analysis_summary')}:</p>
                 <p className="text-white">{aiConclusions.summary as string}</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-400 text-sm mb-2">Factores Clave:</p>
+                  <p className="text-gray-400 text-sm mb-2">{t('analysis_key_factors')}:</p>
                   <ul className="text-green-400 text-sm list-disc list-inside">
                     {(aiConclusions.key_drivers as string[])?.map((driver, i) => (
                       <li key={i}>{driver}</li>
@@ -124,7 +125,7 @@ export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealt
                   </ul>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm mb-2">Riesgos:</p>
+                  <p className="text-gray-400 text-sm mb-2">{t('analysis_risks')}:</p>
                   <ul className="text-red-400 text-sm list-disc list-inside">
                     {(aiConclusions.risks as string[])?.map((risk, i) => (
                       <li key={i}>{risk}</li>
@@ -133,7 +134,7 @@ export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealt
                 </div>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-2">Oportunidades:</p>
+                <p className="text-gray-400 text-sm mb-2">{t('analysis_opportunities')}:</p>
                 <ul className="text-yellow-400 text-sm list-disc list-inside">
                   {(aiConclusions.opportunities as string[])?.map((opp, i) => (
                     <li key={i}>{opp}</li>
@@ -141,70 +142,68 @@ export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealt
                 </ul>
               </div>
               <div className="pt-2 border-t border-green-900/30">
-                <p className="text-gray-400 text-sm">Perspectiva:</p>
+                <p className="text-gray-400 text-sm">{t('analysis_outlook')}:</p>
                 <p className="text-white font-semibold">{aiConclusions.outlook as string}</p>
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Market Direction */}
               <div className="space-y-4">
                 <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                  Dirección Esperada del Mercado
+                  {t('analysis_expected_direction')}
                 </h4>
                 
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="text-gray-400">Muy Corto Plazo (1-2 días):</p>
+                    <p className="text-gray-400">{t('analysis_very_short_term')}:</p>
                     <p className={`font-semibold ${getDirectionColor(data!.shortTerm.direction)}`}>
                       {data!.shortTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      Probabilidad: {data!.shortTerm.probability}% | Objetivo: {data!.shortTerm.target.toFixed(4)}
+                      {t('analysis_probability_label')}: {data!.shortTerm.probability}% | {t('analysis_target_label')}: {data!.shortTerm.target.toFixed(4)}
                     </p>
                   </div>
                   
                   <div>
-                    <p className="text-gray-400">Corto Plazo (1-2 semanas):</p>
+                    <p className="text-gray-400">{t('analysis_short_term')}:</p>
                     <p className={`font-semibold ${getDirectionColor(data!.mediumTerm.direction)}`}>
                       {data!.mediumTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      Probabilidad: {data!.mediumTerm.probability}% | Rango: {data!.mediumTerm.range.min.toFixed(4)}-{data!.mediumTerm.range.max.toFixed(4)}
+                      {t('analysis_probability_label')}: {data!.mediumTerm.probability}% | {t('analysis_range_label')}: {data!.mediumTerm.range.min.toFixed(4)}-{data!.mediumTerm.range.max.toFixed(4)}
                     </p>
                   </div>
                   
                   <div>
-                    <p className="text-gray-400">Medio Plazo (1-3 meses):</p>
+                    <p className="text-gray-400">{t('analysis_medium_term')}:</p>
                     <p className={`font-semibold ${getDirectionColor(data!.longTerm.direction)}`}>
                       {data!.longTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      Objetivo: {data!.longTerm.target.toFixed(4)}
+                      {t('analysis_target_label')}: {data!.longTerm.target.toFixed(4)}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Technical Analysis */}
               <div className="space-y-4">
                 <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                  Análisis Técnico Detallado
+                  {t('analysis_detailed_technical')}
                 </h4>
                 
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="text-gray-400">Resumen Técnico:</p>
+                    <p className="text-gray-400">{t('analysis_technical_summary')}:</p>
                     <p className="text-gray-300 text-xs">{data!.technicalSummary}</p>
                   </div>
                   
                   <div>
-                    <p className="text-gray-400">Para Alcistas:</p>
+                    <p className="text-gray-400">{t('analysis_for_bulls')}:</p>
                     <p className="text-green-400 text-xs">{data!.bullishScenario}</p>
                   </div>
                   
                   <div>
-                    <p className="text-gray-400">Escenario Bajista:</p>
+                    <p className="text-gray-400">{t('analysis_bearish_scenario')}:</p>
                     <p className="text-red-400 text-xs">{data!.bearishScenario}</p>
                   </div>
                 </div>

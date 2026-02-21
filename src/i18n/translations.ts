@@ -196,6 +196,118 @@ type TranslationKeys = {
   perf_sell: string;
   perf_total_operation_time: string;
 
+  // Analysis components
+  analysis_market_sentiment: string;
+  analysis_loading_sentiment: string;
+  analysis_ai_generated: string;
+  analysis_bullish: string;
+  analysis_bearish: string;
+  analysis_neutral: string;
+  analysis_high: string;
+  analysis_low: string;
+  analysis_change: string;
+  analysis_pips: string;
+  analysis_buy_signal: string;
+  analysis_sell_signal: string;
+  analysis_neutral_signal: string;
+
+  analysis_price_prediction: string;
+  analysis_loading_prediction: string;
+  analysis_trend_bullish: string;
+  analysis_trend_bearish: string;
+  analysis_trend_sideways: string;
+  analysis_expected_low: string;
+  analysis_expected_close: string;
+  analysis_expected_high: string;
+  analysis_prediction_confidence: string;
+  analysis_day_synthesis: string;
+  analysis_last_update: string;
+
+  analysis_technical_levels: string;
+  analysis_loading_levels: string;
+  analysis_pivot_point: string;
+  analysis_key_resistances: string;
+  analysis_key_supports: string;
+  analysis_fibonacci_levels: string;
+  analysis_strong: string;
+  analysis_moderate: string;
+  analysis_weak: string;
+
+  analysis_strategic_recommendations: string;
+  analysis_loading_recommendations: string;
+  analysis_long_term_traders: string;
+  analysis_short_term_traders: string;
+  analysis_strategy_label: string;
+  analysis_entry_label: string;
+  analysis_target_1: string;
+  analysis_target_2: string;
+  analysis_horizon: string;
+  analysis_watch: string;
+
+  analysis_conclusions: string;
+  analysis_loading_conclusions: string;
+  analysis_expected_direction: string;
+  analysis_detailed_technical: string;
+  analysis_very_short_term: string;
+  analysis_short_term: string;
+  analysis_medium_term: string;
+  analysis_probability_label: string;
+  analysis_target_label: string;
+  analysis_range_label: string;
+  analysis_technical_summary: string;
+  analysis_for_bulls: string;
+  analysis_bearish_scenario: string;
+  analysis_summary: string;
+  analysis_key_factors: string;
+  analysis_risks: string;
+  analysis_opportunities: string;
+  analysis_outlook: string;
+
+  analysis_monetary_policies: string;
+  analysis_loading_policies: string;
+  analysis_current_rate: string;
+  analysis_last_decision: string;
+  analysis_next_meeting: string;
+  analysis_expectations: string;
+  analysis_end_year_rate: string;
+
+  analysis_economic_events: string;
+  analysis_loading_events: string;
+  analysis_no_events: string;
+  analysis_time: string;
+  analysis_events: string;
+  analysis_description: string;
+  analysis_impact: string;
+  analysis_results: string;
+
+  analysis_major_news: string;
+  analysis_featured_events: string;
+  analysis_loading_news: string;
+  analysis_no_impact_news: string;
+  analysis_positive_for: string;
+  analysis_negative_for: string;
+  analysis_source: string;
+
+  analysis_relevant_news: string;
+  analysis_loading_relevant: string;
+  analysis_no_relevant_news: string;
+  analysis_impact_high: string;
+  analysis_impact_medium: string;
+  analysis_impact_low: string;
+  analysis_view_more_news: string;
+
+  // Currency header
+  currency_max: string;
+  currency_min: string;
+
+  // AI hooks
+  ai_rate_limit: string;
+  ai_rate_limit_desc: string;
+  ai_credits_exhausted: string;
+  ai_credits_exhausted_desc: string;
+  ai_analysis_generated: string;
+  ai_analysis_updated: string;
+
   // Common
   common_loading: string;
   common_error: string;
@@ -377,6 +489,116 @@ const es: TranslationKeys = {
   perf_sell: 'Vender',
   perf_total_operation_time: 'Horas',
 
+  // Analysis components
+  analysis_market_sentiment: 'Sentimiento del Mercado',
+  analysis_loading_sentiment: 'Cargando sentimiento...',
+  analysis_ai_generated: 'Análisis generado con IA',
+  analysis_bullish: 'ALCISTA',
+  analysis_bearish: 'BAJISTA',
+  analysis_neutral: 'NEUTRAL',
+  analysis_high: 'Máximo',
+  analysis_low: 'Mínimo',
+  analysis_change: 'Cambio',
+  analysis_pips: 'Pips',
+  analysis_buy_signal: 'Compra',
+  analysis_sell_signal: 'Venta',
+  analysis_neutral_signal: 'Neutro',
+
+  analysis_price_prediction: 'Predicción Del Precio',
+  analysis_loading_prediction: 'Cargando predicción...',
+  analysis_trend_bullish: 'Tendencia Alcista',
+  analysis_trend_bearish: 'Tendencia Bajista',
+  analysis_trend_sideways: 'Tendencia Lateral',
+  analysis_expected_low: 'Mínimo Esperado',
+  analysis_expected_close: 'Cierre Esperado',
+  analysis_expected_high: 'Máximo Esperado',
+  analysis_prediction_confidence: 'Confianza de la predicción',
+  analysis_day_synthesis: 'Síntesis del Día',
+  analysis_last_update: 'Última actualización',
+
+  analysis_technical_levels: 'Niveles Técnicos - Soportes y Resistencias',
+  analysis_loading_levels: 'Cargando niveles técnicos...',
+  analysis_pivot_point: 'Punto Pivote',
+  analysis_key_resistances: 'Resistencias Clave',
+  analysis_key_supports: 'Soportes Clave',
+  analysis_fibonacci_levels: 'Niveles Fibonacci',
+  analysis_strong: 'Fuerte',
+  analysis_moderate: 'Moderado',
+  analysis_weak: 'Débil',
+
+  analysis_strategic_recommendations: 'Recomendaciones Estratégicas',
+  analysis_loading_recommendations: 'Cargando recomendaciones...',
+  analysis_long_term_traders: 'Para Traders de Largo Plazo',
+  analysis_short_term_traders: 'Para Traders de Corto Plazo',
+  analysis_strategy_label: 'Estrategia',
+  analysis_entry_label: 'Entrada',
+  analysis_target_1: 'Objetivo 1',
+  analysis_target_2: 'Objetivo 2',
+  analysis_horizon: 'Horizonte',
+  analysis_watch: 'Vigilar',
+
+  analysis_conclusions: 'Conclusiones y Dirección Esperada Del Mercado',
+  analysis_loading_conclusions: 'Cargando conclusiones...',
+  analysis_expected_direction: 'Dirección Esperada del Mercado',
+  analysis_detailed_technical: 'Análisis Técnico Detallado',
+  analysis_very_short_term: 'Muy Corto Plazo (1-2 días)',
+  analysis_short_term: 'Corto Plazo (1-2 semanas)',
+  analysis_medium_term: 'Medio Plazo (1-3 meses)',
+  analysis_probability_label: 'Probabilidad',
+  analysis_target_label: 'Objetivo',
+  analysis_range_label: 'Rango',
+  analysis_technical_summary: 'Resumen Técnico',
+  analysis_for_bulls: 'Para Alcistas',
+  analysis_bearish_scenario: 'Escenario Bajista',
+  analysis_summary: 'Resumen',
+  analysis_key_factors: 'Factores Clave',
+  analysis_risks: 'Riesgos',
+  analysis_opportunities: 'Oportunidades',
+  analysis_outlook: 'Perspectiva',
+
+  analysis_monetary_policies: 'Políticas Monetarias',
+  analysis_loading_policies: 'Cargando políticas...',
+  analysis_current_rate: 'Tasa Actual',
+  analysis_last_decision: 'Última Decisión',
+  analysis_next_meeting: 'Próxima Reunión',
+  analysis_expectations: 'Expectativas',
+  analysis_end_year_rate: 'Tasa Fin 2025',
+
+  analysis_economic_events: 'Eventos Económicos Del Día',
+  analysis_loading_events: 'Cargando eventos...',
+  analysis_no_events: 'No hay eventos económicos programados para esta fecha.',
+  analysis_time: 'Hora',
+  analysis_events: 'Eventos',
+  analysis_description: 'Descripción',
+  analysis_impact: 'Impacto',
+  analysis_results: 'Resultados',
+
+  analysis_major_news: 'Principales Noticias De Mayor Impacto',
+  analysis_featured_events: 'Eventos Destacados',
+  analysis_loading_news: 'Cargando noticias...',
+  analysis_no_impact_news: 'No hay noticias de impacto disponibles para este símbolo.',
+  analysis_positive_for: 'POSITIVO PARA',
+  analysis_negative_for: 'NEGATIVO PARA',
+  analysis_source: 'Fuente',
+
+  analysis_relevant_news: 'Noticias Relevantes',
+  analysis_loading_relevant: 'Cargando noticias...',
+  analysis_no_relevant_news: 'No hay noticias relevantes disponibles para este par',
+  analysis_impact_high: 'Alto',
+  analysis_impact_medium: 'Medio',
+  analysis_impact_low: 'Bajo',
+  analysis_view_more_news: 'Ver más noticias',
+
+  currency_max: 'Máximo',
+  currency_min: 'Mínimo',
+
+  ai_rate_limit: 'Límite de velocidad',
+  ai_rate_limit_desc: 'Por favor espera unos segundos antes de regenerar.',
+  ai_credits_exhausted: 'Créditos agotados',
+  ai_credits_exhausted_desc: 'Añade créditos a tu workspace para continuar.',
+  ai_analysis_generated: 'Análisis generado',
+  ai_analysis_updated: 'Análisis actualizado con IA',
+
   common_loading: 'Cargando...',
   common_error: 'Error',
   common_retry: 'Reintentar',
@@ -556,6 +778,115 @@ const en: TranslationKeys = {
   perf_buy: 'Buy',
   perf_sell: 'Sell',
   perf_total_operation_time: 'Hours',
+
+  analysis_market_sentiment: 'Market Sentiment',
+  analysis_loading_sentiment: 'Loading sentiment...',
+  analysis_ai_generated: 'AI-generated analysis',
+  analysis_bullish: 'BULLISH',
+  analysis_bearish: 'BEARISH',
+  analysis_neutral: 'NEUTRAL',
+  analysis_high: 'High',
+  analysis_low: 'Low',
+  analysis_change: 'Change',
+  analysis_pips: 'Pips',
+  analysis_buy_signal: 'Buy',
+  analysis_sell_signal: 'Sell',
+  analysis_neutral_signal: 'Neutral',
+
+  analysis_price_prediction: 'Price Prediction',
+  analysis_loading_prediction: 'Loading prediction...',
+  analysis_trend_bullish: 'Bullish Trend',
+  analysis_trend_bearish: 'Bearish Trend',
+  analysis_trend_sideways: 'Sideways Trend',
+  analysis_expected_low: 'Expected Low',
+  analysis_expected_close: 'Expected Close',
+  analysis_expected_high: 'Expected High',
+  analysis_prediction_confidence: 'Prediction confidence',
+  analysis_day_synthesis: 'Day Synthesis',
+  analysis_last_update: 'Last update',
+
+  analysis_technical_levels: 'Technical Levels - Supports & Resistances',
+  analysis_loading_levels: 'Loading technical levels...',
+  analysis_pivot_point: 'Pivot Point',
+  analysis_key_resistances: 'Key Resistances',
+  analysis_key_supports: 'Key Supports',
+  analysis_fibonacci_levels: 'Fibonacci Levels',
+  analysis_strong: 'Strong',
+  analysis_moderate: 'Moderate',
+  analysis_weak: 'Weak',
+
+  analysis_strategic_recommendations: 'Strategic Recommendations',
+  analysis_loading_recommendations: 'Loading recommendations...',
+  analysis_long_term_traders: 'For Long-Term Traders',
+  analysis_short_term_traders: 'For Short-Term Traders',
+  analysis_strategy_label: 'Strategy',
+  analysis_entry_label: 'Entry',
+  analysis_target_1: 'Target 1',
+  analysis_target_2: 'Target 2',
+  analysis_horizon: 'Horizon',
+  analysis_watch: 'Watch',
+
+  analysis_conclusions: 'Conclusions & Expected Market Direction',
+  analysis_loading_conclusions: 'Loading conclusions...',
+  analysis_expected_direction: 'Expected Market Direction',
+  analysis_detailed_technical: 'Detailed Technical Analysis',
+  analysis_very_short_term: 'Very Short Term (1-2 days)',
+  analysis_short_term: 'Short Term (1-2 weeks)',
+  analysis_medium_term: 'Medium Term (1-3 months)',
+  analysis_probability_label: 'Probability',
+  analysis_target_label: 'Target',
+  analysis_range_label: 'Range',
+  analysis_technical_summary: 'Technical Summary',
+  analysis_for_bulls: 'For Bulls',
+  analysis_bearish_scenario: 'Bearish Scenario',
+  analysis_summary: 'Summary',
+  analysis_key_factors: 'Key Factors',
+  analysis_risks: 'Risks',
+  analysis_opportunities: 'Opportunities',
+  analysis_outlook: 'Outlook',
+
+  analysis_monetary_policies: 'Monetary Policies',
+  analysis_loading_policies: 'Loading policies...',
+  analysis_current_rate: 'Current Rate',
+  analysis_last_decision: 'Last Decision',
+  analysis_next_meeting: 'Next Meeting',
+  analysis_expectations: 'Expectations',
+  analysis_end_year_rate: 'Year-End Rate 2025',
+
+  analysis_economic_events: 'Economic Events of the Day',
+  analysis_loading_events: 'Loading events...',
+  analysis_no_events: 'No economic events scheduled for this date.',
+  analysis_time: 'Time',
+  analysis_events: 'Events',
+  analysis_description: 'Description',
+  analysis_impact: 'Impact',
+  analysis_results: 'Results',
+
+  analysis_major_news: 'Major High-Impact News',
+  analysis_featured_events: 'Featured Events',
+  analysis_loading_news: 'Loading news...',
+  analysis_no_impact_news: 'No impact news available for this symbol.',
+  analysis_positive_for: 'POSITIVE FOR',
+  analysis_negative_for: 'NEGATIVE FOR',
+  analysis_source: 'Source',
+
+  analysis_relevant_news: 'Relevant News',
+  analysis_loading_relevant: 'Loading news...',
+  analysis_no_relevant_news: 'No relevant news available for this pair',
+  analysis_impact_high: 'High',
+  analysis_impact_medium: 'Medium',
+  analysis_impact_low: 'Low',
+  analysis_view_more_news: 'View more news',
+
+  currency_max: 'High',
+  currency_min: 'Low',
+
+  ai_rate_limit: 'Rate limit',
+  ai_rate_limit_desc: 'Please wait a few seconds before regenerating.',
+  ai_credits_exhausted: 'Credits exhausted',
+  ai_credits_exhausted_desc: 'Add credits to your workspace to continue.',
+  ai_analysis_generated: 'Analysis generated',
+  ai_analysis_updated: 'Analysis updated with AI',
 
   common_loading: 'Loading...',
   common_error: 'Error',
@@ -737,6 +1068,115 @@ const pt: TranslationKeys = {
   perf_sell: 'Vender',
   perf_total_operation_time: 'Horas',
 
+  analysis_market_sentiment: 'Sentimento do Mercado',
+  analysis_loading_sentiment: 'Carregando sentimento...',
+  analysis_ai_generated: 'Análise gerada com IA',
+  analysis_bullish: 'ALTISTA',
+  analysis_bearish: 'BAIXISTA',
+  analysis_neutral: 'NEUTRO',
+  analysis_high: 'Máximo',
+  analysis_low: 'Mínimo',
+  analysis_change: 'Variação',
+  analysis_pips: 'Pips',
+  analysis_buy_signal: 'Compra',
+  analysis_sell_signal: 'Venda',
+  analysis_neutral_signal: 'Neutro',
+
+  analysis_price_prediction: 'Previsão de Preço',
+  analysis_loading_prediction: 'Carregando previsão...',
+  analysis_trend_bullish: 'Tendência Altista',
+  analysis_trend_bearish: 'Tendência Baixista',
+  analysis_trend_sideways: 'Tendência Lateral',
+  analysis_expected_low: 'Mínimo Esperado',
+  analysis_expected_close: 'Fechamento Esperado',
+  analysis_expected_high: 'Máximo Esperado',
+  analysis_prediction_confidence: 'Confiança da previsão',
+  analysis_day_synthesis: 'Síntese do Dia',
+  analysis_last_update: 'Última atualização',
+
+  analysis_technical_levels: 'Níveis Técnicos - Suportes e Resistências',
+  analysis_loading_levels: 'Carregando níveis técnicos...',
+  analysis_pivot_point: 'Ponto Pivô',
+  analysis_key_resistances: 'Resistências Chave',
+  analysis_key_supports: 'Suportes Chave',
+  analysis_fibonacci_levels: 'Níveis Fibonacci',
+  analysis_strong: 'Forte',
+  analysis_moderate: 'Moderado',
+  analysis_weak: 'Fraco',
+
+  analysis_strategic_recommendations: 'Recomendações Estratégicas',
+  analysis_loading_recommendations: 'Carregando recomendações...',
+  analysis_long_term_traders: 'Para Traders de Longo Prazo',
+  analysis_short_term_traders: 'Para Traders de Curto Prazo',
+  analysis_strategy_label: 'Estratégia',
+  analysis_entry_label: 'Entrada',
+  analysis_target_1: 'Alvo 1',
+  analysis_target_2: 'Alvo 2',
+  analysis_horizon: 'Horizonte',
+  analysis_watch: 'Observar',
+
+  analysis_conclusions: 'Conclusões e Direção Esperada do Mercado',
+  analysis_loading_conclusions: 'Carregando conclusões...',
+  analysis_expected_direction: 'Direção Esperada do Mercado',
+  analysis_detailed_technical: 'Análise Técnica Detalhada',
+  analysis_very_short_term: 'Curtíssimo Prazo (1-2 dias)',
+  analysis_short_term: 'Curto Prazo (1-2 semanas)',
+  analysis_medium_term: 'Médio Prazo (1-3 meses)',
+  analysis_probability_label: 'Probabilidade',
+  analysis_target_label: 'Alvo',
+  analysis_range_label: 'Faixa',
+  analysis_technical_summary: 'Resumo Técnico',
+  analysis_for_bulls: 'Para Altistas',
+  analysis_bearish_scenario: 'Cenário Baixista',
+  analysis_summary: 'Resumo',
+  analysis_key_factors: 'Fatores Chave',
+  analysis_risks: 'Riscos',
+  analysis_opportunities: 'Oportunidades',
+  analysis_outlook: 'Perspectiva',
+
+  analysis_monetary_policies: 'Políticas Monetárias',
+  analysis_loading_policies: 'Carregando políticas...',
+  analysis_current_rate: 'Taxa Atual',
+  analysis_last_decision: 'Última Decisão',
+  analysis_next_meeting: 'Próxima Reunião',
+  analysis_expectations: 'Expectativas',
+  analysis_end_year_rate: 'Taxa Final 2025',
+
+  analysis_economic_events: 'Eventos Econômicos do Dia',
+  analysis_loading_events: 'Carregando eventos...',
+  analysis_no_events: 'Não há eventos econômicos programados para esta data.',
+  analysis_time: 'Hora',
+  analysis_events: 'Eventos',
+  analysis_description: 'Descrição',
+  analysis_impact: 'Impacto',
+  analysis_results: 'Resultados',
+
+  analysis_major_news: 'Principais Notícias de Grande Impacto',
+  analysis_featured_events: 'Eventos Destacados',
+  analysis_loading_news: 'Carregando notícias...',
+  analysis_no_impact_news: 'Não há notícias de impacto disponíveis para este símbolo.',
+  analysis_positive_for: 'POSITIVO PARA',
+  analysis_negative_for: 'NEGATIVO PARA',
+  analysis_source: 'Fonte',
+
+  analysis_relevant_news: 'Notícias Relevantes',
+  analysis_loading_relevant: 'Carregando notícias...',
+  analysis_no_relevant_news: 'Não há notícias relevantes disponíveis para este par',
+  analysis_impact_high: 'Alto',
+  analysis_impact_medium: 'Médio',
+  analysis_impact_low: 'Baixo',
+  analysis_view_more_news: 'Ver mais notícias',
+
+  currency_max: 'Máximo',
+  currency_min: 'Mínimo',
+
+  ai_rate_limit: 'Limite de velocidade',
+  ai_rate_limit_desc: 'Por favor, aguarde alguns segundos antes de regenerar.',
+  ai_credits_exhausted: 'Créditos esgotados',
+  ai_credits_exhausted_desc: 'Adicione créditos ao seu workspace para continuar.',
+  ai_analysis_generated: 'Análise gerada',
+  ai_analysis_updated: 'Análise atualizada com IA',
+
   common_loading: 'Carregando...',
   common_error: 'Erro',
   common_retry: 'Tentar novamente',
@@ -916,6 +1356,115 @@ const fr: TranslationKeys = {
   perf_buy: 'Acheter',
   perf_sell: 'Vendre',
   perf_total_operation_time: 'Heures',
+
+  analysis_market_sentiment: 'Sentiment du marché',
+  analysis_loading_sentiment: 'Chargement du sentiment...',
+  analysis_ai_generated: 'Analyse générée par IA',
+  analysis_bullish: 'HAUSSIER',
+  analysis_bearish: 'BAISSIER',
+  analysis_neutral: 'NEUTRE',
+  analysis_high: 'Plus haut',
+  analysis_low: 'Plus bas',
+  analysis_change: 'Variation',
+  analysis_pips: 'Pips',
+  analysis_buy_signal: 'Achat',
+  analysis_sell_signal: 'Vente',
+  analysis_neutral_signal: 'Neutre',
+
+  analysis_price_prediction: 'Prévision de prix',
+  analysis_loading_prediction: 'Chargement de la prévision...',
+  analysis_trend_bullish: 'Tendance haussière',
+  analysis_trend_bearish: 'Tendance baissière',
+  analysis_trend_sideways: 'Tendance latérale',
+  analysis_expected_low: 'Plus bas attendu',
+  analysis_expected_close: 'Clôture attendue',
+  analysis_expected_high: 'Plus haut attendu',
+  analysis_prediction_confidence: 'Confiance de la prévision',
+  analysis_day_synthesis: 'Synthèse du jour',
+  analysis_last_update: 'Dernière mise à jour',
+
+  analysis_technical_levels: 'Niveaux techniques - Supports et résistances',
+  analysis_loading_levels: 'Chargement des niveaux techniques...',
+  analysis_pivot_point: 'Point pivot',
+  analysis_key_resistances: 'Résistances clés',
+  analysis_key_supports: 'Supports clés',
+  analysis_fibonacci_levels: 'Niveaux Fibonacci',
+  analysis_strong: 'Fort',
+  analysis_moderate: 'Modéré',
+  analysis_weak: 'Faible',
+
+  analysis_strategic_recommendations: 'Recommandations stratégiques',
+  analysis_loading_recommendations: 'Chargement des recommandations...',
+  analysis_long_term_traders: 'Pour les traders long terme',
+  analysis_short_term_traders: 'Pour les traders court terme',
+  analysis_strategy_label: 'Stratégie',
+  analysis_entry_label: 'Entrée',
+  analysis_target_1: 'Objectif 1',
+  analysis_target_2: 'Objectif 2',
+  analysis_horizon: 'Horizon',
+  analysis_watch: 'Surveiller',
+
+  analysis_conclusions: 'Conclusions et direction attendue du marché',
+  analysis_loading_conclusions: 'Chargement des conclusions...',
+  analysis_expected_direction: 'Direction attendue du marché',
+  analysis_detailed_technical: 'Analyse technique détaillée',
+  analysis_very_short_term: 'Très court terme (1-2 jours)',
+  analysis_short_term: 'Court terme (1-2 semaines)',
+  analysis_medium_term: 'Moyen terme (1-3 mois)',
+  analysis_probability_label: 'Probabilité',
+  analysis_target_label: 'Objectif',
+  analysis_range_label: 'Fourchette',
+  analysis_technical_summary: 'Résumé technique',
+  analysis_for_bulls: 'Pour les haussiers',
+  analysis_bearish_scenario: 'Scénario baissier',
+  analysis_summary: 'Résumé',
+  analysis_key_factors: 'Facteurs clés',
+  analysis_risks: 'Risques',
+  analysis_opportunities: 'Opportunités',
+  analysis_outlook: 'Perspectives',
+
+  analysis_monetary_policies: 'Politiques monétaires',
+  analysis_loading_policies: 'Chargement des politiques...',
+  analysis_current_rate: 'Taux actuel',
+  analysis_last_decision: 'Dernière décision',
+  analysis_next_meeting: 'Prochaine réunion',
+  analysis_expectations: 'Attentes',
+  analysis_end_year_rate: 'Taux fin 2025',
+
+  analysis_economic_events: 'Événements économiques du jour',
+  analysis_loading_events: 'Chargement des événements...',
+  analysis_no_events: 'Aucun événement économique prévu pour cette date.',
+  analysis_time: 'Heure',
+  analysis_events: 'Événements',
+  analysis_description: 'Description',
+  analysis_impact: 'Impact',
+  analysis_results: 'Résultats',
+
+  analysis_major_news: 'Principales actualités à fort impact',
+  analysis_featured_events: 'Événements majeurs',
+  analysis_loading_news: 'Chargement des actualités...',
+  analysis_no_impact_news: 'Aucune actualité d\'impact disponible pour ce symbole.',
+  analysis_positive_for: 'POSITIF POUR',
+  analysis_negative_for: 'NÉGATIF POUR',
+  analysis_source: 'Source',
+
+  analysis_relevant_news: 'Actualités pertinentes',
+  analysis_loading_relevant: 'Chargement des actualités...',
+  analysis_no_relevant_news: 'Aucune actualité pertinente disponible pour cette paire',
+  analysis_impact_high: 'Élevé',
+  analysis_impact_medium: 'Moyen',
+  analysis_impact_low: 'Faible',
+  analysis_view_more_news: 'Voir plus d\'actualités',
+
+  currency_max: 'Plus haut',
+  currency_min: 'Plus bas',
+
+  ai_rate_limit: 'Limite de débit',
+  ai_rate_limit_desc: 'Veuillez patienter quelques secondes avant de régénérer.',
+  ai_credits_exhausted: 'Crédits épuisés',
+  ai_credits_exhausted_desc: 'Ajoutez des crédits à votre espace de travail pour continuer.',
+  ai_analysis_generated: 'Analyse générée',
+  ai_analysis_updated: 'Analyse mise à jour avec l\'IA',
 
   common_loading: 'Chargement...',
   common_error: 'Erreur',
