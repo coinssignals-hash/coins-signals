@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2, Eye, EyeOff, Download, Image } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 
@@ -19,6 +19,7 @@ export default function CreateSignal() {
   const [stopLoss, setStopLoss] = useState('');
   const [loading, setLoading] = useState(false);
   const [showCardPreview, setShowCardPreview] = useState(false);
+  const [downloadingChart, setDownloadingChart] = useState(false);
   const entry = parseFloat(entryPrice);
   const tp = parseFloat(takeProfit);
   const sl = parseFloat(stopLoss);
@@ -72,6 +73,56 @@ export default function CreateSignal() {
       setLoading(false);
     }
   };
+
+  const handleDownloadChart = useCallback(async () => {
+    if (!currencyPair) return;
+    setDownloadingChart(true);
+    try {
+      const pairClean = currencyPair.replace(/[/\-_ ]/g, '');
+      const params = new URLSearchParams({ pair: pairClean, hd: '1' });
+      if (!isNaN(tp)) params.set('resistance', String(tp));
+      if (!isNaN(sl)) params.set('support', String(sl));
+
+      const chartUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
+      const res = await fetch(chartUrl);
+      const svgText = await res.text();
+
+      // Convert SVG to high-quality PNG via canvas
+      const img = new window.Image();
+      const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 1560;
+          canvas.height = 800;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { reject(new Error('No canvas context')); return; }
+          ctx.drawImage(img, 0, 0, 1560, 800);
+          canvas.toBlob((pngBlob) => {
+            if (!pngBlob) { reject(new Error('No blob')); return; }
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(pngBlob);
+            a.download = `${currencyPair.replace('/', '-')}_7d_chart.png`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            resolve();
+          }, 'image/png', 1);
+        };
+        img.onerror = () => reject(new Error('Image load failed'));
+        img.src = url;
+      });
+
+      URL.revokeObjectURL(url);
+      toast.success('Gráfico descargado en HD');
+    } catch (err) {
+      console.error('Chart download error:', err);
+      toast.error('Error al descargar el gráfico');
+    } finally {
+      setDownloadingChart(false);
+    }
+  }, [currencyPair, tp, sl]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[hsl(225,30%,8%)] to-[hsl(225,25%,5%)] text-foreground">
@@ -228,6 +279,24 @@ export default function CreateSignal() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Download Chart HD */}
+        {currencyPair && (
+          <div className="mb-6">
+            <button
+              onClick={handleDownloadChart}
+              disabled={downloadingChart}
+              className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all bg-card/80 border border-border/40 hover:bg-card text-foreground disabled:opacity-40"
+            >
+              {downloadingChart ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <Image className="w-4 h-4" />
+              Descargar gráfico 7 días (HD)
+            </button>
+            <p className="text-[10px] text-muted-foreground text-center mt-1.5">
+              Resistencia (verde) y Soporte (rojo) con precios marcados
+            </p>
           </div>
         )}
 
