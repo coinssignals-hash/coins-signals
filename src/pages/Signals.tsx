@@ -15,7 +15,8 @@ import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
 import { format, addDays, subDays, startOfWeek, startOfDay, parseISO, isToday, isTomorrow, isYesterday, isSameDay } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es, enUS, ptBR, fr } from 'date-fns/locale';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
@@ -31,14 +32,17 @@ type ViewMode = 'full' | 'compact';
 type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
 type DayTab = 'today' | 'tomorrow' | 'yesterday' | 'calendar' | 'all';
 
-const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] = [
-  { value: 'date-desc', label: 'Más recientes', icon: <Clock className="w-4 h-4" /> },
-  { value: 'date-asc', label: 'Más antiguas', icon: <Clock className="w-4 h-4" /> },
-  { value: 'probability-desc', label: 'Mayor probabilidad', icon: <TrendingUp className="w-4 h-4" /> },
-  { value: 'probability-asc', label: 'Menor probabilidad', icon: <TrendingUp className="w-4 h-4" /> },
-  { value: 'pips-desc', label: 'Más pips', icon: <Target className="w-4 h-4" /> },
-  { value: 'pips-asc', label: 'Menos pips', icon: <Target className="w-4 h-4" /> },
-];
+function useSortOptions() {
+  const { t } = useTranslation();
+  return [
+    { value: 'date-desc' as SortOption, label: t('signals_sort_recent'), icon: <Clock className="w-4 h-4" /> },
+    { value: 'date-asc' as SortOption, label: t('signals_sort_oldest'), icon: <Clock className="w-4 h-4" /> },
+    { value: 'probability-desc' as SortOption, label: t('signals_sort_prob_high'), icon: <TrendingUp className="w-4 h-4" /> },
+    { value: 'probability-asc' as SortOption, label: t('signals_sort_prob_low'), icon: <TrendingUp className="w-4 h-4" /> },
+    { value: 'pips-desc' as SortOption, label: t('signals_sort_pips_high'), icon: <Target className="w-4 h-4" /> },
+    { value: 'pips-asc' as SortOption, label: t('signals_sort_pips_low'), icon: <Target className="w-4 h-4" /> },
+  ];
+}
 
 // Calculate pips for a signal
 const calculatePips = (signal: TradingSignal): number => {
@@ -57,13 +61,17 @@ const generateWeekDays = () => {
     const date = addDays(weekStart, i);
     return {
       date: format(date, 'yyyy-MM-dd'),
-      label: `${format(date, 'EEE', { locale: es })} ${format(date, 'd')}`,
+      label: `${format(date, 'EEE')} ${format(date, 'd')}`,
     };
   });
 };
 
 export default function Signals() {
   const navigate = useNavigate();
+  const { t, language } = useTranslation();
+  const sortOptions = useSortOptions();
+  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
+  const dateLocale = DATE_LOCALES[language] ?? es;
   const [dayTab, setDayTab] = useState<DayTab>('today');
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -246,10 +254,10 @@ export default function Signals() {
         {/* Day Tab Switcher */}
         <div className="flex gap-1 px-3 py-2">
           {([
-            { key: 'today' as DayTab, label: 'Hoy', icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
-            { key: 'yesterday' as DayTab, label: 'Ayer', icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
-            { key: 'tomorrow' as DayTab, label: 'Mañana', icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
-            { key: 'all' as DayTab, label: 'Todos', icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
+            { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
+            { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
+            { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
+            { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
           ]).map((tab) => (
             <button
               key={tab.key}
@@ -288,7 +296,7 @@ export default function Signals() {
               >
                 <CalendarIcon className="w-3.5 h-3.5" />
                 {dayTab === 'calendar' && calendarDate
-                  ? format(calendarDate, 'd MMM', { locale: es })
+                  ? format(calendarDate, 'd MMM', { locale: dateLocale })
                   : ''}
               </button>
             </PopoverTrigger>
@@ -303,7 +311,7 @@ export default function Signals() {
                 }}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
-                locale={es}
+                locale={dateLocale}
               />
             </PopoverContent>
           </Popover>
@@ -313,7 +321,7 @@ export default function Signals() {
         {dayTab === 'calendar' && calendarDate && (
           <div className="flex items-center gap-2 px-4 pb-2">
             <span className="text-xs text-emerald-400">
-              {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: es })}
+              {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: dateLocale })}
             </span>
             <button
               onClick={() => { setDayTab('today'); setCalendarDate(undefined); }}
@@ -358,10 +366,10 @@ export default function Signals() {
             {showFavoritesOnly && (
               <div className="flex items-center gap-1 text-rose-400">
                 <Heart className="w-3 h-3 fill-current" />
-                <span>Favoritos</span>
+                <span>{t('signals_favorites')}</span>
               </div>
             )}
-            <span>{filteredAndSortedSignals.length} señales</span>
+            <span>{filteredAndSortedSignals.length} {t('signals_count')}</span>
           </div>
         </div>
       </div>
@@ -377,7 +385,7 @@ export default function Signals() {
           <p className="text-red-400 text-center py-4">{error}</p>
         )}
         {!loading && filteredAndSortedSignals.length === 0 && (
-          <p className="text-slate-500 text-center py-10">No hay señales disponibles</p>
+          <p className="text-slate-500 text-center py-10">{t('signals_no_signals')}</p>
         )}
 
         {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
@@ -385,7 +393,7 @@ export default function Signals() {
         {dayTab === 'yesterday' && (
           <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
             {yesterdaySignals.length === 0 ? (
-              <p className="text-slate-500 text-center py-6 text-sm">No hay señales de ayer</p>
+              <p className="text-slate-500 text-center py-6 text-sm">{t('signals_no_yesterday')}</p>
             ) : (
               yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
             )}
@@ -397,7 +405,7 @@ export default function Signals() {
         {dayTab === 'calendar' && calendarDate && (
           <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
             {calendarSignals.length === 0 ? (
-              <p className="text-slate-500 text-center py-6 text-sm">No hay señales para esta fecha</p>
+              <p className="text-slate-500 text-center py-6 text-sm">{t('signals_no_date')}</p>
             ) : (
               calendarSignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
             )}

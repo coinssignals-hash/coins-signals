@@ -23,7 +23,7 @@ serve(async (req) => {
   }
 
   try {
-    const { signal, mode } = await req.json() as { signal: SignalData; mode?: string };
+    const { signal, mode, language } = await req.json() as { signal: SignalData; mode?: string; language?: string };
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -40,15 +40,20 @@ serve(async (req) => {
 
     // Strategy mode: return structured strategy data
     if (mode === 'strategy') {
-      const systemPrompt = `Eres un analista de trading forex profesional. Analiza la señal y devuelve una estrategia óptima usando la herramienta proporcionada. Responde SIEMPRE en español. Sé conciso en las explicaciones (max 2 oraciones por campo de explicación).
+      const langMap: Record<string, string> = {
+        es: 'español', en: 'English', pt: 'português', fr: 'français'
+      };
+      const responseLang = langMap[language ?? 'es'] ?? 'español';
 
-Criterios para tu análisis:
-- Duración: Evalúa si la operación es intradía, swing o scalping basándote en la distancia TP/SL y la volatilidad del par.
-- Enfoque: Determina la mejor metodología (Smart Money, Price Action, Análisis Técnico Clásico, etc).
-- Sesión: La mejor sesión para ejecutar (London, New York, Tokyo, Sydney o combinaciones).
-- Mejor hora: Rango horario óptimo en formato HH:MM-HH:MM (hora EST).
-- Velas de confirmación: El patrón de velas más relevante para confirmar la entrada (Pin Bar, Engulfing, Doji, Morning Star, etc).
-- Cada campo debe tener una explicación breve de POR QUÉ recomiendas esa opción para ESTA señal específica.`;
+      const systemPrompt = `You are a professional forex trading analyst. Analyze the signal and return an optimal strategy using the provided tool. ALWAYS respond in ${responseLang}. Be concise in explanations (max 2 sentences per explanation field).
+
+Criteria for your analysis:
+- Duration: Evaluate if the trade is intraday, swing or scalping based on TP/SL distance and pair volatility.
+- Approach: Determine the best methodology (Smart Money, Price Action, Classic Technical Analysis, etc).
+- Session: Best session to execute (London, New York, Tokyo, Sydney or combinations).
+- Best time: Optimal time range in HH:MM-HH:MM format (EST time).
+- Confirmation candles: Most relevant candle pattern to confirm entry (Pin Bar, Engulfing, Doji, Morning Star, etc).
+- Each field must have a brief explanation of WHY you recommend that option for THIS specific signal.`;
 
       const userPrompt = `Señal de trading:
 Par: ${signal.currencyPair}
@@ -168,18 +173,22 @@ Analiza y devuelve la estrategia óptima.`;
       });
     }
 
-    // Default mode: full text analysis (existing behavior)
-    const systemPrompt = `Eres un analista de trading forex profesional. Analiza la señal de trading proporcionada y genera un análisis detallado en español.
+    const langMapDefault: Record<string, string> = {
+      es: 'español', en: 'English', pt: 'português', fr: 'français'
+    };
+    const defaultLang = langMapDefault[language ?? 'es'] ?? 'español';
 
-Tu análisis debe incluir:
-1. **Resumen Ejecutivo**: Una evaluación rápida de la señal (2-3 oraciones)
-2. **Análisis Técnico**: Evaluación de los niveles de entrada, take profit y stop loss
-3. **Ratio Riesgo/Beneficio**: Cálculo y evaluación del R:R
-4. **Factores de Riesgo**: Principales riesgos a considerar
-5. **Recomendación**: Tu recomendación final (Ejecutar/Esperar/Evitar)
-6. **Nivel de Confianza**: Porcentaje de confianza en la señal
+    const systemPrompt = `You are a professional forex trading analyst. Analyze the provided trading signal and generate a detailed analysis in ${defaultLang}.
 
-Sé conciso pero informativo. Usa emojis para hacer el análisis más visual.`;
+Your analysis must include:
+1. **Executive Summary**: A quick evaluation of the signal (2-3 sentences)
+2. **Technical Analysis**: Evaluation of entry, take profit and stop loss levels
+3. **Risk/Reward Ratio**: Calculation and evaluation of R:R
+4. **Risk Factors**: Main risks to consider
+5. **Recommendation**: Your final recommendation (Execute/Wait/Avoid)
+6. **Confidence Level**: Confidence percentage in the signal
+
+Be concise but informative. Use emojis to make the analysis more visual.`;
 
     const userPrompt = `Analiza esta señal de trading:
 

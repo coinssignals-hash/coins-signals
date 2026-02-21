@@ -16,13 +16,14 @@ import {
 } from "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
+import { useTranslation } from "@/i18n/LanguageContext";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import marketSentimentChart from "@/assets/market-sentiment-chart.jpg";
 import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS, ptBR, fr } from "date-fns/locale";
 import {
   Tooltip,
   TooltipContent,
@@ -253,10 +254,12 @@ function ImpactBar({ label, value, color }: { label: string; value: number; colo
 }
 
 function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
+  const { t } = useTranslation();
   const overall = data.positive > data.negative ? "Positive" : data.negative > data.positive ? "Negative" : "Neutral";
   const overallColor =
     overall === "Positive" ? "hsl(135, 70%, 50%)" : overall === "Negative" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
   const OverallIcon = overall === "Positive" ? TrendingUp : overall === "Negative" ? TrendingDown : Minus;
+  const overallLabel = overall === "Positive" ? t('signal_positive') : overall === "Negative" ? t('signal_negative') : t('signal_neutral');
 
   return (
     <div
@@ -275,14 +278,14 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
         <div className="flex items-center gap-1">
           <OverallIcon className="w-3.5 h-3.5" style={{ color: overallColor }} />
           <span className="text-[10px] font-bold" style={{ color: overallColor }}>
-            {overall}
+            {overallLabel}
           </span>
         </div>
       </div>
       <div className="space-y-1.5">
-        <ImpactBar label="Positivo" value={data.positive} color="hsl(135, 70%, 50%)" />
-        <ImpactBar label="Negativo" value={data.negative} color="hsl(0, 70%, 55%)" />
-        <ImpactBar label="Neutral" value={data.neutral} color="hsl(45, 80%, 55%)" />
+        <ImpactBar label={t('signal_positive')} value={data.positive} color="hsl(135, 70%, 50%)" />
+        <ImpactBar label={t('signal_negative')} value={data.negative} color="hsl(0, 70%, 55%)" />
+        <ImpactBar label={t('signal_neutral')} value={data.neutral} color="hsl(45, 80%, 55%)" />
       </div>
     </div>
   );
@@ -381,6 +384,10 @@ function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy }: 
 // --- Main Card ---
 export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
+  const { t, language } = useTranslation();
+
+  const DATE_LOCALES = { es, en: enUS, pt: ptBR, fr };
+  const dateLocale = DATE_LOCALES[language] ?? es;
 
   // Derive values from signal prop or use defaults
   const entryPrice = signal?.entryPrice ?? 154.950;
@@ -474,7 +481,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {/* Date header */}
         <div className="relative text-center pt-3 pb-1">
           <span className="text-[11px] text-cyan-300/70 tracking-wide">
-            {format(signalDate, "EEEE dd MMMM yyyy HH:mm:ss", { locale: es })}
+            {format(signalDate, "EEEE dd MMMM yyyy HH:mm:ss", { locale: dateLocale })}
           </span>
         </div>
 
@@ -550,9 +557,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   {priceDiff.currentPrice.toFixed(3)}
                 </p>
               ) : (
-                <p className="text-[8px] text-cyan-300/50 leading-tight">Diferencia Precio</p>
+                <p className="text-[8px] text-cyan-300/50 leading-tight">{t('signal_entry')}</p>
               )}
-              <p className="text-[8px] text-cyan-300/50 leading-tight">vs Entrada</p>
+              <p className="text-[8px] text-cyan-300/50 leading-tight">vs {t('signal_entry')}</p>
             </div>
             <div className="flex items-center gap-1">
               <div
@@ -566,7 +573,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 )}
               />
               <span className="text-[10px] font-bold text-cyan-300 italic">
-                {isConnected ? "Live" : priceLoading ? "Cargando..." : "Sin datos"}
+                {isConnected ? "Live" : priceLoading ? t('common_loading') : "N/A"}
               </span>
             </div>
           </div>
@@ -586,7 +593,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           <div className="flex gap-2">
             {[
               {
-                label: "Tendencia",
+                label: trend === "bullish" ? t('signal_bullish') : t('signal_bearish'),
                 icon: trend === "bullish"
                   ? <TrendingUp className="w-5 h-5 text-green-400" />
                   : <TrendingDown className="w-5 h-5 text-red-400" />,
@@ -594,13 +601,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 valueClass: "text-cyan-200",
               },
               {
-                label: "Decisión",
+                label: action === "BUY" ? t('signal_buy') : t('signal_sell'),
                 icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
-                value: action === "BUY" ? "Compra" : "Venta",
+                value: action === "BUY" ? t('signal_buy') : t('signal_sell'),
                 valueClass: action === "BUY" ? "text-green-400" : "text-red-400",
               },
               {
-                label: "Riesgo",
+                label: t('signal_risk'),
                 icon: <Flame className="w-5 h-5 text-orange-400" />,
                 value: `${riskPercent}%`,
                 valueClass: "text-cyan-200",
@@ -641,7 +648,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
           />
           <div className="flex items-center justify-between px-4 py-2.5">
-            <span className="font-semibold text-white text-sm">Precio de Entrada</span>
+            <span className="font-semibold text-white text-sm">{t('signal_entry')}</span>
             <div className="flex items-center gap-2">
               <span className="font-bold text-white text-sm">{entryPrice.toFixed(3)}</span>
               <button
@@ -650,7 +657,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   e.stopPropagation();
                   navigator.clipboard.writeText(entryPrice.toFixed(3));
                 }}
-                title="Copiar precio de entrada"
+                title={t('signal_copy_price')}
               >
                 <Copy className="w-4 h-4" />
               </button>
@@ -705,11 +712,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
                   }}
                 />
-                <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-2">Informacion</p>
+                <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-2">{t('signal_information')}</p>
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                   {[
-                    { label: "Resistencia", value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
-                    { label: "Soporte", value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
+                    { label: t('signal_resistance'), value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
+                    { label: t('signal_support'), value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
                     { label: "TP", value: takeProfit.toFixed(3), color: "hsl(135, 70%, 50%)" },
                     { label: "SL", value: stopLoss.toFixed(3), color: "hsl(0, 70%, 55%)" },
                   ].map((row) => (
@@ -721,9 +728,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
                   ))}
                   <div className="col-span-2 mt-1 pt-1.5 border-t border-cyan-500/10 flex justify-between items-center">
-                    <span className="text-[9px] text-cyan-300/60">Estado</span>
+                    <span className="text-[9px] text-cyan-300/60">{t('signal_status')}</span>
                     <span className="text-[9px] font-bold" style={{ color: "hsl(45, 80%, 55%)" }}>
-                      {status === "active" ? "Activa" : status === "pending" ? "Pendiente" : status}
+                      {status === "active" ? t('signal_status_active') : status === "pending" ? t('signal_status_pending') : t('signal_status_closed')}
                     </span>
                   </div>
                 </div>
@@ -745,7 +752,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <div className="p-3">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider text-center">
-                    Estrategia Sugerida
+                    {t('signal_strategy')}
                   </p>
                   {strategyLoading && (
                     <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
@@ -768,7 +775,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           }}
                         >
                           <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Duración</span>
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_duration')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.duration.value ?? "Intradía"}</span>
@@ -794,7 +801,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           }}
                         >
                           <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Enfoque</span>
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_approach')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.approach.value ?? "Smart Money"}</span>
@@ -820,7 +827,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           }}
                         >
                           <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Sesión</span>
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_session')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.session.value ?? "New York"}</span>
@@ -843,7 +850,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           }}
                         >
                           <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Mejor Hora</span>
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_best_time')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</span>
@@ -869,7 +876,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         <div className="flex items-start gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-1.5 mb-1.5">
-                              <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Velas de Confirmación</span>
+                              <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_candle')}</span>
                               <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                             </div>
                             <span className="text-xs font-bold text-cyan-100 block">{aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</span>
@@ -900,7 +907,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Per-currency impact scoring */}
             <div className="relative px-3 pb-3">
               <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">
-                Impacto por Divisa
+                {t('signal_currency_impact')}
               </p>
               <div className="flex gap-2">
                 {impactData.map((d) => (

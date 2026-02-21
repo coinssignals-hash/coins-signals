@@ -10,22 +10,7 @@ import { useState, useRef, useEffect } from 'react';
 import { MainDrawer } from './MainDrawer';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
-
-const navItems = [
-  { icon: Brain, label: 'Ideas', href: '/', badgeType: null },
-  { icon: Wallet, label: 'Portfolio', href: '/portfolio', badgeType: null },
-  { icon: Newspaper, label: 'Noticias', href: '/news', badgeType: 'news' },
-  { icon: TrendingUp, label: 'Señales', href: '/signals', badgeType: 'signals' },
-];
-
-const moreNavItems = [
-  { icon: GraduationCap, label: 'Cursos', href: '/courses' },
-  { icon: Building2, label: 'Brokers', href: '/broker' },
-  { icon: BarChart3, label: 'Rendimientos', href: '/performance' },
-  { icon: Gift, label: 'Referidos', href: '/referrals' },
-  { icon: MessageCircle, label: 'Soporte', href: '/support' },
-  { icon: Info, label: 'Sobre Nosotros', href: '/about' },
-];
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export function Header() {
   const location = useLocation();
@@ -34,6 +19,23 @@ export function Header() {
   const moreMenuRef = useRef<HTMLDivElement>(null);
   const { onMouseEnter, onTouchStart } = usePrefetch();
   const { newCount: newsCount } = useNewNewsCount();
+  const { t } = useTranslation();
+
+  const navItems = [
+    { icon: Brain, label: t('nav_ideas'), href: '/', badgeType: null },
+    { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
+    { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
+    { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
+  ];
+
+  const moreNavItems = [
+    { icon: GraduationCap, label: t('nav_courses'), href: '/courses' },
+    { icon: Building2, label: t('nav_brokers'), href: '/broker' },
+    { icon: BarChart3, label: t('nav_performance'), href: '/performance' },
+    { icon: Gift, label: t('nav_referrals'), href: '/referrals' },
+    { icon: MessageCircle, label: t('nav_support'), href: '/support' },
+    { icon: Info, label: t('nav_about'), href: '/about' },
+  ];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -55,22 +57,15 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
-          {/* Menu Button */}
           <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)}>
             <Menu className="w-5 h-5" />
           </Button>
 
-          {/* Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center gap-1"
-            onMouseEnter={onMouseEnter('/')}
-          >
+          <Link to="/" className="flex items-center gap-1" onMouseEnter={onMouseEnter('/')}>
             <span className="text-xl font-bold text-primary">Coins</span>
             <span className="text-xl font-bold text-accent">$ignals</span>
           </Link>
           
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -103,7 +98,6 @@ export function Header() {
               );
             })}
 
-            {/* More Dropdown */}
             <div className="relative" ref={moreMenuRef}>
               <button
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
@@ -114,14 +108,13 @@ export function Header() {
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                 )}
               >
-                Más
+                {t('nav_more')}
                 <ChevronDown className={cn(
                   'w-4 h-4 transition-transform duration-300 ease-out',
                   moreMenuOpen && 'rotate-180'
                 )} />
               </button>
 
-              {/* Dropdown Menu */}
               <div 
                 className={cn(
                   'absolute top-full right-0 mt-2 w-56 z-50 bg-popover border border-border rounded-xl shadow-xl overflow-hidden',
@@ -149,14 +142,9 @@ export function Header() {
                             ? 'bg-primary/10 text-primary'
                             : 'text-foreground hover:bg-secondary hover:pl-5'
                         )}
-                        style={{ 
-                          transitionDelay: moreMenuOpen ? `${index * 30}ms` : '0ms' 
-                        }}
+                        style={{ transitionDelay: moreMenuOpen ? `${index * 30}ms` : '0ms' }}
                       >
-                        <Icon className={cn(
-                          'w-4 h-4 transition-transform duration-200',
-                          'group-hover:scale-110'
-                        )} />
+                        <Icon className={cn('w-4 h-4 transition-transform duration-200', 'group-hover:scale-110')} />
                         <span className="transition-transform duration-200 group-hover:translate-x-0.5">
                           {item.label}
                         </span>
@@ -168,7 +156,6 @@ export function Header() {
             </div>
           </nav>
           
-          {/* Actions */}
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="hidden sm:flex">
               <Search className="w-5 h-5" />

@@ -4,33 +4,35 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight, User, FileText, Shield, Bell, Palette, Globe, HelpCircle } from 'lucide-react';
 import { useOnboardingTour } from '@/components/onboarding/OnboardingTour';
-
-const settingsSections = [
-  {
-    title: 'Perfil',
-    items: [
-      { icon: User, label: 'Información Personal', href: '/settings/personal', description: 'Nombre, fecha de nacimiento, dirección' },
-      { icon: FileText, label: 'Documentos', href: '/settings/documents', description: 'Prueba de identidad y residencia' },
-    ]
-  },
-  {
-    title: 'Seguridad',
-    items: [
-      { icon: Shield, label: 'Seguridad', href: '/settings/security', description: 'Contraseña, autenticación, biométrico' },
-    ]
-  },
-  {
-    title: 'Preferencias',
-    items: [
-      { icon: Bell, label: 'Notificaciones', href: '/settings/notifications', description: 'Alertas, señales, actualizaciones' },
-      { icon: Palette, label: 'Aspecto', href: '/settings/appearance', description: 'Tema, tamaño de letra' },
-      { icon: Globe, label: 'Idioma y Zona Horaria', href: '/settings/language', description: 'Idioma, zona horaria' },
-    ]
-  }
-];
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export default function Settings() {
   const { startTour } = useOnboardingTour();
+  const { t } = useTranslation();
+
+  const settingsSections = [
+    {
+      title: t('settings_profile'),
+      items: [
+        { icon: User, label: t('settings_personal_info'), href: '/settings/personal', description: t('settings_personal_info_desc') },
+        { icon: FileText, label: t('settings_documents'), href: '/settings/documents', description: t('settings_documents_desc') },
+      ]
+    },
+    {
+      title: t('settings_security'),
+      items: [
+        { icon: Shield, label: t('settings_security'), href: '/settings/security', description: t('settings_security_desc') },
+      ]
+    },
+    {
+      title: t('settings_preferences'),
+      items: [
+        { icon: Bell, label: t('settings_notifications'), href: '/settings/notifications', description: t('settings_notifications_desc') },
+        { icon: Palette, label: t('settings_appearance'), href: '/settings/appearance', description: t('settings_appearance_desc') },
+        { icon: Globe, label: t('settings_language_tz'), href: '/settings/language', description: t('settings_language_tz_desc') },
+      ]
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -39,7 +41,7 @@ export default function Settings() {
       <main className="container py-6">
         <div className="flex items-center gap-2 mb-6">
           <span className="text-xs text-muted-foreground">ID # 0572564</span>
-          <span className="text-xl font-bold text-foreground">Ajustes</span>
+          <span className="text-xl font-bold text-foreground">{t('settings_title')}</span>
         </div>
 
         <div className="space-y-6">
@@ -76,9 +78,8 @@ export default function Settings() {
             </div>
           ))}
 
-          {/* Tour button */}
           <div>
-            <h2 className="text-sm font-semibold text-primary mb-3">Ayuda</h2>
+            <h2 className="text-sm font-semibold text-primary mb-3">{t('settings_help')}</h2>
             <Card className="bg-card border-border">
               <CardContent className="p-0">
                 <button
@@ -90,8 +91,8 @@ export default function Settings() {
                       <HelpCircle className="w-5 h-5 text-primary" />
                     </div>
                     <div className="text-left">
-                      <p className="font-medium text-foreground">Tour de la App</p>
-                      <p className="text-xs text-muted-foreground">Revisa las funciones principales</p>
+                      <p className="font-medium text-foreground">{t('settings_app_tour')}</p>
+                      <p className="text-xs text-muted-foreground">{t('settings_app_tour_desc')}</p>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />

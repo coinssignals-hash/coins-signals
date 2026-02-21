@@ -1,34 +1,31 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Newspaper, GraduationCap, Building2, Settings, Brain, TrendingUp, Wallet } from 'lucide-react';
+import { Newspaper, Building2, Settings, Brain, TrendingUp, Wallet } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useEffect } from 'react';
-
-const navItems = [
-  { icon: Brain, label: 'Ideas', href: '/', badgeType: null },
-  { icon: Wallet, label: 'Portfolio', href: '/portfolio', badgeType: null },
-  { icon: TrendingUp, label: 'Señales', href: '/signals', badgeType: 'signals' },
-  { icon: Newspaper, label: 'Noticias', href: '/news', badgeType: 'news' },
-  { icon: Building2, label: 'Brokers', href: '/broker', badgeType: null },
-  { icon: Settings, label: 'Ajustes', href: '/settings', badgeType: null },
-];
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export function BottomNav() {
   const location = useLocation();
   const { newCount: signalsCount, markAsSeen: markSignalsSeen } = useNewSignalsCount();
   const { newCount: newsCount, markAsSeen: markNewsSeen } = useNewNewsCount();
   const { onMouseEnter, onTouchStart } = usePrefetch();
+  const { t } = useTranslation();
 
-  // Mark as seen when visiting respective pages
+  const navItems = [
+    { icon: Brain, label: t('nav_ideas'), href: '/', badgeType: null },
+    { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
+    { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
+    { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
+    { icon: Building2, label: t('nav_brokers'), href: '/broker', badgeType: null },
+    { icon: Settings, label: t('nav_settings'), href: '/settings', badgeType: null },
+  ];
+
   useEffect(() => {
-    if (location.pathname === '/signals') {
-      markSignalsSeen();
-    }
-    if (location.pathname === '/news') {
-      markNewsSeen();
-    }
+    if (location.pathname === '/signals') markSignalsSeen();
+    if (location.pathname === '/news') markNewsSeen();
   }, [location.pathname, markSignalsSeen, markNewsSeen]);
 
   const getBadgeCount = (badgeType: string | null) => {
@@ -54,9 +51,7 @@ export function BottomNav() {
               onTouchStart={onTouchStart(item.href)}
               className={cn(
                 'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors relative',
-                isActive
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
+                isActive ? 'text-primary' : 'text-muted-foreground'
               )}
             >
               <div className="relative">
