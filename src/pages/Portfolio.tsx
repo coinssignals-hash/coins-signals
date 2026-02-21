@@ -104,7 +104,8 @@ export default function Portfolio() {
   const showAuthBanner = !user;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
+    <div className="min-h-screen bg-background flex justify-center">
+      <div className="relative w-full max-w-4xl min-h-screen bg-[image:var(--gradient-page)] pb-20 shadow-2xl">
       <Header />
       
       <main className="container max-w-4xl mx-auto px-4 py-4">
@@ -425,6 +426,7 @@ export default function Portfolio() {
       </main>
 
       <BottomNav />
+      </div>
     </div>
   );
 }

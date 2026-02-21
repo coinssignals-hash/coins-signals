@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -199,12 +199,12 @@ const Index = () => {
   }, [data?.priceData]);
 
   return (
-    <div className="min-h-screen bg-black pb-20 md:pb-0">
+    <PageShell maxWidth="max-w-4xl">
       <Header />
       
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
       
-      <main className="container py-4 px-2 sm:px-4 max-w-4xl mx-auto space-y-4">
+      <main className="container py-4 px-2 sm:px-4 mx-auto space-y-4">
         <PortfolioWidget />
         <div className="flex items-center gap-2 flex-wrap">
           <SymbolSearch 
@@ -214,10 +214,10 @@ const Index = () => {
           />
           
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[100px] bg-[#0a1a0a] border-green-900/50">
+            <SelectTrigger className="w-[100px] bg-card border-border">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a1a0a] border-green-900/50">
+            <SelectContent className="bg-card border-border">
               {TIMEFRAME_VALUES.map(tf => (
                 <SelectItem key={tf} value={tf}>{t(TIMEFRAME_KEYS[tf])}</SelectItem>
               ))}
@@ -233,13 +233,13 @@ const Index = () => {
           
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 border-green-900/50 bg-[#0a1a0a]">
-                <Bell className="w-4 h-4 text-green-400" />
+              <Button variant="outline" size="icon" className="shrink-0 border-border bg-card">
+                <Bell className="w-4 h-4 text-primary" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[320px] sm:w-[380px] bg-[#0a1a0a] border-green-900/50">
+            <SheetContent className="w-[320px] sm:w-[380px] bg-card border-border">
               <SheetHeader>
-                <SheetTitle className="text-white">{t('index_indicator_alerts')}</SheetTitle>
+                <SheetTitle className="text-foreground">{t('index_indicator_alerts')}</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
                 <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
@@ -252,9 +252,9 @@ const Index = () => {
             size="icon"
             onClick={refetch}
             disabled={loading}
-            className="shrink-0 border-green-900/50 bg-[#0a1a0a]"
+            className="shrink-0 border-border bg-card"
           >
-            <RefreshCw className={`w-4 h-4 text-green-400 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 text-primary ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
 
@@ -322,31 +322,31 @@ const Index = () => {
         />
 
         <Tabs defaultValue="price" className="space-y-3">
-          <TabsList className="bg-[#0a1a0a] border border-green-900/50 w-full justify-start overflow-x-auto flex-nowrap">
-            <TabsTrigger value="price" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+          <TabsList className="bg-card border border-border w-full justify-start overflow-x-auto flex-nowrap">
+            <TabsTrigger value="price" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
               <Activity className="w-3 h-3 mr-1" />
               {t('index_tab_price')}
             </TabsTrigger>
-            <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+            <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
               <TrendingUp className="w-3 h-3 mr-1" />
               {t('index_tab_rsi')}
             </TabsTrigger>
-            <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+            <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
               <BarChart2 className="w-3 h-3 mr-1" />
               {t('index_tab_macd')}
             </TabsTrigger>
-            <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+            <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
               <Waves className="w-3 h-3 mr-1" />
               {t('index_tab_bollinger')}
             </TabsTrigger>
-            <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
+            <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
               <Percent className="w-3 h-3 mr-1" />
               {t('index_tab_stochastic')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="price">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+            <div className="bg-card border border-border rounded-lg p-3">
               <PriceChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -366,7 +366,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="rsi">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+            <div className="bg-card border border-border rounded-lg p-3">
               <RSIChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -378,7 +378,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="macd">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+            <div className="bg-card border border-border rounded-lg p-3">
               <MACDChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -390,7 +390,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="bollinger">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+            <div className="bg-card border border-border rounded-lg p-3">
               <BollingerChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -404,7 +404,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="stochastic">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
+            <div className="bg-card border border-border rounded-lg p-3">
               <StochasticChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -486,8 +486,7 @@ const Index = () => {
         </div>
       </main>
       
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 };
 
