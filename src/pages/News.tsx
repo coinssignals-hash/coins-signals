@@ -381,8 +381,9 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 // Currency quick filter pills
 function QuickCurrencyFilter({
   selected,
-  onChange
-}: {selected: Currency[];onChange: (currencies: Currency[]) => void;}) {
+  onChange,
+  allLabel
+}: {selected: Currency[];onChange: (currencies: Currency[]) => void;allLabel: string;}) {
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
       onChange(selected.filter((c) => c !== currency));
@@ -405,7 +406,7 @@ function QuickCurrencyFilter({
             : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
         )}
       >
-        🌍 Todas
+        🌍 {allLabel}
       </button>
       
       {/* Major currencies */}
@@ -538,7 +539,8 @@ const News = () => {
         {/* Quick Currency Filter */}
         <QuickCurrencyFilter
           selected={selectedCurrencies}
-          onChange={setSelectedCurrencies} />
+          onChange={setSelectedCurrencies}
+          allLabel={t('news_all_currencies')} />
 
         
         {/* Advanced Filters */}
