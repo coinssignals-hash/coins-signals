@@ -9,6 +9,7 @@ import { useNewsAIAnalysis } from '@/hooks/useNewsAIAnalysis';
 import { useNewsCache } from '@/hooks/useNewsCache';
 import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2, Archive, Activity } from 'lucide-react';
 import { CurrencyImpactModal } from '@/components/news/CurrencyImpactModal';
+import { CurrencyImpactCharts } from '@/components/news/CurrencyImpactCharts';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
@@ -421,7 +422,17 @@ const NewsDetail = () => {
             </div>
           </CurrencyImpactModal>
         )}
-        
+
+        {/* Per-Currency Impact Charts */}
+        {news.affected_currencies.length > 0 && (
+          <CurrencyImpactCharts
+            newsId={news.id}
+            newsTitle={news.title}
+            category={news.category as EconomicCategory}
+            currencies={news.affected_currencies}
+          />
+        )}
+
         {/* Relevance Score */}
         <div className="p-4 rounded-lg bg-card border border-border space-y-3">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Relevancia</h2>
