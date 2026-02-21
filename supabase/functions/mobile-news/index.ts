@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 const VALID_CURRENCIES = ['EUR', 'USD', 'AUD', 'CAD', 'GBP', 'JPY', 'CHF', 'NZD'];
@@ -16,6 +16,8 @@ const SOURCE_LOGOS: Record<string, string> = {
   'Investing.com': 'https://logo.clearbit.com/investing.com',
   'FXStreet': 'https://logo.clearbit.com/fxstreet.com',
   'DailyFX': 'https://logo.clearbit.com/dailyfx.com',
+  'Forex Factory': 'https://logo.clearbit.com/forexfactory.com',
+  'ForexLive': 'https://logo.clearbit.com/forexlive.com',
 };
 
 const CURRENCY_PATTERNS: Record<string, RegExp> = {
@@ -80,8 +82,8 @@ function detectCategory(text: string): string {
 }
 
 function detectSentiment(text: string): 'bullish' | 'bearish' | 'neutral' {
-  const bull = (text.match(/\b(surge|rally|gain|rise|bullish|positive|growth|strong|optimism)\b/gi) || []).length;
-  const bear = (text.match(/\b(fall|drop|decline|bearish|negative|weak|fear|crash|slump)\b/gi) || []).length;
+  const bull = (text.match(/\b(surge|rally|gain|rise|bullish|positive|growth|strong|optimism|higher|up)\b/gi) || []).length;
+  const bear = (text.match(/\b(fall|drop|decline|bearish|negative|weak|fear|crash|slump|lower|down)\b/gi) || []).length;
   if (bull > bear) return 'bullish';
   if (bear > bull) return 'bearish';
   return 'neutral';
@@ -93,6 +95,30 @@ function detectImpact(text: string): 'high' | 'medium' | 'low' {
   return 'low';
 }
 
+// Simple XML parser for RSS feeds
+function parseRSSItems(xml: string): Array<{ title: string; link: string; description: string; pubDate: string; imageUrl?: string }> {
+  const items: Array<{ title: string; link: string; description: string; pubDate: string; imageUrl?: string }> = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const itemXml = match[1];
+    const title = (itemXml.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || itemXml.match(/<title>(.*?)<\/title>/) || [])[1] || '';
+    const link = (itemXml.match(/<link><!\[CDATA\[(.*?)\]\]><\/link>/) || itemXml.match(/<link>(.*?)<\/link>/) || [])[1] || '';
+    const description = (itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/) || itemXml.match(/<description>([\s\S]*?)<\/description>/) || [])[1] || '';
+    const pubDate = (itemXml.match(/<pubDate>(.*?)<\/pubDate>/) || [])[1] || '';
+    const mediaUrl = (itemXml.match(/<media:content[^>]+url="([^"]+)"/) || [])[1];
+    const enclosureUrl = (itemXml.match(/<enclosure[^>]+url="([^"]+)"/) || [])[1];
+    const descImgUrl = (description.match(/<img[^>]+src="([^"]+)"/) || [])[1];
+    const imageUrl = mediaUrl || enclosureUrl || descImgUrl;
+    if (title) {
+      items.push({ title: title.trim(), link: link.trim(), description: description.replace(/<[^>]+>/g, '').trim(), pubDate, imageUrl });
+    }
+  }
+  return items;
+}
+
+// --- Source fetchers ---
+
 async function fetchFinnhub(apiKey: string): Promise<MobileNewsItem[]> {
   try {
     const res = await fetch(`https://finnhub.io/api/v1/news?category=forex&token=${apiKey}`);
@@ -102,19 +128,11 @@ async function fetchFinnhub(apiKey: string): Promise<MobileNewsItem[]> {
       const text = `${item.headline} ${item.summary || ''}`;
       const pubDate = new Date(item.datetime * 1000).toISOString();
       return {
-        id: `finnhub-${item.id || i}`,
-        title: item.headline,
-        summary: item.summary || '',
-        source: item.source || 'Finnhub',
-        source_logo: SOURCE_LOGOS[item.source] || null,
-        url: item.url,
-        image_url: item.image || null,
-        published_at: pubDate,
-        time_ago: getTimeAgo(pubDate),
-        category: detectCategory(text),
-        affected_currencies: detectCurrencies(text),
-        sentiment: detectSentiment(text),
-        impact: detectImpact(text),
+        id: `finnhub-${item.id || i}`, title: item.headline, summary: item.summary || '',
+        source: item.source || 'Finnhub', source_logo: SOURCE_LOGOS[item.source] || null,
+        url: item.url, image_url: item.image || null, published_at: pubDate,
+        time_ago: getTimeAgo(pubDate), category: detectCategory(text),
+        affected_currencies: detectCurrencies(text), sentiment: detectSentiment(text), impact: detectImpact(text),
       };
     });
   } catch { return []; }
@@ -128,19 +146,13 @@ async function fetchPolygon(apiKey: string): Promise<MobileNewsItem[]> {
     return (data.results || []).map((item: any, i: number) => {
       const text = `${item.title} ${item.description || ''}`;
       return {
-        id: `polygon-${item.id || i}`,
-        title: item.title,
-        summary: item.description || '',
+        id: `polygon-${item.id || i}`, title: item.title, summary: item.description || '',
         source: item.publisher?.name || 'Polygon',
         source_logo: item.publisher?.logo_url || SOURCE_LOGOS[item.publisher?.name] || null,
-        url: item.article_url,
-        image_url: item.image_url || null,
-        published_at: item.published_utc,
-        time_ago: getTimeAgo(item.published_utc),
-        category: detectCategory(text),
-        affected_currencies: detectCurrencies(text),
-        sentiment: detectSentiment(text),
-        impact: detectImpact(text),
+        url: item.article_url, image_url: item.image_url || null,
+        published_at: item.published_utc, time_ago: getTimeAgo(item.published_utc),
+        category: detectCategory(text), affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text), impact: detectImpact(text),
       };
     });
   } catch { return []; }
@@ -157,22 +169,99 @@ async function fetchNewsApi(apiKey: string): Promise<MobileNewsItem[]> {
       .map((item: any, i: number) => {
         const text = `${item.title} ${item.description || ''}`;
         return {
-          id: `newsapi-${i}-${Date.now()}`,
-          title: item.title,
-          summary: item.description || '',
-          source: item.source?.name || 'NewsAPI',
-          source_logo: SOURCE_LOGOS[item.source?.name] || null,
-          url: item.url,
-          image_url: item.urlToImage || null,
-          published_at: item.publishedAt,
-          time_ago: getTimeAgo(item.publishedAt),
-          category: detectCategory(text),
-          affected_currencies: detectCurrencies(text),
-          sentiment: detectSentiment(text),
-          impact: detectImpact(text),
+          id: `newsapi-${i}-${Date.now()}`, title: item.title, summary: item.description || '',
+          source: item.source?.name || 'NewsAPI', source_logo: SOURCE_LOGOS[item.source?.name] || null,
+          url: item.url, image_url: item.urlToImage || null, published_at: item.publishedAt,
+          time_ago: getTimeAgo(item.publishedAt), category: detectCategory(text),
+          affected_currencies: detectCurrencies(text), sentiment: detectSentiment(text), impact: detectImpact(text),
         };
       });
   } catch { return []; }
+}
+
+function rssToItems(items: ReturnType<typeof parseRSSItems>, sourceId: string, sourceName: string): MobileNewsItem[] {
+  return items.slice(0, 15).map((item, i) => {
+    const text = `${item.title} ${item.description}`;
+    const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+    return {
+      id: `${sourceId}-${i}-${Date.now()}`, title: item.title,
+      summary: item.description.substring(0, 200), source: sourceName,
+      source_logo: SOURCE_LOGOS[sourceName] || null, url: item.link,
+      image_url: item.imageUrl || null, published_at: pubDate,
+      time_ago: getTimeAgo(pubDate), category: detectCategory(text),
+      affected_currencies: detectCurrencies(text), sentiment: detectSentiment(text), impact: detectImpact(text),
+    };
+  });
+}
+
+async function fetchRSS(url: string, sourceId: string, sourceName: string): Promise<MobileNewsItem[]> {
+  try {
+    const res = await fetch(url, { headers: { 'User-Agent': 'EcoSignalBot/1.0' } });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return rssToItems(parseRSSItems(xml), sourceId, sourceName);
+  } catch (e) {
+    console.error(`[mobile-news] ${sourceName} RSS error:`, e);
+    return [];
+  }
+}
+
+// In-memory cache with 2-min TTL
+let newsCache: { data: MobileNewsItem[]; sources: Record<string, boolean>; ts: number } | null = null;
+const CACHE_TTL = 2 * 60 * 1000;
+
+async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<string, boolean> }> {
+  if (newsCache && Date.now() - newsCache.ts < CACHE_TTL) {
+    return { data: newsCache.data, sources: newsCache.sources };
+  }
+
+  const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
+  const polygonKey = Deno.env.get('POLYGON_API_KEY');
+  const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
+
+  const promises: Promise<MobileNewsItem[]>[] = [
+    fetchRSS('https://www.fxstreet.com/rss/news', 'fxstreet', 'FXStreet'),
+    fetchRSS('https://www.investing.com/rss/news.rss', 'investing', 'Investing.com'),
+    fetchRSS('https://www.forexfactory.com/rss', 'forexfactory', 'Forex Factory'),
+    fetchRSS('https://feeds.bloomberg.com/markets/news.rss', 'bloomberg', 'Bloomberg'),
+  ];
+  if (finnhubKey) promises.push(fetchFinnhub(finnhubKey));
+  if (polygonKey) promises.push(fetchPolygon(polygonKey));
+  if (newsApiKey) promises.push(fetchNewsApi(newsApiKey));
+
+  if (promises.length === 0) {
+    return { data: [], sources: {} };
+  }
+
+  const results = await Promise.allSettled(promises);
+  let allNews = results
+    .filter((r): r is PromiseFulfilledResult<MobileNewsItem[]> => r.status === 'fulfilled')
+    .flatMap(r => r.value);
+
+  // Sort newest first
+  allNews.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+
+  // Deduplicate by title prefix
+  const seen = new Set<string>();
+  allNews = allNews.filter(item => {
+    const key = item.title.toLowerCase().substring(0, 50);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const sources: Record<string, boolean> = {
+    finnhub: allNews.some(n => n.id.startsWith('finnhub')),
+    polygon: allNews.some(n => n.id.startsWith('polygon')),
+    newsapi: allNews.some(n => n.id.startsWith('newsapi')),
+    fxstreet: allNews.some(n => n.id.startsWith('fxstreet')),
+    investing: allNews.some(n => n.id.startsWith('investing')),
+    forexfactory: allNews.some(n => n.id.startsWith('forexfactory')),
+    bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
+  };
+
+  newsCache = { data: allNews, sources, ts: Date.now() };
+  return { data: allNews, sources };
 }
 
 serve(async (req) => {
@@ -183,72 +272,62 @@ serve(async (req) => {
   try {
     let currencies: string[] = [];
     let limit = 30;
+    let day: string | null = null; // YYYY-MM-DD filter
+    let page = 1;
 
-    // Support both GET (query params) and POST (JSON body)
     if (req.method === 'GET') {
       const url = new URL(req.url);
       const currParam = url.searchParams.get('currencies');
       if (currParam) currencies = currParam.split(',').map(c => c.trim().toUpperCase()).filter(c => VALID_CURRENCIES.includes(c));
-      limit = Math.min(parseInt(url.searchParams.get('limit') || '30'), 50);
+      limit = Math.min(parseInt(url.searchParams.get('limit') || '30'), 100);
+      day = url.searchParams.get('day'); // e.g. 2026-02-21
+      page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
     } else {
       const body = await req.json().catch(() => ({}));
       if (body.currencies) currencies = body.currencies.filter((c: string) => VALID_CURRENCIES.includes(c.toUpperCase()));
-      if (body.limit) limit = Math.min(body.limit, 50);
+      if (body.limit) limit = Math.min(body.limit, 100);
+      if (body.day) day = body.day;
+      if (body.page) page = Math.max(1, body.page);
     }
 
-    console.log('[mobile-news] currencies:', currencies, 'limit:', limit);
+    console.log('[mobile-news] day:', day, 'currencies:', currencies, 'limit:', limit, 'page:', page);
 
-    const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
-    const polygonKey = Deno.env.get('POLYGON_API_KEY');
-    const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
+    const { data: allNews, sources } = await getAllNews();
+    let filtered = allNews;
 
-    const promises: Promise<MobileNewsItem[]>[] = [];
-    if (finnhubKey) promises.push(fetchFinnhub(finnhubKey));
-    if (polygonKey) promises.push(fetchPolygon(polygonKey));
-    if (newsApiKey) promises.push(fetchNewsApi(newsApiKey));
-
-    if (promises.length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'No news API keys configured', data: [], total: 0 }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Filter by day
+    if (day) {
+      filtered = filtered.filter(item => {
+        const itemDay = new Date(item.published_at).toISOString().split('T')[0];
+        return itemDay === day;
+      });
     }
-
-    const results = await Promise.all(promises);
-    let allNews = results.flat();
 
     // Filter by currencies
     if (currencies.length > 0) {
-      allNews = allNews.filter(item =>
+      filtered = filtered.filter(item =>
         item.affected_currencies.some(c => currencies.includes(c))
       );
     }
 
-    // Sort newest first
-    allNews.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
-
-    // Deduplicate by title prefix
-    const seen = new Set<string>();
-    allNews = allNews.filter(item => {
-      const key = item.title.toLowerCase().substring(0, 50);
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
-    allNews = allNews.slice(0, limit);
-
-    console.log('[mobile-news] Returning', allNews.length, 'items');
+    // Pagination
+    const total = filtered.length;
+    const offset = (page - 1) * limit;
+    const paged = filtered.slice(offset, offset + limit);
 
     return new Response(
       JSON.stringify({
         success: true,
-        data: allNews,
-        total: allNews.length,
+        data: paged,
+        total,
+        page,
+        limit,
+        has_more: offset + limit < total,
+        day: day || undefined,
         available_currencies: VALID_CURRENCIES,
-        sources: { finnhub: !!finnhubKey, polygon: !!polygonKey, newsapi: !!newsApiKey },
+        sources,
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=120' } }
     );
   } catch (error) {
     console.error('[mobile-news] Error:', error);
