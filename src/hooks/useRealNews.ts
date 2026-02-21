@@ -24,6 +24,11 @@ interface FetchNewsResponse {
   sources: {
     finnhub: boolean;
     polygon: boolean;
+    newsapi: boolean;
+    fxstreet: boolean;
+    investing: boolean;
+    forexfactory: boolean;
+    bloomberg: boolean;
   };
   total: number;
   error?: string;

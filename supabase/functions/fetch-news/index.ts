@@ -35,6 +35,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'DailyFX': 'https://logo.clearbit.com/dailyfx.com',
   'Forex Factory': 'https://logo.clearbit.com/forexfactory.com',
   'Benzinga': 'https://logo.clearbit.com/benzinga.com',
+  'ForexLive': 'https://logo.clearbit.com/forexlive.com',
 };
 
 // Currency detection from text
@@ -93,15 +94,42 @@ function detectCategory(text: string): string {
 }
 
 function detectSentiment(text: string): 'bullish' | 'bearish' | 'neutral' {
-  const bullishWords = /\b(surge|rally|gain|rise|bullish|positive|growth|strong|optimism)\b/i;
-  const bearishWords = /\b(fall|drop|decline|bearish|negative|weak|fear|crash|slump)\b/i;
+  const bullishWords = /\b(surge|rally|gain|rise|bullish|positive|growth|strong|optimism|higher|up)\b/i;
+  const bearishWords = /\b(fall|drop|decline|bearish|negative|weak|fear|crash|slump|lower|down)\b/i;
   
-  const bullishCount = (text.match(bullishWords) || []).length;
-  const bearishCount = (text.match(bearishWords) || []).length;
+  const bullishCount = (text.match(new RegExp(bullishWords.source, 'gi')) || []).length;
+  const bearishCount = (text.match(new RegExp(bearishWords.source, 'gi')) || []).length;
   
   if (bullishCount > bearishCount) return 'bullish';
   if (bearishCount > bullishCount) return 'bearish';
   return 'neutral';
+}
+
+// Simple XML parser for RSS feeds
+function parseRSSItems(xml: string): Array<{ title: string; link: string; description: string; pubDate: string; imageUrl?: string }> {
+  const items: Array<{ title: string; link: string; description: string; pubDate: string; imageUrl?: string }> = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const itemXml = match[1];
+    const title = (itemXml.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || itemXml.match(/<title>(.*?)<\/title>/) || [])[1] || '';
+    const link = (itemXml.match(/<link><!\[CDATA\[(.*?)\]\]><\/link>/) || itemXml.match(/<link>(.*?)<\/link>/) || [])[1] || '';
+    const description = (itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/) || itemXml.match(/<description>([\s\S]*?)<\/description>/) || [])[1] || '';
+    const pubDate = (itemXml.match(/<pubDate>(.*?)<\/pubDate>/) || [])[1] || '';
+    
+    // Try to extract image from media:content, enclosure, or description
+    const mediaUrl = (itemXml.match(/<media:content[^>]+url="([^"]+)"/) || [])[1];
+    const enclosureUrl = (itemXml.match(/<enclosure[^>]+url="([^"]+)"/) || [])[1];
+    const descImgUrl = (description.match(/<img[^>]+src="([^"]+)"/) || [])[1];
+    const imageUrl = mediaUrl || enclosureUrl || descImgUrl;
+    
+    if (title) {
+      items.push({ title: title.trim(), link: link.trim(), description: description.replace(/<[^>]+>/g, '').trim(), pubDate, imageUrl });
+    }
+  }
+  
+  return items;
 }
 
 // Fetch from Finnhub
@@ -110,12 +138,7 @@ async function fetchFinnhubNews(apiKey: string): Promise<NewsItem[]> {
     const response = await fetch(
       `https://finnhub.io/api/v1/news?category=forex&token=${apiKey}`
     );
-    
-    if (!response.ok) {
-      console.error('[fetch-news] Finnhub error:', response.status);
-      return [];
-    }
-    
+    if (!response.ok) return [];
     const data = await response.json();
     
     return data.slice(0, 15).map((item: any, index: number) => ({
@@ -134,7 +157,7 @@ async function fetchFinnhubNews(apiKey: string): Promise<NewsItem[]> {
       relevance_score: 0.8 + Math.random() * 0.2,
     }));
   } catch (error) {
-    console.error('[fetch-news] Finnhub fetch error:', error);
+    console.error('[fetch-news] Finnhub error:', error);
     return [];
   }
 }
@@ -145,12 +168,7 @@ async function fetchPolygonNews(apiKey: string): Promise<NewsItem[]> {
     const response = await fetch(
       `https://api.polygon.io/v2/reference/news?limit=15&apiKey=${apiKey}`
     );
-    
-    if (!response.ok) {
-      console.error('[fetch-news] Polygon error:', response.status);
-      return [];
-    }
-    
+    if (!response.ok) return [];
     const data = await response.json();
     
     return (data.results || []).map((item: any, index: number) => ({
@@ -171,7 +189,7 @@ async function fetchPolygonNews(apiKey: string): Promise<NewsItem[]> {
       relevance_score: 0.7 + Math.random() * 0.3,
     }));
   } catch (error) {
-    console.error('[fetch-news] Polygon fetch error:', error);
+    console.error('[fetch-news] Polygon error:', error);
     return [];
   }
 }
@@ -179,23 +197,12 @@ async function fetchPolygonNews(apiKey: string): Promise<NewsItem[]> {
 // Fetch from NewsAPI.org
 async function fetchNewsApiNews(apiKey: string): Promise<NewsItem[]> {
   try {
-    // Search for business/financial news
     const response = await fetch(
       `https://newsapi.org/v2/top-headlines?category=business&language=en&pageSize=20&apiKey=${apiKey}`
     );
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('[fetch-news] NewsAPI error:', response.status, errorData);
-      return [];
-    }
-    
+    if (!response.ok) return [];
     const data = await response.json();
-    
-    if (data.status !== 'ok' || !data.articles) {
-      console.error('[fetch-news] NewsAPI invalid response:', data);
-      return [];
-    }
+    if (data.status !== 'ok' || !data.articles) return [];
     
     return data.articles
       .filter((item: any) => item.title && item.title !== '[Removed]')
@@ -215,7 +222,147 @@ async function fetchNewsApiNews(apiKey: string): Promise<NewsItem[]> {
         relevance_score: 0.75 + Math.random() * 0.25,
       }));
   } catch (error) {
-    console.error('[fetch-news] NewsAPI fetch error:', error);
+    console.error('[fetch-news] NewsAPI error:', error);
+    return [];
+  }
+}
+
+// Fetch from FXStreet RSS
+async function fetchFXStreetNews(): Promise<NewsItem[]> {
+  try {
+    const response = await fetch('https://www.fxstreet.com/rss/news', {
+      headers: { 'User-Agent': 'EcoSignalBot/1.0' },
+    });
+    if (!response.ok) return [];
+    const xml = await response.text();
+    const items = parseRSSItems(xml);
+    
+    return items.slice(0, 15).map((item, index) => {
+      const text = `${item.title} ${item.description}`;
+      const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+      return {
+        id: `fxstreet-${index}-${Date.now()}`,
+        title: item.title,
+        summary: item.description.substring(0, 200),
+        source: 'FXStreet',
+        source_logo: SOURCE_LOGOS['FXStreet'],
+        url: item.link,
+        image_url: item.imageUrl || null,
+        published_at: pubDate,
+        time_ago: getTimeAgo(pubDate),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.85 + Math.random() * 0.15,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] FXStreet RSS error:', error);
+    return [];
+  }
+}
+
+// Fetch from Investing.com RSS
+async function fetchInvestingNews(): Promise<NewsItem[]> {
+  try {
+    const response = await fetch('https://www.investing.com/rss/news.rss', {
+      headers: { 'User-Agent': 'EcoSignalBot/1.0' },
+    });
+    if (!response.ok) return [];
+    const xml = await response.text();
+    const items = parseRSSItems(xml);
+    
+    return items.slice(0, 15).map((item, index) => {
+      const text = `${item.title} ${item.description}`;
+      const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+      return {
+        id: `investing-${index}-${Date.now()}`,
+        title: item.title,
+        summary: item.description.substring(0, 200),
+        source: 'Investing.com',
+        source_logo: SOURCE_LOGOS['Investing.com'],
+        url: item.link,
+        image_url: item.imageUrl || null,
+        published_at: pubDate,
+        time_ago: getTimeAgo(pubDate),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.8 + Math.random() * 0.2,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] Investing.com RSS error:', error);
+    return [];
+  }
+}
+
+// Fetch from ForexFactory RSS
+async function fetchForexFactoryNews(): Promise<NewsItem[]> {
+  try {
+    const response = await fetch('https://www.forexfactory.com/rss', {
+      headers: { 'User-Agent': 'EcoSignalBot/1.0' },
+    });
+    if (!response.ok) return [];
+    const xml = await response.text();
+    const items = parseRSSItems(xml);
+    
+    return items.slice(0, 15).map((item, index) => {
+      const text = `${item.title} ${item.description}`;
+      const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+      return {
+        id: `forexfactory-${index}-${Date.now()}`,
+        title: item.title,
+        summary: item.description.substring(0, 200),
+        source: 'Forex Factory',
+        source_logo: SOURCE_LOGOS['Forex Factory'],
+        url: item.link,
+        image_url: item.imageUrl || null,
+        published_at: pubDate,
+        time_ago: getTimeAgo(pubDate),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.9 + Math.random() * 0.1,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] ForexFactory RSS error:', error);
+    return [];
+  }
+}
+
+// Fetch from Bloomberg RSS
+async function fetchBloombergNews(): Promise<NewsItem[]> {
+  try {
+    const response = await fetch('https://feeds.bloomberg.com/markets/news.rss', {
+      headers: { 'User-Agent': 'EcoSignalBot/1.0' },
+    });
+    if (!response.ok) return [];
+    const xml = await response.text();
+    const items = parseRSSItems(xml);
+    
+    return items.slice(0, 15).map((item, index) => {
+      const text = `${item.title} ${item.description}`;
+      const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+      return {
+        id: `bloomberg-${index}-${Date.now()}`,
+        title: item.title,
+        summary: item.description.substring(0, 200),
+        source: 'Bloomberg',
+        source_logo: SOURCE_LOGOS['Bloomberg'],
+        url: item.link,
+        image_url: item.imageUrl || null,
+        published_at: pubDate,
+        time_ago: getTimeAgo(pubDate),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.9 + Math.random() * 0.1,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] Bloomberg RSS error:', error);
     return [];
   }
 }
@@ -226,7 +373,7 @@ serve(async (req) => {
   }
 
   try {
-    const { date, currencies, limit = 30 } = await req.json();
+    const { date, currencies, limit = 50 } = await req.json();
     
     console.log('[fetch-news] Fetching news for date:', date, 'currencies:', currencies);
 
@@ -234,35 +381,37 @@ serve(async (req) => {
     const polygonKey = Deno.env.get('POLYGON_API_KEY');
     const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
 
-    const newsPromises: Promise<NewsItem[]>[] = [];
+    // Launch all sources in parallel - RSS sources don't need API keys
+    const newsPromises: Promise<NewsItem[]>[] = [
+      fetchFXStreetNews(),
+      fetchInvestingNews(),
+      fetchForexFactoryNews(),
+      fetchBloombergNews(),
+    ];
 
-    if (finnhubKey) {
-      newsPromises.push(fetchFinnhubNews(finnhubKey));
+    if (finnhubKey) newsPromises.push(fetchFinnhubNews(finnhubKey));
+    if (polygonKey) newsPromises.push(fetchPolygonNews(polygonKey));
+    if (newsApiKey) newsPromises.push(fetchNewsApiNews(newsApiKey));
+
+    const results = await Promise.allSettled(newsPromises);
+    let allNews = results
+      .filter((r): r is PromiseFulfilledResult<NewsItem[]> => r.status === 'fulfilled')
+      .flatMap(r => r.value);
+
+    // Filter by date if specified (match by calendar day)
+    if (date) {
+      const targetDate = new Date(date);
+      const targetDay = targetDate.toISOString().split('T')[0];
+      allNews = allNews.filter(item => {
+        const itemDay = new Date(item.published_at).toISOString().split('T')[0];
+        return itemDay === targetDay;
+      });
     }
-
-    if (polygonKey) {
-      newsPromises.push(fetchPolygonNews(polygonKey));
-    }
-
-    if (newsApiKey) {
-      newsPromises.push(fetchNewsApiNews(newsApiKey));
-    }
-
-    if (newsPromises.length === 0) {
-      console.error('[fetch-news] No API keys configured');
-      return new Response(
-        JSON.stringify({ success: false, error: 'No news API keys configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const results = await Promise.all(newsPromises);
-    let allNews = results.flat();
 
     // Filter by currencies if specified
     if (currencies && currencies.length > 0) {
       allNews = allNews.filter(item => 
-        item.affected_currencies.some(c => currencies.includes(c))
+        item.affected_currencies.some((c: string) => currencies.includes(c))
       );
     }
 
@@ -283,21 +432,24 @@ serve(async (req) => {
     // Limit results
     allNews = allNews.slice(0, limit);
 
-    console.log('[fetch-news] Returning', allNews.length, 'news items from sources:', {
-      finnhub: !!finnhubKey,
-      polygon: !!polygonKey,
-      newsapi: !!newsApiKey,
-    });
+    // Count sources present
+    const sourcesPresent = {
+      finnhub: allNews.some(n => n.id.startsWith('finnhub')),
+      polygon: allNews.some(n => n.id.startsWith('polygon')),
+      newsapi: allNews.some(n => n.id.startsWith('newsapi')),
+      fxstreet: allNews.some(n => n.id.startsWith('fxstreet')),
+      investing: allNews.some(n => n.id.startsWith('investing')),
+      forexfactory: allNews.some(n => n.id.startsWith('forexfactory')),
+      bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
+    };
+
+    console.log('[fetch-news] Returning', allNews.length, 'news items. Sources:', sourcesPresent);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         data: allNews,
-        sources: {
-          finnhub: !!finnhubKey,
-          polygon: !!polygonKey,
-          newsapi: !!newsApiKey,
-        },
+        sources: sourcesPresent,
         total: allNews.length,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
