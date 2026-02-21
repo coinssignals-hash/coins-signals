@@ -301,8 +301,8 @@ export function PriceChart({
     sessions?: typeof MARKET_SESSIONS;
   } | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('4h');
-  const [enabledSessions, setEnabledSessions] = useState<Set<SessionId>>(new Set(['sydney', 'asia', 'london', 'ny']));
-  const [showSessions, setShowSessions] = useState(true);
+  const [enabledSessions, setEnabledSessions] = useState<Set<SessionId>>(new Set());
+  const [showSessions, setShowSessions] = useState(false);
   const [showVolumeChart, setShowVolumeChart] = useState(showVolume);
   const [chartType, setChartType] = useState<'candle' | 'line'>('candle');
   const [showPatterns, setShowPatterns] = useState(true);
