@@ -77,36 +77,80 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
       </div>
 
       {/* Overall summary */}
-      <div className="p-3 rounded-lg bg-card border border-border">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <DirectionIcon dir={data.overall.trend} />
-            <span className="text-sm font-medium text-foreground capitalize">
-              {data.overall.trend === 'bullish' ? 'Tendencia Alcista' :
-               data.overall.trend === 'bearish' ? 'Tendencia Bajista' : 'Tendencia Neutral'}
+      <div className="p-4 rounded-xl bg-gradient-to-br from-card to-card/80 border border-border/60 shadow-lg shadow-primary/5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className={cn(
+              'w-8 h-8 rounded-lg flex items-center justify-center',
+              data.overall.trend === 'bullish' ? 'bg-green-500/15' :
+              data.overall.trend === 'bearish' ? 'bg-red-500/15' : 'bg-muted/30'
+            )}>
+              <DirectionIcon dir={data.overall.trend} />
+            </div>
+            <div>
+              <span className="text-sm font-semibold text-foreground block leading-tight">
+                {data.overall.trend === 'bullish' ? 'Tendencia Alcista' :
+                 data.overall.trend === 'bearish' ? 'Tendencia Bajista' : 'Tendencia Neutral'}
+              </span>
+              <span className="text-[10px] text-muted-foreground">
+                {data.overall.totalPoints} puntos de datos
+              </span>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className={cn(
+              'text-lg font-bold font-mono block leading-tight',
+              data.overall.avgImpact > 0 ? 'text-green-400' :
+              data.overall.avgImpact < 0 ? 'text-red-400' : 'text-muted-foreground'
+            )}>
+              {data.overall.avgImpact > 0 ? '+' : ''}{data.overall.avgImpact.toFixed(2)}%
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              Vol: {data.overall.volatility.toFixed(1)}%
             </span>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Volatilidad: {data.overall.volatility.toFixed(1)}%
-          </span>
         </div>
-        {/* Aggregate timeline mini chart */}
-        <div className="h-24 w-full">
+        {/* Aggregate timeline chart */}
+        <div className="h-32 w-full -mx-1">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data.timeline} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+            <AreaChart data={data.timeline} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
               <defs>
                 <linearGradient id="impactGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                  <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
                   <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="label" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                labelStyle={{ color: 'hsl(var(--foreground))' }}
-                formatter={(v: number) => [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto']}
+              <XAxis
+                dataKey="label"
+                tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={false}
+                tickLine={false}
+                interval="preserveStartEnd"
+                dy={4}
               />
-              <Area type="monotone" dataKey="impact" stroke="hsl(var(--primary))" fill="url(#impactGrad)" strokeWidth={1.5} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  boxShadow: '0 8px 24px hsl(var(--primary) / 0.15)',
+                  padding: '8px 12px',
+                }}
+                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: 2 }}
+                formatter={(v: number) => [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto']}
+                cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
+              />
+              <Area
+                type="monotone"
+                dataKey="impact"
+                stroke="hsl(var(--primary))"
+                fill="url(#impactGrad)"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 4, fill: 'hsl(var(--primary))', stroke: 'hsl(var(--background))', strokeWidth: 2 }}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -121,52 +165,69 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
           return (
             <div
               key={curr.currency}
-              className="rounded-lg bg-card border border-border overflow-hidden transition-all"
+              className="rounded-xl bg-card/80 border border-border/50 overflow-hidden transition-all hover:border-border"
             >
               {/* Header row */}
               <button
                 onClick={() => setExpanded(isExpanded ? null : curr.currency)}
-                className="w-full flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors"
+                className="w-full flex items-center gap-3 p-3.5 hover:bg-muted/20 transition-colors"
               >
-                <span className="text-lg">{info?.flag || '🌐'}</span>
-                <span className="font-mono font-semibold text-sm text-foreground">{curr.currency}</span>
-                <DirectionIcon dir={curr.direction} />
-                <span className={cn(
-                  'ml-auto text-xs font-mono font-medium',
-                  curr.avgImpact > 0 ? 'text-green-400' : curr.avgImpact < 0 ? 'text-red-400' : 'text-muted-foreground'
-                )}>
-                  {curr.avgImpact > 0 ? '+' : ''}{curr.avgImpact.toFixed(2)}% avg
-                </span>
-                <div className="flex gap-1 text-[10px] text-muted-foreground">
-                  <span className="text-green-400">↑{curr.maxImpact.toFixed(1)}</span>
-                  <span className="text-red-400">↓{curr.minImpact.toFixed(1)}</span>
+                <span className="text-xl">{info?.flag || '🌐'}</span>
+                <div className="flex flex-col items-start">
+                  <span className="font-mono font-bold text-sm text-foreground">{curr.currency}</span>
+                  <span className="text-[10px] text-muted-foreground leading-tight">{info?.name || ''}</span>
+                </div>
+                <div className="ml-1">
+                  <DirectionIcon dir={curr.direction} />
+                </div>
+                <div className="ml-auto flex items-center gap-3">
+                  <span className={cn(
+                    'text-sm font-mono font-bold',
+                    curr.avgImpact > 0 ? 'text-green-400' : curr.avgImpact < 0 ? 'text-red-400' : 'text-muted-foreground'
+                  )}>
+                    {curr.avgImpact > 0 ? '+' : ''}{curr.avgImpact.toFixed(2)}%
+                  </span>
+                  <div className="flex flex-col gap-0.5 text-[10px] font-mono">
+                    <span className="text-green-400/80">↑ {curr.maxImpact.toFixed(1)}%</span>
+                    <span className="text-red-400/80">↓ {curr.minImpact.toFixed(1)}%</span>
+                  </div>
+                  <svg className={cn('w-4 h-4 text-muted-foreground transition-transform', isExpanded && 'rotate-180')} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
               </button>
 
               {/* Expandable chart */}
               {isExpanded && (
-                <div className="px-3 pb-3">
-                  <div className="h-36 w-full">
+                <div className="px-4 pb-4 pt-1 border-t border-border/30">
+                  <div className="h-40 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={curr.points} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+                      <BarChart data={curr.points} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>
                         <XAxis
                           dataKey="label"
                           tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
                           axisLine={false}
                           tickLine={false}
                           interval="preserveStartEnd"
+                          dy={4}
                         />
                         <YAxis hide />
                         <Tooltip
-                          contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                          labelStyle={{ color: 'hsl(var(--foreground))' }}
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--popover))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '10px',
+                            fontSize: '12px',
+                            boxShadow: '0 8px 24px hsl(var(--primary) / 0.15)',
+                            padding: '8px 12px',
+                          }}
+                          labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
                           formatter={(v: number, name: string) => {
                             if (name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto'];
                             if (name === 'volume') return [`${v}`, 'Volumen'];
                             return [v, name];
                           }}
+                          cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
                         />
-                        <Bar dataKey="impact" radius={[3, 3, 0, 0]}>
+                        <Bar dataKey="impact" radius={[4, 4, 0, 0]} maxBarSize={28}>
                           {curr.points.map((pt, i) => (
                             <Cell
                               key={i}
@@ -179,11 +240,11 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
                     </ResponsiveContainer>
                   </div>
                   {/* Confidence strip */}
-                  <div className="flex gap-0.5 mt-2">
+                  <div className="flex gap-0.5 mt-3">
                     {curr.points.map((pt, i) => (
                       <div
                         key={i}
-                        className="flex-1 h-1 rounded-full"
+                        className="flex-1 h-1.5 rounded-full transition-all"
                         style={{
                           backgroundColor: `hsl(var(--primary) / ${(pt.confidence * 0.8 + 0.2).toFixed(2)})`,
                         }}
@@ -191,7 +252,9 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
                       />
                     ))}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1 text-right">Barra de confianza</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-1.5 text-right tracking-wide">
+                    Barra de confianza del dato
+                  </p>
                 </div>
               )}
             </div>
