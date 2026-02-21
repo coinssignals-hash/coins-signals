@@ -10,7 +10,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive
+  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Activity
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,6 +44,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
     { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
     { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
+    { icon: Activity, label: 'Impacto Divisas', href: '/currency-impact' },
     { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
     { icon: Info, label: t('drawer_about_us'), href: '/about' },
   ];
