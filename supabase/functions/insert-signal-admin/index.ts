@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -6,7 +5,54 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+async function generateAndUploadChart(
+  supabaseUrl: string,
+  supabase: ReturnType<typeof createClient>,
+  signalId: string,
+  currencyPair: string,
+  support: number | null,
+  resistance: number | null,
+): Promise<string | null> {
+  try {
+    const pair = currencyPair.replace('/', '');
+    const params = new URLSearchParams({ pair, hd: '1' });
+    if (support !== null) params.set('support', String(support));
+    if (resistance !== null) params.set('resistance', String(resistance));
+
+    const chartUrl = `${supabaseUrl}/functions/v1/candlestick-chart?${params.toString()}`;
+    const res = await fetch(chartUrl);
+    if (!res.ok) {
+      console.error('Chart fetch failed:', res.status);
+      return null;
+    }
+
+    const svgContent = await res.text();
+    const filePath = `${signalId}.svg`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('signal-charts')
+      .upload(filePath, svgContent, {
+        contentType: 'image/svg+xml',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error('Chart upload error:', uploadError);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('signal-charts')
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
+  } catch (e) {
+    console.error('Chart generation failed:', e);
+    return null;
+  }
+}
+
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -20,7 +66,6 @@ serve(async (req) => {
 
     const payload = await req.json();
 
-    // Validate required fields
     if (!payload.currency_pair || !payload.entry_price || !payload.take_profit || !payload.stop_loss) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -31,6 +76,7 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Insert signal first
     const { data, error } = await supabase
       .from('trading_signals')
       .insert({
@@ -58,7 +104,26 @@ serve(async (req) => {
       });
     }
 
-    // Trigger push notification via existing function
+    // Generate HD chart and upload to storage (non-blocking for response but we await it)
+    const chartImageUrl = await generateAndUploadChart(
+      supabaseUrl,
+      supabase,
+      data.id,
+      payload.currency_pair,
+      payload.support ?? payload.stop_loss,
+      payload.resistance ?? payload.take_profit,
+    );
+
+    // Update signal with chart URL if generated
+    if (chartImageUrl) {
+      await supabase
+        .from('trading_signals')
+        .update({ chart_image_url: chartImageUrl })
+        .eq('id', data.id);
+      data.chart_image_url = chartImageUrl;
+    }
+
+    // Trigger push notification
     try {
       const apiKey = Deno.env.get('SIGNALS_API_KEY');
       const actionText = payload.action === 'BUY' ? 'COMPRAR' : 'VENDER';

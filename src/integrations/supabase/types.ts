@@ -745,6 +745,7 @@ export type Database = {
         Row: {
           action: string
           analysis_data: Json | null
+          chart_image_url: string | null
           created_at: string
           currency_pair: string
           datetime: string
@@ -763,6 +764,7 @@ export type Database = {
         Insert: {
           action?: string
           analysis_data?: Json | null
+          chart_image_url?: string | null
           created_at?: string
           currency_pair: string
           datetime?: string
@@ -781,6 +783,7 @@ export type Database = {
         Update: {
           action?: string
           analysis_data?: Json | null
+          chart_image_url?: string | null
           created_at?: string
           currency_pair?: string
           datetime?: string
