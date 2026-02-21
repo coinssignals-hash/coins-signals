@@ -5,15 +5,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// SVG dimensions
-const W = 780;
-const H = 400;
-const PAD_TOP = 30;
-const PAD_BOTTOM = 40;
-const PAD_LEFT = 60;
-const PAD_RIGHT = 20;
-const CHART_W = W - PAD_LEFT - PAD_RIGHT;
-const CHART_H = H - PAD_TOP - PAD_BOTTOM;
+// SVG dimensions (default)
+const W_DEFAULT = 780;
+const H_DEFAULT = 400;
+// HD dimensions
+const W_HD = 1560;
+const H_HD = 800;
+const PAD_TOP_DEFAULT = 30;
+const PAD_BOTTOM_DEFAULT = 40;
+const PAD_LEFT_DEFAULT = 60;
+const PAD_RIGHT_DEFAULT = 20;
 
 interface Bar {
   o: number; h: number; l: number; c: number; t: number;
@@ -36,11 +37,21 @@ function dayKey(ts: number): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
 }
 
-function buildSvg(bars: Bar[], support: number | null, resistance: number | null, pair: string): string {
+function buildSvg(bars: Bar[], support: number | null, resistance: number | null, pair: string, hd = false): string {
+  const W = hd ? W_HD : W_DEFAULT;
+  const H = hd ? H_HD : H_DEFAULT;
+  const scale = hd ? 2 : 1;
+  const PAD_TOP = PAD_TOP_DEFAULT * scale;
+  const PAD_BOTTOM = PAD_BOTTOM_DEFAULT * scale;
+  const PAD_LEFT = PAD_LEFT_DEFAULT * scale;
+  const PAD_RIGHT = PAD_RIGHT_DEFAULT * scale;
+  const CHART_W = W - PAD_LEFT - PAD_RIGHT;
+  const CHART_H = H - PAD_TOP - PAD_BOTTOM;
+
   if (bars.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
       <rect width="${W}" height="${H}" fill="#050d1a"/>
-      <text x="${W / 2}" y="${H / 2}" fill="#94A3B8" text-anchor="middle" font-size="14" font-family="sans-serif">No data available</text>
+      <text x="${W / 2}" y="${H / 2}" fill="#94A3B8" text-anchor="middle" font-size="${14 * scale}" font-family="sans-serif">No data available</text>
     </svg>`;
   }
 
@@ -64,7 +75,7 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
   const yOf = (price: number) => PAD_TOP + CHART_H * (1 - (price - minP) / totalRange);
   const xOf = (i: number) => PAD_LEFT + (i + 0.5) * (CHART_W / bars.length);
 
-  const candleWidth = Math.max(1, Math.min(8, (CHART_W / bars.length) * 0.6));
+  const candleWidth = Math.max(1 * scale, Math.min(8 * scale, (CHART_W / bars.length) * 0.6));
 
   // Identify last day
   const lastDayStr = dayKey(bars[bars.length - 1].t);
@@ -75,8 +86,8 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
   for (let i = 0; i <= 5; i++) {
     const price = minP + (totalRange * i) / 5;
     const y = yOf(price);
-    gridLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="4,4"/>`);
-    priceLabels.push(`<text x="${PAD_LEFT - 5}" y="${y + 3}" fill="#64748b" text-anchor="end" font-size="9" font-family="monospace">${formatPrice(price, isJpy)}</text>`);
+    gridLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#1e3a5f" stroke-width="${0.5 * scale}" stroke-dasharray="4,4"/>`);
+    priceLabels.push(`<text x="${PAD_LEFT - 5}" y="${y + 3}" fill="#64748b" text-anchor="end" font-size="${9 * scale}" font-family="monospace">${formatPrice(price, isJpy)}</text>`);
   }
 
   // Day separators + day labels
@@ -87,10 +98,10 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
     const dk = dayKey(bars[i].t);
     if (dk !== prevDay) {
       const x = PAD_LEFT + i * (CHART_W / bars.length);
-      daySeps.push(`<line x1="${x}" y1="${PAD_TOP}" x2="${x}" y2="${H - PAD_BOTTOM}" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="2,6"/>`);
+      daySeps.push(`<line x1="${x}" y1="${PAD_TOP}" x2="${x}" y2="${H - PAD_BOTTOM}" stroke="#1e3a5f" stroke-width="${0.5 * scale}" stroke-dasharray="2,6"/>`);
       const d = new Date(bars[i].t);
       const label = `${dayNames[d.getUTCDay()]} ${d.getUTCDate()}`;
-      daySeps.push(`<text x="${x + 4}" y="${H - PAD_BOTTOM + 14}" fill="#64748b" font-size="9" font-family="sans-serif">${escapeXml(label)}</text>`);
+      daySeps.push(`<text x="${x + 4}" y="${H - PAD_BOTTOM + 14 * scale}" fill="#64748b" font-size="${9 * scale}" font-family="sans-serif">${escapeXml(label)}</text>`);
       prevDay = dk;
     }
   }
@@ -125,28 +136,33 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
     const fillColor = isUp ? upColor : downColor;
 
     // Wick
-    candles.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${wickColor}" stroke-width="1"/>`);
+    candles.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${wickColor}" stroke-width="${scale}"/>`);
     // Body
-    candles.push(`<rect x="${x - candleWidth / 2}" y="${bodyTop}" width="${candleWidth}" height="${bodyH}" fill="${fillColor}" rx="0.5"/>`);
+    candles.push(`<rect x="${x - candleWidth / 2}" y="${bodyTop}" width="${candleWidth}" height="${bodyH}" fill="${fillColor}" rx="${0.5 * scale}"/>`);
   }
 
-  // Support & Resistance lines
+  // Support & Resistance lines (Resistance = green top, Support = red bottom)
   const srLines: string[] = [];
-  if (support !== null) {
-    const y = yOf(support);
-    srLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6,3"/>`);
-    srLines.push(`<rect x="${W - PAD_RIGHT - 75}" y="${y - 9}" width="74" height="16" rx="3" fill="rgba(34,197,94,0.15)"/>`);
-    srLines.push(`<text x="${W - PAD_RIGHT - 40}" y="${y + 3}" fill="#22c55e" text-anchor="middle" font-size="9" font-family="monospace" font-weight="bold">S ${formatPrice(support, isJpy)}</text>`);
-  }
+  const labelW = 80 * scale;
+  const labelH = 18 * scale;
+  const fontSize = 10 * scale;
+  const lineW = 1.5 * scale;
+
   if (resistance !== null) {
     const y = yOf(resistance);
-    srLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="6,3"/>`);
-    srLines.push(`<rect x="${W - PAD_RIGHT - 75}" y="${y - 9}" width="74" height="16" rx="3" fill="rgba(239,68,68,0.15)"/>`);
-    srLines.push(`<text x="${W - PAD_RIGHT - 40}" y="${y + 3}" fill="#ef4444" text-anchor="middle" font-size="9" font-family="monospace" font-weight="bold">R ${formatPrice(resistance, isJpy)}</text>`);
+    srLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#22c55e" stroke-width="${lineW}" stroke-dasharray="6,3"/>`);
+    srLines.push(`<rect x="${W - PAD_RIGHT - labelW - 4}" y="${y - labelH / 2}" width="${labelW}" height="${labelH}" rx="${3 * scale}" fill="rgba(34,197,94,0.2)" stroke="#22c55e" stroke-width="0.5"/>`);
+    srLines.push(`<text x="${W - PAD_RIGHT - labelW / 2 - 4}" y="${y + fontSize / 3}" fill="#22c55e" text-anchor="middle" font-size="${fontSize}" font-family="monospace" font-weight="bold">${formatPrice(resistance, isJpy)}</text>`);
+  }
+  if (support !== null) {
+    const y = yOf(support);
+    srLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#ef4444" stroke-width="${lineW}" stroke-dasharray="6,3"/>`);
+    srLines.push(`<rect x="${W - PAD_RIGHT - labelW - 4}" y="${y - labelH / 2}" width="${labelW}" height="${labelH}" rx="${3 * scale}" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="0.5"/>`);
+    srLines.push(`<text x="${W - PAD_RIGHT - labelW / 2 - 4}" y="${y + fontSize / 3}" fill="#ef4444" text-anchor="middle" font-size="${fontSize}" font-family="monospace" font-weight="bold">${formatPrice(support, isJpy)}</text>`);
   }
 
   // Title
-  const title = `<text x="${PAD_LEFT + 4}" y="${PAD_TOP - 10}" fill="#e2e8f0" font-size="13" font-family="sans-serif" font-weight="bold">${escapeXml(pair)} · 15m · 7 días</text>`;
+  const title = `<text x="${PAD_LEFT + 4}" y="${PAD_TOP - 10 * scale}" fill="#e2e8f0" font-size="${13 * scale}" font-family="sans-serif" font-weight="bold">${escapeXml(pair)} · 15m · 7 días</text>`;
 
   // Last day highlight background
   let lastDayBg = '';
@@ -164,7 +180,7 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
       <stop offset="100%" stop-color="#0a1628"/>
     </linearGradient>
   </defs>
-  <rect width="${W}" height="${H}" fill="url(#bg)" rx="8"/>
+  <rect width="${W}" height="${H}" fill="url(#bg)" rx="${8 * scale}"/>
   ${title}
   ${gridLines.join('\n  ')}
   ${priceLabels.join('\n  ')}
@@ -172,7 +188,7 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
   ${lastDayBg}
   ${candles.join('\n  ')}
   ${srLines.join('\n  ')}
-  <rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="#1e3a5f" stroke-width="1" rx="8"/>
+  <rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="#1e3a5f" stroke-width="${scale}" rx="${8 * scale}"/>
 </svg>`;
 }
 
@@ -195,9 +211,10 @@ Deno.serve(async (req) => {
     if (resistance !== null && isNaN(resistance)) resistance = null;
 
     const signalId = url.searchParams.get('signal_id');
+    const hd = url.searchParams.get('hd') === '1';
 
     // Check cache
-    const cacheKey = `${pair}_${support}_${resistance}_${signalId}`;
+    const cacheKey = `${pair}_${support}_${resistance}_${signalId}_${hd ? 'hd' : 'sd'}`;
     const cached = svgCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
       return new Response(cached.svg, {
@@ -226,7 +243,7 @@ Deno.serve(async (req) => {
     const polygonKey = Deno.env.get('POLYGON_API_KEY');
     if (!polygonKey) {
       return new Response(
-        buildSvg([], support, resistance, pairLabel),
+        buildSvg([], support, resistance, pairLabel, hd),
         { headers: { ...corsHeaders, 'Content-Type': 'image/svg+xml' } },
       );
     }
@@ -244,7 +261,7 @@ Deno.serve(async (req) => {
       const errText = await res.text();
       console.error('Polygon API error:', res.status, errText);
       return new Response(
-        buildSvg([], support, resistance, pairLabel),
+        buildSvg([], support, resistance, pairLabel, hd),
         { headers: { ...corsHeaders, 'Content-Type': 'image/svg+xml' } },
       );
     }
@@ -260,7 +277,7 @@ Deno.serve(async (req) => {
       t: r.t,
     }));
 
-    const svg = buildSvg(bars, support, resistance, pairLabel);
+    const svg = buildSvg(bars, support, resistance, pairLabel, hd);
 
     // Cache
     svgCache.set(cacheKey, { svg, ts: Date.now() });
@@ -279,8 +296,9 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error('Candlestick chart error:', err);
+    const errW = 780; const errH = 400;
     return new Response(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#050d1a"/><text x="${W / 2}" y="${H / 2}" fill="#ef4444" text-anchor="middle" font-size="12" font-family="sans-serif">Error generating chart</text></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${errW}" height="${errH}"><rect width="${errW}" height="${errH}" fill="#050d1a"/><text x="${errW / 2}" y="${errH / 2}" fill="#ef4444" text-anchor="middle" font-size="12" font-family="sans-serif">Error generating chart</text></svg>`,
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'image/svg+xml' } },
     );
   }
