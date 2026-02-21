@@ -38,6 +38,105 @@ serve(async (req) => {
     const slPips = Math.abs((signal.stopLoss - signal.entryPrice) * pipMultiplier).toFixed(1);
     const rrRatio = (parseFloat(tpPips) / parseFloat(slPips)).toFixed(2);
 
+    // Risk mode: return AI-evaluated risk score
+    if (mode === 'risk') {
+      const langMap: Record<string, string> = {
+        es: 'español', en: 'English', pt: 'português', fr: 'français'
+      };
+      const responseLang = langMap[language ?? 'es'] ?? 'español';
+
+      const riskSystemPrompt = `You are a professional forex risk analyst. Evaluate the risk of the provided trading signal and return a structured risk assessment using the provided tool. Respond in ${responseLang}. Be concise.
+
+Criteria:
+- Analyze the ratio between Stop Loss distance and Take Profit distance (R:R ratio).
+- Evaluate the probability percentage provided.
+- Consider if it's a JPY pair (higher volatility).
+- Consider support/resistance levels if provided.
+- Risk score must be 0-100 where 0 = no risk, 100 = extreme risk.
+- Risk level: "low" (0-30), "medium" (31-60), "high" (61-80), "extreme" (81-100).
+- Provide a brief explanation of the risk assessment.`;
+
+      const riskUserPrompt = `Trading signal:
+Pair: ${signal.currencyPair}
+Action: ${signal.action}
+Trend: ${signal.trend}
+Entry: ${signal.entryPrice}
+TP: ${signal.takeProfit} (${tpPips} pips)
+SL: ${signal.stopLoss} (${slPips} pips)
+R:R: ${rrRatio}
+Probability: ${signal.probability}%
+${signal.support ? `Support: ${signal.support}` : ''}
+${signal.resistance ? `Resistance: ${signal.resistance}` : ''}
+
+Evaluate the risk.`;
+
+      const riskResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-3-flash-preview',
+          messages: [
+            { role: 'system', content: riskSystemPrompt },
+            { role: 'user', content: riskUserPrompt }
+          ],
+          tools: [{
+            type: "function",
+            function: {
+              name: "set_risk",
+              description: "Set the risk assessment for this trading signal",
+              parameters: {
+                type: "object",
+                properties: {
+                  score: { type: "number", description: "Risk score 0-100" },
+                  level: { type: "string", enum: ["low", "medium", "high", "extreme"], description: "Risk level category" },
+                  explanation: { type: "string", description: "Brief explanation of the risk assessment (1-2 sentences)" }
+                },
+                required: ["score", "level", "explanation"],
+                additionalProperties: false
+              }
+            }
+          }],
+          tool_choice: { type: "function", function: { name: "set_risk" } },
+        }),
+      });
+
+      if (!riskResponse.ok) {
+        const errorText = await riskResponse.text();
+        console.error('AI Gateway error (risk):', riskResponse.status, errorText);
+        if (riskResponse.status === 429) {
+          return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+            status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        if (riskResponse.status === 402) {
+          return new Response(JSON.stringify({ error: 'Payment required' }), {
+            status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        throw new Error(`AI Gateway error: ${riskResponse.status}`);
+      }
+
+      const riskData = await riskResponse.json();
+      const riskToolCall = riskData.choices?.[0]?.message?.tool_calls?.[0];
+
+      if (!riskToolCall?.function?.arguments) {
+        throw new Error('No risk assessment generated');
+      }
+
+      const risk = JSON.parse(riskToolCall.function.arguments);
+      console.log('Risk assessed:', JSON.stringify(risk));
+
+      return new Response(JSON.stringify({
+        risk,
+        generatedAt: new Date().toISOString()
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Strategy mode: return structured strategy data
     if (mode === 'strategy') {
       const langMap: Record<string, string> = {

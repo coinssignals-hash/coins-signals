@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
+import { useSignalRisk } from "@/hooks/useSignalRisk";
 import { useTranslation } from "@/i18n/LanguageContext";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
@@ -423,6 +424,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   } : null, [currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability, support, resistance, signal]);
   const { strategy: aiStrategy, loading: strategyLoading } = useSignalStrategy(strategyInput, expanded);
 
+  // AI risk assessment (fetched in background immediately)
+  const { risk: aiRisk, loading: riskLoading } = useSignalRisk(strategyInput);
+
   // Log price source for debugging
   useEffect(() => {
     console.log(`[SignalCardV2] ${currencyPair} | entry=${entryPrice} tp=${takeProfit} sl=${stopLoss} status=${status}`);
@@ -608,9 +612,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               },
               {
                 label: t('signal_risk'),
-                icon: <Flame className="w-5 h-5 text-orange-400" />,
-                value: `${riskPercent}%`,
-                valueClass: "text-cyan-200",
+                icon: riskLoading
+                  ? <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
+                  : <Flame className="w-5 h-5 text-orange-400" />,
+                value: riskLoading ? '...' : aiRisk ? `${aiRisk.score}%` : `${riskPercent}%`,
+                valueClass: aiRisk
+                  ? aiRisk.level === 'low' ? 'text-green-400'
+                    : aiRisk.level === 'medium' ? 'text-yellow-400'
+                    : aiRisk.level === 'high' ? 'text-orange-400'
+                    : 'text-red-400'
+                  : 'text-cyan-200',
               },
             ].map((badge) => (
               <div
