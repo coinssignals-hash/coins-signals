@@ -17,6 +17,7 @@ export interface TradingSignal {
   resistance?: number;
   sessionData?: { session: string; volume: string; volatility: string }[];
   analysisData?: { label: string; value: number }[];
+  chartImageUrl?: string;
 }
 
 interface DbSignal {
@@ -34,6 +35,7 @@ interface DbSignal {
   resistance: number | null;
   session_data: unknown;
   analysis_data: unknown;
+  chart_image_url: string | null;
 }
 
 const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
@@ -51,6 +53,7 @@ const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
   resistance: dbSignal.resistance ? Number(dbSignal.resistance) : undefined,
   sessionData: dbSignal.session_data as TradingSignal['sessionData'],
   analysisData: dbSignal.analysis_data as TradingSignal['analysisData'],
+  chartImageUrl: dbSignal.chart_image_url ?? undefined,
 });
 
 export function useSignals(selectedDate?: string) {

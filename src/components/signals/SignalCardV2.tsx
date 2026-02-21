@@ -13,6 +13,8 @@ import {
   ZoomOut,
   RotateCcw,
   Info,
+  Download,
+  Share2,
 } from "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
@@ -45,7 +47,7 @@ interface CurrencyImpact {
 }
 
 // --- Zoomable Image Chart ---
-function ZoomableChart({ pair, support, resistance, signalId }: { pair: string; support?: number; resistance?: number; signalId?: string }) {
+function ZoomableChart({ pair, support, resistance, signalId, chartImageUrl }: { pair: string; support?: number; resistance?: number; signalId?: string; chartImageUrl?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scale = useRef(1);
   const posX = useRef(0);
@@ -163,6 +165,39 @@ function ZoomableChart({ pair, support, resistance, signalId }: { pair: string; 
     applyTransform();
   };
 
+  const handleDownloadChart = async () => {
+    const imgSrc = chartImageUrl || (() => {
+      const params = new URLSearchParams({ pair, hd: '1' });
+      if (support !== undefined) params.set('support', String(support));
+      if (resistance !== undefined) params.set('resistance', String(resistance));
+      if (signalId) params.set('signal_id', signalId);
+      return `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
+    })();
+    try {
+      const res = await fetch(imgSrc);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${pair.replace('/', '-')}-chart.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Download failed:', e);
+    }
+  };
+
+  const handleShareChart = async () => {
+    const shareUrl = chartImageUrl || `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?pair=${pair}&hd=1`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${pair} Chart`, url: shareUrl });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+    }
+  };
+
   return (
     <div
       ref={attachWheel}
@@ -187,14 +222,16 @@ function ZoomableChart({ pair, support, resistance, signalId }: { pair: string; 
 
       <div ref={imgRef} className="w-full h-full origin-center transition-none" style={{ willChange: "transform" }}>
         {(() => {
-          const params = new URLSearchParams({ pair });
-          if (support !== undefined) params.set('support', String(support));
-          if (resistance !== undefined) params.set('resistance', String(resistance));
-          if (signalId) params.set('signal_id', signalId);
-          const chartUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
+          const imgSrc = chartImageUrl || (() => {
+            const params = new URLSearchParams({ pair });
+            if (support !== undefined) params.set('support', String(support));
+            if (resistance !== undefined) params.set('resistance', String(resistance));
+            if (signalId) params.set('signal_id', signalId);
+            return `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
+          })();
           return (
             <img
-              src={chartUrl}
+              src={imgSrc}
               alt={`${pair} Candlestick Chart`}
               className="w-full h-full object-contain"
               draggable={false}
@@ -228,6 +265,23 @@ function ZoomableChart({ pair, support, resistance, signalId }: { pair: string; 
           style={{ background: "hsla(210, 100%, 8%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.4)" }}
         >
           <RotateCcw className="w-3 h-3" />
+        </button>
+        <div className="w-4 border-t border-cyan-700/30 mx-auto" />
+        <button
+          onClick={handleDownloadChart}
+          className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
+          style={{ background: "hsla(210, 100%, 8%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.4)" }}
+          title="Descargar gráfico"
+        >
+          <Download className="w-3 h-3" />
+        </button>
+        <button
+          onClick={handleShareChart}
+          className="w-6 h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors"
+          style={{ background: "hsla(210, 100%, 8%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.4)" }}
+          title="Compartir gráfico"
+        >
+          <Share2 className="w-3 h-3" />
         </button>
       </div>
     </div>
@@ -729,7 +783,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* Zoomable chart image */}
-            <ZoomableChart pair={currencyPair} support={support} resistance={resistance} signalId={signal?.id} />
+            <ZoomableChart pair={currencyPair} support={support} resistance={resistance} signalId={signal?.id} chartImageUrl={signal?.chartImageUrl} />
 
             {/* Sentimiento del Mercado + Informacion */}
             <div className="mx-3 mb-3 flex gap-2">
