@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 
 const POPULAR_PAIRS = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'NZD/USD', 'USD/CAD',
@@ -17,7 +18,7 @@ export default function CreateSignal() {
   const [takeProfit, setTakeProfit] = useState('');
   const [stopLoss, setStopLoss] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const [showCardPreview, setShowCardPreview] = useState(false);
   const entry = parseFloat(entryPrice);
   const tp = parseFloat(takeProfit);
   const sl = parseFloat(stopLoss);
@@ -183,36 +184,50 @@ export default function CreateSignal() {
           </div>
         </div>
 
-        {/* Preview */}
+        {/* Quick Preview Card */}
         {isValid && (
-          <div className="bg-card/80 border border-border/30 rounded-2xl p-4 mb-6 space-y-2">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Vista previa</p>
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-bold">{currencyPair}</span>
-              <span className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                isBuy ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-              }`}>
-                {action} — {trend}
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center text-sm">
-              <div className="bg-background/50 rounded-lg p-2">
-                <p className="text-muted-foreground text-[10px]">Entry</p>
-                <p className="font-mono font-semibold">{entry}</p>
+          <div className="mb-6 space-y-3">
+            <button
+              onClick={() => setShowCardPreview(!showCardPreview)}
+              className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all bg-card/80 border border-border/40 hover:bg-card text-foreground"
+            >
+              {showCardPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showCardPreview ? 'Ocultar vista previa' : 'Vista previa de tarjeta'}
+            </button>
+
+            {showCardPreview && (
+              <div className="space-y-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest text-center">Así se verá la señal</p>
+                <SignalCardCompact
+                  signal={{
+                    id: 'preview',
+                    currencyPair,
+                    datetime: new Date().toISOString(),
+                    status: 'active',
+                    probability: calculateProbability(),
+                    trend,
+                    action,
+                    entryPrice: entry,
+                    takeProfit: tp,
+                    stopLoss: sl,
+                  }}
+                />
+                <div className="bg-card/60 border border-border/30 rounded-xl p-3 grid grid-cols-3 gap-2 text-center text-xs">
+                  <div>
+                    <p className="text-muted-foreground">Probabilidad</p>
+                    <p className="text-primary font-bold text-sm">{calculateProbability()}%</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">R:R</p>
+                    <p className="text-foreground font-bold text-sm">1:{(Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(1)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Tendencia</p>
+                    <p className={`font-bold text-sm ${isBuy ? 'text-emerald-400' : 'text-rose-400'}`}>{trend}</p>
+                  </div>
+                </div>
               </div>
-              <div className="bg-green-500/10 rounded-lg p-2">
-                <p className="text-green-400 text-[10px]">TP</p>
-                <p className="font-mono font-semibold text-green-400">{tp}</p>
-              </div>
-              <div className="bg-red-500/10 rounded-lg p-2">
-                <p className="text-red-400 text-[10px]">SL</p>
-                <p className="font-mono font-semibold text-red-400">{sl}</p>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground text-center">
-              Probabilidad auto: <span className="text-primary font-bold">{calculateProbability()}%</span> · 
-              R:R = 1:{(Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(1)}
-            </p>
+            )}
           </div>
         )}
 
