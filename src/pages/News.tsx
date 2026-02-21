@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es, enUS, ptBR, fr } from 'date-fns/locale';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Currency, CURRENCIES, EconomicCategory } from '@/types/news';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 // Use RealNewsItem as NewsListItem for compatibility
@@ -206,10 +207,8 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
   }, [news.affected_currencies]);
 
   return (
-    <a
-      href={news.url || `/news/${news.id}`}
-      target={news.url ? '_blank' : undefined}
-      rel={news.url ? 'noopener noreferrer' : undefined}
+    <Link
+      to={`/news/${news.id}`}
       className={cn(
         'group flex gap-3 p-3 rounded-xl bg-card/50 border border-border/50',
         'hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5',
@@ -283,7 +282,7 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
           currencies={news.affected_currencies} />
 
       </div>
-    </a>);
+    </Link>);
 
 }
 
@@ -297,10 +296,8 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
   }, [news.affected_currencies]);
 
   return (
-    <a
-      href={news.url || `/news/${news.id}`}
-      target={news.url ? '_blank' : undefined}
-      rel={news.url ? 'noopener noreferrer' : undefined}
+    <Link
+      to={`/news/${news.id}`}
       className={cn(
         'group block rounded-2xl overflow-hidden bg-gradient-to-br from-card to-card/50',
         'border border-border/50 hover:border-primary/40',
@@ -377,7 +374,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </a>);
+    </Link>);
 
 }
 
