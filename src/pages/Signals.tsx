@@ -253,9 +253,9 @@ export default function Signals() {
 
         {/* Day Tab Switcher */}
         <div className="flex gap-1 px-3 py-2">
-          {([
-            { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
+        {([
             { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
+            { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
             { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
             { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
           ]).map((tab) => (
