@@ -18,31 +18,31 @@ import { cn } from '@/lib/utils';
 type NewsListItem = RealNewsItem;
 
 // Mini historical chart component with real data and tooltips
-function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoading?: boolean }) {
+function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoading?: boolean;}) {
   if (isLoading) {
     return (
       <div className="flex items-end gap-0.5 h-8">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="flex-1 h-full bg-muted/30 rounded-t-sm animate-pulse" />
-        ))}
-      </div>
-    );
+        {[1, 2, 3, 4, 5, 6].map((i) =>
+        <div key={i} className="flex-1 h-full bg-muted/30 rounded-t-sm animate-pulse" />
+        )}
+      </div>);
+
   }
 
-  const maxAbsValue = Math.max(...data.map(d => Math.abs(d.impact)), 1);
-  
+  const maxAbsValue = Math.max(...data.map((d) => Math.abs(d.impact)), 1);
+
   return (
     <div className="flex items-end gap-0.5 h-8">
       {data.map((point, i) => {
-        const height = (Math.abs(point.impact) / maxAbsValue) * 100;
+        const height = Math.abs(point.impact) / maxAbsValue * 100;
         const isPositive = point.impact >= 0;
         const confidencePercent = Math.round((point.confidence || 0.7) * 100);
-        
+
         return (
           <div
             key={i}
-            className="flex flex-col items-center justify-end flex-1 group relative cursor-pointer"
-          >
+            className="flex flex-col items-center justify-end flex-1 group relative cursor-pointer">
+
             {/* Tooltip */}
             <div className={cn(
               'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50',
@@ -65,7 +65,7 @@ function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoa
                   <span className="text-[10px]">Confianza:</span>
                   <span className={cn(
                     'text-[10px] font-medium',
-                    confidencePercent >= 80 ? 'text-green-400' : 
+                    confidencePercent >= 80 ? 'text-green-400' :
                     confidencePercent >= 60 ? 'text-yellow-400' : 'text-red-400'
                   )}>
                     {confidencePercent}%
@@ -86,38 +86,38 @@ function MiniHistoricalChart({ data, isLoading }: { data: MonthlyImpact[]; isLoa
                 'group-hover:scale-110 group-hover:shadow-lg',
                 isPositive ? 'group-hover:shadow-green-500/30' : 'group-hover:shadow-red-500/30'
               )}
-              style={{ 
+              style={{
                 height: `${Math.max(height, 10)}%`,
                 opacity: 0.5 + (point.confidence || 0.7) * 0.5
-              }}
-            />
-          </div>
-        );
+              }} />
+
+          </div>);
+
       })}
-    </div>
-  );
+    </div>);
+
 }
 
 // Historical impact section for cards with real data
-function HistoricalImpactSection({ 
-  newsId, 
-  title, 
-  category, 
-  currencies 
-}: { 
-  newsId: string; 
-  title: string;
-  category: EconomicCategory;
-  currencies: Currency[];
-}) {
+function HistoricalImpactSection({
+  newsId,
+  title,
+  category,
+  currencies
+
+
+
+
+
+}: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
-  
+
   const avgImpact = data?.averageImpact ?? 0;
   const isPositiveAvg = avgImpact >= 0;
   const trend = data?.trend ?? 'neutral';
-  
+
   const TrendIcon = trend === 'bullish' ? TrendingUp : trend === 'bearish' ? TrendingDown : Minus;
-  
+
   return (
     <div className="mt-3 pt-3 border-t border-border/30">
       <div className="flex items-center justify-between mb-2">
@@ -138,69 +138,69 @@ function HistoricalImpactSection({
         </span>
       </div>
       <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
-      {!isLoading && data?.monthlyData && (
-        <div className="flex justify-between mt-1">
-          {data.monthlyData.map((point, i) => (
-            <span key={i} className="text-[9px] text-muted-foreground/70 flex-1 text-center">
+      {!isLoading && data?.monthlyData &&
+      <div className="flex justify-between mt-1">
+          {data.monthlyData.map((point, i) =>
+        <span key={i} className="text-[9px] text-muted-foreground/70 flex-1 text-center">
               {point.month}
             </span>
-          ))}
+        )}
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
 
 // Mini chart for featured card
-function FeaturedHistoricalChart({ 
-  newsId, 
-  title, 
-  category, 
-  currencies 
-}: { 
-  newsId: string; 
-  title: string;
-  category: EconomicCategory;
-  currencies: Currency[];
-}) {
+function FeaturedHistoricalChart({
+  newsId,
+  title,
+  category,
+  currencies
+
+
+
+
+
+}: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
-  
+
   return (
     <div className="absolute bottom-3 right-3 w-24 bg-black/60 backdrop-blur-sm rounded-lg p-2">
       <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
-    </div>
-  );
+    </div>);
+
 }
 
 // Currency pills for quick filter
 const QUICK_CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'];
 
 // Impact badge component
-function ImpactBadge({ currency, impact }: { currency: Currency; impact: number }) {
+function ImpactBadge({ currency, impact }: {currency: Currency;impact: number;}) {
   const isPositive = impact >= 0;
   const info = CURRENCIES[currency];
-  
+
   return (
     <div className={cn(
       'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
-      isPositive 
-        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-        : 'bg-red-500/20 text-red-400 border border-red-500/30'
+      isPositive ?
+      'bg-green-500/20 text-green-400 border border-green-500/30' :
+      'bg-red-500/20 text-red-400 border border-red-500/30'
     )}>
       <span className="text-sm">{info.flag}</span>
       <span className="font-mono">{currency}</span>
       <span className="font-bold">
         {isPositive ? '+' : ''}{impact.toFixed(1)}%
       </span>
-    </div>
-  );
+    </div>);
+
 }
 
 // Modern news card component matching the reference design
-function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) {
+function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
   // Generate random impact values for demo (in production, this would come from the API)
   const impacts = useMemo(() => {
-    return news.affected_currencies.slice(0, 2).map(currency => ({
+    return news.affected_currencies.slice(0, 2).map((currency) => ({
       currency,
       impact: (Math.random() - 0.5) * 40 // Random between -20% and +20%
     }));
@@ -214,19 +214,19 @@ function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) 
         'hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5',
         'transition-all duration-300 animate-fade-in'
       )}
-      style={{ animationDelay: `${index * 50}ms` }}
-    >
+      style={{ animationDelay: `${index * 50}ms` }}>
+
       {/* Thumbnail */}
-      {news.image_url && (
-        <div className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
+      {news.image_url &&
+      <div className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
           <img
-            src={news.image_url}
-            alt={news.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
+          src={news.image_url}
+          alt={news.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </div>
-      )}
+      }
       
       {/* Content */}
       <div className="flex-1 min-w-0 flex flex-col justify-between">
@@ -237,59 +237,59 @@ function ModernNewsCard({ news, index }: { news: NewsListItem; index: number }) 
         
         {/* Source and Date */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-          {news.source_logo ? (
-            <img 
-              src={news.source_logo} 
-              alt={news.source}
-              className="w-4 h-4 rounded-sm object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-            />
-          ) : (
-            <Rss className="w-3 h-3 text-primary" />
-          )}
+          {news.source_logo ?
+          <img
+            src={news.source_logo}
+            alt={news.source}
+            className="w-4 h-4 rounded-sm object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }} /> :
+
+
+          <Rss className="w-3 h-3 text-primary" />
+          }
           <span className="font-medium text-foreground/70">{news.source}</span>
           <span className="text-border">•</span>
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {news.time_ago}
           </span>
-          {news.url && (
-            <a 
-              href={news.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="ml-auto text-primary hover:text-primary/80"
-            >
+          {news.url &&
+          <a
+            href={news.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="ml-auto text-primary hover:text-primary/80">
+
               <ExternalLink className="w-3 h-3" />
             </a>
-          )}
+          }
         </div>
         
         {/* Currency Impacts */}
         <div className="flex items-center gap-2 mt-2 flex-wrap">
-          {impacts.map(({ currency, impact }) => (
-            <ImpactBadge key={currency} currency={currency} impact={impact} />
-          ))}
+          {impacts.map(({ currency, impact }) =>
+          <ImpactBadge key={currency} currency={currency} impact={impact} />
+          )}
         </div>
         {/* Historical Impact */}
-        <HistoricalImpactSection 
-          newsId={news.id} 
+        <HistoricalImpactSection
+          newsId={news.id}
           title={news.title}
           category={news.category as EconomicCategory}
-          currencies={news.affected_currencies}
-        />
+          currencies={news.affected_currencies} />
+
       </div>
-    </Link>
-  );
+    </Link>);
+
 }
 
 // Featured news card for top story
-function FeaturedCard({ news }: { news: NewsListItem }) {
+function FeaturedCard({ news }: {news: NewsListItem;}) {
   const impacts = useMemo(() => {
-    return news.affected_currencies.slice(0, 3).map(currency => ({
+    return news.affected_currencies.slice(0, 3).map((currency) => ({
       currency,
       impact: (Math.random() - 0.5) * 40
     }));
@@ -303,17 +303,17 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
         'border border-border/50 hover:border-primary/40',
         'transition-all duration-500 hover:shadow-xl hover:shadow-primary/10',
         'animate-fade-in'
-      )}
-    >
+      )}>
+
       {/* Image Section */}
       <div className="relative aspect-[16/9] overflow-hidden">
-        {news.image_url && (
-          <img
-            src={news.image_url}
-            alt={news.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        )}
+        {news.image_url &&
+        <img
+          src={news.image_url}
+          alt={news.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+
+        }
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
         
         {/* Source Badge */}
@@ -321,16 +321,16 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
           <span className="px-3 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold backdrop-blur-sm">
             🔥 Top News
           </span>
-          {news.source_logo && (
-            <div className="px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm flex items-center gap-1.5">
-              <img 
-                src={news.source_logo} 
-                alt={news.source}
-                className="w-4 h-4 rounded-sm object-contain"
-              />
+          {news.source_logo &&
+          <div className="px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm flex items-center gap-1.5">
+              <img
+              src={news.source_logo}
+              alt={news.source}
+              className="w-4 h-4 rounded-sm object-contain" />
+
               <span className="text-xs text-white font-medium">{news.source}</span>
             </div>
-          )}
+          }
         </div>
         
         {/* Content Overlay */}
@@ -341,32 +341,32 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
           
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 text-sm text-gray-300">
-              {!news.source_logo && (
-                <>
+              {!news.source_logo &&
+              <>
                   <Rss className="w-3 h-3 text-primary" />
                   <span className="font-medium">{news.source}</span>
                   <span>•</span>
                 </>
-              )}
+              }
               <Clock className="w-3 h-3" />
               <span>{news.time_ago}</span>
-              {news.url && (
-                <a 
-                  href={news.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-primary hover:text-primary/80"
-                >
+              {news.url &&
+              <a
+                href={news.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-primary hover:text-primary/80">
+
                   <ExternalLink className="w-3 h-3" />
                 </a>
-              )}
+              }
             </div>
             
             <div className="flex items-center gap-2 flex-wrap">
-              {impacts.map(({ currency, impact }) => (
-                <ImpactBadge key={currency} currency={currency} impact={impact} />
-              ))}
+              {impacts.map(({ currency, impact }) =>
+              <ImpactBadge key={currency} currency={currency} impact={impact} />
+              )}
             </div>
           </div>
           
@@ -374,21 +374,21 @@ function FeaturedCard({ news }: { news: NewsListItem }) {
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </Link>
-  );
+    </Link>);
+
 }
 
 // Currency quick filter pills
-function QuickCurrencyFilter({ 
-  selected, 
-  onChange 
-}: { 
-  selected: Currency[]; 
-  onChange: (currencies: Currency[]) => void;
-}) {
+function QuickCurrencyFilter({
+  selected,
+  onChange
+
+
+
+}: {selected: Currency[];onChange: (currencies: Currency[]) => void;}) {
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
-      onChange(selected.filter(c => c !== currency));
+      onChange(selected.filter((c) => c !== currency));
     } else {
       onChange([...selected, currency]);
     }
@@ -396,10 +396,10 @@ function QuickCurrencyFilter({
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-      {QUICK_CURRENCIES.map(currency => {
+      {QUICK_CURRENCIES.map((currency) => {
         const info = CURRENCIES[currency];
         const isSelected = selected.includes(currency);
-        
+
         return (
           <button
             key={currency}
@@ -407,18 +407,18 @@ function QuickCurrencyFilter({
             className={cn(
               'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium',
               'border transition-all duration-200',
-              isSelected
-                ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30'
-                : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/50 hover:text-foreground'
-            )}
-          >
+              isSelected ?
+              'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30' :
+              'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/50 hover:text-foreground'
+            )}>
+
             <span className="text-base">{info.flag}</span>
             <span className="font-mono">{currency}</span>
-          </button>
-        );
+          </button>);
+
       })}
-    </div>
-  );
+    </div>);
+
 }
 
 const News = () => {
@@ -429,34 +429,34 @@ const News = () => {
   const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const { data: news, isLoading, error, dataUpdatedAt, refetch } = useRealNewsByDate(selectedDate);
-  
+
   // Filter news by selected currencies
   const filteredNews = useMemo(() => {
     if (!news) return [];
     if (selectedCurrencies.length === 0) return news;
-    
+
     return news.filter((item) =>
-      item.affected_currencies.some((currency) =>
-        selectedCurrencies.includes(currency)
-      )
+    item.affected_currencies.some((currency) =>
+    selectedCurrencies.includes(currency)
+    )
     );
   }, [news, selectedCurrencies]);
-  
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
   };
-  
+
   const featuredNews = filteredNews[0];
   const otherNews = filteredNews.slice(1);
-  
-  const lastUpdated = dataUpdatedAt 
-    ? formatDistanceToNow(dataUpdatedAt, { addSuffix: true, locale: dateLocale })
-    : '';
-  
+
+  const lastUpdated = dataUpdatedAt ?
+  formatDistanceToNow(dataUpdatedAt, { addSuffix: true, locale: dateLocale }) :
+  '';
+
   return (
     <PageShell>
       <Header />
@@ -467,54 +467,54 @@ const News = () => {
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
           onRefresh={handleRefresh}
-          isRefreshing={isRefreshing}
-        />
+          isRefreshing={isRefreshing} />
+
         
         {/* Section Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-foreground">{t('news_title')}</h1>
-            {selectedCurrencies.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+            {selectedCurrencies.length > 0 &&
+            <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
                 {filteredNews.length}
               </span>
-            )}
+            }
           </div>
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
             className={cn(
               'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium',
               'border transition-all',
-              filtersOpen
-                ? 'bg-primary/10 border-primary/30 text-primary'
-                : 'bg-card/50 border-border/50 text-muted-foreground hover:text-foreground'
-            )}
-          >
+              filtersOpen ?
+              'bg-primary/10 border-primary/30 text-primary' :
+              'bg-card/50 border-border/50 text-muted-foreground hover:text-foreground'
+            )}>
+
             <Filter className="w-4 h-4" />
             <span>{t('news_currencies')}</span>
-            {selectedCurrencies.length > 0 && (
-              <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+            {selectedCurrencies.length > 0 &&
+            <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
                 {selectedCurrencies.length}
               </span>
-            )}
+            }
           </button>
         </div>
         
         {/* Quick Currency Filter */}
         <QuickCurrencyFilter
           selected={selectedCurrencies}
-          onChange={setSelectedCurrencies}
-        />
+          onChange={setSelectedCurrencies} />
+
         
         {/* Advanced Filters */}
-        {filtersOpen && (
-          <div className="p-4 rounded-xl bg-card/50 border border-border/50 animate-fade-in">
-            <CurrencyFilter
-              selected={selectedCurrencies}
-              onChange={setSelectedCurrencies}
-            />
-          </div>
-        )}
+        {filtersOpen
+
+
+
+
+
+
+        }
         
         {/* Sources and Last Updated */}
         <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -537,11 +537,11 @@ const News = () => {
         </div>
         
         {/* Loading State */}
-        {isLoading && (
-          <div className="space-y-4">
+        {isLoading &&
+        <div className="space-y-4">
             <Skeleton className="h-48 w-full rounded-2xl" />
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex gap-3">
+            {[1, 2, 3, 4].map((i) =>
+          <div key={i} className="flex gap-3">
                 <Skeleton className="w-24 h-24 rounded-lg flex-shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-full" />
@@ -549,76 +549,76 @@ const News = () => {
                   <Skeleton className="h-6 w-1/2" />
                 </div>
               </div>
-            ))}
+          )}
           </div>
-        )}
+        }
         
         {/* Error State */}
-        {error && (
-          <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl bg-red-500/10 border border-red-500/30">
+        {error &&
+        <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl bg-red-500/10 border border-red-500/30">
             <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
             <h2 className="text-lg font-semibold text-foreground mb-2">{t('news_error_loading')}</h2>
             <p className="text-muted-foreground text-sm mb-4">
               {error instanceof Error ? error.message : t('news_unknown_error')}
             </p>
             <button
-              onClick={handleRefresh}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+
               {t('news_retry')}
             </button>
           </div>
-        )}
+        }
         
         {/* News Content */}
-        {!isLoading && !error && (
-          <>
-            {filteredNews.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
+        {!isLoading && !error &&
+        <>
+            {filteredNews.length === 0 ?
+          <div className="flex flex-col items-center justify-center py-12 text-center">
                 <p className="text-muted-foreground">
-                  {selectedCurrencies.length > 0
-                    ? t('news_no_news_currencies')
-                    : t('news_no_news_date')}
+                  {selectedCurrencies.length > 0 ?
+              t('news_no_news_currencies') :
+              t('news_no_news_date')}
                 </p>
-                {selectedCurrencies.length > 0 && (
-                  <button
-                    onClick={() => setSelectedCurrencies([])}
-                    className="mt-3 text-sm text-primary hover:text-primary/80"
-                  >
+                {selectedCurrencies.length > 0 &&
+            <button
+              onClick={() => setSelectedCurrencies([])}
+              className="mt-3 text-sm text-primary hover:text-primary/80">
+
                     {t('news_clear_filters')}
                   </button>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
+            }
+              </div> :
+
+          <div className="space-y-4">
                 {/* Featured News */}
                 {featuredNews && <FeaturedCard news={featuredNews} />}
                 
                 {/* Top News Label */}
-                {otherNews.length > 0 && (
-                  <div className="flex items-center gap-2 pt-2">
+                {otherNews.length > 0 &&
+            <div className="flex items-center gap-2 pt-2">
                     <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
                       <span>📰</span>
                       <span>{t('news_top_news')}</span>
                     </div>
                     <div className="flex-1 h-px bg-border/50" />
                   </div>
-                )}
+            }
                 
                 {/* News List */}
                 <div className="space-y-3">
-                  {otherNews.map((newsItem, index) => (
-                    <ModernNewsCard key={newsItem.id} news={newsItem} index={index} />
-                  ))}
+                  {otherNews.map((newsItem, index) =>
+              <ModernNewsCard key={newsItem.id} news={newsItem} index={index} />
+              )}
                 </div>
               </div>
-            )}
+          }
           </>
-        )}
+        }
       </main>
       
-    </PageShell>
-  );
+    </PageShell>);
+
 };
 
 export default News;
