@@ -5,6 +5,7 @@ import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TechnicalLevelsProps {
   symbol: string;
@@ -14,6 +15,7 @@ interface TechnicalLevelsProps {
 }
 
 export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtimeConnected }: TechnicalLevelsProps) {
+  const { t } = useTranslation();
   const effectivePrice = realtimePrice || currentPrice;
   const { data, isLoading, error } = useTechnicalLevels(symbol, effectivePrice);
   const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
@@ -54,7 +56,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
       previousClose: effectivePrice * 0.998,
       high: effectivePrice * 1.01,
       low: effectivePrice * 0.99
-    }, undefined, undefined, true); // forceRefresh = true
+    }, undefined, undefined, true);
     if (result?.analysis) {
       setAILevels(result.analysis);
     }
@@ -65,7 +67,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
       <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
-          <span className="ml-2 text-gray-400">Cargando niveles técnicos...</span>
+          <span className="ml-2 text-gray-400">{t('analysis_loading_levels')}</span>
         </div>
       </div>
     );
@@ -74,7 +76,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
   if (error || !data) {
     return (
       <AnalysisError 
-        title="Niveles Técnicos"
+        title={t('analysis_technical_levels')}
         error={error as Error}
         compact
       />
@@ -100,9 +102,9 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
 
   const getStrengthLabel = (strength: 'strong' | 'moderate' | 'weak') => {
     switch (strength) {
-      case 'strong': return 'Fuerte';
-      case 'moderate': return 'Moderado';
-      case 'weak': return 'Débil';
+      case 'strong': return t('analysis_strong');
+      case 'moderate': return t('analysis_moderate');
+      case 'weak': return t('analysis_weak');
     }
   };
 
@@ -111,7 +113,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
       <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-semibold flex items-center gap-2">
-            Niveles Técnicos - Soportes y Resistencias
+            {t('analysis_technical_levels')}
             {aiLevels && (
               <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
             )}
@@ -128,13 +130,13 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
         <div className="space-y-4 text-sm">
           {/* Pivot Point */}
           <div className="flex items-center justify-between p-3 bg-[#0d1f0d] rounded-lg">
-            <span className="text-gray-400">Punto Pivote</span>
+            <span className="text-gray-400">{t('analysis_pivot_point')}</span>
             <span className="text-white font-mono font-bold">{displayData.pivot.toFixed(4)}</span>
           </div>
 
           {/* Resistances */}
           <div>
-            <h4 className="text-gray-400 mb-2">Resistencias Clave:</h4>
+            <h4 className="text-gray-400 mb-2">{t('analysis_key_resistances')}:</h4>
             <div className="space-y-2">
               {displayData.resistances.map((level, index) => (
                 <div key={index} className="flex items-start gap-2 p-2 bg-[#0d1f0d] rounded">
@@ -152,7 +154,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
 
           {/* Supports */}
           <div>
-            <h4 className="text-gray-400 mb-2">Soportes Clave:</h4>
+            <h4 className="text-gray-400 mb-2">{t('analysis_key_supports')}:</h4>
             <div className="space-y-2">
               {displayData.supports.map((level, index) => (
                 <div key={index} className="flex items-start gap-2 p-2 bg-[#0d1f0d] rounded">
@@ -171,7 +173,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
           {/* Fibonacci Levels */}
           {displayData.fibonacci && displayData.fibonacci.length > 0 && (
             <div>
-              <h4 className="text-gray-400 mb-2">Niveles Fibonacci:</h4>
+              <h4 className="text-gray-400 mb-2">{t('analysis_fibonacci_levels')}:</h4>
               <div className="grid grid-cols-3 gap-2">
                 {displayData.fibonacci.map((fib, index) => (
                   <div key={index} className="text-center p-2 bg-[#0d1f0d] rounded">

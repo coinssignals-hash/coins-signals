@@ -31,16 +31,26 @@ interface AIAnalysisResponse {
   error?: string;
 }
 
+function getStoredLanguage(): string {
+  try {
+    return localStorage.getItem('app-language') || 'es';
+  } catch {
+    return 'es';
+  }
+}
+
 async function fetchNewsAIAnalysis(news: RealNewsItem): Promise<NewsAIAnalysis> {
+  const language = getStoredLanguage();
   const { data, error } = await supabase.functions.invoke<AIAnalysisResponse>('news-ai-analysis', {
     body: {
-      newsId: news.id, // Include news ID for caching
+      newsId: news.id,
       title: news.title,
       summary: news.summary,
       source: news.source,
       category: news.category,
       affectedCurrencies: news.affected_currencies,
       sentiment: news.sentiment,
+      language,
     },
   });
 
@@ -61,8 +71,8 @@ export function useNewsAIAnalysis(news: RealNewsItem | null) {
     queryKey: ['news-ai-analysis', news?.id],
     queryFn: () => fetchNewsAIAnalysis(news!),
     enabled: !!news,
-    staleTime: 30 * 60 * 1000, // 30 minutes - AI analysis doesn't change
-    gcTime: 60 * 60 * 1000, // 1 hour
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
     retry: 1,
   });
 }

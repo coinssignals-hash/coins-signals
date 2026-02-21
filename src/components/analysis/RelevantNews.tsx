@@ -1,14 +1,18 @@
 import { Loader2, ExternalLink } from 'lucide-react';
 import { useRelevantNews } from '@/hooks/useAnalysisData';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es, enUS, ptBR, fr } from 'date-fns/locale';
 import { AnalysisError } from './AnalysisError';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface RelevantNewsProps {
   symbol: string;
 }
 
 export function RelevantNews({ symbol }: RelevantNewsProps) {
+  const { t, language } = useTranslation();
+  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
+  const dateLocale = DATE_LOCALES[language] ?? es;
   const { data: news, isLoading, error } = useRelevantNews(symbol);
 
   if (isLoading) {
@@ -16,7 +20,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
       <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4">
         <div className="flex items-center justify-center py-4">
           <Loader2 className="w-5 h-5 text-green-400 animate-spin" />
-          <span className="ml-2 text-gray-400 text-sm">Cargando noticias...</span>
+          <span className="ml-2 text-gray-400 text-sm">{t('analysis_loading_relevant')}</span>
         </div>
       </div>
     );
@@ -25,7 +29,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
   if (error) {
     return (
       <AnalysisError 
-        title="Noticias Relevantes"
+        title={t('analysis_relevant_news')}
         error={error as Error}
         compact
       />
@@ -35,7 +39,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
   if (!news || news.length === 0) {
     return (
       <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4">
-        <p className="text-gray-400 text-sm">No hay noticias relevantes disponibles para este par</p>
+        <p className="text-gray-400 text-sm">{t('analysis_no_relevant_news')}</p>
       </div>
     );
   }
@@ -49,9 +53,18 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
     }
   };
 
+  const getImpactLabel = (impact: string) => {
+    switch (impact) {
+      case 'high': return t('analysis_impact_high');
+      case 'medium': return t('analysis_impact_medium');
+      case 'low': return t('analysis_impact_low');
+      default: return impact;
+    }
+  };
+
   return (
     <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4 space-y-4">
-      <h3 className="text-white font-semibold text-sm">Noticias Relevantes</h3>
+      <h3 className="text-white font-semibold text-sm">{t('analysis_relevant_news')}</h3>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {news.slice(0, 5).map((item) => (
@@ -62,7 +75,6 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
             rel="noopener noreferrer"
             className="group block bg-[#0d1f0d] rounded-lg overflow-hidden border border-green-900/30 hover:border-green-500/50 transition-colors"
           >
-            {/* Image */}
             <div className="aspect-video relative overflow-hidden">
               <img
                 src={item.imageUrl}
@@ -73,11 +85,10 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
                 }}
               />
               <div className={`absolute top-2 right-2 px-2 py-0.5 rounded text-xs border ${getImpactBadge(item.impact)}`}>
-                {item.impact === 'high' ? 'Alto' : item.impact === 'medium' ? 'Medio' : 'Bajo'}
+                {getImpactLabel(item.impact)}
               </div>
             </div>
             
-            {/* Content */}
             <div className="p-3 space-y-2">
               <h4 className="text-white text-xs font-medium line-clamp-2 group-hover:text-green-400 transition-colors">
                 {item.title}
@@ -86,7 +97,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
               <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-500">{item.source}</span>
                 <span className="text-gray-500">
-                  {format(new Date(item.publishedAt), 'HH:mm', { locale: es })}
+                  {format(new Date(item.publishedAt), 'HH:mm', { locale: dateLocale })}
                 </span>
               </div>
             </div>
@@ -97,7 +108,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
       {news.length > 5 && (
         <div className="text-center">
           <button className="text-green-400 text-xs hover:text-green-300 flex items-center gap-1 mx-auto">
-            Ver más noticias <ExternalLink className="w-3 h-3" />
+            {t('analysis_view_more_news')} <ExternalLink className="w-3 h-3" />
           </button>
         </div>
       )}

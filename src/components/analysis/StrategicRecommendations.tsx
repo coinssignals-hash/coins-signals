@@ -6,6 +6,7 @@ import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
 import { AIRegenerateButton } from './AIRegenerateButton';
 import { AIRefreshOverlay } from './AIRefreshOverlay';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface StrategicRecommendationsProps {
   symbol: string;
@@ -15,6 +16,7 @@ interface StrategicRecommendationsProps {
 }
 
 export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, isRealtimeConnected }: StrategicRecommendationsProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { data, isLoading, error } = useStrategicRecommendations(symbol, currentPrice);
   const { generateAnalysis, isLoading: isAILoading } = useAIAnalysis();
@@ -66,7 +68,7 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
 
   // Helper to format AI recommendations to match component structure
   const formatAIRecommendation = (rec: Record<string, unknown>) => ({
-    strategy: `${rec.action === 'buy' ? 'Compra' : rec.action === 'sell' ? 'Venta' : 'Mantener'} - ${rec.reasoning || ''}`,
+    strategy: `${rec.action === 'buy' ? t('perf_buy') : rec.action === 'sell' ? t('perf_sell') : t('analysis_neutral')} - ${rec.reasoning || ''}`,
     entry: `${(rec.entry_price as number)?.toFixed(4) || 'N/A'}`,
     stopLoss: `${(rec.stop_loss as number)?.toFixed(4) || 'N/A'}`,
     takeProfit1: `${(rec.take_profit as number)?.toFixed(4) || 'N/A'}`,
@@ -84,7 +86,7 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
       <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
       <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
         <div className="flex items-center gap-2">
-          <h3 className="text-white font-semibold text-sm">Recomendaciones Estratégicas</h3>
+          <h3 className="text-white font-semibold text-sm">{t('analysis_strategic_recommendations')}</h3>
           {aiRecommendations && (
             <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
           )}
@@ -106,11 +108,11 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
-              <span className="ml-2 text-gray-400">Cargando recomendaciones...</span>
+              <span className="ml-2 text-gray-400">{t('analysis_loading_recommendations')}</span>
             </div>
           ) : error || !displayData ? (
             <AnalysisError 
-              title="Recomendaciones Estratégicas"
+              title={t('analysis_strategic_recommendations')}
               error={error as Error}
               compact
             />
@@ -119,15 +121,15 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
               {/* Long Term Traders */}
               <div className="space-y-3">
                 <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                  Para Traders de Largo Plazo
+                  {t('analysis_long_term_traders')}
                 </h4>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-green-400 font-semibold">Estrategia:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_strategy_label')}:</span>
                     <p className="text-gray-300">{displayData.longTerm.strategy}</p>
                   </div>
                   <div>
-                    <span className="text-green-400 font-semibold">Entrada:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_entry_label')}:</span>
                     <p className="text-gray-300">{displayData.longTerm.entry}</p>
                   </div>
                   <div>
@@ -135,17 +137,17 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
                     <p className="text-gray-300">{displayData.longTerm.stopLoss}</p>
                   </div>
                   <div>
-                    <span className="text-green-400 font-semibold">Objetivo 1:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_target_1')}:</span>
                     <p className="text-gray-300">{displayData.longTerm.takeProfit1}</p>
                   </div>
                   {displayData.longTerm.takeProfit2 && (
                     <div>
-                      <span className="text-green-400 font-semibold">Objetivo 2:</span>
+                      <span className="text-green-400 font-semibold">{t('analysis_target_2')}:</span>
                       <p className="text-gray-300">{displayData.longTerm.takeProfit2}</p>
                     </div>
                   )}
                   <div>
-                    <span className="text-green-400 font-semibold">Horizonte:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_horizon')}:</span>
                     <p className="text-gray-300">{displayData.longTerm.horizon}</p>
                   </div>
                 </div>
@@ -154,16 +156,16 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
               {/* Short Term Traders */}
               <div className="space-y-3">
                 <h4 className="text-white font-semibold border-b border-green-900/50 pb-2">
-                  Para Traders de Corto Plazo
+                  {t('analysis_short_term_traders')}
                   <span className="text-gray-400 text-xs ml-2">(Day/Swing Traders)</span>
                 </h4>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-green-400 font-semibold">Estrategia:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_strategy_label')}:</span>
                     <p className="text-gray-300">{displayData.shortTerm.strategy}</p>
                   </div>
                   <div>
-                    <span className="text-green-400 font-semibold">Entrada:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_entry_label')}:</span>
                     <p className="text-gray-300">{displayData.shortTerm.entry}</p>
                   </div>
                   <div>
@@ -171,22 +173,22 @@ export function StrategicRecommendations({ symbol, currentPrice, realtimePrice, 
                     <p className="text-gray-300">{displayData.shortTerm.stopLoss}</p>
                   </div>
                   <div>
-                    <span className="text-green-400 font-semibold">Objetivo 1:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_target_1')}:</span>
                     <p className="text-gray-300">{displayData.shortTerm.takeProfit1}</p>
                   </div>
                   {displayData.shortTerm.takeProfit2 && (
                     <div>
-                      <span className="text-green-400 font-semibold">Objetivo 2:</span>
+                      <span className="text-green-400 font-semibold">{t('analysis_target_2')}:</span>
                       <p className="text-gray-300">{displayData.shortTerm.takeProfit2}</p>
                     </div>
                   )}
                   <div>
-                    <span className="text-green-400 font-semibold">Horizonte:</span>
+                    <span className="text-green-400 font-semibold">{t('analysis_horizon')}:</span>
                     <p className="text-gray-300">{displayData.shortTerm.horizon}</p>
                   </div>
                   {displayData.shortTerm.notes && displayData.shortTerm.notes.length > 0 && (
                     <div>
-                      <span className="text-green-400 font-semibold">Vigilar:</span>
+                      <span className="text-green-400 font-semibold">{t('analysis_watch')}:</span>
                       <ul className="text-gray-300 list-disc list-inside">
                         {displayData.shortTerm.notes.map((note: string, i: number) => (
                           <li key={i}>{note}</li>
