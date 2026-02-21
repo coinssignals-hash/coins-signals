@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   TrendingUp,
@@ -14,6 +15,7 @@ import {
   Info,
 } from "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
+import { useSignalStrategy } from "@/hooks/useSignalStrategy";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -407,6 +409,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const { quote, loading: priceLoading } = useRestPrice(symbol, 30_000);
   const isConnected = !!quote;
 
+  // AI strategy (fetched in background when card expands)
+  const strategyInput = useMemo(() => signal ? {
+    currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability,
+    support, resistance,
+  } : null, [currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability, support, resistance, signal]);
+  const { strategy: aiStrategy, loading: strategyLoading } = useSignalStrategy(strategyInput, expanded);
+
   // Log price source for debugging
   useEffect(() => {
     console.log(`[SignalCardV2] ${currencyPair} | entry=${entryPrice} tp=${takeProfit} sl=${stopLoss} status=${status}`);
@@ -729,9 +738,17 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
               />
               <div className="p-3">
-                <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider mb-3 text-center">
-                  Estrategia Sugerida
-                </p>
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider text-center">
+                    Estrategia Sugerida
+                  </p>
+                  {strategyLoading && (
+                    <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
+                  )}
+                  {aiStrategy && !strategyLoading && (
+                    <span className="text-[8px] text-emerald-400/70 uppercase tracking-wider">IA</span>
+                  )}
+                </div>
 
                 <TooltipProvider delayDuration={100}>
                   <div className="grid grid-cols-2 gap-2 mb-3">
@@ -749,14 +766,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Duración</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
-                          <span className="text-xs font-bold text-cyan-100">Intradía</span>
+                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.duration.value ?? "Intradía"}</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 Estrategia Intradía</p>
-                        <p className="leading-relaxed">Las posiciones se abren y cierran dentro de la <span className="text-cyan-300 font-semibold">misma sesión de trading</span>. No se mantienen posiciones durante la noche, eliminando el riesgo de <span className="text-red-400 font-semibold">gaps nocturnos</span> y reduciendo la exposición a eventos macroeconómicos inesperados.</p>
+                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 {aiStrategy?.duration.value ?? "Intradía"}</p>
+                        <p className="leading-relaxed">{aiStrategy?.duration.explanation ?? "Operaciones que se abren y cierran dentro del mismo día de trading, reduciendo riesgo de gaps nocturnos."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          Ideal para pares con alta liquidez como {currencyPair}
+                          Análisis para {currencyPair}
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -775,41 +792,63 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Enfoque</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
-                          <span className="text-xs font-bold text-cyan-100">Smart Money</span>
+                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.approach.value ?? "Smart Money"}</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 Smart Money Concepts</p>
-                        <p className="leading-relaxed">Estrategia basada en seguir el flujo de <span className="text-cyan-300 font-semibold">capital institucional</span>. Identifica zonas de liquidez, bloques de órdenes (Order Blocks) y manipulaciones del mercado para operar junto al "dinero inteligente".</p>
+                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 {aiStrategy?.approach.value ?? "Smart Money"}</p>
+                        <p className="leading-relaxed">{aiStrategy?.approach.explanation ?? "Estrategia basada en seguir el flujo de capital institucional, identificando zonas de liquidez y bloques de órdenes."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          Busca confluencia con estructura de mercado y volumen
+                          Confluencia con estructura de mercado
                         </div>
                       </TooltipContent>
                     </Tooltip>
 
                     {/* Mejor Sesión */}
-                    <div
-                      className="rounded-lg p-2.5 relative overflow-hidden"
-                      style={{
-                        background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                        border: "1px solid hsla(200, 60%, 35%, 0.2)",
-                      }}
-                    >
-                      <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider block mb-1">Sesión</span>
-                      <span className="text-xs font-bold text-cyan-100">New York</span>
-                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                          style={{
+                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
+                          }}
+                        >
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Sesión</span>
+                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
+                          </div>
+                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.session.value ?? "New York"}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕐 {aiStrategy?.session.value ?? "New York"}</p>
+                        <p className="leading-relaxed">{aiStrategy?.session.explanation ?? "Sesión con mayor volumen y liquidez para este par."}</p>
+                      </TooltipContent>
+                    </Tooltip>
 
                     {/* Mejor Hora */}
-                    <div
-                      className="rounded-lg p-2.5 relative overflow-hidden"
-                      style={{
-                        background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                        border: "1px solid hsla(200, 60%, 35%, 0.2)",
-                      }}
-                    >
-                      <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider block mb-1">Mejor Hora</span>
-                      <span className="text-xs font-bold text-cyan-100">10:00 – 14:00</span>
-                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                          style={{
+                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
+                          }}
+                        >
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Mejor Hora</span>
+                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
+                          </div>
+                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">⏰ {aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</p>
+                        <p className="leading-relaxed">{aiStrategy?.bestTime.explanation ?? "Rango horario con mayor actividad y mejores oportunidades."}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
 
                   {/* Velas de Confirmación - full width with diagram */}
@@ -828,23 +867,22 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                               <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Velas de Confirmación</span>
                               <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                             </div>
-                            <span className="text-xs font-bold text-cyan-100 block">Pin Bar</span>
+                            <span className="text-xs font-bold text-cyan-100 block">{aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</span>
                             <span className="text-[9px] text-cyan-300/40 mt-0.5 block">Toca para ver diagrama y explicación</span>
                           </div>
                           <div
                             className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
                             style={{ border: "1px solid hsla(200, 60%, 35%, 0.2)" }}
                           >
-                            <img src={pinbarPattern} alt="Pin Bar" className="w-full h-full object-cover" draggable={false} />
+                            <img src={pinbarPattern} alt={aiStrategy?.confirmationCandle.value ?? "Pin Bar"} className="w-full h-full object-cover" draggable={false} />
                           </div>
                         </div>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                      <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ Patrón Pin Bar</p>
-                      <p className="leading-relaxed mb-2">Vela con <span className="text-cyan-300 font-semibold">mecha larga</span> y <span className="text-cyan-300 font-semibold">cuerpo pequeño</span>. Indica un fuerte rechazo del precio en una zona clave de soporte o resistencia.</p>
-                      <p className="leading-relaxed mb-2 text-cyan-200/70">La mecha larga demuestra que compradores o vendedores defendieron ese nivel con fuerza, generando una señal de reversión.</p>
-                      <img src={pinbarPattern} alt="Patrón Pin Bar" className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
+                      <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ {aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</p>
+                      <p className="leading-relaxed mb-2">{aiStrategy?.confirmationCandle.explanation ?? "Vela con mecha larga y cuerpo pequeño que indica rechazo del precio en una zona clave."}</p>
+                      <img src={pinbarPattern} alt="Patrón de velas" className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
                       <div className="text-[10px] text-cyan-300/50 text-center">
                         Buscar confluencia con niveles S/R y volumen
                       </div>
