@@ -15,20 +15,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
 import { useMemo, useEffect, useState } from 'react';
 import { EconomicCategory } from '@/types/news';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const NewsDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const { cacheNews, getCachedNews } = useNewsCache();
   const [isFromCache, setIsFromCache] = useState(false);
   
-  // Fetch all news and find the one matching the ID
   const { data: allNews, isLoading, error, refetch } = useRealNews(undefined, undefined, 100);
   
-  // First try to find in API response, then fallback to cache
   const news = useMemo(() => {
     if (!id) return null;
-    
-    // Try to find in fresh API data
     if (allNews) {
       const freshNews = allNews.find((item: RealNewsItem) => item.id === id);
       if (freshNews) {
@@ -36,37 +34,28 @@ const NewsDetail = () => {
         return freshNews;
       }
     }
-    
-    // Fallback to cached version
     const cachedNews = getCachedNews(id);
     if (cachedNews) {
       setIsFromCache(true);
       return cachedNews;
     }
-    
     setIsFromCache(false);
     return null;
   }, [allNews, id, getCachedNews]);
 
-  // Cache the news when viewing it
   useEffect(() => {
     if (news && !isFromCache) {
       cacheNews(news);
     }
   }, [news, isFromCache, cacheNews]);
 
-  // Fetch AI analysis for the news
   const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
 
-  // Get recent news to show as suggestions when news not found
-  // These are guaranteed to be fresh from the current API response
   const recentNews = useMemo(() => {
     if (news || !allNews) return [];
-    // Return latest 6 news items (they're already fresh from the API)
     return allNews.slice(0, 6);
   }, [news, allNews]);
   
-  // Map sentiment to bias format
   const getBiasFromSentiment = (sentiment: string): 'bullish' | 'bearish' | 'neutral' => {
     if (sentiment === 'bullish') return 'bullish';
     if (sentiment === 'bearish') return 'bearish';
@@ -86,9 +75,27 @@ const NewsDetail = () => {
   };
 
   const getTimeHorizonLabel = (horizon: string) => {
-    if (horizon === 'short_term') return 'Corto Plazo';
-    if (horizon === 'medium_term') return 'Mediano Plazo';
-    return 'Largo Plazo';
+    if (horizon === 'short_term') return t('news_detail_horizon_short');
+    if (horizon === 'medium_term') return t('news_detail_horizon_medium');
+    return t('news_detail_horizon_long');
+  };
+
+  const getRiskLabel = (risk: string) => {
+    if (risk === 'high') return t('news_detail_risk_high');
+    if (risk === 'medium') return t('news_detail_risk_medium');
+    return t('news_detail_risk_low');
+  };
+
+  const getBiasLabel = (bias: string) => {
+    if (bias === 'bullish') return t('news_detail_bullish');
+    if (bias === 'bearish') return t('news_detail_bearish');
+    return t('news_detail_neutral');
+  };
+
+  const getStrengthLabel = (strength: string) => {
+    if (strength === 'strong') return t('news_detail_strong');
+    if (strength === 'moderate') return t('news_detail_moderate');
+    return t('news_detail_weak');
   };
 
   const getImportanceColor = (importance: string) => {
@@ -120,18 +127,17 @@ const NewsDetail = () => {
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Header />
         <main className="container py-4 space-y-6 max-w-4xl">
-          {/* Error message */}
           <div className="p-6 rounded-xl bg-card border border-border text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
               <AlertCircle className="w-8 h-8 text-muted-foreground" />
             </div>
             <h2 className="text-lg font-semibold text-foreground">
-              {error ? 'Error al cargar la noticia' : 'Noticia no disponible'}
+              {error ? t('news_detail_error_loading') : t('news_detail_unavailable')}
             </h2>
             <p className="text-muted-foreground text-sm">
               {error instanceof Error 
                 ? error.message 
-                : 'Esta noticia ya no está en el feed. Aquí tienes las noticias más recientes.'}
+                : t('news_detail_unavailable_desc')}
             </p>
             <Button 
               variant="ghost" 
@@ -140,16 +146,15 @@ const NewsDetail = () => {
               className="text-primary hover:text-primary/80"
             >
               <Loader2 className="w-3 h-3 mr-1" />
-              Actualizar noticias
+              {t('news_detail_refresh')}
             </Button>
           </div>
 
-          {/* Related/Recent news suggestions */}
           {recentNews.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                Noticias Recientes
+                {t('news_detail_recent')}
               </h3>
               <div className="space-y-3">
                 {recentNews.map((item) => (
@@ -195,17 +200,16 @@ const NewsDetail = () => {
             </div>
           )}
 
-          {/* Navigation buttons */}
           <div className="flex flex-col gap-2">
             <Link to="/news">
               <Button className="w-full gap-2">
                 <ArrowLeft className="w-4 h-4" />
-                Ver todas las noticias
+                {t('news_detail_view_all')}
               </Button>
             </Link>
             <Link to="/">
               <Button variant="ghost" className="w-full text-muted-foreground">
-                Ir al inicio
+                {t('news_detail_go_home')}
               </Button>
             </Link>
           </div>
@@ -220,21 +224,18 @@ const NewsDetail = () => {
       <Header />
       
       <main className="container py-4 space-y-6 max-w-4xl">
-        {/* Cached indicator */}
         {isFromCache && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
             <Archive className="w-4 h-4" />
-            <span>Mostrando versión guardada. Esta noticia ya no está en el feed actual.</span>
+            <span>{t('news_detail_cached_notice')}</span>
           </div>
         )}
         
-        {/* Back button */}
         <Link to="/news" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm">Volver a noticias</span>
+          <span className="text-sm">{t('news_detail_back')}</span>
         </Link>
         
-        {/* Hero Image */}
         {news.image_url && (
           <div className="relative aspect-video rounded-xl overflow-hidden">
             <img src={news.image_url} alt={news.title} className="w-full h-full object-cover" />
@@ -242,7 +243,6 @@ const NewsDetail = () => {
           </div>
         )}
         
-        {/* Header */}
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <CategoryBadge category={news.category as EconomicCategory} />
@@ -273,12 +273,11 @@ const NewsDetail = () => {
           <CurrencyBadgeList currencies={news.affected_currencies} size="md" />
         </div>
 
-        {/* AI Analysis Section */}
         {isLoadingAI ? (
           <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4">
             <div className="flex items-center gap-2">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
-              <span className="text-sm font-medium text-primary">Analizando con IA...</span>
+              <span className="text-sm font-medium text-primary">{t('news_detail_analyzing')}</span>
             </div>
             <div className="space-y-3">
               <Skeleton className="h-4 w-full" />
@@ -288,18 +287,16 @@ const NewsDetail = () => {
           </div>
         ) : aiAnalysis ? (
           <>
-            {/* AI Summary */}
             <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Análisis IA</h2>
+                <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">{t('news_detail_ai_analysis')}</h2>
               </div>
               <p className="text-foreground leading-relaxed">{aiAnalysis.aiSummary}</p>
             </div>
 
-            {/* Key Points */}
             <div className="space-y-3">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Puntos Clave</h2>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_key_points')}</h2>
               <div className="space-y-2">
                 {aiAnalysis.keyPoints.map((point, i) => (
                   <div 
@@ -313,28 +310,26 @@ const NewsDetail = () => {
               </div>
             </div>
 
-            {/* Trader Conclusion */}
             <div className="p-4 rounded-lg bg-secondary/50 border border-primary/20 space-y-4">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-primary" />
-                <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Conclusión para Traders</h2>
+                <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">{t('news_detail_trader_conclusion')}</h2>
               </div>
               
               <p className="text-foreground">{aiAnalysis.traderConclusion.summary}</p>
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div className="p-2 rounded bg-background/50">
-                  <div className="text-xs text-muted-foreground mb-1">Riesgo</div>
+                  <div className="text-xs text-muted-foreground mb-1">{t('news_detail_risk')}</div>
                   <div className="flex items-center gap-1.5">
                     {getRiskIcon(aiAnalysis.traderConclusion.riskLevel)}
                     <span className="text-sm font-medium capitalize">
-                      {aiAnalysis.traderConclusion.riskLevel === 'high' ? 'Alto' : 
-                       aiAnalysis.traderConclusion.riskLevel === 'medium' ? 'Medio' : 'Bajo'}
+                      {getRiskLabel(aiAnalysis.traderConclusion.riskLevel)}
                     </span>
                   </div>
                 </div>
                 <div className="p-2 rounded bg-background/50">
-                  <div className="text-xs text-muted-foreground mb-1">Horizonte</div>
+                  <div className="text-xs text-muted-foreground mb-1">{t('news_detail_horizon')}</div>
                   <div className="flex items-center gap-1.5">
                     <Timer className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium">
@@ -343,14 +338,12 @@ const NewsDetail = () => {
                   </div>
                 </div>
                 <div className="p-2 rounded bg-background/50 col-span-2 md:col-span-1">
-                  <div className="text-xs text-muted-foreground mb-1">Sesgo</div>
+                  <div className="text-xs text-muted-foreground mb-1">{t('news_detail_bias')}</div>
                   <div className="flex items-center gap-1.5">
                     {getSentimentIcon(aiAnalysis.traderConclusion.bias)}
                     <span className="text-sm font-medium capitalize">
-                      {aiAnalysis.traderConclusion.bias === 'bullish' ? 'Alcista' :
-                       aiAnalysis.traderConclusion.bias === 'bearish' ? 'Bajista' : 'Neutral'}
-                      {' '}({aiAnalysis.traderConclusion.biasStrength === 'strong' ? 'Fuerte' :
-                             aiAnalysis.traderConclusion.biasStrength === 'moderate' ? 'Moderado' : 'Débil'})
+                      {getBiasLabel(aiAnalysis.traderConclusion.bias)}
+                      {' '}({getStrengthLabel(aiAnalysis.traderConclusion.biasStrength)})
                     </span>
                   </div>
                 </div>
@@ -358,7 +351,7 @@ const NewsDetail = () => {
 
               {aiAnalysis.traderConclusion.recommendedPairs.length > 0 && (
                 <div>
-                  <div className="text-xs text-muted-foreground mb-2">Pares Recomendados</div>
+                  <div className="text-xs text-muted-foreground mb-2">{t('news_detail_recommended_pairs')}</div>
                   <div className="flex flex-wrap gap-2">
                     {aiAnalysis.traderConclusion.recommendedPairs.map((pair) => (
                       <span 
@@ -373,40 +366,37 @@ const NewsDetail = () => {
               )}
             </div>
 
-            {/* Market Impact & Strategy */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="p-4 rounded-lg bg-card border border-border space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Impacto en Mercado</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_market_impact')}</h3>
                 <p className="text-foreground text-sm">{aiAnalysis.marketImpact}</p>
               </div>
               <div className="p-4 rounded-lg bg-card border border-border space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Estrategia Sugerida</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_suggested_strategy')}</h3>
                 <p className="text-foreground text-sm">{aiAnalysis.tradingStrategy}</p>
               </div>
             </div>
           </>
         ) : (
-          /* Fallback to basic summary if AI analysis fails */
           <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-            <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Resumen</h2>
+            <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">{t('news_detail_summary')}</h2>
             <p className="text-foreground leading-relaxed">{news.summary}</p>
             {aiError && (
               <p className="text-xs text-muted-foreground">
-                El análisis IA no está disponible en este momento.
+                {t('news_detail_ai_unavailable')}
               </p>
             )}
           </div>
         )}
         
-        {/* Affected Currencies Detail */}
         {news.affected_currencies.length > 0 && (
           <CurrencyImpactModal currencies={news.affected_currencies}>
             <div className="p-4 rounded-lg bg-card border border-border space-y-3 cursor-pointer hover:border-primary/50 transition-colors group">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Divisas Afectadas</h2>
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_affected_currencies')}</h2>
                 <span className="flex items-center gap-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                   <Activity className="w-3 h-3" />
-                  Ver impacto en vivo
+                  {t('news_detail_live_impact')}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -423,7 +413,6 @@ const NewsDetail = () => {
           </CurrencyImpactModal>
         )}
 
-        {/* Per-Currency Impact Charts */}
         {news.affected_currencies.length > 0 && (
           <CurrencyImpactCharts
             newsId={news.id}
@@ -433,9 +422,8 @@ const NewsDetail = () => {
           />
         )}
 
-        {/* Relevance Score */}
         <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Relevancia</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_relevance')}</h2>
           <div className="flex items-center gap-3">
             <div className="flex-1 bg-secondary rounded-full h-2 overflow-hidden">
               <div 
@@ -449,11 +437,10 @@ const NewsDetail = () => {
           </div>
         </div>
         
-        {/* Source Link */}
         <a href={news.url} target="_blank" rel="noopener noreferrer" className="block">
           <Button variant="outline" className="w-full gap-2">
             <ExternalLink className="w-4 h-4" />
-            Ver artículo completo en {news.source}
+            {t('news_detail_view_full_article')} {news.source}
           </Button>
         </a>
       </main>

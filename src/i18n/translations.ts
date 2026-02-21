@@ -173,6 +173,46 @@ type TranslationKeys = {
   news_confidence: string;
   news_average: string;
   news_top_badge: string;
+  news_all_currencies: string;
+
+  // News Detail
+  news_detail_error_loading: string;
+  news_detail_unavailable: string;
+  news_detail_unavailable_desc: string;
+  news_detail_refresh: string;
+  news_detail_recent: string;
+  news_detail_view_all: string;
+  news_detail_go_home: string;
+  news_detail_cached_notice: string;
+  news_detail_back: string;
+  news_detail_ai_analysis: string;
+  news_detail_analyzing: string;
+  news_detail_key_points: string;
+  news_detail_trader_conclusion: string;
+  news_detail_risk: string;
+  news_detail_risk_high: string;
+  news_detail_risk_medium: string;
+  news_detail_risk_low: string;
+  news_detail_horizon: string;
+  news_detail_horizon_short: string;
+  news_detail_horizon_medium: string;
+  news_detail_horizon_long: string;
+  news_detail_bias: string;
+  news_detail_bullish: string;
+  news_detail_bearish: string;
+  news_detail_neutral: string;
+  news_detail_strong: string;
+  news_detail_moderate: string;
+  news_detail_weak: string;
+  news_detail_recommended_pairs: string;
+  news_detail_market_impact: string;
+  news_detail_suggested_strategy: string;
+  news_detail_summary: string;
+  news_detail_ai_unavailable: string;
+  news_detail_affected_currencies: string;
+  news_detail_live_impact: string;
+  news_detail_relevance: string;
+  news_detail_view_full_article: string;
 
   // Portfolio page
   portfolio_title: string;
@@ -468,6 +508,45 @@ const es: TranslationKeys = {
   news_confidence: 'Confianza',
   news_average: 'Promedio',
   news_top_badge: '🔥 Top News',
+  news_all_currencies: 'Todas',
+
+  news_detail_error_loading: 'Error al cargar la noticia',
+  news_detail_unavailable: 'Noticia no disponible',
+  news_detail_unavailable_desc: 'Esta noticia ya no está en el feed. Aquí tienes las noticias más recientes.',
+  news_detail_refresh: 'Actualizar noticias',
+  news_detail_recent: 'Noticias Recientes',
+  news_detail_view_all: 'Ver todas las noticias',
+  news_detail_go_home: 'Ir al inicio',
+  news_detail_cached_notice: 'Mostrando versión guardada. Esta noticia ya no está en el feed actual.',
+  news_detail_back: 'Volver a noticias',
+  news_detail_ai_analysis: 'Análisis IA',
+  news_detail_analyzing: 'Analizando con IA...',
+  news_detail_key_points: 'Puntos Clave',
+  news_detail_trader_conclusion: 'Conclusión para Traders',
+  news_detail_risk: 'Riesgo',
+  news_detail_risk_high: 'Alto',
+  news_detail_risk_medium: 'Medio',
+  news_detail_risk_low: 'Bajo',
+  news_detail_horizon: 'Horizonte',
+  news_detail_horizon_short: 'Corto Plazo',
+  news_detail_horizon_medium: 'Mediano Plazo',
+  news_detail_horizon_long: 'Largo Plazo',
+  news_detail_bias: 'Sesgo',
+  news_detail_bullish: 'Alcista',
+  news_detail_bearish: 'Bajista',
+  news_detail_neutral: 'Neutral',
+  news_detail_strong: 'Fuerte',
+  news_detail_moderate: 'Moderado',
+  news_detail_weak: 'Débil',
+  news_detail_recommended_pairs: 'Pares Recomendados',
+  news_detail_market_impact: 'Impacto en Mercado',
+  news_detail_suggested_strategy: 'Estrategia Sugerida',
+  news_detail_summary: 'Resumen',
+  news_detail_ai_unavailable: 'El análisis IA no está disponible en este momento.',
+  news_detail_affected_currencies: 'Divisas Afectadas',
+  news_detail_live_impact: 'Ver impacto en vivo',
+  news_detail_relevance: 'Relevancia',
+  news_detail_view_full_article: 'Ver artículo completo en',
 
   portfolio_title: 'Portfolio',
   portfolio_subtitle: 'Vista unificada de todos tus brokers',
@@ -758,6 +837,45 @@ const en: TranslationKeys = {
   news_confidence: 'Confidence',
   news_average: 'Average',
   news_top_badge: '🔥 Top News',
+  news_all_currencies: 'All',
+
+  news_detail_error_loading: 'Error loading news',
+  news_detail_unavailable: 'News unavailable',
+  news_detail_unavailable_desc: 'This news is no longer in the feed. Here are the latest news.',
+  news_detail_refresh: 'Refresh news',
+  news_detail_recent: 'Recent News',
+  news_detail_view_all: 'View all news',
+  news_detail_go_home: 'Go to home',
+  news_detail_cached_notice: 'Showing saved version. This news is no longer in the current feed.',
+  news_detail_back: 'Back to news',
+  news_detail_ai_analysis: 'AI Analysis',
+  news_detail_analyzing: 'Analyzing with AI...',
+  news_detail_key_points: 'Key Points',
+  news_detail_trader_conclusion: 'Trader Conclusion',
+  news_detail_risk: 'Risk',
+  news_detail_risk_high: 'High',
+  news_detail_risk_medium: 'Medium',
+  news_detail_risk_low: 'Low',
+  news_detail_horizon: 'Horizon',
+  news_detail_horizon_short: 'Short Term',
+  news_detail_horizon_medium: 'Medium Term',
+  news_detail_horizon_long: 'Long Term',
+  news_detail_bias: 'Bias',
+  news_detail_bullish: 'Bullish',
+  news_detail_bearish: 'Bearish',
+  news_detail_neutral: 'Neutral',
+  news_detail_strong: 'Strong',
+  news_detail_moderate: 'Moderate',
+  news_detail_weak: 'Weak',
+  news_detail_recommended_pairs: 'Recommended Pairs',
+  news_detail_market_impact: 'Market Impact',
+  news_detail_suggested_strategy: 'Suggested Strategy',
+  news_detail_summary: 'Summary',
+  news_detail_ai_unavailable: 'AI analysis is not available at this time.',
+  news_detail_affected_currencies: 'Affected Currencies',
+  news_detail_live_impact: 'View live impact',
+  news_detail_relevance: 'Relevance',
+  news_detail_view_full_article: 'View full article on',
 
   portfolio_title: 'Portfolio',
   portfolio_subtitle: 'Unified view of all your brokers',
@@ -1047,6 +1165,45 @@ const pt: TranslationKeys = {
   news_confidence: 'Confiança',
   news_average: 'Média',
   news_top_badge: '🔥 Top News',
+  news_all_currencies: 'Todas',
+
+  news_detail_error_loading: 'Erro ao carregar notícia',
+  news_detail_unavailable: 'Notícia indisponível',
+  news_detail_unavailable_desc: 'Esta notícia não está mais no feed. Aqui estão as notícias mais recentes.',
+  news_detail_refresh: 'Atualizar notícias',
+  news_detail_recent: 'Notícias Recentes',
+  news_detail_view_all: 'Ver todas as notícias',
+  news_detail_go_home: 'Ir para o início',
+  news_detail_cached_notice: 'Mostrando versão salva. Esta notícia não está mais no feed atual.',
+  news_detail_back: 'Voltar às notícias',
+  news_detail_ai_analysis: 'Análise IA',
+  news_detail_analyzing: 'Analisando com IA...',
+  news_detail_key_points: 'Pontos Chave',
+  news_detail_trader_conclusion: 'Conclusão para Traders',
+  news_detail_risk: 'Risco',
+  news_detail_risk_high: 'Alto',
+  news_detail_risk_medium: 'Médio',
+  news_detail_risk_low: 'Baixo',
+  news_detail_horizon: 'Horizonte',
+  news_detail_horizon_short: 'Curto Prazo',
+  news_detail_horizon_medium: 'Médio Prazo',
+  news_detail_horizon_long: 'Longo Prazo',
+  news_detail_bias: 'Viés',
+  news_detail_bullish: 'Altista',
+  news_detail_bearish: 'Baixista',
+  news_detail_neutral: 'Neutro',
+  news_detail_strong: 'Forte',
+  news_detail_moderate: 'Moderado',
+  news_detail_weak: 'Fraco',
+  news_detail_recommended_pairs: 'Pares Recomendados',
+  news_detail_market_impact: 'Impacto no Mercado',
+  news_detail_suggested_strategy: 'Estratégia Sugerida',
+  news_detail_summary: 'Resumo',
+  news_detail_ai_unavailable: 'A análise IA não está disponível no momento.',
+  news_detail_affected_currencies: 'Moedas Afetadas',
+  news_detail_live_impact: 'Ver impacto ao vivo',
+  news_detail_relevance: 'Relevância',
+  news_detail_view_full_article: 'Ver artigo completo em',
 
   portfolio_title: 'Portfólio',
   portfolio_subtitle: 'Visão unificada de todas as suas corretoras',
@@ -1336,6 +1493,45 @@ const fr: TranslationKeys = {
   news_confidence: 'Confiance',
   news_average: 'Moyenne',
   news_top_badge: '🔥 Top News',
+  news_all_currencies: 'Toutes',
+
+  news_detail_error_loading: 'Erreur de chargement de l\'actualité',
+  news_detail_unavailable: 'Actualité indisponible',
+  news_detail_unavailable_desc: 'Cette actualité n\'est plus dans le flux. Voici les dernières actualités.',
+  news_detail_refresh: 'Actualiser les nouvelles',
+  news_detail_recent: 'Actualités Récentes',
+  news_detail_view_all: 'Voir toutes les actualités',
+  news_detail_go_home: 'Aller à l\'accueil',
+  news_detail_cached_notice: 'Version sauvegardée affichée. Cette actualité n\'est plus dans le flux actuel.',
+  news_detail_back: 'Retour aux actualités',
+  news_detail_ai_analysis: 'Analyse IA',
+  news_detail_analyzing: 'Analyse IA en cours...',
+  news_detail_key_points: 'Points Clés',
+  news_detail_trader_conclusion: 'Conclusion pour Traders',
+  news_detail_risk: 'Risque',
+  news_detail_risk_high: 'Élevé',
+  news_detail_risk_medium: 'Moyen',
+  news_detail_risk_low: 'Faible',
+  news_detail_horizon: 'Horizon',
+  news_detail_horizon_short: 'Court Terme',
+  news_detail_horizon_medium: 'Moyen Terme',
+  news_detail_horizon_long: 'Long Terme',
+  news_detail_bias: 'Biais',
+  news_detail_bullish: 'Haussier',
+  news_detail_bearish: 'Baissier',
+  news_detail_neutral: 'Neutre',
+  news_detail_strong: 'Fort',
+  news_detail_moderate: 'Modéré',
+  news_detail_weak: 'Faible',
+  news_detail_recommended_pairs: 'Paires Recommandées',
+  news_detail_market_impact: 'Impact sur le Marché',
+  news_detail_suggested_strategy: 'Stratégie Suggérée',
+  news_detail_summary: 'Résumé',
+  news_detail_ai_unavailable: 'L\'analyse IA n\'est pas disponible pour le moment.',
+  news_detail_affected_currencies: 'Devises Affectées',
+  news_detail_live_impact: 'Voir l\'impact en direct',
+  news_detail_relevance: 'Pertinence',
+  news_detail_view_full_article: 'Voir l\'article complet sur',
 
   portfolio_title: 'Portefeuille',
   portfolio_subtitle: 'Vue unifiée de tous vos courtiers',
