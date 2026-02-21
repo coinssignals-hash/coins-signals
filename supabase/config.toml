@@ -68,3 +68,6 @@ verify_jwt = false
 
 [functions.candlestick-chart]
 verify_jwt = false
+
+[functions.market-impact-summary]
+verify_jwt = false
