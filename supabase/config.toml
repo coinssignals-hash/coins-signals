@@ -72,5 +72,8 @@ verify_jwt = false
 [functions.market-impact-summary]
 verify_jwt = false
 
+[functions.news-currency-summary]
+verify_jwt = false
+
 [functions.insert-signal-admin]
 verify_jwt = false
