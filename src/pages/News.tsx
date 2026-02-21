@@ -394,30 +394,30 @@ function QuickCurrencyFilter({
     }
   };
 
-  return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-      {QUICK_CURRENCIES.map((currency) => {
-        const info = CURRENCIES[currency];
-        const isSelected = selected.includes(currency);
+  return;
 
-        return (
-          <button
-            key={currency}
-            onClick={() => toggleCurrency(currency)}
-            className={cn(
-              'flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium',
-              'border transition-all duration-200',
-              isSelected ?
-              'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30' :
-              'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/50 hover:text-foreground'
-            )}>
 
-            <span className="text-base">{info.flag}</span>
-            <span className="font-mono">{currency}</span>
-          </button>);
 
-      })}
-    </div>);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
