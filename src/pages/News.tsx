@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
@@ -458,7 +458,7 @@ const News = () => {
     : '';
   
   return (
-    <div className="min-h-screen bg-black pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
       <main className="container py-4 space-y-4 max-w-2xl mx-auto">
@@ -619,8 +619,7 @@ const News = () => {
         )}
       </main>
       
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 };
 

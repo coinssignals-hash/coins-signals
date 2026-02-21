@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight, User, FileText, Shield, Bell, Palette, Globe, HelpCircle } from 'lucide-react';
 import { useOnboardingTour } from '@/components/onboarding/OnboardingTour';
@@ -35,7 +35,7 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
       <main className="container py-6">
@@ -103,7 +103,6 @@ export default function Settings() {
         </div>
       </main>
 
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, GitCompare } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
+import { PageShell } from '@/components/layout/PageShell';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { BrokerCard, BrokerData } from '@/components/broker/BrokerCard';
 import { BrokerDetail } from '@/components/broker/BrokerDetail';
@@ -73,20 +74,19 @@ export default function Broker() {
   // If a broker is selected, show the detail view
   if (selectedBroker) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-0">
+      <PageShell>
         <Header />
         <main className="container py-6">
           <BrokerDetail broker={selectedBroker} onBack={() => setSelectedBroker(null)} />
         </main>
-        <BottomNav />
-      </div>
+      </PageShell>
     );
   }
 
   // If showing comparison view
   if (showComparison && brokersToCompare.length >= 2) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-0">
+      <PageShell>
         <Header />
         <main className="container py-6">
           <BrokerCompare
@@ -95,13 +95,12 @@ export default function Broker() {
             onClose={() => setShowComparison(false)}
           />
         </main>
-        <BottomNav />
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
       <main className="container py-6">
@@ -204,7 +203,6 @@ export default function Broker() {
         )}
       </main>
 
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

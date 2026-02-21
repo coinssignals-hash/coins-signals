@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -146,7 +146,7 @@ export default function Performance() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
       <main className="container py-4">
@@ -247,7 +247,6 @@ export default function Performance() {
         </div>
       </main>
 
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

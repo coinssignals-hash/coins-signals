@@ -8,24 +8,24 @@
 
 @layer base {
   :root {
-    /* Core colors - Trading dark theme */
-    --background: 225 25% 6%;
+    /* Core colors - Trading dark blue theme (Signals style) */
+    --background: 225 45% 3%;
     --foreground: 210 20% 95%;
 
-    --card: 225 25% 8%;
+    --card: 222 45% 7%;
     --card-foreground: 210 20% 95%;
 
-    --popover: 225 25% 10%;
+    --popover: 220 45% 9%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 142 70% 45%;
-    --primary-foreground: 225 25% 6%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 45% 5%;
 
-    --secondary: 225 20% 14%;
+    --secondary: 218 40% 12%;
     --secondary-foreground: 210 20% 90%;
 
-    --muted: 225 20% 12%;
-    --muted-foreground: 210 15% 55%;
+    --muted: 220 35% 10%;
+    --muted-foreground: 215 20% 55%;
 
     --accent: 38 95% 55%;
     --accent-foreground: 225 25% 6%;
@@ -33,9 +33,9 @@
     --destructive: 0 70% 50%;
     --destructive-foreground: 210 20% 95%;
 
-    --border: 225 15% 18%;
-    --input: 225 20% 14%;
-    --ring: 142 70% 45%;
+    --border: 220 30% 15%;
+    --input: 220 35% 12%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
@@ -48,7 +48,7 @@
     --chart-positive: 142 70% 45%;
     --chart-negative: 0 70% 50%;
     --chart-neutral: 38 95% 55%;
-    --chart-grid: 225 15% 18%;
+    --chart-grid: 220 30% 15%;
     
     /* Currency badges */
     --currency-eur: 225 80% 55%;
@@ -60,51 +60,53 @@
     --currency-chf: 0 0% 60%;
     --currency-nzd: 220 70% 45%;
 
-    /* Gradients */
-    --gradient-card: linear-gradient(135deg, hsl(225 25% 10%) 0%, hsl(225 25% 8%) 100%);
-    --gradient-header: linear-gradient(180deg, hsl(225 25% 10%) 0%, hsl(225 25% 6% / 0.95) 100%);
+    /* Gradients - Blue dark theme */
+    --gradient-card: linear-gradient(135deg, hsl(222 45% 9%) 0%, hsl(222 45% 7%) 100%);
+    --gradient-header: linear-gradient(180deg, hsl(222 45% 7% / 0.95) 0%, hsl(225 45% 3% / 0.95) 100%);
     --gradient-bullish: linear-gradient(135deg, hsl(142 70% 45%) 0%, hsl(142 50% 35%) 100%);
     --gradient-bearish: linear-gradient(135deg, hsl(0 70% 50%) 0%, hsl(0 50% 40%) 100%);
+    --gradient-page: linear-gradient(180deg, hsl(222 45% 7%) 0%, hsl(218 52% 8%) 50%, hsl(222 45% 7%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px hsl(225 25% 0% / 0.3);
-    --shadow-md: 0 4px 16px hsl(225 25% 0% / 0.4);
-    --shadow-lg: 0 8px 32px hsl(225 25% 0% / 0.5);
+    --shadow-sm: 0 2px 8px hsl(225 45% 0% / 0.3);
+    --shadow-md: 0 4px 16px hsl(225 45% 0% / 0.4);
+    --shadow-lg: 0 8px 32px hsl(225 45% 0% / 0.5);
+    --shadow-glow-blue: 0 0 20px hsl(217 91% 60% / 0.3);
     --shadow-glow-green: 0 0 20px hsl(142 70% 45% / 0.3);
     --shadow-glow-red: 0 0 20px hsl(0 70% 50% / 0.3);
 
     /* Sidebar */
-    --sidebar-background: 225 25% 8%;
+    --sidebar-background: 222 45% 7%;
     --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 142 70% 45%;
-    --sidebar-primary-foreground: 225 25% 6%;
-    --sidebar-accent: 225 20% 14%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 45% 5%;
+    --sidebar-accent: 218 40% 12%;
     --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 225 15% 18%;
-    --sidebar-ring: 142 70% 45%;
+    --sidebar-border: 220 30% 15%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   /* Force dark mode only */
   .dark {
-    --background: 225 25% 6%;
+    --background: 225 45% 3%;
     --foreground: 210 20% 95%;
-    --card: 225 25% 8%;
+    --card: 222 45% 7%;
     --card-foreground: 210 20% 95%;
-    --popover: 225 25% 10%;
+    --popover: 220 45% 9%;
     --popover-foreground: 210 20% 95%;
-    --primary: 142 70% 45%;
-    --primary-foreground: 225 25% 6%;
-    --secondary: 225 20% 14%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 45% 5%;
+    --secondary: 218 40% 12%;
     --secondary-foreground: 210 20% 90%;
-    --muted: 225 20% 12%;
-    --muted-foreground: 210 15% 55%;
+    --muted: 220 35% 10%;
+    --muted-foreground: 215 20% 55%;
     --accent: 38 95% 55%;
     --accent-foreground: 225 25% 6%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 210 20% 95%;
-    --border: 225 15% 18%;
-    --input: 225 20% 14%;
-    --ring: 142 70% 45%;
+    --border: 220 30% 15%;
+    --input: 220 35% 12%;
+    --ring: 217 91% 60%;
   }
 }
 
