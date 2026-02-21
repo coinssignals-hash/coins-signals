@@ -511,7 +511,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   ? priceDiff.isPositive ? "bg-green-500" : "bg-red-500"
                   : "bg-cyan-500"
               )} />
-              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm">
+              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm rounded-full overflow-hidden">
                 {/* Background track */}
                 <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 20%, 12%)" strokeWidth="2.5" />
                 <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 15%, 18%)" strokeWidth="1" strokeDasharray="1.5 2" opacity="0.5" />
