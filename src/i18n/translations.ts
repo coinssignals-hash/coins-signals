@@ -136,6 +136,66 @@ type TranslationKeys = {
   signal_negative: string;
   signal_neutral: string;
 
+  // Index / Analysis page
+  index_timeframe_5min: string;
+  index_timeframe_15min: string;
+  index_timeframe_30min: string;
+  index_timeframe_1h: string;
+  index_timeframe_4h: string;
+  index_timeframe_1day: string;
+  index_timeframe_1week: string;
+  index_indicator_alerts: string;
+  index_api_limit: string;
+  index_api_limit_desc: string;
+  index_reconnecting: string;
+  index_reconnecting_desc: string;
+  index_realtime_lost: string;
+  index_cached_data: string;
+  index_tab_price: string;
+  index_tab_rsi: string;
+  index_tab_macd: string;
+  index_tab_bollinger: string;
+  index_tab_stochastic: string;
+
+  // News page
+  news_title: string;
+  news_currencies: string;
+  news_last_updated: string;
+  news_sources: string;
+  news_error_loading: string;
+  news_unknown_error: string;
+  news_retry: string;
+  news_no_news_currencies: string;
+  news_no_news_date: string;
+  news_clear_filters: string;
+  news_top_news: string;
+  news_historical_impact: string;
+  news_confidence: string;
+  news_average: string;
+  news_top_badge: string;
+
+  // Portfolio page
+  portfolio_title: string;
+  portfolio_subtitle: string;
+  portfolio_login_banner: string;
+  portfolio_login_banner_desc: string;
+  portfolio_login: string;
+  portfolio_equity: string;
+  portfolio_cash: string;
+  portfolio_unrealized_pnl: string;
+  portfolio_positions: string;
+  portfolio_demo_tooltip: string;
+  portfolio_no_positions: string;
+  portfolio_connect_broker: string;
+
+  // Performance page
+  perf_loading: string;
+  perf_no_signals_week: string;
+  perf_most_moved: string;
+  perf_buy: string;
+  perf_sell: string;
+  perf_total_operation_time: string;
+
   // Common
   common_loading: string;
   common_error: string;
@@ -261,6 +321,62 @@ const es: TranslationKeys = {
   signal_negative: 'Negativo',
   signal_neutral: 'Neutral',
 
+  index_timeframe_5min: '5 Min',
+  index_timeframe_15min: '15 Min',
+  index_timeframe_30min: '30 Min',
+  index_timeframe_1h: '1 Hora',
+  index_timeframe_4h: '4 Horas',
+  index_timeframe_1day: '1 Día',
+  index_timeframe_1week: '1 Semana',
+  index_indicator_alerts: 'Alertas de Indicadores',
+  index_api_limit: 'Límite de API alcanzado',
+  index_api_limit_desc: 'Actualizando en 60 segundos...',
+  index_reconnecting: 'Reconectando datos en tiempo real...',
+  index_reconnecting_desc: 'Reintentando automáticamente',
+  index_realtime_lost: 'Conexión en tiempo real perdida',
+  index_cached_data: 'Datos desde caché',
+  index_tab_price: 'Precio',
+  index_tab_rsi: 'RSI',
+  index_tab_macd: 'MACD',
+  index_tab_bollinger: 'Bollinger',
+  index_tab_stochastic: 'Estocástico',
+
+  news_title: 'Principales Noticias',
+  news_currencies: 'Monedas',
+  news_last_updated: 'Última actualización',
+  news_sources: 'Fuentes',
+  news_error_loading: 'Error al cargar noticias',
+  news_unknown_error: 'Error desconocido',
+  news_retry: 'Reintentar',
+  news_no_news_currencies: 'No hay noticias para las divisas seleccionadas',
+  news_no_news_date: 'No hay noticias para esta fecha',
+  news_clear_filters: 'Limpiar filtros',
+  news_top_news: 'Top News',
+  news_historical_impact: 'Impacto Histórico',
+  news_confidence: 'Confianza',
+  news_average: 'Promedio',
+  news_top_badge: '🔥 Top News',
+
+  portfolio_title: 'Portfolio',
+  portfolio_subtitle: 'Vista unificada de todos tus brokers',
+  portfolio_login_banner: 'Inicia sesión para guardar tu portfolio',
+  portfolio_login_banner_desc: 'Conecta tus brokers y sincroniza tus datos',
+  portfolio_login: 'Iniciar Sesión',
+  portfolio_equity: 'Equity Total',
+  portfolio_cash: 'Cash Disponible',
+  portfolio_unrealized_pnl: 'PnL No Realizado',
+  portfolio_positions: 'Posiciones',
+  portfolio_demo_tooltip: 'Estos datos son ficticios. Inicia sesión para ver tu portfolio real.',
+  portfolio_no_positions: 'Sin posiciones abiertas',
+  portfolio_connect_broker: 'Conectar broker',
+
+  perf_loading: 'Cargando datos...',
+  perf_no_signals_week: 'No hay señales para esta semana',
+  perf_most_moved: 'Moneda Mas Movida',
+  perf_buy: 'Comprar',
+  perf_sell: 'Vender',
+  perf_total_operation_time: 'Horas',
+
   common_loading: 'Cargando...',
   common_error: 'Error',
   common_retry: 'Reintentar',
@@ -384,6 +500,62 @@ const en: TranslationKeys = {
   signal_positive: 'Positive',
   signal_negative: 'Negative',
   signal_neutral: 'Neutral',
+
+  index_timeframe_5min: '5 Min',
+  index_timeframe_15min: '15 Min',
+  index_timeframe_30min: '30 Min',
+  index_timeframe_1h: '1 Hour',
+  index_timeframe_4h: '4 Hours',
+  index_timeframe_1day: '1 Day',
+  index_timeframe_1week: '1 Week',
+  index_indicator_alerts: 'Indicator Alerts',
+  index_api_limit: 'API limit reached',
+  index_api_limit_desc: 'Updating in 60 seconds...',
+  index_reconnecting: 'Reconnecting real-time data...',
+  index_reconnecting_desc: 'Retrying automatically',
+  index_realtime_lost: 'Real-time connection lost',
+  index_cached_data: 'Data from cache',
+  index_tab_price: 'Price',
+  index_tab_rsi: 'RSI',
+  index_tab_macd: 'MACD',
+  index_tab_bollinger: 'Bollinger',
+  index_tab_stochastic: 'Stochastic',
+
+  news_title: 'Top News',
+  news_currencies: 'Currencies',
+  news_last_updated: 'Last updated',
+  news_sources: 'Sources',
+  news_error_loading: 'Error loading news',
+  news_unknown_error: 'Unknown error',
+  news_retry: 'Retry',
+  news_no_news_currencies: 'No news for the selected currencies',
+  news_no_news_date: 'No news for this date',
+  news_clear_filters: 'Clear filters',
+  news_top_news: 'Top News',
+  news_historical_impact: 'Historical Impact',
+  news_confidence: 'Confidence',
+  news_average: 'Average',
+  news_top_badge: '🔥 Top News',
+
+  portfolio_title: 'Portfolio',
+  portfolio_subtitle: 'Unified view of all your brokers',
+  portfolio_login_banner: 'Log in to save your portfolio',
+  portfolio_login_banner_desc: 'Connect your brokers and sync your data',
+  portfolio_login: 'Log In',
+  portfolio_equity: 'Total Equity',
+  portfolio_cash: 'Available Cash',
+  portfolio_unrealized_pnl: 'Unrealized PnL',
+  portfolio_positions: 'Positions',
+  portfolio_demo_tooltip: 'This is demo data. Log in to see your real portfolio.',
+  portfolio_no_positions: 'No open positions',
+  portfolio_connect_broker: 'Connect broker',
+
+  perf_loading: 'Loading data...',
+  perf_no_signals_week: 'No signals for this week',
+  perf_most_moved: 'Most Moved Currency',
+  perf_buy: 'Buy',
+  perf_sell: 'Sell',
+  perf_total_operation_time: 'Hours',
 
   common_loading: 'Loading...',
   common_error: 'Error',
@@ -509,6 +681,62 @@ const pt: TranslationKeys = {
   signal_negative: 'Negativo',
   signal_neutral: 'Neutro',
 
+  index_timeframe_5min: '5 Min',
+  index_timeframe_15min: '15 Min',
+  index_timeframe_30min: '30 Min',
+  index_timeframe_1h: '1 Hora',
+  index_timeframe_4h: '4 Horas',
+  index_timeframe_1day: '1 Dia',
+  index_timeframe_1week: '1 Semana',
+  index_indicator_alerts: 'Alertas de Indicadores',
+  index_api_limit: 'Limite da API atingido',
+  index_api_limit_desc: 'Atualizando em 60 segundos...',
+  index_reconnecting: 'Reconectando dados em tempo real...',
+  index_reconnecting_desc: 'Tentando automaticamente',
+  index_realtime_lost: 'Conexão em tempo real perdida',
+  index_cached_data: 'Dados do cache',
+  index_tab_price: 'Preço',
+  index_tab_rsi: 'RSI',
+  index_tab_macd: 'MACD',
+  index_tab_bollinger: 'Bollinger',
+  index_tab_stochastic: 'Estocástico',
+
+  news_title: 'Principais Notícias',
+  news_currencies: 'Moedas',
+  news_last_updated: 'Última atualização',
+  news_sources: 'Fontes',
+  news_error_loading: 'Erro ao carregar notícias',
+  news_unknown_error: 'Erro desconhecido',
+  news_retry: 'Tentar novamente',
+  news_no_news_currencies: 'Sem notícias para as moedas selecionadas',
+  news_no_news_date: 'Sem notícias para esta data',
+  news_clear_filters: 'Limpar filtros',
+  news_top_news: 'Top News',
+  news_historical_impact: 'Impacto Histórico',
+  news_confidence: 'Confiança',
+  news_average: 'Média',
+  news_top_badge: '🔥 Top News',
+
+  portfolio_title: 'Portfólio',
+  portfolio_subtitle: 'Visão unificada de todas as suas corretoras',
+  portfolio_login_banner: 'Faça login para salvar seu portfólio',
+  portfolio_login_banner_desc: 'Conecte suas corretoras e sincronize seus dados',
+  portfolio_login: 'Entrar',
+  portfolio_equity: 'Patrimônio Total',
+  portfolio_cash: 'Caixa Disponível',
+  portfolio_unrealized_pnl: 'PnL Não Realizado',
+  portfolio_positions: 'Posições',
+  portfolio_demo_tooltip: 'Estes dados são fictícios. Faça login para ver seu portfólio real.',
+  portfolio_no_positions: 'Sem posições abertas',
+  portfolio_connect_broker: 'Conectar corretora',
+
+  perf_loading: 'Carregando dados...',
+  perf_no_signals_week: 'Sem sinais para esta semana',
+  perf_most_moved: 'Moeda Mais Movimentada',
+  perf_buy: 'Comprar',
+  perf_sell: 'Vender',
+  perf_total_operation_time: 'Horas',
+
   common_loading: 'Carregando...',
   common_error: 'Erro',
   common_retry: 'Tentar novamente',
@@ -632,6 +860,62 @@ const fr: TranslationKeys = {
   signal_positive: 'Positif',
   signal_negative: 'Négatif',
   signal_neutral: 'Neutre',
+
+  index_timeframe_5min: '5 Min',
+  index_timeframe_15min: '15 Min',
+  index_timeframe_30min: '30 Min',
+  index_timeframe_1h: '1 Heure',
+  index_timeframe_4h: '4 Heures',
+  index_timeframe_1day: '1 Jour',
+  index_timeframe_1week: '1 Semaine',
+  index_indicator_alerts: 'Alertes d\'indicateurs',
+  index_api_limit: 'Limite API atteinte',
+  index_api_limit_desc: 'Mise à jour dans 60 secondes...',
+  index_reconnecting: 'Reconnexion des données en temps réel...',
+  index_reconnecting_desc: 'Nouvelle tentative automatique',
+  index_realtime_lost: 'Connexion en temps réel perdue',
+  index_cached_data: 'Données depuis le cache',
+  index_tab_price: 'Prix',
+  index_tab_rsi: 'RSI',
+  index_tab_macd: 'MACD',
+  index_tab_bollinger: 'Bollinger',
+  index_tab_stochastic: 'Stochastique',
+
+  news_title: 'Actualités principales',
+  news_currencies: 'Devises',
+  news_last_updated: 'Dernière mise à jour',
+  news_sources: 'Sources',
+  news_error_loading: 'Erreur de chargement des actualités',
+  news_unknown_error: 'Erreur inconnue',
+  news_retry: 'Réessayer',
+  news_no_news_currencies: 'Pas d\'actualités pour les devises sélectionnées',
+  news_no_news_date: 'Pas d\'actualités pour cette date',
+  news_clear_filters: 'Effacer les filtres',
+  news_top_news: 'Top News',
+  news_historical_impact: 'Impact historique',
+  news_confidence: 'Confiance',
+  news_average: 'Moyenne',
+  news_top_badge: '🔥 Top News',
+
+  portfolio_title: 'Portefeuille',
+  portfolio_subtitle: 'Vue unifiée de tous vos courtiers',
+  portfolio_login_banner: 'Connectez-vous pour sauvegarder votre portefeuille',
+  portfolio_login_banner_desc: 'Connectez vos courtiers et synchronisez vos données',
+  portfolio_login: 'Se connecter',
+  portfolio_equity: 'Fonds propres totaux',
+  portfolio_cash: 'Liquidités disponibles',
+  portfolio_unrealized_pnl: 'PnL non réalisé',
+  portfolio_positions: 'Positions',
+  portfolio_demo_tooltip: 'Ce sont des données fictives. Connectez-vous pour voir votre vrai portefeuille.',
+  portfolio_no_positions: 'Aucune position ouverte',
+  portfolio_connect_broker: 'Connecter un courtier',
+
+  perf_loading: 'Chargement des données...',
+  perf_no_signals_week: 'Pas de signaux pour cette semaine',
+  perf_most_moved: 'Devise la plus active',
+  perf_buy: 'Acheter',
+  perf_sell: 'Vendre',
+  perf_total_operation_time: 'Heures',
 
   common_loading: 'Chargement...',
   common_error: 'Erreur',

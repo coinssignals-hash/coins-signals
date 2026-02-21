@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent, WifiOff } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { MarketSentiment } from '@/components/analysis/MarketSentiment';
@@ -42,15 +43,16 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
-const timeframes = [
-  { value: '5min', label: '5 Min' },
-  { value: '15min', label: '15 Min' },
-  { value: '30min', label: '30 Min' },
-  { value: '1h', label: '1 Hora' },
-  { value: '4h', label: '4 Horas' },
-  { value: '1day', label: '1 Día' },
-  { value: '1week', label: '1 Semana' },
-];
+const TIMEFRAME_KEYS: Record<string, string> = {
+  '5min': 'index_timeframe_5min',
+  '15min': 'index_timeframe_15min',
+  '30min': 'index_timeframe_30min',
+  '1h': 'index_timeframe_1h',
+  '4h': 'index_timeframe_4h',
+  '1day': 'index_timeframe_1day',
+  '1week': 'index_timeframe_1week',
+};
+const TIMEFRAME_VALUES = ['5min', '15min', '30min', '1h', '4h', '1day', '1week'];
 
 interface AlertConfig {
   rsiOverbought: number;
@@ -84,6 +86,7 @@ function formatSymbolForPolygon(symbol: string): string {
 }
 
 const Index = () => {
+  const { t } = useTranslation();
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
@@ -215,8 +218,8 @@ const Index = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#0a1a0a] border-green-900/50">
-              {timeframes.map(tf => (
-                <SelectItem key={tf.value} value={tf.value}>{tf.label}</SelectItem>
+              {TIMEFRAME_VALUES.map(tf => (
+                <SelectItem key={tf} value={tf}>{t(TIMEFRAME_KEYS[tf])}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -236,7 +239,7 @@ const Index = () => {
             </SheetTrigger>
             <SheetContent className="w-[320px] sm:w-[380px] bg-[#0a1a0a] border-green-900/50">
               <SheetHeader>
-                <SheetTitle className="text-white">Alertas de Indicadores</SheetTitle>
+                <SheetTitle className="text-white">{t('index_indicator_alerts')}</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
                 <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
@@ -260,8 +263,8 @@ const Index = () => {
             <CardContent className="p-3 flex items-center gap-3">
               <Clock className="h-5 w-5 text-yellow-500 shrink-0" />
               <div className="flex-1">
-                <p className="text-sm text-yellow-400 font-medium">Límite de API alcanzado</p>
-                <p className="text-xs text-gray-400">Actualizando en 60 segundos...</p>
+                <p className="text-sm text-yellow-400 font-medium">{t('index_api_limit')}</p>
+                <p className="text-xs text-gray-400">{t('index_api_limit_desc')}</p>
               </div>
             </CardContent>
           </Card>
@@ -280,8 +283,8 @@ const Index = () => {
             <CardContent className="p-3 flex items-center gap-3">
               <WifiOff className="h-5 w-5 text-orange-500 shrink-0" />
               <div className="flex-1">
-                <p className="text-sm text-orange-400 font-medium">Reconectando datos en tiempo real...</p>
-                <p className="text-xs text-gray-400">Intento {reconnectAttempt} de 5 - Reintentando automáticamente</p>
+                <p className="text-sm text-orange-400 font-medium">{t('index_reconnecting')}</p>
+                <p className="text-xs text-gray-400">{t('index_reconnecting_desc')}</p>
               </div>
             </CardContent>
           </Card>
@@ -292,7 +295,7 @@ const Index = () => {
             <CardContent className="p-3 flex items-center gap-3">
               <WifiOff className="h-5 w-5 text-red-500 shrink-0" />
               <div className="flex-1">
-                <p className="text-sm text-red-400 font-medium">Conexión en tiempo real perdida</p>
+                <p className="text-sm text-red-400 font-medium">{t('index_realtime_lost')}</p>
                 <p className="text-xs text-gray-400">{wsError}</p>
               </div>
             </CardContent>
@@ -302,7 +305,7 @@ const Index = () => {
         {data?.cached && !loading && !error && (
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <Zap className="h-3 w-3 text-green-500" />
-            <span>Datos desde caché</span>
+            <span>{t('index_cached_data')}</span>
           </div>
         )}
 
@@ -322,23 +325,23 @@ const Index = () => {
           <TabsList className="bg-[#0a1a0a] border border-green-900/50 w-full justify-start overflow-x-auto flex-nowrap">
             <TabsTrigger value="price" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <Activity className="w-3 h-3 mr-1" />
-              Precio
+              {t('index_tab_price')}
             </TabsTrigger>
             <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <TrendingUp className="w-3 h-3 mr-1" />
-              RSI
+              {t('index_tab_rsi')}
             </TabsTrigger>
             <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <BarChart2 className="w-3 h-3 mr-1" />
-              MACD
+              {t('index_tab_macd')}
             </TabsTrigger>
             <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <Waves className="w-3 h-3 mr-1" />
-              Bollinger
+              {t('index_tab_bollinger')}
             </TabsTrigger>
             <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
               <Percent className="w-3 h-3 mr-1" />
-              Estocástico
+              {t('index_tab_stochastic')}
             </TabsTrigger>
           </TabsList>
 
