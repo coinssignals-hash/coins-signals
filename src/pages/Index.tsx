@@ -1,12 +1,18 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
+import { BottomNav } from '@/components/layout/BottomNav';
+import { MainDrawer } from '@/components/layout/MainDrawer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent, WifiOff } from 'lucide-react';
+import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent, WifiOff, Menu, Brain } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { MarketSentiment } from '@/components/analysis/MarketSentiment';
@@ -87,6 +93,9 @@ function formatSymbolForPolygon(symbol: string): string {
 
 const Index = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
@@ -198,13 +207,58 @@ const Index = () => {
     }));
   }, [data?.priceData]);
 
+  const getInitials = () => {
+    if (profile?.first_name) {
+      return `${profile.first_name.charAt(0)}${profile.last_name?.charAt(0) || ''}`.toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
   return (
-    <PageShell maxWidth="max-w-4xl">
-      <Header />
-      
-      <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
-      
-      <main className="container py-4 px-2 sm:px-4 mx-auto space-y-4">
+    <div className="min-h-screen bg-[#06080f] flex justify-center">
+      <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20 shadow-2xl">
+        {/* Header */}
+        <header className="sticky top-0 z-40 bg-[#0a0f1a]/95 backdrop-blur-sm border-b border-blue-500/20">
+          <div className="flex items-center justify-between px-4 py-3">
+            <button 
+              onClick={() => setDrawerOpen(true)}
+              className="p-2 text-blue-300 hover:text-blue-100"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            
+            <h1 className="text-2xl font-bold text-white tracking-wide">
+              Coins <span className="text-yellow-400">$</span>ignals
+            </h1>
+            
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => navigate(user ? '/settings' : '/auth')}
+                className="p-2 text-blue-300 hover:text-blue-100"
+              >
+                {user ? (
+                  <Avatar className="w-8 h-8 border-2 border-blue-500/50">
+                    <AvatarImage src={profile?.avatar_url || ''} alt="Avatar" />
+                    <AvatarFallback className="bg-blue-600 text-white text-xs">
+                      {getInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-white" />
+                  </div>
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
+        
+      <main className="p-4 space-y-4">
         <PortfolioWidget />
         <div className="flex items-center gap-2 flex-wrap">
           <SymbolSearch 
@@ -214,10 +268,10 @@ const Index = () => {
           />
           
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[100px] bg-card border-border">
+            <SelectTrigger className="w-[100px] bg-slate-800/60 border-slate-700/50 text-slate-200">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-card border-border">
+            <SelectContent className="bg-slate-900 border-slate-700">
               {TIMEFRAME_VALUES.map(tf => (
                 <SelectItem key={tf} value={tf}>{t(TIMEFRAME_KEYS[tf])}</SelectItem>
               ))}
@@ -233,13 +287,13 @@ const Index = () => {
           
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 border-border bg-card">
-                <Bell className="w-4 h-4 text-primary" />
+              <Button variant="outline" size="icon" className="shrink-0 border-slate-700/50 bg-slate-800/60 text-blue-400 hover:bg-slate-700/60">
+                <Bell className="w-4 h-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[320px] sm:w-[380px] bg-card border-border">
+            <SheetContent className="w-[320px] sm:w-[380px] bg-slate-900 border-slate-700">
               <SheetHeader>
-                <SheetTitle className="text-foreground">{t('index_indicator_alerts')}</SheetTitle>
+                <SheetTitle className="text-white">{t('index_indicator_alerts')}</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
                 <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
@@ -252,9 +306,9 @@ const Index = () => {
             size="icon"
             onClick={refetch}
             disabled={loading}
-            className="shrink-0 border-border bg-card"
+            className="shrink-0 border-slate-700/50 bg-slate-800/60 text-blue-400 hover:bg-slate-700/60"
           >
-            <RefreshCw className={`w-4 h-4 text-primary ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
 
@@ -322,31 +376,31 @@ const Index = () => {
         />
 
         <Tabs defaultValue="price" className="space-y-3">
-          <TabsList className="bg-card border border-border w-full justify-start overflow-x-auto flex-nowrap">
-            <TabsTrigger value="price" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+          <TabsList className="bg-slate-800/60 border border-slate-700/50 w-full justify-start overflow-x-auto flex-nowrap">
+            <TabsTrigger value="price" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
               <Activity className="w-3 h-3 mr-1" />
               {t('index_tab_price')}
             </TabsTrigger>
-            <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+            <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
               <TrendingUp className="w-3 h-3 mr-1" />
               {t('index_tab_rsi')}
             </TabsTrigger>
-            <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+            <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
               <BarChart2 className="w-3 h-3 mr-1" />
               {t('index_tab_macd')}
             </TabsTrigger>
-            <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+            <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
               <Waves className="w-3 h-3 mr-1" />
               {t('index_tab_bollinger')}
             </TabsTrigger>
-            <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
+            <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-400">
               <Percent className="w-3 h-3 mr-1" />
               {t('index_tab_stochastic')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="price">
-            <div className="bg-card border border-border rounded-lg p-3">
+            <div className="rounded-lg p-3" style={{ background: 'hsl(215, 100%, 4%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
               <PriceChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -366,7 +420,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="rsi">
-            <div className="bg-card border border-border rounded-lg p-3">
+            <div className="rounded-lg p-3" style={{ background: 'hsl(215, 100%, 4%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
               <RSIChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -378,7 +432,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="macd">
-            <div className="bg-card border border-border rounded-lg p-3">
+            <div className="rounded-lg p-3" style={{ background: 'hsl(215, 100%, 4%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
               <MACDChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -390,7 +444,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="bollinger">
-            <div className="bg-card border border-border rounded-lg p-3">
+            <div className="rounded-lg p-3" style={{ background: 'hsl(215, 100%, 4%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
               <BollingerChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -404,7 +458,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="stochastic">
-            <div className="bg-card border border-border rounded-lg p-3">
+            <div className="rounded-lg p-3" style={{ background: 'hsl(215, 100%, 4%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
               <StochasticChart 
                 pair={selectedPair} 
                 timeframe={selectedTimeframe}
@@ -485,8 +539,14 @@ const Index = () => {
           <EconomicEvents symbol={selectedPair} date={selectedDay} />
         </div>
       </main>
-      
-    </PageShell>
+
+        {/* Drawer */}
+        <MainDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+
+        {/* Bottom Navigation */}
+        <BottomNav />
+      </div>
+    </div>
   );
 };
 
