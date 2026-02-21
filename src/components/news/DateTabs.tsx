@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { format, addDays, subDays, isToday, isTomorrow, isYesterday } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { es, enUS, ptBR, fr } from 'date-fns/locale';
+import { RefreshCw, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface DateTabsProps {
   selectedDate: Date;
@@ -20,79 +20,71 @@ export function DateTabs({
   isRefreshing = false,
   className 
 }: DateTabsProps) {
-  const days = Array.from({ length: 5 }, (_, i) => addDays(new Date(), -2 + i));
+  const { language } = useTranslation();
+  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
+  const dateLocale = DATE_LOCALES[language] ?? es;
   
-  const formatDayLabel = (date: Date) => {
-    if (isToday(date)) return 'Hoy';
-    if (isYesterday(date)) return 'Ayer';
-    if (isTomorrow(date)) return 'Mañana';
-    return format(date, 'EEEE', { locale: es });
-  };
-  
-  const formatDayNumber = (date: Date) => {
-    return format(date, 'dd', { locale: es });
-  };
+  // Generate days: yesterday, today, tomorrow + 4 more days back
+  const days = [
+    { date: subDays(new Date(), 3), label: format(subDays(new Date(), 3), 'EEE d', { locale: dateLocale }) },
+    { date: subDays(new Date(), 2), label: format(subDays(new Date(), 2), 'EEE d', { locale: dateLocale }) },
+    { date: subDays(new Date(), 1), label: language === 'es' ? 'Ayer' : 'Yesterday' },
+    { date: new Date(), label: language === 'es' ? 'Hoy' : 'Today' },
+    { date: addDays(new Date(), 1), label: language === 'es' ? 'Mañana' : 'Tomorrow' },
+  ];
   
   const isSelected = (date: Date) => {
     return format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
   };
+
+  const getTabTheme = (date: Date) => {
+    if (isToday(date)) return { bg: 'bg-blue-600', text: 'text-white', shadow: 'shadow-blue-500/30', dot: true };
+    if (isYesterday(date)) return { bg: 'bg-violet-600', text: 'text-white', shadow: 'shadow-violet-500/30', dot: false };
+    if (isTomorrow(date)) return { bg: 'bg-amber-600', text: 'text-white', shadow: 'shadow-amber-500/30', dot: false };
+    return { bg: 'bg-slate-600', text: 'text-white', shadow: 'shadow-slate-500/30', dot: false };
+  };
   
   return (
-    <div className={cn('space-y-4', className)}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onDateChange(subDays(selectedDate, 1))}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          
-          <div className="flex gap-1 bg-secondary/50 p-1 rounded-lg">
-            {days.map((day) => (
+    <div className={cn('space-y-2', className)}>
+      <div className="flex items-center gap-2">
+        {/* Day Tabs */}
+        <div className="flex-1 flex overflow-x-auto gap-1 py-1 px-1 scrollbar-hide">
+          {days.map((day) => {
+            const selected = isSelected(day.date);
+            const theme = getTabTheme(day.date);
+            
+            return (
               <button
-                key={day.toISOString()}
-                onClick={() => onDateChange(day)}
+                key={day.date.toISOString()}
+                onClick={() => onDateChange(day.date)}
                 className={cn(
-                  'flex flex-col items-center px-3 py-2 rounded-md transition-all duration-200',
-                  'text-sm font-medium min-w-[60px]',
-                  isSelected(day)
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                  'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all',
+                  selected
+                    ? `${theme.bg} ${theme.text} shadow-lg ${theme.shadow}`
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
                 )}
               >
-                <span className="text-[10px] uppercase tracking-wider opacity-80">
-                  {formatDayLabel(day)}
-                </span>
-                <span className="text-lg font-bold font-mono">
-                  {formatDayNumber(day)}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  {theme.dot && selected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  )}
+                  <span className="capitalize">{day.label}</span>
+                </div>
               </button>
-            ))}
-          </div>
-          
+            );
+          })}
+        </div>
+        
+        {/* Refresh */}
+        {onRefresh && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
-            onClick={() => onDateChange(addDays(selectedDate, 1))}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
-        
-        {onRefresh && (
-          <Button
-            variant="outline"
-            size="sm"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="gap-2"
+            className="h-8 w-8 flex-shrink-0"
           >
             <RefreshCw className={cn('w-4 h-4', isRefreshing && 'animate-spin')} />
-            <span className="hidden sm:inline">Actualizar</span>
           </Button>
         )}
       </div>
