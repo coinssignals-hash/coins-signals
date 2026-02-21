@@ -223,7 +223,7 @@ function ZoomableChart({ pair, support, resistance, signalId, chartImageUrl }: {
       <div ref={imgRef} className="w-full h-full origin-center transition-none" style={{ willChange: "transform" }}>
         {(() => {
           const imgSrc = chartImageUrl || (() => {
-            const params = new URLSearchParams({ pair });
+            const params = new URLSearchParams({ pair, hd: '1' });
             if (support !== undefined) params.set('support', String(support));
             if (resistance !== undefined) params.set('resistance', String(resistance));
             if (signalId) params.set('signal_id', signalId);
