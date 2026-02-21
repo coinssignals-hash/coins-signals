@@ -705,14 +705,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
                   }}
                 />
-                <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
-                <div className="space-y-1">
+                <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-2">Informacion</p>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                   {[
                     { label: "Resistencia", value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
                     { label: "Soporte", value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
                     { label: "TP", value: takeProfit.toFixed(3), color: "hsl(135, 70%, 50%)" },
                     { label: "SL", value: stopLoss.toFixed(3), color: "hsl(0, 70%, 55%)" },
-                    { label: "Estado", value: status === "active" ? "Activa" : status === "pending" ? "Pendiente" : status, color: "hsl(45, 80%, 55%)" },
                   ].map((row) => (
                     <div key={row.label} className="flex justify-between items-center">
                       <span className="text-[9px] text-cyan-300/60">{row.label}</span>
@@ -721,6 +720,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       </span>
                     </div>
                   ))}
+                  <div className="col-span-2 mt-1 pt-1.5 border-t border-cyan-500/10 flex justify-between items-center">
+                    <span className="text-[9px] text-cyan-300/60">Estado</span>
+                    <span className="text-[9px] font-bold" style={{ color: "hsl(45, 80%, 55%)" }}>
+                      {status === "active" ? "Activa" : status === "pending" ? "Pendiente" : status}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
