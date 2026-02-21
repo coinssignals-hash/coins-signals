@@ -504,14 +504,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="relative w-[72px] h-[72px]">
-              {/* Outer glow ring */}
+              {/* Outer glow ring - uses a blurred circle behind */}
               <div className={cn(
-                "absolute inset-0 rounded-full transition-all duration-700",
+                "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
                 priceDiff.hasData
-                  ? priceDiff.isPositive
-                    ? "shadow-[0_0_16px_3px_hsl(142,70%,45%/0.25)]"
-                    : "shadow-[0_0_16px_3px_hsl(0,70%,50%/0.25)]"
-                  : "shadow-[0_0_12px_2px_hsl(200,80%,50%/0.15)]"
+                  ? priceDiff.isPositive ? "bg-green-500" : "bg-red-500"
+                  : "bg-cyan-500"
               )} />
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm">
                 {/* Background track */}
