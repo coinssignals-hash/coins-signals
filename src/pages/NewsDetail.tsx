@@ -10,6 +10,7 @@ import { useNewsCache } from '@/hooks/useNewsCache';
 import { ArrowLeft, Clock, ExternalLink, TrendingUp, TrendingDown, Minus, Sparkles, Target, AlertTriangle, Timer, Loader2, Archive, Activity } from 'lucide-react';
 import { CurrencyImpactModal } from '@/components/news/CurrencyImpactModal';
 import { CurrencyImpactCharts } from '@/components/news/CurrencyImpactCharts';
+import { RealtimeCurrencyImpact } from '@/components/news/RealtimeCurrencyImpact';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
@@ -411,6 +412,10 @@ const NewsDetail = () => {
               </div>
             </div>
           </CurrencyImpactModal>
+        )}
+
+        {news.affected_currencies.length > 0 && (
+          <RealtimeCurrencyImpact currencies={news.affected_currencies} />
         )}
 
         {news.affected_currencies.length > 0 && (
