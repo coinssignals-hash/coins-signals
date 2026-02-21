@@ -36,9 +36,6 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const { t } = useTranslation();
 
   const menuItems = [
-    { icon: Brain, label: t('nav_ideas'), href: '/' },
-    { icon: Newspaper, label: t('nav_news'), href: '/news' },
-    { icon: Archive, label: t('nav_saved_news'), href: '/news/saved' },
     { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
     { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
     { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
