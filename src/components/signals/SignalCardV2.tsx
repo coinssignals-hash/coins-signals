@@ -317,7 +317,14 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
         </div>
         <div className="flex items-center gap-2">
           <span className="font-bold text-white text-sm">{price}</span>
-          <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
+          <button
+            className="text-cyan-400/60 hover:text-cyan-300 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(price);
+            }}
+            title="Copiar precio"
+          >
             <Copy className="w-4 h-4" />
           </button>
         </div>
@@ -620,7 +627,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <span className="font-semibold text-white text-sm">Precio de Entrada</span>
             <div className="flex items-center gap-2">
               <span className="font-bold text-white text-sm">{entryPrice.toFixed(3)}</span>
-              <button className="text-cyan-400/60 hover:text-cyan-300 transition-colors">
+              <button
+                className="text-cyan-400/60 hover:text-cyan-300 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(entryPrice.toFixed(3));
+                }}
+                title="Copiar precio de entrada"
+              >
                 <Copy className="w-4 h-4" />
               </button>
             </div>
