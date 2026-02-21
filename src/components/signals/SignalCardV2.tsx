@@ -666,7 +666,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Zoomable chart image */}
             <ZoomableChart pair={currencyPair} support={support} resistance={resistance} signalId={signal?.id} />
 
-            {/* Sentimiento del Mercado + Informacion + Estrategia */}
+            {/* Sentimiento del Mercado + Informacion */}
             <div className="mx-3 mb-3 flex gap-2">
               <div
                 className="flex-1 rounded-lg overflow-hidden"
@@ -683,118 +683,174 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 />
               </div>
 
-              <div className="flex-1 flex flex-col gap-2">
+              <div
+                className="flex-1 rounded-lg p-2.5 relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                  border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                }}
+              >
                 <div
-                  className="rounded-lg p-2.5 relative overflow-hidden"
+                  className="absolute top-0 left-[15%] right-[15%] h-[1px]"
                   style={{
-                    background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-                    border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                    background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
                   }}
-                >
-                  <div
-                    className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                    style={{
-                      background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
-                    }}
-                  />
-                  <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
-                  <div className="space-y-1">
-                    {[
-                      { label: "Resistencia", value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
-                      { label: "Soporte", value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
-                      { label: "TP", value: takeProfit.toFixed(3), color: "hsl(135, 70%, 50%)" },
-                      { label: "SL", value: stopLoss.toFixed(3), color: "hsl(0, 70%, 55%)" },
-                      { label: "Estado", value: status === "active" ? "Activa" : status === "pending" ? "Pendiente" : status, color: "hsl(45, 80%, 55%)" },
-                    ].map((row) => (
-                      <div key={row.label} className="flex justify-between items-center">
-                        <span className="text-[9px] text-cyan-300/60">{row.label}</span>
-                        <span className="text-[9px] font-bold" style={{ color: row.color }}>
-                          {row.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                />
+                <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Informacion</p>
+                <div className="space-y-1">
+                  {[
+                    { label: "Resistencia", value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
+                    { label: "Soporte", value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
+                    { label: "TP", value: takeProfit.toFixed(3), color: "hsl(135, 70%, 50%)" },
+                    { label: "SL", value: stopLoss.toFixed(3), color: "hsl(0, 70%, 55%)" },
+                    { label: "Estado", value: status === "active" ? "Activa" : status === "pending" ? "Pendiente" : status, color: "hsl(45, 80%, 55%)" },
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between items-center">
+                      <span className="text-[9px] text-cyan-300/60">{row.label}</span>
+                      <span className="text-[9px] font-bold" style={{ color: row.color }}>
+                        {row.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
+              </div>
+            </div>
 
-                <div
-                  className="rounded-lg p-2.5 relative overflow-hidden"
-                  style={{
-                    background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-                    border: "1px solid hsla(200, 60%, 35%, 0.3)",
-                  }}
-                >
-                  <div
-                    className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                    style={{
-                      background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
-                    }}
-                  />
-                  <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-1.5">Estrategia</p>
-                  <div className="space-y-1">
-                    <TooltipProvider delayDuration={100}>
-                      {/* Duracion */}
-                      <div className="flex justify-between items-center">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="text-[9px] text-cyan-300/60 flex items-center gap-1 cursor-help">
-                              Duracion <Info className="w-2.5 h-2.5 text-cyan-400/40" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[220px] bg-[hsl(225,25%,12%)] border-cyan-500/20 text-[10px] text-cyan-100 p-2.5">
-                            <p className="font-bold text-yellow-400 mb-1">Intradía</p>
-                            <p>Operaciones que se abren y cierran dentro del mismo día de trading. No se mantienen posiciones durante la noche, reduciendo riesgo de gaps.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <span className="text-[9px] font-bold text-cyan-200">Intradia</span>
-                      </div>
+            {/* Strategy Guidance Panel */}
+            <div
+              className="mx-3 mb-3 rounded-lg relative overflow-hidden"
+              style={{
+                background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
+                border: "1px solid hsla(200, 60%, 35%, 0.3)",
+              }}
+            >
+              <div
+                className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+                style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
+              />
+              <div className="p-3">
+                <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider mb-3 text-center">
+                  Estrategia Sugerida
+                </p>
 
-                      {/* Enfoque */}
-                      <div className="flex justify-between items-center">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="text-[9px] text-cyan-300/60 flex items-center gap-1 cursor-help">
-                              Enfoque <Info className="w-2.5 h-2.5 text-cyan-400/40" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[220px] bg-[hsl(225,25%,12%)] border-cyan-500/20 text-[10px] text-cyan-100 p-2.5">
-                            <p className="font-bold text-yellow-400 mb-1">Smart Money</p>
-                            <p>Estrategia basada en seguir el flujo de capital institucional. Identifica zonas de liquidez, bloques de órdenes y manipulaciones del mercado para operar junto al "dinero inteligente".</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <span className="text-[9px] font-bold text-cyan-200">Smart Money</span>
-                      </div>
+                <TooltipProvider delayDuration={100}>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {/* Duración */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                          style={{
+                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
+                          }}
+                        >
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Duración</span>
+                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
+                          </div>
+                          <span className="text-xs font-bold text-cyan-100">Intradía</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 Estrategia Intradía</p>
+                        <p className="leading-relaxed">Las posiciones se abren y cierran dentro de la <span className="text-cyan-300 font-semibold">misma sesión de trading</span>. No se mantienen posiciones durante la noche, eliminando el riesgo de <span className="text-red-400 font-semibold">gaps nocturnos</span> y reduciendo la exposición a eventos macroeconómicos inesperados.</p>
+                        <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
+                          Ideal para pares con alta liquidez como {currencyPair}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
 
-                      {/* Velas Confirmacion */}
-                      <div className="flex justify-between items-center">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="text-[9px] text-cyan-300/60 flex items-center gap-1 cursor-help">
-                              Velas Comf <Info className="w-2.5 h-2.5 text-cyan-400/40" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[240px] bg-[hsl(225,25%,12%)] border-cyan-500/20 text-[10px] text-cyan-100 p-2.5">
-                            <p className="font-bold text-yellow-400 mb-1">Pin Bar</p>
-                            <p className="mb-2">Vela con mecha larga y cuerpo pequeño. Indica rechazo del precio en una zona clave. La mecha larga muestra que los compradores/vendedores defendieron ese nivel con fuerza.</p>
-                            <img src={pinbarPattern} alt="Patrón Pin Bar" className="w-full rounded-md border border-cyan-500/20" />
-                          </TooltipContent>
-                        </Tooltip>
-                        <span className="text-[9px] font-bold text-cyan-200">Pin Bar</span>
-                      </div>
+                    {/* Enfoque */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                          style={{
+                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
+                          }}
+                        >
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Enfoque</span>
+                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
+                          </div>
+                          <span className="text-xs font-bold text-cyan-100">Smart Money</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 Smart Money Concepts</p>
+                        <p className="leading-relaxed">Estrategia basada en seguir el flujo de <span className="text-cyan-300 font-semibold">capital institucional</span>. Identifica zonas de liquidez, bloques de órdenes (Order Blocks) y manipulaciones del mercado para operar junto al "dinero inteligente".</p>
+                        <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
+                          Busca confluencia con estructura de mercado y volumen
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
 
-                      {/* Mejor Session */}
-                      <div className="flex justify-between items-center">
-                        <span className="text-[9px] text-cyan-300/60">Mejor Session</span>
-                        <span className="text-[9px] font-bold text-cyan-200">New York</span>
-                      </div>
+                    {/* Mejor Sesión */}
+                    <div
+                      className="rounded-lg p-2.5 relative overflow-hidden"
+                      style={{
+                        background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                        border: "1px solid hsla(200, 60%, 35%, 0.2)",
+                      }}
+                    >
+                      <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider block mb-1">Sesión</span>
+                      <span className="text-xs font-bold text-cyan-100">New York</span>
+                    </div>
 
-                      {/* Mejor Hora */}
-                      <div className="flex justify-between items-center">
-                        <span className="text-[9px] text-cyan-300/60">Mejor Hora</span>
-                        <span className="text-[9px] font-bold text-cyan-200">10:00-14:00</span>
-                      </div>
-                    </TooltipProvider>
+                    {/* Mejor Hora */}
+                    <div
+                      className="rounded-lg p-2.5 relative overflow-hidden"
+                      style={{
+                        background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                        border: "1px solid hsla(200, 60%, 35%, 0.2)",
+                      }}
+                    >
+                      <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider block mb-1">Mejor Hora</span>
+                      <span className="text-xs font-bold text-cyan-100">10:00 – 14:00</span>
+                    </div>
                   </div>
-                </div>
+
+                  {/* Velas de Confirmación - full width with diagram */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="rounded-lg p-3 cursor-help relative overflow-hidden group"
+                        style={{
+                          background: "linear-gradient(135deg, hsla(210, 80%, 10%, 0.9) 0%, hsla(200, 60%, 14%, 0.7) 100%)",
+                          border: "1px solid hsla(200, 60%, 35%, 0.25)",
+                        }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-1.5 mb-1.5">
+                              <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">Velas de Confirmación</span>
+                              <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
+                            </div>
+                            <span className="text-xs font-bold text-cyan-100 block">Pin Bar</span>
+                            <span className="text-[9px] text-cyan-300/40 mt-0.5 block">Toca para ver diagrama y explicación</span>
+                          </div>
+                          <div
+                            className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
+                            style={{ border: "1px solid hsla(200, 60%, 35%, 0.2)" }}
+                          >
+                            <img src={pinbarPattern} alt="Pin Bar" className="w-full h-full object-cover" draggable={false} />
+                          </div>
+                        </div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                      <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ Patrón Pin Bar</p>
+                      <p className="leading-relaxed mb-2">Vela con <span className="text-cyan-300 font-semibold">mecha larga</span> y <span className="text-cyan-300 font-semibold">cuerpo pequeño</span>. Indica un fuerte rechazo del precio en una zona clave de soporte o resistencia.</p>
+                      <p className="leading-relaxed mb-2 text-cyan-200/70">La mecha larga demuestra que compradores o vendedores defendieron ese nivel con fuerza, generando una señal de reversión.</p>
+                      <img src={pinbarPattern} alt="Patrón Pin Bar" className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
+                      <div className="text-[10px] text-cyan-300/50 text-center">
+                        Buscar confluencia con niveles S/R y volumen
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
 
