@@ -34,6 +34,7 @@ const LinkBroker = lazy(() => import("./pages/LinkBroker"));
 const Analysis = lazy(() => import("./pages/Analysis"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const CreateSignal = lazy(() => import("./pages/CreateSignal"));
+const CurrencyImpact = lazy(() => import("./pages/CurrencyImpact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -87,6 +88,7 @@ const App = () => (
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/create-signal" element={<CreateSignal />} />
+                <Route path="/currency-impact" element={<CurrencyImpact />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
