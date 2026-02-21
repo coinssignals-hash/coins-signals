@@ -170,36 +170,35 @@ function buildSvg(bars: Bar[], support: number | null, resistance: number | null
     volumeBars.push(`<rect x="${x - candleWidth / 2}" y="${vy}" width="${candleWidth}" height="${Math.max(1, vh)}" fill="${volColor}" rx="${0.3 * scale}" shape-rendering="crispEdges"/>`);
   }
 
-  // Support & Resistance lines
+  // Last day highlight background + index
+  const firstLastDayIdx = bars.findIndex(b => dayKey(b.t) === lastDayStr);
+  let lastDayBg = '';
+  if (firstLastDayIdx >= 0) {
+    const x1 = PAD_LEFT + firstLastDayIdx * (CHART_W / bars.length);
+    const x2 = W - PAD_RIGHT;
+    lastDayBg = `<rect x="${x1}" y="${PAD_TOP}" width="${x2 - x1}" height="${CANDLE_H}" fill="rgba(34,197,94,0.03)"/>`;
+  }
+
+  // Support & Resistance lines (only last day)
   const srLines: string[] = [];
   const labelW = 90 * scale;
   const labelH = 20 * scale;
   const fontSize = 10 * scale;
   const lineW = 1.5 * scale;
+  const srX1 = firstLastDayIdx >= 0 ? PAD_LEFT + firstLastDayIdx * (CHART_W / bars.length) : PAD_LEFT;
+  const srX2 = W - PAD_RIGHT;
 
   if (resistance !== null) {
     const y = yOf(resistance);
-    srLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#22c55e" stroke-width="${lineW}" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
-    srLines.push(`<rect x="${W - PAD_RIGHT - labelW - 4}" y="${y - labelH / 2}" width="${labelW}" height="${labelH}" rx="${4 * scale}" fill="rgba(34,197,94,0.15)" stroke="#22c55e" stroke-width="${0.8 * scale}"/>`);
-    srLines.push(`<text x="${W - PAD_RIGHT - labelW / 2 - 4}" y="${y + fontSize / 3}" fill="#22c55e" text-anchor="middle" font-size="${fontSize}" font-family="monospace" font-weight="bold">${formatPrice(resistance, isJpy)}</text>`);
+    srLines.push(`<line x1="${srX1}" y1="${y}" x2="${srX2}" y2="${y}" stroke="#22c55e" stroke-width="${lineW}" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
+    srLines.push(`<rect x="${srX2 - labelW - 4}" y="${y - labelH / 2}" width="${labelW}" height="${labelH}" rx="${4 * scale}" fill="rgba(34,197,94,0.15)" stroke="#22c55e" stroke-width="${0.8 * scale}"/>`);
+    srLines.push(`<text x="${srX2 - labelW / 2 - 4}" y="${y + fontSize / 3}" fill="#22c55e" text-anchor="middle" font-size="${fontSize}" font-family="monospace" font-weight="bold">${formatPrice(resistance, isJpy)}</text>`);
   }
   if (support !== null) {
     const y = yOf(support);
-    srLines.push(`<line x1="${PAD_LEFT}" y1="${y}" x2="${W - PAD_RIGHT}" y2="${y}" stroke="#ef4444" stroke-width="${lineW}" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
-    srLines.push(`<rect x="${W - PAD_RIGHT - labelW - 4}" y="${y - labelH / 2}" width="${labelW}" height="${labelH}" rx="${4 * scale}" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="${0.8 * scale}"/>`);
-    srLines.push(`<text x="${W - PAD_RIGHT - labelW / 2 - 4}" y="${y + fontSize / 3}" fill="#ef4444" text-anchor="middle" font-size="${fontSize}" font-family="monospace" font-weight="bold">${formatPrice(support, isJpy)}</text>`);
-  }
-
-  // Title
-  const title = `<text x="${PAD_LEFT + 4}" y="${PAD_TOP - 10 * scale}" fill="#e2e8f0" font-size="${14 * scale}" font-family="sans-serif" font-weight="bold">${escapeXml(pair)} · 15m · 7 días</text>`;
-
-  // Last day highlight background
-  let lastDayBg = '';
-  const firstLastDayIdx = bars.findIndex(b => dayKey(b.t) === lastDayStr);
-  if (firstLastDayIdx >= 0) {
-    const x1 = PAD_LEFT + firstLastDayIdx * (CHART_W / bars.length);
-    const x2 = W - PAD_RIGHT;
-    lastDayBg = `<rect x="${x1}" y="${PAD_TOP}" width="${x2 - x1}" height="${CANDLE_H}" fill="rgba(34,197,94,0.03)"/>`;
+    srLines.push(`<line x1="${srX1}" y1="${y}" x2="${srX2}" y2="${y}" stroke="#ef4444" stroke-width="${lineW}" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
+    srLines.push(`<rect x="${srX2 - labelW - 4}" y="${y - labelH / 2}" width="${labelW}" height="${labelH}" rx="${4 * scale}" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="${0.8 * scale}"/>`);
+    srLines.push(`<text x="${srX2 - labelW / 2 - 4}" y="${y + fontSize / 3}" fill="#ef4444" text-anchor="middle" font-size="${fontSize}" font-family="monospace" font-weight="bold">${formatPrice(support, isJpy)}</text>`);
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" shape-rendering="geometricPrecision">
