@@ -112,7 +112,96 @@ async def get_news_by_currency(currency: str):
     filtered = [n for n in SAMPLE_NEWS if currency in n["currencies"]]
     return filtered
 
+@router.get("/trends/{year}/{month}")
+async def get_news_trends(year: int, month: int):
+    """Get historical news trends aggregated by month/year for charts"""
+    if month < 1 or month > 12:
+        raise HTTPException(status_code=400, detail="Month must be between 1 and 12")
+    if year < 2020 or year > 2030:
+        raise HTTPException(status_code=400, detail="Year must be between 2020 and 2030")
+    
+    # Aggregate trends data for the given month
+    target_month = f"{year}-{month:02d}"
+    
+    return {
+        "period": target_month,
+        "year": year,
+        "month": month,
+        "total_articles": len(SAMPLE_NEWS),
+        "by_impact": {
+            "high": len([n for n in SAMPLE_NEWS if n["impact"] == "high"]),
+            "medium": len([n for n in SAMPLE_NEWS if n["impact"] == "medium"]),
+            "low": len([n for n in SAMPLE_NEWS if n["impact"] == "low"]),
+        },
+        "by_bias": {
+            "bullish": len([n for n in SAMPLE_NEWS if n["bias"] == "bullish"]),
+            "bearish": len([n for n in SAMPLE_NEWS if n["bias"] == "bearish"]),
+            "neutral": len([n for n in SAMPLE_NEWS if n["bias"] == "neutral"]),
+        },
+        "by_currency": _aggregate_currency_counts(SAMPLE_NEWS),
+        "sentiment_score": _calculate_sentiment_score(SAMPLE_NEWS),
+    }
+
+
+@router.get("/trends/range")
+async def get_news_trends_range(
+    start_year: int = Query(..., ge=2020, le=2030),
+    start_month: int = Query(..., ge=1, le=12),
+    end_year: int = Query(..., ge=2020, le=2030),
+    end_month: int = Query(..., ge=1, le=12),
+):
+    """Get historical news trends for a date range (for multi-month charts)"""
+    results = []
+    current_year, current_month = start_year, start_month
+    
+    while (current_year, current_month) <= (end_year, end_month):
+        period = f"{current_year}-{current_month:02d}"
+        results.append({
+            "period": period,
+            "year": current_year,
+            "month": current_month,
+            "total_articles": len(SAMPLE_NEWS),
+            "by_impact": {
+                "high": len([n for n in SAMPLE_NEWS if n["impact"] == "high"]),
+                "medium": len([n for n in SAMPLE_NEWS if n["impact"] == "medium"]),
+                "low": len([n for n in SAMPLE_NEWS if n["impact"] == "low"]),
+            },
+            "by_bias": {
+                "bullish": len([n for n in SAMPLE_NEWS if n["bias"] == "bullish"]),
+                "bearish": len([n for n in SAMPLE_NEWS if n["bias"] == "bearish"]),
+                "neutral": len([n for n in SAMPLE_NEWS if n["bias"] == "neutral"]),
+            },
+            "by_currency": _aggregate_currency_counts(SAMPLE_NEWS),
+            "sentiment_score": _calculate_sentiment_score(SAMPLE_NEWS),
+        })
+        
+        current_month += 1
+        if current_month > 12:
+            current_month = 1
+            current_year += 1
+    
+    return {"trends": results, "total_periods": len(results)}
+
+
 @router.post("/refresh")
 async def refresh_news():
     """Trigger news refresh/scraping"""
     return {"status": "success", "message": "News refresh initiated"}
+
+
+def _aggregate_currency_counts(news_list: list) -> dict:
+    counts: dict[str, int] = {}
+    for n in news_list:
+        for c in n["currencies"]:
+            counts[c] = counts.get(c, 0) + 1
+    return counts
+
+
+def _calculate_sentiment_score(news_list: list) -> float:
+    if not news_list:
+        return 0.0
+    total = 0.0
+    for n in news_list:
+        for ci in n["currency_impacts"]:
+            total += ci["score"]
+    return round(total / max(len(news_list), 1), 2)
