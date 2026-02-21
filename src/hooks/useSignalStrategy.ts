@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-
+import { useTranslation } from '@/i18n/LanguageContext';
 export interface StrategyField {
   value: string;
   explanation: string;
@@ -39,11 +39,12 @@ export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fetchedRef = useRef<string | null>(null);
+  const { language } = useTranslation();
 
   const fetchStrategy = useCallback(async () => {
     if (!signal || !enabled) return;
     
-    const key = getCacheKey(signal);
+    const key = getCacheKey(signal) + `-${language}`;
     
     // Already fetched this one
     if (fetchedRef.current === key) return;
@@ -75,6 +76,7 @@ export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) 
             resistance: signal.resistance,
           },
           mode: 'strategy',
+          language,
         },
       });
 

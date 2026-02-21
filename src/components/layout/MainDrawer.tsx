@@ -6,33 +6,13 @@ import { User, Session } from '@supabase/supabase-js';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { useNewsCache } from '@/hooks/useNewsCache';
+import { useTranslation } from '@/i18n/LanguageContext';
 import {
-  User as UserIcon,
-  FileText,
-  Gift,
-  Link2,
-  Shield,
-  BookOpen,
-  TrendingUp,
-  BarChart3,
-  MessageCircle,
-  Info,
-  LogOut,
-  LogIn,
-  Bell,
-  Palette,
-  Globe,
-  Cloud,
-  Download,
-  Brain,
-  Newspaper,
-  Archive
+  User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
+  TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
+  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive
 } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -44,29 +24,6 @@ interface MainDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const menuItems = [
-  { icon: Brain, label: 'Ideas', href: '/' },
-  { icon: Newspaper, label: 'Noticias', href: '/news' },
-  { icon: Archive, label: 'Noticias Guardadas', href: '/news/saved' },
-  { icon: UserIcon, label: 'Ajuste De Perfil', href: '/settings' },
-  { icon: FileText, label: 'Suscripciones', href: '/subscriptions' },
-  { icon: Gift, label: 'Bonos Por Referidos', href: '/referrals' },
-  { icon: Link2, label: 'Vincular Broker', href: '/link-broker' },
-  { icon: Shield, label: 'Seguridad', href: '/settings/security' },
-  { icon: BookOpen, label: 'Cursos y Tutoriales', href: '/courses' },
-  { icon: TrendingUp, label: 'Rendimientos Y Ganancias', href: '/performance' },
-  { icon: BarChart3, label: 'Puntuación De Broker', href: '/broker-rating' },
-  { icon: MessageCircle, label: 'Contacto y Soporte', href: '/support' },
-  { icon: Info, label: 'Sobre Nosotros', href: '/about' },
-];
-
-const settingsItems = [
-  { icon: Bell, label: 'Notificaciones', href: '/settings/notifications' },
-  { icon: Palette, label: 'Aspecto', href: '/settings/appearance' },
-  { icon: Globe, label: 'Idioma y Zona Horaria', href: '/settings/language' },
-  { icon: Download, label: 'Instalar App', href: '/install' },
-];
-
 export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -76,6 +33,30 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const savedNewsCount = getAllCachedNews().length;
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const { t } = useTranslation();
+
+  const menuItems = [
+    { icon: Brain, label: t('nav_ideas'), href: '/' },
+    { icon: Newspaper, label: t('nav_news'), href: '/news' },
+    { icon: Archive, label: t('nav_saved_news'), href: '/news/saved' },
+    { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
+    { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
+    { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
+    { icon: Link2, label: t('drawer_link_broker'), href: '/link-broker' },
+    { icon: Shield, label: t('drawer_security'), href: '/settings/security' },
+    { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
+    { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
+    { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
+    { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
+    { icon: Info, label: t('drawer_about_us'), href: '/about' },
+  ];
+
+  const settingsItems = [
+    { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
+    { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
+    { icon: Globe, label: t('drawer_language_tz'), href: '/settings/language' },
+    { icon: Download, label: t('drawer_install_app'), href: '/install' },
+  ];
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -84,21 +65,16 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         setUser(session?.user ?? null);
       }
     );
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast({
-      title: 'Sesión cerrada',
-      description: 'Has cerrado sesión correctamente',
-    });
+    toast({ title: t('drawer_session_closed'), description: t('drawer_session_closed_desc') });
     onOpenChange(false);
     navigate('/');
   };
@@ -113,44 +89,36 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       <SheetContent side="left" className="w-80 p-0 bg-background border-border">
         <SheetHeader className="p-6 pb-4">
           {user ? (
-            <>
-              <div className="flex items-center gap-3">
-                <Avatar className="h-16 w-16 border-2 border-primary">
-                  <AvatarImage src="/placeholder.svg" alt="Usuario" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                    {getInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col items-start">
-                  <h2 className="text-lg font-bold text-foreground">Bienvenido</h2>
-                  <p className="text-sm font-medium text-primary truncate max-w-[150px]">
-                    {user.email}
-                  </p>
-                  <Badge variant="outline" className="mt-1 border-primary text-primary flex items-center gap-1">
-                    <Cloud className="w-3 h-3" />
-                    Sincronizado
-                  </Badge>
-                </div>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-16 w-16 border-2 border-primary">
+                <AvatarImage src="/placeholder.svg" alt="Usuario" />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                  {getInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start">
+                <h2 className="text-lg font-bold text-foreground">{t('drawer_welcome')}</h2>
+                <p className="text-sm font-medium text-primary truncate max-w-[150px]">
+                  {user.email}
+                </p>
+                <Badge variant="outline" className="mt-1 border-primary text-primary flex items-center gap-1">
+                  <Cloud className="w-3 h-3" />
+                  {t('drawer_synced')}
+                </Badge>
               </div>
-            </>
+            </div>
           ) : (
             <div className="flex flex-col items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
                 <UserIcon className="w-8 h-8 text-muted-foreground" />
               </div>
               <div className="text-center">
-                <h2 className="text-lg font-bold text-foreground">Bienvenido</h2>
-                <p className="text-sm text-muted-foreground">Inicia sesión para sincronizar</p>
+                <h2 className="text-lg font-bold text-foreground">{t('drawer_welcome')}</h2>
+                <p className="text-sm text-muted-foreground">{t('drawer_login_sync')}</p>
               </div>
-              <Button
-                onClick={() => {
-                  onOpenChange(false);
-                  navigate('/auth');
-                }}
-                className="w-full bg-primary"
-              >
+              <Button onClick={() => { onOpenChange(false); navigate('/auth'); }} className="w-full bg-primary">
                 <LogIn className="w-4 h-4 mr-2" />
-                Iniciar Sesión
+                {t('drawer_login')}
               </Button>
             </div>
           )}
@@ -196,7 +164,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 {item.label}
                 {showNewsBadge && (
                   <span className="ml-auto px-1.5 py-0.5 text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full">
-                    {newsCount > 99 ? '99+' : newsCount} nuevas
+                    {newsCount > 99 ? '99+' : newsCount} {t('drawer_new')}
                   </span>
                 )}
                 {showSavedBadge && (
@@ -211,7 +179,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
           <Separator className="my-3 bg-border" />
 
           <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Preferencias
+            {t('drawer_preferences')}
           </p>
 
           {settingsItems.map((item) => {
@@ -246,18 +214,15 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
               onClick={handleLogout}
             >
               <LogOut className="w-5 h-5" />
-              Cerrar Sesión
+              {t('drawer_logout')}
             </button>
           ) : (
             <button
               className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
-              onClick={() => {
-                onOpenChange(false);
-                navigate('/auth');
-              }}
+              onClick={() => { onOpenChange(false); navigate('/auth'); }}
             >
               <LogIn className="w-5 h-5" />
-              Iniciar Sesión
+              {t('drawer_login')}
             </button>
           )}
         </div>
