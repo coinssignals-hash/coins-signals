@@ -20,6 +20,8 @@ import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
 import { useSignalRisk } from "@/hooks/useSignalRisk";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
+import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -39,12 +41,7 @@ interface SignalCardV2Props {
   className?: string;
 }
 
-interface CurrencyImpact {
-  currency: string;
-  positive: number;
-  negative: number;
-  neutral: number;
-}
+// CurrencyImpact type now comes from useCurrencyImpactAI
 
 // --- Zoomable Image Chart ---
 function ZoomableChart({ pair, support, resistance, signalId, chartImageUrl }: { pair: string; support?: number; resistance?: number; signalId?: string; chartImageUrl?: string }) {
@@ -308,7 +305,7 @@ function ImpactBar({ label, value, color }: { label: string; value: number; colo
   );
 }
 
-function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
+function CurrencyImpactPanel({ data }: { data: CurrencyImpactAI }) {
   const { t } = useTranslation();
   const overall = data.positive > data.negative ? "Positive" : data.negative > data.positive ? "Negative" : "Neutral";
   const overallColor =
@@ -342,6 +339,11 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpact }) {
         <ImpactBar label={t('signal_negative')} value={data.negative} color="hsl(0, 70%, 55%)" />
         <ImpactBar label={t('signal_neutral')} value={data.neutral} color="hsl(45, 80%, 55%)" />
       </div>
+      {data.reason && (
+        <p className="text-[9px] text-cyan-300/60 mt-2 leading-tight line-clamp-2 italic">
+          {data.reason}
+        </p>
+      )}
     </div>
   );
 }
@@ -481,6 +483,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // AI risk assessment (fetched in background immediately)
   const { risk: aiRisk, loading: riskLoading } = useSignalRisk(strategyInput);
 
+  // AI currency impact analysis
+  const { data: aiImpactData, loading: impactLoading } = useCurrencyImpactAI(strategyInput);
+  const impactData: CurrencyImpactAI[] = aiImpactData || [
+    { currency: baseCurrency, positive: 50, negative: 30, neutral: 20, reason: "" },
+    { currency: quoteCurrency, positive: 30, negative: 50, neutral: 20, reason: "" },
+  ];
+
   // Log price source for debugging
   useEffect(() => {
     console.log(`[SignalCardV2] ${currencyPair} | entry=${entryPrice} tp=${takeProfit} sl=${stopLoss} status=${status}`);
@@ -502,11 +511,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
   // Risk percent = SL distance / entry
   const riskPercent = Math.abs(((stopLoss - entryPrice) / entryPrice) * 100).toFixed(0);
-
-  const impactData: CurrencyImpact[] = [
-    { currency: baseCurrency, positive: 62, negative: 23, neutral: 15 },
-    { currency: quoteCurrency, positive: 28, negative: 51, neutral: 21 },
-  ];
 
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
@@ -1007,11 +1011,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               </div>
             </div>
 
-            {/* Per-currency impact scoring */}
+            {/* Per-currency AI impact scoring */}
             <div className="relative px-3 pb-3">
-              <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest mb-2 text-center">
-                {t('signal_currency_impact')}
-              </p>
+              <div className="flex items-center justify-center gap-1.5 mb-2">
+                <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest text-center">
+                  {t('signal_currency_impact')}
+                </p>
+                {impactLoading && (
+                  <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
+                )}
+              </div>
               <div className="flex gap-2">
                 {impactData.map((d) => (
                   <CurrencyImpactPanel key={d.currency} data={d} />

@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.insert-signal-admin]
 verify_jwt = false
+
+[functions.currency-impact-ai]
+verify_jwt = false
