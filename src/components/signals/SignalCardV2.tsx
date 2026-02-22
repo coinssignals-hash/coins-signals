@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SignalChart } from "@/components/signals/SignalChart";
+
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { usePreviousDayCandles } from "@/hooks/usePreviousDayCandles";
 import {
@@ -559,21 +559,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
-
-            {/* Signal Chart (zoomable) */}
-            <div className="mx-3 mb-3">
-               <SignalChart
-              pair={currencyPair}
-              support={support}
-              resistance={resistance}
-              signalId={signal?.id}
-              chartImageUrl={signal?.chartImageUrl}
-              height={200}
-              entryPrice={entryPrice}
-              takeProfit={takeProfit}
-              stopLoss={stopLoss} />
-
-            </div>
 
             {/* Candlestick Chart - Previous Day */}
             <div className="mx-3 mb-3">
