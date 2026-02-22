@@ -15,19 +15,19 @@ export function MajorNews({ symbol }: MajorNewsProps) {
   const { data: events, isLoading, error } = useMajorNews(symbol);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
-      <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border border-cyan-800/30">
+      <CollapsibleTrigger className="w-full bg-slate-800/60 px-4 py-3 flex items-center justify-between hover:bg-slate-700/60 transition-colors">
         <h3 className="text-white font-semibold text-sm">{t('analysis_major_news')}</h3>
-        <ChevronDown className={`w-5 h-5 text-green-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-cyan-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </CollapsibleTrigger>
       
       <CollapsibleContent>
-        <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
+        <div className="p-4 border-t border-cyan-800/30">
           <h4 className="text-white font-semibold mb-4">{t('analysis_featured_events')}</h4>
           
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+              <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
               <span className="ml-2 text-gray-400">{t('analysis_loading_news')}</span>
             </div>
           ) : error ? (

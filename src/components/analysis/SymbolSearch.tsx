@@ -266,7 +266,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
     if (t.includes('layer2')) return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
     if (t.includes('btc pair')) return 'bg-orange-500/20 text-orange-400 border-orange-500/50';
     if (t.includes('crypto')) return 'bg-amber-500/20 text-amber-400 border-amber-500/50';
-    if (t.includes('forex')) return 'bg-green-500/20 text-green-400 border-green-500/50';
+    if (t.includes('forex')) return 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50';
     return '';
   };
 
@@ -286,7 +286,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
           }}
           onFocus={() => setIsOpen(true)}
           placeholder="Buscar símbolo..."
-          className="pl-9 pr-9 bg-[#0a1a0a] border-green-900/50"
+          className="pl-9 pr-9 bg-slate-800/60 border-slate-700/50"
         />
         {query && (
           <Button
@@ -304,9 +304,9 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-[#0a1a0a] border border-green-900/50 rounded-lg shadow-lg overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-700/50 rounded-lg shadow-lg overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-green-900/50">
+          <div className="flex border-b border-slate-700/50">
             {([
               { key: 'all', label: 'Todos', count: forexCount + cryptoCount },
               { key: 'forex', label: 'Forex', count: forexCount },
@@ -318,8 +318,8 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
                 className={cn(
                   "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1",
                   activeTab === tab.key
-                    ? "bg-green-900/30 text-green-400 border-b-2 border-green-500"
-                    : "text-muted-foreground hover:bg-green-900/10"
+                    ? "bg-slate-800/60 text-cyan-400 border-b-2 border-cyan-500"
+                    : "text-muted-foreground hover:bg-slate-800/40"
                 )}
               >
                 {tab.key === 'forex' && <Globe className="h-3 w-3" />}
@@ -332,7 +332,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
 
           {/* Favorites Section */}
           {favorites.length > 0 && query.length < 2 && (
-            <div className="p-2 border-b border-green-900/50">
+            <div className="p-2 border-b border-slate-700/50">
               <p className="text-xs text-muted-foreground mb-2 px-1 flex items-center gap-1">
                 <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
                 Favoritos
@@ -342,7 +342,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
                   <Badge
                     key={fav.id}
                     variant="secondary"
-                    className="cursor-pointer hover:bg-green-900/30 transition-colors text-xs"
+                    className="cursor-pointer hover:bg-slate-800/60 transition-colors text-xs"
                     onClick={() => handleSelect(fav.symbol)}
                   >
                     {fav.symbol}
@@ -356,20 +356,20 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
           <div className="max-h-72 overflow-y-auto">
             {isLoading && results.length === 0 ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-5 w-5 animate-spin text-green-500" />
+                <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
               </div>
             ) : results.length > 0 ? (
               results.slice(0, 30).map((result) => (
                 <div
                   key={`${result.symbol}-${result.exchange}`}
                   onClick={() => handleSelect(result.symbol)}
-                  className="flex items-center justify-between px-3 py-2 hover:bg-green-900/20 cursor-pointer transition-colors border-b border-green-900/20 last:border-0"
+                  className="flex items-center justify-between px-3 py-2 hover:bg-slate-800/40 cursor-pointer transition-colors border-b border-slate-700/20 last:border-0"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div className={cn(
                       "flex items-center justify-center w-7 h-7 rounded",
                       result.type.toLowerCase().includes('forex') 
-                        ? "bg-green-900/30 text-green-400"
+                        ? "bg-cyan-900/30 text-cyan-400"
                         : "bg-amber-900/30 text-amber-400"
                     )}>
                       {getTypeIcon(result.type)}
@@ -413,7 +413,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
 
           {/* Footer with loading indicator */}
           {isLoading && results.length > 0 && (
-            <div className="px-3 py-2 border-t border-green-900/50 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+            <div className="px-3 py-2 border-t border-slate-700/50 flex items-center justify-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" />
               Buscando más resultados...
             </div>
