@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
-import { PageShell } from '@/components/layout/PageShell';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
@@ -197,7 +196,7 @@ function ImpactBadge({ currency, impact }: {currency: Currency;impact: number;})
 
 }
 
-// Modern news card component matching the reference design
+// Modern news card component matching the signal card design
 function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
   // Generate random impact values for demo (in production, this would come from the API)
   const impacts = useMemo(() => {
@@ -210,82 +209,88 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
   return (
     <div
       className={cn(
-        'group flex gap-3 p-3 rounded-xl bg-card/50 border border-border/50',
-        'hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5',
-        'transition-all duration-300 animate-fade-in'
+        'group relative rounded-xl overflow-hidden animate-fade-in',
       )}
-      style={{ animationDelay: `${index * 50}ms` }}>
+      style={{
+        animationDelay: `${index * 50}ms`,
+        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
+        border: '1px solid hsla(200, 60%, 35%, 0.3)',
+      }}
+    >
+      {/* Top glow line */}
+      <div
+        className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }}
+      />
 
-      {/* Thumbnail */}
-      {news.image_url &&
-      <Link to={`/news/${news.id}`} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
-          <img
-          src={news.image_url}
-          alt={news.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        </Link>
-      }
-      
-      {/* Content */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between">
-        {/* Title */}
-        <Link to={`/news/${news.id}`}>
-          <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-            {news.title}
-          </h3>
-        </Link>
+      <div className="flex gap-3 p-3">
+        {/* Thumbnail */}
+        {news.image_url &&
+        <Link to={`/news/${news.id}`} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-cyan-800/20">
+            <img
+            src={news.image_url}
+            alt={news.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          </Link>
+        }
         
-        {/* Source and Date */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-          {news.source_logo ?
-          <img
-            src={news.source_logo}
-            alt={news.source}
-            className="w-4 h-4 rounded-sm object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }} /> :
+        {/* Content */}
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
+          {/* Title */}
+          <Link to={`/news/${news.id}`}>
+            <h3 className="font-semibold text-sm text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-tight">
+              {news.title}
+            </h3>
+          </Link>
+          
+          {/* Source and Date */}
+          <div className="flex items-center gap-2 text-xs text-cyan-300/50 mt-1">
+            {news.source_logo ?
+            <img
+              src={news.source_logo}
+              alt={news.source}
+              className="w-4 h-4 rounded-sm object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }} /> :
+            <Rss className="w-3 h-3 text-cyan-400" />
+            }
+            <span className="font-medium text-cyan-200/70">{news.source}</span>
+            <span className="text-cyan-800">•</span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {news.time_ago}
+            </span>
+            {news.url &&
+            <a
+              href={news.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="ml-auto text-cyan-400 hover:text-cyan-300">
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            }
+          </div>
+          
+          {/* Currency Impacts */}
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {impacts.map(({ currency, impact }) =>
+            <ImpactBadge key={currency} currency={currency} impact={impact} />
+            )}
+          </div>
+          {/* Historical Impact */}
+          <HistoricalImpactSection
+            newsId={news.id}
+            title={news.title}
+            category={news.category as EconomicCategory}
+            currencies={news.affected_currencies} />
 
-
-          <Rss className="w-3 h-3 text-primary" />
-          }
-          <span className="font-medium text-foreground/70">{news.source}</span>
-          <span className="text-border">•</span>
-          <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {news.time_ago}
-          </span>
-          {news.url &&
-          <a
-            href={news.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="ml-auto text-primary hover:text-primary/80">
-
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          }
-        </div>
-        
-        {/* Currency Impacts */}
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-          {impacts.map(({ currency, impact }) =>
-          <ImpactBadge key={currency} currency={currency} impact={impact} />
-          )}
-        </div>
-        {/* Historical Impact */}
-        <HistoricalImpactSection
-          newsId={news.id}
-          title={news.title}
-          category={news.category as EconomicCategory}
-          currencies={news.affected_currencies} />
-
-        {/* AI Trading Summary */}
-        <div className="mt-2">
-          <NewsAISummaryInline news={news} />
+          {/* AI Trading Summary */}
+          <div className="mt-2">
+            <NewsAISummaryInline news={news} />
+          </div>
         </div>
       </div>
     </div>);
@@ -305,11 +310,20 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
     <Link
       to={`/news/${news.id}`}
       className={cn(
-        'group block rounded-2xl overflow-hidden bg-gradient-to-br from-card to-card/50',
-        'border border-border/50 hover:border-primary/40',
-        'transition-all duration-500 hover:shadow-xl hover:shadow-primary/10',
+        'group block rounded-xl overflow-hidden relative',
+        'transition-all duration-500 hover:shadow-xl',
         'animate-fade-in'
-      )}>
+      )}
+      style={{
+        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
+        border: '1px solid hsla(200, 60%, 35%, 0.3)',
+      }}
+    >
+      {/* Top glow line */}
+      <div
+        className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }}
+      />
 
       {/* Image Section */}
       <div className="relative aspect-[16/9] overflow-hidden">
@@ -318,38 +332,38 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
           src={news.image_url}
           alt={news.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-
         }
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
         
         {/* Source Badge */}
         <div className="absolute top-3 left-3 flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold backdrop-blur-sm">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm"
+            style={{ background: 'hsla(200, 100%, 50%, 0.2)', border: '1px solid hsla(200, 80%, 55%, 0.4)', color: 'hsl(200, 100%, 75%)' }}>
             🔥 Top News
           </span>
           {news.source_logo &&
-          <div className="px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm flex items-center gap-1.5">
+          <div className="px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1.5"
+            style={{ background: 'hsla(210, 100%, 5%, 0.6)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
               <img
               src={news.source_logo}
               alt={news.source}
               className="w-4 h-4 rounded-sm object-contain" />
-
-              <span className="text-xs text-white font-medium">{news.source}</span>
+              <span className="text-xs text-cyan-200 font-medium">{news.source}</span>
             </div>
           }
         </div>
         
         {/* Content Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
-          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 group-hover:text-primary transition-colors">
+          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">
             {news.title}
           </h2>
           
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2 text-sm text-gray-300">
+            <div className="flex items-center gap-2 text-sm text-cyan-300/60">
               {!news.source_logo &&
               <>
-                  <Rss className="w-3 h-3 text-primary" />
+                  <Rss className="w-3 h-3 text-cyan-400" />
                   <span className="font-medium">{news.source}</span>
                   <span>•</span>
                 </>
@@ -362,8 +376,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-primary hover:text-primary/80">
-
+                className="text-cyan-400 hover:text-cyan-300">
                   <ExternalLink className="w-3 h-3" />
                 </a>
               }
@@ -376,7 +389,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
             </div>
           </div>
           
-          {/* Historical Impact Mini Chart - Use inline hook for featured card */}
+          {/* Historical Impact Mini Chart */}
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
@@ -562,10 +575,11 @@ const News = () => {
   '';
 
   return (
-    <PageShell>
+    <div className="min-h-screen bg-[#06080f] flex justify-center">
+      <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20 shadow-2xl">
       <Header />
       
-      <main className="container py-4 space-y-4 max-w-2xl mx-auto">
+      <main className="px-4 py-4 space-y-4">
         {/* Date Tabs */}
         <DateTabs
           selectedDate={selectedDate}
@@ -779,8 +793,8 @@ const News = () => {
           </>
         }
       </main>
-      
-    </PageShell>);
+      </div>
+    </div>);
 
 };
 
