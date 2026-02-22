@@ -168,33 +168,31 @@ function ZoomableChartInner({
   const controlBtn = "w-7 h-7 sm:w-6 sm:h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors";
   const controlStyle: React.CSSProperties = { background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' };
 
-  return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return (
+    <div
+      ref={attachWheel}
+      className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
+      style={{ height: typeof height === 'number' ? `${height}px` : height, background: '#050d1a', borderRadius: 8 }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div ref={imgRef} className="w-full h-full origin-center transition-none">
+        <img src={buildSrc()} alt={`${pair} chart`} className="w-full h-full object-contain" draggable={false} />
+      </div>
+      <div className="absolute top-2 right-2 flex gap-1 z-10">
+        <button className={controlBtn} style={controlStyle} onClick={zoomIn}><ZoomIn size={14} /></button>
+        <button className={controlBtn} style={controlStyle} onClick={zoomOut}><ZoomOut size={14} /></button>
+        <button className={controlBtn} style={controlStyle} onClick={reset}><RotateCcw size={14} /></button>
+        <button className={controlBtn} style={controlStyle} onClick={handleDownloadChart}><Download size={14} /></button>
+        <button className={controlBtn} style={controlStyle} onClick={handleShareChart}><Share2 size={14} /></button>
+      </div>
+    </div>
+  );
 }
 
 // --- Main exported component ---
