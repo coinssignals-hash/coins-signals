@@ -5,7 +5,8 @@ import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3, ChevronDown } from 'lucide-react';
+import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3, ChevronDown, Languages, Loader2 } from 'lucide-react';
+import { useNewsTranslation } from '@/hooks/useNewsTranslation';
 import { NewsAISummaryInline } from '@/components/news/NewsAISummaryInline';
 import { formatDistanceToNow } from 'date-fns';
 import { es, enUS, ptBR, fr } from 'date-fns/locale';
@@ -243,8 +244,15 @@ function ImpactBadge({ currency, impact }: {currency: Currency;impact: number;})
 }
 
 // Modern news card component matching the signal card design
-function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
+function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;index: number; translateHook: ReturnType<typeof useNewsTranslation>;}) {
   const [expanded, setExpanded] = useState(false);
+  const { language } = useTranslation();
+  const { translateText, clearTranslation, translations, translating } = translateHook;
+  const isTranslated = !!translations[news.id];
+  const isTranslating = !!translating[news.id];
+  const displayTitle = translations[news.id] || news.title;
+  const targetLang = language === 'en' ? 'es' : language;
+  const targetLabel = targetLang === 'es' ? '🇪🇸 ES' : targetLang === 'pt' ? '🇧🇷 PT' : targetLang === 'fr' ? '🇫🇷 FR' : '🇪🇸 ES';
 
   const impacts = useMemo(() => {
     return news.affected_currencies.slice(0, 2).map((currency) => ({
@@ -307,7 +315,14 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
         {/* Right: Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           <Link to={`/news/${news.id}`}>
-            <h3 className="font-semibold text-sm text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-tight">{news.title}</h3>
+            <h3 className="font-semibold text-sm text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-tight">
+              {displayTitle}
+            </h3>
+            {isTranslated && (
+              <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
+                <Languages className="w-2.5 h-2.5" /> Traducido
+              </span>
+            )}
           </Link>
 
           <div className="flex items-center gap-2 text-xs text-cyan-300/50 mt-1">
@@ -316,9 +331,33 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (<Rss className="w-3 h-3 text-cyan-400" />)}
             <span className="font-medium text-cyan-200/70">{news.source}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isTranslated) {
+                  clearTranslation(news.id);
+                } else {
+                  translateText(news.id, news.title, targetLang);
+                }
+              }}
+              disabled={isTranslating}
+              className={cn(
+                "ml-auto flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
+                isTranslated
+                  ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                  : "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+              )}
+            >
+              {isTranslating ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Languages className="w-3 h-3" />
+              )}
+              {isTranslated ? 'Original' : targetLabel}
+            </button>
             {news.url && (
               <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                className="ml-auto text-cyan-400 hover:text-cyan-300"><ExternalLink className="w-3 h-3" /></a>
+                className="text-cyan-400 hover:text-cyan-300"><ExternalLink className="w-3 h-3" /></a>
             )}
           </div>
 
@@ -509,6 +548,7 @@ const News = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [sentimentFilters, setSentimentFilters] = useState<Set<'bullish' | 'bearish' | 'neutral'>>(new Set());
   const [sortMode, setSortMode] = useState<'recent' | 'impact' | 'volatility'>('recent');
+  const newsTranslateHook = useNewsTranslation();
 
   const { data: news, isLoading, error, dataUpdatedAt, refetch } = useRealNewsByDate(selectedDate);
 
@@ -776,7 +816,7 @@ const News = () => {
                 {/* News List */}
                 <div className="space-y-3">
                   {otherNews.map((newsItem, index) =>
-              <ModernNewsCard key={newsItem.id} news={newsItem} index={index} />
+              <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
               )}
                 </div>
               </div>
