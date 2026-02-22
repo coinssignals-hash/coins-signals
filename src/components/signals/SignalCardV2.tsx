@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { usePreviousDayCandles } from "@/hooks/usePreviousDayCandles";
+import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -275,51 +277,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     expanded
   );
 
-  // Chart URL: prefer pre-stored chart_image_url, fallback to edge function SVG
-  const storedChartUrl = signal?.chartImageUrl;
-  const [fallbackChartUrl, setFallbackChartUrl] = useState<string | null>(null);
-  const [chartLoading, setChartLoading] = useState(false);
-  const [chartRetry, setChartRetry] = useState(0);
-  const MAX_CHART_RETRIES = 3;
-  const RETRY_DELAYS = [8000, 15000, 30000]; // escalating delays
-
-  const chartSvgUrl = storedChartUrl || fallbackChartUrl;
-
-  useEffect(() => {
-    if (!expanded || storedChartUrl || fallbackChartUrl) return;
-    setChartLoading(true);
-    const pairClean = currencyPair.replace(/[/\- ]/g, '');
-    const params = new URLSearchParams({ pair: pairClean, sr_mode: 'auto' });
-    params.set('resistance', String(resistance ?? takeProfit));
-    params.set('support', String(support ?? stopLoss));
-
-    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
-    let cancelled = false;
-
-    const doFetch = () => {
-      fetch(url)
-        .then(res => res.text())
-        .then(svgText => {
-          if (cancelled) return;
-          // Detect "No data available" placeholder → schedule retry
-          if (svgText.includes('No data available') && chartRetry < MAX_CHART_RETRIES) {
-            const delay = RETRY_DELAYS[chartRetry] ?? 30000;
-            console.warn(`Chart: no data (attempt ${chartRetry + 1}), retrying in ${delay / 1000}s`);
-            setTimeout(() => {
-              if (!cancelled) setChartRetry(prev => prev + 1);
-            }, delay);
-            return;
-          }
-          const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-          setFallbackChartUrl(URL.createObjectURL(blob));
-        })
-        .catch(err => { if (!cancelled) console.error('Chart fetch error:', err); })
-        .finally(() => { if (!cancelled) setChartLoading(false); });
-    };
-
-    doFetch();
-    return () => { cancelled = true; };
-  }, [expanded, currencyPair, resistance, support, takeProfit, stopLoss, storedChartUrl, fallbackChartUrl, chartRetry]);
+  // Candlestick chart data (same as Analysis section)
+  const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(symbol);
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
@@ -600,24 +559,17 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
-            {/* Candlestick Chart - Server Rendered */}
+            {/* Candlestick Chart - Same as Analysis section */}
             <div className="mx-3 mb-3 rounded-lg overflow-hidden">
-              {chartLoading ? (
-                <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
-                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : chartSvgUrl ? (
-                <img
-                  src={chartSvgUrl}
-                  alt={`Gráfico ${currencyPair} 7 días`}
-                  className="w-full h-auto block rounded-lg"
-                  draggable={false}
-                />
-              ) : (
-                <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
-                  <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
-                </div>
-              )}
+              <CandlestickChart
+                data={previousDayData?.candles || []}
+                resistance={previousDayData?.resistance || resistance || takeProfit}
+                support={previousDayData?.support || support || stopLoss}
+                loading={previousDayLoading}
+                realtimePrice={quote?.price}
+                isRealtimeConnected={isConnected}
+                previousDayDate={previousDayData?.date}
+              />
             </div>
 
             {/* Market Sentiment Dashboard */}
