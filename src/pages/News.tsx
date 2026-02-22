@@ -6,7 +6,7 @@ import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss } from 'lucide-react';
+import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es, enUS, ptBR, fr } from 'date-fns/locale';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -497,20 +497,50 @@ const News = () => {
   const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>(['EUR']);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [sentimentFilters, setSentimentFilters] = useState<Set<'bullish' | 'bearish' | 'neutral'>>(new Set());
+  const [sortMode, setSortMode] = useState<'recent' | 'impact' | 'volatility'>('recent');
 
   const { data: news, isLoading, error, dataUpdatedAt, refetch } = useRealNewsByDate(selectedDate);
 
-  // Filter news by selected currencies
+  const toggleSentiment = (s: 'bullish' | 'bearish' | 'neutral') => {
+    setSentimentFilters(prev => {
+      const next = new Set(prev);
+      if (next.has(s)) next.delete(s); else next.add(s);
+      return next;
+    });
+  };
+
+  // Filter and sort news
   const filteredNews = useMemo(() => {
     if (!news) return [];
-    if (selectedCurrencies.length === 0) return news;
+    let result = [...news];
 
-    return news.filter((item) =>
-    item.affected_currencies.some((currency) =>
-    selectedCurrencies.includes(currency)
-    )
-    );
-  }, [news, selectedCurrencies]);
+    // Currency filter
+    if (selectedCurrencies.length > 0) {
+      result = result.filter((item) =>
+        item.affected_currencies.some((c) => selectedCurrencies.includes(c))
+      );
+    }
+
+    // Sentiment filter
+    if (sentimentFilters.size > 0) {
+      result = result.filter((item) => sentimentFilters.has(item.sentiment));
+    }
+
+    // Sort
+    if (sortMode === 'impact') {
+      result.sort((a, b) => b.relevance_score - a.relevance_score);
+    } else if (sortMode === 'volatility') {
+      // Volatility = more affected currencies + higher relevance
+      result.sort((a, b) =>
+        (b.affected_currencies.length * 10 + b.relevance_score) -
+        (a.affected_currencies.length * 10 + a.relevance_score)
+      );
+    }
+    // 'recent' keeps the default chronological order
+
+    return result;
+  }, [news, selectedCurrencies, sentimentFilters, sortMode]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -575,7 +605,64 @@ const News = () => {
           allLabel={t('news_all_currencies')}
           news={news} />
 
-        
+        {/* Impact & Sentiment Filter Bar */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+          {/* Sort modes */}
+          {([
+            { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: 'Recientes' },
+            { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: 'Impacto' },
+            { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: 'Volatilidad' },
+          ]).map(({ key, icon, label }) => (
+            <button
+              key={key}
+              onClick={() => setSortMode(key)}
+              className={cn(
+                'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
+                sortMode === key
+                  ? 'bg-accent border-accent text-accent-foreground shadow-sm'
+                  : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
+              )}
+            >
+              {icon}
+              <span>{label}</span>
+            </button>
+          ))}
+
+          {/* Divider */}
+          <div className="w-px h-5 bg-border/60 flex-shrink-0 mx-0.5" />
+
+          {/* Sentiment toggles */}
+          {([
+            { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: 'Alcista', activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
+            { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: 'Bajista', activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
+            { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: 'Neutral', activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' },
+          ]).map(({ key, icon, label, activeClass }) => (
+            <button
+              key={key}
+              onClick={() => toggleSentiment(key)}
+              className={cn(
+                'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
+                sentimentFilters.has(key)
+                  ? activeClass
+                  : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
+              )}
+            >
+              {icon}
+              <span>{label}</span>
+            </button>
+          ))}
+
+          {/* Clear all filters */}
+          {(sentimentFilters.size > 0 || sortMode !== 'recent') && (
+            <button
+              onClick={() => { setSentimentFilters(new Set()); setSortMode('recent'); }}
+              className="flex-shrink-0 px-2 py-1.5 rounded-full text-[10px] font-medium text-destructive hover:bg-destructive/10 transition-all"
+            >
+              ✕ Reset
+            </button>
+          )}
+        </div>
+
         {/* Advanced Filters */}
         {filtersOpen
 
