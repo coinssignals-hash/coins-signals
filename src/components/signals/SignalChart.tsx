@@ -184,42 +184,34 @@ function ZoomableChartInner({
   const controlBtn = "w-7 h-7 sm:w-6 sm:h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors";
   const controlStyle: React.CSSProperties = { background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' };
 
-  return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return (
+    <div className="relative rounded-lg overflow-hidden" style={{ background: 'hsl(210, 100%, 5%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
+      {/* Zoom controls */}
+      <div className="absolute top-2 right-2 z-20 flex gap-1">
+        <button className={controlBtn} style={controlStyle} onClick={zoomIn}><ZoomIn className="w-4 h-4" /></button>
+        <button className={controlBtn} style={controlStyle} onClick={zoomOut}><ZoomOut className="w-4 h-4" /></button>
+        <button className={controlBtn} style={controlStyle} onClick={reset}><RotateCcw className="w-4 h-4" /></button>
+        <button className={controlBtn} style={controlStyle} onClick={handleDownloadChart}><Download className="w-4 h-4" /></button>
+        <button className={controlBtn} style={controlStyle} onClick={handleShareChart}><Share2 className="w-4 h-4" /></button>
+      </div>
+      <div
+        ref={attachWheel}
+        className="cursor-grab active:cursor-grabbing overflow-hidden"
+        style={{ height: typeof height === 'number' ? `${height}px` : height, touchAction: 'none' }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div ref={imgRef} className="w-full h-full transition-none origin-center" style={{ willChange: 'transform' }}>
+          <img src={buildSrc()} alt={`${pair} chart`} className="w-full h-full object-contain" draggable={false} />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // --- Support/Resistance Panel ---
@@ -243,94 +235,52 @@ function SupportResistancePanel({
   const positionLabel = pricePosition > 66 ? 'Cerca de Resistencia' : pricePosition < 33 ? 'Cerca de Soporte' : 'En Rango Medio';
   const positionColor = pricePosition > 66 ? 'text-green-400' : pricePosition < 33 ? 'text-red-400' : 'text-yellow-400';
 
-  return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return (
+    <div className="rounded-lg p-3" style={{ background: 'hsl(210, 100%, 5%)', border: '1px solid hsla(200, 60%, 35%, 0.2)' }}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-semibold text-cyan-200">Soporte y Resistencia</span>
+      </div>
+      <div className="flex items-center justify-center gap-3 mb-2">
+        <div className="flex items-center gap-2 rounded-lg px-4 py-2" style={{ background: 'linear-gradient(90deg, hsla(135,50%,20%,0.3), hsla(0,50%,20%,0.3))', border: '1px solid hsla(200,40%,30%,0.3)' }}>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-gray-500 uppercase">Resistencia</span>
+            <span className="text-green-400 font-mono text-sm font-semibold">{resistance.toFixed(isJpy ? 3 : 5)}</span>
+          </div>
+          <div className="flex flex-col items-center px-3" style={{ borderLeft: '1px solid hsla(200,40%,30%,0.3)', borderRight: '1px solid hsla(200,40%,30%,0.3)' }}>
+            <span className="text-[10px] text-gray-500 uppercase">Rango</span>
+            <span className="text-yellow-400 font-mono text-sm font-bold">{(range * pipMultiplier).toFixed(1)} pips</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-gray-500 uppercase">Soporte</span>
+            <span className="text-red-400 font-mono text-sm font-semibold">{support.toFixed(isJpy ? 3 : 5)}</span>
+          </div>
+        </div>
+      </div>
+      {hasLive && (
+        <div className="rounded-lg p-3" style={{ background: 'hsla(210,30%,8%,0.5)', border: '1px solid hsla(200,40%,30%,0.2)' }}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] text-gray-500 uppercase">Posición en Rango</span>
+            <span className={cn("text-xs font-medium", positionColor)}>{positionLabel}</span>
+          </div>
+          <div className="relative h-3 rounded-full overflow-hidden" style={{ background: 'linear-gradient(90deg, hsla(0,50%,20%,0.5), hsla(45,50%,20%,0.5), hsla(135,50%,20%,0.5))' }}>
+            <div className="absolute inset-0 flex">
+              <div className="w-1/3" style={{ borderRight: '1px solid hsla(200,30%,30%,0.5)' }}></div>
+              <div className="w-1/3" style={{ borderRight: '1px solid hsla(200,30%,30%,0.5)' }}></div>
+              <div className="w-1/3"></div>
+            </div>
+            <div className="absolute top-0 bottom-0 w-1 bg-white shadow-lg transition-all duration-300" style={{ left: `calc(${pricePosition}% - 2px)`, boxShadow: '0 0 8px rgba(255,255,255,0.5)' }}>
+              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full" style={{ border: '2px solid hsl(210,100%,50%)' }}></div>
+            </div>
+          </div>
+          <div className="flex justify-between mt-1 text-[9px] text-gray-500">
+            <span>Soporte (0%)</span>
+            <span className={cn("font-mono font-bold", positionColor)}>{pricePosition.toFixed(1)}%</span>
+            <span>Resistencia (100%)</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 // --- Main exported component ---

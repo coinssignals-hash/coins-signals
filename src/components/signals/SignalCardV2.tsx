@@ -586,7 +586,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 loading={candleLoading}
                 realtimePrice={priceDiff.hasData ? priceDiff.currentPrice : null}
                 isRealtimeConnected={isConnected}
-                previousDayDate={previousDayData?.date}
+                previousDayDate={previousDayData?.dateRange || previousDayData?.date}
               />
             </div>
 
