@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip, AreaChart, Area } from 'recharts';
+import { ResponsiveContainer, Tooltip, XAxis, YAxis, ComposedChart, Bar, Cell, Line, ReferenceLine } from 'recharts';
 import { Loader2, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CURRENCIES, Currency, EconomicCategory } from '@/types/news';
@@ -32,9 +32,205 @@ interface Props {
   currencies: Currency[];
 }
 
-export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }: Props) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+// Build OHLC-like candles from timeline data
+function buildCandles(timeline: ChartResponse['timeline']) {
+  return timeline.map((pt, i, arr) => {
+    const open = i === 0 ? 0 : arr[i - 1].impact;
+    const close = pt.impact;
+    const high = Math.max(open, close) + pt.volume * 0.15;
+    const low = Math.min(open, close) - pt.volume * 0.1;
+    const bullish = close >= open;
+    return { ...pt, open, close, high, low, bullish, body: [Math.min(open, close), Math.max(open, close)], wick: [low, high] };
+  });
+}
 
+// Custom candlestick shape
+function CandlestickShape(props: any) {
+  const { x, y, width, payload } = props;
+  if (!payload) return null;
+  const { open, close, high, low, bullish } = payload;
+  const yScale = props.yScale || ((v: number) => props.background?.y ?? 0);
+
+  // We need the actual chart coordinate system
+  const chartHeight = props.background?.height ?? 128;
+  const chartY = props.background?.y ?? 0;
+  const domain = props.yDomain || [-3, 3];
+  const range = domain[1] - domain[0];
+
+  const toY = (val: number) => chartY + chartHeight - ((val - domain[0]) / range) * chartHeight;
+
+  const bodyTop = toY(Math.max(open, close));
+  const bodyBottom = toY(Math.min(open, close));
+  const bodyHeight = Math.max(bodyBottom - bodyTop, 1);
+  const wickTop = toY(high);
+  const wickBottom = toY(low);
+  const cx = x + width / 2;
+
+  const fill = bullish ? 'hsl(142, 70%, 45%)' : 'hsl(0, 70%, 50%)';
+  const stroke = bullish ? 'hsl(142, 70%, 55%)' : 'hsl(0, 70%, 60%)';
+
+  return (
+    <g>
+      {/* Wick */}
+      <line x1={cx} y1={wickTop} x2={cx} y2={wickBottom} stroke={stroke} strokeWidth={1.5} />
+      {/* Body */}
+      <rect x={x + width * 0.15} y={bodyTop} width={width * 0.7} height={bodyHeight} fill={fill} rx={1.5} stroke={stroke} strokeWidth={0.5} />
+    </g>
+  );
+}
+
+// Custom candlestick renderer using ComposedChart + custom Bar shape
+function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
+  const candles = buildCandles(data);
+  const allValues = candles.flatMap(c => [c.high, c.low]);
+  const yMin = Math.min(...allValues) - 0.3;
+  const yMax = Math.max(...allValues) + 0.3;
+
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <ComposedChart data={candles} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+          axisLine={false}
+          tickLine={false}
+          interval="preserveStartEnd"
+          dy={4}
+        />
+        <YAxis domain={[yMin, yMax]} hide />
+        <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeOpacity={0.3} strokeDasharray="3 3" />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: 'hsl(var(--popover))',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: '10px',
+            fontSize: '12px',
+            boxShadow: '0 8px 24px hsl(var(--primary) / 0.15)',
+            padding: '8px 12px',
+          }}
+          labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: 2 }}
+          formatter={(v: number, name: string) => {
+            if (name === 'close' || name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto'];
+            if (name === 'high') return [`${v.toFixed(2)}%`, 'Máximo'];
+            if (name === 'low') return [`${v.toFixed(2)}%`, 'Mínimo'];
+            return [v, name];
+          }}
+          cursor={{ fill: 'hsl(var(--muted) / 0.15)' }}
+        />
+        {/* Invisible bar to provide x positioning, then we overlay candles */}
+        <Bar dataKey="high" fill="transparent" barSize={20}
+          shape={(props: any) => <CandlestickShape {...props} yDomain={[yMin, yMax]} />}
+        />
+        {/* Overlay a subtle line for the close trend */}
+        <Line type="monotone" dataKey="close" stroke="hsl(var(--primary))" strokeWidth={1} strokeOpacity={0.4} dot={false} strokeDasharray="4 3" />
+      </ComposedChart>
+    </ResponsiveContainer>
+  );
+}
+
+// Heatmap grid for per-currency monthly impact
+function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
+  if (!currencies.length) return null;
+
+  // Use labels from first currency (all share same months)
+  const months = currencies[0]?.points.map(p => p.label) || [];
+
+  // Find global max for color normalization
+  const allImpacts = currencies.flatMap(c => c.points.map(p => Math.abs(p.impact)));
+  const maxAbs = Math.max(...allImpacts, 0.01);
+
+  const getCellColor = (impact: number) => {
+    const intensity = Math.min(Math.abs(impact) / maxAbs, 1);
+    if (impact > 0) return `hsl(142, 70%, ${65 - intensity * 30}%)`;
+    if (impact < 0) return `hsl(0, 70%, ${65 - intensity * 30}%)`;
+    return 'hsl(var(--muted))';
+  };
+
+  const getCellOpacity = (confidence: number) => 0.4 + confidence * 0.6;
+
+  return (
+    <div className="rounded-xl bg-card/80 border border-border/50 p-4 overflow-hidden">
+      <div className="flex items-center gap-2 mb-3">
+        <BarChart3 className="w-4 h-4 text-primary" />
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Heatmap de Impacto</h3>
+      </div>
+
+      <div className="overflow-x-auto -mx-1 pb-1">
+        <table className="w-full border-separate" style={{ borderSpacing: '3px' }}>
+          <thead>
+            <tr>
+              <th className="text-[10px] text-muted-foreground font-medium text-left p-1 w-16" />
+              {months.map((m, i) => (
+                <th key={i} className="text-[8px] text-muted-foreground/70 font-mono p-0.5 text-center whitespace-nowrap">
+                  {m.slice(0, 3)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {currencies.map((curr) => {
+              const info = CURRENCIES[curr.currency as Currency];
+              return (
+                <tr key={curr.currency}>
+                  <td className="p-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm">{info?.flag || '🌐'}</span>
+                      <span className="text-[10px] font-mono font-bold text-foreground">{curr.currency}</span>
+                    </div>
+                  </td>
+                  {curr.points.map((pt, i) => (
+                    <td key={i} className="p-0.5">
+                      <div
+                        className="w-full aspect-square rounded-md flex items-center justify-center cursor-default transition-transform hover:scale-110"
+                        style={{
+                          backgroundColor: getCellColor(pt.impact),
+                          opacity: getCellOpacity(pt.confidence),
+                          minWidth: '20px',
+                          minHeight: '20px',
+                        }}
+                        title={`${curr.currency} ${pt.label}: ${pt.impact > 0 ? '+' : ''}${pt.impact.toFixed(2)}% (${Math.round(pt.confidence * 100)}% conf.)`}
+                      >
+                        <span className="text-[7px] font-mono font-bold text-white/90 drop-shadow-sm">
+                          {Math.abs(pt.impact) >= 0.5 ? `${pt.impact > 0 ? '+' : ''}${pt.impact.toFixed(1)}` : ''}
+                        </span>
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-4 mt-3">
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'hsl(0, 70%, 50%)' }} />
+          <span className="text-[9px] text-muted-foreground">Bajista</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-sm bg-muted" />
+          <span className="text-[9px] text-muted-foreground">Neutral</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'hsl(142, 70%, 45%)' }} />
+          <span className="text-[9px] text-muted-foreground">Alcista</span>
+        </div>
+        <div className="flex items-center gap-1 ml-2">
+          <div className="flex gap-0.5">
+            {[0.3, 0.5, 0.7, 1].map(o => (
+              <div key={o} className="w-2 h-2 rounded-sm" style={{ backgroundColor: `hsl(var(--primary) / ${o})` }} />
+            ))}
+          </div>
+          <span className="text-[9px] text-muted-foreground">Confianza</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }: Props) {
   const { data, isLoading, error } = useQuery<ChartResponse>({
     queryKey: ['news-impact-charts', newsId],
     queryFn: async () => {
@@ -76,7 +272,7 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
         </h2>
       </div>
 
-      {/* Overall summary */}
+      {/* Candlestick timeline */}
       <div className="p-4 rounded-xl bg-gradient-to-br from-card to-card/80 border border-border/60 shadow-lg shadow-primary/5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
@@ -110,157 +306,14 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
             </span>
           </div>
         </div>
-        {/* Aggregate timeline chart */}
-        <div className="h-32 w-full -mx-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data.timeline} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
-              <defs>
-                <linearGradient id="impactGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                  <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
-                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="label"
-                tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
-                axisLine={false}
-                tickLine={false}
-                interval="preserveStartEnd"
-                dy={4}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--popover))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '10px',
-                  fontSize: '12px',
-                  boxShadow: '0 8px 24px hsl(var(--primary) / 0.15)',
-                  padding: '8px 12px',
-                }}
-                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: 2 }}
-                formatter={(v: number) => [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto']}
-                cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
-              />
-              <Area
-                type="monotone"
-                dataKey="impact"
-                stroke="hsl(var(--primary))"
-                fill="url(#impactGrad)"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, fill: 'hsl(var(--primary))', stroke: 'hsl(var(--background))', strokeWidth: 2 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        {/* Candlestick chart */}
+        <div className="h-36 w-full -mx-1">
+          <CandlestickTimeline data={data.timeline} />
         </div>
       </div>
 
-      {/* Per-currency cards */}
-      <div className="space-y-3">
-        {data.currencies.map((curr) => {
-          const info = CURRENCIES[curr.currency as Currency];
-          const isExpanded = expanded === curr.currency;
-
-          return (
-            <div
-              key={curr.currency}
-              className="rounded-xl bg-card/80 border border-border/50 overflow-hidden transition-all hover:border-border"
-            >
-              {/* Header row */}
-              <button
-                onClick={() => setExpanded(isExpanded ? null : curr.currency)}
-                className="w-full flex items-center gap-3 p-3.5 hover:bg-muted/20 transition-colors"
-              >
-                <span className="text-xl">{info?.flag || '🌐'}</span>
-                <div className="flex flex-col items-start">
-                  <span className="font-mono font-bold text-sm text-foreground">{curr.currency}</span>
-                  <span className="text-[10px] text-muted-foreground leading-tight">{info?.name || ''}</span>
-                </div>
-                <div className="ml-1">
-                  <DirectionIcon dir={curr.direction} />
-                </div>
-                <div className="ml-auto flex items-center gap-3">
-                  <span className={cn(
-                    'text-sm font-mono font-bold',
-                    curr.avgImpact > 0 ? 'text-green-400' : curr.avgImpact < 0 ? 'text-red-400' : 'text-muted-foreground'
-                  )}>
-                    {curr.avgImpact > 0 ? '+' : ''}{curr.avgImpact.toFixed(2)}%
-                  </span>
-                  <div className="flex flex-col gap-0.5 text-[10px] font-mono">
-                    <span className="text-green-400/80">↑ {curr.maxImpact.toFixed(1)}%</span>
-                    <span className="text-red-400/80">↓ {curr.minImpact.toFixed(1)}%</span>
-                  </div>
-                  <svg className={cn('w-4 h-4 text-muted-foreground transition-transform', isExpanded && 'rotate-180')} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-                </div>
-              </button>
-
-              {/* Expandable chart */}
-              {isExpanded && (
-                <div className="px-4 pb-4 pt-1 border-t border-border/30">
-                  <div className="h-40 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={curr.points} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>
-                        <XAxis
-                          dataKey="label"
-                          tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
-                          axisLine={false}
-                          tickLine={false}
-                          interval="preserveStartEnd"
-                          dy={4}
-                        />
-                        <YAxis hide />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--popover))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '10px',
-                            fontSize: '12px',
-                            boxShadow: '0 8px 24px hsl(var(--primary) / 0.15)',
-                            padding: '8px 12px',
-                          }}
-                          labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
-                          formatter={(v: number, name: string) => {
-                            if (name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto'];
-                            if (name === 'volume') return [`${v}`, 'Volumen'];
-                            return [v, name];
-                          }}
-                          cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
-                        />
-                        <Bar dataKey="impact" radius={[4, 4, 0, 0]} maxBarSize={28}>
-                          {curr.points.map((pt, i) => (
-                            <Cell
-                              key={i}
-                              fill={pt.impact >= 0 ? 'hsl(142 70% 45%)' : 'hsl(0 70% 50%)'}
-                              opacity={0.5 + pt.confidence * 0.5}
-                            />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  {/* Confidence strip */}
-                  <div className="flex gap-0.5 mt-3">
-                    {curr.points.map((pt, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 h-1.5 rounded-full transition-all"
-                        style={{
-                          backgroundColor: `hsl(var(--primary) / ${(pt.confidence * 0.8 + 0.2).toFixed(2)})`,
-                        }}
-                        title={`${pt.label}: ${Math.round(pt.confidence * 100)}% confianza`}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-muted-foreground/70 mt-1.5 text-right tracking-wide">
-                    Barra de confianza del dato
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      {/* Heatmap replaces per-currency expandable bars */}
+      <ImpactHeatmap currencies={data.currencies} />
     </div>
   );
 }
