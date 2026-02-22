@@ -35,15 +35,15 @@ function ZoomableChartInner({
   resistance,
   signalId,
   chartImageUrl,
-  height = 200,
-}: {
-  pair: string;
-  support?: number;
-  resistance?: number;
-  signalId?: string;
-  chartImageUrl?: string;
-  height?: number | string;
-}) {
+  height = 200
+
+
+
+
+
+
+
+}: {pair: string;support?: number;resistance?: number;signalId?: string;chartImageUrl?: string;height?: number | string;}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scale = useRef(1);
   const posX = useRef(0);
@@ -79,7 +79,7 @@ function ZoomableChartInner({
       clampPosition();
       applyTransform();
     },
-    [applyTransform, clampPosition],
+    [applyTransform, clampPosition]
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -141,12 +141,12 @@ function ZoomableChartInner({
       (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
       node.addEventListener('wheel', handleWheel, { passive: false });
     },
-    [handleWheel],
+    [handleWheel]
   );
 
-  const zoomIn = () => { scale.current = Math.min(5, scale.current * 1.3); clampPosition(); applyTransform(); };
-  const zoomOut = () => { scale.current = Math.max(1, scale.current * 0.77); clampPosition(); applyTransform(); };
-  const reset = () => { scale.current = 1; posX.current = 0; posY.current = 0; applyTransform(); };
+  const zoomIn = () => {scale.current = Math.min(5, scale.current * 1.3);clampPosition();applyTransform();};
+  const zoomOut = () => {scale.current = Math.max(1, scale.current * 0.77);clampPosition();applyTransform();};
+  const reset = () => {scale.current = 1;posX.current = 0;posY.current = 0;applyTransform();};
 
   const buildSrc = () => {
     if (chartImageUrl) return chartImageUrl;
@@ -175,7 +175,7 @@ function ZoomableChartInner({
   const handleShareChart = async () => {
     const shareUrl = buildSrc();
     if (navigator.share) {
-      try { await navigator.share({ title: `${pair} Chart`, url: shareUrl }); } catch { /* cancelled */ }
+      try {await navigator.share({ title: `${pair} Chart`, url: shareUrl });} catch {/* cancelled */}
     } else {
       await navigator.clipboard.writeText(shareUrl);
     }
@@ -184,42 +184,42 @@ function ZoomableChartInner({
   const controlBtn = "w-7 h-7 sm:w-6 sm:h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors";
   const controlStyle: React.CSSProperties = { background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' };
 
-  return (
-    <div
-      ref={attachWheel}
-      className="relative rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none"
-      style={{ background: 'hsl(215, 100%, 4%)', border: '1px solid hsla(200, 60%, 35%, 0.3)', height }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]" style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+  return;
 
-      <div ref={imgRef} className="w-full h-full origin-center transition-none" style={{ willChange: 'transform' }}>
-        <img
-          src={buildSrc()}
-          alt={`${pair} Candlestick Chart`}
-          className="w-full h-full object-contain"
-          draggable={false}
-          onError={(e) => { (e.target as HTMLImageElement).src = chartSignal; }}
-        />
-      </div>
 
-      {/* Controls */}
-      <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
-        <button onClick={zoomIn} className={controlBtn} style={controlStyle}><ZoomIn className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
-        <button onClick={zoomOut} className={controlBtn} style={controlStyle}><ZoomOut className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
-        <button onClick={reset} className={controlBtn} style={controlStyle}><RotateCcw className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
-        <div className="w-4 border-t border-cyan-700/30 mx-auto" />
-        <button onClick={handleDownloadChart} className={controlBtn} style={controlStyle} title="Descargar"><Download className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
-        <button onClick={handleShareChart} className={controlBtn} style={controlStyle} title="Compartir"><Share2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" /></button>
-      </div>
-    </div>
-  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 // --- Support/Resistance Panel ---
@@ -227,19 +227,19 @@ function SupportResistancePanel({
   support,
   resistance,
   currentPrice,
-  isJpy = false,
-}: {
-  support: number;
-  resistance: number;
-  currentPrice?: number;
-  isJpy?: boolean;
-}) {
+  isJpy = false
+
+
+
+
+
+}: {support: number;resistance: number;currentPrice?: number;isJpy?: boolean;}) {
   const range = resistance - support;
   const pipMultiplier = isJpy ? 100 : 10000;
   const hasLive = currentPrice !== undefined && currentPrice > 0;
-  const pricePosition = hasLive
-    ? Math.max(0, Math.min(100, ((currentPrice - support) / range) * 100))
-    : 50;
+  const pricePosition = hasLive ?
+  Math.max(0, Math.min(100, (currentPrice - support) / range * 100)) :
+  50;
   const positionLabel = pricePosition > 66 ? 'Cerca de Resistencia' : pricePosition < 33 ? 'Cerca de Soporte' : 'En Rango Medio';
   const positionColor = pricePosition > 66 ? 'text-green-400' : pricePosition < 33 ? 'text-red-400' : 'text-yellow-400';
 
@@ -248,18 +248,18 @@ function SupportResistancePanel({
       className="rounded-lg p-3 relative overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, hsl(0, 0%, 4%) 0%, hsl(210, 60%, 6%) 100%)',
-        border: '1px solid hsla(120, 40%, 25%, 0.5)',
-      }}
-    >
+        border: '1px solid hsla(120, 40%, 25%, 0.5)'
+      }}>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-white font-semibold text-sm">Resistencia y Soporte</h3>
-        {hasLive && (
-          <div className="flex items-center gap-2 bg-blue-500/20 px-2 py-1 rounded-full">
+        {hasLive &&
+        <div className="flex items-center gap-2 bg-blue-500/20 px-2 py-1 rounded-full">
             <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
             <span className="text-xs text-blue-400 font-medium">LIVE: {currentPrice.toFixed(5)}</span>
           </div>
-        )}
+        }
       </div>
 
       {/* Range indicator – responsive flex wrap */}
@@ -284,8 +284,8 @@ function SupportResistancePanel({
         </div>
 
         {/* Price position bar */}
-        {hasLive && (
-          <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-2.5 sm:p-3">
+        {hasLive &&
+        <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-2.5 sm:p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] text-gray-500 uppercase">Posición en Rango</span>
               <span className={cn('text-xs font-medium', positionColor)}>{positionLabel}</span>
@@ -297,9 +297,9 @@ function SupportResistancePanel({
                 <div className="w-1/3" />
               </div>
               <div
-                className="absolute top-0 bottom-0 w-1 bg-white shadow-lg shadow-white/50 transition-all duration-300"
-                style={{ left: `calc(${pricePosition}% - 2px)` }}
-              >
+              className="absolute top-0 bottom-0 w-1 bg-white shadow-lg shadow-white/50 transition-all duration-300"
+              style={{ left: `calc(${pricePosition}% - 2px)` }}>
+
                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full border-2 border-blue-500" />
               </div>
             </div>
@@ -309,7 +309,7 @@ function SupportResistancePanel({
               <span>Resistencia (100%)</span>
             </div>
           </div>
-        )}
+        }
       </div>
 
       {/* Legend – responsive wrap */}
@@ -329,8 +329,8 @@ function SupportResistancePanel({
           </span>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // --- Main exported component ---
@@ -347,15 +347,15 @@ export function SignalChart({
   hideSupportResistance = false,
   entryPrice,
   takeProfit,
-  stopLoss,
+  stopLoss
 }: SignalChartProps) {
   // Auto-derive support/resistance from TP/SL when not provided
-  const support = supportProp ?? (stopLoss !== undefined && entryPrice !== undefined
-    ? Math.min(stopLoss, entryPrice)
-    : undefined);
-  const resistance = resistanceProp ?? (takeProfit !== undefined && entryPrice !== undefined
-    ? Math.max(takeProfit, entryPrice)
-    : undefined);
+  const support = supportProp ?? (stopLoss !== undefined && entryPrice !== undefined ?
+  Math.min(stopLoss, entryPrice) :
+  undefined);
+  const resistance = resistanceProp ?? (takeProfit !== undefined && entryPrice !== undefined ?
+  Math.max(takeProfit, entryPrice) :
+  undefined);
 
   const showSR = !hideSupportResistance && support !== undefined && resistance !== undefined;
 
@@ -367,16 +367,16 @@ export function SignalChart({
         resistance={resistance}
         signalId={signalId}
         chartImageUrl={chartImageUrl}
-        height={height}
-      />
-      {showSR && (
-        <SupportResistancePanel
-          support={support!}
-          resistance={resistance!}
-          currentPrice={currentPrice}
-          isJpy={isJpy}
-        />
-      )}
-    </div>
-  );
+        height={height} />
+
+      {showSR &&
+      <SupportResistancePanel
+        support={support!}
+        resistance={resistance!}
+        currentPrice={currentPrice}
+        isJpy={isJpy} />
+
+      }
+    </div>);
+
 }
