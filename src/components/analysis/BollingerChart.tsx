@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ComposedChart, Line, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Loader2, TrendingUp, TrendingDown, Minus, Wifi } from 'lucide-react';
+import {
+  ComposedChart, Line, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  ReferenceLine
+} from 'recharts';
+import { Loader2, AlertTriangle, TrendingUp, TrendingDown, Minus, Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BollingerChartProps {
@@ -15,83 +16,146 @@ interface BollingerChartProps {
   isRealtimeConnected?: boolean;
 }
 
-// Calculate Bollinger Bands from price data
-const calculateBollingerBands = (prices: number[], period: number = 20, multiplier: number = 2) => {
-  if (prices.length < period) return null;
-  
-  const sma = prices.slice(-period).reduce((a, b) => a + b, 0) / period;
-  const squaredDiffs = prices.slice(-period).map(p => Math.pow(p - sma, 2));
-  const variance = squaredDiffs.reduce((a, b) => a + b, 0) / period;
-  const stdDev = Math.sqrt(variance);
-  
-  return {
-    upper: sma + (multiplier * stdDev),
-    middle: sma,
-    lower: sma - (multiplier * stdDev),
-  };
-};
+interface BollingerPoint {
+  time: string;
+  price: number;
+  upper: number;
+  middle: number;
+  lower: number;
+  percentB: number; // %B indicator (0-1 scale, can exceed)
+  bandwidth: number;
+}
 
-export function BollingerChart({ 
-  pair, 
-  timeframe, 
-  priceData, 
-  loading, 
-  error,
-  realtimePrice,
-  isRealtimeConnected = false
-}: BollingerChartProps) {
-  const chartData = useMemo(() => {
-    if (!priceData || priceData.length === 0) {
-      // Generate mock data
-      const basePrice = 1.1689;
-      return Array.from({ length: 30 }, (_, i) => {
-        const variance = Math.sin(i * 0.3) * 0.005;
-        const price = basePrice + variance + (Math.random() - 0.5) * 0.002;
-        return {
-          time: `${i}h`,
-          price,
-          upper: price + 0.008 + Math.random() * 0.002,
-          middle: price + 0.002,
-          lower: price - 0.006 - Math.random() * 0.002,
-        };
-      });
+function calculateBollingerSeries(
+  priceData: BollingerChartProps['priceData'],
+  period = 20,
+  multiplier = 2
+): BollingerPoint[] {
+  if (!priceData || priceData.length === 0) return [];
+
+  const prices = priceData.map(p => p.price);
+
+  return priceData.map((p, i) => {
+    const date = new Date(p.time);
+    const timeLabel = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+    const slice = prices.slice(Math.max(0, i - period + 1), i + 1);
+    const sma = slice.reduce((a, b) => a + b, 0) / slice.length;
+
+    let stdDev = 0;
+    if (slice.length >= 2) {
+      const variance = slice.reduce((sum, val) => sum + Math.pow(val - sma, 2), 0) / slice.length;
+      stdDev = Math.sqrt(variance);
     }
 
-    const prices = priceData.map(p => p.price);
-    return priceData.map((p, i) => {
-      const pricesUpToNow = prices.slice(0, i + 1);
-      const bands = calculateBollingerBands(pricesUpToNow, 20, 2);
-      const date = new Date(p.time);
-      return {
-        time: `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`,
-        price: p.price,
-        upper: bands?.upper || p.price + 0.005,
-        middle: bands?.middle || p.price,
-        lower: bands?.lower || p.price - 0.005,
-      };
-    });
-  }, [priceData]);
+    const upper = sma + multiplier * stdDev;
+    const lower = sma - multiplier * stdDev;
+    const range = upper - lower;
+    const percentB = range > 0 ? (p.price - lower) / range : 0.5;
+    const bandwidth = sma > 0 ? (range / sma) * 100 : 0;
 
-  // Calculate current position relative to bands (use realtime if available)
-  const currentPosition = useMemo(() => {
-    if (chartData.length === 0) return { status: 'neutral', percent: 50 };
+    return { time: timeLabel, price: p.price, upper, middle: sma, lower, percentB, bandwidth };
+  });
+}
+
+// Custom tooltip
+const BollingerTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+
+  const price = payload.find((p: any) => p.dataKey === 'price')?.value;
+  const upper = payload.find((p: any) => p.dataKey === 'upper')?.value;
+  const middle = payload.find((p: any) => p.dataKey === 'middle')?.value;
+  const lower = payload.find((p: any) => p.dataKey === 'lower')?.value;
+
+  const pB = upper && lower && (upper - lower) > 0
+    ? ((price - lower) / (upper - lower) * 100).toFixed(0)
+    : '—';
+
+  return (
+    <div className="bg-[#0a1628]/95 border border-cyan-900/40 rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm">
+      <p className="text-[10px] text-gray-500 mb-1.5">{label}</p>
+      <div className="space-y-1 text-xs font-mono">
+        <div className="flex justify-between gap-4">
+          <span className="text-red-400/70">Superior</span>
+          <span className="text-white font-bold">{upper?.toFixed(5)}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span className="text-cyan-400">Precio</span>
+          <span className="text-white font-bold">{price?.toFixed(5)}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span className="text-gray-400">SMA 20</span>
+          <span className="text-white font-bold">{middle?.toFixed(5)}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span className="text-green-400/70">Inferior</span>
+          <span className="text-white font-bold">{lower?.toFixed(5)}</span>
+        </div>
+        <div className="border-t border-gray-700 pt-1 flex justify-between gap-4">
+          <span className="text-purple-400">%B</span>
+          <span className="text-white font-bold">{pB}%</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export function BollingerChart({
+  pair, timeframe, priceData, loading, error, realtimePrice, isRealtimeConnected = false,
+}: BollingerChartProps) {
+  const chartData = useMemo(
+    () => calculateBollingerSeries(priceData),
+    [priceData]
+  );
+
+  const stats = useMemo(() => {
+    if (chartData.length === 0) return {
+      price: 0, upper: 0, middle: 0, lower: 0,
+      percentB: 50, bandwidth: 0,
+      position: 'neutral' as const,
+      squeeze: false, squeezeTrend: 'flat' as const,
+      touchUpper: false, touchLower: false,
+    };
+
     const latest = chartData[chartData.length - 1];
     const currentPrice = realtimePrice ?? latest.price;
+
     const range = latest.upper - latest.lower;
-    const position = ((currentPrice - latest.lower) / range) * 100;
-    
-    let status: 'overbought' | 'oversold' | 'neutral' = 'neutral';
-    if (position > 80) status = 'overbought';
-    else if (position < 20) status = 'oversold';
-    
-    return { status, percent: Math.round(position) };
+    const percentB = range > 0 ? ((currentPrice - latest.lower) / range) * 100 : 50;
+    const position = percentB > 80 ? 'overbought' as const
+      : percentB < 20 ? 'oversold' as const
+      : 'neutral' as const;
+
+    // Squeeze detection: bandwidth below average
+    const bandwidths = chartData.map(d => d.bandwidth);
+    const avgBandwidth = bandwidths.reduce((a, b) => a + b, 0) / bandwidths.length;
+    const squeeze = latest.bandwidth < avgBandwidth * 0.7;
+
+    // Squeeze trend
+    const recentBW = bandwidths.slice(-5);
+    const bwDelta = recentBW[recentBW.length - 1] - recentBW[0];
+    const squeezeTrend = bwDelta > 0.001 ? 'expanding' as const
+      : bwDelta < -0.001 ? 'contracting' as const
+      : 'flat' as const;
+
+    // Touch detection
+    const touchThreshold = range * 0.05;
+    const touchUpper = currentPrice >= latest.upper - touchThreshold;
+    const touchLower = currentPrice <= latest.lower + touchThreshold;
+
+    return {
+      price: currentPrice, upper: latest.upper, middle: latest.middle, lower: latest.lower,
+      percentB, bandwidth: latest.bandwidth, position, squeeze, squeezeTrend,
+      touchUpper, touchLower,
+    };
   }, [chartData, realtimePrice]);
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-center h-[200px]">
-          <Loader2 className="h-6 w-6 animate-spin text-green-500" />
+      <div className="h-[320px] w-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+          <span className="text-[10px] text-gray-500">Cargando Bollinger...</span>
         </div>
       </div>
     );
@@ -99,133 +163,217 @@ export function BollingerChart({
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[200px] text-red-400">
-        <p className="text-sm">{error}</p>
+      <div className="h-[320px] w-full flex items-center justify-center">
+        <div className="text-center space-y-1">
+          <AlertTriangle className="w-5 h-5 text-red-400 mx-auto" />
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="h-[320px] w-full flex items-center justify-center text-gray-500">
+        <p className="text-xs">Sin datos disponibles</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      {/* Status indicator */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Bollinger Bands</span>
-          <span className={`text-xs px-2 py-0.5 rounded ${
-            currentPosition.status === 'overbought' 
-              ? 'bg-red-500/20 text-red-400' 
-              : currentPosition.status === 'oversold'
-              ? 'bg-green-500/20 text-green-400'
-              : 'bg-gray-500/20 text-gray-400'
-          }`}>
-            {currentPosition.status === 'overbought' ? 'Sobrecompra' : 
-             currentPosition.status === 'oversold' ? 'Sobreventa' : 'Neutral'}
-          </span>
-          {/* Realtime indicator */}
-          {isRealtimeConnected && realtimePrice && (
-            <div className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-xs text-green-400">LIVE</span>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {realtimePrice && (
-            <span className={cn(
-              "text-xs font-mono px-2 py-0.5 rounded",
-              isRealtimeConnected ? "bg-green-500/20 text-green-400" : "bg-blue-500/20 text-blue-400"
+      {/* ── Header ── */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Bollinger Bands (20,2)</span>
+            <div className={cn(
+              "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold",
+              stats.position === 'overbought' && "bg-red-500/15 text-red-400",
+              stats.position === 'oversold' && "bg-green-500/15 text-green-400",
+              stats.position === 'neutral' && "bg-gray-500/15 text-gray-400",
             )}>
-              {realtimePrice.toFixed(5)}
-            </span>
-          )}
-          <div className="flex items-center gap-1">
-            {currentPosition.status === 'overbought' && <TrendingDown className="w-4 h-4 text-red-400" />}
-            {currentPosition.status === 'oversold' && <TrendingUp className="w-4 h-4 text-green-400" />}
-            {currentPosition.status === 'neutral' && <Minus className="w-4 h-4 text-gray-400" />}
-            <span className="text-sm font-medium text-white">{currentPosition.percent}%</span>
+              {stats.position === 'overbought' ? <TrendingDown className="w-3 h-3" /> :
+               stats.position === 'oversold' ? <TrendingUp className="w-3 h-3" /> :
+               <Minus className="w-3 h-3" />}
+              {stats.position === 'overbought' ? 'SOBRECOMPRA' :
+               stats.position === 'oversold' ? 'SOBREVENTA' : 'NEUTRAL'}
+            </div>
+            {stats.squeeze && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-yellow-500/15 text-yellow-400 animate-pulse">
+                <Minimize2 className="w-3 h-3" />
+                SQUEEZE
+              </div>
+            )}
+            {isRealtimeConnected && realtimePrice && (
+              <div className="flex items-center gap-1 bg-green-500/15 px-2 py-0.5 rounded-full">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-[10px] text-green-400 font-medium">LIVE</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-xl font-bold font-mono text-white">{stats.price.toFixed(5)}</span>
+          </div>
+        </div>
+
+        {/* Right side stats */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px]">
+          <div className="text-right">
+            <span className="text-red-400/60">Sup </span>
+            <span className="text-white font-mono">{stats.upper.toFixed(5)}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-gray-500">SMA </span>
+            <span className="text-white font-mono">{stats.middle.toFixed(5)}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-green-400/60">Inf </span>
+            <span className="text-white font-mono">{stats.lower.toFixed(5)}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-purple-400/60">%B </span>
+            <span className={cn(
+              "font-mono font-bold",
+              stats.percentB > 80 ? "text-red-400" : stats.percentB < 20 ? "text-green-400" : "text-white"
+            )}>{stats.percentB.toFixed(0)}%</span>
           </div>
         </div>
       </div>
 
-      {/* Chart */}
-      <ResponsiveContainer width="100%" height={200}>
-        <ComposedChart data={chartData}>
-          <defs>
-            <linearGradient id="bollingerGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.05} />
-            </linearGradient>
-          </defs>
-          <XAxis 
-            dataKey="time" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 10, fill: '#6b7280' }}
-            interval="preserveStartEnd"
-          />
-          <YAxis 
-            domain={['auto', 'auto']} 
-            axisLine={false} 
-            tickLine={false}
-            tick={{ fontSize: 10, fill: '#6b7280' }}
-            tickFormatter={(v) => v.toFixed(4)}
-            width={55}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: '#1a1a2e',
-              border: '1px solid #374151',
-              borderRadius: '8px',
-              fontSize: '12px',
+      {/* ── %B Position Bar ── */}
+      <div className="space-y-1">
+        <div className="flex items-center justify-between text-[9px] text-gray-600">
+          <span>Banda Inferior</span>
+          <span>SMA 20</span>
+          <span>Banda Superior</span>
+        </div>
+        <div className="relative h-2 rounded-full overflow-hidden bg-gray-800/50">
+          {/* Zone gradients */}
+          <div className="absolute inset-y-0 left-0 w-[20%] bg-gradient-to-r from-green-500/25 to-transparent rounded-l-full" />
+          <div className="absolute inset-y-0 right-0 w-[20%] bg-gradient-to-l from-red-500/25 to-transparent rounded-r-full" />
+          {/* Center marker */}
+          <div className="absolute inset-y-0 left-1/2 w-px bg-gray-600/40" />
+          {/* Position dot */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white shadow-lg transition-all duration-500"
+            style={{
+              left: `calc(${Math.min(100, Math.max(0, stats.percentB))}% - 6px)`,
+              backgroundColor: stats.percentB > 80 ? '#ef4444' : stats.percentB < 20 ? '#22c55e' : '#06b6d4',
             }}
-            formatter={(value: number, name: string) => [
-              value.toFixed(5),
-              name === 'price' ? 'Precio' : 
-              name === 'upper' ? 'Banda Superior' :
-              name === 'lower' ? 'Banda Inferior' : 'SMA'
-            ]}
           />
-          
-          {/* Realtime price horizontal line */}
-          {realtimePrice && (
-            <ReferenceLine 
-              y={realtimePrice} 
-              stroke={isRealtimeConnected ? "#22c55e" : "#3b82f6"}
-              strokeWidth={2}
-              strokeDasharray={isRealtimeConnected ? "0" : "5 5"}
-              label={{ 
-                value: `${isRealtimeConnected ? '● ' : ''}${realtimePrice.toFixed(4)}`, 
-                position: 'right',
-                fill: isRealtimeConnected ? '#22c55e' : '#3b82f6',
-                fontSize: 10,
-                fontWeight: 'bold'
-              }}
-            />
+        </div>
+      </div>
+
+      {/* ── Bandwidth Bar ── */}
+      <div className="flex items-center gap-2">
+        <span className="text-[9px] text-gray-600 w-16 shrink-0">Ancho</span>
+        <div className="flex-1 h-1.5 bg-gray-800/50 rounded-full overflow-hidden">
+          <div
+            className={cn(
+              "h-full rounded-full transition-all duration-500",
+              stats.squeeze ? "bg-yellow-500/60" : "bg-blue-500/40"
+            )}
+            style={{ width: `${Math.min(100, stats.bandwidth * 200)}%` }}
+          />
+        </div>
+        <div className="flex items-center gap-1 text-[9px]">
+          {stats.squeezeTrend === 'expanding' ? (
+            <><Maximize2 className="w-3 h-3 text-blue-400" /><span className="text-blue-400">Expandiendo</span></>
+          ) : stats.squeezeTrend === 'contracting' ? (
+            <><Minimize2 className="w-3 h-3 text-yellow-400" /><span className="text-yellow-400">Contrayendo</span></>
+          ) : (
+            <span className="text-gray-500">Estable</span>
           )}
-          
-          {/* Bollinger band area */}
-          <Area
-            type="monotone"
-            dataKey="upper"
-            stroke="none"
-            fill="url(#bollingerGradient)"
-            fillOpacity={1}
-          />
-          <Area
-            type="monotone"
-            dataKey="lower"
-            stroke="none"
-            fill="#0a1a0a"
-            fillOpacity={1}
-          />
-          {/* Band lines */}
-          <Line type="monotone" dataKey="upper" stroke="#3b82f6" strokeWidth={1} dot={false} strokeDasharray="4 2" />
-          <Line type="monotone" dataKey="middle" stroke="#6b7280" strokeWidth={1} dot={false} strokeDasharray="2 2" />
-          <Line type="monotone" dataKey="lower" stroke="#3b82f6" strokeWidth={1} dot={false} strokeDasharray="4 2" />
-          {/* Price line */}
-          <Line type="monotone" dataKey="price" stroke="#22c55e" strokeWidth={2} dot={false} />
-        </ComposedChart>
-      </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* ── Chart ── */}
+      <div className="h-[200px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+            <defs>
+              <linearGradient id="bbBandFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.12} />
+                <stop offset="50%" stopColor="#3b82f6" stopOpacity={0.06} />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.12} />
+              </linearGradient>
+              <linearGradient id="bbPriceGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#06b6d4" />
+                <stop offset="100%" stopColor="#22d3ee" />
+              </linearGradient>
+            </defs>
+
+            <XAxis
+              dataKey="time"
+              tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'monospace' }}
+              axisLine={{ stroke: '#1e293b' }}
+              tickLine={false}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              domain={['auto', 'auto']}
+              tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'monospace' }}
+              axisLine={{ stroke: '#1e293b' }}
+              tickLine={false}
+              width={50}
+              tickFormatter={(v) => v.toFixed(4)}
+            />
+            <Tooltip content={<BollingerTooltip />} />
+
+            {/* Band fill area */}
+            <Area type="monotone" dataKey="upper" stroke="none" fill="url(#bbBandFill)" isAnimationActive={false} />
+            <Area type="monotone" dataKey="lower" stroke="none" fill="#0a1628" isAnimationActive={false} />
+
+            {/* Band lines */}
+            <Line type="monotone" dataKey="upper" stroke="#ef4444" strokeWidth={1} strokeOpacity={0.5} strokeDasharray="4 2" dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="middle" stroke="#6b7280" strokeWidth={1} strokeDasharray="2 4" dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="lower" stroke="#22c55e" strokeWidth={1} strokeOpacity={0.5} strokeDasharray="4 2" dot={false} isAnimationActive={false} />
+
+            {/* Price line */}
+            <Line
+              type="monotone" dataKey="price" stroke="url(#bbPriceGrad)" strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4, stroke: '#06b6d4', strokeWidth: 2, fill: '#0a1628' }}
+              isAnimationActive={false}
+            />
+
+            {/* Realtime price */}
+            {realtimePrice && (
+              <ReferenceLine
+                y={realtimePrice}
+                stroke={isRealtimeConnected ? '#22c55e' : '#3b82f6'}
+                strokeWidth={1.5}
+                strokeDasharray={isRealtimeConnected ? '0' : '5 5'}
+              />
+            )}
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* ── Legend ── */}
+      <div className="flex items-center justify-between text-[9px] text-gray-600 px-1">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-0.5 rounded-full bg-cyan-400" />
+            <span>Precio</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-0.5 rounded-full bg-gray-500" />
+            <span>SMA 20</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-0.5 rounded-full bg-red-400/50" />
+            <span>Banda Sup.</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-0.5 rounded-full bg-green-400/50" />
+            <span>Banda Inf.</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
