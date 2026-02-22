@@ -143,7 +143,7 @@ const CHART_MINUTES = CHART_DAYS * 24 * 60; // 5 days in minutes
 
 // Get session for a given UTC hour, filtered by enabled sessions
 function getSessionsForHour(utcHour: number, enabledSessions: Set<SessionId>) {
-  return MARKET_SESSIONS.filter(session => {
+  return MARKET_SESSIONS.filter((session) => {
     // Check if session is enabled
     if (!enabledSessions.has(session.id as SessionId)) return false;
     if (session.start < session.end) {
@@ -229,9 +229,9 @@ function detectCandlePatterns(data: CandleData[]): CandlePattern[] {
       const prevIsBullish = prev.price > prev.open;
 
       // Bullish Engulfing: bearish candle followed by larger bullish candle that engulfs it
-      if (!prevIsBullish && isBullish && 
-          candle.open < prev.price && candle.price > prev.open && 
-          body > prevBody * 1.2) {
+      if (!prevIsBullish && isBullish &&
+      candle.open < prev.price && candle.price > prev.open &&
+      body > prevBody * 1.2) {
         patterns.push({
           index: i,
           type: 'bullish_engulfing',
@@ -244,9 +244,9 @@ function detectCandlePatterns(data: CandleData[]): CandlePattern[] {
       }
 
       // Bearish Engulfing: bullish candle followed by larger bearish candle that engulfs it
-      if (prevIsBullish && !isBullish && 
-          candle.open > prev.price && candle.price < prev.open && 
-          body > prevBody * 1.2) {
+      if (prevIsBullish && !isBullish &&
+      candle.open > prev.price && candle.price < prev.open &&
+      body > prevBody * 1.2) {
         patterns.push({
           index: i,
           type: 'bearish_engulfing',
@@ -307,29 +307,29 @@ export function PriceChart({
   const [chartType, setChartType] = useState<'candle' | 'line'>('candle');
   const [showPatterns, setShowPatterns] = useState(true);
   const [patternFilter, setPatternFilter] = useState<'all' | 'bullish' | 'bearish' | 'neutral'>('all');
-  
+
   // Zoom and pan state
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panOffset, setPanOffset] = useState(0); // Offset in data points
   const [isPanning, setIsPanning] = useState(false);
   const [panStartX, setPanStartX] = useState(0);
   const [panStartOffset, setPanStartOffset] = useState(0);
-  
+
   // Touch/pinch zoom state
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
   const [initialZoomLevel, setInitialZoomLevel] = useState(1);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartOffset, setTouchStartOffset] = useState(0);
-  
+
   const MIN_ZOOM = 0.5;
   const MAX_ZOOM = 5;
-  
+
   const handlePeriodClick = (period: ChartPeriod) => {
     setSelectedPeriod(period);
     onPeriodChange?.(period);
   };
   const toggleSession = (sessionId: SessionId) => {
-    setEnabledSessions(prev => {
+    setEnabledSessions((prev) => {
       const next = new Set(prev);
       if (next.has(sessionId)) {
         next.delete(sessionId);
@@ -353,7 +353,7 @@ export function PriceChart({
   // Aggregate data into candles based on selected period
   const aggregateCandles = useCallback((data: typeof priceData, periodMinutes: number) => {
     if (!data || data.length === 0) return [];
-    
+
     const aggregated: Array<{
       time: string;
       timestamp: Date;
@@ -367,15 +367,15 @@ export function PriceChart({
 
     // Group data by period
     const groups = new Map<number, typeof data>();
-    
-    data.forEach(item => {
+
+    data.forEach((item) => {
       const date = new Date(item.time);
       if (isNaN(date.getTime())) return;
-      
+
       // Calculate period bucket (floor to period interval)
       const periodMs = periodMinutes * 60 * 1000;
       const bucket = Math.floor(date.getTime() / periodMs) * periodMs;
-      
+
       if (!groups.has(bucket)) {
         groups.set(bucket, []);
       }
@@ -384,27 +384,27 @@ export function PriceChart({
 
     // Convert groups to aggregated candles
     const sortedBuckets = Array.from(groups.keys()).sort((a, b) => a - b);
-    
-    sortedBuckets.forEach(bucket => {
+
+    sortedBuckets.forEach((bucket) => {
       const items = groups.get(bucket)!;
       if (items.length === 0) return;
-      
+
       const bucketDate = new Date(bucket);
       const open = items[0].open;
       const close = items[items.length - 1].price;
-      const high = Math.max(...items.map(i => i.high));
-      const low = Math.min(...items.map(i => i.low));
+      const high = Math.max(...items.map((i) => i.high));
+      const low = Math.min(...items.map((i) => i.low));
       const volume = items.reduce((sum, i) => sum + (i.volume || 0), 0);
-      
+
       // Format time label based on period
       let timeLabel = '';
-      if (periodMinutes >= 1440) { // 1 day or more
+      if (periodMinutes >= 1440) {// 1 day or more
         timeLabel = bucketDate.toLocaleDateString('es-ES', {
           weekday: 'short',
           day: 'numeric',
           month: 'short'
         });
-      } else if (periodMinutes >= 60) { // 1 hour or more
+      } else if (periodMinutes >= 60) {// 1 hour or more
         timeLabel = bucketDate.toLocaleDateString('es-ES', {
           weekday: 'short',
           day: 'numeric',
@@ -420,7 +420,7 @@ export function PriceChart({
           hour12: false
         });
       }
-      
+
       aggregated.push({
         time: timeLabel,
         timestamp: bucketDate,
@@ -439,18 +439,18 @@ export function PriceChart({
   // Calculate chart data with UTC hours for sessions, filtered to 5 days and aggregated by period
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
-    
+
     const { startTime, endTime } = getTimeRange;
-    const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
+    const periodConfig = periodButtons.find((p) => p.value === selectedPeriod);
     const periodMinutes = periodConfig?.minutes || 60;
-    
+
     // Filter data to 5 days range first
-    const filteredData = priceData.filter(item => {
+    const filteredData = priceData.filter((item) => {
       const date = new Date(item.time);
       if (isNaN(date.getTime())) return false;
       return date >= startTime && date <= endTime;
     });
-    
+
     // Aggregate into candles based on selected period
     return aggregateCandles(filteredData, periodMinutes);
   }, [priceData, getTimeRange, selectedPeriod, aggregateCandles]);
@@ -474,7 +474,7 @@ export function PriceChart({
   // Detect candlestick patterns
   const detectedPatterns = useMemo(() => {
     if (!showPatterns || chartType !== 'candle' || finalData.length < 2) return [];
-    return detectCandlePatterns(finalData.map(d => ({
+    return detectCandlePatterns(finalData.map((d) => ({
       open: d.open,
       high: d.high,
       low: d.low,
@@ -490,19 +490,19 @@ export function PriceChart({
     if (!patternAlertConfig?.enabled || detectedPatterns.length === 0) return;
 
     // Create unique identifiers for current patterns
-    const currentPatternIds = detectedPatterns.map(p => `${p.type}-${p.index}`);
-    
+    const currentPatternIds = detectedPatterns.map((p) => `${p.type}-${p.index}`);
+
     // Find new patterns that weren't in the previous detection
-    const newPatterns = detectedPatterns.filter((p, i) => 
-      !prevPatternsRef.current.includes(currentPatternIds[i])
+    const newPatterns = detectedPatterns.filter((p, i) =>
+    !prevPatternsRef.current.includes(currentPatternIds[i])
     );
 
     // Alert for each new pattern
-    newPatterns.forEach(pattern => {
-      const shouldAlert = 
-        (pattern.signal === 'bullish' && patternAlertConfig.types.bullish) ||
-        (pattern.signal === 'bearish' && patternAlertConfig.types.bearish) ||
-        (pattern.signal === 'neutral' && patternAlertConfig.types.neutral);
+    newPatterns.forEach((pattern) => {
+      const shouldAlert =
+      pattern.signal === 'bullish' && patternAlertConfig.types.bullish ||
+      pattern.signal === 'bearish' && patternAlertConfig.types.bearish ||
+      pattern.signal === 'neutral' && patternAlertConfig.types.neutral;
 
       if (shouldAlert) {
         // Play sound if enabled
@@ -513,16 +513,16 @@ export function PriceChart({
         // Show toast notification
         const point = finalData[pattern.index];
         const timeStr = point?.time || '';
-        
+
         toast(pattern.label, {
           description: `${pattern.signal === 'bullish' ? '↑ Señal Alcista' : pattern.signal === 'bearish' ? '↓ Señal Bajista' : '→ Indecisión'} detectada en ${pair} @ ${timeStr}`,
           icon: pattern.emoji,
           duration: 5000,
-          className: pattern.signal === 'bullish' 
-            ? 'border-green-500/50 bg-green-500/10' 
-            : pattern.signal === 'bearish' 
-              ? 'border-red-500/50 bg-red-500/10' 
-              : 'border-amber-500/50 bg-amber-500/10',
+          className: pattern.signal === 'bullish' ?
+          'border-green-500/50 bg-green-500/10' :
+          pattern.signal === 'bearish' ?
+          'border-red-500/50 bg-red-500/10' :
+          'border-amber-500/50 bg-amber-500/10'
         });
       }
     });
@@ -534,7 +534,7 @@ export function PriceChart({
   // Format time range description - always shows 5 days with selected candle interval
   const timeRangeDescription = useMemo(() => {
     const { startTime, endTime } = getTimeRange;
-    const periodConfig = periodButtons.find(p => p.value === selectedPeriod);
+    const periodConfig = periodButtons.find((p) => p.value === selectedPeriod);
     const formatDate = (date: Date) => date.toLocaleDateString('es-ES', {
       weekday: 'short',
       day: 'numeric',
@@ -567,11 +567,11 @@ export function PriceChart({
   // Calculate visible data based on zoom and pan
   const visibleData = useMemo(() => {
     if (finalData.length === 0) return finalData;
-    
+
     const visibleCount = Math.ceil(finalData.length / zoomLevel);
     const start = Math.min(panOffset, finalData.length - visibleCount);
     const end = Math.min(start + visibleCount, finalData.length);
-    
+
     return finalData.slice(Math.max(0, start), end);
   }, [finalData, zoomLevel, panOffset]);
 
@@ -598,8 +598,8 @@ export function PriceChart({
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
     // Calculate price range using OHLC for candlestick accuracy
-    const allHighs = visibleData.map(d => d.high);
-    const allLows = visibleData.map(d => d.low);
+    const allHighs = visibleData.map((d) => d.high);
+    const allLows = visibleData.map((d) => d.low);
     const minPrice = Math.min(...allLows);
     const maxPrice = Math.max(...allHighs);
     const priceRange = maxPrice - minPrice || 1;
@@ -616,13 +616,13 @@ export function PriceChart({
         const barWidth = chartWidth / (visibleData.length - 1);
 
         // Draw session background bands
-        sessions.forEach(session => {
+        sessions.forEach((session) => {
           ctx.fillStyle = session.color;
           ctx.fillRect(x - barWidth / 2, padding.top, barWidth + 1, chartHeight);
         });
 
         // Draw session start marker
-        const currentSessionName = sessions.map(s => s.name).join(',');
+        const currentSessionName = sessions.map((s) => s.name).join(',');
         if (currentSessionName !== prevSession && sessions.length > 0 && i > 0) {
           const mainSession = sessions[0];
           ctx.beginPath();
@@ -692,23 +692,23 @@ export function PriceChart({
     // Draw chart based on type
     if (chartType === 'candle') {
       // Draw Japanese Candlesticks
-      const candleWidth = Math.max(3, (chartWidth / visibleData.length) * 0.7);
+      const candleWidth = Math.max(3, chartWidth / visibleData.length * 0.7);
       const wickWidth = 1;
-      
+
       visibleData.forEach((point, i) => {
         const x = padding.left + i / (visibleData.length - 1) * chartWidth;
-        
+
         // Calculate Y positions for OHLC
         const openY = padding.top + chartHeight - (point.open - paddedMin) / paddedRange * chartHeight;
         const closeY = padding.top + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
         const highY = padding.top + chartHeight - (point.high - paddedMin) / paddedRange * chartHeight;
         const lowY = padding.top + chartHeight - (point.low - paddedMin) / paddedRange * chartHeight;
-        
+
         // Determine if bullish (green) or bearish (red)
         const isBullish = point.price >= point.open;
         const candleColor = isBullish ? '#22c55e' : '#ef4444';
         const wickColor = isBullish ? '#22c55e' : '#ef4444';
-        
+
         // Draw wick (high-low line)
         ctx.beginPath();
         ctx.strokeStyle = wickColor;
@@ -716,38 +716,38 @@ export function PriceChart({
         ctx.moveTo(x, highY);
         ctx.lineTo(x, lowY);
         ctx.stroke();
-        
+
         // Draw candle body
         const bodyTop = Math.min(openY, closeY);
         const bodyHeight = Math.abs(closeY - openY) || 1;
-        
+
         ctx.fillStyle = candleColor;
         ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
-        
+
         // Draw candle border for better visibility
         ctx.strokeStyle = candleColor;
         ctx.lineWidth = 0.5;
         ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
       });
-      
+
       // Draw pattern labels on candlesticks
       if (showPatterns && detectedPatterns.length > 0) {
-        detectedPatterns.forEach(pattern => {
+        detectedPatterns.forEach((pattern) => {
           const point = visibleData[pattern.index];
           if (!point) return;
-          
+
           const x = padding.left + pattern.index / (visibleData.length - 1) * chartWidth;
           const highY = padding.top + chartHeight - (point.high - paddedMin) / paddedRange * chartHeight;
           const lowY = padding.top + chartHeight - (point.low - paddedMin) / paddedRange * chartHeight;
-          
+
           // Position label above or below candle based on signal
           const labelY = pattern.signal === 'bullish' ? lowY + 18 : highY - 8;
-          
+
           // Draw emoji marker
           ctx.font = '12px sans-serif';
           ctx.textAlign = 'center';
           ctx.fillText(pattern.emoji, x, labelY);
-          
+
           // Draw connecting line
           ctx.beginPath();
           ctx.strokeStyle = pattern.color;
@@ -837,11 +837,11 @@ export function PriceChart({
       // OHLC tooltip for candlesticks
       const tooltipWidth = chartType === 'candle' ? 130 : 80;
       const tooltipHeight = chartType === 'candle' ? 85 : 35;
-      
+
       // Adjust tooltip position to stay within canvas
       let tooltipX = hoveredData.x + 10;
       let tooltipY = hoveredData.y - 20;
-      
+
       if (tooltipX + tooltipWidth > dimensions.width - 20) {
         tooltipX = hoveredData.x - tooltipWidth - 10;
       }
@@ -851,21 +851,21 @@ export function PriceChart({
       if (tooltipY + tooltipHeight > dimensions.height - 10) {
         tooltipY = dimensions.height - tooltipHeight - 10;
       }
-      
+
       ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
       ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
-      
+
       // Border based on candle color
       const isBullish = hoveredData.price >= hoveredData.open;
       ctx.strokeStyle = isBullish ? '#22c55e' : '#ef4444';
       ctx.lineWidth = 1;
       ctx.strokeRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
-      
+
       ctx.fillStyle = '#fff';
       ctx.font = '10px sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(hoveredData.time, tooltipX + 8, tooltipY + 14);
-      
+
       if (chartType === 'candle') {
         // OHLC labels
         ctx.font = '9px sans-serif';
@@ -874,7 +874,7 @@ export function PriceChart({
         ctx.fillText('H:', tooltipX + 8, tooltipY + 44);
         ctx.fillText('L:', tooltipX + 8, tooltipY + 58);
         ctx.fillText('C:', tooltipX + 8, tooltipY + 72);
-        
+
         // OHLC values
         ctx.font = 'bold 10px monospace';
         ctx.fillStyle = '#fff';
@@ -916,7 +916,7 @@ export function PriceChart({
     ctx.clearRect(0, 0, volumeDimensions.width, volumeDimensions.height);
 
     // Calculate volume range
-    const volumes = visibleData.map(d => d.volume || 0);
+    const volumes = visibleData.map((d) => d.volume || 0);
     const maxVolume = Math.max(...volumes) || 1;
 
     // Draw volume bars
@@ -966,7 +966,7 @@ export function PriceChart({
     const clampedIndex = Math.max(0, Math.min(dataIndex, visibleData.length - 1));
     const point = visibleData[clampedIndex];
     if (point) {
-      const prices = visibleData.map(d => d.price);
+      const prices = visibleData.map((d) => d.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
       const priceRange = maxPrice - minPrice || 1;
@@ -1003,7 +1003,7 @@ export function PriceChart({
   const handleWheel = useCallback((e: React.WheelEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setZoomLevel(prev => {
+    setZoomLevel((prev) => {
       const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta));
       return newZoom;
     });
@@ -1011,7 +1011,7 @@ export function PriceChart({
 
   // Handle mouse down for pan
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (e.button === 0) { // Left click
+    if (e.button === 0) {// Left click
       setIsPanning(true);
       setPanStartX(e.clientX);
       setPanStartOffset(panOffset);
@@ -1026,12 +1026,12 @@ export function PriceChart({
   // Handle pan during mouse move
   const handlePanMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isPanning || finalData.length === 0) return;
-    
+
     const deltaX = e.clientX - panStartX;
     const chartWidth = dimensions.width - 80; // padding
-    const pointsPerPixel = (finalData.length / zoomLevel) / chartWidth;
+    const pointsPerPixel = finalData.length / zoomLevel / chartWidth;
     const offsetDelta = Math.round(-deltaX * pointsPerPixel);
-    
+
     const maxOffset = Math.max(0, finalData.length - Math.ceil(finalData.length / zoomLevel));
     const newOffset = Math.max(0, Math.min(maxOffset, panStartOffset + offsetDelta));
     setPanOffset(newOffset);
@@ -1088,9 +1088,9 @@ export function PriceChart({
       // Single touch pan
       const deltaX = e.touches[0].clientX - touchStartX;
       const chartWidth = dimensions.width - 80;
-      const pointsPerPixel = (finalData.length / zoomLevel) / chartWidth;
+      const pointsPerPixel = finalData.length / zoomLevel / chartWidth;
       const offsetDelta = Math.round(-deltaX * pointsPerPixel);
-      
+
       const maxOffset = Math.max(0, finalData.length - Math.ceil(finalData.length / zoomLevel));
       const newOffset = Math.max(0, Math.min(maxOffset, touchStartOffset + offsetDelta));
       setPanOffset(newOffset);
@@ -1131,7 +1131,7 @@ export function PriceChart({
         <div className="flex items-center gap-3">
           {/* Period buttons */}
           <div className="flex items-center gap-1">
-            {periodButtons.map(btn => <Tooltip key={btn.value}>
+            {periodButtons.map((btn) => <Tooltip key={btn.value}>
                 <TooltipTrigger asChild>
                   <button onClick={() => handlePeriodClick(btn.value)} className={cn("px-2 py-1 text-xs font-medium rounded transition-all", selectedPeriod === btn.value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
                     {btn.label}
@@ -1149,157 +1149,157 @@ export function PriceChart({
           </div>
           
           {/* Chart type and filter buttons */}
-          <div className="flex flex-col gap-1 border-l border-border/30 pl-3">
-            <div className="flex items-center gap-1">
-              {/* Chart type toggle */}
-              <div className="flex items-center border border-border/50 rounded overflow-hidden">
-                <button 
-                  onClick={() => setChartType('candle')} 
-                  className={cn(
-                    "px-2 py-1 text-[10px] font-medium transition-all",
-                    chartType === 'candle' 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-muted/30 text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  🕯️ Velas
-                </button>
-                <button 
-                  onClick={() => setChartType('line')} 
-                  className={cn(
-                    "px-2 py-1 text-[10px] font-medium transition-all",
-                    chartType === 'line' 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-muted/30 text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  📈 Línea
-                </button>
-              </div>
-              
-              {/* Toggle volume visibility */}
-              <button onClick={() => setShowVolumeChart(!showVolumeChart)} className={cn("px-2 py-1 text-[10px] font-medium rounded transition-all", showVolumeChart ? "bg-muted text-foreground" : "bg-muted/30 text-muted-foreground line-through")}>
-                Vol
-              </button>
-              
-              {/* Toggle patterns visibility - only show when candle chart */}
-              {chartType === 'candle' && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button 
-                      onClick={() => setShowPatterns(!showPatterns)} 
-                      className={cn(
-                        "px-2 py-1 text-[10px] font-medium rounded transition-all flex items-center gap-1",
-                        showPatterns 
-                          ? "bg-amber-500/20 text-amber-400" 
-                          : "bg-muted/30 text-muted-foreground line-through"
-                      )}
-                    >
-                      🕯️ Patrones
-                      {showPatterns && detectedPatterns.length > 0 && (
-                        <span className="bg-amber-500 text-black text-[9px] px-1 rounded-full font-bold">
-                          {detectedPatterns.length}
-                        </span>
-                      )}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs max-w-[200px]">
-                    <p className="font-medium mb-1">Patrones detectados:</p>
-                    <ul className="text-[10px] space-y-0.5">
-                      <li>🔨 Hammer - Reversión alcista</li>
-                      <li>⚖️ Doji - Indecisión</li>
-                      <li>🟢 Bull Engulfing - Alcista fuerte</li>
-                      <li>🔴 Bear Engulfing - Bajista fuerte</li>
-                    </ul>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-              
-              {/* Divider */}
-              <div className="w-px h-4 bg-border/30 mx-1" />
-              
-              {/* Toggle sessions panel */}
-              <button 
-                onClick={() => setShowSessions(!showSessions)} 
-                className={cn(
-                  "px-2 py-1 text-[10px] font-medium rounded transition-all flex items-center gap-1",
-                  showSessions 
-                    ? "bg-primary/20 text-primary" 
-                    : "bg-muted/30 text-muted-foreground"
-                )}
-              >
-                🌐 Zonas
-                <span className={cn("transition-transform duration-200 text-[8px]", showSessions ? "rotate-180" : "")}>▼</span>
-              </button>
-            </div>
-            
-            {/* Collapsible sessions section */}
-            <div className={cn(
-              "overflow-hidden transition-all duration-300 ease-in-out",
-              showSessions ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
-            )}>
-              <div className="flex items-center gap-1 flex-wrap">
-                {MARKET_SESSIONS.map(session => <Tooltip key={session.id}>
-                    <TooltipTrigger asChild>
-                      <button onClick={() => toggleSession(session.id as SessionId)} className={cn("px-2 py-1 text-xs font-medium rounded transition-all flex items-center gap-1", enabledSessions.has(session.id as SessionId) ? `${session.bgColor} ${session.textColor}` : "text-muted-foreground/40 hover:text-muted-foreground bg-muted/20 line-through")}>
-                        <span>{session.emoji}</span>
-                        <span className="hidden sm:inline">{session.name}</span>
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[280px] p-3" style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.95)',
-                    borderColor: session.borderColor
-                  }}>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{session.emoji}</span>
-                          <span className="font-semibold" style={{
-                          color: session.borderColor
-                        }}>{session.name}</span>
-                          <span className="text-[10px] text-muted-foreground ml-auto">
-                            {String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{session.description}</p>
-                        <div className="grid grid-cols-2 gap-2 text-[11px]">
-                          <div>
-                            <span className="text-muted-foreground">Mercados: </span>
-                            <span className="text-foreground">{session.markets}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Volatilidad: </span>
-                            <span className="font-medium" style={{
-                            color: session.volatility === 'Alta' ? '#ef4444' : session.volatility === 'Baja' ? '#22c55e' : '#fbbf24'
-                          }}>
-                              {session.volatility}
-                            </span>
-                          </div>
-                          <div className="col-span-2">
-                            <span className="text-muted-foreground">Pares clave: </span>
-                            <span className="text-foreground">{session.pairs}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>)}
-              </div>
-              {/* UTC time reference */}
-              <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 flex-wrap mt-1">
-                {MARKET_SESSIONS.filter(s => enabledSessions.has(s.id as SessionId)).map(session => <span key={session.id} className="flex items-center gap-1">
-                    <span style={{
-                  color: session.borderColor
-                }}>{session.emoji}</span>
-                    <span>{String(session.start).padStart(2, '0')}:00-{String(session.end).padStart(2, '0')}:00 UTC</span>
-                  </span>)}
-              </div>
-            </div>
-          </div>
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
         
         {/* Session and volume indicators when hovering */}
         <div className="flex items-center gap-3">
           {hoveredData?.sessions && hoveredData.sessions.length > 0 && <div className="flex items-center gap-1">
-              {hoveredData.sessions.map(session => <span key={session.name} className="text-xs px-2 py-0.5 rounded-full" style={{
+              {hoveredData.sessions.map((session) => <span key={session.name} className="text-xs px-2 py-0.5 rounded-full" style={{
               backgroundColor: session.color,
               color: session.borderColor,
               border: `1px solid ${session.borderColor}`
@@ -1325,23 +1325,23 @@ export function PriceChart({
       <div className="flex items-center justify-between px-2 py-1 border-t border-border/30 bg-muted/20">
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground">Zoom:</span>
-          <button 
-            onClick={() => setZoomLevel(prev => Math.max(MIN_ZOOM, prev - 0.25))}
-            className="px-2 py-0.5 text-xs rounded bg-muted hover:bg-muted/80 text-foreground"
-          >
+          <button
+            onClick={() => setZoomLevel((prev) => Math.max(MIN_ZOOM, prev - 0.25))}
+            className="px-2 py-0.5 text-xs rounded bg-muted hover:bg-muted/80 text-foreground">
+
             −
           </button>
           <span className="text-xs font-mono text-foreground w-12 text-center">{(zoomLevel * 100).toFixed(0)}%</span>
-          <button 
-            onClick={() => setZoomLevel(prev => Math.min(MAX_ZOOM, prev + 0.25))}
-            className="px-2 py-0.5 text-xs rounded bg-muted hover:bg-muted/80 text-foreground"
-          >
+          <button
+            onClick={() => setZoomLevel((prev) => Math.min(MAX_ZOOM, prev + 0.25))}
+            className="px-2 py-0.5 text-xs rounded bg-muted hover:bg-muted/80 text-foreground">
+
             +
           </button>
-          <button 
+          <button
             onClick={handleResetZoom}
-            className="px-2 py-0.5 text-[10px] rounded bg-primary/20 hover:bg-primary/30 text-primary"
-          >
+            className="px-2 py-0.5 text-[10px] rounded bg-primary/20 hover:bg-primary/30 text-primary">
+
             Reset
           </button>
         </div>
@@ -1352,82 +1352,82 @@ export function PriceChart({
 
       {/* Price chart */}
       <div ref={containerRef} className="h-[220px] w-full relative">
-        <canvas 
-          ref={canvasRef} 
+        <canvas
+          ref={canvasRef}
           className={cn("w-full h-full touch-none", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
           style={{
             width: dimensions.width,
             height: dimensions.height
-          }} 
-          onMouseMove={handleCombinedMouseMove} 
+          }}
+          onMouseMove={handleCombinedMouseMove}
           onMouseLeave={handleMouseLeave}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onWheel={handleWheel}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        />
+          onTouchEnd={handleTouchEnd} />
+
         
         {/* Zoom level indicator */}
-        {zoomLevel !== 1 && (
-          <div className="absolute bottom-2 right-20 flex items-center gap-1 bg-background/90 backdrop-blur-sm border border-border/50 rounded-md px-2 py-1 shadow-lg animate-fade-in">
-            <svg 
-              className="w-3 h-3 text-muted-foreground" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
+        {zoomLevel !== 1 &&
+        <div className="absolute bottom-2 right-20 flex items-center gap-1 bg-background/90 backdrop-blur-sm border border-border/50 rounded-md px-2 py-1 shadow-lg animate-fade-in">
+            <svg
+            className="w-3 h-3 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
             </svg>
             <span className={cn(
-              "text-[10px] font-bold tabular-nums",
-              zoomLevel > 1 ? "text-green-400" : "text-amber-400"
-            )}>
+            "text-[10px] font-bold tabular-nums",
+            zoomLevel > 1 ? "text-green-400" : "text-amber-400"
+          )}>
               {zoomLevel.toFixed(1)}x
             </span>
             <button
-              onClick={handleResetZoom}
-              className="ml-1 p-0.5 rounded hover:bg-muted/50 transition-colors"
-              title="Resetear zoom"
-            >
-              <svg 
-                className="w-3 h-3 text-muted-foreground hover:text-foreground" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
+            onClick={handleResetZoom}
+            className="ml-1 p-0.5 rounded hover:bg-muted/50 transition-colors"
+            title="Resetear zoom">
+
+              <svg
+              className="w-3 h-3 text-muted-foreground hover:text-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-        )}
+        }
       </div>
       
       {/* Volume chart */}
       {showVolumeChart && <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
           <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
-          <canvas 
-            ref={volumeCanvasRef} 
-            className={cn("w-full h-full touch-none", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
-            style={{
-              width: volumeDimensions.width,
-              height: volumeDimensions.height
-            }} 
-            onMouseMove={handleCombinedMouseMove} 
-            onMouseLeave={handleMouseLeave}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onWheel={handleWheel}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          />
+          <canvas
+          ref={volumeCanvasRef}
+          className={cn("w-full h-full touch-none", isPanning ? "cursor-grabbing" : "cursor-crosshair")}
+          style={{
+            width: volumeDimensions.width,
+            height: volumeDimensions.height
+          }}
+          onMouseMove={handleCombinedMouseMove}
+          onMouseLeave={handleMouseLeave}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd} />
+
         </div>}
       
       {/* Patterns Legend - Expandable */}
-      {chartType === 'candle' && showPatterns && detectedPatterns.length > 0 && (
-        <div className="border-t border-border/30 bg-muted/10">
+      {chartType === 'candle' && showPatterns && detectedPatterns.length > 0 &&
+      <div className="border-t border-border/30 bg-muted/10">
           <details className="group">
             <summary className="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-muted/20 transition-colors">
               <div className="flex items-center gap-2">
@@ -1436,12 +1436,12 @@ export function PriceChart({
                   {detectedPatterns.length}
                 </span>
               </div>
-              <svg 
-                className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
+              <svg
+              className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </summary>
@@ -1450,128 +1450,128 @@ export function PriceChart({
               <div className="flex items-center gap-1 pb-2 border-b border-border/20">
                 <span className="text-[10px] text-muted-foreground mr-2">Filtrar:</span>
                 <button
-                  onClick={() => setPatternFilter('all')}
-                  className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all",
-                    patternFilter === 'all'
-                      ? "bg-amber-500/20 text-amber-400"
-                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
+                onClick={() => setPatternFilter('all')}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] font-medium rounded transition-all",
+                  patternFilter === 'all' ?
+                  "bg-amber-500/20 text-amber-400" :
+                  "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                )}>
+
                   Todos ({detectedPatterns.length})
                 </button>
                 <button
-                  onClick={() => setPatternFilter('bullish')}
-                  className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
-                    patternFilter === 'bullish'
-                      ? "bg-green-500/20 text-green-400"
-                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  ↑ Alcistas ({detectedPatterns.filter(p => p.signal === 'bullish').length})
+                onClick={() => setPatternFilter('bullish')}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                  patternFilter === 'bullish' ?
+                  "bg-green-500/20 text-green-400" :
+                  "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                )}>
+
+                  ↑ Alcistas ({detectedPatterns.filter((p) => p.signal === 'bullish').length})
                 </button>
                 <button
-                  onClick={() => setPatternFilter('bearish')}
-                  className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
-                    patternFilter === 'bearish'
-                      ? "bg-red-500/20 text-red-400"
-                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  ↓ Bajistas ({detectedPatterns.filter(p => p.signal === 'bearish').length})
+                onClick={() => setPatternFilter('bearish')}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                  patternFilter === 'bearish' ?
+                  "bg-red-500/20 text-red-400" :
+                  "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                )}>
+
+                  ↓ Bajistas ({detectedPatterns.filter((p) => p.signal === 'bearish').length})
                 </button>
                 <button
-                  onClick={() => setPatternFilter('neutral')}
-                  className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
-                    patternFilter === 'neutral'
-                      ? "bg-amber-500/20 text-amber-400"
-                      : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  → Neutrales ({detectedPatterns.filter(p => p.signal === 'neutral').length})
+                onClick={() => setPatternFilter('neutral')}
+                className={cn(
+                  "px-2 py-0.5 text-[10px] font-medium rounded transition-all flex items-center gap-1",
+                  patternFilter === 'neutral' ?
+                  "bg-amber-500/20 text-amber-400" :
+                  "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                )}>
+
+                  → Neutrales ({detectedPatterns.filter((p) => p.signal === 'neutral').length})
                 </button>
               </div>
               
               {/* Filtered patterns */}
-              {detectedPatterns
-                .filter(p => patternFilter === 'all' || p.signal === patternFilter)
-                .map((pattern, idx) => {
-                const point = finalData[pattern.index];
-                const patternDescriptions: Record<string, { title: string; desc: string; action: string }> = {
-                  doji: {
-                    title: 'Doji - Indecisión',
-                    desc: 'El precio de apertura y cierre son prácticamente iguales, indicando indecisión en el mercado.',
-                    action: 'Esperar confirmación de la próxima vela antes de actuar.'
-                  },
-                  hammer: {
-                    title: 'Hammer - Reversión Alcista',
-                    desc: 'Cuerpo pequeño en la parte superior con mecha inferior larga. Señal de posible reversión alcista.',
-                    action: 'Considerar posición larga si aparece después de tendencia bajista.'
-                  },
-                  inverted_hammer: {
-                    title: 'Martillo Invertido - Potencial Alcista',
-                    desc: 'Cuerpo pequeño en la parte inferior con mecha superior larga. Posible cambio de tendencia.',
-                    action: 'Buscar confirmación alcista en la siguiente vela.'
-                  },
-                  bullish_engulfing: {
-                    title: 'Envolvente Alcista - Señal Fuerte',
-                    desc: 'Una vela verde grande envuelve completamente la vela roja anterior. Fuerte señal de compra.',
-                    action: 'Considerar entrada en largo con stop bajo el mínimo del patrón.'
-                  },
-                  bearish_engulfing: {
-                    title: 'Envolvente Bajista - Señal Fuerte',
-                    desc: 'Una vela roja grande envuelve completamente la vela verde anterior. Fuerte señal de venta.',
-                    action: 'Considerar entrada en corto con stop sobre el máximo del patrón.'
-                  },
-                  morning_star: {
-                    title: 'Estrella de la Mañana - Reversión Alcista',
-                    desc: 'Patrón de tres velas que indica fin de tendencia bajista.',
-                    action: 'Señal de compra con confirmación.'
-                  },
-                  evening_star: {
-                    title: 'Estrella de la Tarde - Reversión Bajista',
-                    desc: 'Patrón de tres velas que indica fin de tendencia alcista.',
-                    action: 'Señal de venta con confirmación.'
-                  }
-                };
-                
-                const info = patternDescriptions[pattern.type] || { 
-                  title: pattern.label, 
-                  desc: 'Patrón de vela detectado.',
-                  action: 'Analizar contexto del mercado.'
-                };
-                
-                return (
-                  <div 
-                    key={`${pattern.type}-${idx}`}
-                    className="flex items-start gap-3 p-2 rounded-lg bg-background/50 border border-border/30"
-                  >
-                    <div 
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0"
-                      style={{ backgroundColor: `${pattern.color}20` }}
-                    >
+              {detectedPatterns.
+            filter((p) => patternFilter === 'all' || p.signal === patternFilter).
+            map((pattern, idx) => {
+              const point = finalData[pattern.index];
+              const patternDescriptions: Record<string, {title: string;desc: string;action: string;}> = {
+                doji: {
+                  title: 'Doji - Indecisión',
+                  desc: 'El precio de apertura y cierre son prácticamente iguales, indicando indecisión en el mercado.',
+                  action: 'Esperar confirmación de la próxima vela antes de actuar.'
+                },
+                hammer: {
+                  title: 'Hammer - Reversión Alcista',
+                  desc: 'Cuerpo pequeño en la parte superior con mecha inferior larga. Señal de posible reversión alcista.',
+                  action: 'Considerar posición larga si aparece después de tendencia bajista.'
+                },
+                inverted_hammer: {
+                  title: 'Martillo Invertido - Potencial Alcista',
+                  desc: 'Cuerpo pequeño en la parte inferior con mecha superior larga. Posible cambio de tendencia.',
+                  action: 'Buscar confirmación alcista en la siguiente vela.'
+                },
+                bullish_engulfing: {
+                  title: 'Envolvente Alcista - Señal Fuerte',
+                  desc: 'Una vela verde grande envuelve completamente la vela roja anterior. Fuerte señal de compra.',
+                  action: 'Considerar entrada en largo con stop bajo el mínimo del patrón.'
+                },
+                bearish_engulfing: {
+                  title: 'Envolvente Bajista - Señal Fuerte',
+                  desc: 'Una vela roja grande envuelve completamente la vela verde anterior. Fuerte señal de venta.',
+                  action: 'Considerar entrada en corto con stop sobre el máximo del patrón.'
+                },
+                morning_star: {
+                  title: 'Estrella de la Mañana - Reversión Alcista',
+                  desc: 'Patrón de tres velas que indica fin de tendencia bajista.',
+                  action: 'Señal de compra con confirmación.'
+                },
+                evening_star: {
+                  title: 'Estrella de la Tarde - Reversión Bajista',
+                  desc: 'Patrón de tres velas que indica fin de tendencia alcista.',
+                  action: 'Señal de venta con confirmación.'
+                }
+              };
+
+              const info = patternDescriptions[pattern.type] || {
+                title: pattern.label,
+                desc: 'Patrón de vela detectado.',
+                action: 'Analizar contexto del mercado.'
+              };
+
+              return (
+                <div
+                  key={`${pattern.type}-${idx}`}
+                  className="flex items-start gap-3 p-2 rounded-lg bg-background/50 border border-border/30">
+
+                    <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-lg shrink-0"
+                    style={{ backgroundColor: `${pattern.color}20` }}>
+
                       {pattern.emoji}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-semibold text-foreground">{info.title}</span>
-                        <span 
-                          className="text-[9px] px-1.5 py-0.5 rounded font-medium"
-                          style={{ 
-                            backgroundColor: `${pattern.color}20`,
-                            color: pattern.color 
-                          }}
-                        >
+                        <span
+                        className="text-[9px] px-1.5 py-0.5 rounded font-medium"
+                        style={{
+                          backgroundColor: `${pattern.color}20`,
+                          color: pattern.color
+                        }}>
+
                           {pattern.signal === 'bullish' ? '↑ ALCISTA' : pattern.signal === 'bearish' ? '↓ BAJISTA' : '→ NEUTRAL'}
                         </span>
-                        {point && (
-                          <span className="text-[10px] text-muted-foreground">
+                        {point &&
+                      <span className="text-[10px] text-muted-foreground">
                             @ {point.time}
                           </span>
-                        )}
+                      }
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">
                         {info.desc}
@@ -1579,29 +1579,29 @@ export function PriceChart({
                       <p className="text-[10px] mt-1 font-medium" style={{ color: pattern.color }}>
                         💡 {info.action}
                       </p>
-                      {point && (
-                        <div className="flex items-center gap-3 mt-1.5 text-[9px] text-muted-foreground">
+                      {point &&
+                    <div className="flex items-center gap-3 mt-1.5 text-[9px] text-muted-foreground">
                           <span>O: <span className="text-foreground font-mono">{point.open.toFixed(5)}</span></span>
                           <span>H: <span className="text-green-400 font-mono">{point.high.toFixed(5)}</span></span>
                           <span>L: <span className="text-red-400 font-mono">{point.low.toFixed(5)}</span></span>
                           <span>C: <span className="text-foreground font-mono">{point.price.toFixed(5)}</span></span>
                         </div>
-                      )}
+                    }
                     </div>
-                  </div>
-                );
-              })}
+                  </div>);
+
+            })}
               
               {/* Empty state when filter has no results */}
-              {detectedPatterns.filter(p => patternFilter === 'all' || p.signal === patternFilter).length === 0 && (
-                <div className="text-center py-4 text-muted-foreground text-xs">
+              {detectedPatterns.filter((p) => patternFilter === 'all' || p.signal === patternFilter).length === 0 &&
+            <div className="text-center py-4 text-muted-foreground text-xs">
                   No hay patrones {patternFilter === 'bullish' ? 'alcistas' : patternFilter === 'bearish' ? 'bajistas' : 'neutrales'} detectados
                 </div>
-              )}
+            }
             </div>
           </details>
         </div>
-      )}
+      }
     </div>
     </TooltipProvider>;
 }
