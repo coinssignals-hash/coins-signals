@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { TrendingUp, TrendingDown, Minus, Gauge, Activity, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -177,14 +177,14 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
 
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/30 overflow-hidden">
-        <CardContent className="p-5">
+      <SignalStyleCard>
+        <div className="p-5">
           <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-green-900/20 rounded w-1/3"></div>
-            <div className="h-[200px] bg-green-900/10 rounded"></div>
+            <div className="h-6 bg-cyan-900/20 rounded w-1/3"></div>
+            <div className="h-[200px] bg-cyan-900/10 rounded"></div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </SignalStyleCard>
     );
   }
 
@@ -192,8 +192,8 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
   const gaugeRotation = (overallScore / 100) * 90;
 
   return (
-    <Card className="bg-gradient-to-br from-[#0a1a0a] to-[#0d1f0d] border-green-900/30 overflow-hidden">
-      <CardContent className="p-5 space-y-5">
+    <SignalStyleCard>
+      <div className="p-5 space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -359,7 +359,7 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </SignalStyleCard>
   );
 }
