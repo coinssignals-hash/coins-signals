@@ -121,12 +121,19 @@ export function CandlestickChart({
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
-    // Calculate price range
-    const allPrices = data.flatMap(d => [d.high, d.low]);
-    if (realtimePrice) allPrices.push(realtimePrice);
-    allPrices.push(resistance, support);
-    const minPrice = Math.min(...allPrices) * 0.9995;
-    const maxPrice = Math.max(...allPrices) * 1.0005;
+    // Calculate price range — tight padding so candles fill the chart
+    const candlePrices = data.flatMap(d => [d.high, d.low]);
+    let minPrice = Math.min(...candlePrices);
+    let maxPrice = Math.max(...candlePrices);
+    if (realtimePrice) { minPrice = Math.min(minPrice, realtimePrice); maxPrice = Math.max(maxPrice, realtimePrice); }
+    // Include S/R only if they're within a reasonable range of the candle data
+    const candleRange = maxPrice - minPrice || 0.0001;
+    if (support >= minPrice - candleRange * 0.5) minPrice = Math.min(minPrice, support);
+    if (resistance <= maxPrice + candleRange * 0.5) maxPrice = Math.max(maxPrice, resistance);
+    // Minimal padding (2% each side)
+    const pad = (maxPrice - minPrice) * 0.02;
+    minPrice -= pad;
+    maxPrice += pad;
     const priceRange = maxPrice - minPrice;
 
     // Store dimensions for crosshair calculations
