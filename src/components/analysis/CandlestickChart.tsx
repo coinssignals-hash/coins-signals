@@ -69,7 +69,7 @@ export function CandlestickChart({
   const [crosshair, setCrosshair] = useState<CrosshairData | null>(null);
   const candlePositionsRef = useRef<CandlePosition[]>([]);
   const chartDimensionsRef = useRef<ChartDimensions | null>(null);
-  const paddingRef = useRef({ top: 20, right: 80, bottom: 30, left: 50 });
+  const paddingRef = useRef({ top: 16, right: 72, bottom: 26, left: 42 });
   const animationFrameRef = useRef<number | null>(null);
   const pulsePhaseRef = useRef(0);
 
@@ -302,7 +302,7 @@ export function CandlestickChart({
     ctx.fillText(proximity.breakoutSupport ? '📉 RUPTURA!' : 'Soporte', width - padding.right + 5, supportY + 4);
 
     // Draw candlesticks
-    const bodyWidth = Math.max(4, candleWidth * 0.6);
+    const bodyWidth = Math.max(3, candleWidth * 0.7);
     const wickWidth = 1;
 
     data.forEach((candle, index) => {
@@ -604,7 +604,7 @@ export function CandlestickChart({
       
       <div 
         ref={containerRef} 
-        className="h-72 relative z-10"
+        className="h-80 relative z-10"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
