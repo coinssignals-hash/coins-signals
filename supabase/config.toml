@@ -80,3 +80,6 @@ verify_jwt = false
 
 [functions.currency-impact-ai]
 verify_jwt = false
+
+[functions.signal-market-sentiment]
+verify_jwt = false
