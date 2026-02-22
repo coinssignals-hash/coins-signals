@@ -1,9 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { CandlestickChart } from "@/components/analysis/CandlestickChart";
-import { usePreviousDayCandles } from "@/hooks/usePreviousDayCandles";
 import {
   TrendingUp,
   ShieldCheck,
@@ -278,8 +275,30 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     expanded
   );
 
-  // Previous day candle data for CandlestickChart (fetched when expanded)
-  const { data: previousDayData, loading: candleLoading } = usePreviousDayCandles(expanded ? currencyPair : "");
+  // Server-rendered candlestick chart SVG (fetched from edge function when expanded)
+  const [chartSvgUrl, setChartSvgUrl] = useState<string | null>(null);
+  const [chartLoading, setChartLoading] = useState(false);
+
+  useEffect(() => {
+    if (!expanded || chartSvgUrl) return;
+    setChartLoading(true);
+    const pairClean = currencyPair.replace(/[/\- ]/g, '');
+    const params = new URLSearchParams({ pair: pairClean, sr_mode: 'auto' });
+    if (resistance) params.set('resistance', String(resistance));
+    else params.set('resistance', String(takeProfit));
+    if (support) params.set('support', String(support));
+    else params.set('support', String(stopLoss));
+
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
+    fetch(url)
+      .then(res => res.text())
+      .then(svgText => {
+        const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+        setChartSvgUrl(URL.createObjectURL(blob));
+      })
+      .catch(err => console.error('Chart fetch error:', err))
+      .finally(() => setChartLoading(false));
+  }, [expanded, currencyPair, resistance, support, takeProfit, stopLoss, chartSvgUrl]);
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
@@ -560,17 +579,24 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
-            {/* Candlestick Chart - Previous Day */}
-            <div className="mx-3 mb-3">
-              <CandlestickChart
-                data={previousDayData?.candles || []}
-                resistance={previousDayData?.resistance || resistance || takeProfit}
-                support={previousDayData?.support || support || stopLoss}
-                loading={candleLoading}
-                realtimePrice={priceDiff.hasData ? priceDiff.currentPrice : null}
-                isRealtimeConnected={isConnected}
-                previousDayDate={previousDayData?.dateRange || previousDayData?.date}
-              />
+            {/* Candlestick Chart - Server Rendered */}
+            <div className="mx-3 mb-3 rounded-lg overflow-hidden">
+              {chartLoading ? (
+                <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : chartSvgUrl ? (
+                <img
+                  src={chartSvgUrl}
+                  alt={`Gráfico ${currencyPair} 7 días`}
+                  className="w-full h-auto block rounded-lg"
+                  draggable={false}
+                />
+              ) : (
+                <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
+                  <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
+                </div>
+              )}
             </div>
 
             {/* Market Sentiment Dashboard */}
