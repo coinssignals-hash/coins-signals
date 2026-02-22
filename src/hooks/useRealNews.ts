@@ -71,5 +71,5 @@ export function useRealNews(date?: Date, currencies?: Currency[], limit?: number
 }
 
 export function useRealNewsByDate(date: Date) {
-  return useRealNews(date, undefined, 30);
+  return useRealNews(date, undefined, 80);
 }
