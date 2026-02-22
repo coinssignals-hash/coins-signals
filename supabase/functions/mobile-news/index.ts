@@ -31,6 +31,19 @@ const CURRENCY_PATTERNS: Record<string, RegExp> = {
   'NZD': /\b(NZD|kiwi|new zealand dollar|RBNZ)\b/i,
 };
 
+interface CardRender {
+  impact_color: string;
+  impact_label: string;
+  impact_icon: string;
+  sentiment_color: string;
+  sentiment_label: string;
+  sentiment_icon: string;
+  category_label: string;
+  category_icon: string;
+  fallback_image: string;
+  source_initials: string;
+}
+
 interface MobileNewsItem {
   id: string;
   title: string;
@@ -45,6 +58,7 @@ interface MobileNewsItem {
   affected_currencies: string[];
   sentiment: 'bullish' | 'bearish' | 'neutral';
   impact: 'high' | 'medium' | 'low';
+  card: CardRender;
 }
 
 function detectCurrencies(text: string): string[] {
@@ -89,6 +103,36 @@ function detectSentiment(text: string): 'bullish' | 'bearish' | 'neutral' {
   return 'neutral';
 }
 
+const CATEGORY_META: Record<string, { label: string; icon: string }> = {
+  monetary_policy: { label: 'Política Monetaria', icon: '🏦' },
+  inflation: { label: 'Inflación', icon: '📈' },
+  employment: { label: 'Empleo', icon: '👷' },
+  gdp: { label: 'PIB', icon: '📊' },
+  central_bank: { label: 'Banco Central', icon: '🏛️' },
+  trade: { label: 'Comercio', icon: '🚢' },
+  geopolitics: { label: 'Geopolítica', icon: '🌍' },
+  market: { label: 'Mercado', icon: '💹' },
+};
+
+function buildCard(impact: 'high' | 'medium' | 'low', sentiment: 'bullish' | 'bearish' | 'neutral', category: string, source: string): CardRender {
+  const impactMap = { high: { color: '#EF4444', label: 'Alto', icon: '🔴' }, medium: { color: '#F59E0B', label: 'Medio', icon: '🟡' }, low: { color: '#22C55E', label: 'Bajo', icon: '🟢' } };
+  const sentimentMap = { bullish: { color: '#22C55E', label: 'Alcista', icon: '📈' }, bearish: { color: '#EF4444', label: 'Bajista', icon: '📉' }, neutral: { color: '#6B7280', label: 'Neutral', icon: '➖' } };
+  const catMeta = CATEGORY_META[category] || CATEGORY_META.market;
+  const initials = source.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  return {
+    impact_color: impactMap[impact].color,
+    impact_label: impactMap[impact].label,
+    impact_icon: impactMap[impact].icon,
+    sentiment_color: sentimentMap[sentiment].color,
+    sentiment_label: sentimentMap[sentiment].label,
+    sentiment_icon: sentimentMap[sentiment].icon,
+    category_label: catMeta.label,
+    category_icon: catMeta.icon,
+    fallback_image: `https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop`,
+    source_initials: initials,
+  };
+}
+
 function detectImpact(text: string): 'high' | 'medium' | 'low' {
   if (/\b(rate decision|NFP|CPI|GDP|FOMC|emergency|crisis)\b/i.test(text)) return 'high';
   if (/\b(employment|inflation|trade|policy|central bank)\b/i.test(text)) return 'medium';
@@ -127,12 +171,15 @@ async function fetchFinnhub(apiKey: string): Promise<MobileNewsItem[]> {
     return data.slice(0, 20).map((item: any, i: number) => {
       const text = `${item.headline} ${item.summary || ''}`;
       const pubDate = new Date(item.datetime * 1000).toISOString();
+      const cat = detectCategory(text); const sent = detectSentiment(text); const imp = detectImpact(text);
+      const src = item.source || 'Finnhub';
       return {
         id: `finnhub-${item.id || i}`, title: item.headline, summary: item.summary || '',
-        source: item.source || 'Finnhub', source_logo: SOURCE_LOGOS[item.source] || null,
+        source: src, source_logo: SOURCE_LOGOS[item.source] || null,
         url: item.url, image_url: item.image || null, published_at: pubDate,
-        time_ago: getTimeAgo(pubDate), category: detectCategory(text),
-        affected_currencies: detectCurrencies(text), sentiment: detectSentiment(text), impact: detectImpact(text),
+        time_ago: getTimeAgo(pubDate), category: cat,
+        affected_currencies: detectCurrencies(text), sentiment: sent, impact: imp,
+        card: buildCard(imp, sent, cat, src),
       };
     });
   } catch { return []; }
@@ -145,14 +192,17 @@ async function fetchPolygon(apiKey: string): Promise<MobileNewsItem[]> {
     const data = await res.json();
     return (data.results || []).map((item: any, i: number) => {
       const text = `${item.title} ${item.description || ''}`;
+      const cat = detectCategory(text); const sent = detectSentiment(text); const imp = detectImpact(text);
+      const src = item.publisher?.name || 'Polygon';
       return {
         id: `polygon-${item.id || i}`, title: item.title, summary: item.description || '',
-        source: item.publisher?.name || 'Polygon',
-        source_logo: item.publisher?.logo_url || SOURCE_LOGOS[item.publisher?.name] || null,
+        source: src,
+        source_logo: item.publisher?.logo_url || SOURCE_LOGOS[src] || null,
         url: item.article_url, image_url: item.image_url || null,
         published_at: item.published_utc, time_ago: getTimeAgo(item.published_utc),
-        category: detectCategory(text), affected_currencies: detectCurrencies(text),
-        sentiment: detectSentiment(text), impact: detectImpact(text),
+        category: cat, affected_currencies: detectCurrencies(text),
+        sentiment: sent, impact: imp,
+        card: buildCard(imp, sent, cat, src),
       };
     });
   } catch { return []; }
@@ -168,12 +218,15 @@ async function fetchNewsApi(apiKey: string): Promise<MobileNewsItem[]> {
       .filter((a: any) => a.title && a.title !== '[Removed]')
       .map((item: any, i: number) => {
         const text = `${item.title} ${item.description || ''}`;
+        const cat = detectCategory(text); const sent = detectSentiment(text); const imp = detectImpact(text);
+        const src = item.source?.name || 'NewsAPI';
         return {
           id: `newsapi-${i}-${Date.now()}`, title: item.title, summary: item.description || '',
-          source: item.source?.name || 'NewsAPI', source_logo: SOURCE_LOGOS[item.source?.name] || null,
+          source: src, source_logo: SOURCE_LOGOS[src] || null,
           url: item.url, image_url: item.urlToImage || null, published_at: item.publishedAt,
-          time_ago: getTimeAgo(item.publishedAt), category: detectCategory(text),
-          affected_currencies: detectCurrencies(text), sentiment: detectSentiment(text), impact: detectImpact(text),
+          time_ago: getTimeAgo(item.publishedAt), category: cat,
+          affected_currencies: detectCurrencies(text), sentiment: sent, impact: imp,
+          card: buildCard(imp, sent, cat, src),
         };
       });
   } catch { return []; }
@@ -183,13 +236,15 @@ function rssToItems(items: ReturnType<typeof parseRSSItems>, sourceId: string, s
   return items.slice(0, 15).map((item, i) => {
     const text = `${item.title} ${item.description}`;
     const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
+    const cat = detectCategory(text); const sent = detectSentiment(text); const imp = detectImpact(text);
     return {
       id: `${sourceId}-${i}-${Date.now()}`, title: item.title,
       summary: item.description.substring(0, 200), source: sourceName,
       source_logo: SOURCE_LOGOS[sourceName] || null, url: item.link,
       image_url: item.imageUrl || null, published_at: pubDate,
-      time_ago: getTimeAgo(pubDate), category: detectCategory(text),
-      affected_currencies: detectCurrencies(text), sentiment: detectSentiment(text), impact: detectImpact(text),
+      time_ago: getTimeAgo(pubDate), category: cat,
+      affected_currencies: detectCurrencies(text), sentiment: sent, impact: imp,
+      card: buildCard(imp, sent, cat, sourceName),
     };
   });
 }
