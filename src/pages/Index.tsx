@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
-import { Card, CardContent } from '@/components/ui/card';
+// Card/CardContent removed - using SignalStyleCard instead
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -263,107 +263,111 @@ const Index = () => {
         <SignalStyleCard>
           <PortfolioWidget />
         </SignalStyleCard>
-        <div className="flex items-center gap-2 flex-wrap">
-          <SymbolSearch
-              value={selectedPair}
-              onChange={setSelectedPair}
-              className="flex-1 min-w-[180px]" />
+        <SignalStyleCard>
+          <div className="flex items-center gap-2 flex-wrap p-3">
+            <SymbolSearch
+                value={selectedPair}
+                onChange={setSelectedPair}
+                className="flex-1 min-w-[180px]" />
 
-          
-          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[100px] bg-slate-800/60 border-slate-700/50 text-slate-200">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-700">
-              {TIMEFRAME_VALUES.map((tf) =>
-                <SelectItem key={tf} value={tf}>{t(TIMEFRAME_KEYS[tf])}</SelectItem>
-                )}
-            </SelectContent>
-          </Select>
-          
-          <AIFullRegenerateButton
-              symbol={selectedPair}
-              currentPrice={marketStats.currentPrice}
-              high={marketStats.high}
-              low={marketStats.low} />
+            
+            <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+              <SelectTrigger className="w-[100px] bg-slate-800/60 border-slate-700/50 text-slate-200">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-slate-700">
+                {TIMEFRAME_VALUES.map((tf) =>
+                  <SelectItem key={tf} value={tf}>{t(TIMEFRAME_KEYS[tf])}</SelectItem>
+                  )}
+              </SelectContent>
+            </Select>
+            
+            <AIFullRegenerateButton
+                symbol={selectedPair}
+                currentPrice={marketStats.currentPrice}
+                high={marketStats.high}
+                low={marketStats.low} />
 
-          
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 border-slate-700/50 bg-slate-800/60 text-blue-400 hover:bg-slate-700/60">
-                <Bell className="w-4 h-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-[320px] sm:w-[380px] bg-slate-900 border-slate-700">
-              <SheetHeader>
-                <SheetTitle className="text-white">{t('index_indicator_alerts')}</SheetTitle>
-              </SheetHeader>
-              <div className="mt-4">
-                <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
-              </div>
-            </SheetContent>
-          </Sheet>
-          
-          <Button
-              variant="outline"
-              size="icon"
-              onClick={refetch}
-              disabled={loading}
-              className="shrink-0 border-slate-700/50 bg-slate-800/60 text-blue-400 hover:bg-slate-700/60">
+            
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0 border-slate-700/50 bg-slate-800/60 text-blue-400 hover:bg-slate-700/60">
+                  <Bell className="w-4 h-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[320px] sm:w-[380px] bg-slate-900 border-slate-700">
+                <SheetHeader>
+                  <SheetTitle className="text-white">{t('index_indicator_alerts')}</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4">
+                  <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
+                </div>
+              </SheetContent>
+            </Sheet>
+            
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={refetch}
+                disabled={loading}
+                className="shrink-0 border-slate-700/50 bg-slate-800/60 text-blue-400 hover:bg-slate-700/60">
 
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </SignalStyleCard>
 
         {isRateLimited &&
-          <Card className="border-yellow-500/50 bg-yellow-500/10">
-            <CardContent className="p-3 flex items-center gap-3">
+          <SignalStyleCard>
+            <div className="p-3 flex items-center gap-3">
               <Clock className="h-5 w-5 text-yellow-500 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm text-yellow-400 font-medium">{t('index_api_limit')}</p>
                 <p className="text-xs text-gray-400">{t('index_api_limit_desc')}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </SignalStyleCard>
           }
 
         {error && !isRateLimited &&
-          <Card className="border-red-500/50 bg-red-500/10">
-            <CardContent className="p-3">
+          <SignalStyleCard>
+            <div className="p-3">
               <p className="text-sm text-red-400">{error}</p>
-            </CardContent>
-          </Card>
+            </div>
+          </SignalStyleCard>
           }
 
         {isReconnecting &&
-          <Card className="border-orange-500/50 bg-orange-500/10 animate-pulse">
-            <CardContent className="p-3 flex items-center gap-3">
+          <SignalStyleCard className="animate-pulse">
+            <div className="p-3 flex items-center gap-3">
               <WifiOff className="h-5 w-5 text-orange-500 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm text-orange-400 font-medium">{t('index_reconnecting')}</p>
                 <p className="text-xs text-gray-400">{t('index_reconnecting_desc')}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </SignalStyleCard>
           }
 
         {wsError && !isReconnecting &&
-          <Card className="border-red-500/50 bg-red-500/10">
-            <CardContent className="p-3 flex items-center gap-3">
+          <SignalStyleCard>
+            <div className="p-3 flex items-center gap-3">
               <WifiOff className="h-5 w-5 text-red-500 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm text-red-400 font-medium">{t('index_realtime_lost')}</p>
                 <p className="text-xs text-gray-400">{wsError}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </SignalStyleCard>
           }
 
         {data?.cached && !loading && !error &&
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Zap className="h-3 w-3 text-green-500" />
-            <span>{t('index_cached_data')}</span>
-          </div>
+          <SignalStyleCard>
+            <div className="p-2 flex items-center gap-2 text-xs text-gray-400">
+              <Zap className="h-3 w-3 text-green-500" />
+              <span>{t('index_cached_data')}</span>
+            </div>
+          </SignalStyleCard>
           }
 
         <SignalStyleCard>
