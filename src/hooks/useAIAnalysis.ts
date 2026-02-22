@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-export type AIAnalysisType = 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels';
+export type AIAnalysisType = 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels' | 'indicator_interpretation' | 'advanced_prediction';
 
 interface MarketData {
   currentPrice: number;
@@ -17,6 +17,10 @@ interface TechnicalIndicators {
   macd?: { value: number; signal: number; histogram: number };
   sma20?: number;
   sma50?: number;
+  bollingerBands?: { upper: number; middle: number; lower: number };
+  stochastic?: { k: number; d: number };
+  adx?: number;
+  atr?: number;
 }
 
 interface AIAnalysisResult {
