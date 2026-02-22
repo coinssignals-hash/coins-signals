@@ -158,10 +158,15 @@ export function useMarketData(symbol: string, timeframe: string) {
         }),
       ]);
 
-      // Check for rate limit errors
+      // Check for subscription/billing and rate limit errors
       const responses = [priceResponse, rsiResponse, macdResponse, smaResponse];
       for (const response of responses) {
-        if (response.data?.error?.includes('API credits') || response.data?.error?.includes('rate limit')) {
+        const errData = response.data;
+        if (errData?.error === 'api_subscription_expired') {
+          setIsRateLimited(true);
+          throw new Error('Suscripción de datos expirada. Contacta al administrador para renovar el acceso.');
+        }
+        if (errData?.error?.includes?.('API credits') || errData?.error?.includes?.('rate limit')) {
           setIsRateLimited(true);
           throw new Error('Límite de API alcanzado. Los datos se actualizarán en 1 minuto.');
         }

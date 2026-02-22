@@ -149,7 +149,19 @@ serve(async (req) => {
       console.log('SMA 50 response status:', sma50Data.status);
 
       if (sma20Data.status === 'error' || sma50Data.status === 'error') {
-        throw new Error(sma20Data.message || sma50Data.message || 'Error fetching SMA data');
+        const smaMsg = sma20Data.message || sma50Data.message || 'Error fetching SMA data';
+        if (smaMsg.includes('subscription') || smaMsg.includes('billing') || smaMsg.includes('expired')) {
+          return new Response(JSON.stringify({
+            error: 'api_subscription_expired',
+            message: 'La suscripción de datos de mercado ha expirado. Contacta al administrador para renovar el acceso.',
+            status: 'error',
+            retryable: false,
+          }), {
+            status: 402,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        throw new Error(smaMsg);
       }
 
       const smaResult = {
@@ -177,7 +189,20 @@ serve(async (req) => {
     
     if (data.status === 'error') {
       console.error('Twelve Data API error:', data.message);
-      throw new Error(data.message || 'Error fetching market data');
+      const msg = data.message || 'Error fetching market data';
+      // Detect subscription/billing issues
+      if (msg.includes('subscription') || msg.includes('billing') || msg.includes('expired') || msg.includes('API credits') || msg.includes('rate limit')) {
+        return new Response(JSON.stringify({
+          error: 'api_subscription_expired',
+          message: 'La suscripción de datos de mercado ha expirado. Contacta al administrador para renovar el acceso.',
+          status: 'error',
+          retryable: false,
+        }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      throw new Error(msg);
     }
     
     const result = {
