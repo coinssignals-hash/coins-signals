@@ -27,7 +27,7 @@ function ZoomableChartInner({
   signalId,
   chartImageUrl,
   height = 200
-}: {pair: string; support?: number; resistance?: number; signalId?: string; chartImageUrl?: string; height?: number | string;}) {
+}: {pair: string;support?: number;resistance?: number;signalId?: string;chartImageUrl?: string;height?: number | string;}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scale = useRef(1);
   const posX = useRef(0);
@@ -128,9 +128,9 @@ function ZoomableChartInner({
     [handleWheel]
   );
 
-  const zoomIn = () => { scale.current = Math.min(5, scale.current * 1.3); clampPosition(); applyTransform(); };
-  const zoomOut = () => { scale.current = Math.max(1, scale.current * 0.77); clampPosition(); applyTransform(); };
-  const reset = () => { scale.current = 1; posX.current = 0; posY.current = 0; applyTransform(); };
+  const zoomIn = () => {scale.current = Math.min(5, scale.current * 1.3);clampPosition();applyTransform();};
+  const zoomOut = () => {scale.current = Math.max(1, scale.current * 0.77);clampPosition();applyTransform();};
+  const reset = () => {scale.current = 1;posX.current = 0;posY.current = 0;applyTransform();};
 
   const buildSrc = () => {
     if (chartImageUrl) return chartImageUrl;
@@ -159,7 +159,7 @@ function ZoomableChartInner({
   const handleShareChart = async () => {
     const shareUrl = buildSrc();
     if (navigator.share) {
-      try { await navigator.share({ title: `${pair} Chart`, url: shareUrl }); } catch { /* cancelled */ }
+      try {await navigator.share({ title: `${pair} Chart`, url: shareUrl });} catch {/* cancelled */}
     } else {
       await navigator.clipboard.writeText(shareUrl);
     }
@@ -168,33 +168,33 @@ function ZoomableChartInner({
   const controlBtn = "w-7 h-7 sm:w-6 sm:h-6 rounded flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 transition-colors";
   const controlStyle: React.CSSProperties = { background: 'hsla(210, 100%, 8%, 0.8)', border: '1px solid hsla(200, 60%, 35%, 0.4)' };
 
-  return (
-    <div className="relative rounded-lg overflow-hidden" style={{ background: 'hsl(210, 100%, 5%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
-      <div className="absolute top-2 right-2 z-20 flex gap-1">
-        <button className={controlBtn} style={controlStyle} onClick={zoomIn}><ZoomIn className="w-4 h-4" /></button>
-        <button className={controlBtn} style={controlStyle} onClick={zoomOut}><ZoomOut className="w-4 h-4" /></button>
-        <button className={controlBtn} style={controlStyle} onClick={reset}><RotateCcw className="w-4 h-4" /></button>
-        <button className={controlBtn} style={controlStyle} onClick={handleDownloadChart}><Download className="w-4 h-4" /></button>
-        <button className={controlBtn} style={controlStyle} onClick={handleShareChart}><Share2 className="w-4 h-4" /></button>
-      </div>
-      <div
-        ref={attachWheel}
-        className="cursor-grab active:cursor-grabbing overflow-hidden"
-        style={{ height: typeof height === 'number' ? `${height}px` : height, touchAction: 'none' }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div ref={imgRef} className="w-full h-full transition-none origin-center" style={{ willChange: 'transform' }}>
-          <img src={buildSrc()} alt={`${pair} chart`} className="w-full h-full object-contain" draggable={false} />
-        </div>
-      </div>
-    </div>
-  );
+  return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 // --- Main exported component ---
@@ -211,9 +211,9 @@ export function SignalChart({
   stopLoss
 }: SignalChartProps) {
   const support = supportProp ?? (stopLoss !== undefined && entryPrice !== undefined ?
-    Math.min(stopLoss, entryPrice) : undefined);
+  Math.min(stopLoss, entryPrice) : undefined);
   const resistance = resistanceProp ?? (takeProfit !== undefined && entryPrice !== undefined ?
-    Math.max(takeProfit, entryPrice) : undefined);
+  Math.max(takeProfit, entryPrice) : undefined);
 
   return (
     <div className={cn('space-y-3', className)}>
@@ -223,8 +223,8 @@ export function SignalChart({
         resistance={resistance}
         signalId={signalId}
         chartImageUrl={chartImageUrl}
-        height={height}
-      />
-    </div>
-  );
+        height={height} />
+
+    </div>);
+
 }
