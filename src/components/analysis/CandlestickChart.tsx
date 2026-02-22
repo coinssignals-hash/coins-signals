@@ -579,7 +579,7 @@ export function CandlestickChart({
 
       <div className="flex items-center justify-between mb-3 relative z-10">
         <div className="flex items-center gap-2">
-          <h3 className="text-white font-semibold text-sm">Resistencia y Soporte día Anterior</h3>
+          <h3 className="text-white font-semibold text-sm">Velas Japonesas — Última Semana</h3>
           {previousDayDate && (
             <span className="text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded">
               {previousDayDate}

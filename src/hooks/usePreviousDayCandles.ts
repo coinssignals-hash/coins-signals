@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+import { format, subDays } from 'date-fns';
 
 interface CandleData {
   time: string;
@@ -19,6 +19,8 @@ interface PreviousDayData {
   high: number;
   low: number;
   date: string;
+  /** Date range label e.g. "2026-02-15 → 2026-02-22" */
+  dateRange?: string;
 }
 
 interface UsePreviousDayCandlesReturn {
@@ -28,7 +30,7 @@ interface UsePreviousDayCandlesReturn {
   refetch: () => void;
 }
 
-// Cache for previous day data
+// Cache for week data
 const cache = new Map<string, { data: PreviousDayData; timestamp: number }>();
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
@@ -40,9 +42,8 @@ export function usePreviousDayCandles(symbol: string): UsePreviousDayCandlesRetu
   const fetchData = useCallback(async (bypassCache = false) => {
     if (!symbol) return;
 
-    const cacheKey = `prev_day_${symbol}`;
+    const cacheKey = `week_${symbol}`;
     
-    // Check cache
     if (!bypassCache) {
       const cached = cache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
@@ -56,43 +57,31 @@ export function usePreviousDayCandles(symbol: string): UsePreviousDayCandlesRetu
     setError(null);
 
     try {
-      // Calculate previous trading day (skip weekends for Forex)
+      // Fetch 7 days of 1-hour candles
       const today = new Date();
-      let previousDay = subDays(today, 1);
-      
-      // Skip to Friday if today is Monday (previous day would be Sunday)
-      const dayOfWeek = today.getDay();
-      if (dayOfWeek === 1) { // Monday
-        previousDay = subDays(today, 3); // Go back to Friday
-      } else if (dayOfWeek === 0) { // Sunday
-        previousDay = subDays(today, 2); // Go back to Friday
-      }
+      const weekAgo = subDays(today, 7);
 
-      const dateStr = format(previousDay, 'yyyy-MM-dd');
-      
-      // Fetch intraday data for the previous day (1-hour candles)
       const { data: result, error: fetchError } = await supabase.functions.invoke('market-data', {
         body: {
           symbol: symbol.replace('/', ''),
           interval: '1h',
-          outputsize: 24, // Get 24 hours of data
-          date: dateStr,
+          outputsize: 168, // 7 days * 24 hours
+          date: format(today, 'yyyy-MM-dd'),
         },
       });
 
-      if (fetchError) {
-        throw new Error(fetchError.message);
-      }
+      if (fetchError) throw new Error(fetchError.message);
 
-      // Process the data - filter to only previous day
       let candles: CandleData[] = [];
       
       if (result?.['Time Series (60min)']) {
         const timeSeries = result['Time Series (60min)'];
         const entries = Object.entries(timeSeries);
         
+        const weekAgoStr = format(weekAgo, 'yyyy-MM-dd');
+        
         candles = entries
-          .filter(([time]) => time.startsWith(dateStr))
+          .filter(([time]) => time >= weekAgoStr)
           .map(([time, values]: [string, any]) => ({
             time,
             open: parseFloat(values['1. open']),
@@ -103,55 +92,55 @@ export function usePreviousDayCandles(symbol: string): UsePreviousDayCandlesRetu
           .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
       }
 
-      // If no real data, generate mock data for the previous day
+      // If no real data, generate mock data for the week
       if (candles.length === 0) {
         const basePrice = getBasePrice(symbol);
-        candles = generateMockPreviousDayCandles(previousDay, basePrice);
+        candles = generateMockWeekCandles(weekAgo, basePrice);
       }
 
-      // Calculate high/low for resistance/support
+      // Compute S/R from the last 24 hours (last complete trading day)
+      const { support: sr_support, resistance: sr_resistance } = computeLast24hSR(candles);
+
+      // Overall week stats
       const allHighs = candles.map(c => c.high);
       const allLows = candles.map(c => c.low);
-      const dayHigh = Math.max(...allHighs);
-      const dayLow = Math.min(...allLows);
       const dayOpen = candles[0]?.open || 0;
       const dayClose = candles[candles.length - 1]?.close || 0;
 
-      const previousDayData: PreviousDayData = {
+      const weekData: PreviousDayData = {
         candles,
-        resistance: dayHigh,
-        support: dayLow,
+        resistance: sr_resistance,
+        support: sr_support,
         open: dayOpen,
         close: dayClose,
-        high: dayHigh,
-        low: dayLow,
-        date: dateStr,
+        high: Math.max(...allHighs),
+        low: Math.min(...allLows),
+        date: format(today, 'yyyy-MM-dd'),
+        dateRange: `${format(weekAgo, 'dd MMM')} → ${format(today, 'dd MMM yyyy')}`,
       };
 
-      // Cache the result
-      cache.set(cacheKey, { data: previousDayData, timestamp: Date.now() });
-      
-      setData(previousDayData);
+      cache.set(cacheKey, { data: weekData, timestamp: Date.now() });
+      setData(weekData);
     } catch (err) {
-      console.error('Error fetching previous day candles:', err);
+      console.error('Error fetching week candles:', err);
       setError(err instanceof Error ? err.message : 'Error fetching data');
       
-      // Generate fallback mock data
-      const previousDay = subDays(new Date(), 1);
+      // Fallback mock data
+      const weekAgo = subDays(new Date(), 7);
       const basePrice = getBasePrice(symbol);
-      const mockCandles = generateMockPreviousDayCandles(previousDay, basePrice);
-      const dayHigh = Math.max(...mockCandles.map(c => c.high));
-      const dayLow = Math.min(...mockCandles.map(c => c.low));
+      const mockCandles = generateMockWeekCandles(weekAgo, basePrice);
+      const { support: sr_support, resistance: sr_resistance } = computeLast24hSR(mockCandles);
       
       setData({
         candles: mockCandles,
-        resistance: dayHigh,
-        support: dayLow,
+        resistance: sr_resistance,
+        support: sr_support,
         open: mockCandles[0]?.open || basePrice,
         close: mockCandles[mockCandles.length - 1]?.close || basePrice,
-        high: dayHigh,
-        low: dayLow,
-        date: format(previousDay, 'yyyy-MM-dd'),
+        high: Math.max(...mockCandles.map(c => c.high)),
+        low: Math.min(...mockCandles.map(c => c.low)),
+        date: format(new Date(), 'yyyy-MM-dd'),
+        dateRange: `${format(weekAgo, 'dd MMM')} → ${format(new Date(), 'dd MMM yyyy')}`,
       });
     } finally {
       setLoading(false);
@@ -169,50 +158,66 @@ export function usePreviousDayCandles(symbol: string): UsePreviousDayCandlesRetu
   return { data, loading, error, refetch };
 }
 
-// Helper to get base price for different symbols
+/**
+ * Compute support/resistance from the last 24 candles (last trading day).
+ * Support = lowest low, Resistance = highest high.
+ */
+function computeLast24hSR(candles: CandleData[]): { support: number; resistance: number } {
+  if (candles.length === 0) return { support: 0, resistance: 0 };
+  
+  const last24 = candles.slice(-24);
+  const highs = last24.map(c => c.high);
+  const lows = last24.map(c => c.low);
+  
+  return {
+    support: Math.min(...lows),
+    resistance: Math.max(...highs),
+  };
+}
+
 function getBasePrice(symbol: string): number {
   const prices: Record<string, number> = {
-    'EUR/USD': 1.05,
-    'GBP/USD': 1.27,
-    'USD/JPY': 157.50,
-    'USD/CHF': 0.90,
-    'AUD/USD': 0.62,
-    'USD/CAD': 1.44,
-    'NZD/USD': 0.56,
-    'BTC/USD': 95000,
-    'ETH/USD': 3400,
-    'XRP/USD': 2.30,
+    'EUR/USD': 1.05, 'GBP/USD': 1.27, 'USD/JPY': 157.50,
+    'USD/CHF': 0.90, 'AUD/USD': 0.62, 'USD/CAD': 1.44,
+    'NZD/USD': 0.56, 'BTC/USD': 95000, 'ETH/USD': 3400, 'XRP/USD': 2.30,
   };
   return prices[symbol] || 1.0;
 }
 
-// Generate realistic mock candles for a full trading day
-function generateMockPreviousDayCandles(date: Date, basePrice: number): CandleData[] {
+function generateMockWeekCandles(startDate: Date, basePrice: number): CandleData[] {
   const candles: CandleData[] = [];
-  const volatility = basePrice * 0.001; // 0.1% volatility per hour
-  
+  const volatility = basePrice * 0.001;
   let currentPrice = basePrice;
   
-  // Generate 24 hourly candles
-  for (let hour = 0; hour < 24; hour++) {
-    const time = new Date(date);
-    time.setHours(hour, 0, 0, 0);
+  // 7 days * 24 hours = 168 candles
+  for (let day = 0; day < 7; day++) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + day);
     
-    const open = currentPrice;
-    const change = (Math.random() - 0.5) * volatility * 2;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * volatility * 0.5;
-    const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+    // Skip weekends for forex
+    const dow = date.getDay();
+    if (dow === 0 || dow === 6) continue;
     
-    candles.push({
-      time: time.toISOString(),
-      open: Number(open.toFixed(5)),
-      high: Number(high.toFixed(5)),
-      low: Number(low.toFixed(5)),
-      close: Number(close.toFixed(5)),
-    });
-    
-    currentPrice = close;
+    for (let hour = 0; hour < 24; hour++) {
+      const time = new Date(date);
+      time.setHours(hour, 0, 0, 0);
+      
+      const open = currentPrice;
+      const change = (Math.random() - 0.5) * volatility * 2;
+      const close = open + change;
+      const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+      const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+      
+      candles.push({
+        time: time.toISOString(),
+        open: Number(open.toFixed(5)),
+        high: Number(high.toFixed(5)),
+        low: Number(low.toFixed(5)),
+        close: Number(close.toFixed(5)),
+      });
+      
+      currentPrice = close;
+    }
   }
   
   return candles;
