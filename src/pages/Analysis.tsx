@@ -1,11 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Bell, Clock, Zap, Activity, TrendingUp, BarChart2, Waves, Percent, WifiOff } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  RefreshCw, Bell, Clock, Zap, WifiOff,
+  Activity, TrendingUp, BarChart2, Waves, Percent,
+  LineChart, Landmark, Brain, Target
+} from 'lucide-react';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { MarketSentiment } from '@/components/analysis/MarketSentiment';
@@ -18,7 +22,6 @@ import { MonetaryPolicies } from '@/components/analysis/MonetaryPolicies';
 import { MajorNews } from '@/components/analysis/MajorNews';
 import { EconomicEvents } from '@/components/analysis/EconomicEvents';
 import { RelevantNews } from '@/components/analysis/RelevantNews';
-
 import { PriceChart } from '@/components/analysis/PriceChart';
 import { RSIChart } from '@/components/analysis/RSIChart';
 import { MACDChart } from '@/components/analysis/MACDChart';
@@ -34,21 +37,17 @@ import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
 import { useSupportResistanceAlerts } from '@/hooks/useSupportResistanceAlerts';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from '@/components/ui/sheet';
 
 const timeframes = [
-  { value: '5min', label: '5 Min' },
-  { value: '15min', label: '15 Min' },
-  { value: '30min', label: '30 Min' },
-  { value: '1h', label: '1 Hora' },
-  { value: '4h', label: '4 Horas' },
-  { value: '1day', label: '1 Día' },
-  { value: '1week', label: '1 Semana' },
+  { value: '5min', label: '5M' },
+  { value: '15min', label: '15M' },
+  { value: '30min', label: '30M' },
+  { value: '1h', label: '1H' },
+  { value: '4h', label: '4H' },
+  { value: '1day', label: '1D' },
+  { value: '1week', label: '1W' },
 ];
 
 interface AlertConfig {
@@ -61,27 +60,14 @@ interface AlertConfig {
   srProximityPercent: number;
   srEnableSound: boolean;
   enablePatternAlerts: boolean;
-  patternAlertTypes: {
-    bullish: boolean;
-    bearish: boolean;
-    neutral: boolean;
-  };
+  patternAlertTypes: { bullish: boolean; bearish: boolean; neutral: boolean };
   patternEnableSound: boolean;
 }
 
-// Convert symbol format for Polygon.io API
 function formatSymbolForPolygon(symbol: string): string {
-  // EUR/USD -> C:EURUSD (Forex)
-  // BTC/USD -> X:BTCUSD (Crypto)
   const [base, quote] = symbol.split('/');
-  
   const cryptos = ['BTC', 'ETH', 'XRP', 'SOL', 'BNB', 'ADA', 'DOGE', 'DOT', 'AVAX', 'MATIC', 'LINK', 'UNI', 'ATOM', 'LTC', 'XLM', 'SHIB', 'PEPE'];
-  
-  if (cryptos.includes(base)) {
-    return `X:${base}${quote || 'USD'}`;
-  }
-  
-  // Default to Forex
+  if (cryptos.includes(base)) return `X:${base}${quote || 'USD'}`;
   return `C:${base}${quote || 'USD'}`;
 }
 
@@ -89,64 +75,34 @@ export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
+  const [activePanel, setActivePanel] = useState('tecnico');
+  const [activeChart, setActiveChart] = useState('price');
   const [alertConfig, setAlertConfig] = useState<AlertConfig>({
-    rsiOverbought: 70,
-    rsiOversold: 30,
-    enableRSI: true,
-    enableMACD: true,
-    enableSMACross: true,
-    enableSupportResistance: true,
-    srProximityPercent: 5,
-    srEnableSound: true,
-    enablePatternAlerts: true,
-    patternAlertTypes: {
-      bullish: true,
-      bearish: true,
-      neutral: false,
-    },
+    rsiOverbought: 70, rsiOversold: 30, enableRSI: true, enableMACD: true,
+    enableSMACross: true, enableSupportResistance: true, srProximityPercent: 5,
+    srEnableSound: true, enablePatternAlerts: true,
+    patternAlertTypes: { bullish: true, bearish: true, neutral: false },
     patternEnableSound: true,
   });
-  
+
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
-  
-  // Previous day candles for resistance/support chart
   const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(selectedPair);
-  
-  // Realtime market data from Polygon.io
   const polygonSymbol = formatSymbolForPolygon(selectedPair);
-  const { quotes, isConnected, isReconnecting, reconnectAttempt, error: wsError, subscribe, unsubscribe, getQuote } = useRealtimeMarket([polygonSymbol]);
-  
-  // Get realtime quote for current symbol
+  const { isConnected, isReconnecting, reconnectAttempt, error: wsError, subscribe, unsubscribe, getQuote } = useRealtimeMarket([polygonSymbol]);
   const realtimeQuote = getQuote(polygonSymbol);
-  
-  // Subscribe/unsubscribe when symbol changes
+
   useEffect(() => {
     const newSymbol = formatSymbolForPolygon(selectedPair);
     subscribe([newSymbol]);
-    
-    return () => {
-      unsubscribe([newSymbol]);
-    };
+    return () => { unsubscribe([newSymbol]); };
   }, [selectedPair, subscribe, unsubscribe]);
-  
-  // Initialize indicator alerts hook
+
   useIndicatorAlerts(data, selectedPair, alertConfig);
 
-  // Calculate derived values from market data
   const marketStats = useMemo(() => {
     if (!data?.priceData || data.priceData.length === 0) {
-      return {
-        currentPrice: 1.1689,
-        change: 0.00467,
-        changePercent: 0.40,
-        high: 1.1729,
-        low: 1.1651,
-        resistance: 1.1700,
-        support: 1.1650,
-        pips: 78,
-      };
+      return { currentPrice: 1.1689, change: 0.00467, changePercent: 0.40, high: 1.1729, low: 1.1651, resistance: 1.1700, support: 1.1650, pips: 78 };
     }
-
     const prices = data.priceData;
     const latest = prices[prices.length - 1];
     const first = prices[0];
@@ -158,358 +114,234 @@ export default function Analysis() {
     const resistance = high - (high - currentPrice) * 0.3;
     const support = low + (currentPrice - low) * 0.3;
     const pips = Math.abs(change) * 10000;
-
-    return {
-      currentPrice,
-      change,
-      changePercent,
-      high,
-      low,
-      resistance,
-      support,
-      pips,
-    };
+    return { currentPrice, change, changePercent, high, low, resistance, support, pips };
   }, [data?.priceData]);
 
-  // Initialize support/resistance alerts (after marketStats is defined)
   const { alertState } = useSupportResistanceAlerts(
-    selectedPair,
-    realtimeQuote?.price,
+    selectedPair, realtimeQuote?.price,
     previousDayData?.support || marketStats.support,
     previousDayData?.resistance || marketStats.resistance,
-    { 
-      enabled: alertConfig.enableSupportResistance, 
-      proximityPercent: alertConfig.srProximityPercent, 
-      enableSound: alertConfig.srEnableSound 
-    }
+    { enabled: alertConfig.enableSupportResistance, proximityPercent: alertConfig.srProximityPercent, enableSound: alertConfig.srEnableSound }
   );
 
-  // Candlestick data for chart
-  const candleData = useMemo(() => {
-    if (!data?.priceData || data.priceData.length === 0) {
-      // Generate mock data
-      const now = new Date();
-      return Array.from({ length: 20 }, (_, i) => ({
-        time: new Date(now.getTime() - (20 - i) * 3600000).toISOString(),
-        open: 1.165 + Math.random() * 0.01,
-        high: 1.168 + Math.random() * 0.005,
-        low: 1.163 + Math.random() * 0.005,
-        close: 1.166 + Math.random() * 0.01,
-      }));
-    }
-    return data.priceData.map(p => ({
-      time: p.time,
-      open: p.open,
-      high: p.high,
-      low: p.low,
-      close: p.price,
-    }));
-  }, [data?.priceData]);
-
   return (
-    <div className="min-h-screen bg-black pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20 md:pb-0">
       <Header />
-      
-      {/* Day Tabs */}
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
-      
-      <main className="container py-4 px-2 sm:px-4 max-w-4xl mx-auto space-y-4">
-        {/* Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <SymbolSearch 
-            value={selectedPair} 
-            onChange={setSelectedPair}
-            className="flex-1 min-w-[180px]"
-          />
-          
+
+      <main className="container py-3 px-2 sm:px-4 max-w-5xl mx-auto space-y-3">
+        {/* Terminal Header Bar */}
+        <div className="flex items-center gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-xl p-2.5">
+          <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[160px]" />
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[100px] bg-[#0a1a0a] border-green-900/50">
+            <SelectTrigger className="w-[80px] bg-[#0a1628] border-cyan-900/40 text-xs h-9">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a1a0a] border-green-900/50">
+            <SelectContent className="bg-[#0a1628] border-cyan-900/40">
               {timeframes.map(tf => (
-                <SelectItem key={tf.value} value={tf.value}>{tf.label}</SelectItem>
+                <SelectItem key={tf.value} value={tf.value} className="text-xs">{tf.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          
-          <AIFullRegenerateButton
-            symbol={selectedPair}
-            currentPrice={marketStats.currentPrice}
-            high={marketStats.high}
-            low={marketStats.low}
-          />
-          
+          <AIFullRegenerateButton symbol={selectedPair} currentPrice={marketStats.currentPrice} high={marketStats.high} low={marketStats.low} />
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 border-green-900/50 bg-[#0a1a0a]">
-                <Bell className="w-4 h-4 text-green-400" />
+              <Button variant="outline" size="icon" className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9">
+                <Bell className="w-4 h-4 text-cyan-400" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[320px] sm:w-[380px] bg-[#0a1a0a] border-green-900/50">
-              <SheetHeader>
-                <SheetTitle className="text-white">Alertas de Indicadores</SheetTitle>
-              </SheetHeader>
-              <div className="mt-4">
-                <AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} />
-              </div>
+            <SheetContent className="w-[320px] sm:w-[380px] bg-[#0a1628] border-cyan-900/40">
+              <SheetHeader><SheetTitle className="text-white">Alertas</SheetTitle></SheetHeader>
+              <div className="mt-4"><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></div>
             </SheetContent>
           </Sheet>
-          
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={refetch}
-            disabled={loading}
-            className="shrink-0 border-green-900/50 bg-[#0a1a0a]"
-          >
-            <RefreshCw className={`w-4 h-4 text-green-400 ${loading ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="icon" onClick={refetch} disabled={loading} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9">
+            <RefreshCw className={`w-4 h-4 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
 
-        {/* Rate limit warning */}
+        {/* Status Alerts */}
         {isRateLimited && (
-          <Card className="border-yellow-500/50 bg-yellow-500/10">
-            <CardContent className="p-3 flex items-center gap-3">
-              <Clock className="h-5 w-5 text-yellow-500 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-yellow-400 font-medium">Límite de API alcanzado</p>
-                <p className="text-xs text-gray-400">Actualizando en 60 segundos...</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-xs">
+            <Clock className="h-4 w-4 text-yellow-500 shrink-0" />
+            <span className="text-yellow-400">Límite de API — reintentando en 60s</span>
+          </div>
         )}
-
-        {/* Error message */}
         {error && !isRateLimited && (
-          <Card className="border-red-500/50 bg-red-500/10">
-            <CardContent className="p-3">
-              <p className="text-sm text-red-400">{error}</p>
-            </CardContent>
-          </Card>
+          <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-red-400">{error}</div>
         )}
-
-        {/* WebSocket reconnecting message */}
         {isReconnecting && (
-          <Card className="border-orange-500/50 bg-orange-500/10 animate-pulse">
-            <CardContent className="p-3 flex items-center gap-3">
-              <WifiOff className="h-5 w-5 text-orange-500 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-orange-400 font-medium">Reconectando datos en tiempo real...</p>
-                <p className="text-xs text-gray-400">Intento {reconnectAttempt} de 5 - Reintentando automáticamente</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-xs animate-pulse">
+            <WifiOff className="h-4 w-4 text-orange-500 shrink-0" />
+            <span className="text-orange-400">Reconectando... intento {reconnectAttempt}/5</span>
+          </div>
         )}
-
-        {/* WebSocket error message */}
-        {wsError && !isReconnecting && (
-          <Card className="border-red-500/50 bg-red-500/10">
-            <CardContent className="p-3 flex items-center gap-3">
-              <WifiOff className="h-5 w-5 text-red-500 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-red-400 font-medium">Conexión en tiempo real perdida</p>
-                <p className="text-xs text-gray-400">{wsError}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Cache indicator */}
         {data?.cached && !loading && !error && (
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Zap className="h-3 w-3 text-green-500" />
-            <span>Datos desde caché</span>
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+            <Zap className="h-3 w-3 text-cyan-500" /><span>Caché</span>
           </div>
         )}
 
-        {/* Currency Header Card with Realtime Price */}
+        {/* Currency Header */}
         <CurrencyHeader
-          symbol={selectedPair}
-          currentPrice={marketStats.currentPrice}
-          change={marketStats.change}
-          changePercent={marketStats.changePercent}
-          high={marketStats.high}
-          low={marketStats.low}
-          loading={loading}
-          realtimePrice={realtimeQuote?.price}
-          isRealtimeConnected={isConnected}
+          symbol={selectedPair} currentPrice={marketStats.currentPrice}
+          change={marketStats.change} changePercent={marketStats.changePercent}
+          high={marketStats.high} low={marketStats.low} loading={loading}
+          realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
         />
 
-        {/* Charts Tabs */}
-        <Tabs defaultValue="price" className="space-y-3">
-          <TabsList className="bg-[#0a1a0a] border border-green-900/50 w-full justify-start overflow-x-auto flex-nowrap">
-            <TabsTrigger value="price" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
-              <Activity className="w-3 h-3 mr-1" />
-              Precio
+        {/* Terminal Panel Tabs */}
+        <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-3">
+          <TabsList className="bg-[#0a1628]/90 border border-cyan-900/30 w-full h-11 p-1 gap-1">
+            <TabsTrigger value="tecnico" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.2)] rounded-lg transition-all">
+              <LineChart className="w-3.5 h-3.5" /> Técnico
             </TabsTrigger>
-            <TabsTrigger value="rsi" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              RSI
+            <TabsTrigger value="fundamental" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 data-[state=active]:shadow-[0_0_12px_rgba(16,185,129,0.2)] rounded-lg transition-all">
+              <Landmark className="w-3.5 h-3.5" /> Fundamental
             </TabsTrigger>
-            <TabsTrigger value="macd" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
-              <BarChart2 className="w-3 h-3 mr-1" />
-              MACD
+            <TabsTrigger value="sentimiento" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 data-[state=active]:shadow-[0_0_12px_rgba(168,85,247,0.2)] rounded-lg transition-all">
+              <Brain className="w-3.5 h-3.5" /> Sentimiento
             </TabsTrigger>
-            <TabsTrigger value="bollinger" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
-              <Waves className="w-3 h-3 mr-1" />
-              Bollinger
-            </TabsTrigger>
-            <TabsTrigger value="stochastic" className="text-xs data-[state=active]:bg-green-900/30 data-[state=active]:text-green-400">
-              <Percent className="w-3 h-3 mr-1" />
-              Estocástico
+            <TabsTrigger value="estrategia" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 data-[state=active]:shadow-[0_0_12px_rgba(245,158,11,0.2)] rounded-lg transition-all">
+              <Target className="w-3.5 h-3.5" /> Estrategia
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="price">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
-              <PriceChart 
-                pair={selectedPair} 
-                timeframe={selectedTimeframe}
-                priceData={data?.priceData}
-                smaData={data?.smaData}
-                loading={loading}
-                error={error}
-                realtimePrice={realtimeQuote?.price}
-                isRealtimeConnected={isConnected}
-                patternAlertConfig={{
-                  enabled: alertConfig.enablePatternAlerts,
-                  types: alertConfig.patternAlertTypes,
-                  enableSound: alertConfig.patternEnableSound,
-                }}
+          {/* ═══════════════════ TÉCNICO ═══════════════════ */}
+          <TabsContent value="tecnico" className="space-y-3 mt-0">
+            {/* Chart Sub-Tabs */}
+            <div className="flex gap-1 overflow-x-auto pb-1">
+              {[
+                { id: 'price', icon: Activity, label: 'Precio' },
+                { id: 'rsi', icon: TrendingUp, label: 'RSI' },
+                { id: 'macd', icon: BarChart2, label: 'MACD' },
+                { id: 'bollinger', icon: Waves, label: 'Bollinger' },
+                { id: 'stochastic', icon: Percent, label: 'Estoc.' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveChart(tab.id)}
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all ${
+                    activeChart === tab.id
+                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                      : 'text-gray-500 hover:text-gray-300 border border-transparent'
+                  }`}
+                >
+                  <tab.icon className="w-3 h-3" />{tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Active Chart */}
+            <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl p-3">
+              {activeChart === 'price' && (
+                <PriceChart pair={selectedPair} timeframe={selectedTimeframe}
+                  priceData={data?.priceData} smaData={data?.smaData} loading={loading} error={error}
+                  realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                  patternAlertConfig={{ enabled: alertConfig.enablePatternAlerts, types: alertConfig.patternAlertTypes, enableSound: alertConfig.patternEnableSound }}
+                />
+              )}
+              {activeChart === 'rsi' && (
+                <RSIChart pair={selectedPair} timeframe={selectedTimeframe} rsiData={data?.rsiData} loading={loading} error={error} />
+              )}
+              {activeChart === 'macd' && (
+                <MACDChart pair={selectedPair} timeframe={selectedTimeframe} macdData={data?.macdData} loading={loading} error={error} />
+              )}
+              {activeChart === 'bollinger' && (
+                <BollingerChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                />
+              )}
+              {activeChart === 'stochastic' && (
+                <StochasticChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                />
+              )}
+            </div>
+
+            {/* Indicators Summary */}
+            <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
+
+            {/* Technical Levels */}
+            <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl overflow-hidden">
+              <TechnicalLevels symbol={selectedPair} currentPrice={marketStats.currentPrice}
+                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
+            </div>
+
+            {/* Candlestick Chart */}
+            <CandlestickChart
+              data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
+              support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
+              realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+              previousDayDate={previousDayData?.date} alertState={alertState}
+            />
+          </TabsContent>
+
+          {/* ═══════════════════ FUNDAMENTAL ═══════════════════ */}
+          <TabsContent value="fundamental" className="space-y-3 mt-0">
+            {/* Monetary Policies */}
+            <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
+              <MonetaryPolicies symbol={selectedPair} />
+            </div>
+
+            {/* Economic Events */}
+            <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
+              <EconomicEvents symbol={selectedPair} date={selectedDay} />
+            </div>
+
+            {/* Major News */}
+            <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
+              <MajorNews symbol={selectedPair} />
+            </div>
+
+            {/* Relevant News */}
+            <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
+              <RelevantNews symbol={selectedPair} />
             </div>
           </TabsContent>
 
-          <TabsContent value="rsi">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
-              <RSIChart 
-                pair={selectedPair} 
-                timeframe={selectedTimeframe}
-                rsiData={data?.rsiData}
-                loading={loading}
-                error={error}
+          {/* ═══════════════════ SENTIMIENTO ═══════════════════ */}
+          <TabsContent value="sentimiento" className="space-y-3 mt-0">
+            {/* Market Sentiment */}
+            <div className="bg-[#0a1628] border border-purple-900/30 rounded-xl overflow-hidden">
+              <MarketSentiment
+                symbol={selectedPair} highPrice={marketStats.high} lowPrice={marketStats.low}
+                dailyChange={marketStats.changePercent} pipsChange={marketStats.change}
+                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
+
+            {/* Indicators Summary as Sentiment Gauge */}
+            <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
           </TabsContent>
 
-          <TabsContent value="macd">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
-              <MACDChart 
-                pair={selectedPair} 
-                timeframe={selectedTimeframe}
-                macdData={data?.macdData}
-                loading={loading}
-                error={error}
+          {/* ═══════════════════ ESTRATEGIA ═══════════════════ */}
+          <TabsContent value="estrategia" className="space-y-3 mt-0">
+            {/* Price Prediction */}
+            <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
+              <PricePrediction symbol={selectedPair} currentPrice={marketStats.currentPrice}
+                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
-          </TabsContent>
 
-          <TabsContent value="bollinger">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
-              <BollingerChart 
-                pair={selectedPair} 
-                timeframe={selectedTimeframe}
-                priceData={data?.priceData}
-                loading={loading}
-                error={error}
-                realtimePrice={realtimeQuote?.price}
-                isRealtimeConnected={isConnected}
+            {/* Strategic Recommendations */}
+            <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
+              <StrategicRecommendations symbol={selectedPair} currentPrice={marketStats.currentPrice}
+                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
-          </TabsContent>
 
-          <TabsContent value="stochastic">
-            <div className="bg-[#0a1a0a] border border-green-900/50 rounded-lg p-3">
-              <StochasticChart 
-                pair={selectedPair} 
-                timeframe={selectedTimeframe}
-                priceData={data?.priceData}
-                loading={loading}
-                error={error}
-                realtimePrice={realtimeQuote?.price}
-                isRealtimeConnected={isConnected}
+            {/* Market Conclusions */}
+            <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
+              <MarketConclusions symbol={selectedPair} currentPrice={marketStats.currentPrice}
+                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
           </TabsContent>
         </Tabs>
-
-        {/* Indicators Summary Chart */}
-        <IndicatorsSummaryChart 
-          priceData={data?.priceData}
-          rsiData={data?.rsiData}
-          macdData={data?.macdData}
-          smaData={data?.smaData}
-          loading={loading}
-        />
-
-        {/* Market Sentiment */}
-        <MarketSentiment
-          symbol={selectedPair}
-          highPrice={marketStats.high}
-          lowPrice={marketStats.low}
-          dailyChange={marketStats.changePercent}
-          pipsChange={marketStats.change}
-          realtimePrice={realtimeQuote?.price}
-          isRealtimeConnected={isConnected}
-        />
-
-        {/* Price Prediction */}
-        <PricePrediction
-          symbol={selectedPair}
-          currentPrice={marketStats.currentPrice}
-          realtimePrice={realtimeQuote?.price}
-          isRealtimeConnected={isConnected}
-        />
-
-        {/* Technical Levels */}
-        <TechnicalLevels
-          symbol={selectedPair}
-          currentPrice={marketStats.currentPrice}
-          realtimePrice={realtimeQuote?.price}
-          isRealtimeConnected={isConnected}
-        />
-
-        {/* Candlestick Chart - Previous Day Only */}
-        <CandlestickChart
-          data={previousDayData?.candles || []}
-          resistance={previousDayData?.resistance || marketStats.resistance}
-          support={previousDayData?.support || marketStats.support}
-          loading={previousDayLoading}
-          realtimePrice={realtimeQuote?.price}
-          isRealtimeConnected={isConnected}
-          previousDayDate={previousDayData?.date}
-          alertState={alertState}
-        />
-
-        {/* Collapsible Sections */}
-        <div className="space-y-3">
-          <StrategicRecommendations
-            symbol={selectedPair}
-            currentPrice={marketStats.currentPrice}
-            realtimePrice={realtimeQuote?.price}
-            isRealtimeConnected={isConnected}
-          />
-
-          <MarketConclusions
-            symbol={selectedPair}
-            currentPrice={marketStats.currentPrice}
-            realtimePrice={realtimeQuote?.price}
-            isRealtimeConnected={isConnected}
-          />
-
-          <MonetaryPolicies symbol={selectedPair} />
-
-
-          {/* Relevant News with Images */}
-          <RelevantNews symbol={selectedPair} />
-
-          <MajorNews symbol={selectedPair} />
-
-          <EconomicEvents symbol={selectedPair} date={selectedDay} />
-        </div>
       </main>
-      
+
       <BottomNav />
     </div>
   );
