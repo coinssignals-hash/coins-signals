@@ -4,7 +4,6 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   RefreshCw, Bell, Clock, Zap, WifiOff,
   Activity, TrendingUp, BarChart2, Waves, Percent,
@@ -12,6 +11,8 @@ import {
 } from 'lucide-react';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
+import { TerminalStatusBar } from '@/components/analysis/TerminalStatusBar';
+import { QuickStatsGrid } from '@/components/analysis/QuickStatsGrid';
 import { MarketSentiment } from '@/components/analysis/MarketSentiment';
 import { PricePrediction } from '@/components/analysis/PricePrediction';
 import { TechnicalLevels } from '@/components/analysis/TechnicalLevels';
@@ -31,6 +32,7 @@ import { IndicatorsSummaryChart } from '@/components/analysis/IndicatorsSummaryC
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
+import { RiskRewardCalculator } from '@/components/analysis/RiskRewardCalculator';
 import { useMarketData } from '@/hooks/useMarketData';
 import { usePreviousDayCandles } from '@/hooks/usePreviousDayCandles';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
@@ -70,6 +72,14 @@ function formatSymbolForPolygon(symbol: string): string {
   if (cryptos.includes(base)) return `X:${base}${quote || 'USD'}`;
   return `C:${base}${quote || 'USD'}`;
 }
+
+const chartTabs = [
+  { id: 'price', icon: Activity, label: 'Precio' },
+  { id: 'rsi', icon: TrendingUp, label: 'RSI' },
+  { id: 'macd', icon: BarChart2, label: 'MACD' },
+  { id: 'bollinger', icon: Waves, label: 'Bollinger' },
+  { id: 'stochastic', icon: Percent, label: 'Estoc.' },
+];
 
 export default function Analysis() {
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
@@ -160,6 +170,15 @@ export default function Analysis() {
           </Button>
         </div>
 
+        {/* Terminal Status Bar - NEW */}
+        <TerminalStatusBar
+          symbol={selectedPair}
+          currentPrice={realtimeQuote?.price || marketStats.currentPrice}
+          high={marketStats.high}
+          low={marketStats.low}
+          isRealtimeConnected={isConnected}
+        />
+
         {/* Status Alerts */}
         {isRateLimited && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-xs">
@@ -190,6 +209,19 @@ export default function Analysis() {
           realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
         />
 
+        {/* Quick Stats Grid - NEW */}
+        <QuickStatsGrid
+          currentPrice={marketStats.currentPrice}
+          change={marketStats.change}
+          changePercent={marketStats.changePercent}
+          high={marketStats.high}
+          low={marketStats.low}
+          resistance={previousDayData?.resistance || marketStats.resistance}
+          support={previousDayData?.support || marketStats.support}
+          pips={marketStats.pips}
+          realtimePrice={realtimeQuote?.price}
+        />
+
         {/* Terminal Panel Tabs */}
         <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-3">
           <TabsList className="bg-[#0a1628]/90 border border-cyan-900/30 w-full h-11 p-1 gap-1">
@@ -211,13 +243,7 @@ export default function Analysis() {
           <TabsContent value="tecnico" className="space-y-3 mt-0">
             {/* Chart Sub-Tabs */}
             <div className="flex gap-1 overflow-x-auto pb-1">
-              {[
-                { id: 'price', icon: Activity, label: 'Precio' },
-                { id: 'rsi', icon: TrendingUp, label: 'RSI' },
-                { id: 'macd', icon: BarChart2, label: 'MACD' },
-                { id: 'bollinger', icon: Waves, label: 'Bollinger' },
-                { id: 'stochastic', icon: Percent, label: 'Estoc.' },
-              ].map(tab => (
+              {chartTabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveChart(tab.id)}
@@ -280,22 +306,15 @@ export default function Analysis() {
 
           {/* ═══════════════════ FUNDAMENTAL ═══════════════════ */}
           <TabsContent value="fundamental" className="space-y-3 mt-0">
-            {/* Monetary Policies */}
             <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
               <MonetaryPolicies symbol={selectedPair} />
             </div>
-
-            {/* Economic Events */}
             <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
               <EconomicEvents symbol={selectedPair} date={selectedDay} />
             </div>
-
-            {/* Major News */}
             <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
               <MajorNews symbol={selectedPair} />
             </div>
-
-            {/* Relevant News */}
             <div className="bg-[#0a1628] border border-emerald-900/30 rounded-xl overflow-hidden">
               <RelevantNews symbol={selectedPair} />
             </div>
@@ -303,7 +322,6 @@ export default function Analysis() {
 
           {/* ═══════════════════ SENTIMIENTO ═══════════════════ */}
           <TabsContent value="sentimiento" className="space-y-3 mt-0">
-            {/* Market Sentiment */}
             <div className="bg-[#0a1628] border border-purple-900/30 rounded-xl overflow-hidden">
               <MarketSentiment
                 symbol={selectedPair} highPrice={marketStats.high} lowPrice={marketStats.low}
@@ -311,28 +329,29 @@ export default function Analysis() {
                 realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
-
-            {/* Indicators Summary as Sentiment Gauge */}
             <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
           </TabsContent>
 
           {/* ═══════════════════ ESTRATEGIA ═══════════════════ */}
           <TabsContent value="estrategia" className="space-y-3 mt-0">
-            {/* Price Prediction */}
+            {/* Risk/Reward Calculator - NEW */}
+            <RiskRewardCalculator
+              currentPrice={realtimeQuote?.price || marketStats.currentPrice}
+              symbol={selectedPair}
+              resistance={previousDayData?.resistance || marketStats.resistance}
+              support={previousDayData?.support || marketStats.support}
+            />
+
             <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
               <PricePrediction symbol={selectedPair} currentPrice={marketStats.currentPrice}
                 realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
-
-            {/* Strategic Recommendations */}
             <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
               <StrategicRecommendations symbol={selectedPair} currentPrice={marketStats.currentPrice}
                 realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
               />
             </div>
-
-            {/* Market Conclusions */}
             <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
               <MarketConclusions symbol={selectedPair} currentPrice={marketStats.currentPrice}
                 realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
