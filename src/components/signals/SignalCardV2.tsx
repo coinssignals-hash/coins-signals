@@ -15,8 +15,8 @@ import {
   RotateCcw,
   Info,
   Download,
-  Share2,
-} from "lucide-react";
+  Share2 } from
+"lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
 import { useSignalRisk } from "@/hooks/useSignalRisk";
@@ -34,8 +34,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  TooltipTrigger } from
+"@/components/ui/tooltip";
 
 interface SignalCardV2Props {
   signal?: TradingSignal;
@@ -47,7 +47,7 @@ interface SignalCardV2Props {
 
 
 // --- Impact Bar ---
-function ImpactBar({ label, value, color }: { label: string; value: number; color: string }) {
+function ImpactBar({ label, value, color }: {label: string;value: number;color: string;}) {
   return (
     <div className="flex items-center gap-2">
       <span className="text-[10px] w-16 text-right" style={{ color }}>
@@ -56,21 +56,21 @@ function ImpactBar({ label, value, color }: { label: string; value: number; colo
       <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${value}%`, background: color }}
-        />
+          style={{ width: `${value}%`, background: color }} />
+
       </div>
       <span className="text-[11px] font-semibold w-9 text-right" style={{ color }}>
         {value}%
       </span>
-    </div>
-  );
+    </div>);
+
 }
 
-function CurrencyImpactPanel({ data }: { data: CurrencyImpactAI }) {
+function CurrencyImpactPanel({ data }: {data: CurrencyImpactAI;}) {
   const { t } = useTranslation();
   const overall = data.positive > data.negative ? "Positive" : data.negative > data.positive ? "Negative" : "Neutral";
   const overallColor =
-    overall === "Positive" ? "hsl(135, 70%, 50%)" : overall === "Negative" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
+  overall === "Positive" ? "hsl(135, 70%, 50%)" : overall === "Negative" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
   const OverallIcon = overall === "Positive" ? TrendingUp : overall === "Negative" ? TrendingDown : Minus;
   const overallLabel = overall === "Positive" ? t('signal_positive') : overall === "Negative" ? t('signal_negative') : t('signal_neutral');
 
@@ -79,13 +79,13 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpactAI }) {
       className="flex-1 rounded-lg p-2.5 relative overflow-hidden"
       style={{
         background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-        border: "1px solid hsla(200, 60%, 35%, 0.3)",
-      }}
-    >
+        border: "1px solid hsla(200, 60%, 35%, 0.3)"
+      }}>
+
       <div
         className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-        style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
-      />
+        style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
+
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-bold text-cyan-200">{data.currency}</span>
         <div className="flex items-center gap-1">
@@ -100,13 +100,13 @@ function CurrencyImpactPanel({ data }: { data: CurrencyImpactAI }) {
         <ImpactBar label={t('signal_negative')} value={data.negative} color="hsl(0, 70%, 55%)" />
         <ImpactBar label={t('signal_neutral')} value={data.neutral} color="hsl(45, 80%, 55%)" />
       </div>
-      {data.reason && (
-        <p className="text-[9px] text-cyan-300/60 mt-2 leading-tight line-clamp-2 italic">
+      {data.reason &&
+      <p className="text-[9px] text-cyan-300/60 mt-2 leading-tight line-clamp-2 italic">
           {data.reason}
         </p>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
 
 // --- TP/SL Price Row with Pips + % ---
@@ -125,17 +125,17 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
       className="relative rounded-md overflow-hidden"
       style={{
         background: "linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)",
-        border: "1px solid hsla(210, 100%, 50%, 0.15)",
-      }}
-    >
+        border: "1px solid hsla(210, 100%, 50%, 0.15)"
+      }}>
+
       <div
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: "radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)" }}
-      />
+        style={{ background: "radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)" }} />
+
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: "linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)" }}
-      />
+        style={{ background: "linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)" }} />
+
       <div className="flex items-center justify-between px-4 py-2.5">
         <span className="font-semibold text-white text-sm w-24 flex-shrink-0">{label}</span>
         <div className="flex items-center gap-3 flex-1 justify-center">
@@ -154,28 +154,28 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
               e.stopPropagation();
               navigator.clipboard.writeText(price);
             }}
-            title="Copiar precio"
-          >
+            title="Copiar precio">
+
             <Copy className="w-4 h-4" />
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Helper: compute pips and percent between two prices
 function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   const pipMultiplier = isJpy ? 100 : 10000;
   const pips = (target - entry) * pipMultiplier;
-  const percent = ((target - entry) / entry) * 100;
+  const percent = (target - entry) / entry * 100;
   const isPositive = pips >= 0;
   const sign = isPositive ? "+ " : "- ";
   return {
     pips: `${sign}${Math.abs(pips).toFixed(1)}`,
     percent: `${sign}${Math.abs(percent).toFixed(3)}`,
     price: target.toFixed(3),
-    isPositive,
+    isPositive
   };
 }
 
@@ -183,20 +183,20 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
 const CURRENCY_FLAGS: Record<string, string> = {
   USD: "us", EUR: "eu", GBP: "gb", JPY: "jp", AUD: "au", CAD: "ca",
   CHF: "ch", NZD: "nz", CNY: "cn", SGD: "sg", HKD: "hk", SEK: "se",
-  NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr",
+  NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr"
 };
 
-function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy }: {
-  entryPrice: number; takeProfit: number; stopLoss: number; isJpy: boolean;
-}) {
+function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy
+
+}: {entryPrice: number;takeProfit: number;stopLoss: number;isJpy: boolean;}) {
   const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy);
   const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
   return (
     <div className="space-y-2 mx-3 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
       <PriceRowFull label="Stop Loss" {...sl} />
-    </div>
-  );
+    </div>);
+
 }
 
 // --- Main Card ---
@@ -221,9 +221,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const status = signal?.status ?? "active";
 
   // Parse currency codes
-  const [baseCurrency, quoteCurrency] = currencyPair.includes("/")
-    ? currencyPair.split("/")
-    : [currencyPair.slice(0, 3), currencyPair.slice(3, 6)];
+  const [baseCurrency, quoteCurrency] = currencyPair.includes("/") ?
+  currencyPair.split("/") :
+  [currencyPair.slice(0, 3), currencyPair.slice(3, 6)];
   const isJpy = quoteCurrency === "JPY";
   const displayPair = `${baseCurrency}-${quoteCurrency}`;
   const baseFlag = CURRENCY_FLAGS[baseCurrency] ?? "un";
@@ -237,7 +237,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // AI strategy (fetched in background when card expands)
   const strategyInput = useMemo(() => signal ? {
     currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability,
-    support, resistance,
+    support, resistance
   } : null, [currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability, support, resistance, signal]);
   const { strategy: aiStrategy, loading: strategyLoading } = useSignalStrategy(strategyInput, expanded);
 
@@ -247,9 +247,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // AI currency impact analysis
   const { data: aiImpactData, loading: impactLoading } = useCurrencyImpactAI(strategyInput);
   const impactData: CurrencyImpactAI[] = aiImpactData || [
-    { currency: baseCurrency, positive: 50, negative: 30, neutral: 20, reason: "" },
-    { currency: quoteCurrency, positive: 30, negative: 50, neutral: 20, reason: "" },
-  ];
+  { currency: baseCurrency, positive: 50, negative: 30, neutral: 20, reason: "" },
+  { currency: quoteCurrency, positive: 30, negative: 50, neutral: 20, reason: "" }];
+
 
   // Log price source for debugging
   useEffect(() => {
@@ -261,7 +261,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
   const priceDiff = useMemo(() => {
     if (!quote?.price) return { percent: 0, pips: 0, currentPrice: 0, isPositive: true, hasData: false };
-    const diff = ((quote.price - entryPrice) / entryPrice) * 100;
+    const diff = (quote.price - entryPrice) / entryPrice * 100;
     const pipMultiplier = isJpy ? 100 : 10000;
     const pips = (quote.price - entryPrice) * pipMultiplier;
     return { percent: diff, pips, currentPrice: quote.price, isPositive: diff >= 0, hasData: true };
@@ -271,7 +271,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
 
   // Risk percent = SL distance / entry
-  const riskPercent = Math.abs(((stopLoss - entryPrice) / entryPrice) * 100).toFixed(0);
+  const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
 
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
@@ -279,9 +279,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
         style={{
           background:
-            "radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)",
-        }}
-      >
+          "radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)"
+        }}>
+
         {/* Bull background overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -291,15 +291,15 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             backgroundPosition: "65% center",
             backgroundRepeat: "no-repeat",
             opacity: 0.3,
-            mixBlendMode: "screen",
-          }}
-        />
+            mixBlendMode: "screen"
+          }} />
+
 
         {/* Top glow line */}
         <div
           className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-          style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }}
-        />
+          style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
+
 
         {/* Date header */}
         <div className="relative text-center pt-3 pb-1">
@@ -326,9 +326,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               {/* Outer glow ring - uses a blurred circle behind */}
               <div className={cn(
                 "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
-                priceDiff.hasData
-                  ? priceDiff.isPositive ? "bg-green-500" : "bg-red-500"
-                  : "bg-cyan-500"
+                priceDiff.hasData ?
+                priceDiff.isPositive ? "bg-green-500" : "bg-red-500" :
+                "bg-cyan-500"
               )} />
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm rounded-full overflow-hidden">
                 {/* Background track */}
@@ -345,38 +345,38 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   strokeLinecap="round"
                   strokeDasharray={`${circlePercent * 0.942} ${100 * 0.942}`}
                   className="transition-all duration-700 ease-out"
-                  style={{ filter: 'drop-shadow(0 0 3px currentColor)' }}
-                />
+                  style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
+
                 {/* Center fill */}
                 <circle cx="18" cy="18" r="12" fill="hsl(225, 25%, 8%)" fillOpacity="0.85" />
                 <circle cx="18" cy="18" r="12" fill={`url(#centerGrad-${signal.id})`} fillOpacity="0.15" />
                 <defs>
                   <linearGradient id={`liveGrad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    {priceDiff.hasData && priceDiff.isPositive ? (
-                      <>
+                    {priceDiff.hasData && priceDiff.isPositive ?
+                    <>
                         <stop offset="0%" stopColor="hsl(160, 80%, 55%)" />
                         <stop offset="100%" stopColor="hsl(120, 70%, 40%)" />
-                      </>
-                    ) : priceDiff.hasData ? (
-                      <>
+                      </> :
+                    priceDiff.hasData ?
+                    <>
                         <stop offset="0%" stopColor="hsl(10, 80%, 60%)" />
                         <stop offset="100%" stopColor="hsl(350, 70%, 45%)" />
-                      </>
-                    ) : (
-                      <>
+                      </> :
+
+                    <>
                         <stop offset="0%" stopColor="hsl(200, 100%, 55%)" />
                         <stop offset="100%" stopColor="hsl(180, 100%, 50%)" />
                       </>
-                    )}
+                    }
                   </linearGradient>
                   <radialGradient id={`centerGrad-${signal.id}`} cx="50%" cy="30%" r="70%">
-                    {priceDiff.hasData && priceDiff.isPositive ? (
-                      <stop offset="0%" stopColor="hsl(142, 70%, 50%)" />
-                    ) : priceDiff.hasData ? (
-                      <stop offset="0%" stopColor="hsl(0, 70%, 50%)" />
-                    ) : (
-                      <stop offset="0%" stopColor="hsl(200, 80%, 50%)" />
-                    )}
+                    {priceDiff.hasData && priceDiff.isPositive ?
+                    <stop offset="0%" stopColor="hsl(142, 70%, 50%)" /> :
+                    priceDiff.hasData ?
+                    <stop offset="0%" stopColor="hsl(0, 70%, 50%)" /> :
+
+                    <stop offset="0%" stopColor="hsl(200, 80%, 50%)" />
+                    }
                     <stop offset="100%" stopColor="transparent" />
                   </radialGradient>
                 </defs>
@@ -385,54 +385,54 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <span
                   className={cn(
                     "font-mono text-[13px] font-extrabold leading-none tracking-tight transition-colors duration-300",
-                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isPositive ? "text-green-400" : "text-red-400",
+                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
                   )}
-                  style={{ textShadow: priceDiff.hasData 
-                    ? priceDiff.isPositive 
-                      ? '0 0 8px hsl(142, 70%, 45%, 0.4)' 
-                      : '0 0 8px hsl(0, 70%, 50%, 0.4)' 
-                    : 'none' 
-                  }}
-                >
+                  style={{ textShadow: priceDiff.hasData ?
+                    priceDiff.isPositive ?
+                    '0 0 8px hsl(142, 70%, 45%, 0.4)' :
+                    '0 0 8px hsl(0, 70%, 50%, 0.4)' :
+                    'none'
+                  }}>
+
                   {priceDiff.hasData ? `${priceDiff.isPositive ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                 </span>
-                {priceDiff.hasData && (
-                  <span
-                    className={cn(
-                      "text-[8px] font-semibold leading-none mt-1 opacity-60",
-                      priceDiff.isPositive ? "text-green-300" : "text-red-300",
-                    )}
-                  >
+                {priceDiff.hasData &&
+                <span
+                  className={cn(
+                    "text-[8px] font-semibold leading-none mt-1 opacity-60",
+                    priceDiff.isPositive ? "text-green-300" : "text-red-300"
+                  )}>
+
                     {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
                   </span>
-                )}
+                }
               </div>
             </div>
             {/* Current price + status */}
             <div className="text-center">
-              {priceDiff.hasData ? (
-                <p className={cn(
-                  "text-[10px] font-bold",
-                  priceDiff.isPositive ? "text-green-400" : "text-red-400",
-                )}>
+              {priceDiff.hasData ?
+              <p className={cn(
+                "text-[10px] font-bold",
+                priceDiff.isPositive ? "text-green-400" : "text-red-400"
+              )}>
                   {priceDiff.currentPrice.toFixed(3)}
-                </p>
-              ) : (
-                <p className="text-[8px] text-cyan-300/50 leading-tight">{t('signal_entry')}</p>
-              )}
+                </p> :
+
+              <p className="text-[8px] text-cyan-300/50 leading-tight">{t('signal_entry')}</p>
+              }
               <p className="text-[8px] text-cyan-300/50 leading-tight">vs {t('signal_entry')}</p>
             </div>
             <div className="flex items-center gap-1">
               <div
                 className={cn(
                   "w-2.5 h-2.5 rounded-full",
-                  isConnected
-                    ? "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]"
-                    : priceLoading
-                      ? "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse"
-                      : "bg-red-400 shadow-[0_0_6px_hsl(0,80%,50%)]",
-                )}
-              />
+                  isConnected ?
+                  "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]" :
+                  priceLoading ?
+                  "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse" :
+                  "bg-red-400 shadow-[0_0_6px_hsl(0,80%,50%)]"
+                )} />
+
               <span className="text-[10px] font-bold text-cyan-300 italic">
                 {isConnected ? "Live" : priceLoading ? t('common_loading') : "N/A"}
               </span>
@@ -445,61 +445,61 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           className="mx-4 h-[2px] opacity-40 mb-3"
           style={{
             background:
-              "linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)",
-          }}
-        />
+            "linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)"
+          }} />
+
 
         {/* Middle section - 3 badges */}
         <div className="relative px-3 pb-3">
           <div className="flex gap-2">
             {[
-              {
-                label: trend === "bullish" ? t('signal_bullish') : t('signal_bearish'),
-                icon: trend === "bullish"
-                  ? <TrendingUp className="w-5 h-5 text-green-400" />
-                  : <TrendingDown className="w-5 h-5 text-red-400" />,
-                value: `${probability}%`,
-                valueClass: "text-cyan-200",
-              },
-              {
-                label: action === "BUY" ? t('signal_buy') : t('signal_sell'),
-                icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
-                value: action === "BUY" ? t('signal_buy') : t('signal_sell'),
-                valueClass: action === "BUY" ? "text-green-400" : "text-red-400",
-              },
-              {
-                label: t('signal_risk'),
-                icon: riskLoading
-                  ? <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
-                  : <Flame className="w-5 h-5 text-orange-400" />,
-                value: riskLoading ? '...' : aiRisk ? `${aiRisk.score}%` : `${riskPercent}%`,
-                valueClass: aiRisk
-                  ? aiRisk.level === 'low' ? 'text-green-400'
-                    : aiRisk.level === 'medium' ? 'text-yellow-400'
-                    : aiRisk.level === 'high' ? 'text-orange-400'
-                    : 'text-red-400'
-                  : 'text-cyan-200',
-              },
-            ].map((badge) => (
-              <div
-                key={badge.label}
-                className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
-                style={{
-                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-                  border: "1px solid hsla(200, 60%, 35%, 0.3)",
-                }}
-              >
+            {
+              label: trend === "bullish" ? t('signal_bullish') : t('signal_bearish'),
+              icon: trend === "bullish" ?
+              <TrendingUp className="w-5 h-5 text-green-400" /> :
+              <TrendingDown className="w-5 h-5 text-red-400" />,
+              value: `${probability}%`,
+              valueClass: "text-cyan-200"
+            },
+            {
+              label: action === "BUY" ? t('signal_buy') : t('signal_sell'),
+              icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
+              value: action === "BUY" ? t('signal_buy') : t('signal_sell'),
+              valueClass: action === "BUY" ? "text-green-400" : "text-red-400"
+            },
+            {
+              label: t('signal_risk'),
+              icon: riskLoading ?
+              <Loader2 className="w-5 h-5 text-orange-400 animate-spin" /> :
+              <Flame className="w-5 h-5 text-orange-400" />,
+              value: riskLoading ? '...' : aiRisk ? `${aiRisk.score}%` : `${riskPercent}%`,
+              valueClass: aiRisk ?
+              aiRisk.level === 'low' ? 'text-green-400' :
+              aiRisk.level === 'medium' ? 'text-yellow-400' :
+              aiRisk.level === 'high' ? 'text-orange-400' :
+              'text-red-400' :
+              'text-cyan-200'
+            }].
+            map((badge) =>
+            <div
+              key={badge.label}
+              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
+              style={{
+                background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                border: "1px solid hsla(200, 60%, 35%, 0.3)"
+              }}>
+
                 <div
-                  className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                  style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
-                />
+                className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
+
                 <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
                 <div className="flex items-center gap-1">
                   {badge.icon}
                   <span className={cn("font-bold text-base", badge.valueClass)}>{badge.value}</span>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -508,13 +508,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           className="relative mx-3 mb-3 rounded-lg overflow-hidden"
           style={{
             background: "linear-gradient(180deg, hsl(210, 50%, 10%) 0%, hsl(200, 60%, 14%) 100%)",
-            border: "1px solid hsla(200, 60%, 35%, 0.25)",
-          }}
-        >
+            border: "1px solid hsla(200, 60%, 35%, 0.25)"
+          }}>
+
           <div
             className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-            style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
-          />
+            style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
+
           <div className="flex items-center justify-between px-4 py-2.5">
             <span className="font-semibold text-white text-sm">{t('signal_entry')}</span>
             <div className="flex items-center gap-2">
@@ -525,8 +525,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   e.stopPropagation();
                   navigator.clipboard.writeText(entryPrice.toFixed(3));
                 }}
-                title={t('signal_copy_price')}
-              >
+                title={t('signal_copy_price')}>
+
                 <Copy className="w-4 h-4" />
               </button>
             </div>
@@ -536,112 +536,112 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {/* Expand toggle button - justo debajo de Precio de Entrada */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors"
-        >
+          className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
+
           <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", expanded && "rotate-180")} />
         </button>
 
         {/* Expanded content */}
-        {expanded && (
-          <div className="animate-in slide-in-from-top-2 duration-300">
+        {expanded &&
+        <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* Signal Chart (zoomable + support/resistance) */}
             <div className="mx-3 mb-3">
               <SignalChart
-                pair={currencyPair}
-                support={support}
-                resistance={resistance}
-                signalId={signal?.id}
-                chartImageUrl={signal?.chartImageUrl}
-                currentPrice={priceDiff.hasData ? priceDiff.currentPrice : undefined}
-                isJpy={isJpy}
-                height={200}
-                entryPrice={entryPrice}
-                takeProfit={takeProfit}
-                stopLoss={stopLoss}
-              />
+              pair={currencyPair}
+              support={support}
+              resistance={resistance}
+              signalId={signal?.id}
+              chartImageUrl={signal?.chartImageUrl}
+              currentPrice={priceDiff.hasData ? priceDiff.currentPrice : undefined}
+              isJpy={isJpy}
+              height={200}
+              entryPrice={entryPrice}
+              takeProfit={takeProfit}
+              stopLoss={stopLoss} />
+
             </div>
 
             {/* Sentimiento del Mercado + Informacion */}
             <div className="mx-3 mb-3 flex gap-2">
               <div
-                className="flex-1 rounded-lg overflow-hidden"
-                style={{
-                  border: "1px solid hsla(200, 60%, 35%, 0.3)",
-                  background: "hsl(215, 100%, 4%)",
-                }}
-              >
+              className="flex-1 rounded-lg overflow-hidden"
+              style={{
+                border: "1px solid hsla(200, 60%, 35%, 0.3)",
+                background: "hsl(215, 100%, 4%)"
+              }}>
+
                 <img
-                  src={marketSentimentChart}
-                  alt="Sentimiento del Mercado"
-                  className="w-full h-full object-cover"
-                  draggable={false}
-                />
+                src={marketSentimentChart}
+                alt="Sentimiento del Mercado"
+                className="w-full h-full object-cover"
+                draggable={false} />
+
               </div>
 
-              <div
-                className="flex-1 rounded-lg p-2.5 relative overflow-hidden"
-                style={{
-                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-                  border: "1px solid hsla(200, 60%, 35%, 0.3)",
-                }}
-              >
-                <div
-                  className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                  style={{
-                    background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)",
-                  }}
-                />
-                <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-wider mb-2">{t('signal_information')}</p>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-                  {[
-                    { label: t('signal_resistance'), value: resistance?.toFixed(3) ?? "—", color: "hsl(0, 70%, 55%)" },
-                    { label: t('signal_support'), value: support?.toFixed(3) ?? "—", color: "hsl(135, 70%, 50%)" },
-                    { label: "TP", value: takeProfit.toFixed(3), color: "hsl(135, 70%, 50%)" },
-                    { label: "SL", value: stopLoss.toFixed(3), color: "hsl(0, 70%, 55%)" },
-                  ].map((row) => (
-                    <div key={row.label} className="flex justify-between items-center">
-                      <span className="text-[9px] text-cyan-300/60">{row.label}</span>
-                      <span className="text-[9px] font-bold" style={{ color: row.color }}>
-                        {row.value}
-                      </span>
-                    </div>
-                  ))}
-                  <div className="col-span-2 mt-1 pt-1.5 border-t border-cyan-500/10 flex justify-between items-center">
-                    <span className="text-[9px] text-cyan-300/60">{t('signal_status')}</span>
-                    <span className="text-[9px] font-bold" style={{ color: "hsl(45, 80%, 55%)" }}>
-                      {status === "active" ? t('signal_status_active') : status === "pending" ? t('signal_status_pending') : t('signal_status_closed')}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
 
             {/* Strategy Guidance Panel */}
             <div
-              className="mx-3 mb-3 rounded-lg relative overflow-hidden"
-              style={{
-                background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
-                border: "1px solid hsla(200, 60%, 35%, 0.3)",
-              }}
-            >
+            className="mx-3 mb-3 rounded-lg relative overflow-hidden"
+            style={{
+              background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
+              border: "1px solid hsla(200, 60%, 35%, 0.3)"
+            }}>
+
               <div
-                className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-                style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }}
-              />
+              className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+              style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
+
               <div className="p-3">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider text-center">
                     {t('signal_strategy')}
                   </p>
-                  {strategyLoading && (
-                    <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
-                  )}
-                  {aiStrategy && !strategyLoading && (
-                    <span className="text-[8px] text-emerald-400/70 uppercase tracking-wider">IA</span>
-                  )}
+                  {strategyLoading &&
+                <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
+                }
+                  {aiStrategy && !strategyLoading &&
+                <span className="text-[8px] text-emerald-400/70 uppercase tracking-wider">IA</span>
+                }
                 </div>
 
                 <TooltipProvider delayDuration={100}>
@@ -650,12 +650,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
-                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
-                          style={{
-                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
-                          }}
-                        >
+                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        style={{
+                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
+                        }}>
+
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_duration')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
@@ -676,12 +676,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
-                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
-                          style={{
-                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
-                          }}
-                        >
+                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        style={{
+                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
+                        }}>
+
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_approach')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
@@ -702,12 +702,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
-                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
-                          style={{
-                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
-                          }}
-                        >
+                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        style={{
+                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
+                        }}>
+
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_session')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
@@ -725,12 +725,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div
-                          className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
-                          style={{
-                            background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                            border: "1px solid hsla(200, 60%, 35%, 0.2)",
-                          }}
-                        >
+                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        style={{
+                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
+                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
+                        }}>
+
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_best_time')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
@@ -749,12 +749,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className="rounded-lg p-3 cursor-help relative overflow-hidden group"
-                        style={{
-                          background: "linear-gradient(135deg, hsla(210, 80%, 10%, 0.9) 0%, hsla(200, 60%, 14%, 0.7) 100%)",
-                          border: "1px solid hsla(200, 60%, 35%, 0.25)",
-                        }}
-                      >
+                      className="rounded-lg p-3 cursor-help relative overflow-hidden group"
+                      style={{
+                        background: "linear-gradient(135deg, hsla(210, 80%, 10%, 0.9) 0%, hsla(200, 60%, 14%, 0.7) 100%)",
+                        border: "1px solid hsla(200, 60%, 35%, 0.25)"
+                      }}>
+
                         <div className="flex items-start gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-1.5 mb-1.5">
@@ -765,9 +765,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             <span className="text-[9px] text-cyan-300/40 mt-0.5 block">Toca para ver diagrama y explicación</span>
                           </div>
                           <div
-                            className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
-                            style={{ border: "1px solid hsla(200, 60%, 35%, 0.2)" }}
-                          >
+                          className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
+                          style={{ border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+
                             <img src={pinbarPattern} alt={aiStrategy?.confirmationCandle.value ?? "Pin Bar"} className="w-full h-full object-cover" draggable={false} />
                           </div>
                         </div>
@@ -792,35 +792,35 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest text-center">
                   {t('signal_currency_impact')}
                 </p>
-                {impactLoading && (
-                  <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
-                )}
+                {impactLoading &&
+              <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
+              }
               </div>
               <div className="flex gap-2">
-                {impactData.map((d) => (
-                  <CurrencyImpactPanel key={d.currency} data={d} />
-                ))}
+                {impactData.map((d) =>
+              <CurrencyImpactPanel key={d.currency} data={d} />
+              )}
               </div>
             </div>
 
             {/* Bottom accent line */}
             <div
-              className="mx-3 mb-3 h-[3px] rounded-full"
-              style={{
-                background: action === "BUY"
-                  ? "linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)"
-                  : "linear-gradient(90deg, hsl(0, 80%, 45%) 0%, hsl(0, 60%, 30%) 30%, hsl(0, 80%, 50%) 60%, hsl(0, 90%, 55%) 100%)",
-              }}
-            />
+            className="mx-3 mb-3 h-[3px] rounded-full"
+            style={{
+              background: action === "BUY" ?
+              "linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)" :
+              "linear-gradient(90deg, hsl(0, 80%, 45%) 0%, hsl(0, 60%, 30%) 30%, hsl(0, 80%, 50%) 60%, hsl(0, 90%, 55%) 100%)"
+            }} />
+
           </div>
-        )}
+        }
 
         {/* Bottom glow */}
         <div
           className="absolute bottom-0 left-[10%] right-[10%] h-[1px]"
-          style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 40%) 0%, transparent 70%)" }}
-        />
+          style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 40%) 0%, transparent 70%)" }} />
+
       </div>
-    </div>
-  );
+    </div>);
+
 }
