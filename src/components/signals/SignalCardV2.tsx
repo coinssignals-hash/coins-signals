@@ -789,6 +789,105 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Zoomable chart image */}
             <ZoomableChart pair={currencyPair} support={support} resistance={resistance} signalId={signal?.id} chartImageUrl={signal?.chartImageUrl} />
 
+            {/* Resistencia y Soporte panel (copied from CandlestickChart design) */}
+            {(support !== undefined && resistance !== undefined) && (() => {
+              const range = resistance - support;
+              const pipMultiplierSR = isJpy ? 100 : 10000;
+              const pricePosition = priceDiff.hasData
+                ? Math.max(0, Math.min(100, ((priceDiff.currentPrice - support) / range) * 100))
+                : 50;
+              const positionLabel = pricePosition > 66 ? 'Cerca de Resistencia' : pricePosition < 33 ? 'Cerca de Soporte' : 'En Rango Medio';
+              const positionColor = pricePosition > 66 ? 'text-green-400' : pricePosition < 33 ? 'text-red-400' : 'text-yellow-400';
+
+              return (
+                <div className="mx-3 mb-3 rounded-lg p-3 relative overflow-hidden" style={{
+                  background: "linear-gradient(180deg, hsl(0, 0%, 4%) 0%, hsl(210, 60%, 6%) 100%)",
+                  border: "1px solid hsla(120, 40%, 25%, 0.5)",
+                }}>
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-semibold text-sm">Resistencia y Soporte</h3>
+                    {priceDiff.hasData && (
+                      <div className="flex items-center gap-2 bg-blue-500/20 px-2 py-1 rounded-full">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                        <span className="text-xs text-blue-400 font-medium">LIVE: {priceDiff.currentPrice.toFixed(5)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Range indicator */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-green-900/30 to-red-900/30 border border-gray-700 rounded-lg px-4 py-2">
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] text-gray-500 uppercase">Máximo</span>
+                          <span className="text-green-400 font-mono text-sm font-semibold">{resistance.toFixed(4)}</span>
+                        </div>
+                        <div className="flex flex-col items-center px-3 border-x border-gray-700">
+                          <span className="text-[10px] text-gray-500 uppercase">Rango</span>
+                          <span className="text-yellow-400 font-mono text-sm font-bold">
+                            {(range * pipMultiplierSR).toFixed(1)} pips
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] text-gray-500 uppercase">Mínimo</span>
+                          <span className="text-red-400 font-mono text-sm font-semibold">{support.toFixed(4)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price position within range */}
+                    {priceDiff.hasData && (
+                      <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] text-gray-500 uppercase">Posición en Rango</span>
+                          <span className={cn("text-xs font-medium", positionColor)}>{positionLabel}</span>
+                        </div>
+                        <div className="relative h-3 bg-gradient-to-r from-red-900/50 via-yellow-900/50 to-green-900/50 rounded-full overflow-hidden">
+                          <div className="absolute inset-0 flex">
+                            <div className="w-1/3 border-r border-gray-600"></div>
+                            <div className="w-1/3 border-r border-gray-600"></div>
+                            <div className="w-1/3"></div>
+                          </div>
+                          <div
+                            className="absolute top-0 bottom-0 w-1 bg-white shadow-lg shadow-white/50 transition-all duration-300"
+                            style={{ left: `calc(${pricePosition}% - 2px)` }}
+                          >
+                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full border-2 border-blue-500"></div>
+                          </div>
+                        </div>
+                        <div className="flex justify-between mt-1 text-[9px] text-gray-500">
+                          <span>Soporte (0%)</span>
+                          <span className={cn("font-mono font-bold", positionColor)}>{pricePosition.toFixed(1)}%</span>
+                          <span>Resistencia (100%)</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex justify-between text-xs flex-wrap gap-2 mt-3">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-0.5 border-t-2 border-dashed border-green-500"></div>
+                        <span className="text-green-400">Resistencia</span>
+                        <span className="font-mono font-semibold text-green-300 bg-green-500/20 px-1.5 py-0.5 rounded">
+                          {resistance.toFixed(5)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-0.5 border-t-2 border-dashed border-red-500"></div>
+                        <span className="text-red-400">Soporte</span>
+                        <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded">
+                          {support.toFixed(5)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Sentimiento del Mercado + Informacion */}
             <div className="mx-3 mb-3 flex gap-2">
               <div
