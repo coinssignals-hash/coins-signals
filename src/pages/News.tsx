@@ -208,8 +208,7 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
   }, [news.affected_currencies]);
 
   return (
-    <Link
-      to={`/news/${news.id}`}
+    <div
       className={cn(
         'group flex gap-3 p-3 rounded-xl bg-card/50 border border-border/50',
         'hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5',
@@ -219,22 +218,24 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
 
       {/* Thumbnail */}
       {news.image_url &&
-      <div className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
+      <Link to={`/news/${news.id}`} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
           <img
           src={news.image_url}
           alt={news.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        </div>
+        </Link>
       }
       
       {/* Content */}
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         {/* Title */}
-        <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-          {news.title}
-        </h3>
+        <Link to={`/news/${news.id}`}>
+          <h3 className="font-semibold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+            {news.title}
+          </h3>
+        </Link>
         
         {/* Source and Date */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
@@ -287,7 +288,7 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
           <NewsAISummaryInline news={news} />
         </div>
       </div>
-    </Link>);
+    </div>);
 
 }
 
