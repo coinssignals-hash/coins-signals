@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   RefreshCw, Bell, Clock, Zap, WifiOff,
   Activity, TrendingUp, BarChart2, Waves, Percent,
-  LineChart, Landmark, Brain, Target
+  LineChart, Landmark, Brain, Target, Gauge, Cloud
 } from 'lucide-react';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
@@ -33,6 +33,9 @@ import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
 import { RiskRewardCalculator } from '@/components/analysis/RiskRewardCalculator';
+import { ATRChart } from '@/components/analysis/ATRChart';
+import { ADXChart } from '@/components/analysis/ADXChart';
+import { IchimokuChart } from '@/components/analysis/IchimokuChart';
 import { useMarketData } from '@/hooks/useMarketData';
 import { usePreviousDayCandles } from '@/hooks/usePreviousDayCandles';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
@@ -79,6 +82,9 @@ const chartTabs = [
   { id: 'macd', icon: BarChart2, label: 'MACD' },
   { id: 'bollinger', icon: Waves, label: 'Bollinger' },
   { id: 'stochastic', icon: Percent, label: 'Estoc.' },
+  { id: 'atr', icon: Activity, label: 'ATR' },
+  { id: 'adx', icon: Gauge, label: 'ADX' },
+  { id: 'ichimoku', icon: Cloud, label: 'Ichimoku' },
 ];
 
 export default function Analysis() {
@@ -280,6 +286,21 @@ export default function Analysis() {
               )}
               {activeChart === 'stochastic' && (
                 <StochasticChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                />
+              )}
+              {activeChart === 'atr' && (
+                <ATRChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                />
+              )}
+              {activeChart === 'adx' && (
+                <ADXChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  loading={loading} error={error}
+                />
+              )}
+              {activeChart === 'ichimoku' && (
+                <IchimokuChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
                   loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
                 />
               )}
