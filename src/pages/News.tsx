@@ -378,12 +378,13 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 
 }
 
-// Currency quick filter pills
+// Currency quick filter pills — ranked by impact
 function QuickCurrencyFilter({
   selected,
   onChange,
-  allLabel
-}: {selected: Currency[];onChange: (currencies: Currency[]) => void;allLabel: string;}) {
+  allLabel,
+  news,
+}: {selected: Currency[]; onChange: (currencies: Currency[]) => void; allLabel: string; news?: RealNewsItem[];}) {
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
       onChange(selected.filter((c) => c !== currency));
@@ -392,6 +393,24 @@ function QuickCurrencyFilter({
     }
   };
 
+  // Compute impact counts and sort currencies
+  const rankedCurrencies = useMemo(() => {
+    const counts: Record<string, number> = {};
+    QUICK_CURRENCIES.forEach((c) => (counts[c] = 0));
+    if (news) {
+      news.forEach((item) =>
+        item.affected_currencies.forEach((c) => {
+          if (c in counts) counts[c]++;
+        })
+      );
+    }
+    return [...QUICK_CURRENCIES].sort((a, b) => counts[b] - counts[a]).map((c) => ({
+      currency: c,
+      count: counts[c],
+    }));
+  }, [news]);
+
+  const totalNews = news?.length ?? 0;
   const isAll = selected.length === 0;
 
   return (
@@ -407,10 +426,13 @@ function QuickCurrencyFilter({
         )}
       >
         🌍 {allLabel}
+        {totalNews > 0 && (
+          <span className="ml-1 opacity-70">{totalNews}</span>
+        )}
       </button>
-      
-      {/* Major currencies */}
-      {QUICK_CURRENCIES.map((currency) => {
+
+      {/* Currencies ranked by impact */}
+      {rankedCurrencies.map(({ currency, count }) => {
         const info = CURRENCIES[currency];
         const isSelected = selected.includes(currency);
         return (
@@ -426,6 +448,16 @@ function QuickCurrencyFilter({
           >
             <span className="text-sm">{info.flag}</span>
             <span>{currency}</span>
+            {count > 0 && (
+              <span className={cn(
+                'ml-0.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center',
+                isSelected
+                  ? 'bg-primary/25 text-primary'
+                  : 'bg-muted text-muted-foreground'
+              )}>
+                {count}
+              </span>
+            )}
           </button>
         );
       })}
@@ -540,7 +572,8 @@ const News = () => {
         <QuickCurrencyFilter
           selected={selectedCurrencies}
           onChange={setSelectedCurrencies}
-          allLabel={t('news_all_currencies')} />
+          allLabel={t('news_all_currencies')}
+          news={news} />
 
         
         {/* Advanced Filters */}
