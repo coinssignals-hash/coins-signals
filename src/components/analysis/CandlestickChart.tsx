@@ -25,6 +25,13 @@ interface CandlestickChartProps {
 function isJpyPair(s: number, r: number) { return s > 10 || r > 10; }
 function fmtPrice(n: number, jpy: boolean) { return jpy ? n.toFixed(3) : n.toFixed(5); }
 
+function dayKey(ts: string): string {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
 function fmtTimeLabel(ts: string): string {
   const d = new Date(ts);
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -40,9 +47,9 @@ function fmtVolume(v: number): string {
   return v.toFixed(0);
 }
 
-/* ═══════════════════════════════════════════════════
- *  Build TradingView-style SVG chart (static image)
- * ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+ *  Build SVG — dark navy style matching reference image
+ * ═══════════════════════════════════════════════════════ */
 function buildChartSvg(
   data: CandleData[],
   support: number,
@@ -52,123 +59,133 @@ function buildChartSvg(
   title?: string,
 ): string {
   const W = 1200, H = 700;
-  const PAD = { top: 35, right: 130, bottom: 30, left: 60 };
+  const PAD = { top: 35, right: 110, bottom: 50, left: 65 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
   const CHART_W = CHART_X2 - CHART_X1;
 
   // Price area & volume area
+  const VOL_SEP_Y = 560;
   const PRICE_TOP = PAD.top;
-  const VOL_SEPARATOR_Y = 570;
-  const PRICE_BOTTOM = VOL_SEPARATOR_Y;
-  const PRICE_H = PRICE_BOTTOM - PRICE_TOP;
-  const VOL_TOP = VOL_SEPARATOR_Y + 10;
+  const PRICE_H = VOL_SEP_Y - PRICE_TOP;
+  const VOL_TOP = VOL_SEP_Y + 12;
   const VOL_BOTTOM = H - PAD.bottom;
   const VOL_H = VOL_BOTTOM - VOL_TOP;
 
-  // Colors — TradingView
-  const BG = '#131722';
-  const GRID = '#2a2e39';
-  const TEXT_COLOR = '#787b86';
-  const UP_COLOR = '#26a69a';
-  const DN_COLOR = '#ef5350';
+  // Colors
+  const BG1 = '#050d1a';
+  const BG2 = '#0a1628';
+  const GRID = '#1e3a5f';
+  const TEXT_COL = '#64748b';
+  const UP = '#22c55e';
+  const DN = '#ef4444';
+  const UP_DIM = 'rgba(34,197,94,0.35)';
+  const DN_DIM = 'rgba(239,68,68,0.35)';
+  const WICK_DIM = 'rgba(148,163,184,0.3)';
 
   if (data.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-      <rect width="${W}" height="${H}" fill="${BG}"/>
-      <text x="${W / 2}" y="${H / 2}" fill="${TEXT_COLOR}" text-anchor="middle" font-size="14" font-family="Arial, sans-serif">Sin datos disponibles</text>
+      <rect width="${W}" height="${H}" fill="${BG1}"/>
+      <text x="${W / 2}" y="${H / 2}" fill="${TEXT_COL}" text-anchor="middle" font-size="14" font-family="sans-serif">Sin datos disponibles</text>
     </svg>`;
   }
 
   const jpy = isJpyPair(support, resistance);
 
-  // ── Price range ──
+  // Price range
   let minP = Infinity, maxP = -Infinity;
   for (const c of data) { if (c.low < minP) minP = c.low; if (c.high > maxP) maxP = c.high; }
   if (realtimePrice) { minP = Math.min(minP, realtimePrice); maxP = Math.max(maxP, realtimePrice); }
-  minP = Math.min(minP, support);
-  maxP = Math.max(maxP, resistance);
+  minP = Math.min(minP, support); maxP = Math.max(maxP, resistance);
   const pr = maxP - minP || 0.0001;
-  const pPad = pr * 0.05;
-  minP -= pPad;
-  maxP += pPad;
+  const pp = pr * 0.05;
+  minP -= pp; maxP += pp;
   const totalRange = maxP - minP;
 
-  // ── Mock volume ──
+  // Mock volume
   const volumes = data.map((_, i) => 5e6 + Math.abs(Math.sin(i * 0.3)) * 50e6 + ((i * 7) % 10) * 1e6);
   let maxVol = 0;
   for (const v of volumes) if (v > maxVol) maxVol = v;
   if (maxVol === 0) maxVol = 1;
 
-  // ── Coordinate helpers ──
+  // Helpers
   const yOf = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
   const xOf = (i: number) => CHART_X1 + (i + 0.5) * (CHART_W / data.length);
-  const volYOf = (vol: number) => {
-    const h = (vol / maxVol) * VOL_H;
-    return { y: VOL_BOTTOM - h, h };
-  };
-
+  const volYOf = (vol: number) => { const h = (vol / maxVol) * VOL_H; return { y: VOL_BOTTOM - h, h }; };
   const cw = CHART_W / data.length;
-  const bodyW = Math.max(2, Math.min(8, cw * 0.7));
+  const bodyW = Math.max(1.5, Math.min(8, cw * 0.65));
+
+  // Identify last day
+  const lastDayStr = dayKey(data[data.length - 1].time);
+  const firstLastDayIdx = data.findIndex(c => dayKey(c.time) === lastDayStr);
 
   const parts: string[] = [];
 
-  // ── Background ──
-  parts.push(`<rect width="${W}" height="${H}" fill="${BG}"/>`);
+  // Background gradient
+  parts.push(`<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${BG1}"/><stop offset="100%" stop-color="${BG2}"/></linearGradient></defs>`);
+  parts.push(`<rect width="${W}" height="${H}" fill="url(#bg)" rx="8"/>`);
 
-  // ── Title ──
+  // Title
   if (title) {
-    parts.push(`<text x="${CHART_X1}" y="25" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="14" font-weight="bold">${title}</text>`);
+    parts.push(`<text x="${CHART_X1}" y="25" fill="${TEXT_COL}" font-family="sans-serif" font-size="13" font-weight="bold">${title}</text>`);
   }
 
-  // ── Horizontal grid + price labels (RIGHT side) ──
-  const gridCount = 8;
-  for (let i = 0; i <= gridCount; i++) {
-    const price = minP + (totalRange * i) / gridCount;
+  // Horizontal grid + price labels (LEFT)
+  for (let i = 0; i <= 8; i++) {
+    const price = minP + (totalRange * i) / 8;
     const y = yOf(price);
-    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${GRID}" stroke-width="1"/>`);
-    parts.push(`<text x="${CHART_X2 + 10}" y="${y + 4}" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="11">${fmtPrice(price, jpy)}</text>`);
+    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${GRID}" stroke-width="0.5" stroke-dasharray="4,4" shape-rendering="crispEdges"/>`);
+    parts.push(`<text x="${CHART_X1 - 5}" y="${y + 3}" fill="${TEXT_COL}" text-anchor="end" font-size="9" font-family="monospace">${fmtPrice(price, jpy)}</text>`);
   }
 
-  // ── Vertical grid + time labels ──
-  const timeLabelCount = Math.min(10, data.length);
-  const timeInterval = Math.max(1, Math.floor(data.length / timeLabelCount));
+  // Volume separator
+  parts.push(`<line x1="${CHART_X1}" y1="${VOL_SEP_Y}" x2="${CHART_X2}" y2="${VOL_SEP_Y}" stroke="${GRID}" stroke-width="0.8" shape-rendering="crispEdges"/>`);
+  parts.push(`<text x="${CHART_X1 + 4}" y="${VOL_SEP_Y + 12}" fill="#475569" font-size="8" font-family="sans-serif" font-weight="600">VOL</text>`);
+
+  // Volume grid
+  for (let i = 1; i <= 3; i++) {
+    const vv = (maxVol * i) / 3;
+    const { y } = volYOf(vv);
+    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${GRID}" stroke-width="0.5" opacity="0.3"/>`);
+    parts.push(`<text x="${CHART_X2 + 5}" y="${y + 3}" fill="${TEXT_COL}" font-size="8" font-family="monospace">${fmtVolume(vv)}</text>`);
+  }
+
+  // Day separators + labels
+  let prevDay = '';
+  for (let i = 0; i < data.length; i++) {
+    const dk = dayKey(data[i].time);
+    if (dk !== prevDay) {
+      const x = CHART_X1 + i * cw;
+      parts.push(`<line x1="${x}" y1="${PRICE_TOP}" x2="${x}" y2="${VOL_BOTTOM}" stroke="${GRID}" stroke-width="0.5" stroke-dasharray="2,6" shape-rendering="crispEdges"/>`);
+      const d = new Date(data[i].time);
+      const label = `${DAY_NAMES[d.getDay()]} ${d.getDate()}`;
+      parts.push(`<text x="${x + 4}" y="${H - PAD.bottom + 15}" fill="${TEXT_COL}" font-size="10" font-family="sans-serif">${label}</text>`);
+      prevDay = dk;
+    }
+  }
+
+  // Time labels (every ~3 hours)
+  const timeInterval = Math.max(1, Math.floor(data.length / 12));
   for (let i = 0; i < data.length; i += timeInterval) {
     const x = xOf(i);
-    parts.push(`<line x1="${x}" y1="${PRICE_TOP}" x2="${x}" y2="${PRICE_BOTTOM}" stroke="${GRID}" stroke-width="1"/>`);
-    parts.push(`<text x="${x}" y="${PRICE_BOTTOM + 50}" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="11" text-anchor="middle">${fmtTimeLabel(data[i].time)}</text>`);
+    const d = new Date(data[i].time);
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    parts.push(`<text x="${x}" y="${H - PAD.bottom + 30}" fill="${TEXT_COL}" font-size="8" font-family="monospace" text-anchor="middle">${hh}:${mm}</text>`);
   }
 
-  // ── Volume separator ──
-  parts.push(`<line x1="${CHART_X1}" y1="${VOL_SEPARATOR_Y}" x2="${CHART_X2}" y2="${VOL_SEPARATOR_Y}" stroke="${GRID}" stroke-width="2"/>`);
-  parts.push(`<text x="${CHART_X1}" y="${VOL_SEPARATOR_Y + 5}" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="12" font-weight="bold">VOLUME</text>`);
-
-  // ── Volume grid ──
-  for (let i = 1; i <= 3; i++) {
-    const volVal = (maxVol * i) / 3;
-    const { y } = volYOf(volVal);
-    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${GRID}" stroke-width="1" opacity="0.3"/>`);
-    parts.push(`<text x="${W - 20}" y="${y + 4}" fill="${TEXT_COLOR}" font-family="Arial, sans-serif" font-size="9">${fmtVolume(volVal)}</text>`);
+  // Last day highlight background
+  if (firstLastDayIdx >= 0) {
+    const x1 = CHART_X1 + firstLastDayIdx * cw;
+    parts.push(`<rect x="${x1}" y="${PRICE_TOP}" width="${CHART_X2 - x1}" height="${PRICE_H}" fill="rgba(34,197,94,0.03)"/>`);
   }
 
-  // ── Support line ──
-  const sY = yOf(support);
-  parts.push(`<line x1="${CHART_X1}" y1="${sY}" x2="${CHART_X2 - 60}" y2="${sY}" stroke="${DN_COLOR}" stroke-width="1" stroke-dasharray="5,5"/>`);
-  parts.push(`<rect x="${CHART_X2 - 55}" y="${sY - 10}" width="55" height="20" fill="${DN_COLOR}" rx="2"/>`);
-  parts.push(`<text x="${CHART_X2 - 52}" y="${sY + 4}" fill="white" font-family="Arial, sans-serif" font-size="10">${fmtPrice(support, jpy)}</text>`);
-
-  // ── Resistance line ──
-  const rY = yOf(resistance);
-  parts.push(`<line x1="${CHART_X1}" y1="${rY}" x2="${CHART_X2 - 60}" y2="${rY}" stroke="${UP_COLOR}" stroke-width="1" stroke-dasharray="5,5"/>`);
-  parts.push(`<rect x="${CHART_X2 - 55}" y="${rY - 10}" width="55" height="20" fill="${UP_COLOR}" rx="2"/>`);
-  parts.push(`<text x="${CHART_X2 - 52}" y="${rY + 4}" fill="white" font-family="Arial, sans-serif" font-size="10">${fmtPrice(resistance, jpy)}</text>`);
-
-  // ── Candlesticks + Volume bars ──
+  // Candles + Volume
   for (let i = 0; i < data.length; i++) {
     const c = data[i];
     const x = xOf(i);
+    const isLastDay = dayKey(c.time) === lastDayStr;
     const isUp = c.close >= c.open;
-    const color = isUp ? UP_COLOR : DN_COLOR;
 
     const bodyTop = yOf(Math.max(c.open, c.close));
     const bodyBot = yOf(Math.min(c.open, c.close));
@@ -176,33 +193,53 @@ function buildChartSvg(
     const wickTop = yOf(c.high);
     const wickBot = yOf(c.low);
 
-    // Wick
-    parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${color}" stroke-width="1"/>`);
-    // Body
-    parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${color}"/>`);
+    let upC: string, dnC: string, wC: string;
+    if (isLastDay) { upC = UP; dnC = DN; wC = isUp ? UP : DN; }
+    else { upC = UP_DIM; dnC = DN_DIM; wC = WICK_DIM; }
+
+    const fill = isUp ? upC : dnC;
+    parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${wC}" stroke-width="1" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="0.5" shape-rendering="crispEdges"/>`);
 
     // Volume bar
     const { y: vy, h: vh } = volYOf(volumes[i]);
-    parts.push(`<rect x="${x - bodyW / 2}" y="${vy}" width="${bodyW}" height="${Math.max(1, vh)}" fill="${color}" opacity="0.8"/>`);
+    const vc = isLastDay
+      ? (isUp ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)')
+      : (isUp ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)');
+    parts.push(`<rect x="${x - bodyW / 2}" y="${vy}" width="${bodyW}" height="${Math.max(1, vh)}" fill="${vc}" rx="0.3" shape-rendering="crispEdges"/>`);
   }
 
-  // ── Realtime price line ──
+  // S/R lines — ONLY last 24h (last day)
+  const srX1 = firstLastDayIdx >= 0 ? CHART_X1 + firstLastDayIdx * cw : CHART_X1;
+  const srX2 = CHART_X2;
+  const lblW = 80, lblH = 18, fs = 10;
+
+  // Resistance
+  const rY = yOf(resistance);
+  parts.push(`<line x1="${srX1}" y1="${rY}" x2="${srX2}" y2="${rY}" stroke="${UP}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
+  parts.push(`<rect x="${srX2 - lblW - 4}" y="${rY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(34,197,94,0.15)" stroke="${UP}" stroke-width="0.8"/>`);
+  parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${rY + fs / 3}" fill="${UP}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(resistance, jpy)}</text>`);
+
+  // Support
+  const sY = yOf(support);
+  parts.push(`<line x1="${srX1}" y1="${sY}" x2="${srX2}" y2="${sY}" stroke="${DN}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
+  parts.push(`<rect x="${srX2 - lblW - 4}" y="${sY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(239,68,68,0.15)" stroke="${DN}" stroke-width="0.8"/>`);
+  parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(support, jpy)}</text>`);
+
+  // Realtime price
   if (realtimePrice) {
     const rtY = yOf(realtimePrice);
-    const rtColor = isConnected ? '#2196F3' : '#6366f1';
-    parts.push(`<line x1="${CHART_X1}" y1="${rtY}" x2="${CHART_X2 - 60}" y2="${rtY}" stroke="${rtColor}" stroke-width="1.5" stroke-dasharray="4,2"/>`);
-    parts.push(`<rect x="${CHART_X2 - 55}" y="${rtY - 10}" width="55" height="20" fill="${rtColor}" rx="2"/>`);
-    parts.push(`<text x="${CHART_X2 - 52}" y="${rtY + 4}" fill="white" font-family="Arial, sans-serif" font-size="10">${isConnected ? '● ' : ''}${fmtPrice(realtimePrice, jpy)}</text>`);
+    const rtC = isConnected ? '#3b82f6' : '#6366f1';
+    parts.push(`<line x1="${CHART_X1}" y1="${rtY}" x2="${srX2}" y2="${rtY}" stroke="${rtC}" stroke-width="1.5" stroke-dasharray="4,2" shape-rendering="crispEdges"/>`);
+    const bw = 70;
+    parts.push(`<rect x="${srX2 - bw - 4}" y="${rtY - lblH / 2}" width="${bw}" height="${lblH}" rx="4" fill="${rtC}"/>`);
+    parts.push(`<text x="${srX2 - bw / 2 - 4}" y="${rtY + 3}" fill="#fff" text-anchor="middle" font-size="9" font-family="monospace" font-weight="bold">${isConnected ? '● ' : ''}${fmtPrice(realtimePrice, jpy)}</text>`);
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-  <defs>
-    <style>
-      .grid-line { stroke: ${GRID}; stroke-width: 1; }
-      .text { fill: ${TEXT_COLOR}; font-family: Arial, sans-serif; font-size: 11px; }
-      .price-label { font-size: 10px; fill: white; }
-    </style>
-  </defs>
+  // Border
+  parts.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="${GRID}" stroke-width="1" rx="8"/>`);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" shape-rendering="geometricPrecision">
   ${parts.join('\n  ')}
 </svg>`;
 }
@@ -225,8 +262,8 @@ export function CandlestickChart({
   const svgDataUri = useMemo(() => {
     if (!data.length) return null;
     const title = previousDayDate
-      ? `Velas — Última Semana | ${previousDayDate}`
-      : 'Velas — Última Semana';
+      ? `30min · Última Semana | ${previousDayDate}`
+      : '30min · Última Semana';
     const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate]);
@@ -250,8 +287,8 @@ export function CandlestickChart({
 
   if (loading) {
     return (
-      <div className="bg-[#131722] rounded-lg p-4 animate-pulse">
-        <div className="h-52 bg-slate-800/30 rounded" />
+      <div className="rounded-lg p-4 animate-pulse" style={{ background: '#050d1a' }}>
+        <div className="h-52 rounded" style={{ background: 'rgba(6,182,212,0.05)' }} />
       </div>
     );
   }
@@ -260,9 +297,7 @@ export function CandlestickChart({
     <div
       className={cn(
         'rounded-lg transition-all duration-300 relative overflow-hidden',
-        alertStyles
-          ? `${alertStyles.borderColor} ${alertStyles.glowColor} border-2`
-          : '',
+        alertStyles ? `${alertStyles.borderColor} ${alertStyles.glowColor} border-2` : '',
       )}
     >
       {alertStyles && (
@@ -277,28 +312,28 @@ export function CandlestickChart({
       {svgDataUri ? (
         <img
           src={svgDataUri}
-          alt="Candlestick chart"
+          alt="Gráfico de velas japonesas 30min - 7 días"
           className="w-full h-auto block rounded-lg"
           draggable={false}
         />
       ) : (
-        <div className="h-52 bg-[#131722] rounded-lg flex items-center justify-center">
-          <span className="text-slate-500 text-sm">Sin datos disponibles</span>
+        <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
+          <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
         </div>
       )}
 
-      {/* Legend below */}
-      <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 bg-[#131722] rounded-b-lg">
+      {/* Legend */}
+      <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0a1628' }}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#26a69a' }} />
-            <span style={{ color: '#26a69a' }}>Resistencia 24h</span>
-            <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#26a69a', background: 'rgba(38,166,154,0.2)' }}>{fmtPrice(resistance, jpy)}</span>
+            <div className="w-5 h-0.5 border-t-2 border-dashed border-green-500" />
+            <span className="text-green-400">Resistencia 24h</span>
+            <span className="font-mono font-semibold text-green-300 bg-green-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(resistance, jpy)}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#ef5350' }} />
-            <span style={{ color: '#ef5350' }}>Soporte 24h</span>
-            <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#ef5350', background: 'rgba(239,83,80,0.2)' }}>{fmtPrice(support, jpy)}</span>
+            <div className="w-5 h-0.5 border-t-2 border-dashed border-red-500" />
+            <span className="text-red-400">Soporte 24h</span>
+            <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(support, jpy)}</span>
           </div>
         </div>
         {realtimePrice && (
