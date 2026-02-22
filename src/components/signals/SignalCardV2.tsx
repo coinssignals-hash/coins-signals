@@ -560,7 +560,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
-            {/* Signal Chart (zoomable + support/resistance) */}
+            {/* Signal Chart (zoomable) */}
             <div className="mx-3 mb-3">
                <SignalChart
               pair={currencyPair}
@@ -568,8 +568,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               resistance={resistance}
               signalId={signal?.id}
               chartImageUrl={signal?.chartImageUrl}
-              currentPrice={priceDiff.hasData ? priceDiff.currentPrice : undefined}
-              isJpy={isJpy}
               height={200}
               entryPrice={entryPrice}
               takeProfit={takeProfit}
