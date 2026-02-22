@@ -5,6 +5,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MainDrawer } from '@/components/layout/MainDrawer';
 import { Card, CardContent } from '@/components/ui/card';
+import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -259,7 +260,9 @@ const Index = () => {
         <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
         
       <main className="p-4 space-y-4">
-        <PortfolioWidget />
+        <SignalStyleCard>
+          <PortfolioWidget />
+        </SignalStyleCard>
         <div className="flex items-center gap-2 flex-wrap">
           <SymbolSearch
               value={selectedPair}
@@ -363,7 +366,8 @@ const Index = () => {
           </div>
           }
 
-        <CurrencyHeader
+        <SignalStyleCard>
+          <CurrencyHeader
             symbol={selectedPair}
             currentPrice={marketStats.currentPrice}
             change={marketStats.change}
@@ -373,6 +377,7 @@ const Index = () => {
             loading={loading}
             realtimePrice={realtimeQuote?.price}
             isRealtimeConnected={isConnected} />
+        </SignalStyleCard>
 
 
         
@@ -472,15 +477,18 @@ const Index = () => {
 
 
 
-        <IndicatorsSummaryChart
+        <SignalStyleCard label="Indicadores">
+          <IndicatorsSummaryChart
             priceData={data?.priceData}
             rsiData={data?.rsiData}
             macdData={data?.macdData}
             smaData={data?.smaData}
             loading={loading} />
+        </SignalStyleCard>
 
 
-        <MarketSentiment
+        <SignalStyleCard label="Sentimiento">
+          <MarketSentiment
             symbol={selectedPair}
             highPrice={marketStats.high}
             lowPrice={marketStats.low}
@@ -488,23 +496,27 @@ const Index = () => {
             pipsChange={marketStats.change}
             realtimePrice={realtimeQuote?.price}
             isRealtimeConnected={isConnected} />
+        </SignalStyleCard>
 
 
-        <PricePrediction
+        <SignalStyleCard label="Predicción">
+          <PricePrediction
             symbol={selectedPair}
             currentPrice={marketStats.currentPrice}
             realtimePrice={realtimeQuote?.price}
             isRealtimeConnected={isConnected} />
+        </SignalStyleCard>
 
-
-        <TechnicalLevels
+        <SignalStyleCard label="Niveles Técnicos">
+          <TechnicalLevels
             symbol={selectedPair}
             currentPrice={marketStats.currentPrice}
             realtimePrice={realtimeQuote?.price}
             isRealtimeConnected={isConnected} />
+        </SignalStyleCard>
 
-
-        <CandlestickChart
+        <SignalStyleCard label="Velas">
+          <CandlestickChart
             data={previousDayData?.candles || []}
             resistance={previousDayData?.resistance || marketStats.resistance}
             support={previousDayData?.support || marketStats.support}
@@ -513,30 +525,40 @@ const Index = () => {
             isRealtimeConnected={isConnected}
             previousDayDate={previousDayData?.date}
             alertState={alertState} />
-
+        </SignalStyleCard>
 
         <div className="space-y-3">
-          <StrategicRecommendations
+          <SignalStyleCard label="Estrategia">
+            <StrategicRecommendations
               symbol={selectedPair}
               currentPrice={marketStats.currentPrice}
               realtimePrice={realtimeQuote?.price}
               isRealtimeConnected={isConnected} />
+          </SignalStyleCard>
 
-
-          <MarketConclusions
+          <SignalStyleCard label="Conclusiones">
+            <MarketConclusions
               symbol={selectedPair}
               currentPrice={marketStats.currentPrice}
               realtimePrice={realtimeQuote?.price}
               isRealtimeConnected={isConnected} />
+          </SignalStyleCard>
 
+          <SignalStyleCard label="Política Monetaria">
+            <MonetaryPolicies symbol={selectedPair} />
+          </SignalStyleCard>
 
-          <MonetaryPolicies symbol={selectedPair} />
+          <SignalStyleCard label="Noticias Relevantes">
+            <RelevantNews symbol={selectedPair} />
+          </SignalStyleCard>
 
-          <RelevantNews symbol={selectedPair} />
+          <SignalStyleCard label="Noticias Principales">
+            <MajorNews symbol={selectedPair} />
+          </SignalStyleCard>
 
-          <MajorNews symbol={selectedPair} />
-
-          <EconomicEvents symbol={selectedPair} date={selectedDay} />
+          <SignalStyleCard label="Eventos Económicos">
+            <EconomicEvents symbol={selectedPair} date={selectedDay} />
+          </SignalStyleCard>
         </div>
       </main>
 
