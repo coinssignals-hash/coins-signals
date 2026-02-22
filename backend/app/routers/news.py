@@ -183,6 +183,42 @@ async def get_news_trends_range(
     return {"trends": results, "total_periods": len(results)}
 
 
+@router.get("/top-by-impact")
+async def get_top_news_by_impact(
+    currency: Optional[str] = Query(None, description="Filter by currency (e.g. USD, EUR)"),
+    min_score: float = Query(0.0, ge=-1.0, le=1.0, description="Minimum absolute impact score"),
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+):
+    """Get top news ranked by currency impact score, with optional currency filter and pagination"""
+    scored_news = []
+    for n in SAMPLE_NEWS:
+        impacts = n.get("currency_impacts", [])
+        if currency:
+            impacts = [ci for ci in impacts if ci["currency"].upper() == currency.upper()]
+        if not impacts:
+            continue
+        max_impact = max(impacts, key=lambda ci: abs(ci["score"]))
+        if abs(max_impact["score"]) < abs(min_score):
+            continue
+        scored_news.append({**n, "_max_impact_score": abs(max_impact["score"])})
+
+    scored_news.sort(key=lambda x: x["_max_impact_score"], reverse=True)
+
+    total = len(scored_news)
+    start = (page - 1) * limit
+    end = start + limit
+    page_items = [{k: v for k, v in item.items() if k != "_max_impact_score"} for item in scored_news[start:end]]
+
+    return {
+        "items": page_items,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit if total > 0 else 0,
+    }
+
+
 @router.post("/refresh")
 async def refresh_news():
     """Trigger news refresh/scraping"""
