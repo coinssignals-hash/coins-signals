@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ComposedChart, Line, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Loader2, TrendingUp, TrendingDown, Minus, Wifi } from 'lucide-react';
+import {
+  ComposedChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  ReferenceLine, ReferenceArea
+} from 'recharts';
+import { Loader2, AlertTriangle, TrendingUp, TrendingDown, Zap, ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface StochasticChartProps {
@@ -15,122 +16,170 @@ interface StochasticChartProps {
   isRealtimeConnected?: boolean;
 }
 
-// Calculate Stochastic Oscillator
-const calculateStochastic = (
-  prices: Array<{ high: number; low: number; close: number }>,
-  kPeriod: number = 14,
-  dPeriod: number = 3
-) => {
-  if (prices.length < kPeriod) return null;
+interface StochPoint {
+  time: string;
+  k: number;
+  d: number;
+  crossover?: 'bullish' | 'bearish';
+}
 
-  const recentPrices = prices.slice(-kPeriod);
-  const highestHigh = Math.max(...recentPrices.map(p => p.high));
-  const lowestLow = Math.min(...recentPrices.map(p => p.low));
-  const currentClose = prices[prices.length - 1].close;
+function calculateStochasticSeries(
+  priceData: StochasticChartProps['priceData'],
+  kPeriod = 14,
+  dPeriod = 3
+): StochPoint[] {
+  if (!priceData || priceData.length === 0) return [];
 
-  const k = ((currentClose - lowestLow) / (highestHigh - lowestLow)) * 100;
-  
-  return { k: isNaN(k) ? 50 : k };
-};
+  const kValues: number[] = [];
 
-// Calculate realtime stochastic %K
-const calculateRealtimeStochastic = (
-  priceData: Array<{ high: number; low: number; price: number }>,
-  realtimePrice: number,
-  period: number = 14
-) => {
-  if (priceData.length < period) return null;
-  
-  const recentData = priceData.slice(-period);
-  const highestHigh = Math.max(...recentData.map(p => p.high), realtimePrice);
-  const lowestLow = Math.min(...recentData.map(p => p.low), realtimePrice);
-  
-  const k = ((realtimePrice - lowestLow) / (highestHigh - lowestLow)) * 100;
-  return isNaN(k) ? 50 : Math.max(0, Math.min(100, k));
-};
+  return priceData.map((p, i) => {
+    const date = new Date(p.time);
+    const timeLabel = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-export function StochasticChart({ 
-  pair, 
-  timeframe, 
-  priceData, 
-  loading, 
-  error,
-  realtimePrice,
-  isRealtimeConnected = false
-}: StochasticChartProps) {
-  const chartData = useMemo(() => {
-    if (!priceData || priceData.length === 0) {
-      // Generate mock data
-      return Array.from({ length: 30 }, (_, i) => {
-        const k = 30 + Math.sin(i * 0.4) * 35 + Math.random() * 10;
-        const d = 30 + Math.sin((i - 3) * 0.4) * 35 + Math.random() * 5;
-        return {
-          time: `${i}h`,
-          k: Math.max(0, Math.min(100, k)),
-          d: Math.max(0, Math.min(100, d)),
-        };
-      });
+    const slice = priceData.slice(Math.max(0, i - kPeriod + 1), i + 1);
+    const highestHigh = Math.max(...slice.map(s => s.high));
+    const lowestLow = Math.min(...slice.map(s => s.low));
+    const range = highestHigh - lowestLow;
+    const k = range > 0 ? ((p.price - lowestLow) / range) * 100 : 50;
+    kValues.push(Math.max(0, Math.min(100, k)));
+
+    // %D = SMA of %K
+    const dSlice = kValues.slice(-dPeriod);
+    const d = dSlice.reduce((a, b) => a + b, 0) / dSlice.length;
+
+    // Crossover detection
+    let crossover: StochPoint['crossover'];
+    if (kValues.length >= 2) {
+      const prevK = kValues[kValues.length - 2];
+      const prevDSlice = kValues.slice(-dPeriod - 1, -1);
+      const prevD = prevDSlice.length > 0 ? prevDSlice.reduce((a, b) => a + b, 0) / prevDSlice.length : d;
+
+      if (prevK <= prevD && k > d) crossover = 'bullish';
+      else if (prevK >= prevD && k < d) crossover = 'bearish';
     }
 
-    // Calculate stochastic for each point
-    const kValues: number[] = [];
-    return priceData.map((p, i) => {
-      const dataUpToNow = priceData.slice(0, i + 1).map(d => ({
-        high: d.high,
-        low: d.low,
-        close: d.price,
-      }));
-      const stoch = calculateStochastic(dataUpToNow, 14, 3);
-      const k = stoch?.k || 50;
-      kValues.push(k);
-      
-      // Calculate %D as 3-period SMA of %K
-      const dPeriod = Math.min(3, kValues.length);
-      const d = kValues.slice(-dPeriod).reduce((a, b) => a + b, 0) / dPeriod;
+    return {
+      time: timeLabel,
+      k: Math.round(k * 10) / 10,
+      d: Math.round(d * 10) / 10,
+      crossover,
+    };
+  });
+}
 
-      const date = new Date(p.time);
-      return {
-        time: `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`,
-        k: Math.round(k * 10) / 10,
-        d: Math.round(d * 10) / 10,
-      };
-    });
-  }, [priceData]);
+// Realtime %K
+function calcRealtimeK(
+  priceData: StochasticChartProps['priceData'],
+  realtimePrice: number,
+  period = 14
+): number | null {
+  if (!priceData || priceData.length < period) return null;
+  const slice = priceData.slice(-period);
+  const hh = Math.max(...slice.map(p => p.high), realtimePrice);
+  const ll = Math.min(...slice.map(p => p.low), realtimePrice);
+  const range = hh - ll;
+  if (range === 0) return 50;
+  return Math.max(0, Math.min(100, ((realtimePrice - ll) / range) * 100));
+}
 
-  // Calculate realtime stochastic value
-  const realtimeStochastic = useMemo(() => {
-    if (!realtimePrice || !priceData || priceData.length === 0) return null;
-    return calculateRealtimeStochastic(priceData, realtimePrice);
+// Custom crossover dot
+const CrossoverDot = (props: any) => {
+  const { cx, cy, payload } = props;
+  if (!payload?.crossover || !cx || !cy) return null;
+  const isBullish = payload.crossover === 'bullish';
+  const color = isBullish ? '#22c55e' : '#ef4444';
+
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={5} fill={color} fillOpacity={0.25} stroke={color} strokeWidth={1.5} />
+      <circle cx={cx} cy={cy} r={2} fill={color} />
+      <text x={cx} y={cy - 10} textAnchor="middle" fill={color} fontSize={9} fontWeight="bold">
+        {isBullish ? '▲' : '▼'}
+      </text>
+    </g>
+  );
+};
+
+// Custom tooltip
+const StochTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  const k = payload.find((p: any) => p.dataKey === 'k')?.value;
+  const d = payload.find((p: any) => p.dataKey === 'd')?.value;
+  const zone = k >= 80 ? 'Sobrecompra' : k <= 20 ? 'Sobreventa' : 'Neutral';
+  const zoneColor = k >= 80 ? 'text-red-400' : k <= 20 ? 'text-green-400' : 'text-gray-400';
+
+  return (
+    <div className="bg-[#0a1628]/95 border border-cyan-900/40 rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm">
+      <p className="text-[10px] text-gray-500 mb-1.5">{label}</p>
+      <div className="space-y-1">
+        <div className="flex justify-between gap-4">
+          <span className="text-[10px] text-purple-400">%K</span>
+          <span className="text-xs font-mono font-bold text-white">{k?.toFixed(1)}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span className="text-[10px] text-orange-400">%D</span>
+          <span className="text-xs font-mono font-bold text-white">{d?.toFixed(1)}</span>
+        </div>
+        <div className="border-t border-gray-700 pt-1">
+          <span className={cn("text-[10px] font-medium", zoneColor)}>{zone}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export function StochasticChart({
+  pair, timeframe, priceData, loading, error, realtimePrice, isRealtimeConnected = false,
+}: StochasticChartProps) {
+  const chartData = useMemo(() => calculateStochasticSeries(priceData), [priceData]);
+
+  const realtimeK = useMemo(() => {
+    if (!realtimePrice || !priceData) return null;
+    return calcRealtimeK(priceData, realtimePrice);
   }, [priceData, realtimePrice]);
 
-  // Determine current stochastic status
-  const currentStatus = useMemo(() => {
-    if (chartData.length === 0) return { status: 'neutral', k: 50, d: 50, signal: 'hold' };
-    
+  const stats = useMemo(() => {
+    if (chartData.length === 0) return {
+      k: 50, d: 50, position: 'neutral' as const,
+      signal: 'hold' as const, crossovers: 0, lastCrossover: null as null | 'bullish' | 'bearish',
+      trend: 'flat' as const,
+    };
+
     const latest = chartData[chartData.length - 1];
-    const prev = chartData[chartData.length - 2] || latest;
-    
-    // Use realtime stochastic if available
-    const currentK = realtimeStochastic ?? latest.k;
-    
-    let status: 'overbought' | 'oversold' | 'neutral' = 'neutral';
+    const currentK = realtimeK ?? latest.k;
+    const position = currentK >= 80 ? 'overbought' as const
+      : currentK <= 20 ? 'oversold' as const
+      : 'neutral' as const;
+
+    // Signal from crossovers in zones
     let signal: 'buy' | 'sell' | 'hold' = 'hold';
-    
-    if (currentK > 80) status = 'overbought';
-    else if (currentK < 20) status = 'oversold';
-    
-    // Crossover signals
-    if (prev.k < prev.d && latest.k > latest.d && latest.k < 30) signal = 'buy';
-    else if (prev.k > prev.d && latest.k < latest.d && latest.k > 70) signal = 'sell';
-    
-    return { status, k: currentK, d: latest.d, signal };
-  }, [chartData, realtimeStochastic]);
+    const crossoverPoints = chartData.filter(d => d.crossover);
+    const lastCross = crossoverPoints.length > 0 ? crossoverPoints[crossoverPoints.length - 1] : null;
+
+    if (lastCross) {
+      if (lastCross.crossover === 'bullish' && lastCross.k < 30) signal = 'buy';
+      else if (lastCross.crossover === 'bearish' && lastCross.k > 70) signal = 'sell';
+    }
+
+    // %K trend
+    const recent = chartData.slice(-5).map(d => d.k);
+    const delta = recent[recent.length - 1] - recent[0];
+    const trend = delta > 5 ? 'rising' as const : delta < -5 ? 'falling' as const : 'flat' as const;
+
+    return {
+      k: currentK, d: latest.d, position, signal,
+      crossovers: crossoverPoints.length,
+      lastCrossover: lastCross?.crossover ?? null,
+      trend,
+    };
+  }, [chartData, realtimeK]);
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-center h-[200px]">
-          <Loader2 className="h-6 w-6 animate-spin text-green-500" />
+      <div className="h-[320px] w-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+          <span className="text-[10px] text-gray-500">Cargando Estocástico...</span>
         </div>
       </div>
     );
@@ -138,124 +187,209 @@ export function StochasticChart({
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[200px] text-red-400">
-        <p className="text-sm">{error}</p>
+      <div className="h-[320px] w-full flex items-center justify-center">
+        <div className="text-center space-y-1">
+          <AlertTriangle className="w-5 h-5 text-red-400 mx-auto" />
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <div className="h-[320px] w-full flex items-center justify-center text-gray-500">
+        <p className="text-xs">Sin datos disponibles</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      {/* Status indicator */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">Estocástico (14,3,3)</span>
-          <span className={`text-xs px-2 py-0.5 rounded ${
-            currentStatus.status === 'overbought' 
-              ? 'bg-red-500/20 text-red-400' 
-              : currentStatus.status === 'oversold'
-              ? 'bg-green-500/20 text-green-400'
-              : 'bg-gray-500/20 text-gray-400'
-          }`}>
-            {currentStatus.status === 'overbought' ? 'Sobrecompra' : 
-             currentStatus.status === 'oversold' ? 'Sobreventa' : 'Neutral'}
-          </span>
-          {currentStatus.signal !== 'hold' && (
-            <span className={`text-xs px-2 py-0.5 rounded font-medium ${
-              currentStatus.signal === 'buy' 
-                ? 'bg-green-500/30 text-green-300' 
-                : 'bg-red-500/30 text-red-300'
-            }`}>
-              {currentStatus.signal === 'buy' ? '↑ Compra' : '↓ Venta'}
-            </span>
-          )}
-          {/* Realtime indicator */}
-          {isRealtimeConnected && realtimePrice && (
-            <div className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded-full">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-xs text-green-400">LIVE</span>
+      {/* ── Header ── */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Estocástico (14,3,3)</span>
+            <div className={cn(
+              "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold",
+              stats.position === 'overbought' && "bg-red-500/15 text-red-400",
+              stats.position === 'oversold' && "bg-green-500/15 text-green-400",
+              stats.position === 'neutral' && "bg-gray-500/15 text-gray-400",
+            )}>
+              {stats.position === 'overbought' ? <TrendingDown className="w-3 h-3" /> :
+               stats.position === 'oversold' ? <TrendingUp className="w-3 h-3" /> :
+               <ArrowUpDown className="w-3 h-3" />}
+              {stats.position === 'overbought' ? 'SOBRECOMPRA' :
+               stats.position === 'oversold' ? 'SOBREVENTA' : 'NEUTRAL'}
+            </div>
+            {stats.signal !== 'hold' && (
+              <div className={cn(
+                "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold",
+                stats.signal === 'buy' ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+              )}>
+                <Zap className="w-3 h-3" />
+                {stats.signal === 'buy' ? 'COMPRA' : 'VENTA'}
+              </div>
+            )}
+            {isRealtimeConnected && realtimePrice && (
+              <div className="flex items-center gap-1 bg-green-500/15 px-2 py-0.5 rounded-full">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-[10px] text-green-400 font-medium">LIVE</span>
+              </div>
+            )}
+          </div>
+
+          {/* Values */}
+          <div className="flex items-baseline gap-3">
+            <div className="flex items-baseline gap-1">
+              <span className="text-[10px] text-purple-400">%K</span>
+              <span className={cn(
+                "text-xl font-bold font-mono tabular-nums",
+                realtimeK !== null ? "text-green-400" : "text-white"
+              )}>{stats.k.toFixed(1)}</span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-[10px] text-orange-400">%D</span>
+              <span className="text-xl font-bold font-mono tabular-nums text-white">{stats.d.toFixed(1)}</span>
+            </div>
+            <div className={cn(
+              "flex items-center gap-0.5 text-[10px]",
+              stats.trend === 'rising' ? "text-green-400" : stats.trend === 'falling' ? "text-red-400" : "text-gray-500"
+            )}>
+              {stats.trend === 'rising' ? '▲ Subiendo' : stats.trend === 'falling' ? '▼ Cayendo' : '─ Lateral'}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: mini stats */}
+        <div className="flex flex-col items-end gap-1 text-[10px]">
+          {stats.lastCrossover && (
+            <div className={cn(
+              "flex items-center gap-1 px-2 py-0.5 rounded-full font-medium",
+              stats.lastCrossover === 'bullish' ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400"
+            )}>
+              <Zap className="w-3 h-3" />
+              Cruce {stats.lastCrossover === 'bullish' ? '↑' : '↓'}
             </div>
           )}
-        </div>
-        <div className="flex items-center gap-3 text-sm">
-          <span className={cn(
-            "text-purple-400",
-            isRealtimeConnected && realtimeStochastic && "font-bold"
-          )}>
-            %K: {currentStatus.k.toFixed(1)}
-            {isRealtimeConnected && realtimeStochastic && " ●"}
-          </span>
-          <span className="text-orange-400">%D: {currentStatus.d.toFixed(1)}</span>
+          <div className="text-gray-500">
+            Cruces: <span className="text-white font-mono">{stats.crossovers}</span>
+          </div>
         </div>
       </div>
 
-      {/* Chart */}
-      <ResponsiveContainer width="100%" height={200}>
-        <ComposedChart data={chartData}>
-          <defs>
-            <linearGradient id="stochOverbought" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="stochOversold" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor="#22c55e" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <XAxis 
-            dataKey="time" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 10, fill: '#6b7280' }}
-            interval="preserveStartEnd"
-          />
-          <YAxis 
-            domain={[0, 100]} 
-            axisLine={false} 
-            tickLine={false}
-            tick={{ fontSize: 10, fill: '#6b7280' }}
-            ticks={[0, 20, 50, 80, 100]}
-            width={30}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: '#1a1a2e',
-              border: '1px solid #374151',
-              borderRadius: '8px',
-              fontSize: '12px',
-            }}
-            formatter={(value: number, name: string) => [
-              value.toFixed(1),
-              name === 'k' ? '%K' : '%D'
-            ]}
-          />
-          
-          {/* Realtime stochastic horizontal line */}
-          {realtimeStochastic !== null && (
-            <ReferenceLine 
-              y={realtimeStochastic} 
-              stroke={isRealtimeConnected ? "#22c55e" : "#3b82f6"}
-              strokeWidth={2}
-              strokeDasharray={isRealtimeConnected ? "0" : "5 5"}
-              label={{ 
-                value: `${isRealtimeConnected ? '● ' : ''}${realtimeStochastic.toFixed(1)}%`, 
-                position: 'right',
-                fill: isRealtimeConnected ? '#22c55e' : '#3b82f6',
-                fontSize: 10,
-                fontWeight: 'bold'
-              }}
+      {/* ── Position Gauge ── */}
+      <div className="relative h-2 rounded-full overflow-hidden bg-gray-800/50">
+        <div className="absolute inset-y-0 left-0 w-[20%] bg-gradient-to-r from-green-500/30 to-transparent rounded-l-full" />
+        <div className="absolute inset-y-0 right-0 w-[20%] bg-gradient-to-l from-red-500/30 to-transparent rounded-r-full" />
+        <div className="absolute inset-y-0 left-[20%] w-px bg-green-500/40" />
+        <div className="absolute inset-y-0 left-[50%] w-px bg-gray-600/30" />
+        <div className="absolute inset-y-0 left-[80%] w-px bg-red-500/40" />
+        {/* %K position */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-purple-300 shadow-lg transition-all duration-500"
+          style={{
+            left: `calc(${Math.min(100, Math.max(0, stats.k))}% - 6px)`,
+            backgroundColor: stats.position === 'overbought' ? '#ef4444' : stats.position === 'oversold' ? '#22c55e' : '#a855f7',
+          }}
+        />
+        {/* %D position (smaller) */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-orange-400/70 border border-orange-300/50 transition-all duration-500"
+          style={{ left: `calc(${Math.min(100, Math.max(0, stats.d))}% - 4px)` }}
+        />
+      </div>
+
+      {/* ── Chart ── */}
+      <div className="h-[200px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+            <defs>
+              <linearGradient id="stochOBZone" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={0.1} />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity={0.02} />
+              </linearGradient>
+              <linearGradient id="stochOSZone" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity={0.02} />
+                <stop offset="100%" stopColor="#22c55e" stopOpacity={0.1} />
+              </linearGradient>
+            </defs>
+
+            {/* Zones */}
+            <ReferenceArea y1={80} y2={100} fill="url(#stochOBZone)" />
+            <ReferenceArea y1={0} y2={20} fill="url(#stochOSZone)" />
+
+            <XAxis
+              dataKey="time"
+              tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'monospace' }}
+              axisLine={{ stroke: '#1e293b' }}
+              tickLine={false}
+              interval="preserveStartEnd"
             />
-          )}
-          
-          {/* Overbought/Oversold zones */}
-          <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.5} />
-          <ReferenceLine y={20} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.5} />
-          <ReferenceLine y={50} stroke="#6b7280" strokeDasharray="2 2" strokeOpacity={0.3} />
-          {/* Stochastic lines */}
-          <Line type="monotone" dataKey="k" stroke="#a855f7" strokeWidth={2} dot={false} name="k" />
-          <Line type="monotone" dataKey="d" stroke="#f97316" strokeWidth={1.5} dot={false} strokeDasharray="4 2" name="d" />
-        </ComposedChart>
-      </ResponsiveContainer>
+            <YAxis
+              domain={[0, 100]}
+              ticks={[0, 20, 50, 80, 100]}
+              tick={{ fill: '#4b5563', fontSize: 9, fontFamily: 'monospace' }}
+              axisLine={{ stroke: '#1e293b' }}
+              tickLine={false}
+              width={28}
+            />
+            <Tooltip content={<StochTooltip />} />
+
+            <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="4 3" strokeOpacity={0.5} />
+            <ReferenceLine y={20} stroke="#22c55e" strokeDasharray="4 3" strokeOpacity={0.5} />
+            <ReferenceLine y={50} stroke="#374151" strokeDasharray="2 4" strokeOpacity={0.3} />
+
+            {/* Realtime %K */}
+            {realtimeK !== null && (
+              <ReferenceLine
+                y={realtimeK}
+                stroke={isRealtimeConnected ? '#22c55e' : '#a855f7'}
+                strokeWidth={1.5}
+                strokeDasharray={isRealtimeConnected ? '0' : '5 5'}
+              />
+            )}
+
+            {/* %K line */}
+            <Line
+              type="monotone" dataKey="k" stroke="#a855f7" strokeWidth={2}
+              dot={<CrossoverDot />}
+              activeDot={{ r: 4, stroke: '#a855f7', strokeWidth: 2, fill: '#0a1628' }}
+              isAnimationActive={false}
+            />
+            {/* %D line */}
+            <Line
+              type="monotone" dataKey="d" stroke="#f97316" strokeWidth={1.5}
+              strokeDasharray="4 2" dot={false} isAnimationActive={false}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* ── Legend ── */}
+      <div className="flex items-center justify-between text-[9px] text-gray-600 px-1">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-0.5 rounded-full bg-purple-500" />
+            <span>%K (rápido)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-0.5 rounded-full bg-orange-400 opacity-70" />
+            <span>%D (lento)</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-green-500/40" />
+            <span>Sobreventa &lt;20</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-red-500/40" />
+            <span>Sobrecompra &gt;80</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
