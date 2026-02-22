@@ -57,15 +57,15 @@ export function usePreviousDayCandles(symbol: string): UsePreviousDayCandlesRetu
     setError(null);
 
     try {
-      // Fetch 7 days of 1-hour candles
+      // Fetch 7 days of 30-min candles
       const today = new Date();
       const weekAgo = subDays(today, 7);
 
       const { data: result, error: fetchError } = await supabase.functions.invoke('market-data', {
         body: {
           symbol: symbol.replace('/', ''),
-          interval: '1h',
-          outputsize: 168, // 7 days * 24 hours
+          interval: '30min',
+          outputsize: 336, // 7 days * 24 hours * 2 (30-min)
           date: format(today, 'yyyy-MM-dd'),
         },
       });
@@ -189,7 +189,7 @@ function generateMockWeekCandles(startDate: Date, basePrice: number): CandleData
   const volatility = basePrice * 0.001;
   let currentPrice = basePrice;
   
-  // 7 days * 24 hours = 168 candles
+  // 7 days * 48 half-hours = 336 candles (30-min timeframe)
   for (let day = 0; day < 7; day++) {
     const date = new Date(startDate);
     date.setDate(date.getDate() + day);
@@ -198,15 +198,15 @@ function generateMockWeekCandles(startDate: Date, basePrice: number): CandleData
     const dow = date.getDay();
     if (dow === 0 || dow === 6) continue;
     
-    for (let hour = 0; hour < 24; hour++) {
+    for (let slot = 0; slot < 48; slot++) {
       const time = new Date(date);
-      time.setHours(hour, 0, 0, 0);
+      time.setHours(Math.floor(slot / 2), (slot % 2) * 30, 0, 0);
       
       const open = currentPrice;
-      const change = (Math.random() - 0.5) * volatility * 2;
+      const change = (Math.random() - 0.5) * volatility * 1.4;
       const close = open + change;
-      const high = Math.max(open, close) + Math.random() * volatility * 0.5;
-      const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+      const high = Math.max(open, close) + Math.random() * volatility * 0.4;
+      const low = Math.min(open, close) - Math.random() * volatility * 0.4;
       
       candles.push({
         time: time.toISOString(),
