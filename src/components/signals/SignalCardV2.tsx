@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignalChart } from "@/components/signals/SignalChart";
+import { CandlestickChart } from "@/components/analysis/CandlestickChart";
+import { usePreviousDayCandles } from "@/hooks/usePreviousDayCandles";
 import {
   TrendingUp,
   ShieldCheck,
@@ -275,6 +277,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     priceDiff.hasData ? priceDiff.currentPrice : undefined,
     expanded
   );
+
+  // Previous day candle data for CandlestickChart (fetched when expanded)
+  const { data: previousDayData, loading: candleLoading } = usePreviousDayCandles(expanded ? currencyPair : "");
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
@@ -556,21 +561,34 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* Signal Chart (zoomable + support/resistance) */}
-            
+            <div className="mx-3 mb-3">
+               <SignalChart
+              pair={currencyPair}
+              support={support}
+              resistance={resistance}
+              signalId={signal?.id}
+              chartImageUrl={signal?.chartImageUrl}
+              currentPrice={priceDiff.hasData ? priceDiff.currentPrice : undefined}
+              isJpy={isJpy}
+              height={200}
+              entryPrice={entryPrice}
+              takeProfit={takeProfit}
+              stopLoss={stopLoss} />
 
+            </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
+            {/* Candlestick Chart - Previous Day */}
+            <div className="mx-3 mb-3">
+              <CandlestickChart
+                data={previousDayData?.candles || []}
+                resistance={previousDayData?.resistance || resistance || takeProfit}
+                support={previousDayData?.support || support || stopLoss}
+                loading={candleLoading}
+                realtimePrice={priceDiff.hasData ? priceDiff.currentPrice : null}
+                isRealtimeConnected={isConnected}
+                previousDayDate={previousDayData?.date}
+              />
+            </div>
 
             {/* Market Sentiment Dashboard */}
             <MarketSentimentDashboard data={sentimentData} loading={sentimentLoading} />
