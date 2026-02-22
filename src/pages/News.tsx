@@ -7,6 +7,7 @@ import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3 } from 'lucide-react';
+import { NewsAISummaryInline } from '@/components/news/NewsAISummaryInline';
 import { formatDistanceToNow } from 'date-fns';
 import { es, enUS, ptBR, fr } from 'date-fns/locale';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -281,6 +282,10 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
           category={news.category as EconomicCategory}
           currencies={news.affected_currencies} />
 
+        {/* AI Trading Summary */}
+        <div className="mt-2">
+          <NewsAISummaryInline news={news} />
+        </div>
       </div>
     </Link>);
 
