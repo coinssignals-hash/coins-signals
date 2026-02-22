@@ -180,8 +180,7 @@ export function MarketSentiment({
 
             {/* Large Pie Chart */}
             <div className="flex-1">
-              <div className="h-52">
-                
+              
 
 
 
@@ -198,7 +197,8 @@ export function MarketSentiment({
 
 
 
-              </div>
+
+
               {/* Legend */}
               <div className="flex justify-center gap-4 mt-2">
                 {chartData.map((item) =>
