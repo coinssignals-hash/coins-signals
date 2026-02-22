@@ -279,11 +279,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const storedChartUrl = signal?.chartImageUrl;
   const [fallbackChartUrl, setFallbackChartUrl] = useState<string | null>(null);
   const [chartLoading, setChartLoading] = useState(false);
+  const [chartRetry, setChartRetry] = useState(0);
+  const MAX_CHART_RETRIES = 3;
+  const RETRY_DELAYS = [8000, 15000, 30000]; // escalating delays
 
   const chartSvgUrl = storedChartUrl || fallbackChartUrl;
 
   useEffect(() => {
-    // Only fetch from edge function if no stored URL and card is expanded
     if (!expanded || storedChartUrl || fallbackChartUrl) return;
     setChartLoading(true);
     const pairClean = currencyPair.replace(/[/\- ]/g, '');
@@ -292,15 +294,32 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     params.set('support', String(support ?? stopLoss));
 
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
-    fetch(url)
-      .then(res => res.text())
-      .then(svgText => {
-        const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-        setFallbackChartUrl(URL.createObjectURL(blob));
-      })
-      .catch(err => console.error('Chart fetch error:', err))
-      .finally(() => setChartLoading(false));
-  }, [expanded, currencyPair, resistance, support, takeProfit, stopLoss, storedChartUrl, fallbackChartUrl]);
+    let cancelled = false;
+
+    const doFetch = () => {
+      fetch(url)
+        .then(res => res.text())
+        .then(svgText => {
+          if (cancelled) return;
+          // Detect "No data available" placeholder → schedule retry
+          if (svgText.includes('No data available') && chartRetry < MAX_CHART_RETRIES) {
+            const delay = RETRY_DELAYS[chartRetry] ?? 30000;
+            console.warn(`Chart: no data (attempt ${chartRetry + 1}), retrying in ${delay / 1000}s`);
+            setTimeout(() => {
+              if (!cancelled) setChartRetry(prev => prev + 1);
+            }, delay);
+            return;
+          }
+          const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+          setFallbackChartUrl(URL.createObjectURL(blob));
+        })
+        .catch(err => { if (!cancelled) console.error('Chart fetch error:', err); })
+        .finally(() => { if (!cancelled) setChartLoading(false); });
+    };
+
+    doFetch();
+    return () => { cancelled = true; };
+  }, [expanded, currencyPair, resistance, support, takeProfit, stopLoss, storedChartUrl, fallbackChartUrl, chartRetry]);
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
