@@ -563,8 +563,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <div className="mx-3 mb-3 rounded-lg overflow-hidden">
               <CandlestickChart
                 data={previousDayData?.candles || []}
-                resistance={previousDayData?.resistance || resistance || takeProfit}
-                support={previousDayData?.support || support || stopLoss}
+                resistance={previousDayData?.resistance ?? 0}
+                support={previousDayData?.support ?? 0}
                 loading={previousDayLoading}
                 realtimePrice={quote?.price}
                 isRealtimeConnected={isConnected}
