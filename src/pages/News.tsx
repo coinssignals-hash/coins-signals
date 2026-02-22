@@ -5,7 +5,7 @@ import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3 } from 'lucide-react';
+import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3, ChevronDown } from 'lucide-react';
 import { NewsAISummaryInline } from '@/components/news/NewsAISummaryInline';
 import { formatDistanceToNow } from 'date-fns';
 import { es, enUS, ptBR, fr } from 'date-fns/locale';
@@ -172,8 +172,54 @@ function FeaturedHistoricalChart({
 
 }
 
-// Currency pills for quick filter
-const QUICK_CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'];
+
+// Sentiment circle indicator (mirrors SignalCardV2 price circle)
+function SentimentCircle({ sentiment, relevance }: { sentiment: 'bullish' | 'bearish' | 'neutral'; relevance: number }) {
+  const circlePercent = Math.min(100, relevance);
+  const isBullish = sentiment === 'bullish';
+  const isBearish = sentiment === 'bearish';
+  const gradId = `sent-${Math.random().toString(36).slice(2, 8)}`;
+  const SentIcon = isBullish ? TrendingUp : isBearish ? TrendingDown : Minus;
+  const label = isBullish ? 'Bull' : isBearish ? 'Bear' : 'Neutral';
+  const textColor = isBullish ? 'text-green-400' : isBearish ? 'text-red-400' : 'text-cyan-300';
+  return (
+    <div className="relative w-[56px] h-[56px] flex-shrink-0">
+      <div className={cn('absolute -inset-0.5 rounded-full opacity-25 blur-md transition-all duration-700', isBullish ? 'bg-green-500' : isBearish ? 'bg-red-500' : 'bg-cyan-500')} />
+      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 rounded-full overflow-hidden">
+        <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 20%, 12%)" strokeWidth="2.5" />
+        <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 15%, 18%)" strokeWidth="1" strokeDasharray="1.5 2" opacity="0.5" />
+        <circle cx="18" cy="18" r="15" fill="none" stroke={`url(#${gradId})`} strokeWidth="2.8" strokeLinecap="round"
+          strokeDasharray={`${circlePercent * 0.942} ${100 * 0.942}`} className="transition-all duration-700 ease-out"
+          style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
+        <circle cx="18" cy="18" r="12" fill="hsl(225, 25%, 8%)" fillOpacity="0.85" />
+        <defs>
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+            {isBullish ? (<><stop offset="0%" stopColor="hsl(160, 80%, 55%)" /><stop offset="100%" stopColor="hsl(120, 70%, 40%)" /></>)
+              : isBearish ? (<><stop offset="0%" stopColor="hsl(10, 80%, 60%)" /><stop offset="100%" stopColor="hsl(350, 70%, 45%)" /></>)
+              : (<><stop offset="0%" stopColor="hsl(200, 100%, 55%)" /><stop offset="100%" stopColor="hsl(180, 100%, 50%)" /></>)}
+          </linearGradient>
+        </defs>
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <SentIcon className={cn('w-3.5 h-3.5', textColor)} />
+        <span className={cn('text-[8px] font-bold mt-0.5', textColor)}>{label}</span>
+      </div>
+    </div>
+  );
+}
+
+// Currency impact bar (matches SignalCardV2 ImpactBar)
+function NewsImpactBar({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] w-12 text-right" style={{ color }}>{label}</span>
+      <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${value}%`, background: color }} />
+      </div>
+      <span className="text-[11px] font-semibold w-8 text-right" style={{ color }}>{value}%</span>
+    </div>
+  );
+}
 
 // Impact badge component
 function ImpactBadge({ currency, impact }: {currency: Currency;impact: number;}) {
@@ -198,19 +244,27 @@ function ImpactBadge({ currency, impact }: {currency: Currency;impact: number;})
 
 // Modern news card component matching the signal card design
 function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
-  // Generate random impact values for demo (in production, this would come from the API)
+  const [expanded, setExpanded] = useState(false);
+
   const impacts = useMemo(() => {
     return news.affected_currencies.slice(0, 2).map((currency) => ({
-      currency,
-      impact: (Math.random() - 0.5) * 40 // Random between -20% and +20%
+      currency, impact: (Math.random() - 0.5) * 40
     }));
   }, [news.affected_currencies]);
 
+  const sentimentBreakdown = useMemo(() => {
+    if (news.sentiment === 'bullish') return { pos: 65, neg: 15, neu: 20 };
+    if (news.sentiment === 'bearish') return { pos: 15, neg: 65, neu: 20 };
+    return { pos: 30, neg: 25, neu: 45 };
+  }, [news.sentiment]);
+
+  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
+  const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
+  const SentimentIcon = news.sentiment === 'bullish' ? TrendingUp : news.sentiment === 'bearish' ? TrendingDown : Minus;
+
   return (
     <div
-      className={cn(
-        'group relative rounded-xl overflow-hidden animate-fade-in',
-      )}
+      className={cn('group relative rounded-xl overflow-hidden animate-fade-in')}
       style={{
         animationDelay: `${index * 50}ms`,
         background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
@@ -218,191 +272,168 @@ function ModernNewsCard({ news, index }: {news: NewsListItem;index: number;}) {
       }}
     >
       {/* Top glow line */}
-      <div
-        className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }}
-      />
+      <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
-      <div className="flex gap-3 p-3">
-        {/* Thumbnail */}
-        {news.image_url &&
-        <Link to={`/news/${news.id}`} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-cyan-800/20">
-            <img
-            src={news.image_url}
-            alt={news.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          </Link>
-        }
-        
-        {/* Content */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between">
-          {/* Title */}
+      {/* Header: Sentiment badge + Category */}
+      <div className="relative flex items-center justify-between px-3 pt-3 pb-1">
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+            style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
+            <SentimentIcon className="w-3 h-3 inline mr-1" />
+            {sentimentLabel}
+          </span>
+          <span className="text-[10px] text-cyan-300/50 uppercase tracking-wider font-medium">{news.category}</span>
+        </div>
+        <div className="text-[10px] text-cyan-300/50 flex items-center gap-1">
+          <Clock className="w-3 h-3" />
+          {news.time_ago}
+        </div>
+      </div>
+
+      {/* Main content row */}
+      <div className="flex gap-3 px-3 py-2">
+        {/* Left: Thumbnail + Sentiment Circle */}
+        <div className="flex flex-col items-center gap-2 flex-shrink-0">
+          {news.image_url && (
+            <Link to={`/news/${news.id}`} className="relative w-20 h-20 rounded-lg overflow-hidden border border-cyan-800/20">
+              <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            </Link>
+          )}
+          <SentimentCircle sentiment={news.sentiment} relevance={news.relevance_score} />
+        </div>
+
+        {/* Right: Content */}
+        <div className="flex-1 min-w-0 flex flex-col">
           <Link to={`/news/${news.id}`}>
-            <h3 className="font-semibold text-sm text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-tight">
-              {news.title}
-            </h3>
+            <h3 className="font-semibold text-sm text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-tight">{news.title}</h3>
           </Link>
-          
-          {/* Source and Date */}
+
           <div className="flex items-center gap-2 text-xs text-cyan-300/50 mt-1">
-            {news.source_logo ?
-            <img
-              src={news.source_logo}
-              alt={news.source}
-              className="w-4 h-4 rounded-sm object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }} /> :
-            <Rss className="w-3 h-3 text-cyan-400" />
-            }
+            {news.source_logo ? (
+              <img src={news.source_logo} alt={news.source} className="w-4 h-4 rounded-sm object-contain"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            ) : (<Rss className="w-3 h-3 text-cyan-400" />)}
             <span className="font-medium text-cyan-200/70">{news.source}</span>
-            <span className="text-cyan-800">•</span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {news.time_ago}
-            </span>
-            {news.url &&
-            <a
-              href={news.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="ml-auto text-cyan-400 hover:text-cyan-300">
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            }
-          </div>
-          
-          {/* Currency Impacts */}
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {impacts.map(({ currency, impact }) =>
-            <ImpactBadge key={currency} currency={currency} impact={impact} />
+            {news.url && (
+              <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                className="ml-auto text-cyan-400 hover:text-cyan-300"><ExternalLink className="w-3 h-3" /></a>
             )}
           </div>
-          {/* Historical Impact */}
-          <HistoricalImpactSection
-            newsId={news.id}
-            title={news.title}
-            category={news.category as EconomicCategory}
-            currencies={news.affected_currencies} />
 
-          {/* AI Trading Summary */}
-          <div className="mt-2">
-            <NewsAISummaryInline news={news} />
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {impacts.map(({ currency, impact }) => (<ImpactBadge key={currency} currency={currency} impact={impact} />))}
+          </div>
+
+          {/* Relevance bar (like entry price bar) */}
+          <div className="relative rounded-md overflow-hidden mt-2"
+            style={{ background: 'linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)', border: '1px solid hsla(210, 100%, 50%, 0.15)' }}>
+            <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+              style={{ background: 'radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)' }} />
+            <div className="flex items-center justify-between px-3 py-1.5">
+              <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium">Relevancia</span>
+              <span className="font-mono text-sm font-bold text-white">{news.relevance_score}/100</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>);
 
+      {/* Expandable toggle */}
+      <button onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-center py-1.5 text-cyan-400/60 hover:text-cyan-300 transition-colors">
+        <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', expanded && 'rotate-180')} />
+      </button>
+
+      {/* Expanded content */}
+      {expanded && (
+        <div className="px-3 pb-3 space-y-3 animate-fade-in">
+          <div className="rounded-lg p-3 relative overflow-hidden"
+            style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
+            <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+              style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">Análisis de Sentimiento</span>
+            <div className="space-y-1.5">
+              <NewsImpactBar label="Alcista" value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
+              <NewsImpactBar label="Bajista" value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
+              <NewsImpactBar label="Neutral" value={sentimentBreakdown.neu} color="hsl(45, 80%, 55%)" />
+            </div>
+          </div>
+
+          <HistoricalImpactSection newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
+          <NewsAISummaryInline news={news} />
+        </div>
+      )}
+    </div>
+  );
 }
 
 // Featured news card for top story
 function FeaturedCard({ news }: {news: NewsListItem;}) {
   const impacts = useMemo(() => {
     return news.affected_currencies.slice(0, 3).map((currency) => ({
-      currency,
-      impact: (Math.random() - 0.5) * 40
+      currency, impact: (Math.random() - 0.5) * 40
     }));
   }, [news.affected_currencies]);
+
+  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
+  const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
 
   return (
     <Link
       to={`/news/${news.id}`}
-      className={cn(
-        'group block rounded-xl overflow-hidden relative',
-        'transition-all duration-500 hover:shadow-xl',
-        'animate-fade-in'
-      )}
+      className={cn('group block rounded-xl overflow-hidden relative transition-all duration-500 hover:shadow-xl animate-fade-in')}
       style={{
         background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
         border: '1px solid hsla(200, 60%, 35%, 0.3)',
       }}
     >
-      {/* Top glow line */}
-      <div
-        className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }}
-      />
+      <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
-      {/* Image Section */}
       <div className="relative aspect-[16/9] overflow-hidden">
-        {news.image_url &&
-        <img
-          src={news.image_url}
-          alt={news.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-        }
+        {news.image_url && (
+          <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
-        
-        {/* Source Badge */}
+
         <div className="absolute top-3 left-3 flex items-center gap-2">
           <span className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm"
             style={{ background: 'hsla(200, 100%, 50%, 0.2)', border: '1px solid hsla(200, 80%, 55%, 0.4)', color: 'hsl(200, 100%, 75%)' }}>
             🔥 Top News
           </span>
-          {news.source_logo &&
-          <div className="px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1.5"
-            style={{ background: 'hsla(210, 100%, 5%, 0.6)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
-              <img
-              src={news.source_logo}
-              alt={news.source}
-              className="w-4 h-4 rounded-sm object-contain" />
-              <span className="text-xs text-cyan-200 font-medium">{news.source}</span>
-            </div>
-          }
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-sm"
+            style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
+            {sentimentLabel}
+          </span>
         </div>
-        
-        {/* Content Overlay */}
+
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
-          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">
-            {news.title}
-          </h2>
-          
+          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">{news.title}</h2>
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 text-sm text-cyan-300/60">
-              {!news.source_logo &&
-              <>
-                  <Rss className="w-3 h-3 text-cyan-400" />
-                  <span className="font-medium">{news.source}</span>
-                  <span>•</span>
-                </>
-              }
+              <Rss className="w-3 h-3 text-cyan-400" />
+              <span className="font-medium">{news.source}</span>
+              <span>•</span>
               <Clock className="w-3 h-3" />
               <span>{news.time_ago}</span>
-              {news.url &&
-              <a
-                href={news.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-cyan-400 hover:text-cyan-300">
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              }
             </div>
-            
             <div className="flex items-center gap-2 flex-wrap">
-              {impacts.map(({ currency, impact }) =>
-              <ImpactBadge key={currency} currency={currency} impact={impact} />
-              )}
+              {impacts.map(({ currency, impact }) => (<ImpactBadge key={currency} currency={currency} impact={impact} />))}
             </div>
           </div>
-          
-          {/* Historical Impact Mini Chart */}
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </Link>);
-
+    </Link>
+  );
 }
 
-// Currency quick filter pills — ranked by impact
+// Currency quick filter pills
+const QUICK_CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'];
+
 function QuickCurrencyFilter({
-  selected,
-  onChange,
-  allLabel,
-  news,
+  selected, onChange, allLabel, news,
 }: {selected: Currency[]; onChange: (currencies: Currency[]) => void; allLabel: string; news?: RealNewsItem[];}) {
   const toggleCurrency = (currency: Currency) => {
     if (selected.includes(currency)) {
@@ -412,7 +443,6 @@ function QuickCurrencyFilter({
     }
   };
 
-  // Compute impact counts and sort currencies
   const rankedCurrencies = useMemo(() => {
     const counts: Record<string, number> = {};
     QUICK_CURRENCIES.forEach((c) => (counts[c] = 0));
@@ -423,10 +453,7 @@ function QuickCurrencyFilter({
         })
       );
     }
-    return [...QUICK_CURRENCIES].sort((a, b) => counts[b] - counts[a]).map((c) => ({
-      currency: c,
-      count: counts[c],
-    }));
+    return [...QUICK_CURRENCIES].sort((a, b) => counts[b] - counts[a]).map((c) => ({ currency: c, count: counts[c] }));
   }, [news]);
 
   const totalNews = news?.length ?? 0;
@@ -434,23 +461,17 @@ function QuickCurrencyFilter({
 
   return (
     <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
-      {/* All button */}
       <button
         onClick={() => onChange([])}
         className={cn(
           'flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border',
-          isAll
-            ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
+          isAll ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
             : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
         )}
       >
         🌍 {allLabel}
-        {totalNews > 0 && (
-          <span className="ml-1 opacity-70">{totalNews}</span>
-        )}
+        {totalNews > 0 && <span className="ml-1 opacity-70">{totalNews}</span>}
       </button>
-
-      {/* Currencies ranked by impact */}
       {rankedCurrencies.map(({ currency, count }) => {
         const info = CURRENCIES[currency];
         const isSelected = selected.includes(currency);
@@ -460,53 +481,23 @@ function QuickCurrencyFilter({
             onClick={() => toggleCurrency(currency)}
             className={cn(
               'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
-              isSelected
-                ? 'bg-primary/15 border-primary/50 text-primary shadow-sm'
+              isSelected ? 'bg-primary/15 border-primary/50 text-primary shadow-sm'
                 : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
             )}
           >
             <span className="text-sm">{info.flag}</span>
             <span>{currency}</span>
             {count > 0 && (
-              <span className={cn(
-                'ml-0.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center',
-                isSelected
-                  ? 'bg-primary/25 text-primary'
-                  : 'bg-muted text-muted-foreground'
-              )}>
-                {count}
-              </span>
+              <span className={cn('ml-0.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center',
+                isSelected ? 'bg-primary/25 text-primary' : 'bg-muted text-muted-foreground')}>{count}</span>
             )}
           </button>
         );
       })}
     </div>
   );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
 
 const News = () => {
   const { t, language } = useTranslation();
