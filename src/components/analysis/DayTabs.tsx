@@ -9,12 +9,12 @@ interface DayTabsProps {
 
 export function DayTabs({ selectedDay, onSelectDay }: DayTabsProps) {
   const today = new Date();
-  const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
 
   const days = Array.from({ length: 5 }, (_, i) => addDays(weekStart, i));
 
   return (
-    <div className="flex w-full bg-[#0a1a0a] border-y border-green-900/50">
+    <div className="flex w-full bg-slate-900/80 border-y border-slate-700/50">
       {days.map((day) => {
         const isSelected = format(day, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd');
         const dayName = format(day, 'EEEE', { locale: es });
@@ -35,20 +35,6 @@ export function DayTabs({ selectedDay, onSelectDay }: DayTabsProps) {
             <span className="text-sm font-bold">{dayNumber}</span>
           </button>
         );
-
-
-
-
-
-
-
-
-
-
-
-
-
       })}
     </div>);
-
 }

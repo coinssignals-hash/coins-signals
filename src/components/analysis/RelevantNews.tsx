@@ -17,9 +17,9 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4">
+      <div className="p-4">
         <div className="flex items-center justify-center py-4">
-          <Loader2 className="w-5 h-5 text-green-400 animate-spin" />
+          <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
           <span className="ml-2 text-gray-400 text-sm">{t('analysis_loading_relevant')}</span>
         </div>
       </div>
@@ -38,7 +38,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
 
   if (!news || news.length === 0) {
     return (
-      <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4">
+      <div className="p-4">
         <p className="text-gray-400 text-sm">{t('analysis_no_relevant_news')}</p>
       </div>
     );
@@ -63,7 +63,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
   };
 
   return (
-    <div className="bg-[#0a1a0a] rounded-xl border-2 border-green-500/30 p-4 space-y-4">
+    <div className="p-4 space-y-4">
       <h3 className="text-white font-semibold text-sm">{t('analysis_relevant_news')}</h3>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -73,7 +73,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block bg-[#0d1f0d] rounded-lg overflow-hidden border border-green-900/30 hover:border-green-500/50 transition-colors"
+            className="group block bg-slate-800/60 rounded-lg overflow-hidden border border-slate-700/30 hover:border-cyan-500/50 transition-colors"
           >
             <div className="aspect-video relative overflow-hidden">
               <img
@@ -90,7 +90,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
             </div>
             
             <div className="p-3 space-y-2">
-              <h4 className="text-white text-xs font-medium line-clamp-2 group-hover:text-green-400 transition-colors">
+              <h4 className="text-white text-xs font-medium line-clamp-2 group-hover:text-cyan-400 transition-colors">
                 {item.title}
               </h4>
               <p className="text-gray-400 text-xs line-clamp-2">{item.summary}</p>
@@ -107,7 +107,7 @@ export function RelevantNews({ symbol }: RelevantNewsProps) {
       
       {news.length > 5 && (
         <div className="text-center">
-          <button className="text-green-400 text-xs hover:text-green-300 flex items-center gap-1 mx-auto">
+          <button className="text-cyan-400 text-xs hover:text-cyan-300 flex items-center gap-1 mx-auto">
             {t('analysis_view_more_news')} <ExternalLink className="w-3 h-3" />
           </button>
         </div>

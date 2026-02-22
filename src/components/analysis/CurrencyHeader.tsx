@@ -300,12 +300,12 @@ export function CurrencyHeader({
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border border-green-900/50 rounded-xl p-5 overflow-hidden">
+      <div className="p-5 overflow-hidden">
         <div className="flex items-center gap-4 animate-pulse">
-          <div className="w-20 h-20 rounded-full bg-green-900/30" />
+          <div className="w-20 h-20 rounded-full bg-slate-800/60" />
           <div className="space-y-3 flex-1">
-            <div className="h-8 bg-green-900/20 rounded w-40" />
-            <div className="h-4 bg-green-900/20 rounded w-32" />
+            <div className="h-8 bg-slate-800/40 rounded w-40" />
+            <div className="h-4 bg-slate-800/40 rounded w-32" />
           </div>
         </div>
       </div>
@@ -314,11 +314,11 @@ export function CurrencyHeader({
 
   return (
     <div className={cn(
-      "relative bg-gradient-to-r from-[#0a1a0a] to-[#0d2a0d] border rounded-xl p-5 transition-all duration-500 overflow-hidden",
-      isAnimating && "border-green-500/70 animate-border-glow shadow-glow-green",
-      !isAnimating && flash === 'up' && "border-green-500/50",
-      !isAnimating && flash === 'down' && "border-red-500/50",
-      !isAnimating && !flash && "border-green-900/50"
+      "relative p-5 transition-all duration-500 overflow-hidden",
+      isAnimating && "animate-border-glow",
+      !isAnimating && flash === 'up' && "",
+      !isAnimating && flash === 'down' && "",
+      !isAnimating && !flash && ""
     )}>
       {/* Animated background particles when changing */}
       {isAnimating && (
@@ -326,7 +326,7 @@ export function CurrencyHeader({
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-2 bg-green-500/30 rounded-full animate-ping"
+              className="absolute w-2 h-2 bg-cyan-500/30 rounded-full animate-ping"
               style={{
                 left: `${20 + i * 15}%`,
                 top: `${30 + (i % 2) * 40}%`,

@@ -32,17 +32,17 @@ export function EconomicEvents({ symbol, date }: EconomicEventsProps) {
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border-2 border-green-500/30">
-      <CollapsibleTrigger className="w-full bg-[#0d1f0d] px-4 py-3 flex items-center justify-between hover:bg-[#122212] transition-colors">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="rounded-xl overflow-hidden border border-cyan-800/30">
+      <CollapsibleTrigger className="w-full bg-slate-800/60 px-4 py-3 flex items-center justify-between hover:bg-slate-700/60 transition-colors">
         <h3 className="text-white font-semibold text-sm">{t('analysis_economic_events')}</h3>
-        <ChevronDown className={`w-5 h-5 text-green-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-cyan-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </CollapsibleTrigger>
       
       <CollapsibleContent>
-        <div className="bg-[#0a1a0a] p-4 border-t border-green-500/20">
+        <div className="p-4 border-t border-cyan-800/30">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
+              <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
               <span className="ml-2 text-gray-400">{t('analysis_loading_events')}</span>
             </div>
           ) : error ? (
@@ -52,12 +52,12 @@ export function EconomicEvents({ symbol, date }: EconomicEventsProps) {
               compact
             />
           ) : events && events.length > 0 ? (
-            <div className="border border-green-900/30 rounded-lg overflow-hidden">
-              <div className="bg-green-900/20 p-2">
-                <h4 className="text-green-400 font-semibold text-sm">{t('analysis_economic_events')}</h4>
+            <div className="border border-slate-700/30 rounded-lg overflow-hidden">
+              <div className="bg-slate-800/60 p-2">
+                <h4 className="text-cyan-400 font-semibold text-sm">{t('analysis_economic_events')}</h4>
               </div>
               
-              <div className="grid grid-cols-12 gap-2 p-2 border-b border-green-900/30 text-xs text-gray-400 font-semibold">
+              <div className="grid grid-cols-12 gap-2 p-2 border-b border-slate-700/30 text-xs text-gray-400 font-semibold">
                 <div className="col-span-1">{t('analysis_time')}</div>
                 <div className="col-span-3">{t('analysis_events')}</div>
                 <div className="col-span-3">{t('analysis_description')}</div>
@@ -68,7 +68,7 @@ export function EconomicEvents({ symbol, date }: EconomicEventsProps) {
               {events.map((event, index) => (
                 <div 
                   key={index} 
-                  className="grid grid-cols-12 gap-2 p-2 border-b border-green-900/20 text-xs hover:bg-green-900/10"
+                  className="grid grid-cols-12 gap-2 p-2 border-b border-slate-700/20 text-xs hover:bg-slate-800/40"
                 >
                   <div className="col-span-1 text-white font-mono">{event.time}</div>
                   <div className="col-span-3 text-gray-300">{event.event}</div>
