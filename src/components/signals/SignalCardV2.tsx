@@ -20,13 +20,15 @@ import {
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
 import { useSignalRisk } from "@/hooks/useSignalRisk";
+import { useSignalMarketSentiment } from "@/hooks/useSignalMarketSentiment";
+import { MarketSentimentDashboard } from "@/components/signals/MarketSentimentDashboard";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
-import marketSentimentChart from "@/assets/market-sentiment-chart.jpg";
+
 import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
 import { es, enUS, ptBR, fr } from "date-fns/locale";
@@ -267,12 +269,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     return { percent: diff, pips, currentPrice: quote.price, isPositive: diff >= 0, hasData: true };
   }, [quote?.price, entryPrice, isJpy]);
 
+  // Market Sentiment Dashboard (fetched when expanded)
+  const { data: sentimentData, loading: sentimentLoading } = useSignalMarketSentiment(
+    strategyInput,
+    priceDiff.hasData ? priceDiff.currentPrice : undefined,
+    expanded
+  );
+
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
 
   // Risk percent = SL distance / entry
   const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
-
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
       <div
@@ -564,60 +572,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             </div>
 
-            {/* Sentimiento del Mercado + Informacion */}
-            <div className="mx-3 mb-3 flex gap-2">
-              <div
-              className="flex-1 rounded-lg overflow-hidden"
-              style={{
-                border: "1px solid hsla(200, 60%, 35%, 0.3)",
-                background: "hsl(215, 100%, 4%)"
-              }}>
+            {/* Market Sentiment Dashboard */}
+            <MarketSentimentDashboard data={sentimentData} loading={sentimentLoading} />
 
-                <img
-                src={marketSentimentChart}
-                alt="Sentimiento del Mercado"
-                className="w-full h-full object-cover"
-                draggable={false} />
-
-              </div>
-
-              
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
 
             {/* Strategy Guidance Panel */}
             <div
