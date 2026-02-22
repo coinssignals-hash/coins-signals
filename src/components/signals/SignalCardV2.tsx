@@ -558,6 +558,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 currentPrice={priceDiff.hasData ? priceDiff.currentPrice : undefined}
                 isJpy={isJpy}
                 height={200}
+                entryPrice={entryPrice}
+                takeProfit={takeProfit}
+                stopLoss={stopLoss}
               />
             </div>
 

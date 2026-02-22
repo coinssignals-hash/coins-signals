@@ -20,6 +20,12 @@ export interface SignalChartProps {
   className?: string;
   /** Hide the support/resistance panel below the chart */
   hideSupportResistance?: boolean;
+  /** Entry price – used to derive S/R when not provided */
+  entryPrice?: number;
+  /** Take profit – used to derive resistance when not provided */
+  takeProfit?: number;
+  /** Stop loss – used to derive support when not provided */
+  stopLoss?: number;
 }
 
 // --- Zoomable Chart (internal) ---
@@ -330,8 +336,8 @@ function SupportResistancePanel({
 // --- Main exported component ---
 export function SignalChart({
   pair,
-  support,
-  resistance,
+  support: supportProp,
+  resistance: resistanceProp,
   signalId,
   chartImageUrl,
   currentPrice,
@@ -339,7 +345,18 @@ export function SignalChart({
   height = 200,
   className,
   hideSupportResistance = false,
+  entryPrice,
+  takeProfit,
+  stopLoss,
 }: SignalChartProps) {
+  // Auto-derive support/resistance from TP/SL when not provided
+  const support = supportProp ?? (stopLoss !== undefined && entryPrice !== undefined
+    ? Math.min(stopLoss, entryPrice)
+    : undefined);
+  const resistance = resistanceProp ?? (takeProfit !== undefined && entryPrice !== undefined
+    ? Math.max(takeProfit, entryPrice)
+    : undefined);
+
   const showSR = !hideSupportResistance && support !== undefined && resistance !== undefined;
 
   return (
