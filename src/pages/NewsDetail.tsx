@@ -19,13 +19,13 @@ import { EconomicCategory } from '@/types/news';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 const NewsDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{id: string;}>();
   const { t } = useTranslation();
   const { cacheNews, getCachedNews } = useNewsCache();
   const [isFromCache, setIsFromCache] = useState(false);
-  
+
   const { data: allNews, isLoading, error, refetch } = useRealNews(undefined, undefined, 100);
-  
+
   const news = useMemo(() => {
     if (!id) return null;
     if (allNews) {
@@ -56,13 +56,13 @@ const NewsDetail = () => {
     if (news || !allNews) return [];
     return allNews.slice(0, 6);
   }, [news, allNews]);
-  
+
   const getBiasFromSentiment = (sentiment: string): 'bullish' | 'bearish' | 'neutral' => {
     if (sentiment === 'bullish') return 'bullish';
     if (sentiment === 'bearish') return 'bearish';
     return 'neutral';
   };
-  
+
   const getSentimentIcon = (sentiment: string) => {
     if (sentiment === 'bullish') return <TrendingUp className="w-5 h-5 text-green-500" />;
     if (sentiment === 'bearish') return <TrendingDown className="w-5 h-5 text-red-500" />;
@@ -104,7 +104,7 @@ const NewsDetail = () => {
     if (importance === 'medium') return 'border-l-yellow-500 bg-yellow-500/5';
     return 'border-l-green-500 bg-green-500/5';
   };
-  
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -119,10 +119,10 @@ const NewsDetail = () => {
           </div>
         </main>
         <BottomNav />
-      </div>
-    );
+      </div>);
+
   }
-  
+
   if (error || !news) {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -136,42 +136,42 @@ const NewsDetail = () => {
               {error ? t('news_detail_error_loading') : t('news_detail_unavailable')}
             </h2>
             <p className="text-muted-foreground text-sm">
-              {error instanceof Error 
-                ? error.message 
-                : t('news_detail_unavailable_desc')}
+              {error instanceof Error ?
+              error.message :
+              t('news_detail_unavailable_desc')}
             </p>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => refetch()} 
-              className="text-primary hover:text-primary/80"
-            >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => refetch()}
+              className="text-primary hover:text-primary/80">
+
               <Loader2 className="w-3 h-3 mr-1" />
               {t('news_detail_refresh')}
             </Button>
           </div>
 
-          {recentNews.length > 0 && (
-            <div className="space-y-4">
+          {recentNews.length > 0 &&
+          <div className="space-y-4">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
                 {t('news_detail_recent')}
               </h3>
               <div className="space-y-3">
-                {recentNews.map((item) => (
-                  <Link 
-                    key={item.id} 
-                    to={`/news/${item.id}`}
-                    className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group"
-                  >
-                    {item.image_url && (
-                      <img 
-                        src={item.image_url} 
-                        alt="" 
-                        className="w-16 h-16 rounded-md object-cover flex-shrink-0"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    )}
+                {recentNews.map((item) =>
+              <Link
+                key={item.id}
+                to={`/news/${item.id}`}
+                className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group">
+
+                    {item.image_url &&
+                <img
+                  src={item.image_url}
+                  alt=""
+                  className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                  onError={(e) => {e.currentTarget.style.display = 'none';}} />
+
+                }
                     <div className="flex-1 min-w-0 space-y-1">
                       <h4 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                         {item.title}
@@ -185,21 +185,21 @@ const NewsDetail = () => {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {item.affected_currencies.slice(0, 3).map((currency) => (
-                          <span 
-                            key={currency}
-                            className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-medium"
-                          >
+                        {item.affected_currencies.slice(0, 3).map((currency) =>
+                    <span
+                      key={currency}
+                      className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-medium">
+
                             {currency}
                           </span>
-                        ))}
+                    )}
                       </div>
                     </div>
                   </Link>
-                ))}
+              )}
               </div>
             </div>
-          )}
+          }
 
           <div className="flex flex-col gap-2">
             <Link to="/news">
@@ -216,54 +216,54 @@ const NewsDetail = () => {
           </div>
         </main>
         <BottomNav />
-      </div>
-    );
+      </div>);
+
   }
-  
+
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
       <main className="container py-4 space-y-6 max-w-4xl">
-        {isFromCache && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
+        {isFromCache &&
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
             <Archive className="w-4 h-4" />
             <span>{t('news_detail_cached_notice')}</span>
           </div>
-        )}
+        }
         
         <Link to="/news" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">{t('news_detail_back')}</span>
         </Link>
         
-        {news.image_url && (
-          <div className="relative aspect-video rounded-xl overflow-hidden">
+        {news.image_url &&
+        <div className="relative aspect-video rounded-xl overflow-hidden">
             <img src={news.image_url} alt={news.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
           </div>
-        )}
+        }
         
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <CategoryBadge category={news.category as EconomicCategory} />
-            <BiasBadge 
-              bias={aiAnalysis?.traderConclusion.bias || getBiasFromSentiment(news.sentiment)} 
-              strength={aiAnalysis?.traderConclusion.biasStrength || 'moderate'} 
-            />
+            <BiasBadge
+              bias={aiAnalysis?.traderConclusion.bias || getBiasFromSentiment(news.sentiment)}
+              strength={aiAnalysis?.traderConclusion.biasStrength || 'moderate'} />
+
           </div>
           
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">{news.title}</h1>
           
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            {news.source_logo && (
-              <img 
-                src={news.source_logo} 
-                alt={news.source} 
-                className="w-5 h-5 rounded object-contain"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-            )}
+            {news.source_logo &&
+            <img
+              src={news.source_logo}
+              alt={news.source}
+              className="w-5 h-5 rounded object-contain"
+              onError={(e) => {e.currentTarget.style.display = 'none';}} />
+
+            }
             <span className="font-medium text-foreground">{news.source}</span>
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
@@ -274,8 +274,8 @@ const NewsDetail = () => {
           <CurrencyBadgeList currencies={news.affected_currencies} size="md" />
         </div>
 
-        {isLoadingAI ? (
-          <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4">
+        {isLoadingAI ?
+        <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4">
             <div className="flex items-center gap-2">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
               <span className="text-sm font-medium text-primary">{t('news_detail_analyzing')}</span>
@@ -285,9 +285,9 @@ const NewsDetail = () => {
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-4 w-5/6" />
             </div>
-          </div>
-        ) : aiAnalysis ? (
-          <>
+          </div> :
+        aiAnalysis ?
+        <>
             <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
@@ -299,15 +299,15 @@ const NewsDetail = () => {
             <div className="space-y-3">
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_key_points')}</h2>
               <div className="space-y-2">
-                {aiAnalysis.keyPoints.map((point, i) => (
-                  <div 
-                    key={i} 
-                    className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${getImportanceColor(point.importance)}`}
-                  >
+                {aiAnalysis.keyPoints.map((point, i) =>
+              <div
+                key={i}
+                className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${getImportanceColor(point.importance)}`}>
+
                     <span className="text-lg flex-shrink-0">{point.icon}</span>
                     <span className="text-foreground">{point.text}</span>
                   </div>
-                ))}
+              )}
               </div>
             </div>
 
@@ -350,21 +350,21 @@ const NewsDetail = () => {
                 </div>
               </div>
 
-              {aiAnalysis.traderConclusion.recommendedPairs.length > 0 && (
-                <div>
+              {aiAnalysis.traderConclusion.recommendedPairs.length > 0 &&
+            <div>
                   <div className="text-xs text-muted-foreground mb-2">{t('news_detail_recommended_pairs')}</div>
                   <div className="flex flex-wrap gap-2">
-                    {aiAnalysis.traderConclusion.recommendedPairs.map((pair) => (
-                      <span 
-                        key={pair} 
-                        className="px-2 py-1 rounded bg-primary/10 text-primary text-sm font-medium"
-                      >
+                    {aiAnalysis.traderConclusion.recommendedPairs.map((pair) =>
+                <span
+                  key={pair}
+                  className="px-2 py-1 rounded bg-primary/10 text-primary text-sm font-medium">
+
                         {pair}
                       </span>
-                    ))}
+                )}
                   </div>
                 </div>
-              )}
+            }
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -377,21 +377,21 @@ const NewsDetail = () => {
                 <p className="text-foreground text-sm">{aiAnalysis.tradingStrategy}</p>
               </div>
             </div>
-          </>
-        ) : (
-          <div className="p-4 rounded-lg bg-card border border-border space-y-3">
+          </> :
+
+        <div className="p-4 rounded-lg bg-card border border-border space-y-3">
             <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">{t('news_detail_summary')}</h2>
             <p className="text-foreground leading-relaxed">{news.summary}</p>
-            {aiError && (
-              <p className="text-xs text-muted-foreground">
+            {aiError &&
+          <p className="text-xs text-muted-foreground">
                 {t('news_detail_ai_unavailable')}
               </p>
-            )}
+          }
           </div>
-        )}
+        }
         
-        {news.affected_currencies.length > 0 && (
-          <CurrencyImpactModal currencies={news.affected_currencies}>
+        {news.affected_currencies.length > 0 &&
+        <CurrencyImpactModal currencies={news.affected_currencies}>
             <div className="p-4 rounded-lg bg-card border border-border space-y-3 cursor-pointer hover:border-primary/50 transition-colors group">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_affected_currencies')}</h2>
@@ -401,46 +401,46 @@ const NewsDetail = () => {
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {news.affected_currencies.map((currency) => (
-                  <span 
-                    key={currency} 
-                    className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
-                  >
+                {news.affected_currencies.map((currency) =>
+              <span
+                key={currency}
+                className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium">
+
                     {currency}
                   </span>
-                ))}
+              )}
               </div>
             </div>
           </CurrencyImpactModal>
-        )}
+        }
 
-        {news.affected_currencies.length > 0 && (
-          <RealtimeCurrencyImpact currencies={news.affected_currencies} />
-        )}
+        {news.affected_currencies.length > 0 &&
+        <RealtimeCurrencyImpact currencies={news.affected_currencies} />
+        }
 
-        {news.affected_currencies.length > 0 && (
-          <CurrencyImpactCharts
-            newsId={news.id}
-            newsTitle={news.title}
-            category={news.category as EconomicCategory}
-            currencies={news.affected_currencies}
-          />
-        )}
+        {news.affected_currencies.length > 0 &&
+        <CurrencyImpactCharts
+          newsId={news.id}
+          newsTitle={news.title}
+          category={news.category as EconomicCategory}
+          currencies={news.affected_currencies} />
 
-        <div className="p-4 rounded-lg bg-card border border-border space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_detail_relevance')}</h2>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 bg-secondary rounded-full h-2 overflow-hidden">
-              <div 
-                className="h-full bg-primary transition-all"
-                style={{ width: `${news.relevance_score * 100}%` }}
-              />
-            </div>
-            <span className="text-sm font-medium text-foreground">
-              {Math.round(news.relevance_score * 100)}%
-            </span>
-          </div>
-        </div>
+        }
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         <a href={news.url} target="_blank" rel="noopener noreferrer" className="block">
           <Button variant="outline" className="w-full gap-2">
@@ -451,8 +451,8 @@ const NewsDetail = () => {
       </main>
       
       <BottomNav />
-    </div>
-  );
+    </div>);
+
 };
 
 export default NewsDetail;
