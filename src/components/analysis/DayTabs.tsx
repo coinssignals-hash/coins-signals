@@ -20,21 +20,21 @@ export function DayTabs({ selectedDay, onSelectDay }: DayTabsProps) {
         const dayName = format(day, 'EEEE', { locale: es });
         const dayNumber = format(day, 'dd');
 
-        return (
-          <button
-            key={day.toISOString()}
-            onClick={() => onSelectDay(day)}
-            className={cn(
-              "flex-1 py-2 px-1 text-center transition-colors text-xs sm:text-sm",
-              isSelected
-                ? "bg-green-900/40 text-green-400 border-b-2 border-green-500"
-                : "text-gray-400 hover:text-green-400 hover:bg-green-900/20"
-            )}
-          >
-            <span className="capitalize">{dayName} {dayNumber}</span>
-          </button>
-        );
+        return;
+
+
+
+
+
+
+
+
+
+
+
+
+
       })}
-    </div>
-  );
+    </div>);
+
 }
