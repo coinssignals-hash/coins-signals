@@ -275,30 +275,32 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     expanded
   );
 
-  // Server-rendered candlestick chart SVG (fetched from edge function when expanded)
-  const [chartSvgUrl, setChartSvgUrl] = useState<string | null>(null);
+  // Chart URL: prefer pre-stored chart_image_url, fallback to edge function SVG
+  const storedChartUrl = signal?.chartImageUrl;
+  const [fallbackChartUrl, setFallbackChartUrl] = useState<string | null>(null);
   const [chartLoading, setChartLoading] = useState(false);
 
+  const chartSvgUrl = storedChartUrl || fallbackChartUrl;
+
   useEffect(() => {
-    if (!expanded || chartSvgUrl) return;
+    // Only fetch from edge function if no stored URL and card is expanded
+    if (!expanded || storedChartUrl || fallbackChartUrl) return;
     setChartLoading(true);
     const pairClean = currencyPair.replace(/[/\- ]/g, '');
     const params = new URLSearchParams({ pair: pairClean, sr_mode: 'auto' });
-    if (resistance) params.set('resistance', String(resistance));
-    else params.set('resistance', String(takeProfit));
-    if (support) params.set('support', String(support));
-    else params.set('support', String(stopLoss));
+    params.set('resistance', String(resistance ?? takeProfit));
+    params.set('support', String(support ?? stopLoss));
 
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/candlestick-chart?${params.toString()}`;
     fetch(url)
       .then(res => res.text())
       .then(svgText => {
         const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-        setChartSvgUrl(URL.createObjectURL(blob));
+        setFallbackChartUrl(URL.createObjectURL(blob));
       })
       .catch(err => console.error('Chart fetch error:', err))
       .finally(() => setChartLoading(false));
-  }, [expanded, currencyPair, resistance, support, takeProfit, stopLoss, chartSvgUrl]);
+  }, [expanded, currencyPair, resistance, support, takeProfit, stopLoss, storedChartUrl, fallbackChartUrl]);
 
   // Clamp circle fill to 0-100 range (map ±1% to full circle)
   const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
