@@ -14,6 +14,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { Currency, CURRENCIES, EconomicCategory } from '@/types/news';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 // Use RealNewsItem as NewsListItem for compatibility
 type NewsListItem = RealNewsItem;
@@ -498,42 +499,59 @@ function QuickCurrencyFilter({
   const totalNews = news?.length ?? 0;
   const isAll = selected.length === 0;
 
+  const selectedLabel = isAll
+    ? `🌍 ${allLabel}`
+    : selected.map((c) => `${CURRENCIES[c].flag} ${c}`).join(', ');
+
   return (
-    <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
-      <button
-        onClick={() => onChange([])}
-        className={cn(
-          'flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border',
-          isAll ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20'
-            : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground'
-        )}
-      >
-        🌍 {allLabel}
-        {totalNews > 0 && <span className="ml-1 opacity-70">{totalNews}</span>}
-      </button>
-      {rankedCurrencies.map(({ currency, count }) => {
-        const info = CURRENCIES[currency];
-        const isSelected = selected.includes(currency);
-        return (
-          <button
-            key={currency}
-            onClick={() => toggleCurrency(currency)}
-            className={cn(
-              'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
-              isSelected ? 'bg-primary/15 border-primary/50 text-primary shadow-sm'
-                : 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
-            )}
-          >
-            <span className="text-sm">{info.flag}</span>
-            <span>{currency}</span>
-            {count > 0 && (
-              <span className={cn('ml-0.5 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold flex items-center justify-center',
-                isSelected ? 'bg-primary/25 text-primary' : 'bg-muted text-muted-foreground')}>{count}</span>
-            )}
-          </button>
-        );
-      })}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className={cn(
+          'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border',
+          'bg-card/50 border-border/50 text-foreground hover:border-primary/40'
+        )}>
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <span className="truncate max-w-[200px]">{selectedLabel}</span>
+          {!isAll && (
+            <span className="min-w-[20px] h-5 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">
+              {selected.length}
+            </span>
+          )}
+          <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuCheckboxItem
+          checked={isAll}
+          onCheckedChange={() => onChange([])}
+        >
+          <span className="flex items-center gap-2">
+            🌍 {allLabel}
+            {totalNews > 0 && <span className="text-muted-foreground text-xs">({totalNews})</span>}
+          </span>
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuSeparator />
+        {rankedCurrencies.map(({ currency, count }) => {
+          const info = CURRENCIES[currency];
+          const isSelected = selected.includes(currency);
+          return (
+            <DropdownMenuCheckboxItem
+              key={currency}
+              checked={isSelected}
+              onCheckedChange={() => toggleCurrency(currency)}
+            >
+              <span className="flex items-center gap-2 w-full">
+                <span>{info.flag}</span>
+                <span>{currency}</span>
+                {count > 0 && (
+                  <span className="ml-auto text-xs text-muted-foreground">{count}</span>
+                )}
+              </span>
+            </DropdownMenuCheckboxItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
