@@ -637,7 +637,7 @@ const News = () => {
             isRefreshing={isRefreshing} />
 
         
-        {/* Section Header */}
+        {/* Section Header + Currency Filter */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-foreground">{t('news_title')}</h1>
@@ -645,34 +645,14 @@ const News = () => {
               <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
                 {filteredNews.length}
               </span>
-              }
+            }
           </div>
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-        
-        {/* Quick Currency Filter */}
-        <QuickCurrencyFilter
+          <QuickCurrencyFilter
             selected={selectedCurrencies}
             onChange={setSelectedCurrencies}
             allLabel={t('news_all_currencies')}
             news={news} />
+        </div>
 
         {/* Impact & Sentiment Filter Bar */}
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
