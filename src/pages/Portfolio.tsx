@@ -454,21 +454,21 @@ function AnimatedSummaryCard({
   
   return (
     <div className={cn(
-      "bg-slate-800/50 rounded-xl p-4 border transition-all duration-300",
+      "bg-slate-800/50 rounded-xl p-2.5 border transition-all duration-300",
       flash === 'up' && "border-emerald-500/50 bg-emerald-500/10",
       flash === 'down' && "border-red-500/50 bg-red-500/10",
       !flash && "border-slate-700/50"
     )}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-slate-400">
+        <div className="flex items-center gap-1.5 text-slate-400">
           {icon}
-          <span className="text-xs">{title}</span>
+          <span className="text-[10px]">{title}</span>
         </div>
         {loading ? (
-          <Skeleton className="h-6 w-24" />
+          <Skeleton className="h-5 w-20" />
         ) : (
           <span className={cn(
-            "text-lg font-bold transition-colors duration-300",
+            "text-sm font-bold transition-colors duration-300",
             flash === 'up' && "text-emerald-400",
             flash === 'down' && "text-red-400",
             !flash && valueColor
