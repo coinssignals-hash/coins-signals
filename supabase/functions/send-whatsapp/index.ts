@@ -37,6 +37,23 @@ serve(async (req) => {
       });
     }
 
+    // Validate phone number format
+    const cleanNumber = to.replace(/[^0-9+]/g, '');
+    if (!/^\+[1-9]\d{7,14}$/.test(cleanNumber)) {
+      return new Response(JSON.stringify({ error: 'Invalid phone number format. Must be E.164 format (e.g. +1234567890)' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate message length (Twilio WhatsApp limit is 1600 chars)
+    if (message.length > 1600) {
+      return new Response(JSON.stringify({ error: 'Message too long (max 1600 characters)' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Get Twilio credentials
     const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
     const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');

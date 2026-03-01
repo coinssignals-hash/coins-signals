@@ -6,30 +6,71 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple encryption using base64 encoding with a key-based XOR
-function encryptCredentials(credentials: Record<string, string>, key: string): string {
+// AES-256-GCM encryption for broker credentials
+async function encryptCredentials(credentials: Record<string, string>, keyBase64: string): Promise<{ encrypted: string; iv: string }> {
   const json = JSON.stringify(credentials);
-  const keyBytes = new TextEncoder().encode(key);
-  const dataBytes = new TextEncoder().encode(json);
-  const encrypted = new Uint8Array(dataBytes.length);
-  
-  for (let i = 0; i < dataBytes.length; i++) {
-    encrypted[i] = dataBytes[i] ^ keyBytes[i % keyBytes.length];
-  }
-  
-  return btoa(String.fromCharCode(...encrypted));
+  const data = new TextEncoder().encode(json);
+
+  // Derive a 256-bit key from the provided key using SHA-256
+  const rawKey = new TextEncoder().encode(keyBase64);
+  const keyHash = await crypto.subtle.digest('SHA-256', rawKey);
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyHash,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt']
+  );
+
+  // Generate random IV
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+
+  // Encrypt with AES-GCM (provides authentication)
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    cryptoKey,
+    data
+  );
+
+  return {
+    encrypted: btoa(String.fromCharCode(...new Uint8Array(encrypted))),
+    iv: btoa(String.fromCharCode(...iv)),
+  };
 }
 
-function decryptCredentials(encrypted: string, key: string): Record<string, string> {
+async function decryptCredentials(encryptedB64: string, ivB64: string | null, keyBase64: string): Promise<Record<string, string>> {
   try {
-    const keyBytes = new TextEncoder().encode(key);
-    const encryptedBytes = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
-    const decrypted = new Uint8Array(encryptedBytes.length);
-    
-    for (let i = 0; i < encryptedBytes.length; i++) {
-      decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+    // Legacy XOR decryption fallback (no IV means old format)
+    if (!ivB64) {
+      const keyBytes = new TextEncoder().encode(keyBase64);
+      const encryptedBytes = Uint8Array.from(atob(encryptedB64), c => c.charCodeAt(0));
+      const decrypted = new Uint8Array(encryptedBytes.length);
+      for (let i = 0; i < encryptedBytes.length; i++) {
+        decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+      }
+      return JSON.parse(new TextDecoder().decode(decrypted));
     }
-    
+
+    // AES-GCM decryption
+    const rawKey = new TextEncoder().encode(keyBase64);
+    const keyHash = await crypto.subtle.digest('SHA-256', rawKey);
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyHash,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+
+    const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+    const encryptedData = Uint8Array.from(atob(encryptedB64), c => c.charCodeAt(0));
+
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      encryptedData
+    );
+
     return JSON.parse(new TextDecoder().decode(decrypted));
   } catch {
     return {};
@@ -201,7 +242,14 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const encryptionKey = Deno.env.get('ENCRYPTION_KEY') || 'default-key-change-in-production';
+    const encryptionKey = Deno.env.get('ENCRYPTION_KEY');
+    if (!encryptionKey) {
+      console.error('[broker-connections] ENCRYPTION_KEY not configured');
+      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     // Parse body for POST/PUT requests
     let body: Record<string, unknown> = {};
@@ -285,7 +333,7 @@ serve(async (req) => {
         }
         
         const encryptedStr = new TextDecoder().decode(conn.encrypted_credentials);
-        testCredentials = decryptCredentials(encryptedStr, encryptionKey);
+        testCredentials = await decryptCredentials(encryptedStr, conn.credentials_iv ? new TextDecoder().decode(conn.credentials_iv) : null, encryptionKey);
         brokerCode = conn.broker?.code;
         testEnvironment = conn.environment;
       }
@@ -327,8 +375,9 @@ serve(async (req) => {
       if (typeof is_active === 'boolean') updateData.is_active = is_active;
       
       if (credentials) {
-        const encryptedCreds = encryptCredentials(credentials as Record<string, string>, encryptionKey);
-        updateData.encrypted_credentials = new TextEncoder().encode(encryptedCreds);
+        const { encrypted, iv } = await encryptCredentials(credentials as Record<string, string>, encryptionKey);
+        updateData.encrypted_credentials = new TextEncoder().encode(encrypted);
+        updateData.credentials_iv = new TextEncoder().encode(iv);
         updateData.is_connected = false;
       }
       
@@ -375,9 +424,10 @@ serve(async (req) => {
         (environment as string) || 'demo'
       );
 
-      // Encrypt credentials
-      const encryptedCreds = encryptCredentials(credentials as Record<string, string>, encryptionKey);
+      // Encrypt credentials with AES-GCM
+      const { encrypted: encryptedCreds, iv: credsIv } = await encryptCredentials(credentials as Record<string, string>, encryptionKey);
       const encryptedBytes = new TextEncoder().encode(encryptedCreds);
+      const ivBytes = new TextEncoder().encode(credsIv);
       
       const { data: connection, error } = await supabase
         .from('user_broker_connections')
@@ -387,6 +437,7 @@ serve(async (req) => {
           connection_name,
           environment: environment || 'demo',
           encrypted_credentials: encryptedBytes,
+          credentials_iv: ivBytes,
           config: config || {},
           is_active: true,
           is_connected: testResult.success,

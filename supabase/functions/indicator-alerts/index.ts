@@ -21,6 +21,18 @@ serve(async (req) => {
   }
 
   try {
+    // Verify API key
+    const apiKey = req.headers.get('x-api-key');
+    const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
+
+    if (!apiKey || apiKey !== expectedApiKey) {
+      console.error('[indicator-alerts] Invalid or missing API key');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const payload: AlertPayload = await req.json();
     console.log('Received indicator alert:', JSON.stringify(payload));
 
