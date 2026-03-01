@@ -108,10 +108,10 @@ export default function Portfolio() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
-      <div className="relative w-full max-w-4xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
+      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
       
-      <main className="container max-w-4xl mx-auto px-4 py-4">
+      <main className="px-4 py-4">
         {/* Auth Banner for non-authenticated users */}
         {showAuthBanner && (
           <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-4">
