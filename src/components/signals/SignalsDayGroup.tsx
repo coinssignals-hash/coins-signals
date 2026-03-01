@@ -24,7 +24,7 @@ export function SignalsDayGroup({ date, count, children }: SignalsDayGroupProps)
     <section className="space-y-3">
       {/* Day header */}
       <div className={cn(
-        "flex items-center gap-2 px-1 py-2 sticky top-[108px] z-10 backdrop-blur-md rounded-lg",
+        "flex items-center gap-2 px-1 py-2 rounded-lg",
         today
           ? "bg-blue-500/10 border border-blue-500/20"
           : "bg-slate-800/40 border border-slate-700/30"
