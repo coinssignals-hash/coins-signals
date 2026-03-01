@@ -63,7 +63,7 @@ export function Header() {
           </Button>
 
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
-            <img src={logoImg} alt="Coins Signals" className="h-9 w-auto" />
+            <img src={logoImg} alt="Coins Signals" className="h-14 w-auto" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-1">
