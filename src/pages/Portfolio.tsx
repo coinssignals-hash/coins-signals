@@ -12,7 +12,6 @@ import {
   AlertCircle,
   Plus,
   ChevronDown,
-  ChevronUp,
   Radio
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
@@ -543,41 +542,45 @@ function AccountCard({
               <div className="text-slate-500 text-xs">PnL no realizado</div>
             </div>
           )}
-          {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-slate-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-slate-400" />
-          )}
+          <ChevronDown className={cn(
+            "w-5 h-5 text-slate-400 transition-transform duration-300",
+            isExpanded && "rotate-180"
+          )} />
         </div>
       </button>
 
-      {isExpanded && !hasError && (
-        <div className="px-4 pb-4 space-y-4">
-          {/* Account Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatItem label="Cash" value={formatCurrency(account.cash_balance, account.currency)} />
-            <StatItem label="Buying Power" value={formatCurrency(account.buying_power, account.currency)} />
-            <StatItem label="Margen Usado" value={formatCurrency(account.margin_used, account.currency)} />
-            <StatItem 
-              label="PnL Hoy" 
-              value={formatCurrency(account.realized_pnl_today, account.currency)}
-              valueColor={account.realized_pnl_today >= 0 ? 'text-emerald-400' : 'text-red-400'}
-            />
-          </div>
-
-          {/* Positions */}
-          {account.positions.length > 0 && (
-            <div>
-              <h4 className="text-slate-400 text-xs font-medium mb-2">Posiciones</h4>
-              <div className="space-y-2">
-                {account.positions.map((pos, i) => (
-                  <PositionRow key={`${pos.symbol}-${i}`} position={pos} currency={account.currency} />
-                ))}
-              </div>
+      <div
+        className="grid transition-all duration-300 ease-in-out"
+        style={{ gridTemplateRows: isExpanded && !hasError ? '1fr' : '0fr' }}
+      >
+        <div className="overflow-hidden">
+          <div className="px-4 pb-4 space-y-4">
+            {/* Account Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <StatItem label="Cash" value={formatCurrency(account.cash_balance, account.currency)} />
+              <StatItem label="Buying Power" value={formatCurrency(account.buying_power, account.currency)} />
+              <StatItem label="Margen Usado" value={formatCurrency(account.margin_used, account.currency)} />
+              <StatItem 
+                label="PnL Hoy" 
+                value={formatCurrency(account.realized_pnl_today, account.currency)}
+                valueColor={account.realized_pnl_today >= 0 ? 'text-emerald-400' : 'text-red-400'}
+              />
             </div>
-          )}
+
+            {/* Positions */}
+            {account.positions.length > 0 && (
+              <div>
+                <h4 className="text-slate-400 text-xs font-medium mb-2">Posiciones</h4>
+                <div className="space-y-2">
+                  {account.positions.map((pos, i) => (
+                    <PositionRow key={`${pos.symbol}-${i}`} position={pos} currency={account.currency} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
