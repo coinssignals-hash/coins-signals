@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Download, Share, MoreVertical, Plus, Smartphone } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -79,11 +80,9 @@ export default function Install() {
       <main className="p-4 space-y-6">
         {/* Hero Section */}
         <div className="text-center py-8">
-          <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <Smartphone className="w-12 h-12 text-yellow-400" />
-          </div>
+          <img src={logoImg} alt="Coins Signals" className="w-24 h-24 mx-auto mb-4 rounded-2xl shadow-lg" />
           <h2 className="text-2xl font-bold text-white mb-2">
-            Coins <span className="text-yellow-400">$</span>ignals
+            Coins Signals
           </h2>
           <p className="text-blue-200/80 text-sm">
             Instala la app para recibir señales al instante
