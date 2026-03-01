@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { PageTransition } from '@/components/layout/PageTransition';
 import { usePortfolio, AccountData, Position } from '@/hooks/usePortfolio';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -104,6 +105,7 @@ export default function Portfolio() {
   const showAuthBanner = !user;
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-4xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
@@ -428,6 +430,7 @@ export default function Portfolio() {
       <BottomNav />
       </div>
     </div>
+    </PageTransition>
   );
 }
 
