@@ -18,6 +18,8 @@ export interface TradingSignal {
   sessionData?: { session: string; volume: string; volatility: string }[];
   analysisData?: { label: string; value: number }[];
   chartImageUrl?: string;
+  closedPrice?: number;
+  closedResult?: 'tp_hit' | 'sl_hit';
 }
 
 interface DbSignal {
@@ -36,6 +38,8 @@ interface DbSignal {
   session_data: unknown;
   analysis_data: unknown;
   chart_image_url: string | null;
+  closed_price: number | null;
+  closed_result: string | null;
 }
 
 const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
@@ -54,6 +58,8 @@ const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
   sessionData: dbSignal.session_data as TradingSignal['sessionData'],
   analysisData: dbSignal.analysis_data as TradingSignal['analysisData'],
   chartImageUrl: dbSignal.chart_image_url ?? undefined,
+  closedPrice: dbSignal.closed_price ? Number(dbSignal.closed_price) : undefined,
+  closedResult: dbSignal.closed_result as TradingSignal['closedResult'],
 });
 
 export function useSignals(selectedDate?: string) {

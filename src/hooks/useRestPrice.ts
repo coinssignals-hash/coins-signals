@@ -73,6 +73,7 @@ export function useRestPrice(symbol: string, pollIntervalMs = 30_000) {
   }, [symbol]);
 
   useEffect(() => {
+    if (pollIntervalMs <= 0) return; // No polling when interval is 0 or negative
     fetchPrice();
     intervalRef.current = setInterval(fetchPrice, pollIntervalMs);
     return () => {

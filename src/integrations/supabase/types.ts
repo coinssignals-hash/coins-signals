@@ -746,6 +746,8 @@ export type Database = {
           action: string
           analysis_data: Json | null
           chart_image_url: string | null
+          closed_price: number | null
+          closed_result: string | null
           created_at: string
           currency_pair: string
           datetime: string
@@ -765,6 +767,8 @@ export type Database = {
           action?: string
           analysis_data?: Json | null
           chart_image_url?: string | null
+          closed_price?: number | null
+          closed_result?: string | null
           created_at?: string
           currency_pair: string
           datetime?: string
@@ -784,6 +788,8 @@ export type Database = {
           action?: string
           analysis_data?: Json | null
           chart_image_url?: string | null
+          closed_price?: number | null
+          closed_result?: string | null
           created_at?: string
           currency_pair?: string
           datetime?: string
