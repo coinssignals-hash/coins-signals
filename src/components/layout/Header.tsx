@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import logoImg from '@/assets/logo.png';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, Search, Bell,
@@ -61,9 +62,8 @@ export function Header() {
             <Menu className="w-5 h-5" />
           </Button>
 
-          <Link to="/" className="flex items-center gap-1" onMouseEnter={onMouseEnter('/')}>
-            <span className="text-xl font-bold text-white">Coins</span>
-            <span className="text-xl font-bold text-accent">$ignals</span>
+          <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
+            <img src={logoImg} alt="Coins Signals" className="h-9 w-auto" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-1">
