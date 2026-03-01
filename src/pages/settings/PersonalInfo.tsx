@@ -202,7 +202,7 @@ export default function PersonalInfo() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-6">
+      <main className="container py-6 max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/settings">
             <Button variant="ghost" size="icon">

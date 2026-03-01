@@ -109,7 +109,7 @@ const NewsDetail = () => {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Header />
-        <main className="container py-4 space-y-6 max-w-4xl">
+        <main className="container py-4 space-y-6 max-w-2xl mx-auto">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-64 w-full rounded-xl" />
           <div className="space-y-4">
@@ -127,7 +127,7 @@ const NewsDetail = () => {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Header />
-        <main className="container py-4 space-y-6 max-w-4xl">
+        <main className="container py-4 space-y-6 max-w-2xl mx-auto">
           <div className="p-6 rounded-xl bg-card border border-border text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
               <AlertCircle className="w-8 h-8 text-muted-foreground" />
@@ -224,7 +224,7 @@ const NewsDetail = () => {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-4 space-y-6 max-w-4xl">
+      <main className="container py-4 space-y-6 max-w-2xl mx-auto">
         {isFromCache &&
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
             <Archive className="w-4 h-4" />

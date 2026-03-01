@@ -99,7 +99,7 @@ export default function About() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-4 px-4 max-w-4xl mx-auto">
+      <main className="container py-4 px-4 max-w-2xl mx-auto">
         {/* Back button and title */}
         <div className="flex items-center gap-3 mb-6">
           <Link to="/" className="p-2 hover:bg-secondary rounded-lg transition-colors">

@@ -148,7 +148,7 @@ export default function Analysis() {
       <Header />
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
-      <main className="container py-3 px-2 sm:px-4 max-w-5xl mx-auto space-y-3">
+      <main className="container py-3 px-2 sm:px-4 max-w-2xl mx-auto space-y-3">
         {/* Terminal Header Bar */}
         <div className="flex items-center gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-xl p-2.5">
           <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[160px]" />
