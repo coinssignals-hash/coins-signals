@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X } from 'lucide-react';
+import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X } from 'lucide-react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
@@ -10,7 +10,8 @@ import { SignalsDayGroup } from '@/components/signals/SignalsDayGroup';
 import { TodaySignalsGroup } from '@/components/signals/today/TodaySignalsGroup';
 import { TomorrowSignalsGroup } from '@/components/signals/tomorrow/TomorrowSignalsGroup';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { MainDrawer } from '@/components/layout/MainDrawer';
+import { Header } from '@/components/layout/Header';
+
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
@@ -76,7 +77,7 @@ export default function Signals() {
   const [dayTab, setDayTab] = useState<DayTab>('today');
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     return (localStorage.getItem('signals-view-mode') as ViewMode) || 'full';
@@ -177,30 +178,19 @@ export default function Signals() {
     <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20">
-        <div className="flex items-center justify-between px-4 py-3">
-          <button 
-            onClick={() => setDrawerOpen(true)}
-            className="p-2 text-blue-300 hover:text-blue-100"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-          
-          <h1 className="text-2xl font-bold text-white tracking-wide">
-            Coins <span className="text-yellow-400">$</span>ignals
-          </h1>
-          
+      <Header />
+      {/* Signal Controls Bar */}
+      <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-4 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
             {/* View Mode Toggle */}
-            <div className="flex items-center bg-slate-800/50 rounded-lg p-0.5 border border-slate-700/50">
+            <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 border border-border/50">
               <button
                 onClick={() => setViewMode('full')}
                 className={cn(
                   "p-1.5 rounded-md transition-all",
                   viewMode === 'full' 
-                    ? "bg-slate-700 text-white shadow-sm" 
-                    : "text-slate-500 hover:text-slate-300"
+                    ? "bg-muted text-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
                 )}
                 title="Vista completa"
               >
@@ -211,45 +201,30 @@ export default function Signals() {
                 className={cn(
                   "p-1.5 rounded-md transition-all",
                   viewMode === 'compact' 
-                    ? "bg-slate-700 text-white shadow-sm" 
-                    : "text-slate-500 hover:text-slate-300"
+                    ? "bg-muted text-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
                 )}
                 title="Vista compacta"
               >
                 <List className="w-4 h-4" />
               </button>
             </div>
-            
+          </div>
+
+          <div className="flex items-center gap-1">
             <NotificationToggle />
             {isAuthenticated && (
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
                 className={cn(
                   "p-2 rounded-full transition-colors",
-                  showFavoritesOnly ? "text-red-400" : "text-blue-300 hover:text-blue-100"
+                  showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
                 )}
                 title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}
               >
                 <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
               </button>
             )}
-            <button
-              onClick={() => navigate(user ? '/settings' : '/auth')}
-              className="p-2 text-blue-300 hover:text-blue-100"
-            >
-              {user ? (
-                <Avatar className="w-8 h-8 border-2 border-blue-500/50">
-                  <AvatarImage src={profile?.avatar_url || ''} alt="Avatar" />
-                  <AvatarFallback className="bg-blue-600 text-white text-xs">
-                    {getInitials()}
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                  <User className="w-5 h-5" />
-                </div>
-              )}
-            </button>
           </div>
         </div>
 
@@ -333,7 +308,7 @@ export default function Signals() {
             </button>
           </div>
         )}
-      </header>
+      
 
       {/* Filters Bar */}
       <div className="bg-slate-900/50 border-b border-slate-700/50 px-4 py-2">
@@ -434,8 +409,6 @@ export default function Signals() {
         )}
       </main>
 
-      {/* Drawer */}
-      <MainDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
 
       {/* Bottom Navigation */}
       <BottomNav />
