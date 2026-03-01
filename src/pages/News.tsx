@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
+import { PageTransition } from '@/components/layout/PageTransition';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
@@ -624,6 +625,7 @@ const News = () => {
   '';
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
@@ -823,7 +825,8 @@ const News = () => {
           }
       </main>
       </div>
-    </div>);
+    </div>
+    </PageTransition>);
 
 };
 

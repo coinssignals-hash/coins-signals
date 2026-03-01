@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X } from 'lucide-react';
+import { PageTransition } from '@/components/layout/PageTransition';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
@@ -173,6 +174,7 @@ export default function Signals() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       {/* Header */}
@@ -439,5 +441,6 @@ export default function Signals() {
       <BottomNav />
       </div>
     </div>
+    </PageTransition>
   );
 }

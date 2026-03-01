@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { PageTransition } from '@/components/layout/PageTransition';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -142,6 +143,7 @@ export default function Analysis() {
   );
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
       <Header />
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
@@ -397,6 +399,6 @@ export default function Analysis() {
       </main>
 
       <BottomNav />
-    </div>);
-
+    </div>
+    </PageTransition>);
 }

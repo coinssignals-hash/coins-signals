@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { BottomNav } from './BottomNav';
+import { PageTransition } from './PageTransition';
 import { cn } from '@/lib/utils';
 
 interface PageShellProps {
@@ -22,6 +23,7 @@ export function PageShell({
   bottomPadding = true,
 }: PageShellProps) {
   return (
+    <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className={cn(
         'relative w-full min-h-screen shadow-2xl',
@@ -34,5 +36,6 @@ export function PageShell({
       </div>
       {showBottomNav && <BottomNav />}
     </div>
+    </PageTransition>
   );
 }

@@ -3,8 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 
 // Lazy load all pages
 // Index page removed - Analysis is now the home page
@@ -48,6 +49,48 @@ const PageLoader = () => (
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Suspense fallback={<PageLoader />} key={location.pathname}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Analysis />} />
+          <Route path="/signals" element={<Signals />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/news/saved" element={<SavedNews />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
+          <Route path="/monitoring" element={<Monitoring />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/profile" element={<Settings />} />
+          <Route path="/settings/personal" element={<PersonalInfo />} />
+          <Route path="/settings/documents" element={<Documents />} />
+          <Route path="/settings/security" element={<Security />} />
+          <Route path="/settings/notifications" element={<Notifications />} />
+          <Route path="/settings/appearance" element={<Appearance />} />
+          <Route path="/settings/language" element={<Appearance />} />
+          <Route path="/referrals" element={<Referrals />} />
+          <Route path="/broker" element={<Broker />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/install" element={<Install />} />
+          <Route path="/performance" element={<Performance />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/broker-rating" element={<BrokerRating />} />
+          <Route path="/link-broker" element={<LinkBroker />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/create-signal" element={<CreateSignal />} />
+          <Route path="/currency-impact" element={<CurrencyImpact />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </AnimatePresence>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
@@ -57,41 +100,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <OnboardingTour />
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Analysis />} />
-                <Route path="/signals" element={<Signals />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/news/saved" element={<SavedNews />} />
-                <Route path="/news/:id" element={<NewsDetail />} />
-                <Route path="/monitoring" element={<Monitoring />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/settings/profile" element={<Settings />} />
-                <Route path="/settings/personal" element={<PersonalInfo />} />
-                <Route path="/settings/documents" element={<Documents />} />
-                <Route path="/settings/security" element={<Security />} />
-                <Route path="/settings/notifications" element={<Notifications />} />
-                <Route path="/settings/appearance" element={<Appearance />} />
-                <Route path="/settings/language" element={<Appearance />} />
-                <Route path="/referrals" element={<Referrals />} />
-                <Route path="/broker" element={<Broker />} />
-                <Route path="/support" element={<Support />} />
-                <Route path="/subscriptions" element={<Subscriptions />} />
-                <Route path="/courses" element={<Courses />} />
-                <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/install" element={<Install />} />
-                <Route path="/performance" element={<Performance />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/broker-rating" element={<BrokerRating />} />
-                <Route path="/link-broker" element={<LinkBroker />} />
-                {/* /analysis removed - Analysis is now at / */}
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/create-signal" element={<CreateSignal />} />
-                <Route path="/currency-impact" element={<CurrencyImpact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            <AnimatedRoutes />
           </BrowserRouter>
         </div>
       </TooltipProvider>
