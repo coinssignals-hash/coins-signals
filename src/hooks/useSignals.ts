@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { format, startOfDay, endOfDay } from 'date-fns';
+import { startOfDay, endOfDay, isBefore } from 'date-fns';
 
 export interface TradingSignal {
   id: string;
@@ -91,7 +91,29 @@ export function useSignals(selectedDate?: string) {
         }
 
         const mappedSignals = (data || []).map(mapDbSignalToTradingSignal);
-        setSignals(mappedSignals);
+        
+        // Auto-deactivate signals from previous days that are still active/pending
+        const today = startOfDay(new Date());
+        const signalsToDeactivate = mappedSignals.filter(
+          (s) => (s.status === 'active' || s.status === 'pending') && isBefore(new Date(s.datetime), today)
+        );
+        
+        if (signalsToDeactivate.length > 0) {
+          const ids = signalsToDeactivate.map((s) => s.id);
+          await supabase
+            .from('trading_signals')
+            .update({ status: 'completed' })
+            .in('id', ids);
+          
+          // Update local state with deactivated status
+          const deactivatedIds = new Set(ids);
+          const updatedSignals = mappedSignals.map((s) =>
+            deactivatedIds.has(s.id) ? { ...s, status: 'completed' as const } : s
+          );
+          setSignals(updatedSignals);
+        } else {
+          setSignals(mappedSignals);
+        }
       } catch (err) {
         console.error('Error fetching signals:', err);
         setError(err instanceof Error ? err.message : 'Error al cargar señales');
