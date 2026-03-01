@@ -37,47 +37,36 @@ export function Header() {
             <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground">
               <Menu className="w-7 h-7" />
             </Button>
-            <span className="text-lg font-bold tracking-wide hidden xs:inline">
-              <span className="text-[hsl(0,70%,40%)]">C</span>
-              <span className="text-[hsl(210,80%,55%)]">o</span>
-              <span className="text-[hsl(210,80%,55%)]">i</span>
-              <span className="text-[hsl(210,80%,55%)]">n</span>
-              <span className="text-[hsl(210,80%,55%)]">s</span>
+            <span className="text-xl font-extrabold tracking-wider hidden xs:inline" style={{ textShadow: '0 0 12px hsl(217 91% 60% / 0.4)' }}>
+              <span className="bg-gradient-to-r from-[hsl(217,91%,65%)] to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
               {' '}
-              <span className="text-[hsl(0,70%,45%)]">S</span>
-              <span className="text-[hsl(210,60%,50%)]">i</span>
-              <span className="text-[hsl(210,60%,50%)]">g</span>
-              <span className="text-[hsl(210,60%,50%)]">n</span>
-              <span className="text-[hsl(210,60%,50%)]">a</span>
-              <span className="text-[hsl(210,60%,50%)]">l</span>
-              <span className="text-[hsl(210,60%,50%)]">s</span>
+              <span className="bg-gradient-to-r from-[hsl(38,95%,55%)] to-[hsl(0,70%,50%)] bg-clip-text text-transparent">Signals</span>
             </span>
           </div>
 
-          {/* Center: circular logo */}
+          {/* Center: circular logo — bigger */}
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
-            <img src={logoImg} alt="Coins Signals" className="h-16 w-auto" />
+            <img src={logoImg} alt="Coins Signals" className="h-20 w-auto" />
           </Link>
 
-          {/* Right: search + bell + analysis icons */}
+          {/* Right: search + bell + analysis icons — brighter */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
               <Search className="w-5 h-5" />
             </Button>
             <NotificationToggle />
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
               <BarChart3 className="w-5 h-5" />
             </Button>
           </div>
         </div>
 
-        {/* Gradient divider line */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-[hsl(217,91%,50%)] via-[hsl(217,91%,60%)] to-[hsl(0,70%,40%)]" />
+        {/* Gradient divider line — gold to blue */}
+        <div className="h-[2px] w-full bg-gradient-to-r from-[hsl(38,95%,50%)] via-[hsl(217,91%,60%)] to-[hsl(280,60%,50%)]" />
 
-        {/* Navigation tabs row */}
-        <nav className="flex items-center justify-center gap-6 px-4 py-2.5">
+        {/* Navigation tabs row — bigger text */}
+        <nav className="flex items-center justify-center gap-8 px-4 py-3">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = location.pathname === item.href;
             const showBadge = item.badgeType === 'news' && newsCount > 0 && !isActive;
 
@@ -88,13 +77,16 @@ export function Header() {
                 onMouseEnter={onMouseEnter(item.href)}
                 onTouchStart={onTouchStart(item.href)}
                 className={cn(
-                  'flex items-center gap-1.5 text-base font-medium transition-colors relative',
+                  'text-lg font-semibold transition-colors relative',
                   isActive
                     ? 'text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 <span>{item.label}</span>
+                {isActive && (
+                  <span className="absolute -bottom-3 left-0 right-0 h-[2px] bg-primary rounded-full" />
+                )}
                 {showBadge && (
                   <span className="absolute -top-1 -right-3 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
                     {newsCount > 99 ? '99+' : newsCount}
