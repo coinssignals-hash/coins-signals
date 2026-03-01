@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
-  TrendingUp, Newspaper, Brain, Menu, Search, Bell,
+  TrendingUp, Newspaper, Menu, Search, Bell,
   ChevronDown, GraduationCap, Building2, BarChart3,
   Gift, MessageCircle, Info, Wallet, BarChart2 } from
 'lucide-react';
@@ -22,8 +22,7 @@ export function Header() {
   const { t } = useTranslation();
 
   const navItems = [
-  { icon: Brain, label: t('nav_ideas'), href: '/', badgeType: null },
-  { icon: BarChart2, label: t('nav_analysis') || 'Análisis', href: '/analysis', badgeType: null },
+  { icon: BarChart2, label: t('nav_analysis') || 'Análisis', href: '/', badgeType: null },
   { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
   { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
   { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' }];
@@ -81,17 +80,12 @@ export function Header() {
                   onTouchStart={onTouchStart(item.href)}
                   className={cn(
                     'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative',
-                    item.href === '/'
-                      ? isActive
-                        ? 'bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md'
-                        : 'bg-gradient-to-r from-primary/20 to-accent/20 text-foreground hover:from-primary/30 hover:to-accent/30 border border-primary/30'
-                      : isActive
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                   )}
                 >
-                  {item.href !== '/' && <Icon className="w-4 h-4" />}
-                  {item.href === '/' && <span className="text-xs">💡</span>}
+                  <Icon className="w-4 h-4" />
                   <span>{item.label}</span>
                   {showBadge && (
                     <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">

@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 // Lazy load all pages
-const Index = lazy(() => import("./pages/Index"));
+// Index page removed - Analysis is now the home page
 const News = lazy(() => import("./pages/News"));
 const SavedNews = lazy(() => import("./pages/SavedNews"));
 const Signals = lazy(() => import("./pages/Signals"));
@@ -59,7 +59,7 @@ const App = () => (
             <OnboardingTour />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Analysis />} />
                 <Route path="/signals" element={<Signals />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/news/saved" element={<SavedNews />} />
@@ -85,7 +85,7 @@ const App = () => (
                 <Route path="/about" element={<About />} />
                 <Route path="/broker-rating" element={<BrokerRating />} />
                 <Route path="/link-broker" element={<LinkBroker />} />
-                <Route path="/analysis" element={<Analysis />} />
+                {/* /analysis removed - Analysis is now at / */}
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/create-signal" element={<CreateSignal />} />
                 <Route path="/currency-impact" element={<CurrencyImpact />} />
