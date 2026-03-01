@@ -331,7 +331,25 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
               </div>
             </div>
-            <span className="text-3xl font-extrabold text-white tracking-wide">{displayPair}</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-3xl font-extrabold text-white tracking-wide">{displayPair}</span>
+              {/* Long/Short position badge */}
+              <div
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider w-fit",
+                  action === "BUY"
+                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                    : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                )}
+              >
+                {action === "BUY" ? (
+                  <TrendingUp className="w-3.5 h-3.5" />
+                ) : (
+                  <TrendingDown className="w-3.5 h-3.5" />
+                )}
+                {action === "BUY" ? "Largo (Long)" : "Corto (Short)"}
+              </div>
+            </div>
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="relative w-[72px] h-[72px]">
