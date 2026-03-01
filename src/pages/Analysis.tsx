@@ -157,6 +157,7 @@ export default function Analysis() {
           symbol={selectedPair}
           loading={loading}
           isRealtimeConnected={isConnected}
+          onSelectPair={setSelectedPair}
         />
 
         {/* Terminal Header Bar */}
