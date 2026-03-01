@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface AutoCloseParams {
   signalId: string;
+  currencyPair: string;
   action: 'BUY' | 'SELL';
   entryPrice: number;
   takeProfit: number;
@@ -15,10 +16,11 @@ type CloseResult = 'tp_hit' | 'sl_hit';
 
 /**
  * Monitors live price and auto-closes a signal when TP or SL is hit.
- * Updates the trading_signals table with closed_price, closed_result, and status='completed'.
+ * Updates the trading_signals table and sends push notifications.
  */
 export function useSignalAutoClose({
   signalId,
+  currencyPair,
   action,
   entryPrice,
   takeProfit,
@@ -47,21 +49,36 @@ export function useSignalAutoClose({
       if (error) {
         console.error('[AutoClose] Failed to close signal:', error);
         closingRef.current = false;
+        return;
       }
+
+      // Send push notification
+      supabase.functions.invoke('signal-closed-notify', {
+        body: {
+          currencyPair,
+          closedResult: result,
+          closedPrice: price,
+          signalId,
+        },
+      }).then(({ error: notifError }) => {
+        if (notifError) {
+          console.error('[AutoClose] Push notification failed:', notifError);
+        } else {
+          console.log('[AutoClose] Push notification sent for', currencyPair, result);
+        }
+      });
     } catch (err) {
       console.error('[AutoClose] Error:', err);
       closingRef.current = false;
     }
-  }, [signalId]);
+  }, [signalId, currencyPair]);
 
   useEffect(() => {
-    // Only monitor active/pending signals
     if (status === 'completed' || status === 'cancelled') return;
     if (!currentPrice || closingRef.current) return;
 
     const isBuy = action === 'BUY';
 
-    // Check TP hit
     if (isBuy && currentPrice >= takeProfit) {
       closeSignal(currentPrice, 'tp_hit');
       return;
@@ -70,8 +87,6 @@ export function useSignalAutoClose({
       closeSignal(currentPrice, 'tp_hit');
       return;
     }
-
-    // Check SL hit
     if (isBuy && currentPrice <= stopLoss) {
       closeSignal(currentPrice, 'sl_hit');
       return;
@@ -82,7 +97,6 @@ export function useSignalAutoClose({
     }
   }, [currentPrice, action, takeProfit, stopLoss, status, closeSignal]);
 
-  // Reset ref when signal changes
   useEffect(() => {
     closingRef.current = false;
   }, [signalId]);

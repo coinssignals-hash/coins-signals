@@ -282,6 +282,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // Auto-close signal when price hits TP or SL
   useSignalAutoClose({
     signalId: signal?.id ?? '',
+    currencyPair,
     action,
     entryPrice,
     takeProfit,
