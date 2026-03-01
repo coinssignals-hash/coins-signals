@@ -7,6 +7,90 @@ const corsHeaders = {
 
 // Polygon.io WebSocket endpoint
 const POLYGON_WS_URL = 'wss://socket.polygon.io';
+const YAHOO_CHART_URL = 'https://query1.finance.yahoo.com/v8/finance/chart';
+
+function mapToYahooSymbol(symbol: string) {
+  if (symbol.includes('/')) {
+    const [base, quote] = symbol.split('/');
+    return `${base}${quote}=X`;
+  }
+
+  if (symbol.includes('BTC') || symbol.includes('ETH') || symbol.includes('USDT')) {
+    return symbol.replace('/', '-');
+  }
+
+  return symbol;
+}
+
+async function fetchYahooPrice(symbol: string) {
+  const yahooSymbol = mapToYahooSymbol(symbol);
+  const yahooUrl = `${YAHOO_CHART_URL}/${encodeURIComponent(yahooSymbol)}?interval=1m&range=1d`;
+
+  const yahooResponse = await fetch(yahooUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; LovableCloud/1.0)',
+      'Accept': 'application/json',
+    },
+  });
+
+  if (yahooResponse.ok) {
+    const yahooData = await yahooResponse.json();
+    const chartResult = yahooData?.chart?.result?.[0];
+    const regularMarketPrice = chartResult?.meta?.regularMarketPrice;
+    const previousClose = chartResult?.meta?.previousClose;
+
+    if (typeof regularMarketPrice === 'number') {
+      return {
+        provider: 'yahoo',
+        symbol,
+        price: regularMarketPrice,
+        timestamp: Date.now(),
+      };
+    }
+
+    if (typeof previousClose === 'number') {
+      return {
+        provider: 'yahoo',
+        symbol,
+        results: [{ c: previousClose }],
+        timestamp: Date.now(),
+      };
+    }
+  }
+
+  const RAPIDAPI_KEY = Deno.env.get('RAPIDAPI_KEY');
+  if (!RAPIDAPI_KEY) {
+    throw new Error(`Yahoo Finance request failed (${yahooResponse.status}) and RAPIDAPI_KEY is not configured`);
+  }
+
+  const rapidUrl = `https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=${encodeURIComponent(yahooSymbol)}`;
+  const rapidResponse = await fetch(rapidUrl, {
+    headers: {
+      'X-RapidAPI-Key': RAPIDAPI_KEY,
+      'X-RapidAPI-Host': 'apidojo-yahoo-finance-v1.p.rapidapi.com',
+    },
+  });
+
+  if (!rapidResponse.ok) {
+    const rapidErrorText = await rapidResponse.text();
+    throw new Error(`Yahoo RapidAPI request failed (${rapidResponse.status}): ${rapidErrorText}`);
+  }
+
+  const rapidData = await rapidResponse.json();
+  const rapidQuote = rapidData?.quoteResponse?.result?.[0];
+  const rapidPrice = rapidQuote?.regularMarketPrice;
+
+  if (typeof rapidPrice === 'number') {
+    return {
+      provider: 'yahoo_rapidapi',
+      symbol,
+      price: rapidPrice,
+      timestamp: Date.now(),
+    };
+  }
+
+  throw new Error('Yahoo Finance returned no usable price');
+}
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -201,6 +285,18 @@ serve(async (req) => {
     const data = await response.json();
 
     console.log('Polygon REST response:', data);
+
+    const polygonError = String(data?.error || '').toLowerCase();
+    const polygonUnauthorized = data?.status === 'ERROR' &&
+      (polygonError.includes('unknown api key') || polygonError.includes('not authorized'));
+
+    if (polygonUnauthorized) {
+      console.log('Polygon unauthorized. Falling back to Yahoo Finance for:', symbol);
+      const yahooFallback = await fetchYahooPrice(symbol);
+      return new Response(JSON.stringify(yahooFallback), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
