@@ -1,5 +1,5 @@
-import { Activity, Clock, TrendingUp, TrendingDown, BarChart2, Zap, ChevronRight } from 'lucide-react';
-import { useMemo } from 'react';
+import { Activity, Clock, TrendingUp, TrendingDown, BarChart2, Zap, ChevronRight, ChevronDown } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useMultiPairPrices, MultiPairQuote } from '@/hooks/useMultiPairPrices';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +55,7 @@ export function HeroDashboard({
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
   const { quotes } = useMultiPairPrices();
+  const [marketExpanded, setMarketExpanded] = useState(true);
 
   const utcTime = new Date().toLocaleTimeString('es-ES', {
     hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
@@ -155,20 +156,28 @@ export function HeroDashboard({
 
       {/* Market Overview - Multiple Pairs */}
       <div className="bg-[#0d1829]/80 border border-cyan-900/20 rounded-xl overflow-hidden">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-cyan-900/15">
+        <button
+          onClick={() => setMarketExpanded(!marketExpanded)}
+          className="w-full flex items-center justify-between px-3 py-2 border-b border-cyan-900/15"
+        >
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Mercado Global</span>
-          <span className="text-[10px] text-gray-600">{otherPairs.filter(q => !q.loading).length} pares</span>
-        </div>
-        <div className="divide-y divide-cyan-900/10">
-          {otherPairs.map((pair) => (
-            <MarketPairRow
-              key={pair.symbol}
-              pair={pair}
-              isSelected={pair.symbol === symbol}
-              onClick={() => onSelectPair?.(pair.symbol)}
-            />
-          ))}
-        </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-gray-600">{otherPairs.filter(q => !q.loading).length} pares</span>
+            <ChevronDown className={cn('w-3.5 h-3.5 text-gray-500 transition-transform', marketExpanded && 'rotate-180')} />
+          </div>
+        </button>
+        {marketExpanded && (
+          <div className="divide-y divide-cyan-900/10">
+            {otherPairs.map((pair) => (
+              <MarketPairRow
+                key={pair.symbol}
+                pair={pair}
+                isSelected={pair.symbol === symbol}
+                onClick={() => onSelectPair?.(pair.symbol)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
