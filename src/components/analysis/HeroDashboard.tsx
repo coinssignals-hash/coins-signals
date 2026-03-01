@@ -166,18 +166,25 @@ export function HeroDashboard({
             <ChevronDown className={cn('w-3.5 h-3.5 text-gray-500 transition-transform', marketExpanded && 'rotate-180')} />
           </div>
         </button>
-        {marketExpanded && (
-          <div className="divide-y divide-cyan-900/10">
-            {otherPairs.map((pair) => (
-              <MarketPairRow
-                key={pair.symbol}
-                pair={pair}
-                isSelected={pair.symbol === symbol}
-                onClick={() => onSelectPair?.(pair.symbol)}
-              />
-            ))}
+        <div
+          className={cn(
+            'grid transition-all duration-300 ease-in-out',
+            marketExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          )}
+        >
+          <div className="overflow-hidden">
+            <div className="divide-y divide-cyan-900/10">
+              {otherPairs.map((pair) => (
+                <MarketPairRow
+                  key={pair.symbol}
+                  pair={pair}
+                  isSelected={pair.symbol === symbol}
+                  onClick={() => onSelectPair?.(pair.symbol)}
+                />
+              ))}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
