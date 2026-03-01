@@ -15,8 +15,7 @@ export function BottomNav() {
   const { t } = useTranslation();
 
   const navItems = [
-    { icon: null, label: t('nav_ideas'), href: '/', badgeType: null },
-    { icon: BarChart2, label: t('nav_analysis') || 'Análisis', href: '/analysis', badgeType: null },
+    { icon: BarChart2, label: t('nav_analysis') || 'Análisis', href: '/', badgeType: null },
     { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
     { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
@@ -55,7 +54,7 @@ export function BottomNav() {
               )}
             >
               <div className="relative">
-                {Icon && <Icon className={cn('w-5 h-5', isActive && 'text-primary')} />}
+                <Icon className={cn('w-5 h-5', isActive && 'text-primary')} />
                 {showBadge && (
                   <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
                     {badgeCount > 99 ? '99+' : badgeCount}
