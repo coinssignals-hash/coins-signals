@@ -683,7 +683,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               />
               <button
                 onClick={() => setChartFullscreen(true)}
-                className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 opacity-0 group-hover/chart:opacity-100 transition-opacity z-10"
+                className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 sm:opacity-0 sm:group-hover/chart:opacity-100 transition-opacity z-10"
                 title="Pantalla completa"
               >
                 <Maximize2 className="w-4 h-4" />
