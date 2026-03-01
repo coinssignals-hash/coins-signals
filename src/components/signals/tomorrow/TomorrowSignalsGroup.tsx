@@ -11,7 +11,7 @@ export function TomorrowSignalsGroup({ signals }: TomorrowSignalsGroupProps) {
   if (signals.length === 0) {
     return (
       <section className="space-y-3">
-        <div className="flex items-center gap-2 px-3 py-2.5 sticky top-[108px] z-10 backdrop-blur-md rounded-lg bg-amber-500/10 border border-amber-500/20">
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
           <div className="flex items-center justify-center w-7 h-7 rounded-md bg-amber-500/20 text-amber-400">
             <Clock className="w-4 h-4" />
           </div>
@@ -27,7 +27,7 @@ export function TomorrowSignalsGroup({ signals }: TomorrowSignalsGroupProps) {
 
   return (
     <section className="space-y-3">
-      <div className="flex items-center gap-2 px-3 py-2.5 sticky top-[108px] z-10 backdrop-blur-md rounded-lg bg-amber-500/10 border border-amber-500/20">
+      <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
         <div className="flex items-center justify-center w-7 h-7 rounded-md bg-amber-500/20 text-amber-400">
           <Clock className="w-4 h-4" />
         </div>
