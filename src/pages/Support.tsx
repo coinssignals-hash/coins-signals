@@ -22,7 +22,7 @@ export default function Support() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-6">
+      <main className="container py-6 max-w-2xl mx-auto">
         <div className="mb-6">
           <span className="text-xs text-muted-foreground">ID # 0572564</span>
           <h1 className="text-xl font-bold text-foreground">Contacto y Soporte</h1>

@@ -147,7 +147,7 @@ export default function Courses() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-6">
+      <main className="container py-6 max-w-2xl mx-auto">
         {/* Hero Section */}
         <div className="flex items-center gap-4 mb-4">
           <Link to="/">

@@ -34,7 +34,7 @@ const SavedNews = () => {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-4 space-y-6 max-w-4xl">
+      <main className="container py-4 space-y-6 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

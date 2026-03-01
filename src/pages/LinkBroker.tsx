@@ -234,7 +234,7 @@ export default function LinkBroker() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
       <Header />
       
-      <main className="container max-w-lg mx-auto px-4 py-4">
+      <main className="container max-w-2xl mx-auto px-4 py-4">
         {/* Back button and header */}
         <div className="flex items-start gap-3 mb-6">
           <button 

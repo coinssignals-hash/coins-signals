@@ -227,7 +227,7 @@ export default function LessonDetail() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Header />
       
-      <main className="container py-4">
+      <main className="container py-4 max-w-2xl mx-auto">
         {/* Back navigation */}
         <div className="flex items-center gap-2 mb-4">
           <Link to="/courses">
