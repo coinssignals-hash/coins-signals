@@ -137,6 +137,8 @@ type TranslationKeys = {
   signal_neutral: string;
   signal_long: string;
   signal_short: string;
+  signal_reached: string;
+  signal_expired: string;
 
   // Index / Analysis page
   index_timeframe_5min: string;
@@ -476,6 +478,8 @@ const es: TranslationKeys = {
   signal_neutral: 'Neutral',
   signal_long: 'Largo (Long)',
   signal_short: 'Corto (Short)',
+  signal_reached: 'alcanzado',
+  signal_expired: 'Señal expirada — día anterior',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
@@ -807,6 +811,8 @@ const en: TranslationKeys = {
   signal_neutral: 'Neutral',
   signal_long: 'Long',
   signal_short: 'Short',
+  signal_reached: 'reached',
+  signal_expired: 'Signal expired — previous day',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
@@ -1137,6 +1143,8 @@ const pt: TranslationKeys = {
   signal_neutral: 'Neutro',
   signal_long: 'Longo (Long)',
   signal_short: 'Curto (Short)',
+  signal_reached: 'atingido',
+  signal_expired: 'Sinal expirado — dia anterior',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
@@ -1467,6 +1475,8 @@ const fr: TranslationKeys = {
   signal_neutral: 'Neutre',
   signal_long: 'Long',
   signal_short: 'Court (Short)',
+  signal_reached: 'atteint',
+  signal_expired: 'Signal expiré — jour précédent',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
