@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,6 +22,30 @@ serve(async (req) => {
       );
     }
 
+    const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+    const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+
+    if (!vapidPublicKey || !vapidPrivateKey) {
+      console.error('VAPID keys not configured');
+      return new Response(
+        JSON.stringify({ error: 'VAPID keys not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Ensure keys are URL-safe base64 without padding
+    const cleanPublic = vapidPublicKey.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_').trim();
+    const cleanPrivate = vapidPrivateKey.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_').trim();
+
+    console.log(`[DEBUG] Public key length: ${cleanPublic.length}, starts: ${cleanPublic.substring(0, 10)}`);
+    console.log(`[DEBUG] Private key length: ${cleanPrivate.length}`);
+
+    webpush.setVapidDetails(
+      'mailto:notifications@ecosignal.app',
+      cleanPublic,
+      cleanPrivate
+    );
+
     const isTP = closedResult === 'tp_hit';
     const emoji = isTP ? '✅' : '❌';
     const resultLabel = isTP ? 'Take Profit' : 'Stop Loss';
@@ -28,7 +53,6 @@ serve(async (req) => {
     const title = `${emoji} ${currencyPair} — ${resultLabel}`;
     const body = `La señal ${currencyPair} alcanzó el ${resultLabel} a ${Number(closedPrice).toFixed(3)}`;
 
-    // Get all push subscriptions and send notifications
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -59,26 +83,22 @@ serve(async (req) => {
 
     for (const sub of subscriptions || []) {
       try {
-        const response = await fetch(sub.endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'TTL': '86400',
+        await webpush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: { p256dh: sub.p256dh, auth: sub.auth },
           },
-          body: notificationPayload,
-        });
-
-        if (response.ok) {
-          results.success++;
-        } else {
-          results.failed++;
-          // Remove invalid subscriptions
-          if (response.status === 410 || response.status === 404) {
-            await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
-          }
-        }
-      } catch {
+          notificationPayload
+        );
+        results.success++;
+      } catch (err: any) {
+        console.error(`Push failed for ${sub.endpoint}:`, err?.statusCode, err?.body);
         results.failed++;
+        // Remove expired/invalid subscriptions
+        if (err?.statusCode === 410 || err?.statusCode === 404) {
+          await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+          console.log(`Removed expired subscription: ${sub.endpoint}`);
+        }
       }
     }
 
