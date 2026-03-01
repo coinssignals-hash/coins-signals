@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import logoImg from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, Search, Bell,
@@ -61,9 +62,8 @@ export function Header() {
             <Menu className="w-5 h-5" />
           </Button>
 
-          <Link to="/" className="flex items-center gap-1" onMouseEnter={onMouseEnter('/')}>
-            <span className="text-xl font-bold text-white">Coins</span>
-            <span className="text-xl font-bold text-accent border-solid rounded-lg shadow-md">$ignals</span>
+          <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
+            <img src={logoImg} alt="Coins Signals" className="h-14 w-auto" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-1">
@@ -80,20 +80,20 @@ export function Header() {
                   onTouchStart={onTouchStart(item.href)}
                   className={cn(
                     'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative',
-                    isActive ?
-                    'bg-primary/10 text-primary' :
-                    'text-muted-foreground hover:text-foreground hover:bg-secondary'
-                  )}>
-
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                  )}
+                >
                   <Icon className="w-4 h-4" />
                   <span>{item.label}</span>
-                  {showBadge &&
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
+                  {showBadge && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
                       {newsCount > 99 ? '99+' : newsCount}
                     </span>
-                  }
-                </Link>);
-
+                  )}
+                </Link>
+              );
             })}
 
             <div className="relative" ref={moreMenuRef}>
