@@ -16,8 +16,11 @@ import {
   RotateCcw,
   Info,
   Download,
-  Share2 } from
+  Share2,
+  Maximize2,
+  X } from
 "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
 import { useSignalRisk } from "@/hooks/useSignalRisk";
@@ -239,6 +242,7 @@ function PriceAge({ timestamp }: { timestamp: number }) {
 // --- Main Card ---
 export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
+  const [chartFullscreen, setChartFullscreen] = useState(false);
   const { t, language } = useTranslation();
 
   const DATE_LOCALES = { es, en: enUS, pt: ptBR, fr };
@@ -667,7 +671,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* Candlestick Chart - Same as Analysis section */}
-            <div className="mx-3 mb-3 rounded-lg overflow-hidden">
+            <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
               <CandlestickChart
                 data={previousDayData?.candles || []}
                 resistance={previousDayData?.resistance ?? 0}
@@ -677,7 +681,40 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 isRealtimeConnected={isConnected}
                 previousDayDate={previousDayData?.date}
               />
+              <button
+                onClick={() => setChartFullscreen(true)}
+                className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 opacity-0 group-hover/chart:opacity-100 transition-opacity z-10"
+                title="Pantalla completa"
+              >
+                <Maximize2 className="w-4 h-4" />
+              </button>
             </div>
+
+            {/* Fullscreen Chart Dialog */}
+            <Dialog open={chartFullscreen} onOpenChange={setChartFullscreen}>
+              <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden">
+                <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700/50">
+                    <span className="text-sm font-semibold text-slate-200">{signal?.currencyPair}</span>
+                    <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded-md hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <CandlestickChart
+                      data={previousDayData?.candles || []}
+                      resistance={previousDayData?.resistance ?? 0}
+                      support={previousDayData?.support ?? 0}
+                      loading={previousDayLoading}
+                      realtimePrice={quote?.price}
+                      isRealtimeConnected={isConnected}
+                      previousDayDate={previousDayData?.date}
+                    />
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             {/* Market Sentiment Dashboard */}
             <MarketSentimentDashboard data={sentimentData} loading={sentimentLoading} />
