@@ -25,6 +25,7 @@ import { useSignalMarketSentiment } from "@/hooks/useSignalMarketSentiment";
 import { MarketSentimentDashboard } from "@/components/signals/MarketSentimentDashboard";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
+import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
@@ -234,7 +235,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
   // Build polygon symbol for REST price
   const symbol = `${baseCurrency}/${quoteCurrency}`;
-  const { quote, loading: priceLoading } = useRestPrice(symbol, 30_000);
+  const isCompleted = status === 'completed' || status === 'cancelled';
+  const { quote, loading: priceLoading } = useRestPrice(symbol, isCompleted ? 0 : 30_000);
   const isConnected = !!quote;
 
   // AI strategy (fetched in background when card expands)
@@ -277,6 +279,17 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     expanded
   );
 
+  // Auto-close signal when price hits TP or SL
+  useSignalAutoClose({
+    signalId: signal?.id ?? '',
+    action,
+    entryPrice,
+    takeProfit,
+    stopLoss,
+    status,
+    currentPrice: priceDiff.hasData ? priceDiff.currentPrice : null,
+  });
+
   // Candlestick chart data (same as Analysis section)
   const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(symbol);
 
@@ -287,6 +300,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
+      {/* Completed overlay */}
+      {status === 'completed' && (
+        <div className="absolute inset-0 z-40 pointer-events-none rounded-xl" style={{ background: 'hsla(0, 0%, 0%, 0.35)' }} />
+      )}
       <div
         className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
         style={{
@@ -320,7 +337,21 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           </span>
         </div>
 
-        {/* Upper section - currency pair */}
+        {/* Completed result banner */}
+        {status === 'completed' && signal?.closedResult && (
+          <div className={cn(
+            "relative z-50 mx-4 mb-2 px-3 py-2 rounded-lg text-center text-xs font-bold uppercase tracking-wider border",
+            signal.closedResult === 'tp_hit'
+              ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+              : "bg-rose-500/20 text-rose-400 border-rose-500/30"
+          )}>
+            {signal.closedResult === 'tp_hit'
+              ? `✅ Take Profit alcanzado — ${(signal.closedPrice ?? 0).toFixed(3)}`
+              : `❌ Stop Loss alcanzado — ${(signal.closedPrice ?? 0).toFixed(3)}`
+            }
+          </div>
+        )}
+
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative w-20 h-16 flex-shrink-0">
