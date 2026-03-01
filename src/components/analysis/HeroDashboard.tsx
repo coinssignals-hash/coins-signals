@@ -15,7 +15,7 @@ interface HeroDashboardProps {
   onSelectPair?: (pair: string) => void;
 }
 
-function getActiveSession(): { name: string; emoji: string; color: string } {
+function getActiveSession(): {name: string;emoji: string;color: string;} {
   const utcHour = new Date().getUTCHours();
   if (utcHour >= 0 && utcHour < 7) return { name: 'Asia', emoji: '🌏', color: 'text-amber-400' };
   if (utcHour >= 7 && utcHour < 12) return { name: 'Europa', emoji: '🌍', color: 'text-cyan-400' };
@@ -38,7 +38,7 @@ const pairFlags: Record<string, string> = {
   'USD/JPY': '🇺🇸🇯🇵',
   'AUD/USD': '🇦🇺🇺🇸',
   'USD/CAD': '🇺🇸🇨🇦',
-  'USD/CHF': '🇺🇸🇨🇭',
+  'USD/CHF': '🇺🇸🇨🇭'
 };
 
 function formatPrice(price: number): string {
@@ -48,7 +48,7 @@ function formatPrice(price: number): string {
 }
 
 export function HeroDashboard({
-  currentPrice, change, changePercent, high, low, symbol, loading, isRealtimeConnected, onSelectPair,
+  currentPrice, change, changePercent, high, low, symbol, loading, isRealtimeConnected, onSelectPair
 }: HeroDashboardProps) {
   const session = useMemo(() => getActiveSession(), []);
   const greeting = useMemo(() => getGreeting(), []);
@@ -58,7 +58,7 @@ export function HeroDashboard({
   const [marketExpanded, setMarketExpanded] = useState(true);
 
   const utcTime = new Date().toLocaleTimeString('es-ES', {
-    hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
+    hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
   });
 
   const spread = useMemo(() => {
@@ -66,7 +66,7 @@ export function HeroDashboard({
   }, [currentPrice]);
 
   // Separate active pair from other pairs
-  const otherPairs = quotes.filter(q => q.symbol !== symbol);
+  const otherPairs = quotes.filter((q) => q.symbol !== symbol);
 
   return (
     <div className="space-y-3">
@@ -85,17 +85,17 @@ export function HeroDashboard({
               </p>
             </div>
             <div className="flex items-center gap-1.5">
-              {isRealtimeConnected ? (
-                <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">
+              {isRealtimeConnected ?
+              <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Live
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-500/10 border border-gray-500/20 px-2 py-1 rounded-full">
+                </span> :
+
+              <span className="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-500/10 border border-gray-500/20 px-2 py-1 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
                   Offline
                 </span>
-              )}
+              }
             </div>
           </div>
 
@@ -138,113 +138,58 @@ export function HeroDashboard({
           icon={<Activity className="w-3.5 h-3.5 text-cyan-400" />}
           label="Volatilidad"
           value={`${(Math.abs(changePercent) * 2.5).toFixed(1)}%`}
-          trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'}
-        />
+          trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'} />
+
         <QuickStatCard
           icon={<BarChart2 className="w-3.5 h-3.5 text-blue-400" />}
           label="Rango Diario"
           value={`${((high - low) * (currentPrice < 10 ? 10000 : 100)).toFixed(0)} pips`}
-          trend="neutral"
-        />
+          trend="neutral" />
+
         <QuickStatCard
           icon={<Zap className="w-3.5 h-3.5 text-amber-400" />}
           label="Momentum"
           value={isPositive ? 'Alcista' : 'Bajista'}
-          trend={isPositive ? 'bullish' : 'bearish'}
-        />
+          trend={isPositive ? 'bullish' : 'bearish'} />
+
       </div>
 
       {/* Market Overview - Multiple Pairs */}
-      <div className="bg-[#0d1829]/80 border border-cyan-900/20 rounded-xl overflow-hidden">
-        <button
-          onClick={() => setMarketExpanded(!marketExpanded)}
-          className="w-full flex items-center justify-between px-3 py-2 border-b border-cyan-900/15"
-        >
-          <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Mercado Global</span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-gray-600">{otherPairs.filter(q => !q.loading).length} pares</span>
-            <ChevronDown className={cn('w-3.5 h-3.5 text-gray-500 transition-transform', marketExpanded && 'rotate-180')} />
-          </div>
-        </button>
-        <div
-          className={cn(
-            'grid transition-all duration-300 ease-in-out',
-            marketExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-          )}
-        >
-          <div className="overflow-hidden">
-            <div className="divide-y divide-cyan-900/10">
-              {otherPairs.map((pair) => (
-                <MarketPairRow
-                  key={pair.symbol}
-                  pair={pair}
-                  isSelected={pair.symbol === symbol}
-                  onClick={() => onSelectPair?.(pair.symbol)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>);
+
 }
 
-function generateSparklinePoints(price: number, changePercent: number): number[] {
-  const steps = 12;
-  const points: number[] = [];
-  const seed = Math.abs(price * 1000) % 100;
-  const endOffset = changePercent / 100;
-  for (let i = 0; i <= steps; i++) {
-    const progress = i / steps;
-    const trend = progress * endOffset;
-    const noise = Math.sin(seed + i * 1.7) * 0.003 + Math.cos(seed * 0.5 + i * 2.3) * 0.002;
-    points.push(1 + trend + noise);
-  }
-  return points;
-}
+function MarketPairRow({ pair, isSelected, onClick
 
-function MiniSparkline({ points, positive }: { points: number[]; positive: boolean }) {
-  const w = 48, h = 20;
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const range = max - min || 0.001;
-  const coords = points.map((p, i) => {
-    const x = (i / (points.length - 1)) * w;
-    const y = h - ((p - min) / range) * h;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-  const pathD = `M${coords.join(' L')}`;
-  const stroke = positive ? 'hsl(142,70%,45%)' : 'hsl(0,70%,50%)';
 
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0">
-      <defs>
-        <linearGradient id={`sg-${positive ? 'g' : 'r'}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={stroke} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={stroke} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path
-        d={`${pathD} L${w},${h} L0,${h} Z`}
-        fill={`url(#sg-${positive ? 'g' : 'r'})`}
-      />
-      <path d={pathD} fill="none" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
-function MarketPairRow({ pair, isSelected, onClick }: {
-  pair: MultiPairQuote;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
+}: {pair: MultiPairQuote;isSelected: boolean;onClick: () => void;}) {
   const isPositive = pair.changePercent >= 0;
   const flags = pairFlags[pair.symbol] || '';
-  const sparkPoints = useMemo(
-    () => generateSparklinePoints(pair.price, pair.changePercent),
-    [pair.price, pair.changePercent]
-  );
 
   return (
     <button
@@ -252,43 +197,42 @@ function MarketPairRow({ pair, isSelected, onClick }: {
       className={cn(
         'w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors text-left',
         isSelected ? 'bg-cyan-500/10' : 'hover:bg-[#0a1628]/60 active:bg-cyan-500/5'
-      )}
-    >
+      )}>
+
       <span className="text-sm">{flags}</span>
       <div className="flex-1 min-w-0">
         <span className="text-xs font-medium text-white/80">{pair.symbol}</span>
       </div>
       <div className="text-right flex items-center gap-2">
-        {!pair.loading && <MiniSparkline points={sparkPoints} positive={isPositive} />}
         <span className="text-xs font-mono-numbers text-white/70">
           {pair.loading ? '---' : formatPrice(pair.price)}
         </span>
         <span className={cn(
           'text-[10px] font-bold font-mono-numbers px-1.5 py-0.5 rounded-md min-w-[52px] text-center',
-          isPositive
-            ? 'text-emerald-400 bg-emerald-500/10'
-            : 'text-red-400 bg-red-500/10'
+          isPositive ?
+          'text-emerald-400 bg-emerald-500/10' :
+          'text-red-400 bg-red-500/10'
         )}>
           {pair.loading ? '...' : `${isPositive ? '+' : ''}${pair.changePercent.toFixed(2)}%`}
         </span>
         <ChevronRight className="w-3 h-3 text-gray-600" />
       </div>
-    </button>
-  );
+    </button>);
+
 }
 
-function QuickStatCard({ icon, label, value, trend }: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  trend: 'high' | 'low' | 'neutral' | 'bullish' | 'bearish';
-}) {
+function QuickStatCard({ icon, label, value, trend
+
+
+
+
+}: {icon: React.ReactNode;label: string;value: string;trend: 'high' | 'low' | 'neutral' | 'bullish' | 'bearish';}) {
   const trendColors: Record<string, string> = {
     high: 'text-amber-400',
     low: 'text-gray-400',
     neutral: 'text-cyan-400',
     bullish: 'text-emerald-400',
-    bearish: 'text-red-400',
+    bearish: 'text-red-400'
   };
 
   return (
@@ -300,6 +244,6 @@ function QuickStatCard({ icon, label, value, trend }: {
       <span className={`text-sm font-bold font-mono-numbers ${trendColors[trend]}`}>
         {value}
       </span>
-    </div>
-  );
+    </div>);
+
 }
