@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { useTechnicalLevels } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
-import { AIRegenerateButton } from './AIRegenerateButton';
+
 import { AIRefreshOverlay } from './AIRefreshOverlay';
 import { useTranslation } from '@/i18n/LanguageContext';
 
@@ -115,13 +115,6 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice, isRealtim
               <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
             )}
           </h3>
-          <AIRegenerateButton 
-            onClick={handleRegenerateWithAI} 
-            isLoading={isAILoading}
-            showLabel={false}
-            size="icon"
-            className="h-7 w-7"
-          />
         </div>
         
         <div className="space-y-4 text-sm">

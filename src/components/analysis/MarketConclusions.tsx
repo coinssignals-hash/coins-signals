@@ -4,7 +4,7 @@ import { ChevronDown, Loader2 } from 'lucide-react';
 import { useMarketConclusions } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
-import { AIRegenerateButton } from './AIRegenerateButton';
+
 import { AIRefreshOverlay } from './AIRefreshOverlay';
 import { useTranslation } from '@/i18n/LanguageContext';
 
@@ -132,14 +132,6 @@ export function MarketConclusions({ symbol, currentPrice, realtimePrice, isRealt
           )}
         </div>
         <div className="flex items-center gap-2">
-          <AIRegenerateButton 
-            onClick={(e) => { e.stopPropagation(); handleRegenerateWithAI(); }} 
-            isLoading={isAILoading}
-            showLabel={false}
-            size="icon"
-            className="h-7 w-7"
-          />
-          <ChevronDown className={`w-5 h-5 text-cyan-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </CollapsibleTrigger>
       
