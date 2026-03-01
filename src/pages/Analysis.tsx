@@ -34,6 +34,7 @@ import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
 import { RiskRewardCalculator } from '@/components/analysis/RiskRewardCalculator';
 import { ATRChart } from '@/components/analysis/ATRChart';
+import { HeroDashboard } from '@/components/analysis/HeroDashboard';
 import { ADXChart } from '@/components/analysis/ADXChart';
 import { IchimokuChart } from '@/components/analysis/IchimokuChart';
 import { useMarketData } from '@/hooks/useMarketData';
@@ -146,6 +147,18 @@ export default function Analysis() {
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
       <main className="container py-3 px-2 sm:px-4 max-w-5xl mx-auto space-y-3">
+        {/* Hero Dashboard Summary */}
+        <HeroDashboard
+          currentPrice={marketStats.currentPrice}
+          change={marketStats.change}
+          changePercent={marketStats.changePercent}
+          high={marketStats.high}
+          low={marketStats.low}
+          symbol={selectedPair}
+          loading={loading}
+          isRealtimeConnected={isConnected}
+        />
+
         {/* Terminal Header Bar */}
         <div className="flex items-center gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-xl p-2.5">
           <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[160px]" />
