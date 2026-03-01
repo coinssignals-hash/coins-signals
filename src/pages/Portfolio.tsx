@@ -193,7 +193,7 @@ export default function Portfolio() {
         )}
 
         {/* Summary Cards */}
-        <StaggerList className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <StaggerList className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 items-stretch auto-rows-fr">
           <AnimatedSummaryCard
             title={t('portfolio_equity')}
             value={summary.total_equity}
@@ -454,21 +454,21 @@ function AnimatedSummaryCard({
   
   return (
     <div className={cn(
-      "bg-slate-800/50 rounded-xl p-2.5 border transition-all duration-300",
+      "bg-slate-800/50 rounded-xl p-2.5 border transition-all duration-300 h-full min-h-[72px]",
       flash === 'up' && "border-emerald-500/50 bg-emerald-500/10",
       flash === 'down' && "border-red-500/50 bg-red-500/10",
       !flash && "border-slate-700/50"
     )}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-slate-400">
+      <div className="flex h-full flex-col justify-between gap-1">
+        <div className="flex items-center gap-1.5 text-slate-400 min-w-0">
           {icon}
-          <span className="text-[10px]">{title}</span>
+          <span className="text-[10px] leading-none truncate">{title}</span>
         </div>
         {loading ? (
-          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-5 w-20 self-end" />
         ) : (
           <span className={cn(
-            "text-sm font-bold transition-colors duration-300",
+            "text-sm font-bold transition-colors duration-300 text-right leading-none tabular-nums truncate",
             flash === 'up' && "text-emerald-400",
             flash === 'down' && "text-red-400",
             !flash && valueColor
