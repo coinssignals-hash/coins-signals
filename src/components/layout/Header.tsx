@@ -22,7 +22,7 @@ export function Header() {
   const { t } = useTranslation();
 
   const navItems = [
-  { icon: BarChart2, label: t('nav_analysis') || 'Análisis', href: '/', badgeType: null },
+  { icon: BarChart2, label: t('nav_ideas'), href: '/', badgeType: null },
   { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
   { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
   { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' }];
