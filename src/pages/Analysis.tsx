@@ -142,7 +142,7 @@ export default function Analysis() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
       <Header />
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 

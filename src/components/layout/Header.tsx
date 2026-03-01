@@ -55,14 +55,14 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm">
         <div className="container flex h-14 items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)}>
             <Menu className="w-5 h-5" />
           </Button>
 
           <Link to="/" className="flex items-center gap-1" onMouseEnter={onMouseEnter('/')}>
-            <span className="text-xl font-bold text-primary">Coins</span>
+            <span className="text-xl font-bold text-white">Coins</span>
             <span className="text-xl font-bold text-accent">$ignals</span>
           </Link>
           

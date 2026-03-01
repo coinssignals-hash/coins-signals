@@ -34,7 +34,7 @@ export function BottomNav() {
   };
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-card border-t border-border">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-t border-primary/20">
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
           const Icon = item.icon;
