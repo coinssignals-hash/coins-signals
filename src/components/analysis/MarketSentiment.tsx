@@ -4,7 +4,7 @@ import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useMarketSentiment } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
-import { AIRegenerateButton } from './AIRegenerateButton';
+
 import { AIRefreshOverlay } from './AIRefreshOverlay';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { cn } from '@/lib/utils';
@@ -127,9 +127,6 @@ export function MarketSentiment({
       <div className="p-4 relative overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-semibold text-lg">{t('analysis_market_sentiment')}</h3>
-          <AIRegenerateButton
-            onClick={handleRegenerateWithAI}
-            isLoading={isAILoading} />
         </div>
 
         {aiSentiment &&

@@ -5,7 +5,7 @@ import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import { AnalysisError } from './AnalysisError';
-import { AIRegenerateButton } from './AIRegenerateButton';
+
 import { AIRefreshOverlay } from './AIRefreshOverlay';
 import { useTranslation } from '@/i18n/LanguageContext';
 
@@ -122,13 +122,6 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice, isRealtim
                 <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">IA</span>
               )}
             </h3>
-            <AIRegenerateButton 
-              onClick={handleRegenerateWithAI} 
-              isLoading={isAILoading}
-              showLabel={false}
-              size="icon"
-              className="h-7 w-7"
-            />
           </div>
           <div className="flex items-center gap-2">
             <span className={`flex items-center gap-1 ${trendColor}`}>
