@@ -18,6 +18,7 @@ import {
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageTransition } from '@/components/layout/PageTransition';
+import { StaggerList } from '@/components/layout/StaggerList';
 import { usePortfolio, AccountData, Position } from '@/hooks/usePortfolio';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -192,7 +193,7 @@ export default function Portfolio() {
         )}
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        <StaggerList className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <AnimatedSummaryCard
             title={t('portfolio_equity')}
             value={summary.total_equity}
@@ -222,7 +223,7 @@ export default function Portfolio() {
             icon={<PieChartIcon className="w-5 h-5" />}
             loading={loading}
           />
-        </div>
+        </StaggerList>
 
         {/* History Chart */}
         {!loading && accounts.length > 0 && (
@@ -343,7 +344,7 @@ export default function Portfolio() {
         )}
 
         {/* Account Cards */}
-        <div className="space-y-4">
+        <StaggerList className="space-y-4">
           {loading ? (
             Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
@@ -362,7 +363,7 @@ export default function Portfolio() {
               />
             ))
           )}
-        </div>
+        </StaggerList>
 
         {/* All Positions Section */}
         {!loading && allPositions.length > 0 && (
