@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
+import { BottomNav } from '@/components/layout/BottomNav';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { StaggerList } from '@/components/layout/StaggerList';
 import { DateTabs } from '@/components/news/DateTabs';
@@ -628,7 +629,7 @@ const News = () => {
   return (
     <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
-      <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
+      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
       
       <main className="px-4 py-4 space-y-4">
@@ -826,6 +827,7 @@ const News = () => {
           }
       </main>
       </div>
+      <BottomNav />
     </div>
     </PageTransition>);
 
