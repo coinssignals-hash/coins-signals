@@ -86,7 +86,7 @@ export function Header() {
                       : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                   )}
                 >
-                  <Icon className="w-4 h-4" />
+                  {item.href !== '/' && <Icon className="w-4 h-4" />}
                   <span>{item.label}</span>
                   {showBadge && (
                     <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
