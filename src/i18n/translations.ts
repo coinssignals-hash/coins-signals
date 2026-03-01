@@ -135,6 +135,8 @@ type TranslationKeys = {
   signal_positive: string;
   signal_negative: string;
   signal_neutral: string;
+  signal_long: string;
+  signal_short: string;
 
   // Index / Analysis page
   index_timeframe_5min: string;
@@ -472,6 +474,8 @@ const es: TranslationKeys = {
   signal_positive: 'Positivo',
   signal_negative: 'Negativo',
   signal_neutral: 'Neutral',
+  signal_long: 'Largo (Long)',
+  signal_short: 'Corto (Short)',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
@@ -801,6 +805,8 @@ const en: TranslationKeys = {
   signal_positive: 'Positive',
   signal_negative: 'Negative',
   signal_neutral: 'Neutral',
+  signal_long: 'Long',
+  signal_short: 'Short',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
@@ -1129,6 +1135,8 @@ const pt: TranslationKeys = {
   signal_positive: 'Positivo',
   signal_negative: 'Negativo',
   signal_neutral: 'Neutro',
+  signal_long: 'Longo (Long)',
+  signal_short: 'Curto (Short)',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',
@@ -1457,6 +1465,8 @@ const fr: TranslationKeys = {
   signal_positive: 'Positif',
   signal_negative: 'Négatif',
   signal_neutral: 'Neutre',
+  signal_long: 'Long',
+  signal_short: 'Court (Short)',
 
   index_timeframe_5min: '5 Min',
   index_timeframe_15min: '15 Min',

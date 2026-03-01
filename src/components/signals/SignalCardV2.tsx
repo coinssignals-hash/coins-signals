@@ -347,7 +347,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 ) : (
                   <TrendingDown className="w-2.5 h-2.5" />
                 )}
-                {action === "BUY" ? "Largo (Long)" : "Corto (Short)"}
+                {action === "BUY" ? t('signal_long') : t('signal_short')}
               </div>
             </div>
           </div>
