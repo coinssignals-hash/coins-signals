@@ -624,8 +624,8 @@ const News = () => {
   '';
 
   return (
-    <div className="min-h-screen bg-[#06080f] flex justify-center">
-      <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20 shadow-2xl">
+    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
+      <div className="relative w-full max-w-[390px] min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
       
       <main className="px-4 py-4 space-y-4">
