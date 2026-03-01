@@ -81,12 +81,17 @@ export function Header() {
                   onTouchStart={onTouchStart(item.href)}
                   className={cn(
                     'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative',
-                    isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    item.href === '/'
+                      ? isActive
+                        ? 'bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md'
+                        : 'bg-gradient-to-r from-primary/20 to-accent/20 text-foreground hover:from-primary/30 hover:to-accent/30 border border-primary/30'
+                      : isActive
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                   )}
                 >
                   {item.href !== '/' && <Icon className="w-4 h-4" />}
+                  {item.href === '/' && <span className="text-xs">💡</span>}
                   <span>{item.label}</span>
                   {showBadge && (
                     <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
