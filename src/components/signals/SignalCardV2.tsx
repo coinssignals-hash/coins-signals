@@ -217,10 +217,22 @@ function PriceAge({ timestamp }: { timestamp: number }) {
   const label = age < 60 ? `${age}s` : `${Math.floor(age / 60)}m ${age % 60}s`;
   const color = age < 10 ? 'text-emerald-400/70' : age < 30 ? 'text-cyan-300/50' : age < 60 ? 'text-yellow-400/60' : 'text-red-400/60';
 
+  const exactTime = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const exactDate = new Date(timestamp).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
+
   return (
-    <span className={cn("text-[8px] font-mono tabular-nums", color)}>
-      ⏱ {label} ago
-    </span>
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn("text-[8px] font-mono tabular-nums cursor-help", color)}>
+            ⏱ {label} ago
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-[10px] font-mono">
+          <p>{exactDate} — {exactTime}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
