@@ -190,6 +190,50 @@ export function HeroDashboard({
   );
 }
 
+function generateSparklinePoints(price: number, changePercent: number): number[] {
+  const steps = 12;
+  const points: number[] = [];
+  const seed = Math.abs(price * 1000) % 100;
+  const endOffset = changePercent / 100;
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps;
+    const trend = progress * endOffset;
+    const noise = Math.sin(seed + i * 1.7) * 0.003 + Math.cos(seed * 0.5 + i * 2.3) * 0.002;
+    points.push(1 + trend + noise);
+  }
+  return points;
+}
+
+function MiniSparkline({ points, positive }: { points: number[]; positive: boolean }) {
+  const w = 48, h = 20;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 0.001;
+  const coords = points.map((p, i) => {
+    const x = (i / (points.length - 1)) * w;
+    const y = h - ((p - min) / range) * h;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const pathD = `M${coords.join(' L')}`;
+  const stroke = positive ? 'hsl(142,70%,45%)' : 'hsl(0,70%,50%)';
+
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="shrink-0">
+      <defs>
+        <linearGradient id={`sg-${positive ? 'g' : 'r'}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={stroke} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path
+        d={`${pathD} L${w},${h} L0,${h} Z`}
+        fill={`url(#sg-${positive ? 'g' : 'r'})`}
+      />
+      <path d={pathD} fill="none" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function MarketPairRow({ pair, isSelected, onClick }: {
   pair: MultiPairQuote;
   isSelected: boolean;
@@ -197,6 +241,10 @@ function MarketPairRow({ pair, isSelected, onClick }: {
 }) {
   const isPositive = pair.changePercent >= 0;
   const flags = pairFlags[pair.symbol] || '';
+  const sparkPoints = useMemo(
+    () => generateSparklinePoints(pair.price, pair.changePercent),
+    [pair.price, pair.changePercent]
+  );
 
   return (
     <button
@@ -211,6 +259,7 @@ function MarketPairRow({ pair, isSelected, onClick }: {
         <span className="text-xs font-medium text-white/80">{pair.symbol}</span>
       </div>
       <div className="text-right flex items-center gap-2">
+        {!pair.loading && <MiniSparkline points={sparkPoints} positive={isPositive} />}
         <span className="text-xs font-mono-numbers text-white/70">
           {pair.loading ? '---' : formatPrice(pair.price)}
         </span>
