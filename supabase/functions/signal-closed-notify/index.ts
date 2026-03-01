@@ -77,7 +77,7 @@ serve(async (req) => {
       tag: `signal-closed-${signalId}`,
     });
 
-    const results = { success: 0, failed: 0 };
+    const pushResults = { success: 0, failed: 0 };
 
     for (const sub of subscriptions || []) {
       try {
@@ -88,11 +88,10 @@ serve(async (req) => {
           },
           notificationPayload
         );
-        results.success++;
+        pushResults.success++;
       } catch (err: any) {
         console.error(`Push failed for ${sub.endpoint}:`, err?.statusCode, err?.body);
-        results.failed++;
-        // Remove expired/invalid subscriptions
+        pushResults.failed++;
         if (err?.statusCode === 410 || err?.statusCode === 404) {
           await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
           console.log(`Removed expired subscription: ${sub.endpoint}`);
@@ -100,10 +99,79 @@ serve(async (req) => {
       }
     }
 
-    console.log(`[signal-closed-notify] Results:`, results);
+    console.log(`[signal-closed-notify] Push results:`, pushResults);
+
+    // --- WhatsApp notifications ---
+    const whatsappResults = { success: 0, failed: 0, skipped: 0 };
+
+    const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
+    const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');
+    const fromNumber = Deno.env.get('TWILIO_WHATSAPP_FROM');
+
+    if (accountSid && authToken && fromNumber) {
+      // Get users with WhatsApp notifications enabled
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('whatsapp_number')
+        .eq('whatsapp_notifications_enabled', true)
+        .not('whatsapp_number', 'is', null);
+
+      if (profilesError) {
+        console.error('Failed to fetch WhatsApp profiles:', profilesError);
+      } else {
+        const whatsappMessage = `${emoji} *${currencyPair}* — ${resultLabel}\n\nLa señal alcanzó el ${resultLabel} a *${Number(closedPrice).toFixed(3)}*\n\n📊 Ver señales en la app`;
+
+        const fromWhatsApp = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`;
+        const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+
+        console.log(`[signal-closed-notify] Sending WhatsApp to ${profiles?.length || 0} users`);
+
+        for (const profile of profiles || []) {
+          if (!profile.whatsapp_number) {
+            whatsappResults.skipped++;
+            continue;
+          }
+
+          try {
+            const toWhatsApp = profile.whatsapp_number.startsWith('whatsapp:')
+              ? profile.whatsapp_number
+              : `whatsapp:${profile.whatsapp_number}`;
+
+            const formData = new URLSearchParams();
+            formData.append('To', toWhatsApp);
+            formData.append('From', fromWhatsApp);
+            formData.append('Body', whatsappMessage);
+
+            const response = await fetch(twilioUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Basic ${btoa(`${accountSid}:${authToken}`)}`,
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: formData.toString(),
+            });
+
+            if (response.ok) {
+              whatsappResults.success++;
+            } else {
+              const err = await response.json();
+              console.error(`WhatsApp failed for ${profile.whatsapp_number}:`, err?.message);
+              whatsappResults.failed++;
+            }
+          } catch (err) {
+            console.error(`WhatsApp error:`, err);
+            whatsappResults.failed++;
+          }
+        }
+      }
+    } else {
+      console.log('[signal-closed-notify] Twilio not configured, skipping WhatsApp');
+    }
+
+    console.log(`[signal-closed-notify] WhatsApp results:`, whatsappResults);
 
     return new Response(
-      JSON.stringify({ success: true, results }),
+      JSON.stringify({ success: true, push: pushResults, whatsapp: whatsappResults }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: unknown) {
