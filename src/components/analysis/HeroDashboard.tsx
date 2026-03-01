@@ -1,6 +1,7 @@
-import { Activity, Clock, Globe, TrendingUp, TrendingDown, BarChart2, Zap } from 'lucide-react';
+import { Activity, Clock, TrendingUp, TrendingDown, BarChart2, Zap, ChevronRight } from 'lucide-react';
 import { useMemo } from 'react';
-import { useTranslation } from '@/i18n/LanguageContext';
+import { useMultiPairPrices, MultiPairQuote } from '@/hooks/useMultiPairPrices';
+import { cn } from '@/lib/utils';
 
 interface HeroDashboardProps {
   currentPrice: number;
@@ -11,6 +12,7 @@ interface HeroDashboardProps {
   symbol: string;
   loading: boolean;
   isRealtimeConnected: boolean;
+  onSelectPair?: (pair: string) => void;
 }
 
 function getActiveSession(): { name: string; emoji: string; color: string } {
@@ -30,28 +32,45 @@ function getGreeting(): string {
   return 'Buenas noches';
 }
 
+const pairFlags: Record<string, string> = {
+  'EUR/USD': '🇪🇺🇺🇸',
+  'GBP/USD': '🇬🇧🇺🇸',
+  'USD/JPY': '🇺🇸🇯🇵',
+  'AUD/USD': '🇦🇺🇺🇸',
+  'USD/CAD': '🇺🇸🇨🇦',
+  'USD/CHF': '🇺🇸🇨🇭',
+};
+
+function formatPrice(price: number): string {
+  if (price > 100) return price.toFixed(2);
+  if (price > 10) return price.toFixed(4);
+  return price.toFixed(5);
+}
+
 export function HeroDashboard({
-  currentPrice, change, changePercent, high, low, symbol, loading, isRealtimeConnected,
+  currentPrice, change, changePercent, high, low, symbol, loading, isRealtimeConnected, onSelectPair,
 }: HeroDashboardProps) {
   const session = useMemo(() => getActiveSession(), []);
   const greeting = useMemo(() => getGreeting(), []);
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
+  const { quotes } = useMultiPairPrices();
 
   const utcTime = new Date().toLocaleTimeString('es-ES', {
     hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
   });
 
   const spread = useMemo(() => {
-    const decimals = currentPrice < 10 ? 5 : currentPrice < 1000 ? 3 : 2;
     return (Math.random() * 2 + 0.5).toFixed(1);
   }, [currentPrice]);
+
+  // Separate active pair from other pairs
+  const otherPairs = quotes.filter(q => q.symbol !== symbol);
 
   return (
     <div className="space-y-3">
       {/* Hero greeting */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d1829] via-[#101f36] to-[#0a1628] border border-cyan-900/30 p-4">
-        {/* Decorative glow */}
         <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-cyan-500/5 blur-3xl" />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-blue-500/5 blur-3xl" />
         
@@ -92,7 +111,7 @@ export function HeroDashboard({
             <div className="flex-1">
               <div className="flex items-baseline gap-2">
                 <span className="text-xl font-bold font-mono-numbers text-white">
-                  {loading ? '...' : currentPrice.toFixed(currentPrice < 10 ? 5 : 2)}
+                  {loading ? '...' : formatPrice(currentPrice)}
                 </span>
                 <span className={`flex items-center gap-0.5 text-xs font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
                   {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -105,8 +124,8 @@ export function HeroDashboard({
             </div>
             <div className="text-right">
               <div className="text-[10px] text-gray-500">H/L</div>
-              <div className="text-xs font-mono-numbers text-emerald-400">{high.toFixed(currentPrice < 10 ? 5 : 2)}</div>
-              <div className="text-xs font-mono-numbers text-red-400">{low.toFixed(currentPrice < 10 ? 5 : 2)}</div>
+              <div className="text-xs font-mono-numbers text-emerald-400">{formatPrice(high)}</div>
+              <div className="text-xs font-mono-numbers text-red-400">{formatPrice(low)}</div>
             </div>
           </div>
         </div>
@@ -133,7 +152,63 @@ export function HeroDashboard({
           trend={isPositive ? 'bullish' : 'bearish'}
         />
       </div>
+
+      {/* Market Overview - Multiple Pairs */}
+      <div className="bg-[#0d1829]/80 border border-cyan-900/20 rounded-xl overflow-hidden">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-cyan-900/15">
+          <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Mercado Global</span>
+          <span className="text-[10px] text-gray-600">{otherPairs.filter(q => !q.loading).length} pares</span>
+        </div>
+        <div className="divide-y divide-cyan-900/10">
+          {otherPairs.map((pair) => (
+            <MarketPairRow
+              key={pair.symbol}
+              pair={pair}
+              isSelected={pair.symbol === symbol}
+              onClick={() => onSelectPair?.(pair.symbol)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
+  );
+}
+
+function MarketPairRow({ pair, isSelected, onClick }: {
+  pair: MultiPairQuote;
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  const isPositive = pair.changePercent >= 0;
+  const flags = pairFlags[pair.symbol] || '';
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors text-left',
+        isSelected ? 'bg-cyan-500/10' : 'hover:bg-[#0a1628]/60 active:bg-cyan-500/5'
+      )}
+    >
+      <span className="text-sm">{flags}</span>
+      <div className="flex-1 min-w-0">
+        <span className="text-xs font-medium text-white/80">{pair.symbol}</span>
+      </div>
+      <div className="text-right flex items-center gap-2">
+        <span className="text-xs font-mono-numbers text-white/70">
+          {pair.loading ? '---' : formatPrice(pair.price)}
+        </span>
+        <span className={cn(
+          'text-[10px] font-bold font-mono-numbers px-1.5 py-0.5 rounded-md min-w-[52px] text-center',
+          isPositive
+            ? 'text-emerald-400 bg-emerald-500/10'
+            : 'text-red-400 bg-red-500/10'
+        )}>
+          {pair.loading ? '...' : `${isPositive ? '+' : ''}${pair.changePercent.toFixed(2)}%`}
+        </span>
+        <ChevronRight className="w-3 h-3 text-gray-600" />
+      </div>
+    </button>
   );
 }
 
