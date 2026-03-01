@@ -46,23 +46,23 @@ export function AIFullRegenerateButton({
         'gap-2 border-purple-500/50 hover:bg-purple-500/20 hover:border-purple-400',
         'text-purple-400 hover:text-purple-300 bg-purple-500/10',
         className
-      )}
-    >
-      {isRegenerating ? (
-        <>
+      )}>
+
+      {isRegenerating ?
+      <>
           <Loader2 className="h-4 w-4 animate-spin" />
           <span className="text-xs">
-            {progress.currentType 
-              ? `${TYPE_LABELS[progress.currentType]} (${progress.current + 1}/${progress.total})`
-              : 'Iniciando...'}
+            {progress.currentType ?
+          `${TYPE_LABELS[progress.currentType]} (${progress.current + 1}/${progress.total})` :
+          'Iniciando...'}
           </span>
-        </>
-      ) : (
-        <>
+        </> :
+
+      <>
           <Sparkles className="h-4 w-4" />
-          <span className="text-xs">Regenerar Todo con IA</span>
+          
         </>
-      )}
-    </Button>
-  );
+      }
+    </Button>);
+
 }
