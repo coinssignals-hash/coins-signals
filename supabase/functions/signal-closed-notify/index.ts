@@ -37,8 +37,6 @@ serve(async (req) => {
     const cleanPublic = vapidPublicKey.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_').trim();
     const cleanPrivate = vapidPrivateKey.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_').trim();
 
-    console.log(`[DEBUG] Public key length: ${cleanPublic.length}, starts: ${cleanPublic.substring(0, 10)}`);
-    console.log(`[DEBUG] Private key length: ${cleanPrivate.length}`);
 
     webpush.setVapidDetails(
       'mailto:notifications@ecosignal.app',
