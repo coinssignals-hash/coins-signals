@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import logoImg from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
 import {
@@ -65,7 +66,7 @@ export function Header() {
         <div className="h-[2px] w-full bg-gradient-to-r from-[hsl(38,95%,50%)] via-[hsl(217,91%,60%)] to-[hsl(280,60%,50%)]" />
 
         {/* Navigation tabs row — bigger text */}
-        <nav className="flex items-center justify-center gap-8 px-4 py-3">
+        <nav className="flex items-center justify-center gap-2 px-3 py-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             const showBadge = item.badgeType === 'news' && newsCount > 0 && !isActive;
@@ -77,18 +78,22 @@ export function Header() {
                 onMouseEnter={onMouseEnter(item.href)}
                 onTouchStart={onTouchStart(item.href)}
                 className={cn(
-                  'text-lg font-semibold transition-colors relative',
+                  'relative px-4 py-1.5 text-base font-semibold rounded-full transition-colors',
                   isActive
-                    ? 'text-foreground'
+                    ? 'text-primary-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <span>{item.label}</span>
                 {isActive && (
-                  <span className="absolute -bottom-3 left-0 right-0 h-[2px] bg-primary rounded-full" />
+                  <motion.span
+                    layoutId="activeTab"
+                    className="absolute inset-0 rounded-full bg-primary shadow-[0_0_14px_hsl(217_91%_60%/0.5)]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
                 )}
+                <span className="relative z-10">{item.label}</span>
                 {showBadge && (
-                  <span className="absolute -top-1 -right-3 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse z-20">
                     {newsCount > 99 ? '99+' : newsCount}
                   </span>
                 )}
