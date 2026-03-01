@@ -9,6 +9,7 @@ import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { SignalsDayGroup } from '@/components/signals/SignalsDayGroup';
 import { TodaySignalsGroup } from '@/components/signals/today/TodaySignalsGroup';
 import { TomorrowSignalsGroup } from '@/components/signals/tomorrow/TomorrowSignalsGroup';
+import { SignalPerformanceStats } from '@/components/signals/SignalPerformanceStats';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Header } from '@/components/layout/Header';
 
@@ -353,6 +354,11 @@ export default function Signals() {
 
       {/* Signals List grouped by day */}
       <main className="p-4 space-y-6">
+        {/* Performance Stats Panel */}
+        {!loading && signals.length > 0 && (
+          <SignalPerformanceStats signals={signals} />
+        )}
+
         {loading && (
           <div className="flex justify-center py-10">
             <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
