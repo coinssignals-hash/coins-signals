@@ -192,14 +192,14 @@ export default function PersonalInfo() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
       <Header />
       
       <main className="container py-6 max-w-2xl mx-auto">

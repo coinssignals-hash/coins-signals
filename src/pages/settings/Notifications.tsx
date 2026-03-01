@@ -178,7 +178,7 @@ export default function Notifications() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
       <Header />
       
       <main className="container py-6 max-w-2xl mx-auto">

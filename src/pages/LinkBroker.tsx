@@ -231,7 +231,7 @@ export default function LinkBroker() {
   // Authentication is only required when saving a connection (handled in handleSaveConnection)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20">
       <Header />
       
       <main className="container max-w-2xl mx-auto px-4 py-4">
