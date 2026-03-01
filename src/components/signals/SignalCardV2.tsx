@@ -294,8 +294,20 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // Candlestick chart data (same as Analysis section)
   const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(symbol);
 
-  // Clamp circle fill to 0-100 range (map ±1% to full circle)
-  const circlePercent = Math.min(100, Math.abs(priceDiff.percent) * 100);
+  // Circle fill = how far current price is toward TP or SL (0% = at entry, 100% = at TP/SL)
+  const circlePercent = useMemo(() => {
+    if (!priceDiff.hasData) return 0;
+    const current = priceDiff.currentPrice;
+    // Measure progress toward TP (if favorable) or SL (if unfavorable)
+    const isBuy = action === 'BUY';
+    const favorable = isBuy ? current >= entryPrice : current <= entryPrice;
+    const targetDistance = favorable
+      ? Math.abs(takeProfit - entryPrice)
+      : Math.abs(stopLoss - entryPrice);
+    if (targetDistance === 0) return 0;
+    const priceDistance = Math.abs(current - entryPrice);
+    return Math.min(100, (priceDistance / targetDistance) * 100);
+  }, [priceDiff.hasData, priceDiff.currentPrice, action, entryPrice, takeProfit, stopLoss]);
 
   // Risk percent = SL distance / entry
   const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
