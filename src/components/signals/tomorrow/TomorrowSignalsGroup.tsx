@@ -1,5 +1,6 @@
 import { Clock } from 'lucide-react';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
+import { StaggerList } from '@/components/layout/StaggerList';
 import type { TradingSignal } from '@/hooks/useSignals';
 
 interface TomorrowSignalsGroupProps {
@@ -37,11 +38,11 @@ export function TomorrowSignalsGroup({ signals }: TomorrowSignalsGroupProps) {
           </span>
         </div>
       </div>
-      <div className="space-y-4">
+      <StaggerList>
         {signals.map((signal) => (
           <SignalCardV2 key={signal.id} signal={signal} />
         ))}
-      </div>
+      </StaggerList>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageTransition } from '@/components/layout/PageTransition';
+import { StaggerList } from '@/components/layout/StaggerList';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
@@ -814,11 +815,11 @@ const News = () => {
               }
                 
                 {/* News List */}
-                <div className="space-y-3">
+                <StaggerList className="space-y-3">
                   {otherNews.map((newsItem, index) =>
                 <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
                 )}
-                </div>
+                </StaggerList>
               </div>
             }
           </>
