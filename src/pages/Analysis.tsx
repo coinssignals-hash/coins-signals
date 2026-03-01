@@ -32,7 +32,7 @@ import { StochasticChart } from '@/components/analysis/StochasticChart';
 import { IndicatorsSummaryChart } from '@/components/analysis/IndicatorsSummaryChart';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
-import { AIFullRegenerateButton } from '@/components/analysis/AIFullRegenerateButton';
+
 import { RiskRewardCalculator } from '@/components/analysis/RiskRewardCalculator';
 import { ATRChart } from '@/components/analysis/ATRChart';
 import { HeroDashboard } from '@/components/analysis/HeroDashboard';
@@ -162,7 +162,7 @@ export default function Analysis() {
               )}
             </SelectContent>
           </Select>
-          <AIFullRegenerateButton symbol={selectedPair} currentPrice={marketStats.currentPrice} high={marketStats.high} low={marketStats.low} />
+          
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9">
