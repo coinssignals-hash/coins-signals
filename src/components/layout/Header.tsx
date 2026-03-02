@@ -36,7 +36,7 @@ export function Header() {
           {/* Left: hamburger + "Coins Signals" text */}
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground">
-              <Menu className="w-7 h-7" />
+              <Menu className="w-9 h-9" />
             </Button>
             <span className="text-xl font-extrabold tracking-wider hidden xs:inline" style={{ textShadow: '0 0 12px hsl(217 91% 60% / 0.4)' }}>
               <span className="bg-gradient-to-r from-[hsl(217,91%,65%)] to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
