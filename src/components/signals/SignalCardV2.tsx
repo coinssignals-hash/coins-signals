@@ -733,8 +733,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <Dialog open={chartFullscreen} onOpenChange={setChartFullscreen}>
               <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700/50">
+                <div className="h-full overflow-y-auto">
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700/50 sticky top-0 z-30 bg-[hsl(222,45%,5%)]">
                     <span className="text-sm font-semibold text-slate-200">{signal?.currencyPair}</span>
                     <div className="flex items-center gap-1.5">
                       {/* Interval selector */}
@@ -755,9 +755,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       <div className="w-px h-5 bg-slate-700/50 mx-1" />
                       {/* Indicator toggles */}
                       {([
-                        { key: 'ema', label: 'EMA', active: showEMA, toggle: () => setShowEMA(!showEMA), color: 'blue' },
-                        { key: 'rsi', label: 'RSI', active: showRSI, toggle: () => setShowRSI(!showRSI), color: 'blue' },
-                        { key: 'macd', label: 'MACD', active: showMACD, toggle: () => setShowMACD(!showMACD), color: 'purple' },
+                        { key: 'ema', label: 'EMA', active: showEMA, toggle: () => setShowEMA(!showEMA) },
+                        { key: 'rsi', label: 'RSI', active: showRSI, toggle: () => setShowRSI(!showRSI) },
+                        { key: 'macd', label: 'MACD', active: showMACD, toggle: () => setShowMACD(!showMACD) },
                       ] as const).map(ind => (
                         <button
                           key={ind.key}
@@ -789,32 +789,30 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       </button>
                     </div>
                   </div>
-                  <div className="flex-1 min-h-0 overflow-y-auto">
-                    <ZoomableChart>
-                      <CandlestickChart
-                        data={forexChartData?.candles || []}
-                        resistance={forexChartData?.resistance ?? 0}
-                        support={forexChartData?.support ?? 0}
-                        loading={forexChartLoading}
-                        realtimePrice={quote?.price}
-                        isRealtimeConnected={isConnected}
-                        previousDayDate={forexChartData?.date}
-                        showSupportResistance={showSR}
-                        ema20Data={showEMA ? indicatorData?.ema20 : undefined}
-                        ema50Data={showEMA ? indicatorData?.ema50 : undefined}
-                      />
-                    </ZoomableChart>
-                    {showRSI && indicatorData?.rsi && indicatorData.rsi.length > 0 && (
-                      <div className="px-1 mt-1">
-                        <IndicatorMiniChart type="rsi" data={indicatorData.rsi} />
-                      </div>
-                    )}
-                    {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 && (
-                      <div className="px-1 mt-1">
-                        <IndicatorMiniChart type="macd" data={indicatorData.macd} />
-                      </div>
-                    )}
-                  </div>
+                  <ZoomableChart>
+                    <CandlestickChart
+                      data={forexChartData?.candles || []}
+                      resistance={forexChartData?.resistance ?? 0}
+                      support={forexChartData?.support ?? 0}
+                      loading={forexChartLoading}
+                      realtimePrice={quote?.price}
+                      isRealtimeConnected={isConnected}
+                      previousDayDate={forexChartData?.date}
+                      showSupportResistance={showSR}
+                      ema20Data={showEMA ? indicatorData?.ema20 : undefined}
+                      ema50Data={showEMA ? indicatorData?.ema50 : undefined}
+                    />
+                  </ZoomableChart>
+                  {showRSI && indicatorData?.rsi && indicatorData.rsi.length > 0 && (
+                    <div className="px-1 mt-1">
+                      <IndicatorMiniChart type="rsi" data={indicatorData.rsi} />
+                    </div>
+                  )}
+                  {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 && (
+                    <div className="px-1 mt-1">
+                      <IndicatorMiniChart type="macd" data={indicatorData.macd} />
+                    </div>
+                  )}
                 </div>
               </DialogContent>
             </Dialog>

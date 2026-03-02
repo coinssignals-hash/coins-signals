@@ -106,7 +106,7 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
   const isZoomed = scale > 1;
 
   return (
-    <div className={cn('relative h-full w-full', className)}>
+    <div className={cn('relative w-full', className)}>
       {/* Zoom controls */}
       <div className="absolute top-3 right-3 z-20 flex flex-col gap-1">
         <button onClick={zoomIn} className="p-1.5 rounded-md bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors backdrop-blur-sm" title="Zoom in">
@@ -132,7 +132,7 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
       {/* Zoomable area */}
       <div
         ref={containerRef}
-        className={cn('h-full w-full overflow-hidden', isZoomed ? 'cursor-grab' : '', isPanning && 'cursor-grabbing')}
+        className={cn('w-full overflow-hidden', isZoomed ? 'cursor-grab' : '', isPanning && 'cursor-grabbing')}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -142,7 +142,7 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
         style={{ touchAction: 'none' }}
       >
         <div
-          className="h-full w-full transition-transform duration-100 ease-out"
+          className="w-full transition-transform duration-100 ease-out"
           style={{
             transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
             transformOrigin: 'center center',
