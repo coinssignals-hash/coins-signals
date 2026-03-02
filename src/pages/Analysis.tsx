@@ -327,6 +327,7 @@ export default function Analysis() {
               }
               {activeChart === 'ichimoku' &&
               <IchimokuChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+              apiIchimoku={data?.ichimokuData}
               loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
 
               }

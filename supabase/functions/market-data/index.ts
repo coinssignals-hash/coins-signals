@@ -159,6 +159,37 @@ async function fetchWilliamsR(symbol: string, interval: string, outputsize: numb
   };
 }
 
+// ─── Ichimoku Cloud ───
+async function fetchIchimoku(symbol: string, interval: string, outputsize: number) {
+  if (!ALPHA_VANTAGE_KEY) throw new Error('AV_KEY_MISSING');
+  const avSym = symbol.replace('/', '');
+  const avi = avInterval(interval);
+  const qs = new URLSearchParams({
+    function: 'ICHIMOKU', symbol: avSym, interval: avi,
+    apikey: ALPHA_VANTAGE_KEY,
+  });
+  const url = `https://www.alphavantage.co/query?${qs}`;
+  console.log(`[AV] ICHIMOKU ${avSym} ${avi}`);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const data = await res.json();
+  if (data['Note'] || data['Information']) throw new Error('AV_RATE_LIMIT');
+  const tsKey = Object.keys(data).find(k => k.startsWith('Technical Analysis'));
+  if (!tsKey || !data[tsKey]) throw new Error('No AV Ichimoku data');
+  const entries = Object.entries(data[tsKey]).slice(0, outputsize);
+  return {
+    values: entries.map(([dt, v]: [string, any]) => ({
+      datetime: dt,
+      tenkan: v['Tenkan Sen (Conversion Line)'],
+      kijun: v['Kijun Sen (Base Line)'],
+      senkouA: v['Senkou Span A (Leading Span A)'],
+      senkouB: v['Senkou Span B (Leading Span B)'],
+      chikou: v['Chikou Span (Lagging Span)'],
+    })).reverse(),
+    symbol, source: 'alpha_vantage',
+  };
+}
+
 // ─── Plus/Minus DI for ADX chart ───
 async function fetchADXFull(symbol: string, interval: string, outputsize: number) {
   const [adxEntries, pdiEntries, mdiEntries] = await Promise.all([
@@ -383,6 +414,7 @@ serve(async (req) => {
           case 'adx_full': result = await fetchADXFull(sym, interval, outputsize); break;
           case 'bbands': result = await fetchBBands(sym, interval, outputsize); break;
           case 'willr': result = await fetchWilliamsR(sym, interval, outputsize); break;
+          case 'ichimoku': result = await fetchIchimoku(sym, interval, outputsize); break;
           default: result = await fetchAV_OHLC(sym, interval, outputsize); break;
         }
       } catch (avErr: any) {

@@ -10,6 +10,7 @@ interface MarketData {
   atrData: Array<{ time: string; atr: number }>;
   adxData: Array<{ time: string; adx: number; pdi: number; mdi: number }>;
   bbandsData: Array<{ time: string; upper: number; middle: number; lower: number }>;
+  ichimokuData: Array<{ time: string; tenkan: number; kijun: number; senkouA: number; senkouB: number; chikou: number }>;
   cached?: boolean;
 }
 
@@ -56,7 +57,7 @@ export function useMarketData(symbol: string, timeframe: string) {
 
     try {
       // Fetch all 7 data types in parallel
-      const [priceR, rsiR, macdR, smaR, stochR, atrR, adxR, bbandsR] = await Promise.all([
+      const [priceR, rsiR, macdR, smaR, stochR, atrR, adxR, bbandsR, ichimokuR] = await Promise.all([
         supabase.functions.invoke('market-data', { body: { symbol, interval, outputsize: 50 } }),
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'rsi', outputsize: 50 } }),
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'macd', outputsize: 50 } }),
@@ -65,6 +66,7 @@ export function useMarketData(symbol: string, timeframe: string) {
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'atr', outputsize: 50 } }),
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'adx_full', outputsize: 50 } }),
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'bbands', outputsize: 50 } }),
+        supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'ichimoku', outputsize: 80 } }),
       ]);
 
       if (priceR.error) throw new Error(priceR.error.message);
@@ -103,9 +105,16 @@ export function useMarketData(symbol: string, timeframe: string) {
       const bbandsValues = bbandsR.data?.values || [];
       const processedBBands = bbandsValues.map((v: any) => ({ time: v.datetime, upper: parseFloat(v.upper), middle: parseFloat(v.middle), lower: parseFloat(v.lower) })).reverse();
 
+      const ichimokuValues = ichimokuR.data?.values || [];
+      const processedIchimoku = ichimokuValues.map((v: any) => ({
+        time: v.datetime, tenkan: parseFloat(v.tenkan), kijun: parseFloat(v.kijun),
+        senkouA: parseFloat(v.senkouA), senkouB: parseFloat(v.senkouB), chikou: parseFloat(v.chikou),
+      }));
+
       const marketData: MarketData = {
         priceData: processedPrice, smaData: processedSMA, rsiData: processedRSI, macdData: processedMACD,
         stochasticData: processedStoch, atrData: processedATR, adxData: processedADX, bbandsData: processedBBands,
+        ichimokuData: processedIchimoku,
         cached: priceResult.cached || false,
       };
 
