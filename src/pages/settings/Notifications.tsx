@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Bell, MessageCircle, Volume2, Play, TrendingUp, TrendingDown, AlertTriangle, Phone, Loader2, Check, Send } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
+import { GlobalAlertsPanel } from '@/components/notifications/GlobalAlertsPanel';
 import { playNotificationSound, enableAudio, SoundType } from '@/utils/notificationSound';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -195,6 +196,9 @@ export default function Notifications() {
         </div>
 
         <div className="space-y-4">
+          {/* Global Price Alerts Panel */}
+          <GlobalAlertsPanel />
+
           <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="text-sm text-primary">Ajuste de Notificaciones</CardTitle>
