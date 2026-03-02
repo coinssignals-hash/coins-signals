@@ -162,37 +162,7 @@ async function fetchFinnhubNews(apiKey: string): Promise<NewsItem[]> {
   }
 }
 
-// Fetch from Polygon.io
-async function fetchPolygonNews(apiKey: string): Promise<NewsItem[]> {
-  try {
-    const response = await fetch(
-      `https://api.polygon.io/v2/reference/news?limit=15&apiKey=${apiKey}`
-    );
-    if (!response.ok) return [];
-    const data = await response.json();
-    
-    return (data.results || []).map((item: any, index: number) => ({
-      id: `polygon-${item.id || index}`,
-      title: item.title,
-      summary: item.description || '',
-      source: item.publisher?.name || 'Polygon',
-      source_logo: item.publisher?.logo_url || SOURCE_LOGOS[item.publisher?.name] || null,
-      url: item.article_url,
-      image_url: item.image_url || null,
-      published_at: item.published_utc,
-      time_ago: getTimeAgo(item.published_utc),
-      category: detectCategory(item.title + ' ' + (item.description || '')),
-      affected_currencies: item.tickers?.length > 0 
-        ? detectCurrencies(item.tickers.join(' ') + ' ' + item.title)
-        : detectCurrencies(item.title + ' ' + (item.description || '')),
-      sentiment: detectSentiment(item.title + ' ' + (item.description || '')),
-      relevance_score: 0.7 + Math.random() * 0.3,
-    }));
-  } catch (error) {
-    console.error('[fetch-news] Polygon error:', error);
-    return [];
-  }
-}
+
 
 // Fetch from NewsAPI.org
 async function fetchNewsApiNews(apiKey: string): Promise<NewsItem[]> {
@@ -297,40 +267,7 @@ async function fetchInvestingNews(): Promise<NewsItem[]> {
   }
 }
 
-// Fetch from ForexFactory RSS
-async function fetchForexFactoryNews(): Promise<NewsItem[]> {
-  try {
-    const response = await fetch('https://www.forexfactory.com/rss', {
-      headers: { 'User-Agent': 'EcoSignalBot/1.0' },
-    });
-    if (!response.ok) return [];
-    const xml = await response.text();
-    const items = parseRSSItems(xml);
-    
-    return items.slice(0, 15).map((item, index) => {
-      const text = `${item.title} ${item.description}`;
-      const pubDate = item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString();
-      return {
-        id: `forexfactory-${index}-${Date.now()}`,
-        title: item.title,
-        summary: item.description.substring(0, 200),
-        source: 'Forex Factory',
-        source_logo: SOURCE_LOGOS['Forex Factory'],
-        url: item.link,
-        image_url: item.imageUrl || null,
-        published_at: pubDate,
-        time_ago: getTimeAgo(pubDate),
-        category: detectCategory(text),
-        affected_currencies: detectCurrencies(text),
-        sentiment: detectSentiment(text),
-        relevance_score: 0.9 + Math.random() * 0.1,
-      };
-    });
-  } catch (error) {
-    console.error('[fetch-news] ForexFactory RSS error:', error);
-    return [];
-  }
-}
+
 
 // Fetch from Bloomberg RSS
 async function fetchBloombergNews(): Promise<NewsItem[]> {
@@ -378,19 +315,16 @@ serve(async (req) => {
     console.log('[fetch-news] Fetching news for date:', date, 'currencies:', currencies);
 
     const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
-    const polygonKey = Deno.env.get('POLYGON_API_KEY');
     const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
 
     // Launch all sources in parallel - RSS sources don't need API keys
     const newsPromises: Promise<NewsItem[]>[] = [
       fetchFXStreetNews(),
       fetchInvestingNews(),
-      fetchForexFactoryNews(),
       fetchBloombergNews(),
     ];
 
     if (finnhubKey) newsPromises.push(fetchFinnhubNews(finnhubKey));
-    if (polygonKey) newsPromises.push(fetchPolygonNews(polygonKey));
     if (newsApiKey) newsPromises.push(fetchNewsApiNews(newsApiKey));
 
     const results = await Promise.allSettled(newsPromises);
@@ -435,11 +369,9 @@ serve(async (req) => {
     // Count sources present
     const sourcesPresent = {
       finnhub: allNews.some(n => n.id.startsWith('finnhub')),
-      polygon: allNews.some(n => n.id.startsWith('polygon')),
       newsapi: allNews.some(n => n.id.startsWith('newsapi')),
       fxstreet: allNews.some(n => n.id.startsWith('fxstreet')),
       investing: allNews.some(n => n.id.startsWith('investing')),
-      forexfactory: allNews.some(n => n.id.startsWith('forexfactory')),
       bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
     };
 
