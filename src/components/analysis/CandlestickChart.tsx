@@ -19,6 +19,8 @@ interface CandlestickChartProps {
   isRealtimeConnected?: boolean;
   previousDayDate?: string;
   alertState?: AlertState;
+  /** Whether to show support/resistance lines (default: true) */
+  showSupportResistance?: boolean;
 }
 
 /* ─── helpers ─── */
@@ -57,6 +59,7 @@ function buildChartSvg(
   realtimePrice: number | null,
   isConnected: boolean,
   title?: string,
+  showSR = true,
 ): string {
   const W = 1200, H = 700;
   const PAD = { top: 35, right: 110, bottom: 50, left: 65 };
@@ -209,22 +212,23 @@ function buildChartSvg(
     parts.push(`<rect x="${x - bodyW / 2}" y="${vy}" width="${bodyW}" height="${Math.max(1, vh)}" fill="${vc}" rx="0.3" shape-rendering="crispEdges"/>`);
   }
 
-  // S/R lines — ONLY last 24h (last day)
   const srX1 = firstLastDayIdx >= 0 ? CHART_X1 + firstLastDayIdx * cw : CHART_X1;
   const srX2 = CHART_X2;
   const lblW = 80, lblH = 18, fs = 10;
 
-  // Resistance
-  const rY = yOf(resistance);
-  parts.push(`<line x1="${srX1}" y1="${rY}" x2="${srX2}" y2="${rY}" stroke="${UP}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
-  parts.push(`<rect x="${srX2 - lblW - 4}" y="${rY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(34,197,94,0.15)" stroke="${UP}" stroke-width="0.8"/>`);
-  parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${rY + fs / 3}" fill="${UP}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(resistance, jpy)}</text>`);
+  if (showSR) {
+    // Resistance
+    const rY = yOf(resistance);
+    parts.push(`<line x1="${srX1}" y1="${rY}" x2="${srX2}" y2="${rY}" stroke="${UP}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${srX2 - lblW - 4}" y="${rY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(34,197,94,0.15)" stroke="${UP}" stroke-width="0.8"/>`);
+    parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${rY + fs / 3}" fill="${UP}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(resistance, jpy)}</text>`);
 
-  // Support
-  const sY = yOf(support);
-  parts.push(`<line x1="${srX1}" y1="${sY}" x2="${srX2}" y2="${sY}" stroke="${DN}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
-  parts.push(`<rect x="${srX2 - lblW - 4}" y="${sY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(239,68,68,0.15)" stroke="${DN}" stroke-width="0.8"/>`);
-  parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(support, jpy)}</text>`);
+    // Support
+    const sY = yOf(support);
+    parts.push(`<line x1="${srX1}" y1="${sY}" x2="${srX2}" y2="${sY}" stroke="${DN}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${srX2 - lblW - 4}" y="${sY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(239,68,68,0.15)" stroke="${DN}" stroke-width="0.8"/>`);
+    parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(support, jpy)}</text>`);
+  }
 
   // Realtime price
   if (realtimePrice) {
@@ -256,6 +260,7 @@ export function CandlestickChart({
   isRealtimeConnected = false,
   previousDayDate,
   alertState,
+  showSupportResistance = true,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
 
@@ -264,9 +269,9 @@ export function CandlestickChart({
     const title = previousDayDate
       ? `30min · Última Semana | ${previousDayDate}`
       : '30min · Última Semana';
-    const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title);
+    const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title, showSupportResistance);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate]);
+  }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate, showSupportResistance]);
 
   const alertStyles = useMemo(() => {
     if (!alertState?.isActive) return null;
@@ -325,16 +330,20 @@ export function CandlestickChart({
       {/* Legend */}
       <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0a1628' }}>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-0.5 border-t-2 border-dashed border-green-500" />
-            <span className="text-green-400">Resistencia 24h</span>
-            <span className="font-mono font-semibold text-green-300 bg-green-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(resistance, jpy)}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-0.5 border-t-2 border-dashed border-red-500" />
-            <span className="text-red-400">Soporte 24h</span>
-            <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(support, jpy)}</span>
-          </div>
+          {showSupportResistance && (
+            <>
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-0.5 border-t-2 border-dashed border-green-500" />
+                <span className="text-green-400">Resistencia 24h</span>
+                <span className="font-mono font-semibold text-green-300 bg-green-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(resistance, jpy)}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-0.5 border-t-2 border-dashed border-red-500" />
+                <span className="text-red-400">Soporte 24h</span>
+                <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(support, jpy)}</span>
+              </div>
+            </>
+          )}
         </div>
         {realtimePrice && (
           <div className="flex items-center gap-1">
