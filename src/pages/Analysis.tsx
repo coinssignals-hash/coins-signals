@@ -303,21 +303,25 @@ export default function Analysis() {
               }
               {activeChart === 'bollinger' &&
               <BollingerChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+              apiBBands={data?.bbandsData}
               loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
 
               }
               {activeChart === 'stochastic' &&
               <StochasticChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+              apiStochastic={data?.stochasticData}
               loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
 
               }
               {activeChart === 'atr' &&
               <ATRChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+              apiATR={data?.atrData}
               loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
 
               }
               {activeChart === 'adx' &&
               <ADXChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+              apiADX={data?.adxData}
               loading={loading} error={error} />
 
               }

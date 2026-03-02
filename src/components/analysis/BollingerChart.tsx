@@ -10,6 +10,7 @@ interface BollingerChartProps {
   pair: string;
   timeframe: string;
   priceData?: Array<{ time: string; price: number; high: number; low: number; open: number }>;
+  apiBBands?: Array<{ time: string; upper: number; middle: number; lower: number }>;
   loading?: boolean;
   error?: string | null;
   realtimePrice?: number | null;
@@ -101,12 +102,23 @@ const BollingerTooltip = ({ active, payload, label }: any) => {
 };
 
 export function BollingerChart({
-  pair, timeframe, priceData, loading, error, realtimePrice, isRealtimeConnected = false,
+  pair, timeframe, priceData, apiBBands, loading, error, realtimePrice, isRealtimeConnected = false,
 }: BollingerChartProps) {
-  const chartData = useMemo(
-    () => calculateBollingerSeries(priceData),
-    [priceData]
-  );
+  const chartData = useMemo(() => {
+    // Use API Bollinger Bands data if available, merged with price
+    if (apiBBands && apiBBands.length > 0 && priceData && priceData.length > 0) {
+      return apiBBands.map((bb, i) => {
+        const p = priceData[Math.min(i, priceData.length - 1)];
+        const range = bb.upper - bb.lower;
+        const percentB = range > 0 ? ((p.price - bb.lower) / range) * 100 : 50;
+        const bandwidth = bb.middle > 0 ? (range / bb.middle) * 100 : 0;
+        const date = new Date(bb.time);
+        const timeLabel = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        return { time: timeLabel, price: p.price, upper: bb.upper, middle: bb.middle, lower: bb.lower, percentB, bandwidth };
+      });
+    }
+    return calculateBollingerSeries(priceData);
+  }, [priceData, apiBBands]);
 
   const stats = useMemo(() => {
     if (chartData.length === 0) return {

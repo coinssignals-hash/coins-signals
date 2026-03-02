@@ -10,6 +10,7 @@ interface StochasticChartProps {
   pair: string;
   timeframe: string;
   priceData?: Array<{ time: string; price: number; high: number; low: number; open: number }>;
+  apiStochastic?: Array<{ time: string; slowK: number; slowD: number }>;
   loading?: boolean;
   error?: string | null;
   realtimePrice?: number | null;
@@ -129,9 +130,25 @@ const StochTooltip = ({ active, payload, label }: any) => {
 };
 
 export function StochasticChart({
-  pair, timeframe, priceData, loading, error, realtimePrice, isRealtimeConnected = false,
+  pair, timeframe, priceData, apiStochastic, loading, error, realtimePrice, isRealtimeConnected = false,
 }: StochasticChartProps) {
-  const chartData = useMemo(() => calculateStochasticSeries(priceData), [priceData]);
+  const chartData = useMemo(() => {
+    // Use API stochastic data if available
+    if (apiStochastic && apiStochastic.length > 0) {
+      return apiStochastic.map((s, i) => {
+        const date = new Date(s.time);
+        const timeLabel = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        let crossover: StochPoint['crossover'];
+        if (i > 0) {
+          const prev = apiStochastic[i - 1];
+          if (prev.slowK <= prev.slowD && s.slowK > s.slowD) crossover = 'bullish';
+          else if (prev.slowK >= prev.slowD && s.slowK < s.slowD) crossover = 'bearish';
+        }
+        return { time: timeLabel, k: Math.round(s.slowK * 10) / 10, d: Math.round(s.slowD * 10) / 10, crossover };
+      });
+    }
+    return calculateStochasticSeries(priceData);
+  }, [priceData, apiStochastic]);
 
   const realtimeK = useMemo(() => {
     if (!realtimePrice || !priceData) return null;
