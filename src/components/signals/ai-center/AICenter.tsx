@@ -2,12 +2,13 @@ import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import {
   Brain, BarChart3, Target, FileText, Layers, Search,
-  Play, Loader2, ChevronLeft, Sparkles, TrendingUp, AlertTriangle
+  Play, Loader2, ChevronLeft, Sparkles, TrendingUp, AlertTriangle, Zap
 } from 'lucide-react';
 import { AIModelConfig, AIModelSettings } from './AIModelConfig';
 import { AIModuleCard } from './AIModuleCard';
 import { AIResultPanel } from './AIResultPanel';
 import { AIChartPanel } from './AIChartPanel';
+import { AISignalCreator } from './AISignalCreator';
 import { useForexData } from '@/hooks/useForexData';
 import { useAIAnalysis, AIModule } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
@@ -35,6 +36,7 @@ export function AICenter({ onClose }: Props) {
   });
   const [moduleStatuses, setModuleStatuses] = useState<Record<string, ModuleStatus>>({});
   const [showConfig, setShowConfig] = useState(false);
+  const [showSignalCreator, setShowSignalCreator] = useState(false);
 
   const { data: forexData, loading: forexLoading, error: forexError, fetchData } = useForexData();
   const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis } = useAIAnalysis();
@@ -285,6 +287,58 @@ export function AICenter({ onClose }: Props) {
             );
           })}
         </div>
+      )}
+
+      {/* Create Signal Button */}
+      {chartData && !showSignalCreator && (
+        <button
+          onClick={() => setShowSignalCreator(true)}
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-bullish to-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <Zap className="w-5 h-5" />
+          Crear Señal desde Análisis IA
+        </button>
+      )}
+
+      {/* Signal Creator Form */}
+      {showSignalCreator && chartData && (
+        <AISignalCreator
+          draft={{
+            currencyPair: activeSymbol.replace('/', ''),
+            action: (() => {
+              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+              return last && prev && last.close > prev.close ? 'BUY' : 'SELL';
+            })(),
+            entryPrice: chartData.ohlcv[chartData.ohlcv.length - 1]?.close || 0,
+            takeProfit: (() => {
+              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+              const isBuy = last && prev && last.close > prev.close;
+              const entry = last?.close || 0;
+              const range = chartData.resistance - chartData.support;
+              return isBuy ? entry + range * 0.5 : entry - range * 0.5;
+            })(),
+            stopLoss: (() => {
+              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+              const isBuy = last && prev && last.close > prev.close;
+              const entry = last?.close || 0;
+              const range = chartData.resistance - chartData.support;
+              return isBuy ? entry - range * 0.3 : entry + range * 0.3;
+            })(),
+            support: chartData.support,
+            resistance: chartData.resistance,
+            probability: 65,
+            trend: (() => {
+              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+              return last && prev && last.close > prev.close ? 'bullish' : 'bearish';
+            })(),
+          }}
+          onCreated={() => { setShowSignalCreator(false); onClose(); }}
+          onCancel={() => setShowSignalCreator(false)}
+        />
       )}
     </div>
   );
