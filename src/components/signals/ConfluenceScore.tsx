@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SignalMarketData } from '@/hooks/useSignalMarketData';
@@ -130,7 +131,10 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
   const gaugePercent = ((score + 100) / 200) * 100; // 0-100
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="rounded-lg p-3 relative overflow-hidden"
       style={{
         background: 'linear-gradient(135deg, hsla(210, 100%, 6%, 0.9) 0%, hsla(205, 80%, 10%, 0.9) 100%)',
@@ -150,20 +154,22 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
             className="w-10 rounded-lg flex flex-col items-center gap-1 py-1.5 px-1"
             style={{ background: 'hsla(0, 0%, 5%, 0.8)', border: '1px solid hsla(0, 0%, 30%, 0.3)' }}
           >
-            {(['buy', 'neutral', 'sell'] as const).map((l) => {
+            {(['buy', 'neutral', 'sell'] as const).map((l, i) => {
               const isActive =
                 (l === 'buy' && (level === 'buy' || level === 'strong_buy')) ||
                 (l === 'neutral' && level === 'neutral') ||
                 (l === 'sell' && (level === 'sell' || level === 'strong_sell'));
               const c = l === 'buy' ? 'hsl(135, 70%, 50%)' : l === 'neutral' ? 'hsl(45, 80%, 55%)' : 'hsl(0, 70%, 55%)';
               return (
-                <div
+                <motion.div
                   key={l}
-                  className="w-6 h-6 rounded-full transition-all duration-500"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: isActive ? 1 : 0.3 }}
+                  transition={{ delay: 0.3 + i * 0.12, duration: 0.4, type: 'spring', stiffness: 300, damping: 20 }}
+                  className="w-6 h-6 rounded-full"
                   style={{
                     background: isActive ? c : 'hsla(0, 0%, 20%, 0.5)',
                     boxShadow: isActive ? `0 0 12px ${c}, 0 0 4px ${c}` : 'none',
-                    opacity: isActive ? 1 : 0.3,
                   }}
                 />
               );
@@ -226,9 +232,12 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
 
       {/* Indicator pills */}
       <div className="flex flex-wrap gap-1 mt-2">
-        {votes.map((v) => (
-          <span
+        {votes.map((v, i) => (
+          <motion.span
             key={v.name}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 + i * 0.05, duration: 0.3 }}
             className={cn(
               'px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider border',
               v.signal === 'buy' && 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -237,9 +246,9 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
             )}
           >
             {v.name}
-          </span>
+          </motion.span>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
