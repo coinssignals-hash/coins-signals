@@ -416,7 +416,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             src={brandLogo}
             alt=""
             aria-hidden="true"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 opacity-[0.08] pointer-events-none select-none z-0"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 opacity-[0.08] pointer-events-none select-none z-0"
           />
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative w-20 h-16 flex-shrink-0">
