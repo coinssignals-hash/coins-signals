@@ -561,6 +561,8 @@ const SOURCE_COLORS: Record<string, { bg: string; text: string }> = {
   'Bloomberg': { bg: 'bg-pink-500/20', text: 'text-pink-400' },
   'MarketAux': { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
   'ForexFactory': { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+  'FMP': { bg: 'bg-teal-500/20', text: 'text-teal-400' },
+  'Alpha Vantage': { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
 };
 
 function QuickSourceFilter({
@@ -918,6 +920,8 @@ const News = () => {
               <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-medium">Investing</span>
               <span className="px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-400 text-[10px] font-medium">Bloomberg</span>
               <span className="px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-[10px] font-medium">MarketAux</span>
+              <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-400 text-[10px] font-medium">FMP</span>
+              <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-medium">Alpha Vantage</span>
             </div>
           </div>
         </div>
