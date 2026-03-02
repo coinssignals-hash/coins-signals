@@ -2,6 +2,7 @@ import { Activity, Clock, TrendingUp, TrendingDown, BarChart2, Zap, ChevronRight
 import { useMemo, useState } from 'react';
 import { useMultiPairPrices, MultiPairQuote } from '@/hooks/useMultiPairPrices';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 import bullBg from '@/assets/bull-card-bg.svg';
 
 const CURRENCY_FLAGS: Record<string, string> = {
@@ -76,9 +77,19 @@ export function HeroDashboard({
   const otherPairs = quotes.filter((q) => q.symbol !== symbol);
 
   return (
-    <div className="space-y-3">
+    <motion.div
+      className="space-y-3"
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
       {/* Hero card - Signal style */}
-      <div className="relative w-full rounded-xl overflow-hidden">
+      <motion.div
+        className="relative w-full rounded-xl overflow-hidden"
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div
           className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
           style={{
@@ -170,29 +181,37 @@ export function HeroDashboard({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick stats row */}
-      <div className="grid grid-cols-3 gap-2">
-        <QuickStatCard
-          icon={<Activity className="w-3.5 h-3.5 text-cyan-400" />}
-          label="Volatilidad"
-          value={`${(Math.abs(changePercent) * 2.5).toFixed(1)}%`}
-          trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'} />
-
-        <QuickStatCard
-          icon={<BarChart2 className="w-3.5 h-3.5 text-blue-400" />}
-          label="Rango Diario"
-          value={`${((high - low) * (currentPrice < 10 ? 10000 : 100)).toFixed(0)} pips`}
-          trend="neutral" />
-
-        <QuickStatCard
-          icon={<Zap className="w-3.5 h-3.5 text-amber-400" />}
-          label="Momentum"
-          value={isPositive ? 'Alcista' : 'Bajista'}
-          trend={isPositive ? 'bullish' : 'bearish'} />
-
-      </div>
+      <motion.div
+        className="grid grid-cols-3 gap-2"
+        initial="hidden"
+        animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } } }}
+      >
+        <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+          <QuickStatCard
+            icon={<Activity className="w-3.5 h-3.5 text-cyan-400" />}
+            label="Volatilidad"
+            value={`${(Math.abs(changePercent) * 2.5).toFixed(1)}%`}
+            trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'} />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+          <QuickStatCard
+            icon={<BarChart2 className="w-3.5 h-3.5 text-blue-400" />}
+            label="Rango Diario"
+            value={`${((high - low) * (currentPrice < 10 ? 10000 : 100)).toFixed(0)} pips`}
+            trend="neutral" />
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+          <QuickStatCard
+            icon={<Zap className="w-3.5 h-3.5 text-amber-400" />}
+            label="Momentum"
+            value={isPositive ? 'Alcista' : 'Bajista'}
+            trend={isPositive ? 'bullish' : 'bearish'} />
+        </motion.div>
+      </motion.div>
 
       {/* Market Overview - Multiple Pairs */}
       
@@ -219,7 +238,7 @@ export function HeroDashboard({
 
 
 
-    </div>);
+    </motion.div>);
 
 }
 
