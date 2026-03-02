@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import brandLogo from '@/assets/g174.svg';
 
 interface Plan {
   id: string;
@@ -86,6 +87,14 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
               >
                 {/* Gradient overlay */}
                 <div className={cn('absolute inset-0 bg-gradient-to-br opacity-40', plan.color)} />
+
+                {/* Brand watermark */}
+                <img
+                  src={brandLogo}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-28 h-28 opacity-[0.06] pointer-events-none select-none"
+                />
 
                 {/* Glow effect for active */}
                 {isActive && (
