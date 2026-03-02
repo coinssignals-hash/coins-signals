@@ -27,8 +27,19 @@ interface PriceChartProps {
   patternAlertConfig?: any;
 }
 
-const CHART_DAYS = 5;
+type ChartPeriod = '5m' | '15m' | '30m' | '1h' | '4h' | '1w';
+
+const CHART_DAYS = 7;
 const CHART_MINUTES = CHART_DAYS * 24 * 60;
+
+const periodButtons: { value: ChartPeriod; label: string; minutes: number }[] = [
+  { value: '5m', label: '5m', minutes: 5 },
+  { value: '15m', label: '15m', minutes: 15 },
+  { value: '30m', label: '30m', minutes: 30 },
+  { value: '1h', label: '1h', minutes: 60 },
+  { value: '4h', label: '4h', minutes: 240 },
+  { value: '1w', label: '1S', minutes: 10080 },
+];
 
 export function PriceChart({
   pair,
@@ -39,10 +50,12 @@ export function PriceChart({
   realtimePrice,
   isRealtimeConnected = false,
   previousClose,
+  onPeriodChange,
 }: PriceChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('4h');
   const [hoveredData, setHoveredData] = useState<{
     x: number;
     y: number;
@@ -54,6 +67,11 @@ export function PriceChart({
     volume?: number;
   } | null>(null);
 
+  const handlePeriodClick = (period: ChartPeriod) => {
+    setSelectedPeriod(period);
+    onPeriodChange?.(period);
+  };
+
   const getTimeRange = useMemo(() => {
     const now = new Date();
     const startTime = new Date(now.getTime() - CHART_MINUTES * 60 * 1000);
@@ -63,7 +81,8 @@ export function PriceChart({
   const chartData = useMemo(() => {
     if (!priceData || priceData.length === 0) return [];
     const { startTime, endTime } = getTimeRange;
-    const periodMinutes = 240; // 4h default
+    const periodConfig = periodButtons.find((p) => p.value === selectedPeriod);
+    const periodMinutes = periodConfig?.minutes || 240;
 
     const filtered = priceData.filter((item) => {
       const date = new Date(item.time);
@@ -71,7 +90,6 @@ export function PriceChart({
       return date >= startTime && date <= endTime;
     });
 
-    // Aggregate into 4h candles
     const groups = new Map<number, typeof priceData>();
     const periodMs = periodMinutes * 60 * 1000;
 
@@ -88,10 +106,16 @@ export function PriceChart({
       .map((bucket) => {
         const items = groups.get(bucket)!;
         const bucketDate = new Date(bucket);
+        let timeLabel = '';
+        if (periodMinutes >= 1440) {
+          timeLabel = bucketDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+        } else if (periodMinutes >= 60) {
+          timeLabel = bucketDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+        } else {
+          timeLabel = bucketDate.toLocaleTimeString('es-ES', { day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+        }
         return {
-          time: bucketDate.toLocaleDateString('es-ES', {
-            weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false,
-          }),
+          time: timeLabel,
           price: items[items.length - 1].price,
           open: items[0].open,
           high: Math.max(...items.map((i) => i.high)),
@@ -99,7 +123,7 @@ export function PriceChart({
           volume: items.reduce((s, i) => s + (i.volume || 0), 0),
         };
       });
-  }, [priceData, getTimeRange]);
+  }, [priceData, getTimeRange, selectedPeriod]);
 
   const finalData = useMemo(() => {
     if (!realtimePrice || chartData.length === 0) return chartData;
@@ -339,15 +363,34 @@ export function PriceChart({
 
   return (
     <div className="w-full relative bg-background">
-      {/* Realtime indicator */}
-      {isRealtimeConnected && realtimePrice && (
-        <div className="flex items-center justify-end px-2 py-1">
-          <div className="flex items-center gap-2 bg-red-500/20 px-2 py-1 rounded-full">
-            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span className="text-xs text-red-400 font-medium">LIVE</span>
-          </div>
+      {/* Period selector + realtime indicator */}
+      <div className="flex items-center justify-between px-2 py-2 border-b border-border/30">
+        <div className="flex items-center gap-1">
+          {periodButtons.map((btn) => (
+            <button
+              key={btn.value}
+              onClick={() => handlePeriodClick(btn.value)}
+              className={cn(
+                "px-2 py-1 text-xs font-medium rounded transition-all",
+                selectedPeriod === btn.value
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              {btn.label}
+            </button>
+          ))}
+          <span className="hidden md:inline text-[10px] text-muted-foreground/70 bg-muted/30 px-2 py-1 rounded ml-2">
+            7 días • velas de {periodButtons.find((p) => p.value === selectedPeriod)?.label}
+          </span>
         </div>
-      )}
+        {isRealtimeConnected && realtimePrice && (
+          <div className="flex items-center gap-2 bg-destructive/20 px-2 py-1 rounded-full">
+            <span className="w-2 h-2 bg-destructive rounded-full animate-pulse"></span>
+            <span className="text-xs text-destructive font-medium">LIVE</span>
+          </div>
+        )}
+      </div>
 
       {/* Price chart */}
       <div ref={containerRef} className="h-[280px] w-full relative">
