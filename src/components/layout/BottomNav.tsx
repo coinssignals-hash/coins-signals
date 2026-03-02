@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Newspaper, Building2, Settings, TrendingUp, Wallet, BarChart2 } from 'lucide-react';
+import { Newspaper, Settings, TrendingUp, Wallet, BarChart2, Brain } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { usePrefetch } from '@/hooks/usePrefetch';
@@ -16,8 +16,8 @@ export function BottomNav() {
 
   const navItems = [
     { icon: BarChart2, label: t('nav_ideas'), href: '/', badgeType: null },
-    { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
     { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
+    { icon: Brain, label: 'IA', href: '/ai-center', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
     { icon: Settings, label: t('nav_settings'), href: '/settings', badgeType: null },
   ];
