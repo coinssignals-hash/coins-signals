@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,8 +10,12 @@ const ALPHA_VANTAGE_KEY = Deno.env.get('ALPHA_VANTAGE_API_KEY');
 const FMP_API_KEY = Deno.env.get('FMP_API_KEY');
 const FINNHUB_KEY = Deno.env.get('FINNHUB_API_KEY');
 const TWELVE_DATA_KEY = Deno.env.get('TWELVE_DATA_API_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-// ─── Cache ───
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+// ─── In-memory cache (fast, per-instance) ───
 interface CacheEntry { data: unknown; ts: number }
 const cache = new Map<string, CacheEntry>();
 const CACHE_TTL = 90_000; // 90s
@@ -18,6 +23,44 @@ const CACHE_TTL = 90_000; // 90s
 function cacheKey(sym: string, interval: string, ind?: string) { return `${sym}:${interval}:${ind || 'price'}`; }
 function fromCache(k: string) { const e = cache.get(k); if (!e || Date.now() - e.ts > CACHE_TTL) { if (e) cache.delete(k); return null; } return e.data; }
 function toCache(k: string, d: unknown) { if (cache.size > 100) { const f = cache.keys().next().value; if (f) cache.delete(f); } cache.set(k, { data: d, ts: Date.now() }); }
+
+// ─── DB cache (persistent, survives restarts) ───
+const DB_CACHE_TTL: Record<string, number> = {
+  'price': 3,    // 3 min for OHLC
+  'rsi': 5, 'macd': 5, 'sma': 5, 'stochastic': 5,
+  'atr': 5, 'adx': 5, 'adx_full': 5, 'bbands': 5,
+  'ichimoku': 10, 'willr': 5,
+};
+
+async function fromDBCache(ck: string): Promise<unknown | null> {
+  try {
+    const { data } = await supabaseAdmin
+      .from('market_data_cache')
+      .select('data, source')
+      .eq('cache_key', ck)
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle();
+    if (data) {
+      console.log(`[market-data] DB cache HIT: ${ck}`);
+      return { ...data.data as object, cached: true, cache_source: 'db' };
+    }
+  } catch (e) { console.warn('[market-data] DB cache read error:', e); }
+  return null;
+}
+
+async function toDBCache(ck: string, symbol: string, interval: string, indicator: string, result: unknown, source?: string) {
+  try {
+    const ttlMinutes = DB_CACHE_TTL[indicator] || 5;
+    const expires_at = new Date(Date.now() + ttlMinutes * 60_000).toISOString();
+    await supabaseAdmin
+      .from('market_data_cache')
+      .upsert({
+        cache_key: ck, symbol, interval, indicator,
+        data: result, source: source || 'unknown',
+        created_at: new Date().toISOString(), expires_at,
+      }, { onConflict: 'cache_key' });
+  } catch (e) { console.warn('[market-data] DB cache write error:', e); }
+}
 
 // ─── Symbol helpers ───
 function normalize(s: string): string {
@@ -418,9 +461,19 @@ serve(async (req) => {
     }
 
     const sym = normalize(symbol);
+    const ind = indicator || 'price';
     const ck = cacheKey(sym, interval, indicator);
+    
+    // Layer 1: in-memory cache
     const cached = fromCache(ck);
     if (cached) return new Response(JSON.stringify({ ...cached as object, cached: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+    // Layer 2: DB persistent cache
+    const dbCached = await fromDBCache(ck);
+    if (dbCached) {
+      toCache(ck, dbCached); // warm in-memory
+      return new Response(JSON.stringify(dbCached), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
 
     console.log(`[market-data] ${sym} interval=${interval} indicator=${indicator || 'price'}`);
 
@@ -456,6 +509,11 @@ serve(async (req) => {
         const ohlcCK = cacheKey(sym, interval);
         let ohlc: any = fromCache(ohlcCK) as any;
         if (!ohlc || !ohlc.values) {
+          // Try DB cache for OHLC
+          const dbOhlc = await fromDBCache(ohlcCK);
+          if (dbOhlc && (dbOhlc as any).values) ohlc = dbOhlc;
+        }
+        if (!ohlc || !ohlc.values) {
           ohlc = null;
           try { ohlc = await fetchAV_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
           if (!ohlc) try { ohlc = await fetchFMP_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
@@ -467,6 +525,8 @@ serve(async (req) => {
     }
 
     toCache(ck, result);
+    // Persist to DB cache (fire-and-forget)
+    toDBCache(ck, sym, interval, ind, result, result?.source).catch(() => {});
     return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   } catch (err: unknown) {
