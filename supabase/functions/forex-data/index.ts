@@ -14,9 +14,10 @@ function getYahooParams(interval: string): { yhInterval: string; range: string }
     case "30min": return { yhInterval: "30m", range: "60d" };
     case "1h": return { yhInterval: "1h", range: "730d" };
     case "4h": return { yhInterval: "1h", range: "730d" };
+    case "1d":
     case "1day": return { yhInterval: "1d", range: "2y" };
     case "1week": return { yhInterval: "1wk", range: "5y" };
-    default: return { yhInterval: "30m", range: "60d" };
+    default: return { yhInterval: "1d", range: "3mo" };
   }
 }
 
@@ -35,7 +36,9 @@ serve(async (req) => {
       );
     }
 
-    const yhSymbol = symbol.replace("/", "") + "=X";
+    // Handle symbols like EUR/USD, EURUSD, or EURUSD=X
+    const cleanSymbol = symbol.replace("/", "").replace("=X", "");
+    const yhSymbol = cleanSymbol + "=X";
     const maxCandles = parseInt(outputsize) || 336;
     const { yhInterval, range } = getYahooParams(interval);
 

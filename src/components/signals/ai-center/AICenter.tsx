@@ -42,11 +42,10 @@ export function AICenter({ onClose }: Props) {
   const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis } = useAIAnalysis();
 
   const activeSymbol = customSymbol || symbol;
-  const yahooSymbol = activeSymbol.replace('/', '') + '=X';
 
   const handleFetchData = useCallback(async () => {
-    await fetchData(yahooSymbol, '1d', '3mo');
-  }, [fetchData, yahooSymbol]);
+    await fetchData(activeSymbol, '1d', '3mo');
+  }, [fetchData, activeSymbol]);
 
   const computeAllIndicators = useCallback(() => {
     if (!forexData?.candles) return null;
