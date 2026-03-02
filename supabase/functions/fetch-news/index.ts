@@ -677,12 +677,38 @@ serve(async (req) => {
 
     // Remove duplicates by title similarity
     const seenTitles = new Set<string>();
-    allNews = allNews.filter(item => {
-      const normalizedTitle = item.title.toLowerCase().substring(0, 50);
-      if (seenTitles.has(normalizedTitle)) return false;
+    const dedupedNews: typeof allNews = [];
+    const skippedBySource: Record<string, typeof allNews> = {};
+    
+    for (const item of allNews) {
+      const normalizedTitle = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 40);
+      if (seenTitles.has(normalizedTitle)) {
+        // Track skipped items by source for diversity pass
+        if (!skippedBySource[item.source]) skippedBySource[item.source] = [];
+        skippedBySource[item.source].push(item);
+        continue;
+      }
       seenTitles.add(normalizedTitle);
-      return true;
-    });
+      dedupedNews.push(item);
+    }
+    
+    allNews = dedupedNews;
+
+    // Ensure source diversity: if a source has 0 items after dedup, add its unique items
+    const representedSources = new Set(allNews.map(n => n.source));
+    for (const [source, items] of Object.entries(skippedBySource)) {
+      if (!representedSources.has(source) && items.length > 0) {
+        // Add up to 5 unique items from underrepresented source
+        const toAdd = items.slice(0, 5);
+        allNews.push(...toAdd);
+        console.log(`[fetch-news] Added ${toAdd.length} diversity items from ${source}`);
+      }
+    }
+
+    // Re-sort after diversity additions
+    allNews.sort((a, b) => 
+      new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+    );
 
     // Limit results
     allNews = allNews.slice(0, limit);
