@@ -38,24 +38,28 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
   const handleCreate = async () => {
     setCreating(true);
     try {
-      const { error } = await supabase.from('trading_signals').insert({
-        currency_pair: signal.currencyPair,
-        action: signal.action,
-        entry_price: signal.entryPrice,
-        take_profit: signal.takeProfit,
-        stop_loss: signal.stopLoss,
-        support: signal.support ?? null,
-        resistance: signal.resistance ?? null,
-        probability: signal.probability,
-        trend: signal.trend,
-        status: 'active',
-        analysis_data: [{ label: 'AI Generated', value: signal.probability }],
+      // Use the same edge function as manual signal creation
+      // This handles: insert + HD chart generation + storage upload + push notification
+      const { data, error } = await supabase.functions.invoke('insert-signal-admin', {
+        body: {
+          currency_pair: signal.currencyPair,
+          action: signal.action,
+          entry_price: signal.entryPrice,
+          take_profit: signal.takeProfit,
+          stop_loss: signal.stopLoss,
+          support: signal.support ?? null,
+          resistance: signal.resistance ?? null,
+          probability: signal.probability,
+          trend: signal.trend,
+          status: 'active',
+        },
       });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
-        title: '✅ Señal creada',
+        title: '✅ Señal creada con gráfico HD',
         description: `${signal.action} ${signal.currencyPair} @ ${signal.entryPrice}`,
       });
       onCreated();
@@ -214,8 +218,13 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
         ) : (
           <Check className="w-5 h-5" />
         )}
-        Crear Señal de Trading
+        {creating ? 'Creando señal + gráfico HD...' : 'Crear Señal de Trading'}
       </button>
+
+      {/* Info */}
+      <p className="text-[10px] text-muted-foreground text-center">
+        Se generará automáticamente un gráfico HD de 7 días y se enviará notificación push
+      </p>
     </div>
   );
 }
