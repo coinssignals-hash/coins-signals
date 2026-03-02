@@ -104,3 +104,9 @@ verify_jwt = false
 
 [functions.synthesize-analysis]
 verify_jwt = false
+
+[functions.alpha-vantage]
+verify_jwt = false
+
+[functions.fmp-data]
+verify_jwt = false

@@ -8,6 +8,7 @@ const corsHeaders = {
 const TWELVE_DATA_API_KEY = Deno.env.get('TWELVE_DATA_API_KEY');
 const POLYGON_API_KEY = Deno.env.get('POLYGON_API_KEY');
 const RAPIDAPI_KEY = Deno.env.get('RAPIDAPI_KEY');
+const ALPHA_VANTAGE_KEY = Deno.env.get('ALPHA_VANTAGE_API_KEY');
 
 // Simple in-memory cache with TTL
 interface CacheEntry {
@@ -266,6 +267,115 @@ async function fetchTwelveData(formattedSymbol: string, interval: string, indica
   return { ...data, symbol: formattedSymbol };
 }
 
+// Map interval to Alpha Vantage format
+function toAVInterval(interval: string): string {
+  const map: Record<string, string> = {
+    '5min': '5min', '15min': '15min', '30min': '30min',
+    '1h': '60min', '4h': '60min', '1day': 'daily', '1week': 'weekly',
+  };
+  return map[interval] || '60min';
+}
+
+// Fetch OHLC from Alpha Vantage
+async function fetchAlphaVantageOHLC(symbol: string, interval: string, outputsize: number) {
+  if (!ALPHA_VANTAGE_KEY) throw new Error('ALPHA_VANTAGE_KEY not configured');
+
+  const parts = symbol.split('/');
+  const avInterval = toAVInterval(interval);
+  let url: string;
+
+  if (['daily', 'weekly'].includes(avInterval)) {
+    url = `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${parts[0]}&to_symbol=${parts[1]}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`;
+  } else {
+    url = `https://www.alphavantage.co/query?function=FX_INTRADAY&from_symbol=${parts[0]}&to_symbol=${parts[1]}&interval=${avInterval}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`;
+  }
+
+  console.log(`Fetching Alpha Vantage: ${symbol}, ${avInterval}`);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const data = await res.json();
+
+  if (data['Note'] || data['Information']) throw new Error('AV rate limit');
+  if (data['Error Message']) throw new Error(data['Error Message']);
+
+  // Find the time series key
+  const tsKey = Object.keys(data).find(k => k.startsWith('Time Series'));
+  if (!tsKey || !data[tsKey]) throw new Error('No AV time series data');
+
+  const entries = Object.entries(data[tsKey]).slice(0, outputsize);
+  const values = entries.map(([datetime, bar]: [string, any]) => ({
+    datetime,
+    open: bar['1. open'],
+    high: bar['2. high'],
+    low: bar['3. low'],
+    close: bar['4. close'],
+    volume: '0',
+  })).reverse();
+
+  return { meta: { symbol, interval, type: 'Forex' }, values, status: 'ok', source: 'alpha_vantage' };
+}
+
+// Fetch indicator from Alpha Vantage
+async function fetchAlphaVantageIndicator(symbol: string, interval: string, indicator: string, outputsize: number) {
+  if (!ALPHA_VANTAGE_KEY) throw new Error('ALPHA_VANTAGE_KEY not configured');
+
+  const avInterval = toAVInterval(interval);
+  // AV uses forex symbol format: from_symbol=EUR&to_symbol=USD
+  // But for indicators, it uses the symbol directly like EURUSD or EUR/USD
+  const avSymbol = symbol.replace('/', '');
+  const params = new URLSearchParams({ apikey: ALPHA_VANTAGE_KEY, symbol: avSymbol, interval: avInterval, series_type: 'close' });
+
+  let fn = '';
+  if (indicator === 'rsi') { fn = 'RSI'; params.set('time_period', '14'); }
+  else if (indicator === 'macd') { fn = 'MACD'; }
+  else if (indicator === 'sma') { fn = 'SMA'; params.set('time_period', '20'); }
+  else { return fetchAlphaVantageOHLC(symbol, interval, outputsize); }
+
+  params.set('function', fn);
+  const url = `https://www.alphavantage.co/query?${params}`;
+  console.log(`Fetching AV indicator: ${fn} ${avSymbol}`);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const data = await res.json();
+  if (data['Note'] || data['Information']) throw new Error('AV rate limit');
+
+  const tsKey = Object.keys(data).find(k => k.startsWith('Technical Analysis'));
+  if (!tsKey || !data[tsKey]) throw new Error('No AV indicator data');
+
+  const entries = Object.entries(data[tsKey]).slice(0, outputsize);
+
+  if (indicator === 'rsi') {
+    return {
+      values: entries.map(([dt, v]: [string, any]) => ({ datetime: dt, rsi: v['RSI'] })).reverse(),
+      symbol, source: 'alpha_vantage',
+    };
+  }
+  if (indicator === 'macd') {
+    return {
+      values: entries.map(([dt, v]: [string, any]) => ({
+        datetime: dt, macd: v['MACD'], macd_signal: v['MACD_Signal'], macd_hist: v['MACD_Hist'],
+      })).reverse(),
+      symbol, source: 'alpha_vantage',
+    };
+  }
+  if (indicator === 'sma') {
+    // Fetch SMA 20 and 50
+    params.set('time_period', '50');
+    const res50 = await fetch(`https://www.alphavantage.co/query?${params}`);
+    const data50 = await res50.json();
+    const tsKey50 = Object.keys(data50).find(k => k.startsWith('Technical Analysis'));
+    const entries50 = tsKey50 ? Object.entries(data50[tsKey50]).slice(0, outputsize) : [];
+
+    return {
+      sma20: entries.map(([dt, v]: [string, any]) => ({ datetime: dt, sma: v['SMA'] })).reverse(),
+      sma50: entries50.map(([dt, v]: [string, any]) => ({ datetime: dt, sma: v['SMA'] })).reverse(),
+      symbol, source: 'alpha_vantage',
+    };
+  }
+
+  return fetchAlphaVantageOHLC(symbol, interval, outputsize);
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -301,34 +411,46 @@ serve(async (req) => {
 
     let result: any;
 
-    // Try Twelve Data first, fallback to Polygon.io
+    // Try Twelve Data first, then Polygon, then Alpha Vantage
     try {
       result = await fetchTwelveData(formattedSymbol, interval, indicator, outputsize);
       result.source = 'twelve_data';
     } catch (tdError: any) {
       if (tdError.message === 'TWELVE_DATA_EXPIRED') {
-        console.log('Twelve Data expired, falling back to Polygon.io...');
+        console.log('Twelve Data expired, trying Polygon.io...');
 
-        if (!POLYGON_API_KEY) {
-          return new Response(JSON.stringify({
-            error: 'api_subscription_expired',
-            message: 'La suscripción de datos de mercado ha expirado.',
-            status: 'error', retryable: false,
-          }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        if (POLYGON_API_KEY) {
+          try {
+            if (indicator) {
+              result = await fetchPolygonIndicator(formattedSymbol, interval, indicator, outputsize);
+            } else {
+              result = await fetchPolygonOHLC(formattedSymbol, interval, outputsize);
+            }
+            console.log(`Polygon.io fallback successful for ${formattedSymbol}`);
+          } catch (pgError: any) {
+            console.error('Polygon fallback failed:', pgError.message);
+            // Fall through to Alpha Vantage
+          }
         }
 
-        try {
-          if (indicator) {
-            result = await fetchPolygonIndicator(formattedSymbol, interval, indicator, outputsize);
-          } else {
-            result = await fetchPolygonOHLC(formattedSymbol, interval, outputsize);
+        // Try Alpha Vantage as final fallback
+        if (!result && ALPHA_VANTAGE_KEY) {
+          try {
+            if (indicator) {
+              result = await fetchAlphaVantageIndicator(formattedSymbol, interval, indicator, outputsize);
+            } else {
+              result = await fetchAlphaVantageOHLC(formattedSymbol, interval, outputsize);
+            }
+            console.log(`Alpha Vantage fallback successful for ${formattedSymbol}`);
+          } catch (avError: any) {
+            console.error('Alpha Vantage fallback failed:', avError.message);
           }
-          console.log(`Polygon.io fallback successful for ${formattedSymbol} (${indicator || 'price'})`);
-        } catch (pgError: any) {
-          console.error('Polygon fallback failed:', pgError.message);
+        }
+
+        if (!result) {
           return new Response(JSON.stringify({
             error: 'api_subscription_expired',
-            message: 'No se pudieron obtener datos de mercado.',
+            message: 'No se pudieron obtener datos de mercado de ningún proveedor.',
             status: 'error', retryable: true,
           }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
