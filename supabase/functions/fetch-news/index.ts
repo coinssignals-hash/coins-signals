@@ -547,12 +547,28 @@ async function fetchFMPGeneralNews(apiKey: string): Promise<NewsItem[]> {
 // Fetch from Alpha Vantage News Sentiment
 async function fetchAlphaVantageNews(apiKey: string): Promise<NewsItem[]> {
   try {
-    const res = await fetch(
-      `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&topics=financial_markets,economy_fiscal,economy_monetary,finance&sort=LATEST&limit=30&apikey=${apiKey}`
-    );
-    if (!res.ok) return [];
+    const url = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&topics=financial_markets,economy_fiscal,economy_monetary,finance&sort=LATEST&limit=30&apikey=${apiKey}`;
+    console.log('[fetch-news] Fetching Alpha Vantage news...');
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error('[fetch-news] Alpha Vantage HTTP error:', res.status);
+      return [];
+    }
     const data = await res.json();
-    if (data['Note'] || data['Information'] || !data.feed) return [];
+    if (data['Note']) {
+      console.warn('[fetch-news] Alpha Vantage rate limit Note:', data['Note']);
+      return [];
+    }
+    if (data['Information']) {
+      console.warn('[fetch-news] Alpha Vantage info:', data['Information']);
+      return [];
+    }
+    if (!data.feed) {
+      console.warn('[fetch-news] Alpha Vantage no feed. Keys:', Object.keys(data).join(', '));
+      return [];
+    }
+
+    console.log(`[fetch-news] Alpha Vantage returned ${data.feed.length} items`);
 
     return data.feed.slice(0, 20).map((item: any, i: number) => {
       const text = `${item.title} ${item.summary || ''}`;
@@ -569,7 +585,6 @@ async function fetchAlphaVantageNews(apiKey: string): Promise<NewsItem[]> {
         .filter((c: string) => c && Object.keys(CURRENCY_PATTERNS).includes(c));
       const currencies = avCurrencies.length > 0 ? [...new Set(avCurrencies)] : detectCurrencies(text);
 
-      // Relevance from AV
       const relevance = Math.min(parseFloat(item.overall_sentiment_score ? '0.85' : '0.7') + Math.random() * 0.15, 1);
 
       return {
