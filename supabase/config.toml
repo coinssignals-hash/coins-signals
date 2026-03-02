@@ -89,3 +89,18 @@ verify_jwt = false
 
 [functions.translate-news]
 verify_jwt = false
+
+[functions.forex-data]
+verify_jwt = false
+
+[functions.analyze-patterns]
+verify_jwt = false
+
+[functions.predict-signals]
+verify_jwt = false
+
+[functions.generate-report]
+verify_jwt = false
+
+[functions.synthesize-analysis]
+verify_jwt = false
