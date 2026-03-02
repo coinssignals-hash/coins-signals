@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useForexChartData } from "@/hooks/useForexChartData";
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
+import { ZoomableChart } from "@/components/signals/ZoomableChart";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -731,16 +732,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
                   </div>
                   <div className="flex-1 min-h-0">
-                    <CandlestickChart
-                      data={forexChartData?.candles || []}
-                      resistance={forexChartData?.resistance ?? 0}
-                      support={forexChartData?.support ?? 0}
-                      loading={forexChartLoading}
-                      realtimePrice={quote?.price}
-                      isRealtimeConnected={isConnected}
-                      previousDayDate={forexChartData?.date}
-                      showSupportResistance={showSR}
-                    />
+                    <ZoomableChart>
+                      <CandlestickChart
+                        data={forexChartData?.candles || []}
+                        resistance={forexChartData?.resistance ?? 0}
+                        support={forexChartData?.support ?? 0}
+                        loading={forexChartLoading}
+                        realtimePrice={quote?.price}
+                        isRealtimeConnected={isConnected}
+                        previousDayDate={forexChartData?.date}
+                        showSupportResistance={showSR}
+                      />
+                    </ZoomableChart>
                   </div>
                 </div>
               </DialogContent>
