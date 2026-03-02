@@ -10,7 +10,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Activity
+  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Activity, Wallet
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +37,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
 
   const menuItems = [
     { icon: Brain, label: 'Centro de Análisis IA', href: '/ai-center' },
+    { icon: Wallet, label: 'Portfolio', href: '/portfolio' },
     { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
     { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
     { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
