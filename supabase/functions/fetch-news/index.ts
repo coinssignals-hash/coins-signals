@@ -37,6 +37,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'Benzinga': 'https://logo.clearbit.com/benzinga.com',
   'ForexLive': 'https://logo.clearbit.com/forexlive.com',
   'MarketAux': 'https://logo.clearbit.com/marketaux.com',
+  'FMP': 'https://logo.clearbit.com/financialmodelingprep.com',
 };
 
 // Currency detection from text
@@ -363,6 +364,130 @@ async function fetchMarketAuxNews(apiKey: string): Promise<NewsItem[]> {
   }
 }
 
+// Fetch from FMP - Forex News
+async function fetchFMPForexNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    const res = await fetch(`https://financialmodelingprep.com/stable/news/forex-latest?page=0&limit=20&apikey=${apiKey}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((item: any, i: number) => {
+      const text = `${item.title} ${item.text || ''}`;
+      return {
+        id: `fmp-forex-${i}-${Date.now()}`,
+        title: item.title,
+        summary: (item.text || '').substring(0, 300),
+        source: item.site || 'FMP',
+        source_logo: SOURCE_LOGOS['FMP'],
+        url: item.url,
+        image_url: item.image || null,
+        published_at: item.publishedDate || new Date().toISOString(),
+        time_ago: getTimeAgo(item.publishedDate || new Date().toISOString()),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.85 + Math.random() * 0.15,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] FMP Forex error:', error);
+    return [];
+  }
+}
+
+// Fetch from FMP - Crypto News
+async function fetchFMPCryptoNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    const res = await fetch(`https://financialmodelingprep.com/stable/news/crypto-latest?page=0&limit=15&apikey=${apiKey}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((item: any, i: number) => {
+      const text = `${item.title} ${item.text || ''}`;
+      return {
+        id: `fmp-crypto-${i}-${Date.now()}`,
+        title: item.title,
+        summary: (item.text || '').substring(0, 300),
+        source: item.site || 'FMP',
+        source_logo: SOURCE_LOGOS['FMP'],
+        url: item.url,
+        image_url: item.image || null,
+        published_at: item.publishedDate || new Date().toISOString(),
+        time_ago: getTimeAgo(item.publishedDate || new Date().toISOString()),
+        category: 'crypto',
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.8 + Math.random() * 0.2,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] FMP Crypto error:', error);
+    return [];
+  }
+}
+
+// Fetch from FMP - Stock News
+async function fetchFMPStockNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    const res = await fetch(`https://financialmodelingprep.com/stable/news/stock-latest?page=0&limit=15&apikey=${apiKey}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((item: any, i: number) => {
+      const text = `${item.title} ${item.text || ''}`;
+      return {
+        id: `fmp-stock-${i}-${Date.now()}`,
+        title: item.title,
+        summary: (item.text || '').substring(0, 300),
+        source: item.site || 'FMP',
+        source_logo: SOURCE_LOGOS['FMP'],
+        url: item.url,
+        image_url: item.image || null,
+        published_at: item.publishedDate || new Date().toISOString(),
+        time_ago: getTimeAgo(item.publishedDate || new Date().toISOString()),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.82 + Math.random() * 0.18,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] FMP Stock error:', error);
+    return [];
+  }
+}
+
+// Fetch from FMP - General News
+async function fetchFMPGeneralNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    const res = await fetch(`https://financialmodelingprep.com/stable/news/general-latest?page=0&limit=10&apikey=${apiKey}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map((item: any, i: number) => {
+      const text = `${item.title} ${item.text || ''}`;
+      return {
+        id: `fmp-general-${i}-${Date.now()}`,
+        title: item.title,
+        summary: (item.text || '').substring(0, 300),
+        source: item.site || 'FMP',
+        source_logo: SOURCE_LOGOS['FMP'],
+        url: item.url,
+        image_url: item.image || null,
+        published_at: item.publishedDate || new Date().toISOString(),
+        time_ago: getTimeAgo(item.publishedDate || new Date().toISOString()),
+        category: detectCategory(text),
+        affected_currencies: detectCurrencies(text),
+        sentiment: detectSentiment(text),
+        relevance_score: 0.75 + Math.random() * 0.25,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] FMP General error:', error);
+    return [];
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -376,6 +501,7 @@ serve(async (req) => {
     const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
     const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
     const marketAuxKey = Deno.env.get('MARKETAUX_API_KEY');
+    const fmpKey = Deno.env.get('FMP_API_KEY');
 
     // Launch all sources in parallel - RSS sources don't need API keys
     const newsPromises: Promise<NewsItem[]>[] = [
@@ -387,6 +513,12 @@ serve(async (req) => {
     if (finnhubKey) newsPromises.push(fetchFinnhubNews(finnhubKey));
     if (newsApiKey) newsPromises.push(fetchNewsApiNews(newsApiKey));
     if (marketAuxKey) newsPromises.push(fetchMarketAuxNews(marketAuxKey));
+    if (fmpKey) {
+      newsPromises.push(fetchFMPForexNews(fmpKey));
+      newsPromises.push(fetchFMPCryptoNews(fmpKey));
+      newsPromises.push(fetchFMPStockNews(fmpKey));
+      newsPromises.push(fetchFMPGeneralNews(fmpKey));
+    }
 
     const results = await Promise.allSettled(newsPromises);
     let allNews = results
@@ -435,6 +567,10 @@ serve(async (req) => {
       investing: allNews.some(n => n.id.startsWith('investing')),
       bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
       marketaux: allNews.some(n => n.id.startsWith('marketaux')),
+      fmp_forex: allNews.some(n => n.id.startsWith('fmp-forex')),
+      fmp_crypto: allNews.some(n => n.id.startsWith('fmp-crypto')),
+      fmp_stock: allNews.some(n => n.id.startsWith('fmp-stock')),
+      fmp_general: allNews.some(n => n.id.startsWith('fmp-general')),
     };
 
     console.log('[fetch-news] Returning', allNews.length, 'news items. Sources:', sourcesPresent);

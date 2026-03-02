@@ -19,6 +19,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'Forex Factory': 'https://logo.clearbit.com/forexfactory.com',
   'ForexLive': 'https://logo.clearbit.com/forexlive.com',
   'MarketAux': 'https://logo.clearbit.com/marketaux.com',
+  'FMP': 'https://logo.clearbit.com/financialmodelingprep.com',
 };
 
 const CURRENCY_PATTERNS: Record<string, RegExp> = {
@@ -293,6 +294,52 @@ async function fetchMarketAux(apiKey: string): Promise<MobileNewsItem[]> {
   }
 }
 
+// Fetch from FMP - multiple news categories
+async function fetchFMPNews(apiKey: string): Promise<MobileNewsItem[]> {
+  const endpoints = [
+    { url: `https://financialmodelingprep.com/stable/news/forex-latest?page=0&limit=15&apikey=${apiKey}`, prefix: 'fmp-forex' },
+    { url: `https://financialmodelingprep.com/stable/news/crypto-latest?page=0&limit=10&apikey=${apiKey}`, prefix: 'fmp-crypto' },
+    { url: `https://financialmodelingprep.com/stable/news/stock-latest?page=0&limit=10&apikey=${apiKey}`, prefix: 'fmp-stock' },
+    { url: `https://financialmodelingprep.com/stable/news/general-latest?page=0&limit=8&apikey=${apiKey}`, prefix: 'fmp-general' },
+  ];
+
+  const results = await Promise.allSettled(
+    endpoints.map(async ({ url, prefix }) => {
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const data = await res.json();
+      if (!Array.isArray(data)) return [];
+      return data.map((item: any, i: number) => {
+        const text = `${item.title} ${item.text || ''}`;
+        const cat = prefix === 'fmp-crypto' ? 'market' : detectCategory(text);
+        const sent = detectSentiment(text);
+        const imp = detectImpact(text);
+        const src = item.site || 'FMP';
+        return {
+          id: `${prefix}-${i}-${Date.now()}`,
+          title: item.title,
+          summary: (item.text || '').substring(0, 200),
+          source: src,
+          source_logo: SOURCE_LOGOS['FMP'],
+          url: item.url,
+          image_url: item.image || null,
+          published_at: item.publishedDate || new Date().toISOString(),
+          time_ago: getTimeAgo(item.publishedDate || new Date().toISOString()),
+          category: cat,
+          affected_currencies: detectCurrencies(text),
+          sentiment: sent,
+          impact: imp,
+          card: buildCard(imp, sent, cat, src),
+        };
+      });
+    })
+  );
+
+  return results
+    .filter((r): r is PromiseFulfilledResult<MobileNewsItem[]> => r.status === 'fulfilled')
+    .flatMap(r => r.value);
+}
+
 // In-memory cache with 2-min TTL
 let newsCache: { data: MobileNewsItem[]; sources: Record<string, boolean>; ts: number } | null = null;
 const CACHE_TTL = 2 * 60 * 1000;
@@ -305,6 +352,7 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
   const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
   const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
   const marketAuxKey = Deno.env.get('MARKETAUX_API_KEY');
+  const fmpKey = Deno.env.get('FMP_API_KEY');
 
   const promises: Promise<MobileNewsItem[]>[] = [
     fetchRSS('https://www.fxstreet.com/rss/news', 'fxstreet', 'FXStreet'),
@@ -314,6 +362,7 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
   if (finnhubKey) promises.push(fetchFinnhub(finnhubKey));
   if (newsApiKey) promises.push(fetchNewsApi(newsApiKey));
   if (marketAuxKey) promises.push(fetchMarketAux(marketAuxKey));
+  if (fmpKey) promises.push(fetchFMPNews(fmpKey));
 
   if (promises.length === 0) {
     return { data: [], sources: {} };
@@ -343,6 +392,7 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
     investing: allNews.some(n => n.id.startsWith('investing')),
     bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
     marketaux: allNews.some(n => n.id.startsWith('marketaux')),
+    fmp: allNews.some(n => n.id.startsWith('fmp-')),
   };
 
   newsCache = { data: allNews, sources, ts: Date.now() };
