@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { useForexChartData, type ChartInterval } from "@/hooks/useForexChartData";
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { ZoomableChart } from "@/components/signals/ZoomableChart";
+import { IndicatorMiniChart } from "@/components/signals/IndicatorMiniChart";
+import { calcEMA, calcRSI, calcMACD } from "@/lib/indicators";
+import type { OHLCVCandle } from "@/lib/indicators";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -335,7 +338,25 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [chartInterval, setChartInterval] = useState<ChartInterval>('30min');
   const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol, chartInterval);
 
-  // Circle fill = how far current price is toward TP or SL (0% = at entry, 100% = at TP/SL)
+  // Indicator toggles for fullscreen
+  const [showEMA, setShowEMA] = useState(false);
+  const [showRSI, setShowRSI] = useState(false);
+  const [showMACD, setShowMACD] = useState(false);
+
+  // Compute indicators from candle data
+  const indicatorData = useMemo(() => {
+    const candles = forexChartData?.candles;
+    if (!candles?.length) return null;
+    // Add volume=0 to satisfy OHLCVCandle interface
+    const ohlcv: OHLCVCandle[] = candles.map(c => ({ ...c, volume: 0 }));
+    return {
+      ema20: calcEMA(ohlcv, 20),
+      ema50: calcEMA(ohlcv, 50),
+      rsi: calcRSI(ohlcv),
+      macd: calcMACD(ohlcv),
+    };
+  }, [forexChartData?.candles]);
+
   const circlePercent = useMemo(() => {
     if (!priceDiff.hasData) return 0;
     const current = priceDiff.currentPrice;
@@ -732,6 +753,26 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         </button>
                       ))}
                       <div className="w-px h-5 bg-slate-700/50 mx-1" />
+                      {/* Indicator toggles */}
+                      {([
+                        { key: 'ema', label: 'EMA', active: showEMA, toggle: () => setShowEMA(!showEMA), color: 'blue' },
+                        { key: 'rsi', label: 'RSI', active: showRSI, toggle: () => setShowRSI(!showRSI), color: 'blue' },
+                        { key: 'macd', label: 'MACD', active: showMACD, toggle: () => setShowMACD(!showMACD), color: 'purple' },
+                      ] as const).map(ind => (
+                        <button
+                          key={ind.key}
+                          onClick={ind.toggle}
+                          className={cn(
+                            "px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                            ind.active
+                              ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                              : "bg-slate-800/70 text-slate-500 border border-slate-700/40 hover:text-slate-300"
+                          )}
+                        >
+                          {ind.label}
+                        </button>
+                      ))}
+                      <div className="w-px h-5 bg-slate-700/50 mx-1" />
                       <button
                         onClick={() => setShowSR(!showSR)}
                         className={cn(
@@ -748,7 +789,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       </button>
                     </div>
                   </div>
-                  <div className="flex-1 min-h-0">
+                  <div className="flex-1 min-h-0 overflow-y-auto">
                     <ZoomableChart>
                       <CandlestickChart
                         data={forexChartData?.candles || []}
@@ -759,8 +800,20 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         isRealtimeConnected={isConnected}
                         previousDayDate={forexChartData?.date}
                         showSupportResistance={showSR}
+                        ema20Data={showEMA ? indicatorData?.ema20 : undefined}
+                        ema50Data={showEMA ? indicatorData?.ema50 : undefined}
                       />
                     </ZoomableChart>
+                    {showRSI && indicatorData?.rsi && indicatorData.rsi.length > 0 && (
+                      <div className="px-1 mt-1">
+                        <IndicatorMiniChart type="rsi" data={indicatorData.rsi} />
+                      </div>
+                    )}
+                    {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 && (
+                      <div className="px-1 mt-1">
+                        <IndicatorMiniChart type="macd" data={indicatorData.macd} />
+                      </div>
+                    )}
                   </div>
                 </div>
               </DialogContent>

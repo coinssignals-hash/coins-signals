@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import type { TimeValue, MACDData } from '@/lib/indicators';
 import { cn } from '@/lib/utils';
 import type { AlertState } from '@/hooks/useSupportResistanceAlerts';
 
@@ -21,6 +22,9 @@ interface CandlestickChartProps {
   alertState?: AlertState;
   /** Whether to show support/resistance lines (default: true) */
   showSupportResistance?: boolean;
+  /** Optional EMA overlay data */
+  ema20Data?: TimeValue[];
+  ema50Data?: TimeValue[];
 }
 
 /* ─── helpers ─── */
@@ -60,6 +64,8 @@ function buildChartSvg(
   isConnected: boolean,
   title?: string,
   showSR = true,
+  ema20Data?: TimeValue[],
+  ema50Data?: TimeValue[],
 ): string {
   const W = 1200, H = 700;
   const PAD = { top: 35, right: 110, bottom: 50, left: 65 };
@@ -212,6 +218,24 @@ function buildChartSvg(
     parts.push(`<rect x="${x - bodyW / 2}" y="${vy}" width="${bodyW}" height="${Math.max(1, vh)}" fill="${vc}" rx="0.3" shape-rendering="crispEdges"/>`);
   }
 
+  // EMA overlays
+  const drawEmaLine = (emaData: TimeValue[] | undefined, color: string) => {
+    if (!emaData?.length) return;
+    const timeMap = new Map(emaData.map(e => [e.time, e.value]));
+    const points: string[] = [];
+    for (let i = 0; i < data.length; i++) {
+      const val = timeMap.get(data[i].time);
+      if (val !== undefined && val !== null) {
+        points.push(`${xOf(i)},${yOf(val)}`);
+      }
+    }
+    if (points.length > 1) {
+      parts.push(`<polyline points="${points.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.8"/>`);
+    }
+  };
+  drawEmaLine(ema20Data, '#3b82f6');
+  drawEmaLine(ema50Data, '#f59e0b');
+
   const srX1 = firstLastDayIdx >= 0 ? CHART_X1 + firstLastDayIdx * cw : CHART_X1;
   const srX2 = CHART_X2;
   const lblW = 80, lblH = 18, fs = 10;
@@ -261,6 +285,8 @@ export function CandlestickChart({
   previousDayDate,
   alertState,
   showSupportResistance = true,
+  ema20Data,
+  ema50Data,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
 
@@ -269,9 +295,9 @@ export function CandlestickChart({
     const title = previousDayDate
       ? `30min · Última Semana | ${previousDayDate}`
       : '30min · Última Semana';
-    const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title, showSupportResistance);
+    const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title, showSupportResistance, ema20Data, ema50Data);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate, showSupportResistance]);
+  }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate, showSupportResistance, ema20Data, ema50Data]);
 
   const alertStyles = useMemo(() => {
     if (!alertState?.isActive) return null;
@@ -343,6 +369,18 @@ export function CandlestickChart({
                 <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(support, jpy)}</span>
               </div>
             </>
+          )}
+          {ema20Data && ema20Data.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-0.5 bg-blue-500" />
+              <span className="text-blue-400">EMA 20</span>
+            </div>
+          )}
+          {ema50Data && ema50Data.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-0.5 bg-amber-500" />
+              <span className="text-amber-400">EMA 50</span>
+            </div>
           )}
         </div>
         {realtimePrice && (
