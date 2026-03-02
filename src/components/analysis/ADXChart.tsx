@@ -10,6 +10,7 @@ interface ADXChartProps {
   pair: string;
   timeframe: string;
   priceData?: { time: string; price: number; high: number; low: number; open?: number; close?: number }[];
+  apiADX?: Array<{ time: string; adx: number; pdi: number; mdi: number }>;
   loading: boolean;
   error?: string | null;
 }
@@ -102,8 +103,21 @@ function calculateADX(priceData: ADXChartProps['priceData'], period = 14): ADXPo
   return points;
 }
 
-export function ADXChart({ pair, timeframe, priceData, loading, error }: ADXChartProps) {
-  const adxData = useMemo(() => calculateADX(priceData), [priceData]);
+export function ADXChart({ pair, timeframe, priceData, apiADX, loading, error }: ADXChartProps) {
+  const adxData = useMemo(() => {
+    if (apiADX && apiADX.length > 0) {
+      return apiADX.map((a) => {
+        const date = new Date(a.time);
+        const label = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        const signal: ADXPoint['signal'] =
+          a.adx >= 25 && a.pdi > a.mdi ? 'strong_bull' :
+          a.adx >= 25 && a.mdi > a.pdi ? 'strong_bear' :
+          a.adx < 20 ? 'ranging' : 'weak';
+        return { time: a.time, label, adx: a.adx, pdi: a.pdi, mdi: a.mdi, signal };
+      });
+    }
+    return calculateADX(priceData);
+  }, [priceData, apiADX]);
 
   const stats = useMemo(() => {
     if (adxData.length === 0) return null;

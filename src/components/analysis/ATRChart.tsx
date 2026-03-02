@@ -10,6 +10,7 @@ interface ATRChartProps {
   pair: string;
   timeframe: string;
   priceData?: { time: string; price: number; high: number; low: number; open?: number; close?: number }[];
+  apiATR?: Array<{ time: string; atr: number }>;
   loading: boolean;
   error?: string | null;
   realtimePrice?: number;
@@ -67,8 +68,21 @@ function calculateATR(priceData: ATRChartProps['priceData'], period = 14): ATRPo
   return points;
 }
 
-export function ATRChart({ pair, timeframe, priceData, loading, error, realtimePrice, isRealtimeConnected }: ATRChartProps) {
-  const atrData = useMemo(() => calculateATR(priceData), [priceData]);
+export function ATRChart({ pair, timeframe, priceData, apiATR, loading, error, realtimePrice, isRealtimeConnected }: ATRChartProps) {
+  const atrData = useMemo(() => {
+    // Use API ATR data merged with price if available
+    if (apiATR && apiATR.length > 0 && priceData && priceData.length > 0) {
+      return apiATR.map((a, i) => {
+        const p = priceData[Math.min(i, priceData.length - 1)];
+        const close = p.close ?? p.price;
+        const atrPercent = close > 0 ? (a.atr / close) * 100 : 0;
+        const date = new Date(a.time);
+        const label = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        return { time: a.time, label, atr: a.atr, atrPercent, trueRange: a.atr, high: p.high, low: p.low, close };
+      });
+    }
+    return calculateATR(priceData);
+  }, [priceData, apiATR]);
 
   const stats = useMemo(() => {
     if (atrData.length === 0) return null;
