@@ -36,6 +36,7 @@ const Analysis = lazy(() => import("./pages/Analysis"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const CreateSignal = lazy(() => import("./pages/CreateSignal"));
 const CurrencyImpact = lazy(() => import("./pages/CurrencyImpact"));
+const AICenter = lazy(() => import("./pages/AICenter"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -84,6 +85,7 @@ function AnimatedRoutes() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/create-signal" element={<CreateSignal />} />
           <Route path="/currency-impact" element={<CurrencyImpact />} />
+          <Route path="/ai-center" element={<AICenter />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
