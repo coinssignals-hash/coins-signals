@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AreaChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart } from 'recharts';
+import { AreaChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart, Bar, Cell, BarChart } from 'recharts';
 import type { HistoricalPrice } from '@/hooks/useStockData';
 import { cn } from '@/lib/utils';
 
@@ -75,6 +75,8 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
     return data.map((d, i) => ({
       date: d.date,
       price: d.close,
+      volume: d.volume,
+      volColor: d.close >= d.open ? 'hsl(142, 70%, 45%)' : 'hsl(0, 70%, 50%)',
       sma20: sma20[i],
       sma50: sma50[i],
       ema12: ema12[i],
@@ -212,6 +214,36 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
           ))}
         </ComposedChart>
       </ResponsiveContainer>
+
+      {/* Volume chart */}
+      <div className="mt-1 border-t border-border/20 pt-1">
+        <div className="text-[10px] text-muted-foreground mb-0.5 pl-1">Vol</div>
+        <ResponsiveContainer width="100%" height={50}>
+          <BarChart data={chartData} margin={{ top: 0, right: 5, left: -20, bottom: 0 }}>
+            <XAxis dataKey="date" hide />
+            <YAxis hide domain={[0, 'auto']} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                fontSize: '11px',
+              }}
+              labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
+              formatter={(value: number) => {
+                if (value >= 1e6) return [`${(value / 1e6).toFixed(1)}M`, 'Volumen'];
+                if (value >= 1e3) return [`${(value / 1e3).toFixed(1)}K`, 'Volumen'];
+                return [value.toFixed(0), 'Volumen'];
+              }}
+            />
+            <Bar dataKey="volume" radius={[1, 1, 0, 0]}>
+              {chartData.map((entry, i) => (
+                <Cell key={i} fill={entry.volColor} fillOpacity={0.6} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </Card>
   );
 }
