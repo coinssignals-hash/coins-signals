@@ -36,6 +36,7 @@ import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalMarketData } from "@/hooks/useSignalMarketData";
+import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -1046,6 +1047,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
                 {marketData ? (
                   <>
+                    {/* Confluence Score Traffic Light */}
+                    <div className="mb-3">
+                      <ConfluenceScore data={marketData} />
+                    </div>
+
                     {/* Row 1: Price + Spread + Daily Range */}
                     <div className="grid grid-cols-3 gap-2 mb-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
