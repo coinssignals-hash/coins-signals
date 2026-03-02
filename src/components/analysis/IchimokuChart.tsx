@@ -10,6 +10,7 @@ interface IchimokuChartProps {
   pair: string;
   timeframe: string;
   priceData?: { time: string; price: number; high: number; low: number; open?: number; close?: number }[];
+  apiIchimoku?: { time: string; tenkan: number; kijun: number; senkouA: number; senkouB: number; chikou: number }[];
   loading: boolean;
   error?: string | null;
   realtimePrice?: number;
@@ -92,8 +93,35 @@ function calculateIchimoku(priceData: IchimokuChartProps['priceData']): Ichimoku
   return points;
 }
 
-export function IchimokuChart({ pair, timeframe, priceData, loading, error, realtimePrice, isRealtimeConnected }: IchimokuChartProps) {
-  const ichData = useMemo(() => calculateIchimoku(priceData), [priceData]);
+export function IchimokuChart({ pair, timeframe, priceData, apiIchimoku, loading, error, realtimePrice, isRealtimeConnected }: IchimokuChartProps) {
+  // Use API data if available, otherwise fall back to local calculation
+  const ichData = useMemo(() => {
+    if (apiIchimoku && apiIchimoku.length > 0 && priceData && priceData.length > 0) {
+      // Merge API ichimoku data with price data by matching timestamps
+      const priceMap = new Map(priceData.map(p => [p.time, p]));
+      // Try to match by date substring if exact match fails
+      return apiIchimoku.map(ich => {
+        const pricePoint = priceMap.get(ich.time) || 
+          [...priceMap.values()].find(p => p.time.startsWith(ich.time.slice(0, 10)));
+        const close = pricePoint ? (pricePoint.close ?? pricePoint.price) : 0;
+        const date = new Date(ich.time);
+        const label = !isNaN(date.getTime())
+          ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+          : ich.time.slice(-5);
+        const cloudTop = Math.max(ich.senkouA, ich.senkouB);
+        const cloudBottom = Math.min(ich.senkouA, ich.senkouB);
+        return {
+          time: ich.time, label, close,
+          tenkan: ich.tenkan, kijun: ich.kijun,
+          senkouA: ich.senkouA, senkouB: ich.senkouB,
+          chikou: ich.chikou,
+          cloudTop, cloudBottom,
+          cloudBullish: ich.senkouA >= ich.senkouB,
+        } as IchimokuPoint;
+      }).filter(p => p.close > 0);
+    }
+    return calculateIchimoku(priceData);
+  }, [priceData, apiIchimoku]);
 
   const stats = useMemo(() => {
     if (ichData.length === 0) return null;
