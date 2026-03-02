@@ -36,6 +36,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'Forex Factory': 'https://logo.clearbit.com/forexfactory.com',
   'Benzinga': 'https://logo.clearbit.com/benzinga.com',
   'ForexLive': 'https://logo.clearbit.com/forexlive.com',
+  'MarketAux': 'https://logo.clearbit.com/marketaux.com',
 };
 
 // Currency detection from text
@@ -304,6 +305,64 @@ async function fetchBloombergNews(): Promise<NewsItem[]> {
   }
 }
 
+// Fetch from MarketAux API
+async function fetchMarketAuxNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    const response = await fetch(
+      `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=20&domains=bloomberg.com,reuters.com,cnbc.com,ft.com,wsj.com,investing.com,forexlive.com,fxstreet.com`
+    );
+    if (!response.ok) {
+      console.error('[fetch-news] MarketAux error status:', response.status);
+      return [];
+    }
+    const data = await response.json();
+    if (!data.data || !Array.isArray(data.data)) return [];
+
+    return data.data.map((item: any, index: number) => {
+      const text = `${item.title} ${item.description || ''}`;
+      // Use MarketAux native sentiment if available
+      const entitySentiment = item.entities?.[0]?.sentiment_score;
+      let sentiment: 'bullish' | 'bearish' | 'neutral' = 'neutral';
+      if (entitySentiment != null) {
+        sentiment = entitySentiment > 0.2 ? 'bullish' : entitySentiment < -0.2 ? 'bearish' : 'neutral';
+      } else {
+        sentiment = detectSentiment(text);
+      }
+
+      // Extract currencies from entities
+      const entityCurrencies = (item.entities || [])
+        .filter((e: any) => e.type === 'currency' || e.type === 'index' || e.type === 'equity')
+        .map((e: any) => e.symbol?.substring(0, 3)?.toUpperCase())
+        .filter((c: string) => c && Object.keys(CURRENCY_PATTERNS).includes(c));
+      const currencies = entityCurrencies.length > 0 ? [...new Set(entityCurrencies)] : detectCurrencies(text);
+
+      // Relevance from entity match_score or highlights_count
+      const relevance = item.entities?.[0]?.match_score
+        ? Math.min(item.entities[0].match_score / 100, 1)
+        : 0.85 + Math.random() * 0.15;
+
+      return {
+        id: `marketaux-${item.uuid || index}-${Date.now()}`,
+        title: item.title,
+        summary: (item.description || item.snippet || '').substring(0, 300),
+        source: item.source || 'MarketAux',
+        source_logo: SOURCE_LOGOS[item.source] || SOURCE_LOGOS['MarketAux'],
+        url: item.url,
+        image_url: item.image_url || null,
+        published_at: item.published_at,
+        time_ago: getTimeAgo(item.published_at),
+        category: detectCategory(text),
+        affected_currencies: currencies as string[],
+        sentiment,
+        relevance_score: relevance,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] MarketAux error:', error);
+    return [];
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -316,6 +375,7 @@ serve(async (req) => {
 
     const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
     const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
+    const marketAuxKey = Deno.env.get('MARKETAUX_API_KEY');
 
     // Launch all sources in parallel - RSS sources don't need API keys
     const newsPromises: Promise<NewsItem[]>[] = [
@@ -326,6 +386,7 @@ serve(async (req) => {
 
     if (finnhubKey) newsPromises.push(fetchFinnhubNews(finnhubKey));
     if (newsApiKey) newsPromises.push(fetchNewsApiNews(newsApiKey));
+    if (marketAuxKey) newsPromises.push(fetchMarketAuxNews(marketAuxKey));
 
     const results = await Promise.allSettled(newsPromises);
     let allNews = results
@@ -373,6 +434,7 @@ serve(async (req) => {
       fxstreet: allNews.some(n => n.id.startsWith('fxstreet')),
       investing: allNews.some(n => n.id.startsWith('investing')),
       bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
+      marketaux: allNews.some(n => n.id.startsWith('marketaux')),
     };
 
     console.log('[fetch-news] Returning', allNews.length, 'news items. Sources:', sourcesPresent);
