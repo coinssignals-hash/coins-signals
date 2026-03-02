@@ -18,6 +18,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'DailyFX': 'https://logo.clearbit.com/dailyfx.com',
   'Forex Factory': 'https://logo.clearbit.com/forexfactory.com',
   'ForexLive': 'https://logo.clearbit.com/forexlive.com',
+  'MarketAux': 'https://logo.clearbit.com/marketaux.com',
 };
 
 const CURRENCY_PATTERNS: Record<string, RegExp> = {
@@ -240,6 +241,58 @@ async function fetchRSS(url: string, sourceId: string, sourceName: string): Prom
   }
 }
 
+// Fetch from MarketAux API
+async function fetchMarketAux(apiKey: string): Promise<MobileNewsItem[]> {
+  try {
+    const res = await fetch(
+      `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=20&domains=bloomberg.com,reuters.com,cnbc.com,ft.com,wsj.com,investing.com,forexlive.com,fxstreet.com`
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!data.data || !Array.isArray(data.data)) return [];
+
+    return data.data.map((item: any, i: number) => {
+      const text = `${item.title} ${item.description || ''}`;
+      const entitySentiment = item.entities?.[0]?.sentiment_score;
+      let sent: 'bullish' | 'bearish' | 'neutral' = 'neutral';
+      if (entitySentiment != null) {
+        sent = entitySentiment > 0.2 ? 'bullish' : entitySentiment < -0.2 ? 'bearish' : 'neutral';
+      } else {
+        sent = detectSentiment(text);
+      }
+      const cat = detectCategory(text);
+      const imp = detectImpact(text);
+      const src = item.source || 'MarketAux';
+
+      const entityCurrencies = (item.entities || [])
+        .filter((e: any) => e.type === 'currency' || e.type === 'index' || e.type === 'equity')
+        .map((e: any) => e.symbol?.substring(0, 3)?.toUpperCase())
+        .filter((c: string) => c && Object.keys(CURRENCY_PATTERNS).includes(c));
+      const currencies = entityCurrencies.length > 0 ? [...new Set(entityCurrencies)] : detectCurrencies(text);
+
+      return {
+        id: `marketaux-${item.uuid || i}-${Date.now()}`,
+        title: item.title,
+        summary: (item.description || item.snippet || '').substring(0, 200),
+        source: src,
+        source_logo: SOURCE_LOGOS[src] || SOURCE_LOGOS['MarketAux'],
+        url: item.url,
+        image_url: item.image_url || null,
+        published_at: item.published_at,
+        time_ago: getTimeAgo(item.published_at),
+        category: cat,
+        affected_currencies: currencies as string[],
+        sentiment: sent,
+        impact: imp,
+        card: buildCard(imp, sent, cat, src),
+      };
+    });
+  } catch (error) {
+    console.error('[mobile-news] MarketAux error:', error);
+    return [];
+  }
+}
+
 // In-memory cache with 2-min TTL
 let newsCache: { data: MobileNewsItem[]; sources: Record<string, boolean>; ts: number } | null = null;
 const CACHE_TTL = 2 * 60 * 1000;
@@ -251,6 +304,7 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
 
   const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
   const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
+  const marketAuxKey = Deno.env.get('MARKETAUX_API_KEY');
 
   const promises: Promise<MobileNewsItem[]>[] = [
     fetchRSS('https://www.fxstreet.com/rss/news', 'fxstreet', 'FXStreet'),
@@ -259,6 +313,7 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
   ];
   if (finnhubKey) promises.push(fetchFinnhub(finnhubKey));
   if (newsApiKey) promises.push(fetchNewsApi(newsApiKey));
+  if (marketAuxKey) promises.push(fetchMarketAux(marketAuxKey));
 
   if (promises.length === 0) {
     return { data: [], sources: {} };
@@ -287,6 +342,7 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
     fxstreet: allNews.some(n => n.id.startsWith('fxstreet')),
     investing: allNews.some(n => n.id.startsWith('investing')),
     bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
+    marketaux: allNews.some(n => n.id.startsWith('marketaux')),
   };
 
   newsCache = { data: allNews, sources, ts: Date.now() };
