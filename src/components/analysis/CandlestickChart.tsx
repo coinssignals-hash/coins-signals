@@ -122,7 +122,7 @@ function buildChartSvg(
   const xOf = (i: number) => CHART_X1 + (i + 0.5) * (CHART_W / data.length);
   const volYOf = (vol: number) => { const h = (vol / maxVol) * VOL_H; return { y: VOL_BOTTOM - h, h }; };
   const cw = CHART_W / data.length;
-  const bodyW = Math.max(1.5, Math.min(8, cw * 0.65));
+  const bodyW = Math.max(3, Math.min(14, cw * 0.8));
 
   // Identify last day
   const lastDayStr = dayKey(data[data.length - 1].time);
@@ -236,7 +236,7 @@ function buildChartSvg(
   drawEmaLine(ema20Data, '#3b82f6');
   drawEmaLine(ema50Data, '#f59e0b');
 
-  const srX1 = firstLastDayIdx >= 0 ? CHART_X1 + firstLastDayIdx * cw : CHART_X1;
+  const srX1 = CHART_X1;
   const srX2 = CHART_X2;
   const lblW = 80, lblH = 18, fs = 10;
 
