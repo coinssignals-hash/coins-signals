@@ -69,14 +69,16 @@ export function useMarketData(symbol: string, timeframe: string) {
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'ichimoku', outputsize: 80 } }),
       ]);
 
-      if (priceR.error) throw new Error(priceR.error.message);
-      const priceResult = priceR.data;
-      if (priceResult.status === 'error') throw new Error(priceResult.error || 'Error fetching price data');
-
-      const priceValues = priceResult.values || [];
-      const processedPrice = priceValues.map((v: any) => ({
-        time: v.datetime, price: parseFloat(v.close), open: parseFloat(v.open), high: parseFloat(v.high), low: parseFloat(v.low),
-      })).reverse();
+      // Process price data gracefully - don't throw if price fails
+      let processedPrice: Array<{ time: string; price: number; open: number; high: number; low: number }> = [];
+      if (!priceR.error && priceR.data?.status !== 'error') {
+        const priceValues = priceR.data?.values || [];
+        processedPrice = priceValues.map((v: any) => ({
+          time: v.datetime, price: parseFloat(v.close), open: parseFloat(v.open), high: parseFloat(v.high), low: parseFloat(v.low),
+        })).reverse();
+      } else {
+        console.warn('Price data unavailable:', priceR.error?.message || priceR.data?.error);
+      }
 
       const rsiValues = rsiR.data?.values || [];
       const processedRSI = rsiValues.map((v: any) => ({ time: v.datetime, rsi: parseFloat(v.rsi) })).reverse();
@@ -115,7 +117,7 @@ export function useMarketData(symbol: string, timeframe: string) {
         priceData: processedPrice, smaData: processedSMA, rsiData: processedRSI, macdData: processedMACD,
         stochasticData: processedStoch, atrData: processedATR, adxData: processedADX, bbandsData: processedBBands,
         ichimokuData: processedIchimoku,
-        cached: priceResult.cached || false,
+        cached: priceR.data?.cached || false,
       };
 
       setCC(ck, marketData);
