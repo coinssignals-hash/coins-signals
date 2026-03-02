@@ -27,15 +27,31 @@ interface PlanCarouselProps {
 
 export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(1);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
 
   const goTo = (index: number) => {
     if (index >= 0 && index < plans.length) setActiveIndex(index);
   };
 
+  const handleDragEnd = (_: any, info: { offset: { x: number }; velocity: { x: number } }) => {
+    const threshold = 50;
+    const { x } = info.offset;
+    const vx = info.velocity.x;
+    if (x < -threshold || vx < -300) goTo(activeIndex + 1);
+    else if (x > threshold || vx > 300) goTo(activeIndex - 1);
+  };
+
   return (
     <div className="relative flex flex-col items-center">
-      {/* Stacked cards container */}
-      <div className="relative w-full flex justify-center items-start" style={{ minHeight: '540px' }}>
+      {/* Stacked cards container with swipe */}
+      <motion.div
+        className="relative w-full flex justify-center items-start touch-pan-y"
+        style={{ minHeight: '540px' }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.15}
+        onDragEnd={handleDragEnd}
+      >
         {plans.map((plan, index) => {
           const offset = index - activeIndex;
           const isActive = offset === 0;
@@ -146,7 +162,7 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Navigation */}
       <div className="flex items-center gap-6 mt-4">
