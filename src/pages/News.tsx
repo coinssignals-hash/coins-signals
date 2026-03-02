@@ -785,6 +785,7 @@ const News = () => {
               <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 text-[10px] font-medium">FXStreet</span>
               <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-medium">Investing</span>
               <span className="px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-400 text-[10px] font-medium">Bloomberg</span>
+              <span className="px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-[10px] font-medium">MarketAux</span>
             </div>
           </div>
         </div>
