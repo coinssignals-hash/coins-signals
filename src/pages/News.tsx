@@ -326,7 +326,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
             <div className="absolute w-32 h-32 rounded-full" style={{
               background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`,
             }} />
-            <span className="text-7xl select-none drop-shadow-lg relative z-10" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
+            <span className="text-7xl select-none drop-shadow-lg relative z-10 animate-[placeholder-enter_0.8s_ease-out_both]" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.3)] to-transparent" />
@@ -505,7 +505,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
             <div className="absolute w-40 h-40 rounded-full" style={{
               background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`,
             }} />
-            <span className="text-8xl select-none drop-shadow-lg relative z-10" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
+            <span className="text-8xl select-none drop-shadow-lg relative z-10 animate-[placeholder-enter_0.8s_ease-out_both]" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
