@@ -117,16 +117,14 @@ Respond ONLY with valid JSON, no extra text:
   ]
 }`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': lovableApiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${lovableApiKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+        model: 'google/gemini-2.5-flash',
         messages: [{ role: 'user', content: prompt }],
       }),
     });
@@ -138,7 +136,7 @@ Respond ONLY with valid JSON, no extra text:
     }
 
     const aiResponse = await response.json();
-    const content = aiResponse.content?.[0]?.text || '';
+    const content = aiResponse.choices?.[0]?.message?.content || '';
 
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Failed to parse AI response');

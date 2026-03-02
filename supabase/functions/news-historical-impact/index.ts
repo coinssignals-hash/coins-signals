@@ -66,16 +66,14 @@ Responde SOLO con un JSON válido en este formato exacto (sin texto adicional):
   "summary": "<resumen breve de 1 línea sobre el patrón histórico>"
 }`;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': lovableApiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${lovableApiKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'user', content: prompt }
         ],
@@ -89,7 +87,7 @@ Responde SOLO con un JSON válido en este formato exacto (sin texto adicional):
     }
 
     const aiResponse = await response.json();
-    const content = aiResponse.content?.[0]?.text || '';
+    const content = aiResponse.choices?.[0]?.message?.content || '';
     
     console.log('[news-historical-impact] Raw AI response:', content.substring(0, 200));
 
