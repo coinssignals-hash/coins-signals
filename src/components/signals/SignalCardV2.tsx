@@ -1046,7 +1046,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
                 {marketData ? (
                   <>
-                    {/* Row 1: Price + Change + Daily Range */}
+                    {/* Row 1: Price + Spread + Daily Range */}
                     <div className="grid grid-cols-3 gap-2 mb-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Precio</span>
@@ -1056,6 +1056,15 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             {marketData.changePercent >= 0 ? '+' : ''}{marketData.changePercent.toFixed(2)}%
                           </span>
                         )}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Spread</span>
+                        {marketData.spreadPips !== null ? (
+                          <>
+                            <span className="text-sm font-bold text-cyan-200">{marketData.spreadPips.toFixed(1)}</span>
+                            <span className="text-[8px] text-slate-500 block">pips</span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Rango Diario</span>
@@ -1078,6 +1087,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           </>
                         ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
+                    </div>
+
+                    {/* Row 2: Volatility + RSI + Stochastic */}
+                    <div className="grid grid-cols-3 gap-2 mb-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Volatilidad</span>
                         <span className={cn("text-sm font-bold",
@@ -1095,10 +1108,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           <span className="text-[8px] text-slate-500 block">ATR: {marketData.atrPercent.toFixed(3)}%</span>
                         )}
                       </div>
-                    </div>
-
-                    {/* Row 2: RSI + MACD + Momentum */}
-                    <div className="grid grid-cols-3 gap-2 mb-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">RSI (14)</span>
                         {marketData.rsi14 !== null ? (
@@ -1116,6 +1125,26 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Estocástico</span>
+                        {marketData.stochK !== null && marketData.stochD !== null ? (
+                          <>
+                            <span className={cn("text-sm font-bold",
+                              marketData.stochK > 80 ? 'text-rose-400' :
+                              marketData.stochK < 20 ? 'text-emerald-400' : 'text-cyan-200'
+                            )}>
+                              K:{marketData.stochK.toFixed(0)} D:{marketData.stochD.toFixed(0)}
+                            </span>
+                            <span className="text-[8px] block text-slate-500">
+                              {marketData.stochK > 80 ? 'Sobrecompra' : marketData.stochK < 20 ? 'Sobreventa' : 'Neutral'}
+                            </span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                    </div>
+
+                    {/* Row 3: MACD + ADX + Bollinger */}
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">MACD</span>
                         {marketData.macdHistogram !== null ? (
                           <>
@@ -1128,6 +1157,91 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           </>
                         ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">ADX (14)</span>
+                        {marketData.adx14 !== null ? (
+                          <>
+                            <span className={cn("text-sm font-bold",
+                              marketData.adx14 > 40 ? 'text-emerald-400' :
+                              marketData.adx14 > 20 ? 'text-yellow-400' : 'text-slate-400'
+                            )}>
+                              {marketData.adx14.toFixed(1)}
+                            </span>
+                            <span className="text-[8px] text-slate-500 block">
+                              {marketData.trendStrength === 'very_strong' ? 'Muy Fuerte' :
+                               marketData.trendStrength === 'strong' ? 'Fuerte' :
+                               marketData.trendStrength === 'moderate' ? 'Moderada' : 'Débil'}
+                            </span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Bollinger</span>
+                        {marketData.bollingerWidth !== null ? (
+                          <>
+                            <span className="text-sm font-bold text-cyan-200">{marketData.bollingerWidth.toFixed(2)}%</span>
+                            <span className="text-[8px] text-slate-500 block">Ancho banda</span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                    </div>
+
+                    {/* Row 4: SMAs + EMAs + Williams */}
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">SMA 20/50/200</span>
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] text-cyan-200 block">{marketData.sma20?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                          <span className="text-[9px] text-cyan-300/70 block">{marketData.sma50?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                          <span className="text-[9px] text-cyan-400/50 block">{marketData.sma200?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                        </div>
+                        {marketData.smaSignal && (
+                          <span className={cn("text-[8px] font-bold block mt-0.5",
+                            marketData.smaSignal === 'bullish' ? 'text-emerald-400' :
+                            marketData.smaSignal === 'bearish' ? 'text-rose-400' : 'text-yellow-400'
+                          )}>
+                            {marketData.smaSignal === 'bullish' ? '↑ Alcista' :
+                             marketData.smaSignal === 'bearish' ? '↓ Bajista' : '→ Neutral'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">EMA 9/20/50</span>
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] text-purple-300 block">{marketData.ema9?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                          <span className="text-[9px] text-purple-400/70 block">{marketData.ema20?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                          <span className="text-[9px] text-purple-500/50 block">{marketData.ema50?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                        </div>
+                        {marketData.emaSignal && (
+                          <span className={cn("text-[8px] font-bold block mt-0.5",
+                            marketData.emaSignal === 'bullish' ? 'text-emerald-400' :
+                            marketData.emaSignal === 'bearish' ? 'text-rose-400' : 'text-yellow-400'
+                          )}>
+                            {marketData.emaSignal === 'bullish' ? '↑ Alcista' :
+                             marketData.emaSignal === 'bearish' ? '↓ Bajista' : '→ Neutral'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Williams %R</span>
+                        {marketData.williamsR !== null ? (
+                          <>
+                            <span className={cn("text-sm font-bold",
+                              marketData.williamsR > -20 ? 'text-rose-400' :
+                              marketData.williamsR < -80 ? 'text-emerald-400' : 'text-cyan-200'
+                            )}>
+                              {marketData.williamsR.toFixed(1)}
+                            </span>
+                            <span className="text-[8px] text-slate-500 block">
+                              {marketData.williamsR > -20 ? 'Sobrecompra' : marketData.williamsR < -80 ? 'Sobreventa' : 'Neutral'}
+                            </span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                    </div>
+
+                    {/* Row 5: Momentum + Señal General + Sentimiento */}
+                    <div className="grid grid-cols-3 gap-2 mb-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Momentum</span>
                         <span className={cn("text-sm font-bold",
@@ -1143,26 +1257,24 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                            marketData.momentum === 'bearish' ? '⬇' :
                            marketData.momentum === 'strong_bearish' ? '⬇⬇' : '—'}
                         </span>
-                        {marketData.trendStrength && (
-                          <span className="text-[8px] text-slate-500 block">
-                            Fuerza: {marketData.trendStrength === 'strong' ? 'Fuerte' : marketData.trendStrength === 'moderate' ? 'Moderada' : 'Débil'}
-                          </span>
-                        )}
                       </div>
-                    </div>
-
-                    {/* Row 3: SMA + News Sentiment + Open/Close */}
-                    <div className="grid grid-cols-3 gap-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
-                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">SMA 20</span>
-                        <span className="text-xs font-bold text-cyan-200">
-                          {marketData.sma20?.toFixed(isJpy ? 3 : 5) ?? '—'}
-                        </span>
-                        {marketData.price !== null && marketData.sma20 !== null && (
-                          <span className={cn("text-[8px] block", marketData.price > marketData.sma20 ? 'text-emerald-400/60' : 'text-rose-400/60')}>
-                            {marketData.price > marketData.sma20 ? 'Por encima' : 'Por debajo'}
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Señal General</span>
+                        {marketData.overallSignal ? (
+                          <span className={cn("text-sm font-bold",
+                            marketData.overallSignal === 'strong_buy' ? 'text-emerald-400' :
+                            marketData.overallSignal === 'buy' ? 'text-green-400' :
+                            marketData.overallSignal === 'neutral' ? 'text-yellow-400' :
+                            marketData.overallSignal === 'sell' ? 'text-orange-400' :
+                            'text-rose-400'
+                          )}>
+                            {marketData.overallSignal === 'strong_buy' ? '🟢 Compra Fuerte' :
+                             marketData.overallSignal === 'buy' ? '🟢 Compra' :
+                             marketData.overallSignal === 'neutral' ? '🟡 Neutral' :
+                             marketData.overallSignal === 'sell' ? '🔴 Venta' :
+                             '🔴 Venta Fuerte'}
                           </span>
-                        )}
+                        ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Sentimiento</span>
@@ -1180,16 +1292,56 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           </>
                         ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
+                    </div>
+
+                    {/* News Headlines */}
+                    {marketData.newsHeadlines && marketData.newsHeadlines.length > 0 && (
+                      <div className="rounded-lg p-2 mb-2" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block mb-1">📰 Noticias Recientes</span>
+                        {marketData.newsHeadlines.slice(0, 3).map((h, i) => (
+                          <p key={i} className="text-[9px] text-slate-400 leading-tight mb-0.5 line-clamp-1">• {h}</p>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Upcoming Economic Events */}
+                    {marketData.upcomingEvents && marketData.upcomingEvents.length > 0 && (
+                      <div className="rounded-lg p-2 mb-2" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block mb-1">📅 Eventos Económicos</span>
+                        {marketData.upcomingEvents.slice(0, 5).map((evt, i) => (
+                          <div key={i} className="flex items-center gap-1.5 mb-0.5">
+                            <span className={cn("w-1.5 h-1.5 rounded-full shrink-0",
+                              evt.impact === 'high' ? 'bg-rose-500' :
+                              evt.impact === 'medium' ? 'bg-yellow-500' : 'bg-slate-600'
+                            )} />
+                            <span className="text-[8px] text-slate-500 shrink-0">{evt.country}</span>
+                            <span className="text-[9px] text-slate-400 truncate flex-1">{evt.event}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Row 6: Open/Close + Prev Close */}
+                    <div className="grid grid-cols-3 gap-2">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Apertura</span>
                         <span className="text-xs font-bold text-cyan-200">
                           {marketData.dailyOpen?.toFixed(isJpy ? 3 : 5) ?? '—'}
                         </span>
-                        {marketData.previousClose !== null && (
-                          <span className="text-[8px] text-slate-500 block">
-                            Prev: {marketData.previousClose.toFixed(isJpy ? 3 : 5)}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Cierre Prev</span>
+                        <span className="text-xs font-bold text-cyan-200">
+                          {marketData.previousClose?.toFixed(isJpy ? 3 : 5) ?? '—'}
+                        </span>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Bid / Ask</span>
+                        {marketData.bid !== null && marketData.ask !== null ? (
+                          <span className="text-[9px] font-mono text-cyan-200">
+                            {marketData.bid.toFixed(isJpy ? 3 : 5)} / {marketData.ask.toFixed(isJpy ? 3 : 5)}
                           </span>
-                        )}
+                        ) : <span className="text-xs text-slate-500">—</span>}
                       </div>
                     </div>
 
