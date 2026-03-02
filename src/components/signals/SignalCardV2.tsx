@@ -771,7 +771,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 )}
                 title="Mostrar/ocultar Soporte y Resistencia"
               >
-                S/R
+                Soporte/Resistencia
               </button>
               <CandlestickChart
                 data={forexChartData?.candles || []}
