@@ -304,7 +304,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full bottom-full mb-1 bg-slate-900 border border-slate-700/50 rounded-lg shadow-lg overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-700/50 rounded-lg shadow-lg overflow-hidden">
           {/* Tabs */}
           <div className="flex border-b border-slate-700/50">
             {([
