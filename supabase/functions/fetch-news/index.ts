@@ -136,30 +136,66 @@ function parseRSSItems(xml: string): Array<{ title: string; link: string; descri
   return items;
 }
 
-// Fetch from Finnhub
+// Fetch from Finnhub - multiple categories + forex symbol news for broader coverage
 async function fetchFinnhubNews(apiKey: string): Promise<NewsItem[]> {
   try {
-    const response = await fetch(
-      `https://finnhub.io/api/v1/news?category=forex&token=${apiKey}`
-    );
-    if (!response.ok) return [];
-    const data = await response.json();
+    // Fetch multiple categories in parallel for wider forex/macro coverage
+    const categories = ['forex', 'general', 'merger'];
+    const forexSymbols = ['OANDA:EUR_USD', 'OANDA:GBP_USD', 'OANDA:USD_JPY', 'OANDA:AUD_USD', 'OANDA:USD_CAD', 'OANDA:USD_CHF'];
     
-    return data.slice(0, 15).map((item: any, index: number) => ({
-      id: `finnhub-${item.id || index}`,
-      title: item.headline,
-      summary: item.summary || '',
-      source: 'Finnhub',
-      source_logo: SOURCE_LOGOS['Finnhub'] || null,
-      url: item.url,
-      image_url: item.image || null,
-      published_at: new Date(item.datetime * 1000).toISOString(),
-      time_ago: getTimeAgo(new Date(item.datetime * 1000).toISOString()),
-      category: detectCategory(item.headline + ' ' + (item.summary || '')),
-      affected_currencies: detectCurrencies(item.headline + ' ' + (item.summary || '')),
-      sentiment: detectSentiment(item.headline + ' ' + (item.summary || '')),
-      relevance_score: 0.8 + Math.random() * 0.2,
-    }));
+    const now = Math.floor(Date.now() / 1000);
+    const oneDayAgo = now - 86400;
+
+    const categoryFetches = categories.map(cat =>
+      fetch(`https://finnhub.io/api/v1/news?category=${cat}&token=${apiKey}`)
+        .then(r => r.ok ? r.json() : [])
+        .catch(() => [])
+    );
+
+    const symbolFetches = forexSymbols.map(symbol =>
+      fetch(`https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${new Date(oneDayAgo * 1000).toISOString().split('T')[0]}&to=${new Date().toISOString().split('T')[0]}&token=${apiKey}`)
+        .then(r => r.ok ? r.json() : [])
+        .catch(() => [])
+    );
+
+    const results = await Promise.all([...categoryFetches, ...symbolFetches]);
+    
+    // Merge all results and deduplicate by id/headline
+    const seen = new Set<string>();
+    const allItems: NewsItem[] = [];
+
+    for (const data of results) {
+      if (!Array.isArray(data)) continue;
+      for (const item of data) {
+        const key = String(item.id || item.headline);
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const text = (item.headline || '') + ' ' + (item.summary || '');
+        const publishedAt = new Date(item.datetime * 1000).toISOString();
+
+        allItems.push({
+          id: `finnhub-${item.id || seen.size}`,
+          title: item.headline,
+          summary: item.summary || '',
+          source: 'Finnhub',
+          source_logo: SOURCE_LOGOS['Finnhub'] || null,
+          url: item.url,
+          image_url: item.image || null,
+          published_at: publishedAt,
+          time_ago: getTimeAgo(publishedAt),
+          category: detectCategory(text),
+          affected_currencies: detectCurrencies(text),
+          sentiment: detectSentiment(text),
+          relevance_score: 0.8 + Math.random() * 0.2,
+        });
+      }
+    }
+
+    // Sort by date, take top 30
+    allItems.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+    console.log(`[fetch-news] Finnhub total unique: ${allItems.length}`);
+    return allItems.slice(0, 30);
   } catch (error) {
     console.error('[fetch-news] Finnhub error:', error);
     return [];
