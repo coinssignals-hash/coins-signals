@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 import type { TimeValue, MACDData } from '@/lib/indicators';
 import { cn } from '@/lib/utils';
 import type { AlertState } from '@/hooks/useSupportResistanceAlerts';
@@ -289,6 +289,38 @@ export function CandlestickChart({
   ema50Data,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; volume: string } | null>(null);
+
+  // Chart layout constants (must match buildChartSvg)
+  const SVG_W = 1200, SVG_H = 700;
+  const CHART_X1 = 65, CHART_W = SVG_W - 110 - 65;
+  const VOL_SEP_Y = 560, PAD_TOP = 35;
+
+  const volumes = useMemo(() =>
+    data.map((_, i) => 5e6 + Math.abs(Math.sin(i * 0.3)) * 50e6 + ((i * 7) % 10) * 1e6),
+    [data]
+  );
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!data.length || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const scaleX = SVG_W / rect.width;
+    const scaleY = SVG_H / rect.height;
+    const svgX = (e.clientX - rect.left) * scaleX;
+    const svgY = (e.clientY - rect.top) * scaleY;
+    if (svgX < CHART_X1 || svgX > CHART_X1 + CHART_W || svgY < PAD_TOP || svgY > VOL_SEP_Y) {
+      setTooltip(null); return;
+    }
+    const cw = CHART_W / data.length;
+    const idx = Math.floor((svgX - CHART_X1) / cw);
+    if (idx < 0 || idx >= data.length) { setTooltip(null); return; }
+    const vol = volumes[idx];
+    const volStr = vol >= 1e6 ? `${(vol / 1e6).toFixed(1)}M` : vol >= 1e3 ? `${(vol / 1e3).toFixed(1)}K` : vol.toFixed(0);
+    setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, candle: data[idx], volume: volStr });
+  }, [data, volumes]);
+
+  const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
   const svgDataUri = useMemo(() => {
     if (!data.length) return null;
@@ -324,6 +356,9 @@ export function CandlestickChart({
     );
   }
 
+  const tooltipCandle = tooltip?.candle;
+  const isUp = tooltipCandle ? tooltipCandle.close >= tooltipCandle.open : false;
+
   return (
     <div
       className={cn(
@@ -340,18 +375,52 @@ export function CandlestickChart({
         </>
       )}
 
-      {svgDataUri ? (
-        <img
-          src={svgDataUri}
-          alt="Gráfico de velas japonesas 30min - 7 días"
-          className="w-full h-auto block rounded-lg"
-          draggable={false}
-        />
-      ) : (
-        <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
-          <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
-        </div>
-      )}
+      <div ref={containerRef} className="relative cursor-crosshair" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+        {svgDataUri ? (
+          <img
+            src={svgDataUri}
+            alt="Gráfico de velas japonesas 30min - 7 días"
+            className="w-full h-auto block rounded-lg"
+            draggable={false}
+          />
+        ) : (
+          <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
+            <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
+          </div>
+        )}
+
+        {/* OHLC Tooltip */}
+        {tooltip && tooltipCandle && (
+          <div
+            className="absolute z-30 pointer-events-none transition-opacity duration-150"
+            style={{
+              left: tooltip.x > (containerRef.current?.clientWidth ?? 0) * 0.7 ? tooltip.x - 160 : tooltip.x + 16,
+              top: Math.max(4, tooltip.y - 10),
+            }}
+          >
+            <div
+              className="rounded-lg px-3 py-2 text-xs font-mono shadow-xl backdrop-blur-sm"
+              style={{ background: 'rgba(5,13,26,0.93)', border: '1px solid rgba(100,116,139,0.25)' }}
+            >
+              <div className="text-slate-400 mb-1.5 text-[10px] border-b border-white/5 pb-1">{fmtTimeLabel(tooltipCandle.time)}</div>
+              <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
+                <span className="text-slate-500">O</span>
+                <span className="text-slate-200 text-right">{fmtPrice(tooltipCandle.open, jpy)}</span>
+                <span className="text-slate-500">H</span>
+                <span className="text-green-400 text-right">{fmtPrice(tooltipCandle.high, jpy)}</span>
+                <span className="text-slate-500">L</span>
+                <span className="text-red-400 text-right">{fmtPrice(tooltipCandle.low, jpy)}</span>
+                <span className="text-slate-500">C</span>
+                <span className={cn('text-right font-semibold', isUp ? 'text-green-400' : 'text-red-400')}>
+                  {fmtPrice(tooltipCandle.close, jpy)}
+                </span>
+                <span className="text-slate-500">Vol</span>
+                <span className="text-blue-400 text-right">{tooltip.volume}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Legend */}
       <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0a1628' }}>
