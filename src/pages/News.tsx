@@ -731,7 +731,7 @@ const News = () => {
   const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
   const dateLocale = DATE_LOCALES[language] ?? es;
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>(['EUR']);
+  const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [sentimentFilters, setSentimentFilters] = useState<Set<'bullish' | 'bearish' | 'neutral'>>(new Set());
