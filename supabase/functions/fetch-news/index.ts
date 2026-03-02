@@ -307,58 +307,85 @@ async function fetchBloombergNews(): Promise<NewsItem[]> {
   }
 }
 
-// Fetch from MarketAux API
+// Fetch from MarketAux API (Premium)
 async function fetchMarketAuxNews(apiKey: string): Promise<NewsItem[]> {
+  const allItems: NewsItem[] = [];
+  
+  // Premium: fetch multiple categories in parallel with higher limits
+  const endpoints = [
+    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=50&industries=Financial&domains=bloomberg.com,reuters.com,cnbc.com,ft.com,wsj.com,investing.com,forexlive.com,fxstreet.com,marketwatch.com,benzinga.com`,
+    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=30&search=forex+currency+exchange+rate&sort=published_at`,
+    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=20&search=central+bank+interest+rate+monetary+policy&sort=entity_match_score`,
+  ];
+
   try {
-    const response = await fetch(
-      `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=20&domains=bloomberg.com,reuters.com,cnbc.com,ft.com,wsj.com,investing.com,forexlive.com,fxstreet.com`
-    );
-    if (!response.ok) {
-      console.error('[fetch-news] MarketAux error status:', response.status);
-      return [];
-    }
-    const data = await response.json();
-    if (!data.data || !Array.isArray(data.data)) return [];
-
-    return data.data.map((item: any, index: number) => {
-      const text = `${item.title} ${item.description || ''}`;
-      // Use MarketAux native sentiment if available
-      const entitySentiment = item.entities?.[0]?.sentiment_score;
-      let sentiment: 'bullish' | 'bearish' | 'neutral' = 'neutral';
-      if (entitySentiment != null) {
-        sentiment = entitySentiment > 0.2 ? 'bullish' : entitySentiment < -0.2 ? 'bearish' : 'neutral';
-      } else {
-        sentiment = detectSentiment(text);
+    const responses = await Promise.allSettled(endpoints.map(url => fetch(url)));
+    
+    for (const [idx, result] of responses.entries()) {
+      if (result.status !== 'fulfilled' || !result.value.ok) {
+        console.error(`[fetch-news] MarketAux endpoint ${idx} failed:`, result.status === 'rejected' ? result.reason : `HTTP ${result.value?.status}`);
+        continue;
       }
+      const data = await result.value.json();
+      if (!data.data || !Array.isArray(data.data)) continue;
 
-      // Extract currencies from entities
-      const entityCurrencies = (item.entities || [])
-        .filter((e: any) => e.type === 'currency' || e.type === 'index' || e.type === 'equity')
-        .map((e: any) => e.symbol?.substring(0, 3)?.toUpperCase())
-        .filter((c: string) => c && Object.keys(CURRENCY_PATTERNS).includes(c));
-      const currencies = entityCurrencies.length > 0 ? [...new Set(entityCurrencies)] : detectCurrencies(text);
+      console.log(`[fetch-news] MarketAux endpoint ${idx}: ${data.data.length} items (meta: ${JSON.stringify(data.meta || {})})`);
 
-      // Relevance from entity match_score or highlights_count
-      const relevance = item.entities?.[0]?.match_score
-        ? Math.min(item.entities[0].match_score / 100, 1)
-        : 0.85 + Math.random() * 0.15;
+      for (const [i, item] of data.data.entries()) {
+        const text = `${item.title} ${item.description || ''}`;
+        
+        // Premium: use native entity sentiment scores
+        const entitySentiment = item.entities?.[0]?.sentiment_score;
+        let sentiment: 'bullish' | 'bearish' | 'neutral' = 'neutral';
+        if (entitySentiment != null) {
+          sentiment = entitySentiment > 0.15 ? 'bullish' : entitySentiment < -0.15 ? 'bearish' : 'neutral';
+        } else {
+          sentiment = detectSentiment(text);
+        }
 
-      return {
-        id: `marketaux-${item.uuid || index}-${Date.now()}`,
-        title: item.title,
-        summary: (item.description || item.snippet || '').substring(0, 300),
-        source: item.source || 'MarketAux',
-        source_logo: SOURCE_LOGOS[item.source] || SOURCE_LOGOS['MarketAux'],
-        url: item.url,
-        image_url: item.image_url || null,
-        published_at: item.published_at,
-        time_ago: getTimeAgo(item.published_at),
-        category: detectCategory(text),
-        affected_currencies: currencies as string[],
-        sentiment,
-        relevance_score: relevance,
-      };
+        // Premium: extract richer entity data
+        const entityCurrencies = (item.entities || [])
+          .filter((e: any) => e.type === 'currency' || e.type === 'index' || e.type === 'equity' || e.type === 'forex_pair')
+          .map((e: any) => e.symbol?.substring(0, 3)?.toUpperCase())
+          .filter((c: string) => c && Object.keys(CURRENCY_PATTERNS).includes(c));
+        const currencies = entityCurrencies.length > 0 ? [...new Set(entityCurrencies)] : detectCurrencies(text);
+
+        // Premium: use highlight and match scores for better relevance
+        const matchScore = item.entities?.[0]?.match_score || 0;
+        const highlightScore = item.entities?.[0]?.highlights?.length || 0;
+        const relevance = matchScore > 0
+          ? Math.min((matchScore + highlightScore * 5) / 120, 1)
+          : 0.80 + Math.random() * 0.15;
+
+        allItems.push({
+          id: `marketaux-${item.uuid || `${idx}-${i}`}-${Date.now()}`,
+          title: item.title,
+          summary: (item.description || item.snippet || '').substring(0, 400),
+          source: 'MarketAux',
+          source_logo: SOURCE_LOGOS['MarketAux'],
+          url: item.url,
+          image_url: item.image_url || null,
+          published_at: item.published_at,
+          time_ago: getTimeAgo(item.published_at),
+          category: detectCategory(text),
+          affected_currencies: currencies as string[],
+          sentiment,
+          relevance_score: relevance,
+        });
+      }
+    }
+
+    // Deduplicate by title
+    const seen = new Set<string>();
+    const unique = allItems.filter(item => {
+      const key = item.title.toLowerCase().trim();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
     });
+
+    console.log(`[fetch-news] MarketAux premium total: ${unique.length} unique items`);
+    return unique;
   } catch (error) {
     console.error('[fetch-news] MarketAux error:', error);
     return [];
