@@ -552,6 +552,94 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 // Currency quick filter pills
 const QUICK_CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'];
 
+// Source filter dropdown
+const SOURCE_COLORS: Record<string, { bg: string; text: string }> = {
+  'Finnhub': { bg: 'bg-green-500/20', text: 'text-green-400' },
+  'NewsAPI': { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+  'FXStreet': { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+  'Investing': { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+  'Bloomberg': { bg: 'bg-pink-500/20', text: 'text-pink-400' },
+  'MarketAux': { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
+  'ForexFactory': { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+};
+
+function QuickSourceFilter({
+  selected, onChange, news
+}: { selected: string[]; onChange: (sources: string[]) => void; news?: RealNewsItem[] }) {
+  const sources = useMemo(() => {
+    const counts: Record<string, number> = {};
+    if (news) {
+      news.forEach((item) => {
+        const src = item.source || 'Unknown';
+        counts[src] = (counts[src] || 0) + 1;
+      });
+    }
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+  }, [news]);
+
+  const isAll = selected.length === 0;
+  const totalSources = sources.length;
+
+  const toggleSource = (source: string) => {
+    if (selected.includes(source)) {
+      onChange(selected.filter((s) => s !== source));
+    } else {
+      onChange([...selected, source]);
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className={cn(
+          'flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm font-medium transition-all border',
+          'bg-card/50 border-border/50 text-foreground hover:border-primary/40'
+        )}>
+          <Rss className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="truncate max-w-[100px]">
+            {isAll ? 'Fuentes' : selected.length === 1 ? selected[0] : `${selected.length} fuentes`}
+          </span>
+          {!isAll && (
+            <span className="min-w-[20px] h-5 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">
+              {selected.length}
+            </span>
+          )}
+          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuCheckboxItem
+          checked={isAll}
+          onCheckedChange={() => onChange([])}>
+          <span className="flex items-center gap-2">
+            📡 Todas las fuentes
+            {totalSources > 0 && <span className="text-muted-foreground text-xs">({totalSources})</span>}
+          </span>
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuSeparator />
+        {sources.map(({ name, count }) => {
+          const colors = SOURCE_COLORS[name] || { bg: 'bg-muted', text: 'text-muted-foreground' };
+          return (
+            <DropdownMenuCheckboxItem
+              key={name}
+              checked={selected.includes(name)}
+              onCheckedChange={() => toggleSource(name)}>
+              <span className="flex items-center gap-2 w-full">
+                <span className={cn('px-1.5 py-0.5 rounded text-[10px] font-medium', colors.bg, colors.text)}>
+                  {name}
+                </span>
+                <span className="ml-auto text-xs text-muted-foreground">{count}</span>
+              </span>
+            </DropdownMenuCheckboxItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function QuickCurrencyFilter({
   selected, onChange, allLabel, news
 }: {selected: Currency[];onChange: (currencies: Currency[]) => void;allLabel: string;news?: RealNewsItem[];}) {
@@ -646,6 +734,7 @@ const News = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [sentimentFilters, setSentimentFilters] = useState<Set<'bullish' | 'bearish' | 'neutral'>>(new Set());
   const [sortMode, setSortMode] = useState<'recent' | 'impact' | 'volatility'>('recent');
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const newsTranslateHook = useNewsTranslation();
 
   const { data: news, isLoading, error, dataUpdatedAt, refetch } = useRealNewsByDate(selectedDate);
@@ -670,6 +759,11 @@ const News = () => {
       );
     }
 
+    // Source filter
+    if (selectedSources.length > 0) {
+      result = result.filter((item) => selectedSources.includes(item.source));
+    }
+
     // Sentiment filter
     if (sentimentFilters.size > 0) {
       result = result.filter((item) => sentimentFilters.has(item.sentiment));
@@ -688,7 +782,7 @@ const News = () => {
     // 'recent' keeps the default chronological order
 
     return result;
-  }, [news, selectedCurrencies, sentimentFilters, sortMode]);
+  }, [news, selectedCurrencies, selectedSources, sentimentFilters, sortMode]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -728,11 +822,17 @@ const News = () => {
               </span>
             }
           </div>
-          <QuickCurrencyFilter
-            selected={selectedCurrencies}
-            onChange={setSelectedCurrencies}
-            allLabel={t('news_all_currencies')}
-            news={news} />
+          <div className="flex items-center gap-1.5">
+            <QuickSourceFilter
+              selected={selectedSources}
+              onChange={setSelectedSources}
+              news={news} />
+            <QuickCurrencyFilter
+              selected={selectedCurrencies}
+              onChange={setSelectedCurrencies}
+              allLabel={t('news_all_currencies')}
+              news={news} />
+          </div>
         </div>
 
         {/* Impact & Sentiment Filter Bar */}
@@ -783,9 +883,9 @@ const News = () => {
             )}
 
           {/* Clear all filters */}
-          {(sentimentFilters.size > 0 || sortMode !== 'recent') &&
+          {(sentimentFilters.size > 0 || sortMode !== 'recent' || selectedSources.length > 0) &&
             <button
-              onClick={() => {setSentimentFilters(new Set());setSortMode('recent');}}
+              onClick={() => {setSentimentFilters(new Set());setSortMode('recent');setSelectedSources([]);}}
               className="flex-shrink-0 px-2 py-1.5 rounded-full text-[10px] font-medium text-destructive hover:bg-destructive/10 transition-all">
 
               ✕ Reset
