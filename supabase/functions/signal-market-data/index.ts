@@ -22,22 +22,58 @@ interface MarketDataResult {
   dailyRangePercent: number | null;
   previousClose: number | null;
   volume: number | null;
+  bid: number | null;
+  ask: number | null;
+  spread: number | null;
+  spreadPips: number | null;
+  // Technical indicators
   rsi14: number | null;
   atr14: number | null;
   atrPercent: number | null;
   sma20: number | null;
   sma50: number | null;
+  sma200: number | null;
+  ema9: number | null;
   ema20: number | null;
+  ema50: number | null;
   macdValue: number | null;
   macdSignal: number | null;
   macdHistogram: number | null;
+  stochK: number | null;
+  stochD: number | null;
+  williamsR: number | null;
+  adx14: number | null;
+  bollingerUpper: number | null;
+  bollingerMiddle: number | null;
+  bollingerLower: number | null;
+  bollingerWidth: number | null;
+  // Moving average signals
+  smaSignal: string | null;
+  emaSignal: string | null;
+  // Derived
   momentum: string | null;
   volatility: string | null;
   trendStrength: string | null;
+  overallSignal: string | null;
+  // Sentiment
   newsSentiment: number | null;
   newsSentimentLabel: string | null;
+  newsHeadlines: string[];
+  // Economic
+  upcomingEvents: EconomicEvent[];
+  // Meta
   sources: string[];
   timestamp: number;
+}
+
+interface EconomicEvent {
+  event: string;
+  country: string;
+  impact: string;
+  date: string;
+  actual?: string;
+  estimate?: string;
+  previous?: string;
 }
 
 function parseForexPair(pair: string): { base: string; quote: string } {
@@ -45,69 +81,119 @@ function parseForexPair(pair: string): { base: string; quote: string } {
   return { base: clean.slice(0, 3), quote: clean.slice(3, 6) };
 }
 
+function pipMultiplier(quote: string): number {
+  return quote === "JPY" ? 100 : 10000;
+}
+
 // ── Alpha Vantage ──────────────────────────────────────────────
 async function fetchAlphaVantage(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
   const { base, quote } = parseForexPair(pair);
+  const sym = `${base}${quote}`;
 
   try {
-    const [quoteRes, rsiRes, atrRes, macdRes, smaRes] = await Promise.allSettled([
+    const [quoteRes, rsiRes, atrRes, macdRes, sma20Res, sma50Res, sma200Res, ema9Res, ema20Res, stochRes, adxRes, bbRes, williamsRes] = await Promise.allSettled([
       fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${base}&to_currency=${quote}&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=RSI&symbol=${base}${quote}&interval=60min&time_period=14&series_type=close&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=ATR&symbol=${base}${quote}&interval=daily&time_period=14&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=MACD&symbol=${base}${quote}&interval=60min&series_type=close&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=SMA&symbol=${base}${quote}&interval=daily&time_period=20&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=RSI&symbol=${sym}&interval=60min&time_period=14&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=ATR&symbol=${sym}&interval=daily&time_period=14&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=MACD&symbol=${sym}&interval=60min&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=SMA&symbol=${sym}&interval=daily&time_period=20&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=SMA&symbol=${sym}&interval=daily&time_period=50&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=SMA&symbol=${sym}&interval=daily&time_period=200&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=EMA&symbol=${sym}&interval=60min&time_period=9&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=EMA&symbol=${sym}&interval=60min&time_period=20&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=STOCH&symbol=${sym}&interval=60min&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=ADX&symbol=${sym}&interval=daily&time_period=14&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=BBANDS&symbol=${sym}&interval=60min&time_period=20&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=WILLR&symbol=${sym}&interval=60min&time_period=14&apikey=${apiKey}`),
     ]);
 
+    const getFirst = (res: PromiseSettledResult<Response>, key: string) => {
+      if (res.status !== 'fulfilled') return null;
+      return res.value.json().then((data: Record<string, Record<string, Record<string, string>>>) => {
+        if (data?.[key]) {
+          const dates = Object.keys(data[key]);
+          return dates.length > 0 ? data[key][dates[0]] : null;
+        }
+        return null;
+      }).catch(() => null);
+    };
+
+    // Quote
     if (quoteRes.status === 'fulfilled') {
       const data = await quoteRes.value.json();
       const rate = data?.["Realtime Currency Exchange Rate"];
       if (rate) {
         result.price = parseFloat(rate["5. Exchange Rate"]);
-        result.sources = ['Alpha Vantage'];
-      }
-    }
-
-    if (rsiRes.status === 'fulfilled') {
-      const data = await rsiRes.value.json();
-      const key = "Technical Analysis: RSI";
-      if (data?.[key]) {
-        const dates = Object.keys(data[key]);
-        if (dates.length > 0) result.rsi14 = parseFloat(data[key][dates[0]].RSI);
-      }
-    }
-
-    if (atrRes.status === 'fulfilled') {
-      const data = await atrRes.value.json();
-      const key = "Technical Analysis: ATR";
-      if (data?.[key]) {
-        const dates = Object.keys(data[key]);
-        if (dates.length > 0) result.atr14 = parseFloat(data[key][dates[0]].ATR);
-      }
-    }
-
-    if (macdRes.status === 'fulfilled') {
-      const data = await macdRes.value.json();
-      const key = "Technical Analysis: MACD";
-      if (data?.[key]) {
-        const dates = Object.keys(data[key]);
-        if (dates.length > 0) {
-          const macd = data[key][dates[0]];
-          result.macdValue = parseFloat(macd.MACD);
-          result.macdSignal = parseFloat(macd.MACD_Signal);
-          result.macdHistogram = parseFloat(macd.MACD_Hist);
+        result.bid = parseFloat(rate["8. Bid Price"]) || null;
+        result.ask = parseFloat(rate["9. Ask Price"]) || null;
+        if (result.bid && result.ask) {
+          result.spread = result.ask - result.bid;
+          result.spreadPips = result.spread * pipMultiplier(quote);
         }
       }
     }
 
-    if (smaRes.status === 'fulfilled') {
-      const data = await smaRes.value.json();
-      const key = "Technical Analysis: SMA";
-      if (data?.[key]) {
-        const dates = Object.keys(data[key]);
-        if (dates.length > 0) result.sma20 = parseFloat(data[key][dates[0]].SMA);
+    // RSI
+    const rsiData = await getFirst(rsiRes, "Technical Analysis: RSI");
+    if (rsiData) result.rsi14 = parseFloat(rsiData.RSI);
+
+    // ATR
+    const atrData = await getFirst(atrRes, "Technical Analysis: ATR");
+    if (atrData) result.atr14 = parseFloat(atrData.ATR);
+
+    // MACD
+    const macdData = await getFirst(macdRes, "Technical Analysis: MACD");
+    if (macdData) {
+      result.macdValue = parseFloat(macdData.MACD);
+      result.macdSignal = parseFloat(macdData.MACD_Signal);
+      result.macdHistogram = parseFloat(macdData.MACD_Hist);
+    }
+
+    // SMAs
+    const sma20Data = await getFirst(sma20Res, "Technical Analysis: SMA");
+    if (sma20Data) result.sma20 = parseFloat(sma20Data.SMA);
+
+    const sma50Data = await getFirst(sma50Res, "Technical Analysis: SMA");
+    if (sma50Data) result.sma50 = parseFloat(sma50Data.SMA);
+
+    const sma200Data = await getFirst(sma200Res, "Technical Analysis: SMA");
+    if (sma200Data) result.sma200 = parseFloat(sma200Data.SMA);
+
+    // EMAs
+    const ema9Data = await getFirst(ema9Res, "Technical Analysis: EMA");
+    if (ema9Data) result.ema9 = parseFloat(ema9Data.EMA);
+
+    const ema20Data = await getFirst(ema20Res, "Technical Analysis: EMA");
+    if (ema20Data) result.ema20 = parseFloat(ema20Data.EMA);
+
+    // Stochastic
+    const stochData = await getFirst(stochRes, "Technical Analysis: STOCH");
+    if (stochData) {
+      result.stochK = parseFloat(stochData.SlowK);
+      result.stochD = parseFloat(stochData.SlowD);
+    }
+
+    // ADX
+    const adxData = await getFirst(adxRes, "Technical Analysis: ADX");
+    if (adxData) result.adx14 = parseFloat(adxData.ADX);
+
+    // Bollinger Bands
+    const bbData = await getFirst(bbRes, "Technical Analysis: BBANDS");
+    if (bbData) {
+      result.bollingerUpper = parseFloat(bbData["Real Upper Band"]);
+      result.bollingerMiddle = parseFloat(bbData["Real Middle Band"]);
+      result.bollingerLower = parseFloat(bbData["Real Lower Band"]);
+      if (result.bollingerUpper && result.bollingerLower && result.bollingerMiddle) {
+        result.bollingerWidth = ((result.bollingerUpper - result.bollingerLower) / result.bollingerMiddle) * 100;
       }
     }
+
+    // Williams %R
+    const willData = await getFirst(williamsRes, "Technical Analysis: WILLR");
+    if (willData) result.williamsR = parseFloat(willData["Williams' %R"]);
+
+    console.log(`[signal-market-data] AV OK: ${sym}, price=${result.price}, rsi=${result.rsi14}, atr=${result.atr14}, stochK=${result.stochK}, adx=${result.adx14}, bb=${result.bollingerMiddle}, willR=${result.williamsR}`);
   } catch (e) {
     console.error("[signal-market-data] Alpha Vantage error:", e);
   }
@@ -115,23 +201,59 @@ async function fetchAlphaVantage(pair: string, apiKey: string): Promise<Partial<
   return result;
 }
 
-// ── Finnhub (free plan: /forex/rates for prices) ──────────────
+// ── Finnhub ──────────────────────────────────────────────────
 async function fetchFinnhub(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
   const { base, quote } = parseForexPair(pair);
 
   try {
-    // /forex/rates is FREE and returns all forex rates with a given base currency
-    const ratesRes = await fetch(
-      `https://finnhub.io/api/v1/forex/rates?base=${base}&token=${apiKey}`
-    );
-    const data = await ratesRes.json();
+    // Fetch rates + economic calendar in parallel
+    const now = new Date();
+    const from = now.toISOString().split('T')[0];
+    const toDate = new Date(now.getTime() + 7 * 86400000).toISOString().split('T')[0];
 
-    if (data?.quote && data.quote[quote]) {
-      result.price = data.quote[quote];
-      console.log(`[signal-market-data] Finnhub rates OK: ${base}/${quote}, price=${result.price}`);
-    } else {
-      console.warn(`[signal-market-data] Finnhub rates: no ${quote} in response for base=${base}`);
+    const [ratesRes, calendarRes] = await Promise.allSettled([
+      fetch(`https://finnhub.io/api/v1/forex/rates?base=${base}&token=${apiKey}`),
+      fetch(`https://finnhub.io/api/v1/calendar/economic?from=${from}&to=${toDate}&token=${apiKey}`),
+    ]);
+
+    // Rates
+    if (ratesRes.status === 'fulfilled') {
+      const data = await ratesRes.value.json();
+      if (data?.quote && data.quote[quote]) {
+        result.price = data.quote[quote];
+        console.log(`[signal-market-data] Finnhub rates OK: ${base}/${quote}, price=${result.price}`);
+      }
+    }
+
+    // Economic Calendar - filter for relevant countries
+    if (calendarRes.status === 'fulfilled') {
+      const data = await calendarRes.value.json();
+      if (data?.economicCalendar?.length > 0) {
+        const currencyCountries: Record<string, string[]> = {
+          USD: ['US'], EUR: ['DE', 'FR', 'IT', 'ES', 'EU'], GBP: ['GB'],
+          JPY: ['JP'], CHF: ['CH'], AUD: ['AU'], NZD: ['NZ'], CAD: ['CA'],
+        };
+        const relevantCountries = [...(currencyCountries[base] || []), ...(currencyCountries[quote] || [])];
+        
+        const events: EconomicEvent[] = data.economicCalendar
+          .filter((e: { country: string }) => relevantCountries.includes(e.country))
+          .slice(0, 10)
+          .map((e: { event: string; country: string; impact: string; time: string; actual: number; estimate: number; prev: number }) => ({
+            event: e.event,
+            country: e.country,
+            impact: e.impact === '3' ? 'high' : e.impact === '2' ? 'medium' : 'low',
+            date: e.time || from,
+            actual: e.actual?.toString() ?? undefined,
+            estimate: e.estimate?.toString() ?? undefined,
+            previous: e.prev?.toString() ?? undefined,
+          }));
+
+        if (events.length > 0) {
+          result.upcomingEvents = events;
+          console.log(`[signal-market-data] Finnhub calendar: ${events.length} events for ${base}/${quote}`);
+        }
+      }
     }
   } catch (e) {
     console.error("[signal-market-data] Finnhub error:", e);
@@ -140,20 +262,23 @@ async function fetchFinnhub(pair: string, apiKey: string): Promise<Partial<Marke
   return result;
 }
 
-// ── FMP (use stable endpoint + forex list) ─────────────────────
+// ── FMP ─────────────────────────────────────────────────────
 async function fetchFMP(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
   const { base, quote } = parseForexPair(pair);
   const fmpPair = `${base}${quote}`;
 
   try {
-    // Use the stable quote endpoint and the forex list endpoint
-    const [stableRes, forexListRes] = await Promise.allSettled([
+    // Stable quote + stable technical indicators
+    const [stableRes, forexRes, smaRes, emaRes, rsiRes] = await Promise.allSettled([
       fetch(`https://financialmodelingprep.com/stable/quote?symbol=${fmpPair}&apikey=${apiKey}`),
       fetch(`https://financialmodelingprep.com/api/v3/fx/${fmpPair}?apikey=${apiKey}`),
+      fetch(`https://financialmodelingprep.com/stable/technical-indicators/sma?symbol=${fmpPair}&periodLength=50&timeframe=1day&apikey=${apiKey}`),
+      fetch(`https://financialmodelingprep.com/stable/technical-indicators/ema?symbol=${fmpPair}&periodLength=50&timeframe=1day&apikey=${apiKey}`),
+      fetch(`https://financialmodelingprep.com/stable/technical-indicators/rsi?symbol=${fmpPair}&periodLength=14&timeframe=1day&apikey=${apiKey}`),
     ]);
 
-    // Try stable quote first
+    // Stable quote
     if (stableRes.status === 'fulfilled') {
       const raw = await stableRes.value.text();
       try {
@@ -168,20 +293,20 @@ async function fetchFMP(pair: string, apiKey: string): Promise<Partial<MarketDat
           result.dailyOpen = q.open ?? null;
           result.previousClose = q.previousClose ?? null;
           result.volume = q.volume ?? null;
+          if (q.priceAvg50) result.sma50 = q.priceAvg50;
+          if (q.priceAvg200) result.sma200 = q.priceAvg200;
           if (result.dailyHigh && result.dailyLow) {
             result.dailyRange = result.dailyHigh - result.dailyLow;
             if (result.price && result.price > 0) result.dailyRangePercent = (result.dailyRange / result.price) * 100;
           }
-          console.log(`[signal-market-data] FMP stable OK: ${fmpPair}, price=${result.price}`);
-        } else {
-          console.warn(`[signal-market-data] FMP stable raw: ${raw.slice(0, 200)}`);
+          console.log(`[signal-market-data] FMP stable OK: ${fmpPair}, price=${result.price}, sma50=${result.sma50}, sma200=${result.sma200}`);
         }
-      } catch { console.warn(`[signal-market-data] FMP stable parse fail: ${raw.slice(0, 100)}`); }
+      } catch { console.warn(`[signal-market-data] FMP stable parse fail`); }
     }
 
-    // Fallback: /api/v3/fx endpoint (returns real-time forex rates)
-    if (!result.price && forexListRes.status === 'fulfilled') {
-      const raw = await forexListRes.value.text();
+    // Fallback forex endpoint
+    if (!result.price && forexRes.status === 'fulfilled') {
+      const raw = await forexRes.value.text();
       try {
         const data = JSON.parse(raw);
         const item = Array.isArray(data) ? data[0] : data;
@@ -193,15 +318,32 @@ async function fetchFMP(pair: string, apiKey: string): Promise<Partial<MarketDat
           result.change = item.changes ?? null;
           result.changePercent = item.changesPercentage ?? null;
           console.log(`[signal-market-data] FMP fx OK: ${fmpPair}, price=${result.price}`);
-        } else {
-          console.warn(`[signal-market-data] FMP fx raw: ${raw.slice(0, 200)}`);
         }
       } catch { /* parse error */ }
     }
 
-    if (!result.price) {
-      console.warn(`[signal-market-data] FMP no price for ${fmpPair}`);
-    }
+    // FMP Technical indicators
+    const parseFMPIndicator = async (res: PromiseSettledResult<Response>, name: string) => {
+      if (res.status !== 'fulfilled') return null;
+      try {
+        const data = await res.value.json();
+        const item = Array.isArray(data) ? data[0] : data;
+        return item ?? null;
+      } catch {
+        console.warn(`[signal-market-data] FMP ${name} parse fail`);
+        return null;
+      }
+    };
+
+    const fmpSma = await parseFMPIndicator(smaRes, 'SMA');
+    if (fmpSma?.sma) result.sma50 = result.sma50 ?? fmpSma.sma;
+
+    const fmpEma = await parseFMPIndicator(emaRes, 'EMA');
+    if (fmpEma?.ema) result.ema50 = fmpEma.ema;
+
+    const fmpRsi = await parseFMPIndicator(rsiRes, 'RSI');
+    if (fmpRsi?.rsi) result.rsi14 = result.rsi14 ?? fmpRsi.rsi;
+
   } catch (e) {
     console.error("[signal-market-data] FMP error:", e);
   }
@@ -209,13 +351,12 @@ async function fetchFMP(pair: string, apiKey: string): Promise<Partial<MarketDat
   return result;
 }
 
-// ── MarketAux (news sentiment for currency pairs) ──────────────
+// ── MarketAux ──────────────────────────────────────────────────
 async function fetchMarketAux(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
   const { base, quote } = parseForexPair(pair);
 
   try {
-    // Use search without filter_entities to get broader results with sentiment
     const res = await fetch(
       `https://api.marketaux.com/v1/news/all?search=${base}+${quote}&language=en&limit=10&api_token=${apiKey}`
     );
@@ -224,47 +365,43 @@ async function fetchMarketAux(pair: string, apiKey: string): Promise<Partial<Mar
     if (data?.data?.length > 0) {
       let totalSentiment = 0;
       let count = 0;
+      const headlines: string[] = [];
 
       for (const article of data.data) {
-        // Check entity-level sentiment
+        // Collect headlines
+        if (article.title) headlines.push(article.title);
+
+        // Entity-level sentiment
         if (article.entities && Array.isArray(article.entities)) {
           for (const entity of article.entities) {
-            if (typeof entity.sentiment_score === 'number') {
-              totalSentiment += entity.sentiment_score;
+            const score = entity.sentiment_score ?? entity.score ?? entity.sentiment;
+            if (typeof score === 'number') {
+              totalSentiment += score;
               count++;
             }
           }
         }
-      }
 
-      // If no entity sentiment, try to derive from article highlights
-      if (count === 0) {
-        for (const article of data.data) {
-          if (article.entities && Array.isArray(article.entities)) {
-            for (const entity of article.entities) {
-              // Some responses use different field names
-              const score = entity.sentiment_score ?? entity.score ?? entity.sentiment;
-              if (typeof score === 'number') {
-                totalSentiment += score;
-                count++;
-              }
-            }
-          }
+        // Fallback: article-level sentiment
+        if (typeof article.sentiment_score === 'number') {
+          totalSentiment += article.sentiment_score;
+          count++;
         }
       }
+
+      result.newsHeadlines = headlines.slice(0, 5);
 
       if (count > 0) {
         result.newsSentiment = totalSentiment / count;
         result.newsSentimentLabel =
-          result.newsSentiment > 0.2 ? 'Positivo' :
-          result.newsSentiment < -0.2 ? 'Negativo' : 'Neutral';
-        console.log(`[signal-market-data] MarketAux OK: sentiment=${result.newsSentiment.toFixed(3)} (${count} scores, ${data.data.length} articles)`);
+          result.newsSentiment > 0.3 ? 'Muy Positivo' :
+          result.newsSentiment > 0.1 ? 'Positivo' :
+          result.newsSentiment > -0.1 ? 'Neutral' :
+          result.newsSentiment > -0.3 ? 'Negativo' : 'Muy Negativo';
+        console.log(`[signal-market-data] MarketAux OK: sentiment=${result.newsSentiment.toFixed(3)} (${count} scores, ${data.data.length} articles, ${headlines.length} headlines)`);
       } else {
-        // Still report articles found even without sentiment
-        console.warn(`[signal-market-data] MarketAux: ${data.data.length} articles, 0 sentiment scores. First article entities: ${JSON.stringify(data.data[0]?.entities?.slice(0, 2) ?? 'none').slice(0, 300)}`);
+        console.warn(`[signal-market-data] MarketAux: ${data.data.length} articles, 0 sentiment scores`);
       }
-    } else {
-      console.warn(`[signal-market-data] MarketAux: no articles for ${base} ${quote}. Error: ${JSON.stringify(data?.error ?? 'none')}`);
     }
   } catch (e) {
     console.error("[signal-market-data] MarketAux error:", e);
@@ -274,7 +411,19 @@ async function fetchMarketAux(pair: string, apiKey: string): Promise<Partial<Mar
 }
 
 // ── Derived indicators ─────────────────────────────────────────
-function deriveMomentum(data: MarketDataResult): void {
+function deriveIndicators(data: MarketDataResult): void {
+  const p = data.price;
+
+  // ATR %
+  if (data.atr14 !== null && p !== null && p > 0) {
+    data.atrPercent = (data.atr14 / p) * 100;
+    if (data.atrPercent < 0.3) data.volatility = 'low';
+    else if (data.atrPercent < 0.7) data.volatility = 'moderate';
+    else if (data.atrPercent < 1.5) data.volatility = 'high';
+    else data.volatility = 'extreme';
+  }
+
+  // Momentum from RSI + MACD + Stochastic
   if (data.rsi14 !== null) {
     if (data.rsi14 > 70) data.momentum = 'strong_bullish';
     else if (data.rsi14 > 55) data.momentum = 'bullish';
@@ -282,25 +431,72 @@ function deriveMomentum(data: MarketDataResult): void {
     else if (data.rsi14 > 30) data.momentum = 'bearish';
     else data.momentum = 'strong_bearish';
 
+    // Refine with MACD
     if (data.macdHistogram !== null) {
       if (data.macdHistogram > 0 && data.momentum === 'neutral') data.momentum = 'bullish';
       if (data.macdHistogram < 0 && data.momentum === 'neutral') data.momentum = 'bearish';
     }
+
+    // Refine with Stochastic
+    if (data.stochK !== null && data.stochD !== null) {
+      if (data.stochK > 80 && data.stochD > 80 && data.momentum === 'bullish') data.momentum = 'strong_bullish';
+      if (data.stochK < 20 && data.stochD < 20 && data.momentum === 'bearish') data.momentum = 'strong_bearish';
+    }
   }
 
-  if (data.atr14 !== null && data.price !== null && data.price > 0) {
-    data.atrPercent = (data.atr14 / data.price) * 100;
-    if (data.atrPercent < 0.3) data.volatility = 'low';
-    else if (data.atrPercent < 0.7) data.volatility = 'moderate';
-    else if (data.atrPercent < 1.5) data.volatility = 'high';
-    else data.volatility = 'extreme';
-  }
-
-  if (data.price !== null && data.sma20 !== null) {
-    const smaDistance = Math.abs(data.price - data.sma20) / data.price * 100;
+  // Trend strength from ADX
+  if (data.adx14 !== null) {
+    if (data.adx14 < 20) data.trendStrength = 'weak';
+    else if (data.adx14 < 40) data.trendStrength = 'moderate';
+    else if (data.adx14 < 60) data.trendStrength = 'strong';
+    else data.trendStrength = 'very_strong';
+  } else if (p !== null && data.sma20 !== null) {
+    const smaDistance = Math.abs(p - data.sma20) / p * 100;
     if (smaDistance < 0.2) data.trendStrength = 'weak';
     else if (smaDistance < 0.5) data.trendStrength = 'moderate';
     else data.trendStrength = 'strong';
+  }
+
+  // SMA signal
+  if (p !== null && data.sma20 !== null && data.sma50 !== null) {
+    if (p > data.sma20 && data.sma20 > data.sma50) data.smaSignal = 'bullish';
+    else if (p < data.sma20 && data.sma20 < data.sma50) data.smaSignal = 'bearish';
+    else data.smaSignal = 'neutral';
+  }
+
+  // EMA signal
+  if (data.ema9 !== null && data.ema20 !== null) {
+    if (data.ema9 > data.ema20) data.emaSignal = 'bullish';
+    else if (data.ema9 < data.ema20) data.emaSignal = 'bearish';
+    else data.emaSignal = 'neutral';
+  }
+
+  // Overall signal (consensus)
+  const signals: number[] = [];
+  if (data.momentum === 'strong_bullish') signals.push(2);
+  else if (data.momentum === 'bullish') signals.push(1);
+  else if (data.momentum === 'neutral') signals.push(0);
+  else if (data.momentum === 'bearish') signals.push(-1);
+  else if (data.momentum === 'strong_bearish') signals.push(-2);
+
+  if (data.smaSignal === 'bullish') signals.push(1);
+  else if (data.smaSignal === 'bearish') signals.push(-1);
+
+  if (data.emaSignal === 'bullish') signals.push(1);
+  else if (data.emaSignal === 'bearish') signals.push(-1);
+
+  if (data.newsSentiment !== null) {
+    if (data.newsSentiment > 0.2) signals.push(1);
+    else if (data.newsSentiment < -0.2) signals.push(-1);
+  }
+
+  if (signals.length > 0) {
+    const avg = signals.reduce((a, b) => a + b, 0) / signals.length;
+    if (avg > 0.8) data.overallSignal = 'strong_buy';
+    else if (avg > 0.3) data.overallSignal = 'buy';
+    else if (avg > -0.3) data.overallSignal = 'neutral';
+    else if (avg > -0.8) data.overallSignal = 'sell';
+    else data.overallSignal = 'strong_sell';
   }
 }
 
@@ -346,49 +542,70 @@ serve(async (req) => {
     const fmp = fmpData.status === 'fulfilled' ? fmpData.value : {};
     const ma = maData.status === 'fulfilled' ? maData.value : {};
 
-    // Track which sources contributed data
+    // Track sources
     const sources: string[] = [];
-    if (av.price || av.rsi14 || av.atr14 || av.macdValue || av.sma20) sources.push('Alpha Vantage');
-    if (fh.price || fh.dailyHigh) sources.push('Finnhub');
-    if (fmp.price || fmp.rsi14) sources.push('FMP');
+    if (av.price || av.rsi14 || av.atr14 || av.macdValue || av.sma20 || av.stochK || av.adx14) sources.push('Alpha Vantage');
+    if (fh.price || (fh.upcomingEvents && fh.upcomingEvents.length > 0)) sources.push('Finnhub');
+    if (fmp.price || fmp.sma50 || fmp.rsi14 || fmp.ema50) sources.push('FMP');
     if (ma.newsSentiment !== undefined && ma.newsSentiment !== null) sources.push('MarketAux');
 
-    // Merge: prefer FMP/Finnhub for quotes, AV for technicals, MA for sentiment
+    // Merge: prefer FMP for quotes, AV for technicals, Finnhub for calendar, MA for sentiment
     const merged: MarketDataResult = {
       symbol: symbol.toUpperCase(),
       price: fmp.price ?? fh.price ?? av.price ?? null,
-      change: fmp.change ?? fh.change ?? null,
-      changePercent: fmp.changePercent ?? fh.changePercent ?? null,
-      dailyHigh: fmp.dailyHigh ?? fh.dailyHigh ?? null,
-      dailyLow: fmp.dailyLow ?? fh.dailyLow ?? null,
-      dailyOpen: fmp.dailyOpen ?? fh.dailyOpen ?? null,
-      dailyRange: fmp.dailyRange ?? fh.dailyRange ?? null,
-      dailyRangePercent: fmp.dailyRangePercent ?? fh.dailyRangePercent ?? null,
-      previousClose: fmp.previousClose ?? fh.previousClose ?? null,
-      volume: fmp.volume ?? fh.volume ?? null,
+      change: fmp.change ?? null,
+      changePercent: fmp.changePercent ?? null,
+      dailyHigh: fmp.dailyHigh ?? null,
+      dailyLow: fmp.dailyLow ?? null,
+      dailyOpen: fmp.dailyOpen ?? null,
+      dailyRange: fmp.dailyRange ?? null,
+      dailyRangePercent: fmp.dailyRangePercent ?? null,
+      previousClose: fmp.previousClose ?? null,
+      volume: fmp.volume ?? null,
+      bid: av.bid ?? null,
+      ask: av.ask ?? null,
+      spread: av.spread ?? null,
+      spreadPips: av.spreadPips ?? null,
+      // Technical: prefer AV, fallback FMP
       rsi14: av.rsi14 ?? fmp.rsi14 ?? null,
       atr14: av.atr14 ?? null,
       atrPercent: null,
       sma20: av.sma20 ?? null,
-      sma50: null,
-      ema20: null,
+      sma50: av.sma50 ?? fmp.sma50 ?? null,
+      sma200: av.sma200 ?? fmp.sma200 ?? null,
+      ema9: av.ema9 ?? null,
+      ema20: av.ema20 ?? null,
+      ema50: fmp.ema50 ?? null,
       macdValue: av.macdValue ?? null,
       macdSignal: av.macdSignal ?? null,
       macdHistogram: av.macdHistogram ?? null,
+      stochK: av.stochK ?? null,
+      stochD: av.stochD ?? null,
+      williamsR: av.williamsR ?? null,
+      adx14: av.adx14 ?? null,
+      bollingerUpper: av.bollingerUpper ?? null,
+      bollingerMiddle: av.bollingerMiddle ?? null,
+      bollingerLower: av.bollingerLower ?? null,
+      bollingerWidth: av.bollingerWidth ?? null,
+      smaSignal: null,
+      emaSignal: null,
       momentum: null,
       volatility: null,
       trendStrength: null,
+      overallSignal: null,
       newsSentiment: ma.newsSentiment ?? null,
       newsSentimentLabel: ma.newsSentimentLabel ?? null,
+      newsHeadlines: ma.newsHeadlines ?? [],
+      upcomingEvents: fh.upcomingEvents ?? [],
       sources,
       timestamp: Date.now(),
     };
 
-    deriveMomentum(merged);
+    deriveIndicators(merged);
 
     cache.set(cacheKey, { data: merged, ts: Date.now() });
 
-    console.log(`[signal-market-data] ${symbol}: sources=[${sources.join(', ')}], price=${merged.price}, rsi=${merged.rsi14}, atr=${merged.atr14}, sentiment=${merged.newsSentiment}`);
+    console.log(`[signal-market-data] ${symbol}: sources=[${sources.join(', ')}], price=${merged.price}, rsi=${merged.rsi14}, atr=${merged.atr14}, stochK=${merged.stochK}, adx=${merged.adx14}, bb=${merged.bollingerMiddle}, sentiment=${merged.newsSentiment}, events=${merged.upcomingEvents.length}, signal=${merged.overallSignal}`);
 
     return new Response(JSON.stringify(merged), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
