@@ -10,6 +10,7 @@ import {
   Activity, TrendingUp, BarChart2, Waves, Percent,
   LineChart, Landmark, Brain, Target, Gauge, Cloud } from
 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { TerminalStatusBar } from '@/components/analysis/TerminalStatusBar';
@@ -90,6 +91,7 @@ const chartTabs = [
 
 
 export default function Analysis() {
+  const navigate = useNavigate();
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
@@ -175,6 +177,9 @@ export default function Analysis() {
               <div className="mt-4"><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></div>
             </SheetContent>
           </Sheet>
+          <Button variant="outline" size="icon" onClick={() => navigate('/ai-center')} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9" title="Centro de Análisis IA">
+            <Brain className="w-4 h-4 text-purple-400" />
+          </Button>
           <Button variant="outline" size="icon" onClick={refetch} disabled={loading} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9">
             <RefreshCw className={`w-4 h-4 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
           </Button>
