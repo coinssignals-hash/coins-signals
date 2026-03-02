@@ -311,11 +311,11 @@ async function fetchBloombergNews(): Promise<NewsItem[]> {
 async function fetchMarketAuxNews(apiKey: string): Promise<NewsItem[]> {
   const allItems: NewsItem[] = [];
   
-  // Premium: fetch multiple categories in parallel with higher limits
+  // Use domains NOT already covered by other scrapers to avoid dedup elimination
   const endpoints = [
-    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=50&industries=Financial&domains=bloomberg.com,reuters.com,cnbc.com,ft.com,wsj.com,investing.com,forexlive.com,fxstreet.com,marketwatch.com,benzinga.com`,
-    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=30&search=forex+currency+exchange+rate&sort=published_at`,
-    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=20&search=central+bank+interest+rate+monetary+policy&sort=entity_match_score`,
+    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=30&industries=Financial&domains=marketwatch.com,benzinga.com,barrons.com,seekingalpha.com,thestreet.com,fool.com,finance.yahoo.com`,
+    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=20&search=forex+currency+central+bank&sort=published_at&exclude_domains=bloomberg.com,investing.com,fxstreet.com,cnbc.com,reuters.com`,
+    `https://api.marketaux.com/v1/news/all?api_token=${apiKey}&filter_entities=true&language=en&limit=15&search=interest+rate+inflation+monetary+policy&sort=entity_match_score&exclude_domains=bloomberg.com,investing.com,fxstreet.com,cnbc.com,reuters.com`,
   ];
 
   try {
