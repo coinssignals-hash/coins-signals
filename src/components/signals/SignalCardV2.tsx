@@ -390,9 +390,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           "radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)"
         }}>
 
-        {/* Brand logo watermark (replaces bull) */}
+        {/* Brand logo watermark — fixed position so it stays visible when card expands */}
         <div
-          className="absolute inset-0 pointer-events-none flex items-center justify-center"
+          className="sticky top-0 z-[5] pointer-events-none flex items-center justify-center h-0 overflow-visible"
         >
           <img
             src={brandLogo}
