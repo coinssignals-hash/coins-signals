@@ -733,31 +733,60 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               </button>
             </div>
 
-            {/* Fullscreen Chart Dialog */}
+            {/* Enhanced Fullscreen Chart Dialog */}
             <Dialog open={chartFullscreen} onOpenChange={setChartFullscreen}>
               <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
-                <div className="h-full overflow-y-auto">
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700/50 sticky top-0 z-30 bg-[hsl(222,45%,5%)]">
-                    <span className="text-sm font-semibold text-slate-200">{signal?.currencyPair}</span>
-                    <div className="flex items-center gap-1.5">
-                      {/* Interval selector */}
+                <div className="h-full flex flex-col overflow-hidden">
+                  {/* ── Top Bar ── */}
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-slate-700/50 bg-[hsl(222,45%,5%)] shrink-0">
+                    {/* Left: Symbol + Live Price */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-bold text-white tracking-wide">{displayPair}</span>
+                      {quote?.price && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-mono font-bold text-white">
+                            {quote.price.toFixed(isJpy ? 3 : 5)}
+                          </span>
+                          <span className={cn(
+                            "text-[10px] font-bold font-mono px-1.5 py-0.5 rounded",
+                            priceDiff.isPositive
+                              ? "text-emerald-400 bg-emerald-500/15"
+                              : "text-rose-400 bg-rose-500/15"
+                          )}>
+                            {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)} pips
+                          </span>
+                          <span className={cn(
+                            "text-[10px] font-bold font-mono",
+                            priceDiff.isPositive ? "text-emerald-400" : "text-rose-400"
+                          )}>
+                            ({priceDiff.isPositive ? "+" : ""}{priceDiff.percent.toFixed(3)}%)
+                          </span>
+                          {isConnected && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Center: Interval Selector */}
+                    <div className="flex items-center gap-1">
                       {(['15min', '30min', '1h', '4h', '1day'] as ChartInterval[]).map((iv) => (
                         <button
                           key={iv}
                           onClick={() => setChartInterval(iv)}
                           className={cn(
-                            "px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                            "px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all",
                             chartInterval === iv
                               ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                              : "bg-slate-800/70 text-slate-500 border border-slate-700/40 hover:text-slate-300"
+                              : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
                           )}
                         >
                           {iv === '1day' ? '1D' : iv === '15min' ? '15m' : iv === '30min' ? '30m' : iv}
                         </button>
                       ))}
-                      <div className="w-px h-5 bg-slate-700/50 mx-1" />
-                      {/* Indicator toggles */}
+                    </div>
+
+                    {/* Right: Indicator Toggles + Close */}
+                    <div className="flex items-center gap-1">
                       {([
                         { key: 'ema', label: 'EMA', active: showEMA, toggle: () => setShowEMA(!showEMA) },
                         { key: 'rsi', label: 'RSI', active: showRSI, toggle: () => setShowRSI(!showRSI) },
@@ -769,10 +798,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           key={ind.key}
                           onClick={ind.toggle}
                           className={cn(
-                            "px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                            "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all",
                             ind.active
                               ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                              : "bg-slate-800/70 text-slate-500 border border-slate-700/40 hover:text-slate-300"
+                              : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
                           )}
                         >
                           {ind.label}
@@ -782,53 +811,211 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       <button
                         onClick={() => setShowSR(!showSR)}
                         className={cn(
-                          "px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                          "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all",
                           showSR
                             ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                            : "bg-slate-800/70 text-slate-500 border border-slate-700/40"
+                            : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
                         )}
                       >
                         S/R
                       </button>
-                      <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded-md hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors">
+                      <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors ml-1">
                         <X className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
-                  <ZoomableChart>
-                    <CandlestickChart
-                      data={forexChartData?.candles || []}
-                      resistance={forexChartData?.resistance ?? 0}
-                      support={forexChartData?.support ?? 0}
-                      loading={forexChartLoading}
-                      realtimePrice={quote?.price}
-                      isRealtimeConnected={isConnected}
-                      previousDayDate={forexChartData?.date}
-                      showSupportResistance={showSR}
-                      ema20Data={showEMA ? indicatorData?.ema20 : undefined}
-                      ema50Data={showEMA ? indicatorData?.ema50 : undefined}
-                    />
-                  </ZoomableChart>
-                  {showRSI && indicatorData?.rsi && indicatorData.rsi.length > 0 && (
-                    <div className="px-1 mt-1">
-                      <IndicatorMiniChart type="rsi" data={indicatorData.rsi} />
+
+                  {/* ── Main Content ── */}
+                  <div className="flex flex-1 overflow-hidden">
+                    {/* Chart Area */}
+                    <div className="flex-1 flex flex-col overflow-y-auto">
+                      <ZoomableChart>
+                        <CandlestickChart
+                          data={forexChartData?.candles || []}
+                          resistance={forexChartData?.resistance ?? 0}
+                          support={forexChartData?.support ?? 0}
+                          loading={forexChartLoading}
+                          realtimePrice={quote?.price}
+                          isRealtimeConnected={isConnected}
+                          previousDayDate={forexChartData?.date}
+                          showSupportResistance={showSR}
+                          ema20Data={showEMA ? indicatorData?.ema20 : undefined}
+                          ema50Data={showEMA ? indicatorData?.ema50 : undefined}
+                        />
+                      </ZoomableChart>
+                      {/* Indicator panels below chart */}
+                      {showRSI && indicatorData?.rsi && indicatorData.rsi.length > 0 && (
+                        <div className="px-1 mt-1">
+                          <IndicatorMiniChart type="rsi" data={indicatorData.rsi} />
+                        </div>
+                      )}
+                      {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 && (
+                        <div className="px-1 mt-1">
+                          <IndicatorMiniChart type="macd" data={indicatorData.macd} />
+                        </div>
+                      )}
+                      {showBollinger && indicatorData?.bollinger && indicatorData.bollinger.length > 0 && (
+                        <div className="px-1 mt-1">
+                          <IndicatorMiniChart type="bollinger" data={indicatorData.bollinger} />
+                        </div>
+                      )}
+                      {showStochastic && indicatorData?.stochastic && indicatorData.stochastic.length > 0 && (
+                        <div className="px-1 mt-1">
+                          <IndicatorMiniChart type="stochastic" data={indicatorData.stochastic} />
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 && (
-                    <div className="px-1 mt-1">
-                      <IndicatorMiniChart type="macd" data={indicatorData.macd} />
+
+                    {/* ── Right Sidebar ── */}
+                    <div className="w-52 shrink-0 border-l border-slate-700/50 overflow-y-auto hidden md:flex flex-col" style={{ background: 'hsl(222, 45%, 4%)' }}>
+                      {/* Signal Info */}
+                      <div className="p-3 border-b border-slate-700/30">
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Señal</div>
+                        <div className={cn(
+                          "text-xs font-bold px-2 py-1 rounded text-center mb-2",
+                          action === 'BUY'
+                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                        )}>
+                          {action === 'BUY' ? '↗ LARGO (LONG)' : '↘ CORTO (SHORT)'}
+                        </div>
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{
+                                width: `${probability}%`,
+                                background: probability >= 70 ? 'hsl(135,70%,50%)' : probability >= 50 ? 'hsl(45,80%,55%)' : 'hsl(0,70%,55%)'
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs font-bold text-white">{probability}%</span>
+                        </div>
+                      </div>
+
+                      {/* Price Levels */}
+                      <div className="p-3 border-b border-slate-700/30">
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Niveles</div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
+                            <span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-blue-400 font-semibold">Entry</span>
+                            <span className="text-xs font-mono text-blue-300">{entryPrice.toFixed(isJpy ? 3 : 5)}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-rose-400 font-semibold">SL</span>
+                            <span className="text-xs font-mono text-rose-300">{stopLoss.toFixed(isJpy ? 3 : 5)}</span>
+                          </div>
+                        </div>
+                        {/* R:R Ratio */}
+                        <div className="mt-3 pt-2 border-t border-slate-700/30">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-slate-500">R:R</span>
+                            <span className="text-xs font-bold text-cyan-300">
+                              1:{(Math.abs(takeProfit - entryPrice) / Math.abs(stopLoss - entryPrice)).toFixed(1)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center mt-1">
+                            <span className="text-[10px] text-slate-500">Riesgo</span>
+                            <span className="text-xs font-bold text-amber-400">{riskPercent}%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* S/R Levels */}
+                      <div className="p-3 border-b border-slate-700/30">
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Soporte / Resistencia</div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-3 h-0.5 bg-emerald-500 rounded" />
+                              <span className="text-[10px] text-slate-400">Resistencia</span>
+                            </div>
+                            <span className="text-[11px] font-mono text-emerald-300">{(forexChartData?.resistance ?? 0).toFixed(isJpy ? 3 : 5)}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-3 h-0.5 bg-rose-500 rounded" />
+                              <span className="text-[10px] text-slate-400">Soporte</span>
+                            </div>
+                            <span className="text-[11px] font-mono text-rose-300">{(forexChartData?.support ?? 0).toFixed(isJpy ? 3 : 5)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* OHLC Summary */}
+                      {forexChartData?.candles && forexChartData.candles.length > 0 && (() => {
+                        const last = forexChartData.candles[forexChartData.candles.length - 1];
+                        const isUp = last.close >= last.open;
+                        return (
+                          <div className="p-3 border-b border-slate-700/30">
+                            <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Última Vela</div>
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {[
+                                { label: 'O', value: last.open, color: 'text-slate-300' },
+                                { label: 'H', value: last.high, color: 'text-emerald-400' },
+                                { label: 'L', value: last.low, color: 'text-rose-400' },
+                                { label: 'C', value: last.close, color: isUp ? 'text-emerald-400' : 'text-rose-400' },
+                              ].map(item => (
+                                <div key={item.label} className="flex justify-between">
+                                  <span className="text-[10px] text-slate-600">{item.label}</span>
+                                  <span className={cn("text-[11px] font-mono", item.color)}>
+                                    {item.value.toFixed(isJpy ? 3 : 5)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Trend & Strategy */}
+                      <div className="p-3">
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Tendencia</div>
+                        <div className={cn(
+                          "text-xs font-bold text-center py-1.5 rounded",
+                          trend === 'bullish' ? "text-emerald-400 bg-emerald-500/10" :
+                          trend === 'bearish' ? "text-rose-400 bg-rose-500/10" :
+                          "text-amber-400 bg-amber-500/10"
+                        )}>
+                          {trend === 'bullish' ? '📈 Alcista' : trend === 'bearish' ? '📉 Bajista' : '➡️ Lateral'}
+                        </div>
+                        {aiStrategy?.duration && (
+                          <div className="mt-2">
+                            <div className="text-[10px] text-slate-500">Duración</div>
+                            <div className="text-[11px] text-slate-300 mt-0.5">{String(aiStrategy.duration)}</div>
+                          </div>
+                        )}
+                        {aiStrategy?.approach && (
+                          <div className="mt-2">
+                            <div className="text-[10px] text-slate-500">Enfoque</div>
+                            <div className="text-[11px] text-slate-300 mt-0.5">{String(aiStrategy.approach)}</div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  {showBollinger && indicatorData?.bollinger && indicatorData.bollinger.length > 0 && (
-                    <div className="px-1 mt-1">
-                      <IndicatorMiniChart type="bollinger" data={indicatorData.bollinger} />
+                  </div>
+
+                  {/* ── Bottom Status Bar ── */}
+                  <div className="flex items-center justify-between px-3 py-1.5 border-t border-slate-700/50 bg-[hsl(222,45%,4%)] shrink-0 text-[10px] text-slate-500 font-mono">
+                    <div className="flex items-center gap-4">
+                      <span>Intervalo: <span className="text-slate-300">{chartInterval === '1day' ? '1D' : chartInterval}</span></span>
+                      <span>Velas: <span className="text-slate-300">{forexChartData?.candles?.length ?? 0}</span></span>
+                      {showEMA && <span className="text-blue-400">EMA 20/50</span>}
+                      {showRSI && <span className="text-purple-400">RSI</span>}
+                      {showMACD && <span className="text-cyan-400">MACD</span>}
+                      {showBollinger && <span className="text-amber-400">BOLL</span>}
+                      {showStochastic && <span className="text-pink-400">STOCH</span>}
                     </div>
-                  )}
-                  {showStochastic && indicatorData?.stochastic && indicatorData.stochastic.length > 0 && (
-                    <div className="px-1 mt-1">
-                      <IndicatorMiniChart type="stochastic" data={indicatorData.stochastic} />
+                    <div className="flex items-center gap-4">
+                      <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</span>
+                      <span className="text-slate-600">Coins Signals</span>
                     </div>
-                  )}
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
