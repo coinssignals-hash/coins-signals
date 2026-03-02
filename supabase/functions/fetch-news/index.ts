@@ -369,9 +369,16 @@ async function fetchMarketAuxNews(apiKey: string): Promise<NewsItem[]> {
 async function fetchFMPForexNews(apiKey: string): Promise<NewsItem[]> {
   try {
     const res = await fetch(`https://financialmodelingprep.com/stable/news/forex-latest?page=0&limit=20&apikey=${apiKey}`);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error(`[fetch-news] FMP Forex HTTP ${res.status}: ${errBody.slice(0, 300)}`);
+      return [];
+    }
     const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data)) {
+      console.warn('[fetch-news] FMP Forex non-array response:', JSON.stringify(data).slice(0, 300));
+      return [];
+    }
     return data.map((item: any, i: number) => {
       const text = `${item.title} ${item.text || ''}`;
       return {
@@ -400,9 +407,16 @@ async function fetchFMPForexNews(apiKey: string): Promise<NewsItem[]> {
 async function fetchFMPCryptoNews(apiKey: string): Promise<NewsItem[]> {
   try {
     const res = await fetch(`https://financialmodelingprep.com/stable/news/crypto-latest?page=0&limit=15&apikey=${apiKey}`);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error(`[fetch-news] FMP Crypto HTTP ${res.status}: ${errBody.slice(0, 300)}`);
+      return [];
+    }
     const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data)) {
+      console.warn('[fetch-news] FMP Crypto non-array response:', JSON.stringify(data).slice(0, 300));
+      return [];
+    }
     return data.map((item: any, i: number) => {
       const text = `${item.title} ${item.text || ''}`;
       return {
@@ -431,9 +445,16 @@ async function fetchFMPCryptoNews(apiKey: string): Promise<NewsItem[]> {
 async function fetchFMPStockNews(apiKey: string): Promise<NewsItem[]> {
   try {
     const res = await fetch(`https://financialmodelingprep.com/stable/news/stock-latest?page=0&limit=15&apikey=${apiKey}`);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error(`[fetch-news] FMP Stock HTTP ${res.status}: ${errBody.slice(0, 300)}`);
+      return [];
+    }
     const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data)) {
+      console.warn('[fetch-news] FMP Stock non-array response:', JSON.stringify(data).slice(0, 300));
+      return [];
+    }
     return data.map((item: any, i: number) => {
       const text = `${item.title} ${item.text || ''}`;
       return {
@@ -462,9 +483,16 @@ async function fetchFMPStockNews(apiKey: string): Promise<NewsItem[]> {
 async function fetchFMPGeneralNews(apiKey: string): Promise<NewsItem[]> {
   try {
     const res = await fetch(`https://financialmodelingprep.com/stable/news/general-latest?page=0&limit=10&apikey=${apiKey}`);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error(`[fetch-news] FMP General HTTP ${res.status}: ${errBody.slice(0, 300)}`);
+      return [];
+    }
     const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data)) {
+      console.warn('[fetch-news] FMP General non-array response:', JSON.stringify(data).slice(0, 300));
+      return [];
+    }
     return data.map((item: any, i: number) => {
       const text = `${item.title} ${item.text || ''}`;
       return {
@@ -558,6 +586,7 @@ serve(async (req) => {
     const marketAuxKey = Deno.env.get('MARKETAUX_API_KEY');
     const fmpKey = Deno.env.get('FMP_API_KEY');
     const avKey = Deno.env.get('ALPHA_VANTAGE_API_KEY');
+    
 
     // Launch all sources in parallel - RSS sources don't need API keys
     const newsPromises: Promise<NewsItem[]>[] = [
