@@ -149,9 +149,9 @@ export default function Analysis() {
       <Header />
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
-      <main className="py-3 px-2 sm:px-4 space-y-3">
+      <main className="py-2 px-1.5 sm:px-4 space-y-2 sm:space-y-3">
         {/* Terminal Header Bar */}
-        <div className="relative z-20 flex items-center gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-xl p-2.5">
+        <div className="relative z-20 flex items-center gap-1.5 sm:gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-lg sm:rounded-xl p-2">
           <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[160px]" />
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
             <SelectTrigger className="w-[80px] bg-[#0a1628] border-cyan-900/40 text-xs h-9">
