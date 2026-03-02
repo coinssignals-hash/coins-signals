@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Plan {
   id: string;
@@ -26,123 +26,120 @@ interface PlanCarouselProps {
 }
 
 export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(1); // Start on Plus (center)
+  const [activeIndex, setActiveIndex] = useState(1);
 
-  const updateActiveIndex = useCallback(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const scrollLeft = container.scrollLeft;
-    const cardWidth = container.scrollWidth / plans.length;
-    const index = Math.round(scrollLeft / cardWidth);
-    setActiveIndex(Math.min(index, plans.length - 1));
-  }, [plans.length]);
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    // Scroll to center card on mount
-    const cardWidth = container.scrollWidth / plans.length;
-    container.scrollLeft = cardWidth * 1;
-  }, [plans.length]);
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    container.addEventListener('scroll', updateActiveIndex, { passive: true });
-    return () => container.removeEventListener('scroll', updateActiveIndex);
-  }, [updateActiveIndex]);
-
-  const scrollToIndex = (index: number) => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const cardWidth = container.scrollWidth / plans.length;
-    container.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
+  const goTo = (index: number) => {
+    if (index >= 0 && index < plans.length) setActiveIndex(index);
   };
 
   return (
-    <div className="relative">
-      {/* Carousel container */}
-      <div
-        ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4 px-8 pb-4"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
+    <div className="relative flex flex-col items-center">
+      {/* Stacked cards container */}
+      <div className="relative w-full flex justify-center items-start" style={{ minHeight: '540px' }}>
         {plans.map((plan, index) => {
-          const isCentered = index === activeIndex;
+          const offset = index - activeIndex;
+          const isActive = offset === 0;
+          const isLeft = offset < 0;
+          const isRight = offset > 0;
+          const absOffset = Math.abs(offset);
+
           return (
             <motion.div
               key={plan.id}
-              className="snap-center flex-shrink-0"
-              style={{ width: '85%', minWidth: '280px', maxWidth: '340px' }}
-              animate={{
-                scale: isCentered ? 1.05 : 0.92,
-                opacity: isCentered ? 1 : 0.6,
+              className="absolute cursor-pointer"
+              style={{
+                width: 'min(85vw, 320px)',
+                zIndex: isActive ? 30 : 20 - absOffset,
+                transformOrigin: 'top center',
               }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              onClick={() => scrollToIndex(index)}
+              animate={{
+                x: isActive ? 0 : isLeft ? `-${absOffset * 28}px` : `${absOffset * 28}px`,
+                scale: isActive ? 1 : 0.88 - absOffset * 0.04,
+                opacity: isActive ? 1 : 0.45,
+                rotateY: isActive ? 0 : isLeft ? 6 : -6,
+                y: isActive ? 0 : 16 * absOffset,
+              }}
+              transition={{ type: 'spring', stiffness: 320, damping: 32, mass: 0.8 }}
+              onClick={() => goTo(index)}
             >
               <Card
                 className={cn(
-                  'relative overflow-hidden border-2 transition-shadow duration-300 h-full',
-                  plan.borderColor,
-                  isCentered && 'shadow-lg shadow-primary/20'
+                  'relative overflow-hidden border transition-all duration-300',
+                  isActive ? 'border-primary/60 shadow-2xl shadow-primary/15' : 'border-border/40 shadow-lg',
                 )}
               >
-                <div className={cn('absolute inset-0 bg-gradient-to-br opacity-50', plan.color)} />
+                {/* Gradient overlay */}
+                <div className={cn('absolute inset-0 bg-gradient-to-br opacity-40', plan.color)} />
+
+                {/* Glow effect for active */}
+                {isActive && (
+                  <div className="absolute -inset-px rounded-xl bg-gradient-to-b from-primary/20 via-transparent to-accent/10 pointer-events-none" />
+                )}
 
                 <CardContent className="relative p-5">
-                  <div className="mb-3">
-                    <Badge className={cn('mb-2', plan.badgeColor)}>
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <Badge className={cn('text-xs font-bold px-3 py-1', plan.badgeColor)}>
                       {plan.name}
                     </Badge>
-                    <h3 className="text-sm font-semibold text-primary mb-1">
-                      {plan.subtitle}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {plan.description}
-                    </p>
+                    {plan.featured && (
+                      <div className="flex items-center gap-1 text-accent text-xs font-medium">
+                        <Star className="w-3.5 h-3.5 fill-accent" />
+                        Popular
+                      </div>
+                    )}
                   </div>
 
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold text-accent">
+                  <h3 className="text-sm font-semibold text-primary mb-1">
+                    {plan.subtitle}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-4 line-clamp-2">
+                    {plan.description}
+                  </p>
+
+                  {/* Price */}
+                  <div className="mb-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold text-foreground tracking-tight">
                       ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceWeekly}
                     </span>
-                    <span className="text-muted-foreground text-sm">
-                      /{billingPeriod === 'monthly' ? 'Mes' : 'Semana'}
+                    <span className="text-sm text-muted-foreground font-medium">
+                      /{billingPeriod === 'monthly' ? 'mes' : 'sem'}
                     </span>
                   </div>
 
-                  <ul className="space-y-1.5 mb-5">
+                  {/* Divider */}
+                  <div className="h-px bg-border/60 mb-4" />
+
+                  {/* Features */}
+                  <ul className="space-y-2 mb-5">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs">
-                        <Check className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-foreground">{feature}</span>
+                        <div className="mt-0.5 w-4 h-4 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                          <Check className="w-2.5 h-2.5 text-primary" />
+                        </div>
+                        <span className="text-foreground/85">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
+                  {/* CTA */}
                   <div className="space-y-2">
                     <Button
                       className={cn(
-                        'w-full',
+                        'w-full font-semibold',
                         plan.featured
                           ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-                          : 'bg-accent hover:bg-accent/90 text-accent-foreground'
+                          : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50'
                       )}
                     >
                       Suscribirme
                     </Button>
 
                     {plan.featured && (
-                      <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/10">
+                      <Button variant="outline" className="w-full border-primary/40 text-primary hover:bg-primary/10 text-xs">
                         7 Días Gratis
                       </Button>
                     )}
-
-                    <button className="w-full text-xs text-muted-foreground hover:text-foreground underline">
-                      ver detalles
-                    </button>
                   </div>
                 </CardContent>
               </Card>
@@ -151,20 +148,38 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
         })}
       </div>
 
-      {/* Dot indicators */}
-      <div className="flex justify-center gap-2 mt-4">
-        {plans.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => scrollToIndex(index)}
-            className={cn(
-              'w-2 h-2 rounded-full transition-all duration-300',
-              index === activeIndex
-                ? 'bg-primary w-6'
-                : 'bg-muted-foreground/30'
-            )}
-          />
-        ))}
+      {/* Navigation */}
+      <div className="flex items-center gap-6 mt-4">
+        <button
+          onClick={() => goTo(activeIndex - 1)}
+          disabled={activeIndex === 0}
+          className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center text-foreground disabled:opacity-30 hover:bg-secondary transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        <div className="flex gap-2">
+          {plans.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goTo(index)}
+              className={cn(
+                'h-2 rounded-full transition-all duration-300',
+                index === activeIndex
+                  ? 'bg-primary w-7'
+                  : 'bg-muted-foreground/25 w-2 hover:bg-muted-foreground/40'
+              )}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => goTo(activeIndex + 1)}
+          disabled={activeIndex === plans.length - 1}
+          className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center text-foreground disabled:opacity-30 hover:bg-secondary transition-colors"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
