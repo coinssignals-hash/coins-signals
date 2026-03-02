@@ -1,9 +1,10 @@
-import { TrendingUp, TrendingDown, Minus, Loader2, Activity, BarChart3, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Loader2, Activity, BarChart3, Shield, Zap, Eye } from 'lucide-react';
 import { useMarketSentiment } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 
 interface MarketSentimentProps {
   symbol: string;
@@ -15,226 +16,305 @@ interface MarketSentimentProps {
   isRealtimeConnected?: boolean;
 }
 
-function SentimentGauge({ value, size = 120 }: { value: number; size?: number }) {
-  const radius = (size - 16) / 2;
+/* ─── Professional Radial Gauge ─── */
+function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
+  const r = (size - 24) / 2;
   const cx = size / 2;
-  const cy = size / 2 + 10;
-  const startAngle = -210;
-  const endAngle = 30;
-  const totalAngle = endAngle - startAngle;
-  const valueAngle = startAngle + (value / 100) * totalAngle;
+  const cy = size / 2 + 8;
+  const startA = -220;
+  const endA = 40;
+  const totalA = endA - startA;
+  const valA = startA + (value / 100) * totalA;
 
-  const polarToCartesian = (angle: number, r: number) => {
-    const rad = (angle * Math.PI) / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  const ptc = (a: number, rad: number) => {
+    const rn = (a * Math.PI) / 180;
+    return { x: cx + rad * Math.cos(rn), y: cy + rad * Math.sin(rn) };
+  };
+  const arc = (s: number, e: number, rad: number) => {
+    const sp = ptc(s, rad);
+    const ep = ptc(e, rad);
+    return `M ${sp.x} ${sp.y} A ${rad} ${rad} 0 ${e - s > 180 ? 1 : 0} 1 ${ep.x} ${ep.y}`;
   };
 
-  const arcPath = (startA: number, endA: number, r: number) => {
-    const s = polarToCartesian(startA, r);
-    const e = polarToCartesian(endA, r);
-    const largeArc = endA - startA > 180 ? 1 : 0;
-    return `M ${s.x} ${s.y} A ${r} ${r} 0 ${largeArc} 1 ${e.x} ${e.y}`;
-  };
+  const needle = ptc(valA, r - 14);
+  const label = value >= 65 ? 'ALCISTA' : value >= 45 ? 'NEUTRAL' : 'BAJISTA';
+  const color = value >= 65 ? '#22c55e' : value >= 45 ? '#f59e0b' : '#ef4444';
 
-  const needleEnd = polarToCartesian(valueAngle, radius - 8);
-  const color = value >= 60 ? '#22c55e' : value >= 40 ? '#eab308' : '#ef4444';
-  const glowColor = value >= 60 ? 'rgba(34,197,94,0.4)' : value >= 40 ? 'rgba(234,179,8,0.4)' : 'rgba(239,68,68,0.4)';
+  // Tick marks
+  const ticks = Array.from({ length: 11 }, (_, i) => {
+    const a = startA + (i / 10) * totalA;
+    const inner = ptc(a, r - 6);
+    const outer = ptc(a, r + 2);
+    return { x1: inner.x, y1: inner.y, x2: outer.x, y2: outer.y, major: i % 5 === 0 };
+  });
 
   return (
-    <svg width={size} height={size * 0.75} viewBox={`0 0 ${size} ${size * 0.75}`}>
-      <defs>
-        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#ef4444" />
-          <stop offset="50%" stopColor="#eab308" />
-          <stop offset="100%" stopColor="#22c55e" />
-        </linearGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {/* Background arc */}
-      <path d={arcPath(startAngle, endAngle, radius)} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" strokeLinecap="round" />
-      {/* Colored arc */}
-      <path d={arcPath(startAngle, valueAngle, radius)} fill="none" stroke="url(#gaugeGradient)" strokeWidth="8" strokeLinecap="round" filter="url(#glow)" />
-      {/* Needle */}
-      <line x1={cx} y1={cy} x2={needleEnd.x} y2={needleEnd.y} stroke={color} strokeWidth="2.5" strokeLinecap="round" filter="url(#glow)" />
-      {/* Center dot */}
-      <circle cx={cx} cy={cy} r="4" fill={color} filter="url(#glow)" />
-      <circle cx={cx} cy={cy} r="2" fill="white" />
-      {/* Value text */}
-      <text x={cx} y={cy + 20} textAnchor="middle" fill={color} fontSize="16" fontWeight="bold" fontFamily="monospace">{value}%</text>
-    </svg>
-  );
-}
+    <div className="relative flex flex-col items-center">
+      <svg width={size} height={size * 0.68} viewBox={`0 0 ${size} ${size * 0.68}`}>
+        <defs>
+          <linearGradient id="proGaugeGrad" x1="0%" y1="0%" x2="100%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="35%" stopColor="#f97316" />
+            <stop offset="50%" stopColor="#f59e0b" />
+            <stop offset="65%" stopColor="#84cc16" />
+            <stop offset="100%" stopColor="#22c55e" />
+          </linearGradient>
+          <filter id="proGlow">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="needleShadow">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor={color} floodOpacity="0.6" />
+          </filter>
+        </defs>
 
-function MiniBar({ label, value, color, icon: Icon }: { label: string; value: number; color: string; icon: React.ElementType }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-1.5">
-        <Icon className="w-3 h-3" style={{ color }} />
-        <span className="text-[11px] text-gray-400">{label}</span>
-        <span className="text-xs font-bold ml-auto" style={{ color }}>{value}%</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-        <motion.div
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
-          initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        />
+        {/* Outer ring glow */}
+        <path d={arc(startA, endA, r)} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="14" strokeLinecap="round" />
+        {/* Track */}
+        <path d={arc(startA, endA, r)} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" strokeLinecap="round" />
+        {/* Active arc */}
+        <path d={arc(startA, valA, r)} fill="none" stroke="url(#proGaugeGrad)" strokeWidth="8" strokeLinecap="round" filter="url(#proGlow)" />
+
+        {/* Ticks */}
+        {ticks.map((t, i) => (
+          <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+            stroke={t.major ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)'} strokeWidth={t.major ? 1.5 : 0.8} />
+        ))}
+
+        {/* Needle */}
+        <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke={color} strokeWidth="2" strokeLinecap="round" filter="url(#needleShadow)" />
+        {/* Center hub */}
+        <circle cx={cx} cy={cy} r="6" fill="#0a1628" stroke={color} strokeWidth="2" />
+        <circle cx={cx} cy={cy} r="2.5" fill={color} />
+
+        {/* Labels */}
+        <text x={ptc(startA, r + 14).x + 4} y={ptc(startA, r + 14).y} fill="#ef4444" fontSize="7" fontFamily="monospace" fontWeight="600">0</text>
+        <text x={cx} y={ptc(startA + totalA / 2, r + 14).y - 2} textAnchor="middle" fill="#f59e0b" fontSize="7" fontFamily="monospace" fontWeight="600">50</text>
+        <text x={ptc(endA, r + 14).x - 12} y={ptc(endA, r + 14).y} fill="#22c55e" fontSize="7" fontFamily="monospace" fontWeight="600">100</text>
+      </svg>
+
+      {/* Center value */}
+      <div className="absolute bottom-0 flex flex-col items-center">
+        <span className="text-2xl font-black font-mono tabular-nums" style={{ color, textShadow: `0 0 20px ${color}40` }}>
+          {value}
+        </span>
+        <span className="text-[9px] font-bold tracking-[0.2em] uppercase mt-0.5" style={{ color: color + 'aa' }}>
+          {label}
+        </span>
       </div>
     </div>
   );
 }
 
-function IndicatorChip({ name, signal, t }: { name: string; signal: string; t: (k: string) => string }) {
-  const config = {
-    buy: { bg: 'bg-green-500/10', border: 'border-green-500/30', text: 'text-green-400', icon: TrendingUp, label: t('analysis_buy_signal') },
-    sell: { bg: 'bg-red-500/10', border: 'border-red-500/30', text: 'text-red-400', icon: TrendingDown, label: t('analysis_sell_signal') },
-    neutral: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', text: 'text-yellow-400', icon: Minus, label: t('analysis_neutral_signal') },
+/* ─── Sentiment Distribution Bar ─── */
+function SentimentDistBar({ bullish, neutral, bearish }: { bullish: number; neutral: number; bearish: number }) {
+  return (
+    <div className="space-y-2.5">
+      {[
+        { label: 'Alcista', value: bullish, color: '#22c55e', icon: TrendingUp },
+        { label: 'Neutral', value: neutral, color: '#f59e0b', icon: Minus },
+        { label: 'Bajista', value: bearish, color: '#ef4444', icon: TrendingDown },
+      ].map((item) => (
+        <div key={item.label} className="group">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5">
+              <item.icon className="w-3 h-3" style={{ color: item.color }} />
+              <span className="text-[11px] font-medium text-gray-400">{item.label}</span>
+            </div>
+            <span className="text-xs font-bold font-mono tabular-nums" style={{ color: item.color }}>
+              {item.value.toFixed(1)}%
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden relative backdrop-blur-sm">
+            <motion.div
+              className="h-full rounded-full relative"
+              style={{ backgroundColor: item.color + 'cc' }}
+              initial={{ width: 0 }}
+              animate={{ width: `${item.value}%` }}
+              transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20 rounded-full" />
+            </motion.div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Technical Signal Chip ─── */
+function SignalChip({ name, signal, t }: { name: string; signal: string; t: (k: string) => string }) {
+  const cfg = {
+    buy: { bg: 'bg-green-500/8', border: 'border-green-500/20', text: 'text-green-400', glow: 'shadow-[0_0_8px_rgba(34,197,94,0.15)]', icon: TrendingUp, label: 'COMPRA' },
+    sell: { bg: 'bg-red-500/8', border: 'border-red-500/20', text: 'text-red-400', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.15)]', icon: TrendingDown, label: 'VENTA' },
+    neutral: { bg: 'bg-white/[0.03]', border: 'border-white/[0.08]', text: 'text-gray-400', glow: '', icon: Minus, label: 'NEUTRAL' },
   };
-  const c = config[signal as keyof typeof config] || config.neutral;
+  const c = cfg[signal as keyof typeof cfg] || cfg.neutral;
   const Icon = c.icon;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={cn("flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border", c.bg, c.border)}
+      className={cn("flex items-center gap-2 px-2.5 py-2 rounded-lg border backdrop-blur-sm", c.bg, c.border, c.glow)}
     >
-      <Icon className={cn("w-3 h-3", c.text)} />
-      <div className="flex flex-col">
-        <span className="text-[10px] text-gray-500 leading-none">{name}</span>
-        <span className={cn("text-[11px] font-semibold leading-tight", c.text)}>{c.label}</span>
+      <div className={cn("w-5 h-5 rounded flex items-center justify-center", c.bg)}>
+        <Icon className={cn("w-3 h-3", c.text)} />
+      </div>
+      <div className="flex flex-col leading-none">
+        <span className="text-[9px] text-gray-500 uppercase tracking-wider font-medium">{name}</span>
+        <span className={cn("text-[11px] font-bold", c.text)}>{c.label}</span>
       </div>
     </motion.div>
   );
 }
 
-function PriceStatCard({ label, value, color }: { label: string; value: string; color?: string }) {
+/* ─── Price Metric Card ─── */
+function MetricCard({ label, value, color, icon: Icon }: { label: string; value: string; color?: string; icon?: React.ElementType }) {
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 text-center">
-      <span className="text-[10px] text-gray-500 block uppercase tracking-wider">{label}</span>
-      <div className={cn("text-sm font-bold font-mono mt-0.5", color || "text-white")}>{value}</div>
+    <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 py-2.5 relative overflow-hidden group hover:border-white/[0.12] transition-colors">
+      <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-white/[0.02] to-transparent rounded-bl-lg" />
+      <div className="flex items-center gap-1 mb-1">
+        {Icon && <Icon className="w-3 h-3 text-gray-600" />}
+        <span className="text-[9px] text-gray-500 uppercase tracking-[0.1em] font-medium">{label}</span>
+      </div>
+      <div className={cn("text-sm font-bold font-mono tabular-nums", color || "text-white")}>{value}</div>
     </div>
   );
 }
 
+/* ─── Main Component ─── */
 export function MarketSentiment({
-  symbol,
-  highPrice,
-  lowPrice,
-  dailyChange,
-  pipsChange,
+  symbol, highPrice, lowPrice, dailyChange, pipsChange,
 }: MarketSentimentProps) {
   const { t } = useTranslation();
   const { data: sentimentData, isLoading, error } = useMarketSentiment(symbol);
+  const [expanded, setExpanded] = useState(true);
 
   const bullish = (sentimentData?.bullishPercent || 0) as number;
   const neutral = (sentimentData?.neutralPercent || 0) as number;
   const bearish = (sentimentData?.bearishPercent || 0) as number;
 
-  const dominantValue = Math.max(bullish, neutral, bearish);
   const currentTrend = sentimentData?.overall || (
     bullish >= neutral && bullish >= bearish ? 'bullish' :
     bearish >= neutral && bearish >= bullish ? 'bearish' : 'neutral');
 
-  const trendConfig = {
-    bullish: { icon: TrendingUp, label: t('analysis_bullish'), color: '#22c55e', glow: 'shadow-green-500/20' },
-    bearish: { icon: TrendingDown, label: t('analysis_bearish'), color: '#ef4444', glow: 'shadow-red-500/20' },
-    neutral: { icon: Minus, label: t('analysis_neutral'), color: '#eab308', glow: 'shadow-yellow-500/20' },
+  const trendCfg = {
+    bullish: { icon: TrendingUp, label: 'ALCISTA', color: '#22c55e' },
+    bearish: { icon: TrendingDown, label: 'BAJISTA', color: '#ef4444' },
+    neutral: { icon: Minus, label: 'NEUTRAL', color: '#f59e0b' },
   };
-  const trend = trendConfig[currentTrend as keyof typeof trendConfig] || trendConfig.neutral;
+  const trend = trendCfg[currentTrend as keyof typeof trendCfg] || trendCfg.neutral;
   const TrendIcon = trend.icon;
-
-  // Gauge value: 0=full bearish, 50=neutral, 100=full bullish
   const gaugeValue = Math.round(bullish + neutral * 0.5);
 
   if (isLoading) {
     return (
       <div className="p-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
-          <span className="ml-2 text-gray-400 text-sm">{t('analysis_loading_sentiment')}</span>
+        <div className="flex items-center justify-center py-12 gap-3">
+          <div className="relative">
+            <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
+            <div className="absolute inset-0 w-5 h-5 rounded-full bg-cyan-400/20 animate-ping" />
+          </div>
+          <span className="text-gray-400 text-sm font-medium">{t('analysis_loading_sentiment')}</span>
         </div>
       </div>
     );
   }
 
-  if (error) {
-    return <AnalysisError title={t('analysis_market_sentiment')} error={error as Error} compact />;
-  }
+  if (error) return <AnalysisError title={t('analysis_market_sentiment')} error={error as Error} compact />;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 relative overflow-hidden"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-4 h-4 text-cyan-400" />
-        <h3 className="text-white font-semibold text-base">{t('analysis_market_sentiment')}</h3>
+      <div
+        className="flex items-center gap-2.5 p-4 pb-3 cursor-pointer select-none"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20">
+          <Activity className="w-4 h-4 text-purple-400" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-white font-semibold text-sm">{t('analysis_market_sentiment')}</h3>
+          <span className="text-[10px] text-gray-500 font-mono">{symbol} · Multi-source</span>
+        </div>
         <div
-          className={cn("ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border shadow-lg", trend.glow)}
-          style={{ borderColor: trend.color + '40', backgroundColor: trend.color + '15', color: trend.color }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border"
+          style={{ borderColor: trend.color + '30', backgroundColor: trend.color + '10', color: trend.color,
+            boxShadow: `0 0 16px ${trend.color}15` }}
         >
           <TrendIcon className="w-3.5 h-3.5" />
           {trend.label}
         </div>
+        <Eye className={cn("w-4 h-4 transition-colors", expanded ? "text-gray-400" : "text-gray-600")} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left: Gauge + sentiment bars */}
-        <div className="lg:col-span-5 flex flex-col items-center gap-3">
-          <SentimentGauge value={gaugeValue} size={140} />
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4 space-y-4">
+              {/* Gauge + Distribution */}
+              <div className="grid grid-cols-12 gap-4 items-start">
+                <div className="col-span-5 flex justify-center">
+                  <ProGauge value={gaugeValue} size={150} />
+                </div>
+                <div className="col-span-7 space-y-3">
+                  <SentimentDistBar bullish={bullish} neutral={neutral} bearish={bearish} />
 
-          <div className="w-full space-y-2 px-1">
-            <MiniBar label={t('analysis_bullish')} value={bullish} color="#22c55e" icon={TrendingUp} />
-            <MiniBar label={t('analysis_neutral')} value={neutral} color="#eab308" icon={Minus} />
-            <MiniBar label={t('analysis_bearish')} value={bearish} color="#ef4444" icon={TrendingDown} />
-          </div>
-        </div>
-
-        {/* Right: Price stats + indicators */}
-        <div className="lg:col-span-7 flex flex-col gap-3">
-          {/* Price stats grid */}
-          <div className="grid grid-cols-4 gap-2">
-            <PriceStatCard label={t('analysis_high')} value={highPrice.toFixed(4)} color="text-green-400" />
-            <PriceStatCard label={t('analysis_low')} value={lowPrice.toFixed(4)} color="text-red-400" />
-            <PriceStatCard
-              label={t('analysis_change')}
-              value={`${dailyChange >= 0 ? '+' : ''}${dailyChange.toFixed(2)}%`}
-              color={dailyChange >= 0 ? 'text-green-400' : 'text-red-400'}
-            />
-            <PriceStatCard
-              label={t('analysis_pips')}
-              value={`${pipsChange >= 0 ? '+' : ''}${(pipsChange * 10000).toFixed(0)}`}
-              color={pipsChange >= 0 ? 'text-green-400' : 'text-red-400'}
-            />
-          </div>
-
-          {/* Technical indicators */}
-          {sentimentData?.indicators && sentimentData.indicators.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <BarChart3 className="w-3.5 h-3.5 text-cyan-400/60" />
-                <span className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Indicadores</span>
+                  {/* Source badges */}
+                  <div className="flex flex-wrap gap-1">
+                    {['Finnhub', 'AlphaV', 'FMP', 'MarketAux'].map(src => (
+                      <span key={src} className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-gray-600 uppercase tracking-wider">
+                        {src}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {sentimentData.indicators.slice(0, 6).map((indicator, i) => (
-                  <IndicatorChip key={i} name={indicator.name} signal={indicator.signal} t={t} />
-                ))}
+
+              {/* Price Stats Row */}
+              <div className="grid grid-cols-4 gap-2">
+                <MetricCard label="Máximo" value={highPrice.toFixed(4)} color="text-green-400" icon={TrendingUp} />
+                <MetricCard label="Mínimo" value={lowPrice.toFixed(4)} color="text-red-400" icon={TrendingDown} />
+                <MetricCard
+                  label="Cambio"
+                  value={`${dailyChange >= 0 ? '+' : ''}${dailyChange.toFixed(2)}%`}
+                  color={dailyChange >= 0 ? 'text-green-400' : 'text-red-400'}
+                  icon={Zap}
+                />
+                <MetricCard
+                  label="Pips"
+                  value={`${pipsChange >= 0 ? '+' : ''}${(pipsChange * 10000).toFixed(0)}`}
+                  color={pipsChange >= 0 ? 'text-green-400' : 'text-red-400'}
+                  icon={BarChart3}
+                />
               </div>
+
+              {/* Technical Indicators Grid */}
+              {sentimentData?.indicators && sentimentData.indicators.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2.5">
+                    <Shield className="w-3.5 h-3.5 text-purple-400/60" />
+                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.15em] font-semibold">Señales Técnicas</span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent ml-2" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {sentimentData.indicators.slice(0, 6).map((indicator, i) => (
+                      <SignalChip key={i} name={indicator.name} signal={indicator.signal} t={t} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
