@@ -33,6 +33,7 @@ import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
+import brandLogo from "@/assets/g174.svg";
 
 import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
@@ -410,7 +411,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         )}
 
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          {/* Brand watermark behind header */}
+          <img
+            src={brandLogo}
+            alt=""
+            aria-hidden="true"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 opacity-[0.08] pointer-events-none select-none z-0"
+          />
+          <div className="flex items-center gap-3 relative z-10">
             <div className="relative w-20 h-16 flex-shrink-0">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
                 <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
@@ -439,7 +447,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex flex-col items-center gap-1 relative z-10">
             <div className="relative w-[72px] h-[72px]">
               {/* Outer glow ring - uses a blurred circle behind */}
               <div className={cn(
