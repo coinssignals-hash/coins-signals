@@ -370,7 +370,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             src={brandLogo}
             alt=""
             aria-hidden="true"
-            className="w-44 h-44 opacity-[0.07] select-none"
+            className="w-64 h-64 opacity-[0.07] select-none"
           />
         </div>
 
