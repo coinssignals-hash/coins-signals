@@ -185,28 +185,7 @@ async function fetchFinnhub(apiKey: string): Promise<MobileNewsItem[]> {
   } catch { return []; }
 }
 
-async function fetchPolygon(apiKey: string): Promise<MobileNewsItem[]> {
-  try {
-    const res = await fetch(`https://api.polygon.io/v2/reference/news?limit=20&apiKey=${apiKey}`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.results || []).map((item: any, i: number) => {
-      const text = `${item.title} ${item.description || ''}`;
-      const cat = detectCategory(text); const sent = detectSentiment(text); const imp = detectImpact(text);
-      const src = item.publisher?.name || 'Polygon';
-      return {
-        id: `polygon-${item.id || i}`, title: item.title, summary: item.description || '',
-        source: src,
-        source_logo: item.publisher?.logo_url || SOURCE_LOGOS[src] || null,
-        url: item.article_url, image_url: item.image_url || null,
-        published_at: item.published_utc, time_ago: getTimeAgo(item.published_utc),
-        category: cat, affected_currencies: detectCurrencies(text),
-        sentiment: sent, impact: imp,
-        card: buildCard(imp, sent, cat, src),
-      };
-    });
-  } catch { return []; }
-}
+
 
 async function fetchNewsApi(apiKey: string): Promise<MobileNewsItem[]> {
   try {
@@ -271,17 +250,14 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
   }
 
   const finnhubKey = Deno.env.get('FINNHUB_API_KEY');
-  const polygonKey = Deno.env.get('POLYGON_API_KEY');
   const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
 
   const promises: Promise<MobileNewsItem[]>[] = [
     fetchRSS('https://www.fxstreet.com/rss/news', 'fxstreet', 'FXStreet'),
     fetchRSS('https://www.investing.com/rss/news.rss', 'investing', 'Investing.com'),
-    fetchRSS('https://www.forexfactory.com/rss', 'forexfactory', 'Forex Factory'),
     fetchRSS('https://feeds.bloomberg.com/markets/news.rss', 'bloomberg', 'Bloomberg'),
   ];
   if (finnhubKey) promises.push(fetchFinnhub(finnhubKey));
-  if (polygonKey) promises.push(fetchPolygon(polygonKey));
   if (newsApiKey) promises.push(fetchNewsApi(newsApiKey));
 
   if (promises.length === 0) {
@@ -307,11 +283,9 @@ async function getAllNews(): Promise<{ data: MobileNewsItem[]; sources: Record<s
 
   const sources: Record<string, boolean> = {
     finnhub: allNews.some(n => n.id.startsWith('finnhub')),
-    polygon: allNews.some(n => n.id.startsWith('polygon')),
     newsapi: allNews.some(n => n.id.startsWith('newsapi')),
     fxstreet: allNews.some(n => n.id.startsWith('fxstreet')),
     investing: allNews.some(n => n.id.startsWith('investing')),
-    forexfactory: allNews.some(n => n.id.startsWith('forexfactory')),
     bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
   };
 
