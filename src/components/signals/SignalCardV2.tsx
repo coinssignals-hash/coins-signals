@@ -425,7 +425,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               {/* Long/Short position badge */}
               <div
                 className={cn(
-                  "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider w-fit",
+                  "inline-flex items-center gap-0.5 px-1 py-px rounded text-[8px] font-bold uppercase tracking-wider w-fit",
                   action === "BUY"
                     ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                     : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
