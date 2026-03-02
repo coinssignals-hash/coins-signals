@@ -16,11 +16,21 @@ interface ForexChartData {
   date: string;
 }
 
+export type ChartInterval = '15min' | '30min' | '1h' | '4h' | '1day';
+
+const INTERVAL_CONFIG: Record<ChartInterval, { outputsize: string; label: string }> = {
+  '15min': { outputsize: '672', label: '15min' },   // 7 days
+  '30min': { outputsize: '336', label: '30min' },   // 7 days
+  '1h':    { outputsize: '168', label: '1H' },      // 7 days
+  '4h':    { outputsize: '180', label: '4H' },      // 30 days
+  '1day':  { outputsize: '120', label: '1D' },      // 120 days
+};
+
 // In-memory cache
 const cache = new Map<string, { data: ForexChartData; timestamp: number }>();
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
-export function useForexChartData(symbol: string) {
+export function useForexChartData(symbol: string, interval: ChartInterval = '30min') {
   const [data, setData] = useState<ForexChartData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +38,7 @@ export function useForexChartData(symbol: string) {
   const fetchData = useCallback(async (bypassCache = false) => {
     if (!symbol) return;
 
-    const cacheKey = `forex_chart_${symbol}`;
+    const cacheKey = `forex_chart_${symbol}_${interval}`;
 
     if (!bypassCache) {
       const cached = cache.get(cacheKey);
@@ -42,12 +52,14 @@ export function useForexChartData(symbol: string) {
     setLoading(true);
     setError(null);
 
+    const config = INTERVAL_CONFIG[interval];
+
     try {
       const { data: result, error: fnError } = await supabase.functions.invoke('forex-data', {
         body: {
           symbol: symbol.replace('/', ''),
-          interval: '30min',
-          outputsize: '336', // 7 days * 48 half-hours
+          interval,
+          outputsize: config.outputsize,
         },
       });
 
@@ -80,7 +92,7 @@ export function useForexChartData(symbol: string) {
     } finally {
       setLoading(false);
     }
-  }, [symbol]);
+  }, [symbol, interval]);
 
   useEffect(() => {
     fetchData();
