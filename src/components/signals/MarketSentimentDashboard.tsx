@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Loader2, TrendingUp, TrendingDown, Minus, AlertTriangle, BarChart3, Newspaper, Activity, Globe, Users } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Minus, AlertTriangle, BarChart3, Newspaper, Activity, Globe, Users, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MarketSentimentData } from "@/hooks/useSignalMarketSentiment";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -245,22 +245,26 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
                 const sentColor = h.sentiment != null
                   ? h.sentiment > 0.1 ? "hsl(135, 70%, 50%)" : h.sentiment < -0.1 ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)"
                   : undefined;
+                const Wrapper = h.url ? "a" : "div";
+                const linkProps = h.url ? { href: h.url, target: "_blank", rel: "noopener noreferrer" } : {};
                 return (
-                  <div
+                  <Wrapper
                     key={i}
-                    className="flex items-start gap-1.5 rounded-md px-2 py-1"
+                    {...linkProps}
+                    className={`flex items-start gap-1.5 rounded-md px-2 py-1 transition-colors ${h.url ? "cursor-pointer hover:bg-cyan-500/5" : ""}`}
                     style={{ background: "hsla(210, 60%, 10%, 0.6)", border: "1px solid hsla(200, 60%, 35%, 0.1)" }}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-[9px] text-cyan-100 leading-tight line-clamp-2">{h.title}</p>
+                      <p className={`text-[9px] leading-tight line-clamp-2 ${h.url ? "text-cyan-200 hover:text-cyan-100" : "text-cyan-100"}`}>{h.title}</p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0 mt-0.5">
                       {sentColor && (
                         <span className="w-1.5 h-1.5 rounded-full" style={{ background: sentColor }} />
                       )}
                       <span className="text-[7px] text-cyan-400/40 uppercase">{h.source}</span>
+                      {h.url && <ExternalLink className="w-2.5 h-2.5 text-cyan-400/30" />}
                     </div>
-                  </div>
+                  </Wrapper>
                 );
               })}
             </div>
