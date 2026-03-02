@@ -35,11 +35,12 @@ async function fetchAlphaVantageTechnicals(pair: string) {
   const { base, quote } = splitPair(pair);
   const symbol = `${base}${quote}`;
 
-  const [rsiData, macdData, smaData, bbData] = await Promise.all([
+  const [rsiData, macdData, smaData, bbData, newsData] = await Promise.all([
     safeFetch(`https://www.alphavantage.co/query?function=RSI&symbol=${symbol}&interval=60min&time_period=14&series_type=close&apikey=${key}&datatype=json`),
     safeFetch(`https://www.alphavantage.co/query?function=MACD&symbol=${symbol}&interval=60min&series_type=close&apikey=${key}&datatype=json`),
     safeFetch(`https://www.alphavantage.co/query?function=SMA&symbol=${symbol}&interval=60min&time_period=20&series_type=close&apikey=${key}&datatype=json`),
     safeFetch(`https://www.alphavantage.co/query?function=BBANDS&symbol=${symbol}&interval=60min&time_period=20&series_type=close&apikey=${key}&datatype=json`),
+    safeFetch(`https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=FOREX:${symbol}&sort=LATEST&limit=5&apikey=${key}`),
   ]);
 
   const result: any = {};
@@ -74,6 +75,16 @@ async function fetchAlphaVantageTechnicals(pair: string) {
     result.bbUpper = parseFloat(latest?.["Real Upper Band"] ?? "0");
     result.bbMiddle = parseFloat(latest?.["Real Middle Band"] ?? "0");
     result.bbLower = parseFloat(latest?.["Real Lower Band"] ?? "0");
+  }
+
+  // News Sentiment
+  if (newsData?.feed && Array.isArray(newsData.feed)) {
+    result.newsHeadlines = newsData.feed.slice(0, 3).map((item: any) => ({
+      title: item.title,
+      url: item.url,
+      source: item.source,
+      sentiment: item.overall_sentiment_score ?? null,
+    }));
   }
 
   return Object.keys(result).length > 0 ? result : null;
@@ -438,6 +449,11 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
     if (fmpData?.fmpNews) {
       for (const n of fmpData.fmpNews.slice(0, 2)) {
         realHeadlines.push({ title: n.title, source: "FMP", url: n.url });
+      }
+    }
+    if (avData?.newsHeadlines) {
+      for (const h of avData.newsHeadlines) {
+        realHeadlines.push({ title: h.title, source: h.source ?? "AlphaVantage", sentiment: h.sentiment, url: h.url });
       }
     }
     result.headlines = realHeadlines;
