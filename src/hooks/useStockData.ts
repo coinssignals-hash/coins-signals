@@ -105,13 +105,29 @@ export function useStockQuote(symbol: string) {
   });
 }
 
-export function useStockHistorical(symbol: string, from?: string, to?: string) {
+export function useStockHistorical(symbol: string, period: string = '3m') {
+  const { from, to, limit } = (() => {
+    const now = new Date();
+    const toStr = now.toISOString().slice(0, 10);
+    const d = new Date(now);
+    let lim = 90;
+    switch (period) {
+      case '1w': d.setDate(d.getDate() - 7); lim = 7; break;
+      case '1m': d.setMonth(d.getMonth() - 1); lim = 30; break;
+      case '3m': d.setMonth(d.getMonth() - 3); lim = 90; break;
+      case '1y': d.setFullYear(d.getFullYear() - 1); lim = 365; break;
+      case '5y': d.setFullYear(d.getFullYear() - 5); lim = 1260; break;
+      default: d.setMonth(d.getMonth() - 3); break;
+    }
+    return { from: d.toISOString().slice(0, 10), to: toStr, limit: lim };
+  })();
+
   return useQuery({
-    queryKey: ['stock-historical', symbol, from, to],
+    queryKey: ['stock-historical', symbol, period],
     queryFn: () => fmpFetch({ action: 'historical', symbol, from, to }),
     enabled: !!symbol,
     staleTime: 5 * 60_000,
-    select: (data: { historical?: HistoricalPrice[] }) => data?.historical?.slice(0, 90)?.reverse() ?? [],
+    select: (data: { historical?: HistoricalPrice[] }) => data?.historical?.slice(0, limit)?.reverse() ?? [],
   });
 }
 

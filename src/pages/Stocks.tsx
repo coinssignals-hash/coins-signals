@@ -162,17 +162,13 @@ function StockDetail({ symbol }: { symbol: string }) {
   const { data: sentiment, isLoading: sentimentLoading } = useStockSentiment(symbol);
   const { data: news, isLoading: newsLoading } = useStockNews(symbol);
 
-  const today = new Date();
-  const threeMonthsAgo = new Date(today);
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-  const from = threeMonthsAgo.toISOString().split('T')[0];
-  const to = today.toISOString().split('T')[0];
-  const { data: historical, isLoading: histLoading } = useStockHistorical(symbol, from, to);
+  const [chartPeriod, setChartPeriod] = useState('3m');
+  const { data: historical, isLoading: histLoading } = useStockHistorical(symbol, chartPeriod);
 
   return (
     <div className="px-4 space-y-3 pb-4">
       <StockQuoteCard quote={quote} loading={quoteLoading} />
-      <StockChart data={historical ?? []} loading={histLoading} symbol={symbol} />
+      <StockChart data={historical ?? []} loading={histLoading} symbol={symbol} period={chartPeriod} onPeriodChange={setChartPeriod} />
 
       {/* Tabbed sections */}
       <Tabs defaultValue="technicals" className="w-full">

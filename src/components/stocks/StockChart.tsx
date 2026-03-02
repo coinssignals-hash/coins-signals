@@ -1,15 +1,27 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import type { HistoricalPrice } from '@/hooks/useStockData';
+import { cn } from '@/lib/utils';
+
+const PERIODS = [
+  { value: '1w', label: '1S' },
+  { value: '1m', label: '1M' },
+  { value: '3m', label: '3M' },
+  { value: '1y', label: '1A' },
+  { value: '5y', label: '5A' },
+] as const;
 
 interface StockChartProps {
   data: HistoricalPrice[];
   loading: boolean;
   symbol: string;
+  period: string;
+  onPeriodChange: (period: string) => void;
 }
 
-export function StockChart({ data, loading, symbol }: StockChartProps) {
+export function StockChart({ data, loading, symbol, period, onPeriodChange }: StockChartProps) {
   if (loading) {
     return (
       <Card className="p-4 bg-card border-border">
@@ -37,12 +49,36 @@ export function StockChart({ data, loading, symbol }: StockChartProps) {
     volume: d.volume,
   }));
 
+  const tickInterval = period === '1w' ? 0 : period === '1m' ? 4 : period === '1y' ? 30 : period === '5y' ? 120 : 'preserveStartEnd';
+
   return (
     <Card className="p-4 bg-card border-border">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-foreground">Histórico 3 Meses</h3>
+        <h3 className="text-sm font-semibold text-foreground">Histórico</h3>
+        <div className="flex items-center gap-1">
+          {PERIODS.map(p => (
+            <button
+              key={p.value}
+              onClick={() => onPeriodChange(p.value)}
+              className={cn(
+                "px-2.5 py-1 text-xs font-medium rounded transition-all",
+                period === p.value
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-muted-foreground font-mono">
           {data[0]?.date} → {data[data.length - 1]?.date}
+        </span>
+        <span className={cn("text-xs font-semibold", isPositive ? "text-[hsl(142,70%,45%)]" : "text-destructive")}>
+          {isPositive ? '+' : ''}{((data[data.length - 1].close - data[0].close) / data[0].close * 100).toFixed(2)}%
         </span>
       </div>
 
@@ -60,7 +96,7 @@ export function StockChart({ data, loading, symbol }: StockChartProps) {
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => v?.slice(5)}
-            interval="preserveStartEnd"
+            interval={tickInterval as any}
           />
           <YAxis
             tick={{ fontSize: 10, fill: 'hsl(215, 20%, 55%)' }}
@@ -71,12 +107,12 @@ export function StockChart({ data, loading, symbol }: StockChartProps) {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'hsl(222, 45%, 7%)',
-              border: '1px solid hsl(220, 30%, 15%)',
+              backgroundColor: 'hsl(var(--card))',
+              border: '1px solid hsl(var(--border))',
               borderRadius: '8px',
               fontSize: '12px',
             }}
-            labelStyle={{ color: 'hsl(215, 20%, 55%)' }}
+            labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
             formatter={(value: number) => [`$${value.toFixed(2)}`, 'Precio']}
           />
           <Area
