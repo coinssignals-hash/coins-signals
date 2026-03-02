@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { usePreviousDayCandles } from "@/hooks/usePreviousDayCandles";
+import { useForexChartData } from "@/hooks/useForexChartData";
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -244,6 +244,7 @@ function PriceAge({ timestamp }: { timestamp: number }) {
 export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
   const [chartFullscreen, setChartFullscreen] = useState(false);
+  const [showSR, setShowSR] = useState(true);
   const { t, language } = useTranslation();
 
   const DATE_LOCALES = { es, en: enUS, pt: ptBR, fr };
@@ -330,7 +331,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   });
 
   // Candlestick chart data (same as Analysis section)
-  const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(symbol);
+  const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol);
 
   // Circle fill = how far current price is toward TP or SL (0% = at entry, 100% = at TP/SL)
   const circlePercent = useMemo(() => {
@@ -671,16 +672,30 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
 
-            {/* Candlestick Chart - Same as Analysis section */}
+            {/* Candlestick Chart - Loaded via forex-data API */}
             <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
+              {/* S/R Toggle */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowSR(!showSR); }}
+                className={cn(
+                  "absolute top-2 left-2 z-10 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                  showSR
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                    : "bg-slate-800/70 text-slate-500 border border-slate-700/40"
+                )}
+                title="Mostrar/ocultar Soporte y Resistencia"
+              >
+                S/R
+              </button>
               <CandlestickChart
-                data={previousDayData?.candles || []}
-                resistance={previousDayData?.resistance ?? 0}
-                support={previousDayData?.support ?? 0}
-                loading={previousDayLoading}
+                data={forexChartData?.candles || []}
+                resistance={forexChartData?.resistance ?? 0}
+                support={forexChartData?.support ?? 0}
+                loading={forexChartLoading}
                 realtimePrice={quote?.price}
                 isRealtimeConnected={isConnected}
-                previousDayDate={previousDayData?.date}
+                previousDayDate={forexChartData?.date}
+                showSupportResistance={showSR}
               />
               <button
                 onClick={() => setChartFullscreen(true)}
@@ -698,19 +713,33 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700/50">
                     <span className="text-sm font-semibold text-slate-200">{signal?.currencyPair}</span>
-                    <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded-md hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors">
-                      <X className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setShowSR(!showSR)}
+                        className={cn(
+                          "px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                          showSR
+                            ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                            : "bg-slate-800/70 text-slate-500 border border-slate-700/40"
+                        )}
+                      >
+                        S/R
+                      </button>
+                      <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded-md hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors">
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex-1 min-h-0">
                     <CandlestickChart
-                      data={previousDayData?.candles || []}
-                      resistance={previousDayData?.resistance ?? 0}
-                      support={previousDayData?.support ?? 0}
-                      loading={previousDayLoading}
+                      data={forexChartData?.candles || []}
+                      resistance={forexChartData?.resistance ?? 0}
+                      support={forexChartData?.support ?? 0}
+                      loading={forexChartLoading}
                       realtimePrice={quote?.price}
                       isRealtimeConnected={isConnected}
-                      previousDayDate={previousDayData?.date}
+                      previousDayDate={forexChartData?.date}
+                      showSupportResistance={showSR}
                     />
                   </div>
                 </div>
