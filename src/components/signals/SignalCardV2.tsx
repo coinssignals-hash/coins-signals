@@ -764,14 +764,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <button
                 onClick={(e) => { e.stopPropagation(); setShowSR(!showSR); }}
                 className={cn(
-                  "absolute top-2 left-2 z-10 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                  "absolute top-2 left-2 z-10 px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
                   showSR
-                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                    ? "bg-slate-800/80 border border-slate-600/40"
                     : "bg-slate-800/70 text-slate-500 border border-slate-700/40"
                 )}
                 title="Mostrar/ocultar Soporte y Resistencia"
               >
-                Soporte/Resistencia
+                <span className="text-red-400">Soporte</span>
+                <span className="text-slate-500">/</span>
+                <span className="text-green-400">Resistencia</span>
               </button>
               <CandlestickChart
                 data={forexChartData?.candles || []}
