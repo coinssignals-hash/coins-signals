@@ -333,8 +333,7 @@ export default function Analysis() {
               }
             </div>
 
-            {/* Indicators Summary */}
-            <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
+            {/* Indicators Summary - desactivado */}
 
             {/* Technical Levels */}
             <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl overflow-hidden">
