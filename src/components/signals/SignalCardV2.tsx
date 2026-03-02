@@ -313,13 +313,39 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     }
   }, [quote, currencyPair, entryPrice, takeProfit, stopLoss, status, symbol]);
 
+  // Score from -100 (SL hit) to +100 (TP hit), 0 = at entry
   const priceDiff = useMemo(() => {
-    if (!quote?.price) return { percent: 0, pips: 0, currentPrice: 0, isPositive: true, hasData: false };
-    const diff = (quote.price - entryPrice) / entryPrice * 100;
+    if (!quote?.price) return { percent: 0, score: 0, pips: 0, currentPrice: 0, isPositive: true, hasData: false };
+    const price = quote.price;
     const pipMultiplier = isJpy ? 100 : 10000;
-    const pips = (quote.price - entryPrice) * pipMultiplier;
-    return { percent: diff, pips, currentPrice: quote.price, isPositive: diff >= 0, hasData: true };
-  }, [quote?.price, entryPrice, isJpy]);
+    const pips = (price - entryPrice) * pipMultiplier;
+    const isBuy = action === 'BUY';
+
+    let score = 0;
+    if (isBuy) {
+      if (price >= entryPrice) {
+        // Moving towards TP: 0 to +100
+        const tpDistance = takeProfit - entryPrice;
+        score = tpDistance > 0 ? Math.min(100, ((price - entryPrice) / tpDistance) * 100) : 0;
+      } else {
+        // Moving towards SL: 0 to -100
+        const slDistance = entryPrice - stopLoss;
+        score = slDistance > 0 ? Math.max(-100, -((entryPrice - price) / slDistance) * 100) : 0;
+      }
+    } else {
+      // SELL: price going down is good
+      if (price <= entryPrice) {
+        const tpDistance = entryPrice - takeProfit;
+        score = tpDistance > 0 ? Math.min(100, ((entryPrice - price) / tpDistance) * 100) : 0;
+      } else {
+        const slDistance = stopLoss - entryPrice;
+        score = slDistance > 0 ? Math.max(-100, -((price - entryPrice) / slDistance) * 100) : 0;
+      }
+    }
+
+    const percent = (price - entryPrice) / entryPrice * 100;
+    return { percent, score, pips, currentPrice: price, isPositive: score >= 0, hasData: true };
+  }, [quote?.price, entryPrice, isJpy, action, takeProfit, stopLoss]);
 
   // Market Sentiment Dashboard (fetched when expanded)
   const { data: sentimentData, loading: sentimentLoading } = useSignalMarketSentiment(
@@ -367,19 +393,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     };
   }, [forexChartData?.candles]);
 
+  // Circle fill uses absolute score (0-100) for the arc
   const circlePercent = useMemo(() => {
     if (!priceDiff.hasData) return 0;
-    const current = priceDiff.currentPrice;
-    // Measure progress toward TP (if favorable) or SL (if unfavorable)
-    const isBuy = action === 'BUY';
-    const favorable = isBuy ? current >= entryPrice : current <= entryPrice;
-    const targetDistance = favorable
-      ? Math.abs(takeProfit - entryPrice)
-      : Math.abs(stopLoss - entryPrice);
-    if (targetDistance === 0) return 0;
-    const priceDistance = Math.abs(current - entryPrice);
-    return Math.min(100, (priceDistance / targetDistance) * 100);
-  }, [priceDiff.hasData, priceDiff.currentPrice, action, entryPrice, takeProfit, stopLoss]);
+    return Math.abs(priceDiff.score);
+  }, [priceDiff.hasData, priceDiff.score]);
 
   // Risk percent = SL distance / entry
   const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
@@ -547,7 +565,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     'none'
                   }}>
 
-                  {priceDiff.hasData ? `${priceDiff.isPositive ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
+                  {priceDiff.hasData ? `${priceDiff.score >= 0 ? "+" : ""}${Math.round(priceDiff.score)}` : "—"}
                 </span>
                 {priceDiff.hasData &&
                 <span

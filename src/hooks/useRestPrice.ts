@@ -7,11 +7,11 @@ interface PriceQuote {
 }
 
 const priceCache = new Map<string, { quote: PriceQuote; ts: number }>();
-const CACHE_TTL = 15_000; // 15s
+const CACHE_TTL = 30_000; // 30s
 
 /**
- * Fetches current price via REST (Polygon) through the realtime-market edge function.
- * Falls back gracefully — no WebSocket dependency.
+ * Fetches current price via signal-market-data (Alpha Vantage + Finnhub + FMP).
+ * Falls back gracefully — no Polygon/WebSocket dependency.
  */
 export function useRestPrice(symbol: string, pollIntervalMs = 30_000) {
   const [quote, setQuote] = useState<PriceQuote | null>(null);
@@ -30,31 +30,19 @@ export function useRestPrice(symbol: string, pollIntervalMs = 30_000) {
     }
 
     try {
-      // Try quote first, then fall back to aggregates (prev day close)
-      const { data, error: fnError } = await supabase.functions.invoke('realtime-market', {
-        body: { symbol, type: 'quote' },
+      const { data, error: fnError } = await supabase.functions.invoke('signal-market-data', {
+        body: { symbol },
       });
 
       if (fnError) throw new Error(fnError.message);
 
       let price: number | null = null;
 
-      if (data?.last) {
-        price = (data.last.ask + data.last.bid) / 2;
-      } else if (data?.price) {
+      // signal-market-data returns { price, bid, ask, ... }
+      if (data?.price && typeof data.price === 'number') {
         price = data.price;
-      }
-
-      // Fallback to aggregates if quote not authorized
-      if (price === null && (data?.status === 'NOT_AUTHORIZED' || data?.message?.includes('not entitled'))) {
-        const { data: aggData } = await supabase.functions.invoke('realtime-market', {
-          body: { symbol, type: 'aggregates' },
-        });
-        if (aggData?.results?.[0]) {
-          price = aggData.results[0].c; // close price
-        }
-      } else if (data?.results?.[0]) {
-        price = data.results[0].c;
+      } else if (data?.bid && data?.ask) {
+        price = (data.bid + data.ask) / 2;
       }
 
       if (price !== null) {
@@ -73,7 +61,7 @@ export function useRestPrice(symbol: string, pollIntervalMs = 30_000) {
   }, [symbol]);
 
   useEffect(() => {
-    if (pollIntervalMs <= 0) return; // No polling when interval is 0 or negative
+    if (pollIntervalMs <= 0) return;
     fetchPrice();
     intervalRef.current = setInterval(fetchPrice, pollIntervalMs);
     return () => {
