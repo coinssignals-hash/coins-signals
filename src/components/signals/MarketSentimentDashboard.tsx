@@ -233,6 +233,40 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
           </div>
         </div>
 
+        {/* Real Headlines */}
+        {(data as any).headlines?.length > 0 && (
+          <div className="mb-3">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Newspaper className="w-3 h-3 text-blue-400" />
+              <span className="text-[9px] text-cyan-300/50 uppercase tracking-wider">Titulares en Tiempo Real</span>
+            </div>
+            <div className="space-y-1">
+              {(data as any).headlines.slice(0, 5).map((h: any, i: number) => {
+                const sentColor = h.sentiment != null
+                  ? h.sentiment > 0.1 ? "hsl(135, 70%, 50%)" : h.sentiment < -0.1 ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)"
+                  : undefined;
+                return (
+                  <div
+                    key={i}
+                    className="flex items-start gap-1.5 rounded-md px-2 py-1"
+                    style={{ background: "hsla(210, 60%, 10%, 0.6)", border: "1px solid hsla(200, 60%, 35%, 0.1)" }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[9px] text-cyan-100 leading-tight line-clamp-2">{h.title}</p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                      {sentColor && (
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: sentColor }} />
+                      )}
+                      <span className="text-[7px] text-cyan-400/40 uppercase">{h.source}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Source bars */}
         <div className="space-y-2.5 mb-3">
           <SourceBar

@@ -415,13 +415,30 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
     const result = JSON.parse(toolCall.function.arguments);
     result.currencyPair = currencyPair;
     result.generatedAt = new Date().toISOString();
-    // Attach raw real-data flags
     result.realData = {
       alphaVantage: !!avData,
       finnhub: !!fhData,
       fmp: !!fmpData,
       marketaux: !!maData,
     };
+    // Attach real headlines from APIs
+    const realHeadlines: { title: string; source: string; sentiment?: number }[] = [];
+    if (fhData?.headlines) {
+      for (const h of fhData.headlines.slice(0, 3)) {
+        realHeadlines.push({ title: h, source: "Finnhub" });
+      }
+    }
+    if (maData?.articles) {
+      for (const a of maData.articles.slice(0, 3)) {
+        realHeadlines.push({ title: a.title, source: a.source ?? "MarketAux", sentiment: a.sentiment });
+      }
+    }
+    if (fmpData?.fmpNews) {
+      for (const n of fmpData.fmpNews.slice(0, 2)) {
+        realHeadlines.push({ title: n.title, source: "FMP" });
+      }
+    }
+    result.headlines = realHeadlines;
 
     cache.set(cacheKey, { data: result, ts: Date.now() });
     if (cache.size > 100) {
