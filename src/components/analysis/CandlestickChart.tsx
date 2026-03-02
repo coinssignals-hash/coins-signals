@@ -290,7 +290,7 @@ export function CandlestickChart({
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; volume: string } | null>(null);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; volume: string; crosshairX: number; relY: number } | null>(null);
 
   // Chart layout constants (must match buildChartSvg)
   const SVG_W = 1200, SVG_H = 700;
@@ -301,6 +301,18 @@ export function CandlestickChart({
     data.map((_, i) => 5e6 + Math.abs(Math.sin(i * 0.3)) * 50e6 + ((i * 7) % 10) * 1e6),
     [data]
   );
+
+  // Price range for crosshair price label
+  const priceRange = useMemo(() => {
+    if (!data.length) return null;
+    let minP = Infinity, maxP = -Infinity;
+    for (const c of data) { if (c.low < minP) minP = c.low; if (c.high > maxP) maxP = c.high; }
+    if (realtimePrice) { minP = Math.min(minP, realtimePrice); maxP = Math.max(maxP, realtimePrice); }
+    minP = Math.min(minP, support); maxP = Math.max(maxP, resistance);
+    const pr = maxP - minP || 0.0001;
+    const pp = pr * 0.05;
+    return { min: minP - pp, max: maxP + pp };
+  }, [data, support, resistance, realtimePrice]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!data.length || !containerRef.current) return;
@@ -317,7 +329,9 @@ export function CandlestickChart({
     if (idx < 0 || idx >= data.length) { setTooltip(null); return; }
     const vol = volumes[idx];
     const volStr = vol >= 1e6 ? `${(vol / 1e6).toFixed(1)}M` : vol >= 1e3 ? `${(vol / 1e3).toFixed(1)}K` : vol.toFixed(0);
-    setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, candle: data[idx], volume: volStr });
+    // Snap crosshair X to candle center
+    const candleCenterPx = (CHART_X1 + (idx + 0.5) * cw) / scaleX;
+    setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, candle: data[idx], volume: volStr, crosshairX: candleCenterPx, relY: e.clientY - rect.top });
   }, [data, volumes]);
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
@@ -388,6 +402,75 @@ export function CandlestickChart({
             <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
           </div>
         )}
+
+        {/* Crosshair lines */}
+        {tooltip && containerRef.current && (() => {
+          const h = containerRef.current!.clientHeight;
+          const w = containerRef.current!.clientWidth;
+          const scaleY = SVG_H / h;
+          const chartTopPx = PAD_TOP / scaleY;
+          const chartBottomPx = VOL_SEP_Y / scaleY;
+          // Price from Y position
+          const svgY = tooltip.relY * scaleY;
+          const priceAtY = priceRange
+            ? priceRange.max - ((svgY - PAD_TOP) / (VOL_SEP_Y - PAD_TOP)) * (priceRange.max - priceRange.min)
+            : null;
+          const showPriceLabel = priceAtY !== null && svgY >= PAD_TOP && svgY <= VOL_SEP_Y;
+          return (
+            <>
+              {/* Vertical line snapped to candle */}
+              <div
+                className="absolute top-0 pointer-events-none z-20"
+                style={{
+                  left: tooltip.crosshairX,
+                  top: chartTopPx,
+                  height: chartBottomPx - chartTopPx,
+                  width: 1,
+                  background: 'rgba(148,163,184,0.4)',
+                  borderLeft: '1px dashed rgba(148,163,184,0.5)',
+                }}
+              />
+              {/* Horizontal line */}
+              <div
+                className="absolute pointer-events-none z-20"
+                style={{
+                  left: CHART_X1 / (SVG_W / w),
+                  top: tooltip.relY,
+                  width: CHART_W / (SVG_W / w),
+                  height: 1,
+                  background: 'rgba(148,163,184,0.3)',
+                  borderTop: '1px dashed rgba(148,163,184,0.4)',
+                }}
+              />
+              {/* Price label on right edge */}
+              {showPriceLabel && (
+                <div
+                  className="absolute pointer-events-none z-20 text-[10px] font-mono px-1.5 py-0.5 rounded-sm"
+                  style={{
+                    right: 2,
+                    top: tooltip.relY - 9,
+                    background: 'rgba(59,130,246,0.85)',
+                    color: '#fff',
+                  }}
+                >
+                  {fmtPrice(priceAtY!, jpy)}
+                </div>
+              )}
+              {/* Time label on bottom */}
+              <div
+                className="absolute pointer-events-none z-20 text-[10px] font-mono px-1.5 py-0.5 rounded-sm"
+                style={{
+                  left: tooltip.crosshairX - 25,
+                  bottom: 46,
+                  background: 'rgba(51,65,85,0.9)',
+                  color: '#94a3b8',
+                }}
+              >
+                {new Date(tooltip.candle.time).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </>
+          );
+        })()}
 
         {/* OHLC Tooltip */}
         {tooltip && tooltipCandle && (
