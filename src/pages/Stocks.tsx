@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, TrendingUp, TrendingDown, Building2, Globe, Users, DollarSign, BarChart3, ArrowLeft, Activity, Brain, Newspaper } from 'lucide-react';
-import { useStockSearch, useStockProfile, useStockQuote, useStockHistorical, useStockFinancials, useStockTechnicals, useStockSentiment, useStockNews } from '@/hooks/useStockData';
+import { useStockSearch, useStockProfile, useStockQuote, useStockHistorical, useStockFinancials, useStockTechnicals, useStockSentiment, useStockNews, useStockAISummary } from '@/hooks/useStockData';
 import { useDebounce } from '@/hooks/useDebounce';
 import { StockChart } from '@/components/stocks/StockChart';
 import { StockQuoteCard } from '@/components/stocks/StockQuoteCard';
@@ -16,6 +16,7 @@ import { StockFinancialsCard } from '@/components/stocks/StockFinancialsCard';
 import { StockTechnicalsCard } from '@/components/stocks/StockTechnicalsCard';
 import { StockSentimentCard } from '@/components/stocks/StockSentimentCard';
 import { StockNewsCard } from '@/components/stocks/StockNewsCard';
+import { StockAISummaryCard } from '@/components/stocks/StockAISummaryCard';
 
 const POPULAR_STOCKS = [
   { symbol: 'AAPL', name: 'Apple' },
@@ -161,6 +162,7 @@ function StockDetail({ symbol }: { symbol: string }) {
   const { data: technicals, isLoading: technicalsLoading } = useStockTechnicals(symbol);
   const { data: sentiment, isLoading: sentimentLoading } = useStockSentiment(symbol);
   const { data: news, isLoading: newsLoading } = useStockNews(symbol);
+  const { data: aiSummary, isLoading: aiLoading } = useStockAISummary(symbol);
 
   const [chartPeriod, setChartPeriod] = useState('3m');
   const { data: historical, isLoading: histLoading } = useStockHistorical(symbol, chartPeriod);
@@ -168,6 +170,7 @@ function StockDetail({ symbol }: { symbol: string }) {
   return (
     <div className="px-4 space-y-3 pb-4">
       <StockQuoteCard quote={quote} loading={quoteLoading} />
+      <StockAISummaryCard data={aiSummary} loading={aiLoading} currentPrice={quote?.price} />
       <StockChart data={historical ?? []} loading={histLoading} symbol={symbol} period={chartPeriod} onPeriodChange={setChartPeriod} />
 
       {/* Tabbed sections */}

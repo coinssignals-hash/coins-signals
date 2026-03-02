@@ -221,6 +221,144 @@ serve(async (req) => {
         break;
       }
 
+      // ---- AI SUMMARY: Unified recommendation ----
+      case 'ai-summary': {
+        const AI_CACHE_TTL = 15 * 60 * 1000;
+        const aiCacheKey = `ai-summary:${symbol}`;
+        const aiCached = getCached(aiCacheKey);
+        if (aiCached) {
+          return new Response(JSON.stringify(aiCached), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Gather data in parallel
+        const avBase = 'https://www.alphavantage.co/query';
+        const today = new Date();
+        const weekAgo = new Date(today);
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const fromDate = weekAgo.toISOString().split('T')[0];
+        const toDate = today.toISOString().split('T')[0];
+
+        const [rsiRes, macdRes, smaRes, sentRes, fhSentRes, newsRes, quoteRes] = await Promise.allSettled([
+          safeFetch(`${avBase}?function=RSI&symbol=${symbol}&interval=daily&time_period=14&series_type=close&apikey=${ALPHA_KEY}`, 'RSI'),
+          safeFetch(`${avBase}?function=MACD&symbol=${symbol}&interval=daily&series_type=close&apikey=${ALPHA_KEY}`, 'MACD'),
+          safeFetch(`${avBase}?function=SMA&symbol=${symbol}&interval=daily&time_period=50&series_type=close&apikey=${ALPHA_KEY}`, 'SMA50'),
+          safeFetch(`https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${symbol}&limit=10&apikey=${ALPHA_KEY}`, 'Sentiment'),
+          safeFetch(`https://finnhub.io/api/v1/news-sentiment?symbol=${symbol}&token=${FINNHUB_KEY}`, 'FH Sentiment'),
+          safeFetch(`https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${fromDate}&to=${toDate}&token=${FINNHUB_KEY}`, 'News'),
+          safeFetch(`https://financialmodelingprep.com/stable/quote?symbol=${symbol}&apikey=${FMP_KEY}`, 'Quote'),
+        ]);
+
+        const getVal = (r: PromiseSettledResult<any>) => r.status === 'fulfilled' ? r.value : null;
+
+        // Extract latest RSI
+        const rsiData = getVal(rsiRes);
+        const rsiEntries = rsiData?.['Technical Analysis: RSI'] ? Object.entries(rsiData['Technical Analysis: RSI']).slice(0, 5) : [];
+        const latestRsi = rsiEntries.length > 0 ? (rsiEntries[0][1] as any)?.RSI : null;
+
+        // Extract latest MACD
+        const macdData = getVal(macdRes);
+        const macdEntries = macdData?.['Technical Analysis: MACD'] ? Object.entries(macdData['Technical Analysis: MACD']).slice(0, 5) : [];
+        const latestMacd = macdEntries.length > 0 ? macdEntries[0][1] : null;
+
+        // Extract SMA50
+        const smaData = getVal(smaRes);
+        const smaEntries = smaData?.['Technical Analysis: SMA'] ? Object.entries(smaData['Technical Analysis: SMA']).slice(0, 1) : [];
+        const latestSma50 = smaEntries.length > 0 ? (smaEntries[0][1] as any)?.SMA : null;
+
+        // Extract sentiment
+        const sentData = getVal(sentRes);
+        const sentFeed = sentData?.feed?.slice(0, 5) || [];
+        const avgSentScore = sentFeed.length > 0
+          ? sentFeed.reduce((s: number, i: any) => s + parseFloat(i.overall_sentiment_score || '0'), 0) / sentFeed.length
+          : null;
+
+        const fhSent = getVal(fhSentRes);
+        const fhBullish = fhSent?.sentiment?.bullishPercent;
+
+        // News headlines
+        const newsData = getVal(newsRes);
+        const headlines = Array.isArray(newsData) ? newsData.slice(0, 5).map((n: any) => n.headline) : [];
+
+        // Quote
+        const quoteData = getVal(quoteRes);
+        const quote = Array.isArray(quoteData) ? quoteData[0] : null;
+
+        // Build context for AI
+        const context = `
+Acción: ${symbol}
+Precio actual: $${quote?.price || 'N/A'} | Cambio: ${quote?.changesPercentage?.toFixed(2) || 'N/A'}%
+P/E: ${quote?.pe || 'N/A'} | Market Cap: $${quote?.marketCap ? (quote.marketCap / 1e9).toFixed(1) + 'B' : 'N/A'}
+
+INDICADORES TÉCNICOS:
+- RSI(14): ${latestRsi || 'N/A'}
+- MACD: ${latestMacd ? `Línea: ${(latestMacd as any).MACD}, Signal: ${(latestMacd as any).MACD_Signal}, Hist: ${(latestMacd as any).MACD_Hist}` : 'N/A'}
+- SMA(50): ${latestSma50 || 'N/A'} ${latestSma50 && quote?.price ? (quote.price > parseFloat(latestSma50) ? '(precio ENCIMA)' : '(precio DEBAJO)') : ''}
+
+SENTIMIENTO:
+- Alpha Vantage avg score: ${avgSentScore?.toFixed(3) || 'N/A'} (escala -1 a 1)
+- Finnhub bullish%: ${fhBullish != null ? (fhBullish * 100).toFixed(0) + '%' : 'N/A'}
+
+TITULARES RECIENTES:
+${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}`).join('\n') : 'Sin noticias recientes'}`;
+
+        const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+        if (!LOVABLE_API_KEY) {
+          result = { error: 'AI not configured' };
+          break;
+        }
+
+        const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              {
+                role: 'system',
+                content: `Eres un analista financiero profesional. Genera un resumen ejecutivo en español para traders. Responde SOLO con un JSON válido (sin markdown ni backticks) con esta estructura exacta:
+{
+  "recommendation": "COMPRAR" | "MANTENER" | "VENDER",
+  "confidence": 0-100,
+  "summary": "Resumen de 2-3 oraciones máximo con el análisis unificado.",
+  "technicalSignal": "ALCISTA" | "NEUTRAL" | "BAJISTA",
+  "sentimentSignal": "POSITIVO" | "NEUTRAL" | "NEGATIVO",
+  "newsSignal": "POSITIVO" | "NEUTRAL" | "NEGATIVO",
+  "keyFactors": ["factor1", "factor2", "factor3"],
+  "riskLevel": "BAJO" | "MEDIO" | "ALTO",
+  "priceTarget": { "low": number, "mid": number, "high": number }
+}`
+              },
+              { role: 'user', content: `Analiza esta acción y genera la recomendación unificada:\n${context}` }
+            ],
+          }),
+        });
+
+        if (!aiResponse.ok) {
+          const errStatus = aiResponse.status;
+          console.error(`[stock-analysis] AI gateway error: ${errStatus}`);
+          result = { error: errStatus === 429 ? 'Rate limited' : errStatus === 402 ? 'Payment required' : 'AI error' };
+          break;
+        }
+
+        const aiJson = await aiResponse.json();
+        const aiContent = aiJson.choices?.[0]?.message?.content || '';
+
+        try {
+          const cleaned = aiContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+          result = JSON.parse(cleaned);
+        } catch {
+          result = { recommendation: 'MANTENER', confidence: 50, summary: aiContent.slice(0, 300), technicalSignal: 'NEUTRAL', sentimentSignal: 'NEUTRAL', newsSignal: 'NEUTRAL', keyFactors: [], riskLevel: 'MEDIO', priceTarget: null };
+        }
+
+        cache.set(aiCacheKey, { data: result, ts: Date.now() });
+        break;
+      }
+
       default:
         return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
           status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }

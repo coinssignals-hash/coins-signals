@@ -177,3 +177,14 @@ export function useStockNews(symbol: string) {
     staleTime: 3 * 60_000,
   });
 }
+
+// ---- AI Summary ----
+export function useStockAISummary(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-ai-summary', symbol],
+    queryFn: () => stockAnalysisFetch({ action: 'ai-summary', symbol }),
+    enabled: !!symbol,
+    staleTime: 15 * 60_000,
+    retry: 1,
+  });
+}
