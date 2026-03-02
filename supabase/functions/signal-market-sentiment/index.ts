@@ -101,6 +101,7 @@ async function fetchFinnhubSentiment(pair: string) {
 
     result.newsCount = relevant.length;
     result.headlines = relevant.map((n: any) => n.headline).filter(Boolean);
+    result.newsUrls = relevant.map((n: any) => n.url).filter(Boolean);
     result.newsSummaries = relevant.map((n: any) => n.summary?.slice(0, 150)).filter(Boolean);
   }
 
@@ -156,7 +157,7 @@ async function fetchFMPData(pair: string) {
         return text.includes(base) || text.includes(quote);
       })
       .slice(0, 3);
-    result.fmpNews = relevant.map((n: any) => ({ title: n.title, text: n.text?.slice(0, 200) }));
+    result.fmpNews = relevant.map((n: any) => ({ title: n.title, text: n.text?.slice(0, 200), url: n.url }));
   }
 
   return Object.keys(result).length > 0 ? result : null;
@@ -179,6 +180,7 @@ async function fetchMarketAuxNews(pair: string) {
       description: a.description?.slice(0, 200),
       sentiment: a.entities?.[0]?.sentiment_score ?? null,
       source: a.source,
+      url: a.url,
     })),
     avgSentiment: data.data.reduce((acc: number, a: any) => {
       const s = a.entities?.[0]?.sentiment_score;
@@ -422,20 +424,20 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
       marketaux: !!maData,
     };
     // Attach real headlines from APIs
-    const realHeadlines: { title: string; source: string; sentiment?: number }[] = [];
+    const realHeadlines: { title: string; source: string; sentiment?: number; url?: string }[] = [];
     if (fhData?.headlines) {
-      for (const h of fhData.headlines.slice(0, 3)) {
-        realHeadlines.push({ title: h, source: "Finnhub" });
+      for (let i = 0; i < Math.min(3, fhData.headlines.length); i++) {
+        realHeadlines.push({ title: fhData.headlines[i], source: "Finnhub", url: fhData.newsUrls?.[i] });
       }
     }
     if (maData?.articles) {
       for (const a of maData.articles.slice(0, 3)) {
-        realHeadlines.push({ title: a.title, source: a.source ?? "MarketAux", sentiment: a.sentiment });
+        realHeadlines.push({ title: a.title, source: a.source ?? "MarketAux", sentiment: a.sentiment, url: a.url });
       }
     }
     if (fmpData?.fmpNews) {
       for (const n of fmpData.fmpNews.slice(0, 2)) {
-        realHeadlines.push({ title: n.title, source: "FMP" });
+        realHeadlines.push({ title: n.title, source: "FMP", url: n.url });
       }
     }
     result.headlines = realHeadlines;
