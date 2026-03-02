@@ -26,6 +26,7 @@ export function Header() {
     { icon: BarChart2, label: t('nav_ideas'), href: '/', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
     { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
+    { icon: BarChart3, label: 'Acciones', href: '/stocks', badgeType: null },
   ];
 
   return (
