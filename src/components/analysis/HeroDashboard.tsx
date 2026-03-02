@@ -2,6 +2,13 @@ import { Activity, Clock, TrendingUp, TrendingDown, BarChart2, Zap, ChevronRight
 import { useMemo, useState } from 'react';
 import { useMultiPairPrices, MultiPairQuote } from '@/hooks/useMultiPairPrices';
 import { cn } from '@/lib/utils';
+import bullBg from '@/assets/bull-card-bg.svg';
+
+const CURRENCY_FLAGS: Record<string, string> = {
+  USD: "us", EUR: "eu", GBP: "gb", JPY: "jp", AUD: "au", CAD: "ca",
+  CHF: "ch", NZD: "nz", CNY: "cn", SGD: "sg", HKD: "hk", XAU: "us",
+  BTC: "us",
+};
 
 interface HeroDashboardProps {
   currentPrice: number;
@@ -70,63 +77,96 @@ export function HeroDashboard({
 
   return (
     <div className="space-y-3">
-      {/* Hero greeting */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d1829] via-[#101f36] to-[#0a1628] border border-cyan-900/30 p-4">
-        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-cyan-500/5 blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-blue-500/5 blur-3xl" />
-        
-        <div className="relative z-10">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h1 className="text-lg font-bold text-white/90">{greeting}, Trader 👋</h1>
-              <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
-                <Clock className="w-3 h-3" />
-                {utcTime} UTC · Sesión {session.emoji} <span className={session.color}>{session.name}</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {isRealtimeConnected ?
-              <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Live
-                </span> :
+      {/* Hero card - Signal style */}
+      <div className="relative w-full rounded-xl overflow-hidden">
+        <div
+          className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
+          style={{
+            background:
+            'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)'
+          }}>
 
-              <span className="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-500/10 border border-gray-500/20 px-2 py-1 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
-                  Offline
-                </span>
-              }
-            </div>
-          </div>
+          {/* Bull background overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: `url(${bullBg})`,
+              backgroundSize: '55%',
+              backgroundPosition: '65% center',
+              backgroundRepeat: 'no-repeat',
+              opacity: 0.3,
+              mixBlendMode: 'screen'
+            }} />
 
-          {/* Active pair highlight */}
-          <div className="flex items-center gap-3 bg-[#0a1628]/60 rounded-xl p-3 border border-cyan-900/20">
-            <div className="flex -space-x-1">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-[10px] font-bold text-white shadow-lg shadow-cyan-500/20">
-                {base}
+          {/* Top glow line */}
+          <div
+            className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+            style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+
+          <div className="relative z-10 p-4">
+            {/* Greeting + session */}
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-xl font-extrabold text-white">{greeting}, Trader 👋</h1>
+                <p className="text-xs text-cyan-300/60 mt-1 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  {utcTime} UTC · Sesión {session.emoji} <span className={session.color}>{session.name}</span>
+                </p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-[10px] font-bold text-white border-2 border-[#0a1628]">
-                {quote}
+              <div className="flex items-center gap-1.5">
+                {isRealtimeConnected ?
+                <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Live
+                  </span> :
+                <span className="flex items-center gap-1 text-[10px] text-gray-500 bg-gray-500/10 border border-gray-500/20 px-2 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+                    Offline
+                  </span>
+                }
               </div>
             </div>
-            <div className="flex-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold font-mono-numbers text-white">
-                  {loading ? '...' : formatPrice(currentPrice)}
-                </span>
-                <span className={`flex items-center gap-0.5 text-xs font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                  {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
-                </span>
+
+            {/* Active pair highlight with FlagCDN flags */}
+            <div
+              className="relative flex items-center gap-4 rounded-lg p-3 overflow-hidden"
+              style={{
+                background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)',
+                border: '1px solid hsla(200, 60%, 35%, 0.3)'
+              }}>
+              <div
+                className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+                style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+
+              {/* Flag icons like SignalCardV2 */}
+              <div className="relative w-20 h-14 flex-shrink-0">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
+                  <img src={`https://flagcdn.com/w160/${CURRENCY_FLAGS[base] ?? 'un'}.png`} alt={base} className="w-full h-full object-cover" />
+                </div>
+                <div className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
+                  <img src={`https://flagcdn.com/w160/${CURRENCY_FLAGS[quote] ?? 'un'}.png`} alt={quote} className="w-full h-full object-cover" />
+                </div>
               </div>
-              <p className="text-[10px] text-gray-500 mt-0.5">
-                {symbol} · Spread ~{spread} pips
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-[10px] text-gray-500">H/L</div>
-              <div className="text-xs font-mono-numbers text-emerald-400">{formatPrice(high)}</div>
-              <div className="text-xs font-mono-numbers text-red-400">{formatPrice(low)}</div>
+
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-extrabold font-mono-numbers text-white tracking-wide">
+                    {loading ? '...' : formatPrice(currentPrice)}
+                  </span>
+                  <span className={`flex items-center gap-0.5 text-sm font-bold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                    {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+                  </span>
+                </div>
+                <p className="text-[11px] text-cyan-300/50 mt-0.5 font-medium">
+                  {symbol} · Spread ~{spread} pips
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-[10px] text-cyan-300/40 font-medium uppercase tracking-wider">H/L</div>
+                <div className="text-sm font-bold font-mono-numbers text-emerald-400">{formatPrice(high)}</div>
+                <div className="text-sm font-bold font-mono-numbers text-red-400">{formatPrice(low)}</div>
+              </div>
             </div>
           </div>
         </div>
