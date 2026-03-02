@@ -1,0 +1,110 @@
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+
+export interface StockProfile {
+  symbol: string;
+  companyName: string;
+  currency: string;
+  exchange: string;
+  industry: string;
+  sector: string;
+  description: string;
+  image: string;
+  mktCap: number;
+  price: number;
+  changes: number;
+  changesPercentage: number;
+  beta: number;
+  volAvg: number;
+  ceo: string;
+  website: string;
+  country: string;
+  ipoDate: string;
+  fullTimeEmployees: string;
+}
+
+export interface StockQuote {
+  symbol: string;
+  name: string;
+  price: number;
+  changesPercentage: number;
+  change: number;
+  dayLow: number;
+  dayHigh: number;
+  yearHigh: number;
+  yearLow: number;
+  marketCap: number;
+  volume: number;
+  avgVolume: number;
+  open: number;
+  previousClose: number;
+  eps: number;
+  pe: number;
+  exchange: string;
+  timestamp: number;
+}
+
+export interface HistoricalPrice {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  changePercent: number;
+}
+
+export interface SearchResult {
+  symbol: string;
+  name: string;
+  currency: string;
+  stockExchange: string;
+  exchangeShortName: string;
+}
+
+async function fmpFetch(body: Record<string, unknown>) {
+  const { data, error } = await supabase.functions.invoke('fmp-data', { body });
+  if (error) throw error;
+  return data;
+}
+
+export function useStockSearch(query: string) {
+  return useQuery({
+    queryKey: ['stock-search', query],
+    queryFn: () => fmpFetch({ action: 'search', symbol: query, limit: 10 }),
+    enabled: query.length >= 2,
+    staleTime: 60_000,
+    select: (data: SearchResult[]) => data?.filter(r => r.exchangeShortName && !r.exchangeShortName.includes('CRYPTO')),
+  });
+}
+
+export function useStockProfile(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-profile', symbol],
+    queryFn: () => fmpFetch({ action: 'profile', symbol }),
+    enabled: !!symbol,
+    staleTime: 5 * 60_000,
+    select: (data: StockProfile[]) => data?.[0],
+  });
+}
+
+export function useStockQuote(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-quote', symbol],
+    queryFn: () => fmpFetch({ action: 'quote', symbol }),
+    enabled: !!symbol,
+    staleTime: 30_000,
+    refetchInterval: 30_000,
+    select: (data: StockQuote[]) => data?.[0],
+  });
+}
+
+export function useStockHistorical(symbol: string, from?: string, to?: string) {
+  return useQuery({
+    queryKey: ['stock-historical', symbol, from, to],
+    queryFn: () => fmpFetch({ action: 'historical', symbol, from, to }),
+    enabled: !!symbol,
+    staleTime: 5 * 60_000,
+    select: (data: { historical?: HistoricalPrice[] }) => data?.historical?.slice(0, 90)?.reverse() ?? [],
+  });
+}

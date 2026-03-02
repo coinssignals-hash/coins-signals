@@ -47,6 +47,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
     { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
     { icon: Activity, label: 'Impacto Divisas', href: '/currency-impact' },
+    { icon: BarChart3, label: 'Mercado de Acciones', href: '/stocks' },
     { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
     { icon: Info, label: t('drawer_about_us'), href: '/about' },
   ];
