@@ -56,7 +56,7 @@ export function useMarketData(symbol: string, timeframe: string) {
     setLoading(true); setError(null); setIsRateLimited(false);
 
     try {
-      // Fetch all 7 data types in parallel
+      // Fetch all data types in parallel - use allSettled to not fail on individual indicator errors
       const [priceR, rsiR, macdR, smaR, stochR, atrR, adxR, bbandsR, ichimokuR] = await Promise.all([
         supabase.functions.invoke('market-data', { body: { symbol, interval, outputsize: 50 } }),
         supabase.functions.invoke('market-data', { body: { symbol, interval, indicator: 'rsi', outputsize: 50 } }),
