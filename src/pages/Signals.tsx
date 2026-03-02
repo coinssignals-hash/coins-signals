@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X } from 'lucide-react';
+import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain } from 'lucide-react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
@@ -14,6 +14,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Header } from '@/components/layout/Header';
 
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
+import { AICenter } from '@/components/signals/ai-center/AICenter';
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
@@ -80,6 +81,7 @@ export default function Signals() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showAICenter, setShowAICenter] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     return (localStorage.getItem('signals-view-mode') as ViewMode) || 'full';
   });
@@ -213,6 +215,16 @@ export default function Signals() {
           </div>
 
           <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowAICenter(!showAICenter)}
+              className={cn(
+                "p-2 rounded-full transition-colors",
+                showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+              )}
+              title="Centro de Análisis IA"
+            >
+              <Brain className="w-5 h-5" />
+            </button>
             <NotificationToggle />
             {isAuthenticated && (
               <button
@@ -354,63 +366,69 @@ export default function Signals() {
 
       {/* Signals List grouped by day */}
       <main className="p-4 space-y-6">
-        {/* Performance Stats Panel */}
-        {!loading && signals.length > 0 && (
-          <SignalPerformanceStats signals={signals} />
-        )}
-
-        {loading && (
-          <div className="flex justify-center py-10">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
-          </div>
-        )}
-        {error && (
-          <p className="text-red-400 text-center py-4">{error}</p>
-        )}
-        {!loading && filteredAndSortedSignals.length === 0 && (
-          <p className="text-slate-500 text-center py-10">{t('signals_no_signals')}</p>
-        )}
-
-        {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
-
-        {dayTab === 'yesterday' && (
-          <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
-            {yesterdaySignals.length === 0 ? (
-              <p className="text-slate-500 text-center py-6 text-sm">{t('signals_no_yesterday')}</p>
-            ) : (
-              yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
-            )}
-          </SignalsDayGroup>
-        )}
-
-        {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
-
-        {dayTab === 'calendar' && calendarDate && (
-          <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
-            {calendarSignals.length === 0 ? (
-              <p className="text-slate-500 text-center py-6 text-sm">{t('signals_no_date')}</p>
-            ) : (
-              calendarSignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
-            )}
-          </SignalsDayGroup>
-        )}
-
-        {dayTab === 'all' && (
+        {showAICenter ? (
+          <AICenter onClose={() => setShowAICenter(false)} />
+        ) : (
           <>
-            <TodaySignalsGroup signals={todaySignals} />
-            {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
-            {yesterdaySignals.length > 0 && (
+            {/* Performance Stats Panel */}
+            {!loading && signals.length > 0 && (
+              <SignalPerformanceStats signals={signals} />
+            )}
+
+            {loading && (
+              <div className="flex justify-center py-10">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            )}
+            {error && (
+              <p className="text-destructive text-center py-4">{error}</p>
+            )}
+            {!loading && filteredAndSortedSignals.length === 0 && (
+              <p className="text-muted-foreground text-center py-10">{t('signals_no_signals')}</p>
+            )}
+
+            {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
+
+            {dayTab === 'yesterday' && (
               <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
-                {yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)}
+                {yesterdaySignals.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_yesterday')}</p>
+                ) : (
+                  yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
+                )}
               </SignalsDayGroup>
             )}
-            {otherDayGroups.map(([day, daySignals]) => (
-              <SignalsDayGroup key={day} date={day} count={daySignals.length}>
-                {daySignals.map((signal) => (
-                  <SignalCardV2 key={signal.id} signal={signal} />
-                ))}
+
+            {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
+
+            {dayTab === 'calendar' && calendarDate && (
+              <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
+                {calendarSignals.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_date')}</p>
+                ) : (
+                  calendarSignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
+                )}
               </SignalsDayGroup>
-            ))}
+            )}
+
+            {dayTab === 'all' && (
+              <>
+                <TodaySignalsGroup signals={todaySignals} />
+                {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
+                {yesterdaySignals.length > 0 && (
+                  <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+                    {yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)}
+                  </SignalsDayGroup>
+                )}
+                {otherDayGroups.map(([day, daySignals]) => (
+                  <SignalsDayGroup key={day} date={day} count={daySignals.length}>
+                    {daySignals.map((signal) => (
+                      <SignalCardV2 key={signal.id} signal={signal} />
+                    ))}
+                  </SignalsDayGroup>
+                ))}
+              </>
+            )}
           </>
         )}
       </main>
