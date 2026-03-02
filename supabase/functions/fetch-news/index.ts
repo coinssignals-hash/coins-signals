@@ -39,6 +39,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'MarketAux': 'https://logo.clearbit.com/marketaux.com',
   'FMP': 'https://logo.clearbit.com/financialmodelingprep.com',
   'Alpha Vantage': 'https://logo.clearbit.com/alphavantage.co',
+  'Finnhub': 'https://logo.clearbit.com/finnhub.io',
 };
 
 // Currency detection from text
@@ -148,8 +149,8 @@ async function fetchFinnhubNews(apiKey: string): Promise<NewsItem[]> {
       id: `finnhub-${item.id || index}`,
       title: item.headline,
       summary: item.summary || '',
-      source: item.source || 'Finnhub',
-      source_logo: SOURCE_LOGOS[item.source] || null,
+      source: 'Finnhub',
+      source_logo: SOURCE_LOGOS['Finnhub'] || null,
       url: item.url,
       image_url: item.image || null,
       published_at: new Date(item.datetime * 1000).toISOString(),
