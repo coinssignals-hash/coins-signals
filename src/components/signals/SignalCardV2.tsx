@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { useForexChartData } from "@/hooks/useForexChartData";
+import { useForexChartData, type ChartInterval } from "@/hooks/useForexChartData";
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { ZoomableChart } from "@/components/signals/ZoomableChart";
 import { Loader2 } from "lucide-react";
@@ -332,7 +332,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   });
 
   // Candlestick chart data (same as Analysis section)
-  const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol);
+  const [chartInterval, setChartInterval] = useState<ChartInterval>('30min');
+  const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol, chartInterval);
 
   // Circle fill = how far current price is toward TP or SL (0% = at entry, 100% = at TP/SL)
   const circlePercent = useMemo(() => {
@@ -714,7 +715,23 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700/50">
                     <span className="text-sm font-semibold text-slate-200">{signal?.currencyPair}</span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
+                      {/* Interval selector */}
+                      {(['15min', '30min', '1h', '4h', '1day'] as ChartInterval[]).map((iv) => (
+                        <button
+                          key={iv}
+                          onClick={() => setChartInterval(iv)}
+                          className={cn(
+                            "px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all",
+                            chartInterval === iv
+                              ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                              : "bg-slate-800/70 text-slate-500 border border-slate-700/40 hover:text-slate-300"
+                          )}
+                        >
+                          {iv === '1day' ? '1D' : iv === '15min' ? '15m' : iv === '30min' ? '30m' : iv}
+                        </button>
+                      ))}
+                      <div className="w-px h-5 bg-slate-700/50 mx-1" />
                       <button
                         onClick={() => setShowSR(!showSR)}
                         className={cn(
