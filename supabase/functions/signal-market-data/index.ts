@@ -22,7 +22,6 @@ interface MarketDataResult {
   dailyRangePercent: number | null;
   previousClose: number | null;
   volume: number | null;
-  // Technical indicators
   rsi14: number | null;
   atr14: number | null;
   atrPercent: number | null;
@@ -32,80 +31,61 @@ interface MarketDataResult {
   macdValue: number | null;
   macdSignal: number | null;
   macdHistogram: number | null;
-  // Momentum
-  momentum: string | null; // 'strong_bullish' | 'bullish' | 'neutral' | 'bearish' | 'strong_bearish'
-  volatility: string | null; // 'low' | 'moderate' | 'high' | 'extreme'
-  trendStrength: string | null; // 'weak' | 'moderate' | 'strong'
-  // Sentiment from news
-  newsSentiment: number | null; // -1 to 1
+  momentum: string | null;
+  volatility: string | null;
+  trendStrength: string | null;
+  newsSentiment: number | null;
   newsSentimentLabel: string | null;
-  // Sources used
   sources: string[];
   timestamp: number;
 }
 
-function toForexSymbol(pair: string): { av: string; fh: string; fmp: string } {
+function parseForexPair(pair: string): { base: string; quote: string } {
   const clean = pair.replace("/", "").replace("-", "").toUpperCase();
-  const base = clean.slice(0, 3);
-  const quote = clean.slice(3, 6);
-  return {
-    av: `${base}${quote}`,
-    fh: `OANDA:${base}_${quote}`,
-    fmp: `${base}${quote}`,
-  };
+  return { base: clean.slice(0, 3), quote: clean.slice(3, 6) };
 }
 
+// ── Alpha Vantage ──────────────────────────────────────────────
 async function fetchAlphaVantage(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
-  const symbols = toForexSymbol(pair);
+  const { base, quote } = parseForexPair(pair);
 
   try {
-    // Fetch quote + RSI + ATR + MACD in parallel
     const [quoteRes, rsiRes, atrRes, macdRes, smaRes] = await Promise.allSettled([
-      fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${symbols.av.slice(0,3)}&to_currency=${symbols.av.slice(3)}&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=RSI&symbol=${symbols.av}&interval=60min&time_period=14&series_type=close&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=ATR&symbol=${symbols.av}&interval=daily&time_period=14&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=MACD&symbol=${symbols.av}&interval=60min&series_type=close&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=SMA&symbol=${symbols.av}&interval=daily&time_period=20&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${base}&to_currency=${quote}&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=RSI&symbol=${base}${quote}&interval=60min&time_period=14&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=ATR&symbol=${base}${quote}&interval=daily&time_period=14&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=MACD&symbol=${base}${quote}&interval=60min&series_type=close&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=SMA&symbol=${base}${quote}&interval=daily&time_period=20&series_type=close&apikey=${apiKey}`),
     ]);
 
-    // Parse quote
     if (quoteRes.status === 'fulfilled') {
       const data = await quoteRes.value.json();
       const rate = data?.["Realtime Currency Exchange Rate"];
       if (rate) {
-        const price = parseFloat(rate["5. Exchange Rate"]);
-        const open = parseFloat(rate["8. Bid Price"]) || null;
-        result.price = price;
-        result.sources = ['alpha_vantage'];
+        result.price = parseFloat(rate["5. Exchange Rate"]);
+        result.sources = ['Alpha Vantage'];
       }
     }
 
-    // Parse RSI
     if (rsiRes.status === 'fulfilled') {
       const data = await rsiRes.value.json();
       const key = "Technical Analysis: RSI";
       if (data?.[key]) {
         const dates = Object.keys(data[key]);
-        if (dates.length > 0) {
-          result.rsi14 = parseFloat(data[key][dates[0]].RSI);
-        }
+        if (dates.length > 0) result.rsi14 = parseFloat(data[key][dates[0]].RSI);
       }
     }
 
-    // Parse ATR
     if (atrRes.status === 'fulfilled') {
       const data = await atrRes.value.json();
       const key = "Technical Analysis: ATR";
       if (data?.[key]) {
         const dates = Object.keys(data[key]);
-        if (dates.length > 0) {
-          result.atr14 = parseFloat(data[key][dates[0]].ATR);
-        }
+        if (dates.length > 0) result.atr14 = parseFloat(data[key][dates[0]].ATR);
       }
     }
 
-    // Parse MACD
     if (macdRes.status === 'fulfilled') {
       const data = await macdRes.value.json();
       const key = "Technical Analysis: MACD";
@@ -120,15 +100,12 @@ async function fetchAlphaVantage(pair: string, apiKey: string): Promise<Partial<
       }
     }
 
-    // Parse SMA
     if (smaRes.status === 'fulfilled') {
       const data = await smaRes.value.json();
       const key = "Technical Analysis: SMA";
       if (data?.[key]) {
         const dates = Object.keys(data[key]);
-        if (dates.length > 0) {
-          result.sma20 = parseFloat(data[key][dates[0]].SMA);
-        }
+        if (dates.length > 0) result.sma20 = parseFloat(data[key][dates[0]].SMA);
       }
     }
   } catch (e) {
@@ -138,47 +115,23 @@ async function fetchAlphaVantage(pair: string, apiKey: string): Promise<Partial<
   return result;
 }
 
+// ── Finnhub (free plan: /forex/rates for prices) ──────────────
 async function fetchFinnhub(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
-  const symbols = toForexSymbol(pair);
+  const { base, quote } = parseForexPair(pair);
 
   try {
-    // Fetch candles for daily OHLC
-    const now = Math.floor(Date.now() / 1000);
-    const dayAgo = now - 86400 * 2;
-    
-    const [quoteRes, candleRes] = await Promise.allSettled([
-      fetch(`https://finnhub.io/api/v1/quote?symbol=${symbols.fh}&token=${apiKey}`),
-      fetch(`https://finnhub.io/api/v1/forex/candle?symbol=${symbols.fh}&resolution=D&from=${dayAgo}&to=${now}&token=${apiKey}`),
-    ]);
+    // /forex/rates is FREE and returns all forex rates with a given base currency
+    const ratesRes = await fetch(
+      `https://finnhub.io/api/v1/forex/rates?base=${base}&token=${apiKey}`
+    );
+    const data = await ratesRes.json();
 
-    // Parse quote
-    if (quoteRes.status === 'fulfilled') {
-      const data = await quoteRes.value.json();
-      if (data && data.c > 0) {
-        result.price = data.c;
-        result.dailyHigh = data.h;
-        result.dailyLow = data.l;
-        result.dailyOpen = data.o;
-        result.previousClose = data.pc;
-        result.change = data.d;
-        result.changePercent = data.dp;
-        
-        if (data.h && data.l) {
-          result.dailyRange = data.h - data.l;
-          if (data.c > 0) {
-            result.dailyRangePercent = (result.dailyRange / data.c) * 100;
-          }
-        }
-      }
-    }
-
-    // Parse candles for volume
-    if (candleRes.status === 'fulfilled') {
-      const data = await candleRes.value.json();
-      if (data?.s === 'ok' && data.v?.length > 0) {
-        result.volume = data.v[data.v.length - 1];
-      }
+    if (data?.quote && data.quote[quote]) {
+      result.price = data.quote[quote];
+      console.log(`[signal-market-data] Finnhub rates OK: ${base}/${quote}, price=${result.price}`);
+    } else {
+      console.warn(`[signal-market-data] Finnhub rates: no ${quote} in response for base=${base}`);
     }
   } catch (e) {
     console.error("[signal-market-data] Finnhub error:", e);
@@ -187,46 +140,67 @@ async function fetchFinnhub(pair: string, apiKey: string): Promise<Partial<Marke
   return result;
 }
 
+// ── FMP (use stable endpoint + forex list) ─────────────────────
 async function fetchFMP(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
-  const symbols = toForexSymbol(pair);
-  const fmpSymbol = `${symbols.fmp.slice(0,3)}/${symbols.fmp.slice(3)}`;
+  const { base, quote } = parseForexPair(pair);
+  const fmpPair = `${base}${quote}`;
 
   try {
-    const [quoteRes, technicalRes] = await Promise.allSettled([
-      fetch(`https://financialmodelingprep.com/api/v3/quote/${fmpSymbol}?apikey=${apiKey}`),
-      fetch(`https://financialmodelingprep.com/api/v3/technical_indicator/daily/${fmpSymbol}?period=14&type=rsi&apikey=${apiKey}`),
+    // Use the stable quote endpoint and the forex list endpoint
+    const [stableRes, forexListRes] = await Promise.allSettled([
+      fetch(`https://financialmodelingprep.com/stable/quote?symbol=${fmpPair}&apikey=${apiKey}`),
+      fetch(`https://financialmodelingprep.com/api/v3/fx/${fmpPair}?apikey=${apiKey}`),
     ]);
 
-    // Parse quote
-    if (quoteRes.status === 'fulfilled') {
-      const data = await quoteRes.value.json();
-      if (Array.isArray(data) && data.length > 0) {
-        const q = data[0];
-        result.price = q.price ?? null;
-        result.change = q.change ?? null;
-        result.changePercent = q.changesPercentage ?? null;
-        result.dailyHigh = q.dayHigh ?? null;
-        result.dailyLow = q.dayLow ?? null;
-        result.dailyOpen = q.open ?? null;
-        result.previousClose = q.previousClose ?? null;
-        result.volume = q.volume ?? null;
-        
-        if (q.dayHigh && q.dayLow) {
-          result.dailyRange = q.dayHigh - q.dayLow;
-          if (q.price > 0) {
-            result.dailyRangePercent = (result.dailyRange / q.price) * 100;
+    // Try stable quote first
+    if (stableRes.status === 'fulfilled') {
+      const raw = await stableRes.value.text();
+      try {
+        const data = JSON.parse(raw);
+        const q = Array.isArray(data) ? data[0] : data;
+        if (q && (q.price || q.bid)) {
+          result.price = q.price ?? ((q.bid + q.ask) / 2) ?? null;
+          result.change = q.change ?? q.changes ?? null;
+          result.changePercent = q.changesPercentage ?? null;
+          result.dailyHigh = q.dayHigh ?? q.high ?? null;
+          result.dailyLow = q.dayLow ?? q.low ?? null;
+          result.dailyOpen = q.open ?? null;
+          result.previousClose = q.previousClose ?? null;
+          result.volume = q.volume ?? null;
+          if (result.dailyHigh && result.dailyLow) {
+            result.dailyRange = result.dailyHigh - result.dailyLow;
+            if (result.price && result.price > 0) result.dailyRangePercent = (result.dailyRange / result.price) * 100;
           }
+          console.log(`[signal-market-data] FMP stable OK: ${fmpPair}, price=${result.price}`);
+        } else {
+          console.warn(`[signal-market-data] FMP stable raw: ${raw.slice(0, 200)}`);
         }
-      }
+      } catch { console.warn(`[signal-market-data] FMP stable parse fail: ${raw.slice(0, 100)}`); }
     }
 
-    // Parse RSI from FMP technical
-    if (technicalRes.status === 'fulfilled') {
-      const data = await technicalRes.value.json();
-      if (Array.isArray(data) && data.length > 0) {
-        result.rsi14 = data[0].rsi ?? null;
-      }
+    // Fallback: /api/v3/fx endpoint (returns real-time forex rates)
+    if (!result.price && forexListRes.status === 'fulfilled') {
+      const raw = await forexListRes.value.text();
+      try {
+        const data = JSON.parse(raw);
+        const item = Array.isArray(data) ? data[0] : data;
+        if (item && (item.bid || item.price)) {
+          result.price = item.price ?? ((item.bid + item.ask) / 2);
+          result.dailyHigh = item.high ?? null;
+          result.dailyLow = item.low ?? null;
+          result.dailyOpen = item.open ?? null;
+          result.change = item.changes ?? null;
+          result.changePercent = item.changesPercentage ?? null;
+          console.log(`[signal-market-data] FMP fx OK: ${fmpPair}, price=${result.price}`);
+        } else {
+          console.warn(`[signal-market-data] FMP fx raw: ${raw.slice(0, 200)}`);
+        }
+      } catch { /* parse error */ }
+    }
+
+    if (!result.price) {
+      console.warn(`[signal-market-data] FMP no price for ${fmpPair}`);
     }
   } catch (e) {
     console.error("[signal-market-data] FMP error:", e);
@@ -235,37 +209,62 @@ async function fetchFMP(pair: string, apiKey: string): Promise<Partial<MarketDat
   return result;
 }
 
+// ── MarketAux (news sentiment for currency pairs) ──────────────
 async function fetchMarketAux(pair: string, apiKey: string): Promise<Partial<MarketDataResult>> {
   const result: Partial<MarketDataResult> = {};
-  const symbols = toForexSymbol(pair);
-  const base = symbols.av.slice(0, 3);
+  const { base, quote } = parseForexPair(pair);
 
   try {
+    // Use search without filter_entities to get broader results with sentiment
     const res = await fetch(
-      `https://api.marketaux.com/v1/news/all?symbols=${base}&filter_entities=true&language=en&limit=5&api_token=${apiKey}`
+      `https://api.marketaux.com/v1/news/all?search=${base}+${quote}&language=en&limit=10&api_token=${apiKey}`
     );
     const data = await res.json();
 
     if (data?.data?.length > 0) {
-      // Calculate average sentiment from recent news
       let totalSentiment = 0;
       let count = 0;
+
       for (const article of data.data) {
-        if (article.entities) {
+        // Check entity-level sentiment
+        if (article.entities && Array.isArray(article.entities)) {
           for (const entity of article.entities) {
-            if (entity.sentiment_score !== undefined) {
+            if (typeof entity.sentiment_score === 'number') {
               totalSentiment += entity.sentiment_score;
               count++;
             }
           }
         }
       }
+
+      // If no entity sentiment, try to derive from article highlights
+      if (count === 0) {
+        for (const article of data.data) {
+          if (article.entities && Array.isArray(article.entities)) {
+            for (const entity of article.entities) {
+              // Some responses use different field names
+              const score = entity.sentiment_score ?? entity.score ?? entity.sentiment;
+              if (typeof score === 'number') {
+                totalSentiment += score;
+                count++;
+              }
+            }
+          }
+        }
+      }
+
       if (count > 0) {
         result.newsSentiment = totalSentiment / count;
         result.newsSentimentLabel =
           result.newsSentiment > 0.2 ? 'Positivo' :
           result.newsSentiment < -0.2 ? 'Negativo' : 'Neutral';
+        console.log(`[signal-market-data] MarketAux OK: sentiment=${result.newsSentiment.toFixed(3)} (${count} scores, ${data.data.length} articles)`);
+      } else {
+        // Still report articles found even without sentiment
+        console.warn(`[signal-market-data] MarketAux: ${data.data.length} articles, 0 sentiment scores. First article entities: ${JSON.stringify(data.data[0]?.entities?.slice(0, 2) ?? 'none').slice(0, 300)}`);
       }
+    } else {
+      console.warn(`[signal-market-data] MarketAux: no articles for ${base} ${quote}. Error: ${JSON.stringify(data?.error ?? 'none')}`);
     }
   } catch (e) {
     console.error("[signal-market-data] MarketAux error:", e);
@@ -274,8 +273,8 @@ async function fetchMarketAux(pair: string, apiKey: string): Promise<Partial<Mar
   return result;
 }
 
+// ── Derived indicators ─────────────────────────────────────────
 function deriveMomentum(data: MarketDataResult): void {
-  // Derive momentum from RSI + MACD
   if (data.rsi14 !== null) {
     if (data.rsi14 > 70) data.momentum = 'strong_bullish';
     else if (data.rsi14 > 55) data.momentum = 'bullish';
@@ -283,14 +282,12 @@ function deriveMomentum(data: MarketDataResult): void {
     else if (data.rsi14 > 30) data.momentum = 'bearish';
     else data.momentum = 'strong_bearish';
 
-    // Adjust with MACD histogram
     if (data.macdHistogram !== null) {
       if (data.macdHistogram > 0 && data.momentum === 'neutral') data.momentum = 'bullish';
       if (data.macdHistogram < 0 && data.momentum === 'neutral') data.momentum = 'bearish';
     }
   }
 
-  // Derive volatility from ATR
   if (data.atr14 !== null && data.price !== null && data.price > 0) {
     data.atrPercent = (data.atr14 / data.price) * 100;
     if (data.atrPercent < 0.3) data.volatility = 'low';
@@ -299,7 +296,6 @@ function deriveMomentum(data: MarketDataResult): void {
     else data.volatility = 'extreme';
   }
 
-  // Derive trend strength from SMA alignment
   if (data.price !== null && data.sma20 !== null) {
     const smaDistance = Math.abs(data.price - data.sma20) / data.price * 100;
     if (smaDistance < 0.2) data.trendStrength = 'weak';
@@ -308,6 +304,7 @@ function deriveMomentum(data: MarketDataResult): void {
   }
 }
 
+// ── Main handler ───────────────────────────────────────────────
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -349,20 +346,19 @@ serve(async (req) => {
     const fmp = fmpData.status === 'fulfilled' ? fmpData.value : {};
     const ma = maData.status === 'fulfilled' ? maData.value : {};
 
-    // Merge: prefer FMP/Finnhub for quotes, AV for technicals, MA for sentiment
+    // Track which sources contributed data
     const sources: string[] = [];
-    if (Object.keys(av).length > 0) sources.push('Alpha Vantage');
-    if (Object.keys(fh).length > 0) sources.push('Finnhub');
-    if (Object.keys(fmp).length > 0) sources.push('FMP');
-    if (Object.keys(ma).length > 0) sources.push('MarketAux');
+    if (av.price || av.rsi14 || av.atr14 || av.macdValue || av.sma20) sources.push('Alpha Vantage');
+    if (fh.price || fh.dailyHigh) sources.push('Finnhub');
+    if (fmp.price || fmp.rsi14) sources.push('FMP');
+    if (ma.newsSentiment !== undefined && ma.newsSentiment !== null) sources.push('MarketAux');
 
+    // Merge: prefer FMP/Finnhub for quotes, AV for technicals, MA for sentiment
     const merged: MarketDataResult = {
       symbol: symbol.toUpperCase(),
-      // Price: prefer FMP > Finnhub > AV
       price: fmp.price ?? fh.price ?? av.price ?? null,
       change: fmp.change ?? fh.change ?? null,
       changePercent: fmp.changePercent ?? fh.changePercent ?? null,
-      // Daily OHLC: prefer FMP > Finnhub
       dailyHigh: fmp.dailyHigh ?? fh.dailyHigh ?? null,
       dailyLow: fmp.dailyLow ?? fh.dailyLow ?? null,
       dailyOpen: fmp.dailyOpen ?? fh.dailyOpen ?? null,
@@ -370,34 +366,29 @@ serve(async (req) => {
       dailyRangePercent: fmp.dailyRangePercent ?? fh.dailyRangePercent ?? null,
       previousClose: fmp.previousClose ?? fh.previousClose ?? null,
       volume: fmp.volume ?? fh.volume ?? null,
-      // Technicals: prefer AV
       rsi14: av.rsi14 ?? fmp.rsi14 ?? null,
       atr14: av.atr14 ?? null,
       atrPercent: null,
       sma20: av.sma20 ?? null,
-      sma50: av.sma50 ?? null,
+      sma50: null,
       ema20: null,
       macdValue: av.macdValue ?? null,
       macdSignal: av.macdSignal ?? null,
       macdHistogram: av.macdHistogram ?? null,
-      // Derived (will be computed below)
       momentum: null,
       volatility: null,
       trendStrength: null,
-      // Sentiment
       newsSentiment: ma.newsSentiment ?? null,
       newsSentimentLabel: ma.newsSentimentLabel ?? null,
       sources,
       timestamp: Date.now(),
     };
 
-    // Derive momentum, volatility, trend strength
     deriveMomentum(merged);
 
-    // Cache result
     cache.set(cacheKey, { data: merged, ts: Date.now() });
 
-    console.log(`[signal-market-data] ${symbol}: sources=${sources.join(',')}, price=${merged.price}, rsi=${merged.rsi14}, atr=${merged.atr14}`);
+    console.log(`[signal-market-data] ${symbol}: sources=[${sources.join(', ')}], price=${merged.price}, rsi=${merged.rsi14}, atr=${merged.atr14}, sentiment=${merged.newsSentiment}`);
 
     return new Response(JSON.stringify(merged), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
