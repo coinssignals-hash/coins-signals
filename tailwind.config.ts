@@ -104,6 +104,12 @@ export default {
         "glow-red": "var(--shadow-glow-red)",
       },
       keyframes: {
+        "zone-pulse": {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "30%": { transform: "scale(1.18)", opacity: "0.85" },
+          "60%": { transform: "scale(0.96)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },

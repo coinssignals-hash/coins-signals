@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useForexChartData, type ChartInterval } from "@/hooks/useForexChartData";
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { ZoomableChart } from "@/components/signals/ZoomableChart";
@@ -313,6 +313,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     }
   }, [quote, currencyPair, entryPrice, takeProfit, stopLoss, status, symbol]);
 
+  // Zone-change pulse animation
+  const prevZoneRef = useRef<'neutral' | 'positive' | 'negative'>('neutral');
+  const [zonePulse, setZonePulse] = useState(false);
+
+
   // Score from -100 (SL hit) to +100 (TP hit), 0 = at entry
   const priceDiff = useMemo(() => {
     if (!quote?.price) return { percent: 0, score: 0, pips: 0, currentPrice: 0, isPositive: true, isNeutral: false, hasData: false };
@@ -347,7 +352,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     return { percent, score, pips, currentPrice: price, isPositive: score >= 0, isNeutral: Math.abs(score) <= 10, hasData: true };
   }, [quote?.price, entryPrice, isJpy, action, takeProfit, stopLoss]);
 
-  // Market Sentiment Dashboard (fetched when expanded)
+  // Detect zone transitions and trigger pulse
+  useEffect(() => {
+    if (!priceDiff.hasData) return;
+    const zone: 'neutral' | 'positive' | 'negative' = priceDiff.isNeutral ? 'neutral' : priceDiff.isPositive ? 'positive' : 'negative';
+    if (prevZoneRef.current !== zone) {
+      prevZoneRef.current = zone;
+      setZonePulse(true);
+      const timer = setTimeout(() => setZonePulse(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [priceDiff.hasData, priceDiff.isNeutral, priceDiff.isPositive]);
+
   const { data: sentimentData, loading: sentimentLoading } = useSignalMarketSentiment(
     strategyInput,
     priceDiff.hasData ? priceDiff.currentPrice : undefined,
@@ -493,7 +509,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             </div>
           </div>
           <div className="flex flex-col items-center gap-1 relative z-10">
-            <div className="relative w-[72px] h-[72px]">
+            <div className={cn(
+              "relative w-[72px] h-[72px] transition-transform",
+              zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
+            )}>
               {/* Outer glow ring - uses a blurred circle behind */}
               <div className={cn(
                 "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
