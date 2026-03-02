@@ -196,6 +196,14 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
           </span>
           {loading && <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />}
           {data.cached && <span className="text-[7px] text-cyan-400/40 uppercase">cache</span>}
+          {(data as any).realData && (
+            <div className="flex gap-0.5 ml-1">
+              {(data as any).realData.alphaVantage && <span className="text-[6px] px-1 py-px rounded bg-green-500/10 text-green-400/70">AV</span>}
+              {(data as any).realData.finnhub && <span className="text-[6px] px-1 py-px rounded bg-blue-500/10 text-blue-400/70">FH</span>}
+              {(data as any).realData.fmp && <span className="text-[6px] px-1 py-px rounded bg-purple-500/10 text-purple-400/70">FMP</span>}
+              {(data as any).realData.marketaux && <span className="text-[6px] px-1 py-px rounded bg-orange-500/10 text-orange-400/70">MX</span>}
+            </div>
+          )}
         </div>
 
         {/* Overall Score + Label + Risk */}
