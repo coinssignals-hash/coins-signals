@@ -144,11 +144,12 @@ export default function Analysis() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
+      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
-      <main className="container py-3 px-2 sm:px-4 max-w-2xl mx-auto space-y-3">
+      <main className="py-3 px-2 sm:px-4 space-y-3">
         {/* Terminal Header Bar */}
         <div className="relative z-20 flex items-center gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-xl p-2.5">
           <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[160px]" />
@@ -399,6 +400,7 @@ export default function Analysis() {
       </main>
 
       <BottomNav />
+      </div>
     </div>
     </PageTransition>);
 }
