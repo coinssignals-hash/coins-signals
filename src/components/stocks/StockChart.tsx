@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart } from 'recharts';
 import type { HistoricalPrice } from '@/hooks/useStockData';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +13,39 @@ const PERIODS = [
   { value: '5y', label: '5A' },
 ] as const;
 
+const OVERLAYS = [
+  { key: 'sma20', label: 'SMA 20', color: 'hsl(210, 80%, 60%)', period: 20 },
+  { key: 'sma50', label: 'SMA 50', color: 'hsl(280, 70%, 60%)', period: 50 },
+  { key: 'ema12', label: 'EMA 12', color: 'hsl(35, 90%, 55%)', period: 12 },
+  { key: 'ema26', label: 'EMA 26', color: 'hsl(340, 70%, 55%)', period: 26 },
+] as const;
+
+function calcSMA(prices: number[], period: number): (number | null)[] {
+  return prices.map((_, i) => {
+    if (i < period - 1) return null;
+    const slice = prices.slice(i - period + 1, i + 1);
+    return slice.reduce((a, b) => a + b, 0) / period;
+  });
+}
+
+function calcEMA(prices: number[], period: number): (number | null)[] {
+  const k = 2 / (period + 1);
+  const result: (number | null)[] = [];
+  let ema: number | null = null;
+  for (let i = 0; i < prices.length; i++) {
+    if (i < period - 1) {
+      result.push(null);
+    } else if (ema === null) {
+      ema = prices.slice(0, period).reduce((a, b) => a + b, 0) / period;
+      result.push(ema);
+    } else {
+      ema = prices[i] * k + ema * (1 - k);
+      result.push(ema);
+    }
+  }
+  return result;
+}
+
 interface StockChartProps {
   data: HistoricalPrice[];
   loading: boolean;
@@ -22,6 +55,33 @@ interface StockChartProps {
 }
 
 export function StockChart({ data, loading, symbol, period, onPeriodChange }: StockChartProps) {
+  const [activeOverlays, setActiveOverlays] = useState<Set<string>>(new Set());
+
+  const toggleOverlay = (key: string) => {
+    setActiveOverlays(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
+
+  const chartData = useMemo(() => {
+    if (!data || data.length === 0) return [];
+    const closes = data.map(d => d.close);
+    const sma20 = calcSMA(closes, 20);
+    const sma50 = calcSMA(closes, 50);
+    const ema12 = calcEMA(closes, 12);
+    const ema26 = calcEMA(closes, 26);
+    return data.map((d, i) => ({
+      date: d.date,
+      price: d.close,
+      sma20: sma20[i],
+      sma50: sma50[i],
+      ema12: ema12[i],
+      ema26: ema26[i],
+    }));
+  }, [data]);
+
   if (loading) {
     return (
       <Card className="p-4 bg-card border-border">
@@ -42,13 +102,6 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
   const isPositive = data.length >= 2 && data[data.length - 1].close >= data[0].close;
   const lineColor = isPositive ? 'hsl(142, 70%, 45%)' : 'hsl(0, 70%, 50%)';
   const gradientId = `stockGradient-${symbol}`;
-
-  const chartData = data.map(d => ({
-    date: d.date,
-    price: d.close,
-    volume: d.volume,
-  }));
-
   const tickInterval = period === '1w' ? 0 : period === '1m' ? 4 : period === '1y' ? 30 : period === '5y' ? 120 : 'preserveStartEnd';
 
   return (
@@ -73,6 +126,25 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
         </div>
       </div>
 
+      {/* Overlay toggles */}
+      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+        {OVERLAYS.map(o => (
+          <button
+            key={o.key}
+            onClick={() => toggleOverlay(o.key)}
+            className={cn(
+              "px-2 py-0.5 text-[10px] font-medium rounded-full border transition-all",
+              activeOverlays.has(o.key)
+                ? "border-transparent text-white"
+                : "border-border text-muted-foreground hover:text-foreground"
+            )}
+            style={activeOverlays.has(o.key) ? { backgroundColor: o.color } : undefined}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-muted-foreground font-mono">
           {data[0]?.date} → {data[data.length - 1]?.date}
@@ -82,8 +154,8 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
         </span>
       </div>
 
-      <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={220}>
+        <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
@@ -110,10 +182,14 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
               backgroundColor: 'hsl(var(--card))',
               border: '1px solid hsl(var(--border))',
               borderRadius: '8px',
-              fontSize: '12px',
+              fontSize: '11px',
             }}
             labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
-            formatter={(value: number) => [`$${value.toFixed(2)}`, 'Precio']}
+            formatter={(value: number | null, name: string) => {
+              if (value == null) return ['-', name];
+              const labels: Record<string, string> = { price: 'Precio', sma20: 'SMA 20', sma50: 'SMA 50', ema12: 'EMA 12', ema26: 'EMA 26' };
+              return [`$${value.toFixed(2)}`, labels[name] || name];
+            }}
           />
           <Area
             type="monotone"
@@ -122,7 +198,19 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
             strokeWidth={2}
             fill={`url(#${gradientId})`}
           />
-        </AreaChart>
+          {OVERLAYS.map(o => activeOverlays.has(o.key) && (
+            <Line
+              key={o.key}
+              type="monotone"
+              dataKey={o.key}
+              stroke={o.color}
+              strokeWidth={1.5}
+              dot={false}
+              connectNulls={false}
+              strokeDasharray={o.key.startsWith('ema') ? '4 2' : undefined}
+            />
+          ))}
+        </ComposedChart>
       </ResponsiveContainer>
     </Card>
   );
