@@ -103,6 +103,15 @@ function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoadi
 
 }
 
+function getCategoryIcon(category: string): string {
+  const icons: Record<string, string> = {
+    monetary_policy: '🏦', inflation: '📈', employment: '👔', gdp: '📊',
+    trade: '🌐', central_bank: '🏛️', geopolitics: '🌍', commodities: '⛽',
+    stocks: '📉', crypto: '₿', market: '💹', other: '📰',
+  };
+  return icons[category] || '📰';
+}
+
 // Historical impact section for cards with real data
 function HistoricalImpactSection({
   newsId,
@@ -289,59 +298,46 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       {/* Hero Image */}
-      {news.image_url && (
-        <Link to={`/news/${news.id}`} className="block relative aspect-[2/1] overflow-hidden">
+      <Link to={`/news/${news.id}`} className="block relative aspect-[2/1] overflow-hidden">
+        {news.image_url ? (
           <img
             src={news.image_url}
             alt={news.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.3)] to-transparent" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"
+            style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
+            <span className="text-5xl opacity-30 select-none">{getCategoryIcon(news.category)}</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.3)] to-transparent" />
 
-          {/* Overlaid badges */}
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md"
-              style={{ background: `${sentimentColor}25`, border: `1px solid ${sentimentColor}50`, color: sentimentColor }}>
-              <SentimentIcon className="w-3 h-3 inline mr-0.5 -mt-0.5" />
-              {sentimentLabel}
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider backdrop-blur-md"
-              style={{ background: 'hsla(200, 100%, 50%, 0.15)', border: '1px solid hsla(200, 80%, 55%, 0.3)', color: 'hsl(200, 100%, 75%)' }}>
-              {news.category}
-            </span>
-          </div>
-
-          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] text-white/70 backdrop-blur-md rounded-full px-2 py-0.5"
-            style={{ background: 'hsla(0,0%,0%,0.4)' }}>
-            <Clock className="w-3 h-3" />
-            {news.time_ago}
-          </div>
-
-          {/* Sentiment circle overlay bottom-right */}
-          <div className="absolute bottom-2 right-2">
-            <SentimentCircle sentiment={news.sentiment} relevance={relevancePercent} />
-          </div>
-        </Link>
-      )}
-
-      {/* If no image, show header badges */}
-      {!news.image_url && (
-        <div className="flex items-center justify-between px-3 pt-3 pb-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-              style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
-              <SentimentIcon className="w-3 h-3 inline mr-1" />
-              {sentimentLabel}
-            </span>
-            <span className="text-[10px] text-cyan-300/50 uppercase tracking-wider font-medium">{news.category}</span>
-          </div>
-          <div className="text-[10px] text-cyan-300/50 flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {news.time_ago}
-          </div>
+        {/* Overlaid badges */}
+        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md"
+            style={{ background: `${sentimentColor}25`, border: `1px solid ${sentimentColor}50`, color: sentimentColor }}>
+            <SentimentIcon className="w-3 h-3 inline mr-0.5 -mt-0.5" />
+            {sentimentLabel}
+          </span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider backdrop-blur-md"
+            style={{ background: 'hsla(200, 100%, 50%, 0.15)', border: '1px solid hsla(200, 80%, 55%, 0.3)', color: 'hsl(200, 100%, 75%)' }}>
+            {news.category}
+          </span>
         </div>
-      )}
+
+        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] text-white/70 backdrop-blur-md rounded-full px-2 py-0.5"
+          style={{ background: 'hsla(0,0%,0%,0.4)' }}>
+          <Clock className="w-3 h-3" />
+          {news.time_ago}
+        </div>
+
+        {/* Sentiment circle overlay bottom-right */}
+        <div className="absolute bottom-2 right-2">
+          <SentimentCircle sentiment={news.sentiment} relevance={relevancePercent} />
+        </div>
+      </Link>
 
       {/* Content section */}
       <div className="px-3 pt-3 pb-2 space-y-2.5">
@@ -473,8 +469,13 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
         style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       <div className="relative aspect-[16/9] overflow-hidden">
-        {news.image_url && (
+        {news.image_url ? (
           <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"
+            style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
+            <span className="text-6xl opacity-25 select-none">{getCategoryIcon(news.category)}</span>
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
 
