@@ -28,8 +28,6 @@ export function PageShell({
       <div className={cn(
         'relative w-full min-h-screen shadow-2xl',
         'bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)]',
-        'relative w-full min-h-screen shadow-2xl',
-        'bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)]',
         maxWidth,
         bottomPadding && 'pb-20',
         className,

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -231,10 +231,10 @@ export default function LinkBroker() {
   // Authentication is only required when saving a connection (handled in handleSaveConnection)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20">
+    <PageShell>
       <Header />
       
-      <main className="container max-w-2xl mx-auto px-4 py-4">
+      <main className="px-4 py-4">
         {/* Back button and header */}
         <div className="flex items-start gap-3 mb-6">
           <button 
@@ -601,9 +601,7 @@ export default function LinkBroker() {
           </div>
         </section>
       </main>
-
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }
 

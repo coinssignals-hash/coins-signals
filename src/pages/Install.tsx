@@ -3,7 +3,7 @@ import { ArrowLeft, Download, Share, MoreVertical, Plus, Smartphone } from 'luci
 import logoImg from '@/assets/logo.svg';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -63,17 +63,17 @@ export default function Install() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20">
+    <PageShell>
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#0a0f1a]/95 backdrop-blur-sm border-b border-blue-500/20">
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-4 px-4 py-3">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 text-blue-300 hover:text-blue-100"
+            className="p-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-bold text-white">Instalar App</h1>
+          <h1 className="text-xl font-bold text-foreground">Instalar App</h1>
         </div>
       </header>
 
@@ -229,9 +229,7 @@ export default function Install() {
           </>
         )}
       </main>
-
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }
 

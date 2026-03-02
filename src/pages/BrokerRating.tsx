@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -602,10 +602,10 @@ export default function BrokerRating() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-4 px-4 max-w-2xl mx-auto">
+      <main className="py-4 px-4">
         {/* Back button and title */}
         <div className="flex items-center gap-3 mb-4">
           <Link to="/" className="p-2 hover:bg-secondary rounded-lg transition-colors">
@@ -1278,7 +1278,6 @@ export default function BrokerRating() {
         </DialogContent>
       </Dialog>
 
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

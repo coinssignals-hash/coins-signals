@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { CategoryBadge } from '@/components/news/CategoryBadge';
 import { CurrencyBadgeList } from '@/components/news/CurrencyBadge';
 import { BiasBadge } from '@/components/news/BiasBadge';
@@ -107,9 +107,9 @@ const NewsDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+      <PageShell>
         <Header />
-        <main className="container py-4 space-y-6 max-w-2xl mx-auto">
+        <main className="py-4 px-4 space-y-6">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-64 w-full rounded-xl" />
           <div className="space-y-4">
@@ -118,16 +118,15 @@ const NewsDetail = () => {
             <Skeleton className="h-32 w-full" />
           </div>
         </main>
-        <BottomNav />
-      </div>);
+      </PageShell>);
 
   }
 
   if (error || !news) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+      <PageShell>
         <Header />
-        <main className="container py-4 space-y-6 max-w-2xl mx-auto">
+        <main className="py-4 px-4 space-y-6">
           <div className="p-6 rounded-xl bg-card border border-border text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
               <AlertCircle className="w-8 h-8 text-muted-foreground" />
@@ -215,16 +214,15 @@ const NewsDetail = () => {
             </Link>
           </div>
         </main>
-        <BottomNav />
-      </div>);
+      </PageShell>);
 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-4 space-y-6 max-w-2xl mx-auto">
+      <main className="py-4 px-4 space-y-6">
         {isFromCache &&
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
             <Archive className="w-4 h-4" />
@@ -449,9 +447,7 @@ const NewsDetail = () => {
           </Button>
         </a>
       </main>
-      
-      <BottomNav />
-    </div>);
+    </PageShell>);
 
 };
 

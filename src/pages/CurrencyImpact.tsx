@@ -359,8 +359,8 @@ const CurrencyImpact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#06080f] flex justify-center">
-      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[#0a0f1a] via-[#0d1829] to-[#0a0f1a] pb-20 shadow-2xl">
+    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
+      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
         {/* Header */}
         <header className="sticky top-0 z-40 bg-[#0a0f1a]/95 backdrop-blur-sm border-b border-blue-500/20">
           <div className="flex items-center justify-between px-4 py-3">

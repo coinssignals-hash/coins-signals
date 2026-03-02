@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2, Eye, EyeOff, Download, Image } from 'lucide-react';
@@ -125,8 +126,8 @@ export default function CreateSignal() {
   }, [currencyPair, tp, sl]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(225,30%,8%)] to-[hsl(225,25%,5%)] text-foreground">
-      <div className="max-w-2xl mx-auto px-4 py-6">
+    <PageShell showBottomNav={false}>
+      <div className="px-4 py-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button onClick={() => navigate(-1)} className="p-2 rounded-xl bg-card/60 hover:bg-card">
@@ -310,6 +311,6 @@ export default function CreateSignal() {
           Crear Señal
         </button>
       </div>
-    </div>
+    </PageShell>
   );
 }
