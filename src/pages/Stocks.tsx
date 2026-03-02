@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, TrendingUp, TrendingDown, DollarSign, BarChart3, ArrowLeft, Activity, Brain, Newspaper, Star } from 'lucide-react';
+import { Search, TrendingUp, TrendingDown, DollarSign, BarChart3, ArrowLeft, Activity, Brain, Newspaper, Star, ArrowUpDown } from 'lucide-react';
 import { useStockSearch, useStockProfile, useStockQuote, useStockHistorical, useStockFinancials, useStockTechnicals, useStockSentiment, useStockNews, useStockAISummary } from '@/hooks/useStockData';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -19,6 +19,7 @@ import { StockSentimentCard } from '@/components/stocks/StockSentimentCard';
 import { StockNewsCard } from '@/components/stocks/StockNewsCard';
 import { StockAISummaryCard } from '@/components/stocks/StockAISummaryCard';
 import { cn } from '@/lib/utils';
+import { StockCompare } from '@/components/stocks/StockCompare';
 
 const POPULAR_STOCKS = [
   { symbol: 'AAPL', name: 'Apple' },
@@ -34,6 +35,7 @@ const POPULAR_STOCKS = [
 function Stocks() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState('');
+  const [compareMode, setCompareMode] = useState(false);
   const debouncedQuery = useDebounce(searchQuery, 400);
   const { data: searchResults, isLoading: searchLoading } = useStockSearch(debouncedQuery);
   const { favorites, isFavorite, addFavorite, removeFavorite } = useFavoriteSymbols();
@@ -130,10 +132,21 @@ function Stocks() {
       </div>
 
       {/* Content */}
-      {selectedSymbol ? (
+      {compareMode ? (
+        <StockCompare onClose={() => setCompareMode(false)} />
+      ) : selectedSymbol ? (
         <StockDetail symbol={selectedSymbol} />
       ) : (
         <div className="px-4 space-y-4 pb-4">
+          {/* Compare button */}
+          <button
+            onClick={() => setCompareMode(true)}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 hover:bg-secondary/50 transition-all"
+          >
+            <ArrowUpDown className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">Comparar acciones</span>
+          </button>
+
           {/* Favorites section */}
           {stockFavorites.length > 0 && (
             <>
