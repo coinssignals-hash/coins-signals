@@ -307,9 +307,26 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center"
+          <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
             style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
-            <span className="text-5xl opacity-30 select-none">{getCategoryIcon(news.category)}</span>
+            {/* Grid pattern */}
+            <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id={`grid-${news.id}`} width="24" height="24" patternUnits="userSpaceOnUse">
+                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-cyan-400" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill={`url(#grid-${news.id})`} />
+            </svg>
+            {/* Diagonal accent lines */}
+            <div className="absolute inset-0 opacity-[0.04]" style={{
+              backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 40px, hsl(200,80%,60%) 40px, hsl(200,80%,60%) 41px)',
+            }} />
+            {/* Radial glow behind icon */}
+            <div className="absolute w-32 h-32 rounded-full" style={{
+              background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`,
+            }} />
+            <span className="text-7xl select-none drop-shadow-lg relative z-10" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.3)] to-transparent" />
@@ -472,9 +489,23 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
         {news.image_url ? (
           <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center"
+          <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
             style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
-            <span className="text-6xl opacity-25 select-none">{getCategoryIcon(news.category)}</span>
+            <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id={`grid-feat-${news.id}`} width="24" height="24" patternUnits="userSpaceOnUse">
+                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-cyan-400" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill={`url(#grid-feat-${news.id})`} />
+            </svg>
+            <div className="absolute inset-0 opacity-[0.04]" style={{
+              backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 40px, hsl(200,80%,60%) 40px, hsl(200,80%,60%) 41px)',
+            }} />
+            <div className="absolute w-40 h-40 rounded-full" style={{
+              background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`,
+            }} />
+            <span className="text-8xl select-none drop-shadow-lg relative z-10" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
