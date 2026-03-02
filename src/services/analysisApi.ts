@@ -459,11 +459,58 @@ export const analysisApi = {
   },
 
   async getEconomicEvents(symbol: string, date: Date): Promise<EconomicEvent[]> {
-    if (API_CONFIG.useMockData) {
+    const formattedDate = format(date, 'yyyy-MM-dd');
+    const nextDay = format(new Date(date.getTime() + 86400000), 'yyyy-MM-dd');
+    const currencies = symbol.replace('/', '').match(/.{3}/g) || ['EUR', 'USD'];
+
+    try {
+      const { data, error } = await supabase.functions.invoke('fmp-data', {
+        body: { action: 'economic-calendar', from: formattedDate, to: nextDay },
+      });
+
+      if (error || !Array.isArray(data)) {
+        console.warn('FMP economic calendar error, falling back to mock:', error);
+        return generateMockEconomicEvents(symbol);
+      }
+
+      const currencySet = new Set(currencies.map(c => c.toUpperCase()));
+
+      const mapped: EconomicEvent[] = data
+        .filter((e: any) => {
+          const cur = (e.currency || '').toUpperCase();
+          return currencySet.has(cur);
+        })
+        .map((e: any) => {
+          let impact = 'Bajo';
+          const imp = (e.impact || '').toLowerCase();
+          if (imp === 'high') impact = 'Alto';
+          else if (imp === 'medium') impact = 'Moderado';
+
+          const eventDate = new Date(e.date || '');
+          const time = !isNaN(eventDate.getTime())
+            ? `${String(eventDate.getUTCHours()).padStart(2, '0')}:${String(eventDate.getUTCMinutes()).padStart(2, '0')}`
+            : '--:--';
+
+          const parts: string[] = [];
+          if (e.previous !== null && e.previous !== undefined) parts.push(`Prev: ${e.previous}${e.unit || ''}`);
+          if (e.estimate !== null && e.estimate !== undefined) parts.push(`Est: ${e.estimate}${e.unit || ''}`);
+          if (e.actual !== null && e.actual !== undefined) parts.push(`Real: ${e.actual}${e.unit || ''}`);
+
+          return {
+            time,
+            event: e.event || 'Evento',
+            description: `${e.country || ''} — ${e.currency || ''}`,
+            impact,
+            result: parts.length > 0 ? parts.join(' | ') : 'Pendiente',
+          } as EconomicEvent;
+        })
+        .sort((a: EconomicEvent, b: EconomicEvent) => a.time.localeCompare(b.time));
+
+      return mapped.length > 0 ? mapped : generateMockEconomicEvents(symbol);
+    } catch (err) {
+      console.warn('FMP economic calendar fetch failed:', err);
       return generateMockEconomicEvents(symbol);
     }
-    const formattedDate = format(date, 'yyyy-MM-dd');
-    return fetchViaProxy<EconomicEvent[]>('economicEvents', symbol, formattedDate);
   },
 };
 
