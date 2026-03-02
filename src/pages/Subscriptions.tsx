@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, Shield, ArrowLeft } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PlanCarousel } from '@/components/subscriptions/PlanCarousel';
 
 const plans = [
   {
@@ -92,8 +91,8 @@ export default function Subscriptions() {
     <PageShell>
       <Header />
       
-      <main className="py-6 px-4">
-        <div className="flex items-center gap-4 mb-6">
+      <main className="py-6">
+        <div className="flex items-center gap-4 mb-6 px-4">
           <Link to="/">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
@@ -102,7 +101,7 @@ export default function Subscriptions() {
         </div>
 
         {/* Hero Section */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 px-4">
           <h1 className="text-xl md:text-2xl font-bold text-foreground mb-2">
             Mejora tus resultados con señales
           </h1>
@@ -115,7 +114,7 @@ export default function Subscriptions() {
         </div>
 
         {/* Billing Toggle */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6 px-4">
           <div className="inline-flex rounded-lg bg-secondary p-1">
             <button
               onClick={() => setBillingPeriod('weekly')}
@@ -142,79 +141,11 @@ export default function Subscriptions() {
           </div>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {plans.map((plan) => (
-            <Card
-              key={plan.id}
-              className={cn(
-                'relative overflow-hidden border-2 transition-all duration-300',
-                plan.borderColor,
-                plan.featured ? 'scale-105 shadow-lg shadow-primary/20' : 'hover:scale-102'
-              )}
-            >
-              <div className={cn('absolute inset-0 bg-gradient-to-br opacity-50', plan.color)} />
-              
-              <CardContent className="relative p-6">
-                <div className="mb-4">
-                  <Badge className={cn('mb-2', plan.badgeColor)}>
-                    {plan.name}
-                  </Badge>
-                  <h3 className="text-sm font-semibold text-primary mb-1">
-                    {plan.subtitle}
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {plan.description}
-                  </p>
-                </div>
-
-                <div className="mb-6">
-                  <span className="text-3xl font-bold text-accent">
-                    ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceWeekly}
-                  </span>
-                  <span className="text-muted-foreground">
-                    /{billingPeriod === 'monthly' ? 'Mes' : 'Semana'}
-                  </span>
-                </div>
-
-                <ul className="space-y-2 mb-6">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2 text-xs">
-                      <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="space-y-2">
-                  <Button 
-                    className={cn(
-                      'w-full',
-                      plan.featured 
-                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
-                        : 'bg-accent hover:bg-accent/90 text-accent-foreground'
-                    )}
-                  >
-                    Suscribirme
-                  </Button>
-                  
-                  {plan.featured && (
-                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/10">
-                      7 Días Gratis
-                    </Button>
-                  )}
-                  
-                  <button className="w-full text-xs text-muted-foreground hover:text-foreground underline">
-                    ver detalles
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Pricing Carousel */}
+        <PlanCarousel plans={plans} billingPeriod={billingPeriod} />
 
         {/* Footer Info */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 mt-8 px-4">
           <p className="text-sm text-muted-foreground">
             Sin contratos a largo plazo.{' '}
             <span className="text-foreground font-medium">Cancela cuando lo desee</span>
