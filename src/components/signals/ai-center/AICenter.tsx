@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import {
   Brain, BarChart3, Target, FileText, Layers, Search,
@@ -7,6 +7,7 @@ import {
 import { AIModelConfig, AIModelSettings } from './AIModelConfig';
 import { AIModuleCard } from './AIModuleCard';
 import { AIResultPanel } from './AIResultPanel';
+import { AIChartPanel } from './AIChartPanel';
 import { useForexData } from '@/hooks/useForexData';
 import { useAIAnalysis, AIModule } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
@@ -50,7 +51,6 @@ export function AICenter({ onClose }: Props) {
     const ohlcv: OHLCVCandle[] = forexData.candles.map(c => ({
       time: c.date, open: c.open, high: c.high, low: c.low, close: c.close, volume: c.volume
     }));
-
     const indicators = computeIndicators(ohlcv, {
       ema20: true, ema50: true, ema200: true,
       sessionSydney: false, sessionTokyo: false, sessionLondon: false, sessionNewYork: false,
@@ -61,11 +61,29 @@ export function AICenter({ onClose }: Props) {
     return { ...indicators, patterns };
   }, [forexData]);
 
+  // Precomputed chart data with S/R, patterns, EMAs
+  const chartData = useMemo(() => {
+    if (!forexData?.candles) return null;
+    const ohlcv: OHLCVCandle[] = forexData.candles.map(c => ({
+      time: c.date, open: c.open, high: c.high, low: c.low, close: c.close, volume: c.volume
+    }));
+    const ind = computeIndicators(ohlcv, {
+      ema20: true, ema50: true, ema200: false,
+      sessionSydney: false, sessionTokyo: false, sessionLondon: false, sessionNewYork: false,
+      kzLondonOpen: false, kzNewYorkOpen: false, kzLondonNYOverlap: false, kzAsianRange: false,
+      kzHours: { ldnOpen: [7,9], nyOpen: [12,14], ldnNyOverlap: [12,16], asianRange: [0,4] },
+    });
+    const patterns = detectCandlePatterns(ohlcv);
+    const recent = ohlcv.slice(-24);
+    const support = Math.min(...recent.map(c => c.low));
+    const resistance = Math.max(...recent.map(c => c.high));
+    return { ohlcv, patterns, support, resistance, ema20: ind.ema20, ema50: ind.ema50 };
+  }, [forexData]);
+
   const handleRunModule = useCallback(async (module: AIModule) => {
     if (!forexData?.candles) {
       await handleFetchData();
     }
-    
     setModuleStatuses(prev => ({ ...prev, [module]: 'running' }));
     const indicators = computeAllIndicators();
     const result = await runModule(module, {
@@ -96,7 +114,7 @@ export function AICenter({ onClose }: Props) {
       newStatuses[mod] = allResults?.[mod] ? 'done' : 'error';
     });
     setModuleStatuses(prev => ({ ...prev, ...newStatuses }));
-  }, [forexData, handleFetchData, computeIndicators, runFullAnalysis, activeSymbol]);
+  }, [forexData, handleFetchData, computeAllIndicators, runFullAnalysis, activeSymbol]);
 
   const AI_MODULES: { id: AIModule; title: string; desc: string; icon: typeof Brain }[] = [
     { id: 'analyze-patterns', title: 'Análisis de Patrones', desc: 'Detecta formaciones y patrones de velas con IA', icon: BarChart3 },
@@ -197,6 +215,19 @@ export function AICenter({ onClose }: Props) {
           <AlertTriangle className="w-4 h-4 text-destructive" />
           <span className="text-xs text-destructive">{forexError}</span>
         </div>
+      )}
+
+      {/* Interactive Candlestick Chart */}
+      {chartData && (
+        <AIChartPanel
+          candles={chartData.ohlcv}
+          patterns={chartData.patterns}
+          support={chartData.support}
+          resistance={chartData.resistance}
+          ema20={chartData.ema20}
+          ema50={chartData.ema50}
+          symbol={activeSymbol}
+        />
       )}
 
       {/* Run All Button */}
