@@ -20,6 +20,8 @@ import { StockNewsCard } from '@/components/stocks/StockNewsCard';
 import { StockAISummaryCard } from '@/components/stocks/StockAISummaryCard';
 import { cn } from '@/lib/utils';
 import { StockCompare } from '@/components/stocks/StockCompare';
+import { StockPriceAlerts } from '@/components/stocks/StockPriceAlerts';
+import { useStockAlertMonitor } from '@/hooks/useStockPriceAlerts';
 
 const POPULAR_STOCKS = [
   { symbol: 'AAPL', name: 'Apple' },
@@ -262,11 +264,17 @@ function StockDetail({ symbol }: { symbol: string }) {
   const [chartPeriod, setChartPeriod] = useState('3m');
   const { data: historical, isLoading: histLoading } = useStockHistorical(symbol, chartPeriod);
 
+  // Monitor price alerts
+  useStockAlertMonitor(symbol, quote?.price);
+
   return (
     <div className="px-4 space-y-3 pb-4">
       <StockQuoteCard quote={quote} loading={quoteLoading} />
       <StockAISummaryCard data={aiSummary} loading={aiLoading} currentPrice={quote?.price} />
       <StockChart data={historical ?? []} loading={histLoading} symbol={symbol} period={chartPeriod} onPeriodChange={setChartPeriod} />
+
+      {/* Price Alerts */}
+      <StockPriceAlerts symbol={symbol} symbolName={profile?.companyName} currentPrice={quote?.price} />
 
       <Tabs defaultValue="technicals" className="w-full">
         <TabsList className="w-full bg-secondary/50">
