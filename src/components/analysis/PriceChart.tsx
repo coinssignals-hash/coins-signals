@@ -54,8 +54,12 @@ export function PriceChart({
 }: PriceChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const volumeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const volumeContainerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [volumeDimensions, setVolumeDimensions] = useState({ width: 0, height: 0 });
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('4h');
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [hoveredData, setHoveredData] = useState<{
     x: number;
     y: number;
@@ -145,6 +149,12 @@ export function PriceChart({
         setDimensions({
           width: containerRef.current.clientWidth,
           height: containerRef.current.clientHeight,
+        });
+      }
+      if (volumeContainerRef.current) {
+        setVolumeDimensions({
+          width: volumeContainerRef.current.clientWidth,
+          height: volumeContainerRef.current.clientHeight,
         });
       }
     };
@@ -304,6 +314,62 @@ export function PriceChart({
     }
   }, [finalData, dimensions, realtimePrice, isRealtimeConnected, previousClose, hoveredData]);
 
+  // Draw volume chart
+  useEffect(() => {
+    const canvas = volumeCanvasRef.current;
+    if (!canvas || finalData.length === 0 || volumeDimensions.width === 0) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = volumeDimensions.width * dpr;
+    canvas.height = volumeDimensions.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const padding = { top: 5, right: 70, bottom: 5, left: 10 };
+    const chartWidth = volumeDimensions.width - padding.left - padding.right;
+    const chartHeight = volumeDimensions.height - padding.top - padding.bottom;
+
+    ctx.clearRect(0, 0, volumeDimensions.width, volumeDimensions.height);
+
+    const maxVolume = Math.max(...finalData.map((d) => d.volume || 0)) || 1;
+    const barWidth = Math.max(1, chartWidth / finalData.length * 0.7);
+
+    finalData.forEach((point, i) => {
+      const x = padding.left + i / (finalData.length - 1) * chartWidth;
+      const barHeight = (point.volume || 0) / maxVolume * chartHeight;
+      const y = padding.top + chartHeight - barHeight;
+
+      const prevPrice = i > 0 ? finalData[i - 1].price : point.open;
+      const isUp = point.price >= prevPrice;
+      const isHovered = hoveredIndex === i;
+
+      ctx.fillStyle = isUp
+        ? (isHovered ? 'rgba(34, 197, 94, 0.9)' : 'rgba(34, 197, 94, 0.5)')
+        : (isHovered ? 'rgba(239, 68, 68, 0.9)' : 'rgba(239, 68, 68, 0.5)');
+      ctx.fillRect(x - barWidth / 2, y, barWidth, barHeight);
+    });
+
+    // Crosshair sync
+    if (hoveredData) {
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(156, 163, 175, 0.5)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(hoveredData.x, padding.top);
+      ctx.lineTo(hoveredData.x, volumeDimensions.height - padding.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }, [finalData, volumeDimensions, hoveredData, hoveredIndex]);
+
+  // Format volume
+  const formatVolume = (vol: number) => {
+    if (vol >= 1000000) return `${(vol / 1000000).toFixed(1)}M`;
+    if (vol >= 1000) return `${(vol / 1000).toFixed(1)}K`;
+    return vol.toFixed(0);
+  };
+
   // Mouse handlers
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (finalData.length === 0 || !containerRef.current) return;
@@ -326,6 +392,7 @@ export function PriceChart({
       const chartHeight = dimensions.height - 50;
       const pointX = padding.left + clampedIndex / (finalData.length - 1) * chartWidth;
       const pointY = 20 + chartHeight - (point.price - paddedMin) / paddedRange * chartHeight;
+      setHoveredIndex(clampedIndex);
       setHoveredData({
         x: pointX, y: pointY,
         price: point.price, open: point.open,
@@ -335,7 +402,10 @@ export function PriceChart({
     }
   }, [finalData, dimensions]);
 
-  const handleMouseLeave = () => setHoveredData(null);
+  const handleMouseLeave = () => {
+    setHoveredData(null);
+    setHoveredIndex(null);
+  };
 
   if (loading) {
     return (
@@ -384,20 +454,40 @@ export function PriceChart({
             7 días • velas de {periodButtons.find((p) => p.value === selectedPeriod)?.label}
           </span>
         </div>
-        {isRealtimeConnected && realtimePrice && (
-          <div className="flex items-center gap-2 bg-destructive/20 px-2 py-1 rounded-full">
-            <span className="w-2 h-2 bg-destructive rounded-full animate-pulse"></span>
-            <span className="text-xs text-destructive font-medium">LIVE</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {hoveredData?.volume != null && hoveredData.volume > 0 && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Vol:</span>
+              <span className="font-mono font-medium text-foreground">{formatVolume(hoveredData.volume)}</span>
+            </div>
+          )}
+          {isRealtimeConnected && realtimePrice && (
+            <div className="flex items-center gap-2 bg-destructive/20 px-2 py-1 rounded-full">
+              <span className="w-2 h-2 bg-destructive rounded-full animate-pulse"></span>
+              <span className="text-xs text-destructive font-medium">LIVE</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Price chart */}
-      <div ref={containerRef} className="h-[280px] w-full relative">
+      <div ref={containerRef} className="h-[240px] w-full relative">
         <canvas
           ref={canvasRef}
           className="w-full h-full cursor-crosshair"
           style={{ width: dimensions.width, height: dimensions.height }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        />
+      </div>
+
+      {/* Volume chart */}
+      <div ref={volumeContainerRef} className="h-[60px] w-full relative border-t border-border/20">
+        <div className="absolute top-1 left-2 text-[10px] text-muted-foreground z-10">Vol</div>
+        <canvas
+          ref={volumeCanvasRef}
+          className="w-full h-full cursor-crosshair"
+          style={{ width: volumeDimensions.width, height: volumeDimensions.height }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         />
