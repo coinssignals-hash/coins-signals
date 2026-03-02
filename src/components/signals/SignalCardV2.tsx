@@ -315,7 +315,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
   // Score from -100 (SL hit) to +100 (TP hit), 0 = at entry
   const priceDiff = useMemo(() => {
-    if (!quote?.price) return { percent: 0, score: 0, pips: 0, currentPrice: 0, isPositive: true, hasData: false };
+    if (!quote?.price) return { percent: 0, score: 0, pips: 0, currentPrice: 0, isPositive: true, isNeutral: false, hasData: false };
     const price = quote.price;
     const pipMultiplier = isJpy ? 100 : 10000;
     const pips = (price - entryPrice) * pipMultiplier;
@@ -344,7 +344,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     }
 
     const percent = (price - entryPrice) / entryPrice * 100;
-    return { percent, score, pips, currentPrice: price, isPositive: score >= 0, hasData: true };
+    return { percent, score, pips, currentPrice: price, isPositive: score >= 0, isNeutral: Math.abs(score) <= 10, hasData: true };
   }, [quote?.price, entryPrice, isJpy, action, takeProfit, stopLoss]);
 
   // Market Sentiment Dashboard (fetched when expanded)
@@ -498,6 +498,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <div className={cn(
                 "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
                 priceDiff.hasData ?
+                priceDiff.isNeutral ? "bg-yellow-500" :
                 priceDiff.isPositive ? "bg-green-500" : "bg-red-500" :
                 "bg-cyan-500"
               )} />
@@ -523,7 +524,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <circle cx="18" cy="18" r="12" fill={`url(#centerGrad-${signal.id})`} fillOpacity="0.15" />
                 <defs>
                   <linearGradient id={`liveGrad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    {priceDiff.hasData && priceDiff.isPositive ?
+                    {priceDiff.hasData && priceDiff.isNeutral ?
+                    <>
+                        <stop offset="0%" stopColor="hsl(45, 90%, 55%)" />
+                        <stop offset="100%" stopColor="hsl(35, 80%, 45%)" />
+                      </> :
+                    priceDiff.hasData && priceDiff.isPositive ?
                     <>
                         <stop offset="0%" stopColor="hsl(160, 80%, 55%)" />
                         <stop offset="100%" stopColor="hsl(120, 70%, 40%)" />
@@ -533,7 +539,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         <stop offset="0%" stopColor="hsl(10, 80%, 60%)" />
                         <stop offset="100%" stopColor="hsl(350, 70%, 45%)" />
                       </> :
-
                     <>
                         <stop offset="0%" stopColor="hsl(200, 100%, 55%)" />
                         <stop offset="100%" stopColor="hsl(180, 100%, 50%)" />
@@ -541,11 +546,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     }
                   </linearGradient>
                   <radialGradient id={`centerGrad-${signal.id}`} cx="50%" cy="30%" r="70%">
-                    {priceDiff.hasData && priceDiff.isPositive ?
+                    {priceDiff.hasData && priceDiff.isNeutral ?
+                    <stop offset="0%" stopColor="hsl(45, 80%, 50%)" /> :
+                    priceDiff.hasData && priceDiff.isPositive ?
                     <stop offset="0%" stopColor="hsl(142, 70%, 50%)" /> :
                     priceDiff.hasData ?
                     <stop offset="0%" stopColor="hsl(0, 70%, 50%)" /> :
-
                     <stop offset="0%" stopColor="hsl(200, 80%, 50%)" />
                     }
                     <stop offset="100%" stopColor="transparent" />
@@ -556,9 +562,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <span
                   className={cn(
                     "font-mono text-[13px] font-extrabold leading-none tracking-tight transition-colors duration-300",
-                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
+                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
                   )}
                   style={{ textShadow: priceDiff.hasData ?
+                    priceDiff.isNeutral ?
+                    '0 0 8px hsl(45, 80%, 50%, 0.4)' :
                     priceDiff.isPositive ?
                     '0 0 8px hsl(142, 70%, 45%, 0.4)' :
                     '0 0 8px hsl(0, 70%, 50%, 0.4)' :
@@ -572,14 +580,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <span
                     className={cn(
                       "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
-                      priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70"
+                      priceDiff.isNeutral ? "text-yellow-400/70" : priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70"
                     )}>
-                    {priceDiff.isPositive ? "TP" : "SL"}
+                    {priceDiff.isNeutral ? "ENTRY" : priceDiff.isPositive ? "TP" : "SL"}
                   </span>
                   <span
                     className={cn(
                       "text-[8px] font-semibold leading-none mt-0.5 opacity-60",
-                      priceDiff.isPositive ? "text-green-300" : "text-red-300"
+                      priceDiff.isNeutral ? "text-yellow-300" : priceDiff.isPositive ? "text-green-300" : "text-red-300"
                     )}>
                     {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
                   </span>
@@ -592,7 +600,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               {priceDiff.hasData ?
               <p className={cn(
                 "text-[10px] font-bold",
-                priceDiff.isPositive ? "text-green-400" : "text-red-400"
+                priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
               )}>
                   {priceDiff.currentPrice.toFixed(3)}
                 </p> :
