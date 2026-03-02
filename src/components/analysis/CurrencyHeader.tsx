@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { useEffect, useState, useRef } from 'react';
 
 // Currency/Asset visual mapping with flags and logos
-const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: string; textColor?: string }> = {
+const symbolVisuals: Record<string, {flag?: string;symbol?: string;bgColor: string;textColor?: string;}> = {
   // Fiat currencies with flag emojis
   EUR: { flag: '🇪🇺', bgColor: 'bg-blue-600' },
   USD: { flag: '🇺🇸', bgColor: 'bg-blue-700' },
@@ -48,7 +48,7 @@ const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: s
   EGP: { flag: '🇪🇬', bgColor: 'bg-red-600' },
   NGN: { flag: '🇳🇬', bgColor: 'bg-green-600' },
   KES: { flag: '🇰🇪', bgColor: 'bg-black' },
-  
+
   // Cryptocurrencies with symbols
   BTC: { symbol: '₿', bgColor: 'bg-orange-500' },
   ETH: { symbol: 'Ξ', bgColor: 'bg-indigo-600' },
@@ -105,7 +105,7 @@ const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: s
   MANA: { symbol: 'M', bgColor: 'bg-red-500' },
   AXS: { symbol: 'A', bgColor: 'bg-blue-600' },
   ENJ: { symbol: 'E', bgColor: 'bg-purple-500' },
-  
+
   // Commodities & Indices
   XAU: { symbol: '🥇', bgColor: 'bg-yellow-500' },
   XAG: { symbol: '🥈', bgColor: 'bg-gray-400' },
@@ -116,7 +116,7 @@ const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: s
   COPPER: { symbol: '🟤', bgColor: 'bg-orange-700' },
   WHEAT: { symbol: '🌾', bgColor: 'bg-yellow-600' },
   CORN: { symbol: '🌽', bgColor: 'bg-yellow-500' },
-  
+
   // Major Stocks
   AAPL: { symbol: '', bgColor: 'bg-gray-800' },
   GOOGL: { symbol: 'G', bgColor: 'bg-blue-500' },
@@ -124,19 +124,19 @@ const symbolVisuals: Record<string, { flag?: string; symbol?: string; bgColor: s
   AMZN: { symbol: 'a', bgColor: 'bg-orange-500' },
   TSLA: { symbol: 'T', bgColor: 'bg-red-600' },
   NVDA: { symbol: 'NV', bgColor: 'bg-green-600' },
-  META: { symbol: '∞', bgColor: 'bg-blue-600' },
+  META: { symbol: '∞', bgColor: 'bg-blue-600' }
 };
 
-const getSymbolVisual = (code: string): { flag?: string; symbol?: string; bgColor: string; textColor?: string } => {
+const getSymbolVisual = (code: string): {flag?: string;symbol?: string;bgColor: string;textColor?: string;} => {
   const upperCode = code?.toUpperCase() || '';
   return symbolVisuals[upperCode] || { symbol: upperCode.slice(0, 2), bgColor: 'bg-gray-600' };
 };
 
 // Animated currency icon with elaborate entrance
-const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: { code: string; isAnimating: boolean; delay?: number; position: 'base' | 'quote' }) => {
+const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: {code: string;isAnimating: boolean;delay?: number;position: 'base' | 'quote';}) => {
   const visual = getSymbolVisual(code);
   const [show, setShow] = useState(!isAnimating);
-  
+
   useEffect(() => {
     if (isAnimating) {
       setShow(false);
@@ -146,9 +146,9 @@ const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: { code: string
       setShow(true);
     }
   }, [isAnimating, delay]);
-  
+
   return (
-    <div 
+    <div
       className={cn(
         "absolute w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all",
         visual.bgColor,
@@ -157,13 +157,13 @@ const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: { code: string
         isAnimating && show && position === 'base' && "animate-scale-bounce",
         isAnimating && show && position === 'quote' && "animate-flip-in"
       )}
-      style={{ 
-        borderWidth: '3px', 
+      style={{
+        borderWidth: '3px',
         borderColor: 'hsl(var(--background))',
         animationDelay: `${delay}ms`,
         perspective: '1000px'
-      }}
-    >
+      }}>
+
       <span className={cn(
         "text-2xl transition-all duration-300",
         visual.textColor || "text-white",
@@ -171,33 +171,33 @@ const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: { code: string
       )} style={{ animationDelay: `${delay + 100}ms` }}>
         {visual.flag || visual.symbol}
       </span>
-    </div>
-  );
+    </div>);
+
 };
 
 // TradingView-style currency pair icon with elaborate animations
-const CurrencyPairIcon = ({ base, quote, animate }: { base: string; quote: string; animate?: boolean }) => {
+const CurrencyPairIcon = ({ base, quote, animate }: {base: string;quote: string;animate?: boolean;}) => {
   return (
     <div className={cn(
       "relative w-20 h-20 transition-all duration-500",
       animate && "animate-scale-in"
     )}>
       {/* Glow effect when animating */}
-      {animate && (
-        <div className="absolute inset-0 rounded-full bg-green-500/20 blur-xl animate-pulse" />
-      )}
+      {animate &&
+      <div className="absolute inset-0 rounded-full bg-green-500/20 blur-xl animate-pulse" />
+      }
       
       <CurrencyIcon code={quote} isAnimating={!!animate} delay={100} position="quote" />
       <CurrencyIcon code={base} isAnimating={!!animate} delay={200} position="base" />
-    </div>
-  );
+    </div>);
+
 };
 
 // Animated number display with rolling effect
-const AnimatedPrice = ({ value, decimals = 5, isAnimating, flash }: { value: number; decimals?: number; isAnimating: boolean; flash: 'up' | 'down' | null }) => {
+const AnimatedPrice = ({ value, decimals = 5, isAnimating, flash }: {value: number;decimals?: number;isAnimating: boolean;flash: 'up' | 'down' | null;}) => {
   const [displayValue, setDisplayValue] = useState(value);
   const [isRolling, setIsRolling] = useState(false);
-  
+
   useEffect(() => {
     if (isAnimating) {
       setIsRolling(true);
@@ -210,9 +210,9 @@ const AnimatedPrice = ({ value, decimals = 5, isAnimating, flash }: { value: num
       setDisplayValue(value);
     }
   }, [value, isAnimating]);
-  
+
   const priceString = displayValue.toFixed(decimals);
-  
+
   return (
     <span className={cn(
       "text-2xl sm:text-3xl font-bold tabular-nums transition-colors duration-300 inline-flex overflow-hidden",
@@ -220,20 +220,20 @@ const AnimatedPrice = ({ value, decimals = 5, isAnimating, flash }: { value: num
       flash === 'down' && "text-red-400",
       !flash && "text-white"
     )}>
-      {priceString.split('').map((char, i) => (
-        <span 
-          key={`${i}-${char}`}
-          className={cn(
-            "inline-block transition-transform",
-            isRolling && "animate-number-roll"
-          )}
-          style={{ animationDelay: `${i * 20}ms` }}
-        >
+      {priceString.split('').map((char, i) =>
+      <span
+        key={`${i}-${char}`}
+        className={cn(
+          "inline-block transition-transform",
+          isRolling && "animate-number-roll"
+        )}
+        style={{ animationDelay: `${i * 20}ms` }}>
+
           {char}
         </span>
-      ))}
-    </span>
-  );
+      )}
+    </span>);
+
 };
 
 interface CurrencyHeaderProps {
@@ -286,11 +286,11 @@ export function CurrencyHeader({
     if (symbol !== prevSymbolRef.current) {
       setIsAnimating(true);
       prevSymbolRef.current = symbol;
-      
+
       // Staggered update for smooth transition
       const timer1 = setTimeout(() => setDisplaySymbol(symbol), 150);
       const timer2 = setTimeout(() => setIsAnimating(false), 800);
-      
+
       return () => {
         clearTimeout(timer1);
         clearTimeout(timer2);
@@ -308,147 +308,147 @@ export function CurrencyHeader({
             <div className="h-4 bg-slate-800/40 rounded w-32" />
           </div>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
-  return (
-    <div className={cn(
-      "relative p-5 transition-all duration-500 overflow-hidden",
-      isAnimating && "animate-border-glow",
-      !isAnimating && flash === 'up' && "",
-      !isAnimating && flash === 'down' && "",
-      !isAnimating && !flash && ""
-    )}>
-      {/* Animated background particles when changing */}
-      {isAnimating && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-cyan-500/30 rounded-full animate-ping"
-              style={{
-                left: `${20 + i * 15}%`,
-                top: `${30 + (i % 2) * 40}%`,
-                animationDelay: `${i * 100}ms`,
-                animationDuration: '1s'
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      <div className="relative flex items-center justify-between flex-wrap gap-4">
-        {/* Currency Pair Icons */}
-        <div className="flex items-center gap-5">
-          <CurrencyPairIcon base={base} quote={quote} animate={isAnimating} />
-          
-          <div className={cn(
-            "transition-all duration-500",
-            isAnimating && "animate-slide-in-right"
-          )}>
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <AnimatedPrice 
-                value={displayPrice} 
-                decimals={realtimePrice ? 5 : 4}
-                isAnimating={isAnimating}
-                flash={flash}
-              />
-              
-              <span className={cn(
-                "text-gray-400 text-sm font-medium",
-                isAnimating && "animate-fade-in"
-              )} style={{ animationDelay: '300ms' }}>
-                {displaySymbol}
-              </span>
-              
-              {/* Realtime indicator */}
-              <div className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
-                isRealtimeConnected 
-                  ? "bg-green-500/20 text-green-400" 
-                  : "bg-gray-500/20 text-gray-400",
-                isAnimating && "animate-pop-in"
-              )} style={{ animationDelay: '400ms' }}>
-                {isRealtimeConnected ? (
-                  <>
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    <span className="hidden sm:inline">LIVE</span>
-                  </>
-                ) : (
-                  <>
-                    <WifiOff className="w-3 h-3" />
-                    <span className="hidden sm:inline">DELAYED</span>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            <div className={cn(
-              "flex items-center gap-2 text-sm mt-1",
-              isPositive ? "text-green-400" : "text-red-400",
-              isAnimating && "animate-slide-up"
-            )} style={{ animationDelay: '350ms' }}>
-              {isPositive ? (
-                <ArrowUpRight className="w-4 h-4" />
-              ) : (
-                <ArrowDownRight className="w-4 h-4" />
-              )}
-              <span className="font-medium tabular-nums">{isPositive ? '+' : ''}{change.toFixed(5)}</span>
-              <span className={cn(
-                "px-1.5 py-0.5 rounded text-xs font-bold",
-                isPositive ? "bg-green-500/20" : "bg-red-500/20"
-              )}>
-                {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
-              </span>
-            </div>
-          </div>
-        </div>
+  return;
 
-        {/* High/Low with animations */}
-        <div className={cn(
-          "flex items-center gap-6",
-          isAnimating && "animate-slide-in-left"
-        )} style={{ animationDelay: '250ms' }}>
-          <div className="hidden sm:block">
-            <svg width="70" height="35" viewBox="0 0 70 35" className="text-green-500/50">
-              <defs>
-                <linearGradient id="sparklineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="currentColor" stopOpacity="1" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0 30 Q10 28, 15 22 T30 18 T45 12 T55 8 T70 10"
-                fill="none"
-                stroke="url(#sparklineGrad)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                className={cn(isAnimating && "animate-fade-in")}
-              />
-            </svg>
-          </div>
-          
-          <div className={cn(
-            "text-right transition-all",
-            isAnimating && "animate-pop-in"
-          )} style={{ animationDelay: '400ms' }}>
-            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">High</div>
-            <div className="text-green-400 font-mono text-sm font-semibold tabular-nums">{high.toFixed(4)}</div>
-          </div>
-          
-          <div className={cn(
-            "text-right transition-all",
-            isAnimating && "animate-pop-in"
-          )} style={{ animationDelay: '450ms' }}>
-            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">Low</div>
-            <div className="text-red-400 font-mono text-sm font-semibold tabular-nums">{low.toFixed(4)}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
