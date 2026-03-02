@@ -1,5 +1,5 @@
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,10 +24,10 @@ export default function Referrals() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-6 max-w-2xl mx-auto">
+      <main className="py-6 px-4">
         <div className="mb-6">
           <span className="text-xs text-muted-foreground">ID # 0572564</span>
           <h1 className="text-xl font-bold text-foreground">Recomendar un Amigo</h1>
@@ -126,8 +126,6 @@ export default function Referrals() {
           </CardContent>
         </Card>
       </main>
-
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

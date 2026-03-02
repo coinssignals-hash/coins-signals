@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -89,10 +89,10 @@ export default function Subscriptions() {
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-6 max-w-2xl mx-auto">
+      <main className="py-6 px-4">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/">
             <Button variant="ghost" size="icon">
@@ -226,8 +226,6 @@ export default function Subscriptions() {
           </div>
         </div>
       </main>
-
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

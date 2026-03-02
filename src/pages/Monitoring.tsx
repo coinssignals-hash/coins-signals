@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { ServiceCard } from '@/components/monitoring/ServiceCard';
 import { ResourceChart } from '@/components/monitoring/ResourceChart';
 import { LogsViewer } from '@/components/monitoring/LogsViewer';
@@ -61,10 +61,10 @@ const Monitoring = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-4 space-y-6">
+      <main className="py-4 px-4 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -122,9 +122,7 @@ const Monitoring = () => {
           <LogsViewer logs={logs} onClear={handleClearLogs} />
         </section>
       </main>
-      
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 };
 

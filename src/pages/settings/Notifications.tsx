@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -178,10 +178,10 @@ export default function Notifications() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-6 max-w-2xl mx-auto">
+      <main className="py-6 px-4">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/settings">
             <Button variant="ghost" size="icon">
@@ -405,8 +405,6 @@ export default function Notifications() {
           </Card>
         </div>
       </main>
-
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

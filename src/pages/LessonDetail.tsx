@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { VideoPlayer } from '@/components/courses/VideoPlayer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -224,10 +224,10 @@ export default function LessonDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 md:pb-0">
+    <PageShell>
       <Header />
       
-      <main className="container py-4 max-w-2xl mx-auto">
+      <main className="py-4 px-4">
         {/* Back navigation */}
         <div className="flex items-center gap-2 mb-4">
           <Link to="/courses">
@@ -410,8 +410,6 @@ export default function LessonDetail() {
           )}
         </div>
       </main>
-
-      <BottomNav />
-    </div>
+    </PageShell>
   );
 }

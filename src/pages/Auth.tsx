@@ -335,7 +335,8 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
+    <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] shadow-2xl flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur">
         <div className="container flex h-14 items-center justify-between">
@@ -613,6 +614,7 @@ export default function Auth() {
           </CardContent>
         </Card>
       </div>
+    </div>
     </div>
   );
 }
