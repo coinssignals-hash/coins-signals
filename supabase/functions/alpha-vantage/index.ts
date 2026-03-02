@@ -18,6 +18,54 @@ function getCached(key: string): any | null {
   return null;
 }
 
+// Retry with exponential backoff
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 1500; // 1.5s base delay
+
+async function fetchWithRetry(url: string, action: string, retries = MAX_RETRIES): Promise<{ data: any; rateLimited: boolean }> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      if (response.status === 429 && attempt < retries) {
+        const delay = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 500;
+        console.warn(`[alpha-vantage] HTTP 429 on ${action}, retry ${attempt + 1}/${retries} in ${Math.round(delay)}ms`);
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+      throw new Error(`Alpha Vantage API error: ${response.status} - ${errorText.slice(0, 200)}`);
+    }
+
+    const data = await response.json();
+
+    // AV returns 200 with rate limit messages in body
+    if (data['Note'] || data['Information']) {
+      const msg = data['Note'] || data['Information'];
+      const isPerSecondLimit = msg.includes('1 request per second') || msg.includes('spreading out');
+
+      if (attempt < retries && isPerSecondLimit) {
+        const delay = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 500;
+        console.warn(`[alpha-vantage] Per-second rate limit on ${action}, retry ${attempt + 1}/${retries} in ${Math.round(delay)}ms`);
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+
+      // Daily limit or exhausted retries
+      console.warn(`[alpha-vantage] Rate limit (final) on ${action}: ${msg.slice(0, 120)}`);
+      return { data, rateLimited: true };
+    }
+
+    if (data['Error Message']) {
+      throw new Error(data['Error Message']);
+    }
+
+    return { data, rateLimited: false };
+  }
+
+  throw new Error('Max retries exceeded');
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -228,33 +276,14 @@ serve(async (req) => {
     }
 
     console.log(`[alpha-vantage] Fetching: ${action} ${symbol || tickers || ''}`);
-    const response = await fetch(url);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[alpha-vantage] API error ${response.status}:`, errorText.slice(0, 300));
-      return new Response(
-        JSON.stringify({ error: `Alpha Vantage API error: ${response.status}`, details: errorText.slice(0, 200) }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { data, rateLimited } = await fetchWithRetry(url, action);
 
-    const data = await response.json();
-
-    // Check for AV rate limit / error messages
-    if (data['Note'] || data['Information']) {
+    if (rateLimited) {
       const msg = data['Note'] || data['Information'];
-      console.warn(`[alpha-vantage] Rate limit/info: ${msg}`);
       return new Response(
         JSON.stringify({ error: 'rate_limit', message: msg }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (data['Error Message']) {
-      return new Response(
-        JSON.stringify({ error: data['Error Message'] }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
