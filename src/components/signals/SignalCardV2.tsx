@@ -33,6 +33,7 @@ import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
+import brandLogo from "@/assets/g174.svg";
 
 import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
@@ -207,7 +208,7 @@ function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy
 }
 
 // --- Price Age Indicator ---
-function PriceAge({ timestamp }: {timestamp: number;}) {
+function PriceAge({ timestamp }: { timestamp: number }) {
   const [age, setAge] = useState(0);
 
   useEffect(() => {
@@ -235,8 +236,8 @@ function PriceAge({ timestamp }: {timestamp: number;}) {
           <p>{exactDate} — {exactTime}</p>
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>);
-
+    </TooltipProvider>
+  );
 }
 
 // --- Main Card ---
@@ -325,7 +326,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     takeProfit,
     stopLoss,
     status,
-    currentPrice: priceDiff.hasData ? priceDiff.currentPrice : null
+    currentPrice: priceDiff.hasData ? priceDiff.currentPrice : null,
   });
 
   // Candlestick chart data (same as Analysis section)
@@ -338,12 +339,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     // Measure progress toward TP (if favorable) or SL (if unfavorable)
     const isBuy = action === 'BUY';
     const favorable = isBuy ? current >= entryPrice : current <= entryPrice;
-    const targetDistance = favorable ?
-    Math.abs(takeProfit - entryPrice) :
-    Math.abs(stopLoss - entryPrice);
+    const targetDistance = favorable
+      ? Math.abs(takeProfit - entryPrice)
+      : Math.abs(stopLoss - entryPrice);
     if (targetDistance === 0) return 0;
     const priceDistance = Math.abs(current - entryPrice);
-    return Math.min(100, priceDistance / targetDistance * 100);
+    return Math.min(100, (priceDistance / targetDistance) * 100);
   }, [priceDiff.hasData, priceDiff.currentPrice, action, entryPrice, takeProfit, stopLoss]);
 
   // Risk percent = SL distance / entry
@@ -351,9 +352,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
       {/* Completed overlay */}
-      {status === 'completed' &&
-      <div className="absolute inset-0 z-40 pointer-events-none rounded-xl" style={{ background: 'hsla(0, 0%, 0%, 0.35)' }} />
-      }
+      {status === 'completed' && (
+        <div className="absolute inset-0 z-40 pointer-events-none rounded-xl" style={{ background: 'hsla(0, 0%, 0%, 0.35)' }} />
+      )}
       <div
         className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
         style={{
@@ -361,17 +362,17 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           "radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)"
         }}>
 
-        {/* Bull background overlay */}
+        {/* Brand logo watermark (replaces bull) */}
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${bullBg})`,
-            backgroundSize: "55%",
-            backgroundPosition: "65% center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.3,
-            mixBlendMode: "screen"
-          }} />
+          className="absolute inset-0 pointer-events-none flex items-center justify-center"
+        >
+          <img
+            src={brandLogo}
+            alt=""
+            aria-hidden="true"
+            className="w-64 h-64 opacity-[0.07] select-none"
+          />
+        </div>
 
 
         {/* Top glow line */}
@@ -388,58 +389,58 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         </div>
 
         {/* Completed result banner */}
-        {status === 'completed' && signal?.closedResult &&
-        <div className={cn(
-          "relative z-50 mx-4 mb-2 px-3 py-2 rounded-lg text-center text-xs font-bold uppercase tracking-wider border",
-          signal.closedResult === 'tp_hit' ?
-          "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
-          "bg-rose-500/20 text-rose-400 border-rose-500/30"
-        )}>
-            {signal.closedResult === 'tp_hit' ?
-          `✅ Take Profit ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}` :
-          `❌ Stop Loss ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}`
-          }
+        {status === 'completed' && signal?.closedResult && (
+          <div className={cn(
+            "relative z-50 mx-4 mb-2 px-3 py-2 rounded-lg text-center text-xs font-bold uppercase tracking-wider border",
+            signal.closedResult === 'tp_hit'
+              ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+              : "bg-rose-500/20 text-rose-400 border-rose-500/30"
+          )}>
+            {signal.closedResult === 'tp_hit'
+              ? `✅ Take Profit ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}`
+              : `❌ Stop Loss ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}`
+            }
           </div>
-        }
+        )}
 
         {/* Auto-expired banner (completed without TP/SL hit) */}
-        {status === 'completed' && !signal?.closedResult &&
-        <div className="relative z-50 mx-4 mb-2 px-3 py-2 rounded-lg text-center text-xs font-bold uppercase tracking-wider border bg-slate-500/20 text-slate-400 border-slate-500/30">
+        {status === 'completed' && !signal?.closedResult && (
+          <div className="relative z-50 mx-4 mb-2 px-3 py-2 rounded-lg text-center text-xs font-bold uppercase tracking-wider border bg-slate-500/20 text-slate-400 border-slate-500/30">
             ⏱️ {t('signal_expired')}
           </div>
-        }
+        )}
 
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative w-20 h-16 flex-shrink-0">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="relative w-32 h-24 flex-shrink-0">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
                 <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
               </div>
-              <div className="absolute left-7 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
+              <div className="absolute left-10 top-1/2 -translate-y-1/2 w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
                 <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-3xl font-extrabold text-white tracking-wide mx-[5px]">{displayPair}</span>
+              <span className="text-3xl font-extrabold text-white tracking-wide">{displayPair}</span>
               {/* Long/Short position badge */}
               <div
                 className={cn(
                   "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider w-fit",
-                  action === "BUY" ?
-                  "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" :
-                  "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                )}>
-
-                {action === "BUY" ?
-                <TrendingUp className="w-2.5 h-2.5" /> :
-
-                <TrendingDown className="w-2.5 h-2.5" />
-                }
+                  action === "BUY"
+                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                    : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                )}
+              >
+                {action === "BUY" ? (
+                  <TrendingUp className="w-2.5 h-2.5" />
+                ) : (
+                  <TrendingDown className="w-2.5 h-2.5" />
+                )}
                 {action === "BUY" ? t('signal_long') : t('signal_short')}
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex flex-col items-center gap-1 relative z-10">
             <div className="relative w-[72px] h-[72px]">
               {/* Outer glow ring - uses a blurred circle behind */}
               <div className={cn(
@@ -556,9 +557,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   {isConnected ? "Live" : priceLoading ? t('common_loading') : "N/A"}
                 </span>
               </div>
-              {priceDiff.hasData && quote?.timestamp &&
-              <PriceAge timestamp={quote.timestamp} />
-              }
+              {priceDiff.hasData && quote?.timestamp && (
+                <PriceAge timestamp={quote.timestamp} />
+              )}
             </div>
           </div>
         </div>
@@ -673,19 +674,19 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Candlestick Chart - Same as Analysis section */}
             <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
               <CandlestickChart
-              data={previousDayData?.candles || []}
-              resistance={previousDayData?.resistance ?? 0}
-              support={previousDayData?.support ?? 0}
-              loading={previousDayLoading}
-              realtimePrice={quote?.price}
-              isRealtimeConnected={isConnected}
-              previousDayDate={previousDayData?.date} />
-
+                data={previousDayData?.candles || []}
+                resistance={previousDayData?.resistance ?? 0}
+                support={previousDayData?.support ?? 0}
+                loading={previousDayLoading}
+                realtimePrice={quote?.price}
+                isRealtimeConnected={isConnected}
+                previousDayDate={previousDayData?.date}
+              />
               <button
-              onClick={() => setChartFullscreen(true)}
-              className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 sm:opacity-0 sm:group-hover/chart:opacity-100 transition-opacity z-10"
-              title="Pantalla completa">
-
+                onClick={() => setChartFullscreen(true)}
+                className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 sm:opacity-0 sm:group-hover/chart:opacity-100 transition-opacity z-10"
+                title="Pantalla completa"
+              >
                 <Maximize2 className="w-4 h-4" />
               </button>
             </div>
@@ -703,14 +704,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   </div>
                   <div className="flex-1 min-h-0">
                     <CandlestickChart
-                    data={previousDayData?.candles || []}
-                    resistance={previousDayData?.resistance ?? 0}
-                    support={previousDayData?.support ?? 0}
-                    loading={previousDayLoading}
-                    realtimePrice={quote?.price}
-                    isRealtimeConnected={isConnected}
-                    previousDayDate={previousDayData?.date} />
-
+                      data={previousDayData?.candles || []}
+                      resistance={previousDayData?.resistance ?? 0}
+                      support={previousDayData?.support ?? 0}
+                      loading={previousDayLoading}
+                      realtimePrice={quote?.price}
+                      isRealtimeConnected={isConnected}
+                      previousDayDate={previousDayData?.date}
+                    />
                   </div>
                 </div>
               </DialogContent>
