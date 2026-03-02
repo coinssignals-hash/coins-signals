@@ -362,17 +362,17 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           "radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)"
         }}>
 
-        {/* Bull background overlay */}
+        {/* Brand logo watermark (replaces bull) */}
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${bullBg})`,
-            backgroundSize: "55%",
-            backgroundPosition: "65% center",
-            backgroundRepeat: "no-repeat",
-            opacity: 0.3,
-            mixBlendMode: "screen"
-          }} />
+          className="absolute inset-0 pointer-events-none flex items-center justify-center"
+        >
+          <img
+            src={brandLogo}
+            alt=""
+            aria-hidden="true"
+            className="w-44 h-44 opacity-[0.07] select-none"
+          />
+        </div>
 
 
         {/* Top glow line */}
@@ -411,13 +411,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         )}
 
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
-          {/* Brand watermark behind header */}
-          <img
-            src={brandLogo}
-            alt=""
-            aria-hidden="true"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 opacity-[0.08] pointer-events-none select-none z-0"
-          />
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative w-20 h-16 flex-shrink-0">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
