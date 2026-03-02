@@ -44,25 +44,49 @@ const SOURCE_LOGOS: Record<string, string> = {
 
 // Currency detection from text
 const CURRENCY_PATTERNS: Record<string, RegExp> = {
-  'USD': /\b(USD|dollar|dólar|US\$|federal reserve|fed|powell)\b/i,
-  'EUR': /\b(EUR|euro|eurozone|ECB|lagarde)\b/i,
-  'GBP': /\b(GBP|pound|sterling|BOE|bank of england)\b/i,
-  'JPY': /\b(JPY|yen|BOJ|bank of japan|kuroda|ueda)\b/i,
-  'AUD': /\b(AUD|aussie|australian dollar|RBA)\b/i,
-  'CAD': /\b(CAD|loonie|canadian dollar|BOC)\b/i,
-  'CHF': /\b(CHF|swiss franc|SNB)\b/i,
-  'NZD': /\b(NZD|kiwi|new zealand dollar|RBNZ)\b/i,
-  'CNY': /\b(CNY|yuan|renminbi|PBOC|china)\b/i,
+  'USD': /\b(USD|dollar|dólar|US\$|federal reserve|fed\b|powell|fomc|treasury|u\.s\. economy)/i,
+  'EUR': /\b(EUR|euro|eurozone|ECB|lagarde|european central|eurozona)/i,
+  'GBP': /\b(GBP|pound|sterling|BOE|bank of england|british pound|cable)/i,
+  'JPY': /\b(JPY|yen|BOJ|bank of japan|kuroda|ueda|japanese yen)/i,
+  'AUD': /\b(AUD|aussie|australian dollar|RBA|reserve bank of australia)/i,
+  'CAD': /\b(CAD|loonie|canadian dollar|BOC|bank of canada)/i,
+  'CHF': /\b(CHF|swiss franc|SNB|swiss national bank)/i,
+  'NZD': /\b(NZD|kiwi|new zealand dollar|RBNZ)/i,
+  'CNY': /\b(CNY|yuan|renminbi|PBOC|china|chinese yuan)/i,
+  'SEK': /\b(SEK|swedish krona|riksbank)/i,
+  'NOK': /\b(NOK|norwegian krone|norges bank)/i,
+  'MXN': /\b(MXN|mexican peso|banxico)/i,
+  'ZAR': /\b(ZAR|south african rand|sarb)/i,
+  'TRY': /\b(TRY|turkish lira|TCMB)/i,
+  'INR': /\b(INR|indian rupee|RBI|reserve bank of india)/i,
+  'BRL': /\b(BRL|brazilian real|BCB|banco central)/i,
 };
 
+// Detect currencies from forex pair patterns like EUR/USD, EURUSD, EUR_USD, GBPJPY etc.
+const FOREX_PAIR_REGEX = /\b([A-Z]{3})\s*[\/\_\-]?\s*([A-Z]{3})\b/g;
+const KNOWN_CURRENCIES = new Set(Object.keys(CURRENCY_PATTERNS));
+
 function detectCurrencies(text: string): string[] {
-  const currencies: string[] = [];
+  const currencies = new Set<string>();
+
+  // 1. Detect from forex pair patterns (EUR/USD, EURUSD, GBP_JPY, etc.)
+  const upperText = text.toUpperCase();
+  let pairMatch;
+  const pairRegex = /\b([A-Z]{3})\s*[\/\_\-]?\s*([A-Z]{3})\b/g;
+  while ((pairMatch = pairRegex.exec(upperText)) !== null) {
+    const [, base, quote] = pairMatch;
+    if (KNOWN_CURRENCIES.has(base)) currencies.add(base);
+    if (KNOWN_CURRENCIES.has(quote)) currencies.add(quote);
+  }
+
+  // 2. Detect from keyword patterns
   for (const [currency, pattern] of Object.entries(CURRENCY_PATTERNS)) {
     if (pattern.test(text)) {
-      currencies.push(currency);
+      currencies.add(currency);
     }
   }
-  return currencies.length > 0 ? currencies : ['USD'];
+
+  return currencies.size > 0 ? [...currencies] : ['USD'];
 }
 
 function getTimeAgo(dateString: string): string {
