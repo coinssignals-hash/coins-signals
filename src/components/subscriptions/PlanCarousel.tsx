@@ -93,7 +93,7 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
                   src={brandLogo}
                   alt=""
                   aria-hidden="true"
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-28 h-28 opacity-[0.06] pointer-events-none select-none"
+                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-32 opacity-[0.10] pointer-events-none select-none"
                 />
 
                 {/* Glow effect for active */}
