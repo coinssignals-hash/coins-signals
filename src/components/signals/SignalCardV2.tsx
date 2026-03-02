@@ -3,7 +3,7 @@ import { useForexChartData, type ChartInterval } from "@/hooks/useForexChartData
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { ZoomableChart } from "@/components/signals/ZoomableChart";
 import { IndicatorMiniChart } from "@/components/signals/IndicatorMiniChart";
-import { calcEMA, calcRSI, calcMACD } from "@/lib/indicators";
+import { calcEMA, calcRSI, calcMACD, calcBollingerBands, calcStochastic } from "@/lib/indicators";
 import type { OHLCVCandle } from "@/lib/indicators";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -342,6 +342,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [showEMA, setShowEMA] = useState(false);
   const [showRSI, setShowRSI] = useState(false);
   const [showMACD, setShowMACD] = useState(false);
+  const [showBollinger, setShowBollinger] = useState(false);
+  const [showStochastic, setShowStochastic] = useState(false);
 
   // Compute indicators from candle data
   const indicatorData = useMemo(() => {
@@ -354,6 +356,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
       ema50: calcEMA(ohlcv, 50),
       rsi: calcRSI(ohlcv),
       macd: calcMACD(ohlcv),
+      bollinger: calcBollingerBands(ohlcv),
+      stochastic: calcStochastic(ohlcv),
     };
   }, [forexChartData?.candles]);
 
@@ -758,6 +762,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         { key: 'ema', label: 'EMA', active: showEMA, toggle: () => setShowEMA(!showEMA) },
                         { key: 'rsi', label: 'RSI', active: showRSI, toggle: () => setShowRSI(!showRSI) },
                         { key: 'macd', label: 'MACD', active: showMACD, toggle: () => setShowMACD(!showMACD) },
+                        { key: 'boll', label: 'BOLL', active: showBollinger, toggle: () => setShowBollinger(!showBollinger) },
+                        { key: 'stoch', label: 'STOCH', active: showStochastic, toggle: () => setShowStochastic(!showStochastic) },
                       ] as const).map(ind => (
                         <button
                           key={ind.key}
@@ -811,6 +817,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 && (
                     <div className="px-1 mt-1">
                       <IndicatorMiniChart type="macd" data={indicatorData.macd} />
+                    </div>
+                  )}
+                  {showBollinger && indicatorData?.bollinger && indicatorData.bollinger.length > 0 && (
+                    <div className="px-1 mt-1">
+                      <IndicatorMiniChart type="bollinger" data={indicatorData.bollinger} />
+                    </div>
+                  )}
+                  {showStochastic && indicatorData?.stochastic && indicatorData.stochastic.length > 0 && (
+                    <div className="px-1 mt-1">
+                      <IndicatorMiniChart type="stochastic" data={indicatorData.stochastic} />
                     </div>
                   )}
                 </div>
