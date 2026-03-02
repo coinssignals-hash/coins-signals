@@ -38,6 +38,7 @@ const SOURCE_LOGOS: Record<string, string> = {
   'ForexLive': 'https://logo.clearbit.com/forexlive.com',
   'MarketAux': 'https://logo.clearbit.com/marketaux.com',
   'FMP': 'https://logo.clearbit.com/financialmodelingprep.com',
+  'Alpha Vantage': 'https://logo.clearbit.com/alphavantage.co',
 };
 
 // Currency detection from text
@@ -488,6 +489,60 @@ async function fetchFMPGeneralNews(apiKey: string): Promise<NewsItem[]> {
   }
 }
 
+// Fetch from Alpha Vantage News Sentiment
+async function fetchAlphaVantageNews(apiKey: string): Promise<NewsItem[]> {
+  try {
+    const res = await fetch(
+      `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&topics=financial_markets,economy_fiscal,economy_monetary,finance&sort=LATEST&limit=30&apikey=${apiKey}`
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (data['Note'] || data['Information'] || !data.feed) return [];
+
+    return data.feed.slice(0, 20).map((item: any, i: number) => {
+      const text = `${item.title} ${item.summary || ''}`;
+      
+      // Use AV native sentiment
+      let sentiment: 'bullish' | 'bearish' | 'neutral' = 'neutral';
+      const score = parseFloat(item.overall_sentiment_score || '0');
+      if (score > 0.15) sentiment = 'bullish';
+      else if (score < -0.15) sentiment = 'bearish';
+
+      // Extract currencies from ticker_sentiment
+      const avCurrencies = (item.ticker_sentiment || [])
+        .map((t: any) => t.ticker?.replace('FOREX:', '')?.substring(0, 3)?.toUpperCase())
+        .filter((c: string) => c && Object.keys(CURRENCY_PATTERNS).includes(c));
+      const currencies = avCurrencies.length > 0 ? [...new Set(avCurrencies)] : detectCurrencies(text);
+
+      // Relevance from AV
+      const relevance = Math.min(parseFloat(item.overall_sentiment_score ? '0.85' : '0.7') + Math.random() * 0.15, 1);
+
+      return {
+        id: `alphavantage-${i}-${Date.now()}`,
+        title: item.title,
+        summary: (item.summary || '').substring(0, 300),
+        source: item.source || 'Alpha Vantage',
+        source_logo: SOURCE_LOGOS[item.source] || SOURCE_LOGOS['Alpha Vantage'],
+        url: item.url,
+        image_url: item.banner_image || null,
+        published_at: item.time_published
+          ? `${item.time_published.slice(0,4)}-${item.time_published.slice(4,6)}-${item.time_published.slice(6,8)}T${item.time_published.slice(9,11)}:${item.time_published.slice(11,13)}:${item.time_published.slice(13,15)}Z`
+          : new Date().toISOString(),
+        time_ago: item.time_published
+          ? getTimeAgo(`${item.time_published.slice(0,4)}-${item.time_published.slice(4,6)}-${item.time_published.slice(6,8)}T${item.time_published.slice(9,11)}:${item.time_published.slice(11,13)}:${item.time_published.slice(13,15)}Z`)
+          : 'ahora',
+        category: detectCategory(text),
+        affected_currencies: currencies as string[],
+        sentiment,
+        relevance_score: relevance,
+      };
+    });
+  } catch (error) {
+    console.error('[fetch-news] Alpha Vantage error:', error);
+    return [];
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -502,6 +557,7 @@ serve(async (req) => {
     const newsApiKey = Deno.env.get('NEWSAPI_API_KEY');
     const marketAuxKey = Deno.env.get('MARKETAUX_API_KEY');
     const fmpKey = Deno.env.get('FMP_API_KEY');
+    const avKey = Deno.env.get('ALPHA_VANTAGE_API_KEY');
 
     // Launch all sources in parallel - RSS sources don't need API keys
     const newsPromises: Promise<NewsItem[]>[] = [
@@ -513,6 +569,7 @@ serve(async (req) => {
     if (finnhubKey) newsPromises.push(fetchFinnhubNews(finnhubKey));
     if (newsApiKey) newsPromises.push(fetchNewsApiNews(newsApiKey));
     if (marketAuxKey) newsPromises.push(fetchMarketAuxNews(marketAuxKey));
+    if (avKey) newsPromises.push(fetchAlphaVantageNews(avKey));
     if (fmpKey) {
       newsPromises.push(fetchFMPForexNews(fmpKey));
       newsPromises.push(fetchFMPCryptoNews(fmpKey));
@@ -567,6 +624,7 @@ serve(async (req) => {
       investing: allNews.some(n => n.id.startsWith('investing')),
       bloomberg: allNews.some(n => n.id.startsWith('bloomberg')),
       marketaux: allNews.some(n => n.id.startsWith('marketaux')),
+      alphavantage: allNews.some(n => n.id.startsWith('alphavantage')),
       fmp_forex: allNews.some(n => n.id.startsWith('fmp-forex')),
       fmp_crypto: allNews.some(n => n.id.startsWith('fmp-crypto')),
       fmp_stock: allNews.some(n => n.id.startsWith('fmp-stock')),
