@@ -22,7 +22,8 @@ import {
   Download,
   Share2,
   Maximize2,
-  X } from
+  X,
+  Activity } from
 "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useRestPrice } from "@/hooks/useRestPrice";
@@ -34,6 +35,7 @@ import { useTranslation } from "@/i18n/LanguageContext";
 import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
+import { useSignalMarketData } from "@/hooks/useSignalMarketData";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -297,6 +299,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const impactData: CurrencyImpactAI[] = aiImpactData || [
   { currency: baseCurrency, positive: 50, negative: 30, neutral: 20, reason: "" },
   { currency: quoteCurrency, positive: 30, negative: 50, neutral: 20, reason: "" }];
+
+  // Real market data from Finnhub, Alpha Vantage, FMP, MarketAux
+  const { data: marketData, loading: marketDataLoading } = useSignalMarketData(symbol, expanded);
 
 
   // Log price source for debugging
@@ -1019,6 +1024,189 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 </div>
               </DialogContent>
             </Dialog>
+
+            {/* ══════ Real Market Data Panel ══════ */}
+            <div
+              className="mx-3 mb-3 rounded-lg relative overflow-hidden"
+              style={{
+                background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
+                border: "1px solid hsla(200, 60%, 35%, 0.3)"
+              }}>
+              <div
+                className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+                style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
+              <div className="p-3">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Activity className="w-3.5 h-3.5 text-cyan-400" />
+                  <p className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider text-center">
+                    Datos de Mercado en Tiempo Real
+                  </p>
+                  {marketDataLoading && <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />}
+                </div>
+
+                {marketData ? (
+                  <>
+                    {/* Row 1: Price + Change + Daily Range */}
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Precio</span>
+                        <span className="text-sm font-bold text-white">{marketData.price?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
+                        {marketData.changePercent !== null && (
+                          <span className={cn("text-[9px] font-bold block", marketData.changePercent >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                            {marketData.changePercent >= 0 ? '+' : ''}{marketData.changePercent.toFixed(2)}%
+                          </span>
+                        )}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Rango Diario</span>
+                        {marketData.dailyHigh !== null && marketData.dailyLow !== null ? (
+                          <>
+                            <div className="flex items-center justify-center gap-1">
+                              <span className="text-[9px] text-emerald-400">{marketData.dailyHigh.toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
+                            <div className="w-full h-1 rounded-full bg-slate-800 my-0.5 overflow-hidden">
+                              {marketData.price !== null && (
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-rose-500 to-emerald-500"
+                                  style={{ width: `${Math.min(100, Math.max(0, ((marketData.price - marketData.dailyLow) / (marketData.dailyHigh - marketData.dailyLow)) * 100))}%` }}
+                                />
+                              )}
+                            </div>
+                            <div className="flex items-center justify-center gap-1">
+                              <span className="text-[9px] text-rose-400">{marketData.dailyLow.toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Volatilidad</span>
+                        <span className={cn("text-sm font-bold",
+                          marketData.volatility === 'low' ? 'text-emerald-400' :
+                          marketData.volatility === 'moderate' ? 'text-yellow-400' :
+                          marketData.volatility === 'high' ? 'text-orange-400' :
+                          marketData.volatility === 'extreme' ? 'text-rose-400' : 'text-slate-400'
+                        )}>
+                          {marketData.volatility === 'low' ? 'Baja' :
+                           marketData.volatility === 'moderate' ? 'Moderada' :
+                           marketData.volatility === 'high' ? 'Alta' :
+                           marketData.volatility === 'extreme' ? 'Extrema' : '—'}
+                        </span>
+                        {marketData.atrPercent !== null && (
+                          <span className="text-[8px] text-slate-500 block">ATR: {marketData.atrPercent.toFixed(3)}%</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row 2: RSI + MACD + Momentum */}
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">RSI (14)</span>
+                        {marketData.rsi14 !== null ? (
+                          <>
+                            <span className={cn("text-sm font-bold",
+                              marketData.rsi14 > 70 ? 'text-rose-400' :
+                              marketData.rsi14 < 30 ? 'text-emerald-400' : 'text-cyan-200'
+                            )}>
+                              {marketData.rsi14.toFixed(1)}
+                            </span>
+                            <span className="text-[8px] block" style={{ color: marketData.rsi14 > 70 ? 'hsl(0,70%,60%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(45,80%,55%)' }}>
+                              {marketData.rsi14 > 70 ? 'Sobrecompra' : marketData.rsi14 < 30 ? 'Sobreventa' : 'Neutral'}
+                            </span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">MACD</span>
+                        {marketData.macdHistogram !== null ? (
+                          <>
+                            <span className={cn("text-sm font-bold", marketData.macdHistogram >= 0 ? 'text-emerald-400' : 'text-rose-400')}>
+                              {marketData.macdHistogram >= 0 ? '+' : ''}{marketData.macdHistogram.toFixed(5)}
+                            </span>
+                            <span className={cn("text-[8px] block", marketData.macdHistogram >= 0 ? 'text-emerald-400/60' : 'text-rose-400/60')}>
+                              {marketData.macdHistogram >= 0 ? 'Alcista' : 'Bajista'}
+                            </span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Momentum</span>
+                        <span className={cn("text-sm font-bold",
+                          marketData.momentum === 'strong_bullish' ? 'text-emerald-400' :
+                          marketData.momentum === 'bullish' ? 'text-green-400' :
+                          marketData.momentum === 'neutral' ? 'text-yellow-400' :
+                          marketData.momentum === 'bearish' ? 'text-orange-400' :
+                          marketData.momentum === 'strong_bearish' ? 'text-rose-400' : 'text-slate-400'
+                        )}>
+                          {marketData.momentum === 'strong_bullish' ? '⬆⬆' :
+                           marketData.momentum === 'bullish' ? '⬆' :
+                           marketData.momentum === 'neutral' ? '➡' :
+                           marketData.momentum === 'bearish' ? '⬇' :
+                           marketData.momentum === 'strong_bearish' ? '⬇⬇' : '—'}
+                        </span>
+                        {marketData.trendStrength && (
+                          <span className="text-[8px] text-slate-500 block">
+                            Fuerza: {marketData.trendStrength === 'strong' ? 'Fuerte' : marketData.trendStrength === 'moderate' ? 'Moderada' : 'Débil'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row 3: SMA + News Sentiment + Open/Close */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">SMA 20</span>
+                        <span className="text-xs font-bold text-cyan-200">
+                          {marketData.sma20?.toFixed(isJpy ? 3 : 5) ?? '—'}
+                        </span>
+                        {marketData.price !== null && marketData.sma20 !== null && (
+                          <span className={cn("text-[8px] block", marketData.price > marketData.sma20 ? 'text-emerald-400/60' : 'text-rose-400/60')}>
+                            {marketData.price > marketData.sma20 ? 'Por encima' : 'Por debajo'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Sentimiento</span>
+                        {marketData.newsSentiment !== null ? (
+                          <>
+                            <span className={cn("text-sm font-bold",
+                              marketData.newsSentiment > 0.2 ? 'text-emerald-400' :
+                              marketData.newsSentiment < -0.2 ? 'text-rose-400' : 'text-yellow-400'
+                            )}>
+                              {marketData.newsSentimentLabel}
+                            </span>
+                            <span className="text-[8px] text-slate-500 block">
+                              Score: {(marketData.newsSentiment * 100).toFixed(0)}
+                            </span>
+                          </>
+                        ) : <span className="text-xs text-slate-500">—</span>}
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
+                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Apertura</span>
+                        <span className="text-xs font-bold text-cyan-200">
+                          {marketData.dailyOpen?.toFixed(isJpy ? 3 : 5) ?? '—'}
+                        </span>
+                        {marketData.previousClose !== null && (
+                          <span className="text-[8px] text-slate-500 block">
+                            Prev: {marketData.previousClose.toFixed(isJpy ? 3 : 5)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sources footer */}
+                    <div className="flex items-center justify-center gap-1 mt-2">
+                      {marketData.sources.map(s => (
+                        <span key={s} className="text-[7px] text-cyan-300/30 px-1.5 py-0.5 rounded bg-slate-800/50">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                ) : !marketDataLoading ? (
+                  <p className="text-[10px] text-slate-500 text-center">Expande la tarjeta para cargar datos</p>
+                ) : null}
+              </div>
+            </div>
 
             {/* Market Sentiment Dashboard */}
             <MarketSentimentDashboard data={sentimentData} loading={sentimentLoading} />
