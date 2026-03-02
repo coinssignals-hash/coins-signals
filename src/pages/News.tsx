@@ -273,6 +273,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
   const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
   const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
   const SentimentIcon = news.sentiment === 'bullish' ? TrendingUp : news.sentiment === 'bearish' ? TrendingDown : Minus;
+  const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
   return (
     <div
@@ -284,117 +285,155 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       }}>
 
       {/* Top glow line */}
-      <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+      <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
       style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
-      {/* Header: Sentiment badge + Category */}
-      <div className="relative flex items-center justify-between px-3 pt-3 pb-1">
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-          style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
-            <SentimentIcon className="w-3 h-3 inline mr-1" />
-            {sentimentLabel}
-          </span>
-          <span className="text-[10px] text-cyan-300/50 uppercase tracking-wider font-medium">{news.category}</span>
-        </div>
-        <div className="text-[10px] text-cyan-300/50 flex items-center gap-1">
-          <Clock className="w-3 h-3" />
-          {news.time_ago}
-        </div>
-      </div>
+      {/* Hero Image */}
+      {news.image_url && (
+        <Link to={`/news/${news.id}`} className="block relative aspect-[2/1] overflow-hidden">
+          <img
+            src={news.image_url}
+            alt={news.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.3)] to-transparent" />
 
-      {/* Main content row */}
-      <div className="flex gap-3 px-3 py-2">
-        {/* Left: Thumbnail + Sentiment Circle */}
-        <div className="flex flex-col items-center gap-2 flex-shrink-0">
-          {news.image_url &&
-          <Link to={`/news/${news.id}`} className="relative w-20 h-20 rounded-lg overflow-hidden border border-cyan-800/20">
-              <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            </Link>
-          }
-          <SentimentCircle sentiment={news.sentiment} relevance={news.relevance_score} />
-        </div>
+          {/* Overlaid badges */}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md"
+              style={{ background: `${sentimentColor}25`, border: `1px solid ${sentimentColor}50`, color: sentimentColor }}>
+              <SentimentIcon className="w-3 h-3 inline mr-0.5 -mt-0.5" />
+              {sentimentLabel}
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider backdrop-blur-md"
+              style={{ background: 'hsla(200, 100%, 50%, 0.15)', border: '1px solid hsla(200, 80%, 55%, 0.3)', color: 'hsl(200, 100%, 75%)' }}>
+              {news.category}
+            </span>
+          </div>
 
-        {/* Right: Content */}
-        <div className="flex-1 min-w-0 flex flex-col">
-          <Link to={`/news/${news.id}`}>
-            <h3 className="font-semibold text-sm text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-tight">
-              {displayTitle}
-            </h3>
-            {isTranslated &&
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] text-white/70 backdrop-blur-md rounded-full px-2 py-0.5"
+            style={{ background: 'hsla(0,0%,0%,0.4)' }}>
+            <Clock className="w-3 h-3" />
+            {news.time_ago}
+          </div>
+
+          {/* Sentiment circle overlay bottom-right */}
+          <div className="absolute bottom-2 right-2">
+            <SentimentCircle sentiment={news.sentiment} relevance={relevancePercent} />
+          </div>
+        </Link>
+      )}
+
+      {/* If no image, show header badges */}
+      {!news.image_url && (
+        <div className="flex items-center justify-between px-3 pt-3 pb-1">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+              style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
+              <SentimentIcon className="w-3 h-3 inline mr-1" />
+              {sentimentLabel}
+            </span>
+            <span className="text-[10px] text-cyan-300/50 uppercase tracking-wider font-medium">{news.category}</span>
+          </div>
+          <div className="text-[10px] text-cyan-300/50 flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {news.time_ago}
+          </div>
+        </div>
+      )}
+
+      {/* Content section */}
+      <div className="px-3 pt-3 pb-2 space-y-2.5">
+        {/* Title */}
+        <Link to={`/news/${news.id}`}>
+          <h3 className="font-semibold text-[15px] text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-snug">
+            {displayTitle}
+          </h3>
+          {isTranslated && (
             <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
-                <Languages className="w-2.5 h-2.5" /> Traducido
-              </span>
-            }
-          </Link>
+              <Languages className="w-2.5 h-2.5" /> Traducido
+            </span>
+          )}
+        </Link>
 
-          <div className="flex items-center gap-2 text-xs text-cyan-300/50 mt-1">
-            {news.source_logo ?
+        {/* Source row */}
+        <div className="flex items-center gap-2 text-xs">
+          {news.source_logo ? (
             <img src={news.source_logo} alt={news.source} className="w-4 h-4 rounded-sm object-contain"
-            onError={(e) => {(e.target as HTMLImageElement).style.display = 'none';}} /> :
-            <Rss className="w-3 h-3 text-cyan-400" />}
-            <span className="font-medium text-cyan-200/70">{news.source}</span>
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          ) : (
+            <Rss className="w-3.5 h-3.5 text-cyan-400" />
+          )}
+          <span className="font-medium text-cyan-200/70 text-xs">{news.source}</span>
+
+          <div className="ml-auto flex items-center gap-2">
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (isTranslated) {
-                  clearTranslation(news.id);
-                } else {
-                  translateText(news.id, news.title, targetLang);
-                }
+                if (isTranslated) clearTranslation(news.id);
+                else translateText(news.id, news.title, targetLang);
               }}
               disabled={isTranslating}
               className={cn(
-                "ml-auto flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
-                isTranslated ?
-                "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
-                "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+                "flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
+                isTranslated
+                  ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                  : "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
               )}>
-
-              {isTranslating ?
-              <Loader2 className="w-3 h-3 animate-spin" /> :
-
-              <Languages className="w-3 h-3" />
-              }
+              {isTranslating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Languages className="w-3 h-3" />}
               {isTranslated ? 'Original' : targetLabel}
             </button>
-            {news.url &&
-            <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-            className="text-cyan-400 hover:text-cyan-300"><ExternalLink className="w-3 h-3" /></a>
-            }
+            {news.url && (
+              <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                className="text-cyan-400 hover:text-cyan-300">
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {impacts.map(({ currency, impact }) => <ImpactBadge key={currency} currency={currency} impact={impact} />)}
-          </div>
+        {/* Currency impact badges */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {impacts.map(({ currency, impact }) => <ImpactBadge key={currency} currency={currency} impact={impact} />)}
+        </div>
 
-          {/* Relevance bar (like entry price bar) */}
-          <div className="relative rounded-md overflow-hidden mt-2"
-          style={{ background: 'linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)', border: '1px solid hsla(210, 100%, 50%, 0.15)' }}>
-            <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
+        {/* Relevance bar - professional format */}
+        <div className="relative rounded-lg overflow-hidden"
+          style={{ background: 'linear-gradient(180deg, hsl(210, 30%, 8%) 0%, hsl(205, 40%, 10%) 100%)', border: '1px solid hsla(200, 60%, 30%, 0.25)' }}>
+          <div className="absolute top-0 left-[10%] right-[10%] h-[1px]"
             style={{ background: 'radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)' }} />
-            <div className="flex items-center justify-between px-3 py-1.5">
-              <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium">Relevancia</span>
-              <span className="font-mono text-sm font-bold text-white">{news.relevance_score}/100</span>
+          <div className="flex items-center gap-3 px-3 py-2">
+            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium">Relevancia</span>
+            <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${relevancePercent}%`,
+                  background: relevancePercent >= 80 ? 'linear-gradient(90deg, hsl(160, 80%, 45%), hsl(135, 70%, 50%))' :
+                    relevancePercent >= 50 ? 'linear-gradient(90deg, hsl(200, 100%, 45%), hsl(180, 100%, 50%))' :
+                      'linear-gradient(90deg, hsl(45, 80%, 45%), hsl(35, 90%, 55%))'
+                }}
+              />
             </div>
+            <span className="font-mono text-sm font-bold text-white">{relevancePercent}%</span>
           </div>
         </div>
       </div>
 
       {/* Expandable toggle */}
       <button onClick={() => setExpanded(!expanded)}
-      className="w-full flex items-center justify-center py-1.5 text-cyan-400/60 hover:text-cyan-300 transition-colors">
+        className="w-full flex items-center justify-center py-1.5 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10">
         <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', expanded && 'rotate-180')} />
       </button>
 
       {/* Expanded content */}
-      {expanded &&
-      <div className="px-3 pb-3 space-y-3 animate-fade-in">
+      {expanded && (
+        <div className="px-3 pb-3 space-y-3 animate-fade-in">
           <div className="rounded-lg p-3 relative overflow-hidden"
-        style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
+            style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
             <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-          style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+              style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
             <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">Análisis de Sentimiento</span>
             <div className="space-y-1.5">
               <NewsImpactBar label="Alcista" value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
@@ -402,15 +441,13 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               <NewsImpactBar label="Neutral" value={sentimentBreakdown.neu} color="hsl(45, 80%, 55%)" />
             </div>
           </div>
-
           <HistoricalImpactSection newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
           <NewsAISummaryInline news={news} />
         </div>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 }
-
 // Featured news card for top story
 function FeaturedCard({ news }: {news: NewsListItem;}) {
   const impacts = useMemo(() => {
@@ -421,6 +458,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 
   const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
   const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
+  const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
   return (
     <Link
@@ -432,23 +470,30 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
       }}>
 
       <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       <div className="relative aspect-[16/9] overflow-hidden">
-        {news.image_url &&
-        <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-        }
+        {news.image_url && (
+          <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
 
         <div className="absolute top-3 left-3 flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm"
-          style={{ background: 'hsla(200, 100%, 50%, 0.2)', border: '1px solid hsla(200, 80%, 55%, 0.4)', color: 'hsl(200, 100%, 75%)' }}>
+          <span className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md"
+            style={{ background: 'hsla(200, 100%, 50%, 0.2)', border: '1px solid hsla(200, 80%, 55%, 0.4)', color: 'hsl(200, 100%, 75%)' }}>
             🔥 Top News
           </span>
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-sm"
-          style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md"
+            style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
             {sentimentLabel}
           </span>
+        </div>
+
+        {/* Relevance badge top-right */}
+        <div className="absolute top-3 right-3 backdrop-blur-md rounded-full px-2.5 py-1 flex items-center gap-1.5"
+          style={{ background: 'hsla(0,0%,0%,0.5)', border: '1px solid hsla(200,60%,40%,0.3)' }}>
+          <Zap className="w-3 h-3 text-cyan-400" />
+          <span className="text-xs font-bold text-white">{relevancePercent}%</span>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
@@ -468,8 +513,8 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </Link>);
-
+    </Link>
+  );
 }
 
 // Currency quick filter pills
