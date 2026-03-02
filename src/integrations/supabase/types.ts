@@ -711,6 +711,45 @@ export type Database = {
           },
         ]
       }
+      stock_price_alerts: {
+        Row: {
+          created_at: string
+          direction: string
+          id: string
+          is_triggered: boolean
+          symbol: string
+          symbol_name: string | null
+          target_price: number
+          triggered_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          direction?: string
+          id?: string
+          is_triggered?: boolean
+          symbol: string
+          symbol_name?: string | null
+          target_price: number
+          triggered_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          id?: string
+          is_triggered?: boolean
+          symbol?: string
+          symbol_name?: string | null
+          target_price?: number
+          triggered_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       trades: {
         Row: {
           broker_trade_id: string | null
