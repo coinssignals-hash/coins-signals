@@ -159,35 +159,67 @@ async function fetchWilliamsR(symbol: string, interval: string, outputsize: numb
   };
 }
 
-// ─── Ichimoku Cloud ───
+// ─── Ichimoku Cloud (calculated from OHLC) ───
+function calcIchimokuFromOHLC(values: any[], symbol: string) {
+  const tenkanP = 9, kijunP = 26, senkouBP = 52, disp = 26;
+  if (values.length < senkouBP + disp) throw new Error('Insufficient data for Ichimoku (need 78+ candles)');
+
+  function midpoint(start: number, period: number): number | null {
+    if (start < 0 || start + period > values.length) return null;
+    const slice = values.slice(start, start + period);
+    const high = Math.max(...slice.map((d: any) => parseFloat(d.high)));
+    const low = Math.min(...slice.map((d: any) => parseFloat(d.low)));
+    return (high + low) / 2;
+  }
+
+  const result: any[] = [];
+  for (let i = 0; i < values.length; i++) {
+    const close = parseFloat(values[i].close);
+    const tenkan = i >= tenkanP - 1 ? midpoint(i - tenkanP + 1, tenkanP) : null;
+    const kijun = i >= kijunP - 1 ? midpoint(i - kijunP + 1, kijunP) : null;
+
+    // Senkou spans displaced forward
+    const srcA = i >= kijunP - 1 + disp ? i - disp : -1;
+    let senkouA: number | null = null;
+    let senkouB: number | null = null;
+    if (srcA >= kijunP - 1) {
+      const t = midpoint(srcA - tenkanP + 1, tenkanP);
+      const k = midpoint(srcA - kijunP + 1, kijunP);
+      if (t !== null && k !== null) senkouA = (t + k) / 2;
+    }
+    if (i >= senkouBP - 1 + disp) {
+      const src = i - disp;
+      if (src >= senkouBP - 1) senkouB = midpoint(src - senkouBP + 1, senkouBP);
+    }
+
+    const chikou = i >= disp ? parseFloat(values[i - disp].close) : null;
+
+    result.push({
+      datetime: values[i].datetime,
+      tenkan: tenkan !== null ? tenkan.toFixed(5) : null,
+      kijun: kijun !== null ? kijun.toFixed(5) : null,
+      senkouA: senkouA !== null ? senkouA.toFixed(5) : null,
+      senkouB: senkouB !== null ? senkouB.toFixed(5) : null,
+      chikou: chikou !== null ? chikou.toFixed(5) : null,
+    });
+  }
+
+  return { values: result, symbol, source: 'calculated' };
+}
+
 async function fetchIchimoku(symbol: string, interval: string, outputsize: number) {
-  if (!ALPHA_VANTAGE_KEY) throw new Error('AV_KEY_MISSING');
-  const avSym = symbol.replace('/', '');
-  const avi = avInterval(interval);
-  const qs = new URLSearchParams({
-    function: 'ICHIMOKU', symbol: avSym, interval: avi,
-    apikey: ALPHA_VANTAGE_KEY,
-  });
-  const url = `https://www.alphavantage.co/query?${qs}`;
-  console.log(`[AV] ICHIMOKU ${avSym} ${avi}`);
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
-  const data = await res.json();
-  if (data['Note'] || data['Information']) throw new Error('AV_RATE_LIMIT');
-  const tsKey = Object.keys(data).find(k => k.startsWith('Technical Analysis'));
-  if (!tsKey || !data[tsKey]) throw new Error('No AV Ichimoku data');
-  const entries = Object.entries(data[tsKey]).slice(0, outputsize);
-  return {
-    values: entries.map(([dt, v]: [string, any]) => ({
-      datetime: dt,
-      tenkan: v['Tenkan Sen (Conversion Line)'],
-      kijun: v['Kijun Sen (Base Line)'],
-      senkouA: v['Senkou Span A (Leading Span A)'],
-      senkouB: v['Senkou Span B (Leading Span B)'],
-      chikou: v['Chikou Span (Lagging Span)'],
-    })).reverse(),
-    symbol, source: 'alpha_vantage',
-  };
+  // Ichimoku needs 78+ candles for full calculation - get OHLC and calculate
+  const ohlcCK = cacheKey(symbol, interval);
+  let ohlc: any = fromCache(ohlcCK) as any;
+  if (!ohlc || !ohlc.values) {
+    // Fetch OHLC with extra data for Ichimoku calculation
+    const neededSize = Math.max(outputsize + 60, 120);
+    try { ohlc = await fetchAV_OHLC(symbol, interval, neededSize); } catch { /* ignore */ }
+    if (!ohlc) try { ohlc = await fetchFMP_OHLC(symbol, interval, neededSize); } catch { /* ignore */ }
+    if (!ohlc) try { ohlc = await fetchFinnhub_OHLC(symbol, interval, neededSize); } catch { /* ignore */ }
+  }
+  if (!ohlc || !ohlc.values || ohlc.values.length < 52) throw new Error('Insufficient OHLC data for Ichimoku');
+  return calcIchimokuFromOHLC(ohlc.values, symbol);
 }
 
 // ─── Plus/Minus DI for ADX chart ───
@@ -419,12 +451,17 @@ serve(async (req) => {
         }
       } catch (avErr: any) {
         console.log(`[market-data] AV indicator ${indicator} failed: ${avErr.message}, falling back to calculation`);
-        // Fallback: get OHLC then calculate
-        let ohlc: any;
-        try { ohlc = await fetchAV_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
-        if (!ohlc) try { ohlc = await fetchFMP_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
-        if (!ohlc) try { ohlc = await fetchFinnhub_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
-        if (!ohlc) throw new Error(`No data available for ${indicator}`);
+        
+        // Fallback: check cached OHLC first, then fetch
+        const ohlcCK = cacheKey(sym, interval);
+        let ohlc: any = fromCache(ohlcCK) as any;
+        if (!ohlc || !ohlc.values) {
+          ohlc = null;
+          try { ohlc = await fetchAV_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
+          if (!ohlc) try { ohlc = await fetchFMP_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
+          if (!ohlc) try { ohlc = await fetchFinnhub_OHLC(sym, interval, Math.max(outputsize + 60, 100)); } catch { /* ignore */ }
+        }
+        if (!ohlc || !ohlc.values) throw new Error(`No data available for ${indicator}`);
         result = calcIndicatorFromOHLC(ohlc.values, indicator, sym);
       }
     }
