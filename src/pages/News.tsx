@@ -914,14 +914,32 @@ const News = () => {
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             <span className="text-[10px] uppercase tracking-wider flex-shrink-0">{t('news_sources')}:</span>
             <div className="flex items-center gap-1">
-              <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-medium">Finnhub</span>
-              <span className="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 text-[10px] font-medium">NewsAPI</span>
-              <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 text-[10px] font-medium">FXStreet</span>
-              <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-medium">Investing</span>
-              <span className="px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-400 text-[10px] font-medium">Bloomberg</span>
-              <span className="px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-[10px] font-medium">MarketAux</span>
-              <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-400 text-[10px] font-medium">FMP</span>
-              <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-medium">Alpha Vantage</span>
+              {Object.entries(SOURCE_COLORS).map(([name, colors]) => {
+                const isActive = selectedSources.includes(name);
+                const isFiltering = selectedSources.length > 0;
+                return (
+                  <button
+                    key={name}
+                    onClick={() => {
+                      if (isActive) {
+                        setSelectedSources(selectedSources.filter(s => s !== name));
+                      } else {
+                        setSelectedSources([...selectedSources, name]);
+                      }
+                    }}
+                    className={cn(
+                      'px-1.5 py-0.5 rounded text-[10px] font-medium transition-all cursor-pointer border',
+                      isActive
+                        ? `${colors.bg} ${colors.text} border-current ring-1 ring-current/30 scale-105`
+                        : isFiltering
+                          ? `bg-muted/30 text-muted-foreground/40 border-transparent hover:${colors.bg} hover:${colors.text}`
+                          : `${colors.bg} ${colors.text} border-transparent hover:ring-1 hover:ring-current/30`
+                    )}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
