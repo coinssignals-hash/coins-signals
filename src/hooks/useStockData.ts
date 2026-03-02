@@ -68,6 +68,12 @@ async function fmpFetch(body: Record<string, unknown>) {
   return data;
 }
 
+async function stockAnalysisFetch(body: Record<string, unknown>) {
+  const { data, error } = await supabase.functions.invoke('stock-analysis', { body });
+  if (error) throw error;
+  return data;
+}
+
 export function useStockSearch(query: string) {
   return useQuery({
     queryKey: ['stock-search', query],
@@ -106,5 +112,52 @@ export function useStockHistorical(symbol: string, from?: string, to?: string) {
     enabled: !!symbol,
     staleTime: 5 * 60_000,
     select: (data: { historical?: HistoricalPrice[] }) => data?.historical?.slice(0, 90)?.reverse() ?? [],
+  });
+}
+
+// ---- Financial Statements ----
+export function useStockFinancials(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-financials', symbol],
+    queryFn: async () => {
+      const [income, balance, cashFlow] = await Promise.all([
+        fmpFetch({ action: 'income-statement', symbol, limit: 5 }),
+        fmpFetch({ action: 'balance-sheet', symbol, limit: 5 }),
+        fmpFetch({ action: 'cash-flow', symbol, limit: 5 }),
+      ]);
+      return { income: income || [], balance: balance || [], cashFlow: cashFlow || [] };
+    },
+    enabled: !!symbol,
+    staleTime: 30 * 60_000,
+  });
+}
+
+// ---- Technical Indicators ----
+export function useStockTechnicals(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-technicals', symbol],
+    queryFn: () => stockAnalysisFetch({ action: 'technicals', symbol }),
+    enabled: !!symbol,
+    staleTime: 5 * 60_000,
+  });
+}
+
+// ---- Sentiment Analysis ----
+export function useStockSentiment(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-sentiment', symbol],
+    queryFn: () => stockAnalysisFetch({ action: 'sentiment', symbol }),
+    enabled: !!symbol,
+    staleTime: 5 * 60_000,
+  });
+}
+
+// ---- Stock News ----
+export function useStockNews(symbol: string) {
+  return useQuery({
+    queryKey: ['stock-news', symbol],
+    queryFn: () => stockAnalysisFetch({ action: 'news', symbol }),
+    enabled: !!symbol,
+    staleTime: 3 * 60_000,
   });
 }

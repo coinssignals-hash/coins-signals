@@ -110,3 +110,6 @@ verify_jwt = false
 
 [functions.fmp-data]
 verify_jwt = false
+
+[functions.stock-analysis]
+verify_jwt = false

@@ -5,12 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, TrendingUp, TrendingDown, Building2, Globe, Users, DollarSign, BarChart3, ArrowLeft } from 'lucide-react';
-import { useStockSearch, useStockProfile, useStockQuote, useStockHistorical } from '@/hooks/useStockData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, TrendingUp, TrendingDown, Building2, Globe, Users, DollarSign, BarChart3, ArrowLeft, Activity, Brain, Newspaper } from 'lucide-react';
+import { useStockSearch, useStockProfile, useStockQuote, useStockHistorical, useStockFinancials, useStockTechnicals, useStockSentiment, useStockNews } from '@/hooks/useStockData';
 import { useDebounce } from '@/hooks/useDebounce';
 import { StockChart } from '@/components/stocks/StockChart';
 import { StockQuoteCard } from '@/components/stocks/StockQuoteCard';
 import { StockProfileCard } from '@/components/stocks/StockProfileCard';
+import { StockFinancialsCard } from '@/components/stocks/StockFinancialsCard';
+import { StockTechnicalsCard } from '@/components/stocks/StockTechnicalsCard';
+import { StockSentimentCard } from '@/components/stocks/StockSentimentCard';
+import { StockNewsCard } from '@/components/stocks/StockNewsCard';
 
 const POPULAR_STOCKS = [
   { symbol: 'AAPL', name: 'Apple' },
@@ -152,6 +157,10 @@ function PopularStockCard({ symbol, name, onSelect }: { symbol: string; name: st
 function StockDetail({ symbol }: { symbol: string }) {
   const { data: profile, isLoading: profileLoading } = useStockProfile(symbol);
   const { data: quote, isLoading: quoteLoading } = useStockQuote(symbol);
+  const { data: financials, isLoading: financialsLoading } = useStockFinancials(symbol);
+  const { data: technicals, isLoading: technicalsLoading } = useStockTechnicals(symbol);
+  const { data: sentiment, isLoading: sentimentLoading } = useStockSentiment(symbol);
+  const { data: news, isLoading: newsLoading } = useStockNews(symbol);
 
   const today = new Date();
   const threeMonthsAgo = new Date(today);
@@ -164,6 +173,37 @@ function StockDetail({ symbol }: { symbol: string }) {
     <div className="px-4 space-y-3 pb-4">
       <StockQuoteCard quote={quote} loading={quoteLoading} />
       <StockChart data={historical ?? []} loading={histLoading} symbol={symbol} />
+
+      {/* Tabbed sections */}
+      <Tabs defaultValue="technicals" className="w-full">
+        <TabsList className="w-full bg-secondary/50">
+          <TabsTrigger value="technicals" className="flex-1 text-[11px] gap-1">
+            <Activity className="w-3.5 h-3.5" /> Técnico
+          </TabsTrigger>
+          <TabsTrigger value="sentiment" className="flex-1 text-[11px] gap-1">
+            <Brain className="w-3.5 h-3.5" /> Sentimiento
+          </TabsTrigger>
+          <TabsTrigger value="financials" className="flex-1 text-[11px] gap-1">
+            <DollarSign className="w-3.5 h-3.5" /> Finanzas
+          </TabsTrigger>
+          <TabsTrigger value="news" className="flex-1 text-[11px] gap-1">
+            <Newspaper className="w-3.5 h-3.5" /> Noticias
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="technicals" className="mt-3">
+          <StockTechnicalsCard data={technicals} loading={technicalsLoading} currentPrice={quote?.price} />
+        </TabsContent>
+        <TabsContent value="sentiment" className="mt-3">
+          <StockSentimentCard data={sentiment} loading={sentimentLoading} />
+        </TabsContent>
+        <TabsContent value="financials" className="mt-3">
+          <StockFinancialsCard data={financials} loading={financialsLoading} />
+        </TabsContent>
+        <TabsContent value="news" className="mt-3">
+          <StockNewsCard data={news} loading={newsLoading} />
+        </TabsContent>
+      </Tabs>
+
       <StockProfileCard profile={profile} loading={profileLoading} />
     </div>
   );
