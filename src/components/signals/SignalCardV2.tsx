@@ -568,14 +568,22 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   {priceDiff.hasData ? `${priceDiff.score >= 0 ? "+" : ""}${Math.round(priceDiff.score)}` : "—"}
                 </span>
                 {priceDiff.hasData &&
-                <span
-                  className={cn(
-                    "text-[8px] font-semibold leading-none mt-1 opacity-60",
-                    priceDiff.isPositive ? "text-green-300" : "text-red-300"
-                  )}>
-
+                <>
+                  <span
+                    className={cn(
+                      "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
+                      priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70"
+                    )}>
+                    {priceDiff.isPositive ? "TP" : "SL"}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-[8px] font-semibold leading-none mt-0.5 opacity-60",
+                      priceDiff.isPositive ? "text-green-300" : "text-red-300"
+                    )}>
                     {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
                   </span>
+                </>
                 }
               </div>
             </div>
