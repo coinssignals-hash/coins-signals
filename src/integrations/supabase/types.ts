@@ -351,6 +351,42 @@ export type Database = {
         }
         Relationships: []
       }
+      market_data_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          data: Json
+          expires_at: string
+          id: string
+          indicator: string
+          interval: string
+          source: string | null
+          symbol: string
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          data: Json
+          expires_at?: string
+          id?: string
+          indicator?: string
+          interval: string
+          source?: string | null
+          symbol: string
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          data?: Json
+          expires_at?: string
+          id?: string
+          indicator?: string
+          interval?: string
+          source?: string | null
+          symbol?: string
+        }
+        Relationships: []
+      }
       news_ai_analysis_cache: {
         Row: {
           analysis_data: Json
