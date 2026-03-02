@@ -412,11 +412,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
           <div className="flex items-center gap-5 relative z-10">
-            <div className="relative w-28 h-28 flex-shrink-0">
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
+            <div className="relative w-28 h-[6.5rem] flex-shrink-0">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
                 <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
               </div>
-              <div className="absolute left-1/2 -translate-x-1/2 top-6 w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
+              <div className="absolute left-8 top-1/2 -translate-y-1/2 w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
                 <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
               </div>
             </div>
