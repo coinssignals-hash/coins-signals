@@ -11,6 +11,8 @@ interface SignalData {
   trend: string;
   entryPrice: number;
   takeProfit: number;
+  takeProfit2?: number;
+  takeProfit3?: number;
   stopLoss: number;
   probability: number;
   support?: number;
@@ -131,6 +133,73 @@ Evaluate the risk.`;
 
       return new Response(JSON.stringify({
         risk,
+        generatedAt: new Date().toISOString()
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Notes mode: generate brief AI trading notes
+    if (mode === 'notes') {
+      const notesSystemPrompt = `Eres un analista de trading profesional. Genera una nota breve y concisa (máximo 3-4 líneas) que resuma la recomendación óptima de entrada para la operación proporcionada. Incluye: contexto del par, justificación del nivel de entrada respecto a soporte/resistencia, ratio riesgo-beneficio, y la mejor confirmación antes de entrar. Responde SIEMPRE en español. No uses markdown, solo texto plano con emojis para hacerlo visual.`;
+
+      const tp2Info = signal.takeProfit2 ? `\nTP2: ${signal.takeProfit2}` : '';
+      const tp3Info = signal.takeProfit3 ? `\nTP3: ${signal.takeProfit3}` : '';
+
+      const notesUserPrompt = `Señal de trading:
+Par: ${signal.currencyPair}
+Acción: ${signal.action === 'BUY' ? 'COMPRAR' : 'VENDER'}
+Tendencia: ${signal.trend === 'bullish' ? 'Alcista' : 'Bajista'}
+Entrada: ${signal.entryPrice}
+TP1: ${signal.takeProfit} (${tpPips} pips)${tp2Info}${tp3Info}
+SL: ${signal.stopLoss} (${slPips} pips)
+R:R: ${rrRatio}
+Probabilidad: ${signal.probability}%
+${signal.support ? `Soporte: ${signal.support}` : ''}
+${signal.resistance ? `Resistencia: ${signal.resistance}` : ''}
+
+Genera una nota breve de análisis para acompañar esta señal.`;
+
+      const notesResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-3-flash-preview',
+          messages: [
+            { role: 'system', content: notesSystemPrompt },
+            { role: 'user', content: notesUserPrompt }
+          ],
+        }),
+      });
+
+      if (!notesResponse.ok) {
+        const errorText = await notesResponse.text();
+        console.error('AI Gateway error (notes):', notesResponse.status, errorText);
+        if (notesResponse.status === 429) {
+          return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+            status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        if (notesResponse.status === 402) {
+          return new Response(JSON.stringify({ error: 'Payment required' }), {
+            status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        throw new Error(`AI Gateway error: ${notesResponse.status}`);
+      }
+
+      const notesData = await notesResponse.json();
+      const generatedNotes = notesData.choices?.[0]?.message?.content;
+
+      if (!generatedNotes) {
+        throw new Error('No notes generated');
+      }
+
+      return new Response(JSON.stringify({
+        notes: generatedNotes.trim(),
         generatedAt: new Date().toISOString()
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
