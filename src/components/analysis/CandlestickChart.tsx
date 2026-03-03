@@ -510,17 +510,17 @@ export function CandlestickChart({
             type="button"
             onClick={() => setSrVisible(v => !v)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border active:scale-95',
+              'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
               showSupportResistance
-                ? 'border-cyan-600/70 text-cyan-200 shadow-[0_0_8px_rgba(0,180,160,0.25)]'
-                : 'border-slate-600/40 text-slate-400 hover:text-slate-300'
+                ? 'border-cyan-600/50 text-cyan-300'
+                : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
             )}
-            style={{ background: showSupportResistance ? 'rgba(0,180,160,0.18)' : 'rgba(255,255,255,0.06)' }}
+            style={{ background: showSupportResistance ? 'rgba(0,180,160,0.15)' : 'rgba(255,255,255,0.05)' }}
           >
-            <span className="text-sm" style={{ color: '#00d4aa' }}>S</span>
-            <span className="text-slate-500">/</span>
-            <span className="text-sm" style={{ color: '#ff4976' }}>R</span>
-            <span className="ml-0.5 text-[11px] tracking-wide">{showSupportResistance ? 'ON' : 'OFF'}</span>
+            <span className="text-[11px]" style={{ color: '#00d4aa' }}>S</span>
+            <span className="text-muted-foreground/50">/</span>
+            <span className="text-[11px]" style={{ color: '#ff4976' }}>R</span>
+            <span className="ml-0.5 text-[9px] opacity-70">{showSupportResistance ? 'ON' : 'OFF'}</span>
           </button>
           {ema20Data && ema20Data.length > 0 && (
             <div className="flex items-center gap-1.5">
