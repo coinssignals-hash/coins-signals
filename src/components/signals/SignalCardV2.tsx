@@ -249,7 +249,7 @@ function PriceAge({ timestamp }: {timestamp: number;}) {
 export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
   const [chartFullscreen, setChartFullscreen] = useState(false);
-  const [showSR, setShowSR] = useState(true);
+  // S/R toggle now managed internally by CandlestickChart
   const { t, language } = useTranslation();
 
   const DATE_LOCALES = { es, en: enUS, pt: ptBR, fr };
@@ -755,8 +755,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               loading={forexChartLoading}
               realtimePrice={quote?.price}
               isRealtimeConnected={isConnected}
-              previousDayDate={forexChartData?.date}
-              showSupportResistance={showSR} />
+              previousDayDate={forexChartData?.date} />
             
               <button
               onClick={() => setChartFullscreen(true)}
@@ -764,21 +763,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               title="Pantalla completa">
               
                 <Maximize2 className="w-4 h-4" />
-              </button>
-              {/* S/R Toggle - Inside chart at bottom */}
-              <button
-              onClick={(e) => {e.stopPropagation();setShowSR(!showSR);}}
-              className={cn(
-                "absolute top-2 left-2 z-10 px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
-                showSR ?
-                "bg-slate-800/80 border border-slate-600/40" :
-                "bg-slate-800/70 text-slate-500 border border-slate-700/40"
-              )}
-              title="Mostrar/ocultar Soporte y Resistencia">
-              
-                <span className="text-red-400">Soporte</span>
-                <span className="text-slate-500">/</span>
-                <span className="text-green-400">Resistencia</span>
               </button>
             </div>
 
@@ -836,16 +820,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
                     {/* Right: S/R Toggle + Close */}
                     <div className="flex items-center gap-1">
-                      <button
-                      onClick={() => setShowSR(!showSR)}
-                      className={cn(
-                        "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all",
-                        showSR ?
-                        "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" :
-                        "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
-                      )}>
-                        S/R
-                      </button>
                       <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors ml-1">
                         <X className="w-5 h-5" />
                       </button>
@@ -864,8 +838,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         loading={forexChartLoading}
                         realtimePrice={quote?.price}
                         isRealtimeConnected={isConnected}
-                        previousDayDate={forexChartData?.date}
-                        showSupportResistance={showSR} />
+                        previousDayDate={forexChartData?.date} />
                       </ZoomableChart>
                     </div>
 
