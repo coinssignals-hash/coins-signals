@@ -1074,6 +1074,45 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           </div>
                         </div>
                         )}
+
+                        {/* News Headlines */}
+                        {marketData?.newsHeadlines && marketData.newsHeadlines.length > 0 && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[200px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">📰 Noticias Recientes</div>
+                          <div className="space-y-1.5">
+                            {marketData.newsHeadlines.slice(0, 5).map((headline, i) => (
+                              <div key={i} className="text-[10px] text-slate-300 leading-tight py-1 border-b border-slate-800/50 last:border-0">
+                                {headline}
+                              </div>
+                            ))}
+                          </div>
+                          {marketData.newsSentimentLabel && (
+                            <div className="mt-2 flex items-center gap-1.5">
+                              <span className="text-[9px] text-slate-500">Sentimiento:</span>
+                              <span className={cn("text-[10px] font-bold",
+                                marketData.newsSentimentLabel === 'Positivo' ? 'text-emerald-400' :
+                                marketData.newsSentimentLabel === 'Negativo' ? 'text-rose-400' : 'text-amber-400'
+                              )}>
+                                {marketData.newsSentimentLabel === 'Positivo' ? '🟢' : marketData.newsSentimentLabel === 'Negativo' ? '🔴' : '🟡'} {marketData.newsSentimentLabel}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        )}
+
+                        {/* Data Sources */}
+                        {marketData?.sources && marketData.sources.length > 0 && (
+                        <div className="p-3 min-w-[140px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Fuentes</div>
+                          <div className="flex flex-wrap gap-1">
+                            {marketData.sources.map((src, i) => (
+                              <span key={i} className="text-[8px] px-1.5 py-0.5 rounded bg-slate-800/60 text-cyan-300/70 border border-slate-700/30">
+                                {src}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
