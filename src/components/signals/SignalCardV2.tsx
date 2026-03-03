@@ -636,7 +636,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             map((badge) =>
             <div
               key={badge.label}
-              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-2.5 gap-0.5"
+              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-1 gap-0"
               style={{
                 background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
                 border: "1px solid hsla(200, 60%, 35%, 0.3)"
