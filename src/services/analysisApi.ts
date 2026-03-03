@@ -438,10 +438,17 @@ export const analysisApi = {
   },
 
   async getMonetaryPolicies(symbol: string): Promise<MonetaryPolicyData[]> {
-    if (API_CONFIG.useMockData) {
+    try {
+      const { data, error } = await supabase.functions.invoke('monetary-policies', {
+        body: { symbol },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data as MonetaryPolicyData[];
+    } catch (e) {
+      console.warn('Edge function failed, using mock:', e);
       return generateMockMonetaryPolicies(symbol);
     }
-    return fetchViaProxy<MonetaryPolicyData[]>('monetaryPolicies', symbol);
   },
 
   async getMajorNews(symbol: string): Promise<MajorNewsEvent[]> {
