@@ -918,7 +918,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         </div>
 
                         {/* Trend */}
-                        <div className="p-3 min-w-[120px] md:min-w-0">
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
                           <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Tendencia</div>
                           <div className={cn(
                             "text-xs font-bold text-center py-1.5 rounded",
@@ -929,6 +929,151 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             {trend === 'bullish' ? '📈 Alcista' : trend === 'bearish' ? '📉 Bajista' : '➡️ Lateral'}
                           </div>
                         </div>
+
+                        {/* Live Price */}
+                        {quote?.price && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Precio Actual</div>
+                          <div className="text-sm font-bold text-white tabular-nums">{quote.price.toFixed(isJpy ? 3 : 5)}</div>
+                          {priceDiff.hasData && (
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={cn("text-[10px] font-bold", priceDiff.isPositive ? "text-emerald-400" : "text-rose-400")}>
+                                {priceDiff.pips >= 0 ? '+' : ''}{priceDiff.pips.toFixed(1)} pips
+                              </span>
+                              <span className={cn("text-[10px]", priceDiff.isPositive ? "text-emerald-400/70" : "text-rose-400/70")}>
+                                ({priceDiff.percent >= 0 ? '+' : ''}{priceDiff.percent.toFixed(3)}%)
+                              </span>
+                            </div>
+                          )}
+                          <PriceAge timestamp={quote.timestamp} />
+                        </div>
+                        )}
+
+                        {/* RSI */}
+                        {marketData?.rsi14 !== null && marketData?.rsi14 !== undefined && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">RSI (14)</div>
+                          <div className={cn("text-sm font-bold",
+                            marketData.rsi14 > 70 ? 'text-rose-400' : marketData.rsi14 < 30 ? 'text-emerald-400' : 'text-cyan-200'
+                          )}>
+                            {marketData.rsi14.toFixed(1)}
+                          </div>
+                          <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
+                            <div className="h-full rounded-full transition-all" style={{
+                              width: `${marketData.rsi14}%`,
+                              background: marketData.rsi14 > 70 ? 'hsl(0,70%,55%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(195,100%,50%)'
+                            }} />
+                          </div>
+                          <span className="text-[9px] mt-0.5 block" style={{ color: marketData.rsi14 > 70 ? 'hsl(0,70%,60%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(45,80%,55%)' }}>
+                            {marketData.rsi14 > 70 ? 'Sobrecompra' : marketData.rsi14 < 30 ? 'Sobreventa' : 'Neutral'}
+                          </span>
+                        </div>
+                        )}
+
+                        {/* MACD */}
+                        {marketData?.macdHistogram !== null && marketData?.macdHistogram !== undefined && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">MACD</div>
+                          <div className={cn("text-sm font-bold", marketData.macdHistogram >= 0 ? 'text-emerald-400' : 'text-rose-400')}>
+                            {marketData.macdHistogram >= 0 ? '+' : ''}{marketData.macdHistogram.toFixed(5)}
+                          </div>
+                          <span className={cn("text-[9px]", marketData.macdHistogram >= 0 ? 'text-emerald-400/60' : 'text-rose-400/60')}>
+                            {marketData.macdHistogram >= 0 ? '▲ Alcista' : '▼ Bajista'}
+                          </span>
+                        </div>
+                        )}
+
+                        {/* Volatility */}
+                        {marketData?.volatility && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Volatilidad</div>
+                          <div className={cn("text-xs font-bold",
+                            marketData.volatility === 'low' ? 'text-emerald-400' :
+                            marketData.volatility === 'moderate' ? 'text-yellow-400' :
+                            marketData.volatility === 'high' ? 'text-orange-400' : 'text-rose-400'
+                          )}>
+                            {marketData.volatility === 'low' ? '🟢 Baja' :
+                             marketData.volatility === 'moderate' ? '🟡 Moderada' :
+                             marketData.volatility === 'high' ? '🟠 Alta' : '🔴 Extrema'}
+                          </div>
+                          {marketData.atr14 !== null && (
+                            <span className="text-[9px] text-slate-500 block mt-0.5">ATR: {marketData.atr14.toFixed(isJpy ? 3 : 5)}</span>
+                          )}
+                        </div>
+                        )}
+
+                        {/* Spread */}
+                        {marketData?.spreadPips !== null && marketData?.spreadPips !== undefined && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[110px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Spread</div>
+                          <div className="text-sm font-bold text-cyan-200">{marketData.spreadPips.toFixed(1)} <span className="text-[9px] text-slate-500">pips</span></div>
+                          {marketData.bid !== null && marketData.ask !== null && (
+                            <div className="text-[9px] text-slate-500 mt-0.5">
+                              Bid: {marketData.bid.toFixed(isJpy ? 3 : 5)} / Ask: {marketData.ask.toFixed(isJpy ? 3 : 5)}
+                            </div>
+                          )}
+                        </div>
+                        )}
+
+                        {/* ADX */}
+                        {marketData?.adx14 !== null && marketData?.adx14 !== undefined && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">ADX (14)</div>
+                          <div className={cn("text-sm font-bold",
+                            marketData.adx14 > 40 ? 'text-emerald-400' : marketData.adx14 > 20 ? 'text-yellow-400' : 'text-slate-400'
+                          )}>
+                            {marketData.adx14.toFixed(1)}
+                          </div>
+                          <span className="text-[9px] text-slate-500">
+                            {marketData.adx14 > 40 ? 'Tendencia Fuerte' : marketData.adx14 > 20 ? 'Tendencia Moderada' : 'Sin Tendencia'}
+                          </span>
+                        </div>
+                        )}
+
+                        {/* Stochastic */}
+                        {marketData?.stochK !== null && marketData?.stochK !== undefined && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Estocástico</div>
+                          <div className={cn("text-xs font-bold",
+                            marketData.stochK > 80 ? 'text-rose-400' : marketData.stochK < 20 ? 'text-emerald-400' : 'text-cyan-200'
+                          )}>
+                            K: {marketData.stochK.toFixed(0)} / D: {(marketData.stochD ?? 0).toFixed(0)}
+                          </div>
+                          <span className="text-[9px] text-slate-500">
+                            {marketData.stochK > 80 ? 'Sobrecompra' : marketData.stochK < 20 ? 'Sobreventa' : 'Neutral'}
+                          </span>
+                        </div>
+                        )}
+
+                        {/* Bollinger Bands */}
+                        {marketData?.bollingerUpper !== null && marketData?.bollingerUpper !== undefined && (
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Bollinger</div>
+                          <div className="space-y-0.5 text-[10px] font-mono">
+                            <div className="flex justify-between"><span className="text-slate-500">Superior</span><span className="text-emerald-300">{marketData.bollingerUpper.toFixed(isJpy ? 3 : 5)}</span></div>
+                            <div className="flex justify-between"><span className="text-slate-500">Media</span><span className="text-cyan-300">{(marketData.bollingerMiddle ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
+                            <div className="flex justify-between"><span className="text-slate-500">Inferior</span><span className="text-rose-300">{(marketData.bollingerLower ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
+                          </div>
+                        </div>
+                        )}
+
+                        {/* Overall Signal */}
+                        {marketData?.overallSignal && (
+                        <div className="p-3 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Señal Global</div>
+                          <div className={cn(
+                            "text-xs font-bold text-center py-1.5 rounded",
+                            marketData.overallSignal === 'strong_buy' || marketData.overallSignal === 'buy' ? "text-emerald-400 bg-emerald-500/10" :
+                            marketData.overallSignal === 'strong_sell' || marketData.overallSignal === 'sell' ? "text-rose-400 bg-rose-500/10" :
+                            "text-amber-400 bg-amber-500/10"
+                          )}>
+                            {marketData.overallSignal === 'strong_buy' ? '🟢 Compra Fuerte' :
+                             marketData.overallSignal === 'buy' ? '🟢 Compra' :
+                             marketData.overallSignal === 'strong_sell' ? '🔴 Venta Fuerte' :
+                             marketData.overallSignal === 'sell' ? '🔴 Venta' : '🟡 Neutral'}
+                          </div>
+                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
