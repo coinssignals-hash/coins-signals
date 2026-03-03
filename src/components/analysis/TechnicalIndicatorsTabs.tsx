@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gauge, BarChart3, Activity, Waves, CandlestickChart as CandlestickIcon, TrendingUp } from 'lucide-react';
+import { Gauge, BarChart3, Activity, Waves, CandlestickChart as CandlestickIcon, TrendingUp, GitBranch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   ResponsiveContainer, LineChart, Line, AreaChart, Area, BarChart, Bar,
@@ -445,6 +445,7 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
     { value: 'bollinger', label: 'Bollinger', icon: Waves },
     { value: 'stochastic', label: 'Estoc.', icon: Activity },
     { value: 'adx', label: 'ADX', icon: TrendingUp },
+    { value: 'ma', label: 'Medias', icon: GitBranch },
   ];
 
   return (
@@ -484,6 +485,9 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
           </TabsContent>
           <TabsContent value="adx" className="mt-0">
             <ADXPanel candles={candles} />
+          </TabsContent>
+          <TabsContent value="ma" className="mt-0">
+            <MovingAveragesPanel candles={candles} />
           </TabsContent>
         </div>
       </Tabs>
