@@ -298,7 +298,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       {/* Hero Image */}
-      <Link to={`/news/${news.id}`} className="block relative aspect-[2/1] overflow-hidden">
+      <Link to={`/news/${news.id}`} className="block relative aspect-[5/3] sm:aspect-[2/1] overflow-hidden">
         {news.image_url ? (
           <img
             src={news.image_url}
@@ -357,7 +357,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       </Link>
 
       {/* Content section */}
-      <div className="px-3 pt-3 pb-2 space-y-2.5">
+      <div className="px-3 pt-2.5 pb-2 space-y-2">
         {/* Title */}
         <Link to={`/news/${news.id}`}>
           <h3 className="font-semibold text-[15px] text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-snug">
@@ -436,8 +436,8 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
 
       {/* Expandable toggle */}
       <button onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center py-1.5 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10">
-        <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', expanded && 'rotate-180')} />
+        className="w-full flex items-center justify-center py-2.5 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10 active:bg-white/5">
+        <ChevronDown className={cn('w-5 h-5 transition-transform duration-300', expanded && 'rotate-180')} />
       </button>
 
       {/* Expanded content */}
@@ -485,7 +485,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
       <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
         style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
-      <div className="relative aspect-[16/9] overflow-hidden">
+      <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
         {news.image_url ? (
           <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
@@ -805,7 +805,7 @@ const News = () => {
       <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
       
-      <main className="px-4 py-4 space-y-4">
+      <main className="px-3 sm:px-4 py-3 sm:py-4 space-y-3">
         {/* Date Tabs */}
         <DateTabs
             selectedDate={selectedDate}
@@ -815,30 +815,37 @@ const News = () => {
 
         
         {/* Section Header + Currency Filter */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-foreground">{t('news_title')}</h1>
-            {selectedCurrencies.length > 0 &&
-              <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
-                {filteredNews.length}
-              </span>
-            }
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('news_title')}</h1>
+              {selectedCurrencies.length > 0 &&
+                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+                  {filteredNews.length}
+                </span>
+              }
+            </div>
+            <div className="flex items-center gap-1.5">
+              <QuickSourceFilter
+                selected={selectedSources}
+                onChange={setSelectedSources}
+                news={news} />
+              <QuickCurrencyFilter
+                selected={selectedCurrencies}
+                onChange={setSelectedCurrencies}
+                allLabel={t('news_all_currencies')}
+                news={news} />
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <QuickSourceFilter
-              selected={selectedSources}
-              onChange={setSelectedSources}
-              news={news} />
-            <QuickCurrencyFilter
-              selected={selectedCurrencies}
-              onChange={setSelectedCurrencies}
-              allLabel={t('news_all_currencies')}
-              news={news} />
+          {/* Last updated — compact */}
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <Clock className="w-3 h-3" />
+            <span>{t('news_last_updated')}: {lastUpdated}</span>
           </div>
         </div>
 
         {/* Impact & Sentiment Filter Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
           {/* Sort modes */}
           {[
             { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: 'Recientes' },
@@ -849,7 +856,7 @@ const News = () => {
               key={key}
               onClick={() => setSortMode(key)}
               className={cn(
-                'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
+                'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all border active:scale-95',
                 sortMode === key ?
                 'bg-accent border-accent text-accent-foreground shadow-sm' :
                 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
@@ -873,7 +880,7 @@ const News = () => {
               key={key}
               onClick={() => toggleSentiment(key)}
               className={cn(
-                'flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all border',
+                'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all border active:scale-95',
                 sentimentFilters.has(key) ?
                 activeClass :
                 'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
@@ -888,7 +895,7 @@ const News = () => {
           {(sentimentFilters.size > 0 || sortMode !== 'recent' || selectedSources.length > 0) &&
             <button
               onClick={() => {setSentimentFilters(new Set());setSortMode('recent');setSelectedSources([]);}}
-              className="flex-shrink-0 px-2 py-1.5 rounded-full text-[10px] font-medium text-destructive hover:bg-destructive/10 transition-all">
+              className="flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium text-destructive hover:bg-destructive/10 transition-all active:scale-95">
 
               ✕ Reset
             </button>
@@ -905,13 +912,8 @@ const News = () => {
 
           }
         
-        {/* Sources and Last Updated */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Clock className="w-3 h-3" />
-            <span>{t('news_last_updated')}: {lastUpdated}</span>
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+        {/* Sources — hidden on mobile, visible on desktop */}
+        <div className="hidden sm:flex items-center gap-2 overflow-x-auto scrollbar-hide text-xs text-muted-foreground">
             <span className="text-[10px] uppercase tracking-wider flex-shrink-0">{t('news_sources')}:</span>
             <div className="flex items-center gap-1">
               {Object.entries(SOURCE_COLORS).map(([name, colors]) => {
@@ -932,8 +934,8 @@ const News = () => {
                       isActive
                         ? `${colors.bg} ${colors.text} border-current ring-1 ring-current/30 scale-105`
                         : isFiltering
-                          ? `bg-muted/30 text-muted-foreground/40 border-transparent hover:${colors.bg} hover:${colors.text}`
-                          : `${colors.bg} ${colors.text} border-transparent hover:ring-1 hover:ring-current/30`
+                          ? `bg-muted/30 text-muted-foreground/40 border-transparent`
+                          : `${colors.bg} ${colors.text} border-transparent`
                     )}
                   >
                     {name}
@@ -941,7 +943,6 @@ const News = () => {
                 );
               })}
             </div>
-          </div>
         </div>
         
         {/* Loading State */}
