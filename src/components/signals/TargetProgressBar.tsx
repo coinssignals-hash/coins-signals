@@ -175,7 +175,7 @@ export function TargetProgressBar({
   }
 
   return (
-    <div className={cn("mx-4 mb-3 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
+    <div className={cn("mx-4 mb-3 mt-1 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
       {/* Labels */}
       <div className="flex items-center justify-between mb-1.5">
         <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'sl' && "scale-110")}>
@@ -209,7 +209,7 @@ export function TargetProgressBar({
       </div>
 
       {/* Bar */}
-      <div className="relative h-2 rounded-full overflow-hidden"
+      <div className="relative h-2 rounded-full"
         style={{ background: 'linear-gradient(90deg, hsla(0, 70%, 25%, 0.4) 0%, hsla(210, 30%, 15%, 0.6) 50%, hsla(142, 70%, 25%, 0.4) 100%)' }}
       >
         {/* Entry marker */}
@@ -217,21 +217,41 @@ export function TargetProgressBar({
           className="absolute top-0 bottom-0 w-0.5 bg-white/50 z-10"
           style={{ left: `${entryPosition}%` }}
         />
-        {/* Price position indicator (dot) */}
+        {/* Price position indicator (dot) with price label */}
         <div
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full z-20 border-2 border-white/80 transition-all duration-700 ease-out shadow-lg",
+            "absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center transition-all duration-700 ease-out",
             pulse && "animate-[dot-pulse_1.2s_ease-out]"
           )}
           style={{
             left: `${position}%`,
             transform: `translateX(-50%) translateY(-50%)`,
-            backgroundColor: progressColor,
-            boxShadow: pulse
-              ? `0 0 16px ${pulseColor}, 0 0 32px ${pulseColor}50`
-              : `0 0 8px ${progressColor}`,
           }}
-        />
+        >
+          {/* Price label above the dot */}
+          {hasLivePrice && (
+            <div
+              className={cn(
+                "absolute -top-4 whitespace-nowrap px-1 py-px rounded text-[8px] font-bold font-mono tabular-nums",
+                nearEntry ? "bg-yellow-500/20 text-yellow-400" : isAboveEntry ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+              )}
+            >
+              {displayPrice!.toFixed(isJpy ? 2 : 3)}
+            </div>
+          )}
+          {/* Dot */}
+          <div
+            className={cn(
+              "w-3 h-3 rounded-full border-2 border-white/80 shadow-lg",
+            )}
+            style={{
+              backgroundColor: progressColor,
+              boxShadow: pulse
+                ? `0 0 16px ${pulseColor}, 0 0 32px ${pulseColor}50`
+                : `0 0 8px ${progressColor}`,
+            }}
+          />
+        </div>
         {/* Fill from SL side to price position */}
         <div
           className="absolute top-0 bottom-0 left-0 rounded-full transition-all duration-700 ease-out opacity-60"
