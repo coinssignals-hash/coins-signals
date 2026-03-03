@@ -452,17 +452,31 @@ export const analysisApi = {
   },
 
   async getMajorNews(symbol: string): Promise<MajorNewsEvent[]> {
-    if (API_CONFIG.useMockData) {
+    try {
+      const { data, error } = await supabase.functions.invoke('analysis-news', {
+        body: { symbol },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return (data?.majorNews || []) as MajorNewsEvent[];
+    } catch (e) {
+      console.warn('analysis-news edge function failed for majorNews, using mock:', e);
       return generateMockMajorNews(symbol);
     }
-    return fetchViaProxy<MajorNewsEvent[]>('majorNews', symbol);
   },
 
   async getRelevantNews(symbol: string): Promise<RelevantNewsItem[]> {
-    if (API_CONFIG.useMockData) {
+    try {
+      const { data, error } = await supabase.functions.invoke('analysis-news', {
+        body: { symbol },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return (data?.relevantNews || []) as RelevantNewsItem[];
+    } catch (e) {
+      console.warn('analysis-news edge function failed for relevantNews, using mock:', e);
       return generateMockRelevantNews(symbol);
     }
-    return fetchViaProxy<RelevantNewsItem[]>('relevantNews', symbol);
   },
 
   async getEconomicEvents(symbol: string, date: Date): Promise<EconomicEvent[]> {
