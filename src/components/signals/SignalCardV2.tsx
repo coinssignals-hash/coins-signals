@@ -37,6 +37,7 @@ import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalMarketData } from "@/hooks/useSignalMarketData";
 import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
+import { TargetProgressBar } from "@/components/signals/TargetProgressBar";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -744,7 +745,19 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           </div>
         </div>
 
-        {/* Expand toggle button - justo debajo de Precio de Entrada */}
+        {/* Target Progress Bar - SL/Entry/TP meter */}
+        <TargetProgressBar
+          entryPrice={entryPrice}
+          takeProfit={takeProfit}
+          stopLoss={stopLoss}
+          currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
+          action={action as 'BUY' | 'SELL'}
+          isCompleted={isCompleted}
+          closedResult={signal?.closedResult ?? undefined}
+          closedPrice={signal?.closedPrice ?? undefined}
+        />
+
+        {/* Expand toggle button - justo debajo del medidor */}
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
