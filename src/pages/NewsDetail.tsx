@@ -127,28 +127,28 @@ const NewsDetail = () => {
       <PageShell>
         <Header />
         <main className="py-4 px-4 space-y-6">
-          <div className="p-6 rounded-xl bg-card border border-border text-center space-y-4">
-            <div className="w-16 h-16 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <h2 className="text-lg font-semibold text-foreground">
-              {error ? t('news_detail_error_loading') : t('news_detail_unavailable')}
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              {error instanceof Error ?
-              error.message :
-              t('news_detail_unavailable_desc')}
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => refetch()}
-              className="text-primary hover:text-primary/80">
+          
 
-              <Loader2 className="w-3 h-3 mr-1" />
-              {t('news_detail_refresh')}
-            </Button>
-          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
 
           {recentNews.length > 0 &&
           <div className="space-y-4">
