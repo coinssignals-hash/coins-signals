@@ -765,13 +765,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               
                 <Maximize2 className="w-4 h-4" />
               </button>
-            </div>
-            {/* S/R Toggle - Below chart */}
-            <div className="mx-3 mb-3 flex justify-center">
+              {/* S/R Toggle - Inside chart at bottom */}
               <button
               onClick={(e) => {e.stopPropagation();setShowSR(!showSR);}}
               className={cn(
-                "px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
+                "absolute bottom-2 left-2 z-10 px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
                 showSR ?
                 "bg-slate-800/80 border border-slate-600/40" :
                 "bg-slate-800/70 text-slate-500 border border-slate-700/40"
