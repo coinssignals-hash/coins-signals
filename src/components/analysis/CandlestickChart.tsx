@@ -25,6 +25,10 @@ interface CandlestickChartProps {
   /** Optional EMA overlay data */
   ema20Data?: TimeValue[];
   ema50Data?: TimeValue[];
+  /** Signal levels for TP/SL overlay */
+  signalTakeProfit?: number | null;
+  signalStopLoss?: number | null;
+  signalEntry?: number | null;
 }
 
 /* ─── helpers ─── */
@@ -61,6 +65,10 @@ function buildChartSvg(
   showSR = true,
   ema20Data?: TimeValue[],
   ema50Data?: TimeValue[],
+  signalTP?: number | null,
+  signalSL?: number | null,
+  signalEntry?: number | null,
+  showSignalLevels = false,
 ): string {
   const W = 1200, H = 700;
   const PAD = { top: 35, right: 110, bottom: 50, left: 65 };
@@ -103,6 +111,11 @@ function buildChartSvg(
   for (const c of data) { if (c.low < minP) minP = c.low; if (c.high > maxP) maxP = c.high; }
   if (realtimePrice) { minP = Math.min(minP, realtimePrice); maxP = Math.max(maxP, realtimePrice); }
   minP = Math.min(minP, support); maxP = Math.max(maxP, resistance);
+  if (showSignalLevels) {
+    if (signalTP) { minP = Math.min(minP, signalTP); maxP = Math.max(maxP, signalTP); }
+    if (signalSL) { minP = Math.min(minP, signalSL); maxP = Math.max(maxP, signalSL); }
+    if (signalEntry) { minP = Math.min(minP, signalEntry); maxP = Math.max(maxP, signalEntry); }
+  }
   const pr = maxP - minP || 0.0001;
   const pp = pr * 0.05;
   minP -= pp; maxP += pp;
@@ -245,7 +258,33 @@ function buildChartSvg(
     parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(support, jpy)}</text>`);
   }
 
-  // Realtime price
+  // Signal TP/SL/Entry lines
+  if (showSignalLevels) {
+    const SIG_TP = '#22c55e';  // green
+    const SIG_SL = '#ef4444';  // red
+    const SIG_ENTRY = '#3b82f6'; // blue
+    const sigLblW = 90, sigLblH = 18, sigFs = 9;
+
+    if (signalTP) {
+      const tpY = yOf(signalTP);
+      parts.push(`<line x1="${srX1}" y1="${tpY}" x2="${srX2}" y2="${tpY}" stroke="${SIG_TP}" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.9" shape-rendering="crispEdges"/>`);
+      parts.push(`<rect x="${CHART_X1 + 4}" y="${tpY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(34,197,94,0.15)" stroke="${SIG_TP}" stroke-width="0.6"/>`);
+      parts.push(`<text x="${CHART_X1 + 4 + sigLblW / 2}" y="${tpY + sigFs / 3}" fill="${SIG_TP}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">TP ${fmtPrice(signalTP, jpy)}</text>`);
+    }
+    if (signalSL) {
+      const slY = yOf(signalSL);
+      parts.push(`<line x1="${srX1}" y1="${slY}" x2="${srX2}" y2="${slY}" stroke="${SIG_SL}" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.9" shape-rendering="crispEdges"/>`);
+      parts.push(`<rect x="${CHART_X1 + 4}" y="${slY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(239,68,68,0.15)" stroke="${SIG_SL}" stroke-width="0.6"/>`);
+      parts.push(`<text x="${CHART_X1 + 4 + sigLblW / 2}" y="${slY + sigFs / 3}" fill="${SIG_SL}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(signalSL, jpy)}</text>`);
+    }
+    if (signalEntry) {
+      const entY = yOf(signalEntry);
+      parts.push(`<line x1="${srX1}" y1="${entY}" x2="${srX2}" y2="${entY}" stroke="${SIG_ENTRY}" stroke-width="1" stroke-dasharray="4,4" opacity="0.7" shape-rendering="crispEdges"/>`);
+      parts.push(`<rect x="${CHART_X1 + 4}" y="${entY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(59,130,246,0.15)" stroke="${SIG_ENTRY}" stroke-width="0.6"/>`);
+      parts.push(`<text x="${CHART_X1 + 4 + sigLblW / 2}" y="${entY + sigFs / 3}" fill="${SIG_ENTRY}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">Entry ${fmtPrice(signalEntry, jpy)}</text>`);
+    }
+  }
+
   if (realtimePrice) {
     const rtY = yOf(realtimePrice);
     const rtC = isConnected ? '#3b82f6' : '#6366f1';
@@ -278,11 +317,16 @@ export function CandlestickChart({
   showSupportResistance: showSRProp,
   ema20Data,
   ema50Data,
+  signalTakeProfit,
+  signalStopLoss,
+  signalEntry,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; crosshairX: number; relY: number } | null>(null);
   const [srVisible, setSrVisible] = useState(showSRProp ?? true);
+  const [signalLevelsVisible, setSignalLevelsVisible] = useState(false);
+  const hasSignalLevels = !!(signalTakeProfit || signalStopLoss || signalEntry);
   const showSupportResistance = srVisible;
 
   // Chart layout constants (must match buildChartSvg)
@@ -326,9 +370,9 @@ export function CandlestickChart({
     const title = previousDayDate
       ? `30min · Última Semana | ${previousDayDate}`
       : '30min · Última Semana';
-    const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title, showSupportResistance, ema20Data, ema50Data);
+    const svg = buildChartSvg(data, support, resistance, realtimePrice ?? null, isRealtimeConnected, title, showSupportResistance, ema20Data, ema50Data, signalTakeProfit, signalStopLoss, signalEntry, signalLevelsVisible);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate, showSupportResistance, ema20Data, ema50Data]);
+  }, [data, support, resistance, realtimePrice, isRealtimeConnected, previousDayDate, showSupportResistance, ema20Data, ema50Data, signalTakeProfit, signalStopLoss, signalEntry, signalLevelsVisible]);
 
   const alertStyles = useMemo(() => {
     if (!alertState?.isActive) return null;
@@ -522,6 +566,25 @@ export function CandlestickChart({
             <span className="text-[11px]" style={{ color: '#ff4976' }}>R</span>
             <span className="ml-0.5 text-[9px] opacity-70">{showSupportResistance ? 'ON' : 'OFF'}</span>
           </button>
+          {/* TP/SL Signal Toggle Button */}
+          {hasSignalLevels && (
+            <button
+              type="button"
+              onClick={() => setSignalLevelsVisible(v => !v)}
+              className={cn(
+                'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
+                signalLevelsVisible
+                  ? 'border-amber-600/50 text-amber-300'
+                  : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+              )}
+              style={{ background: signalLevelsVisible ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)' }}
+            >
+              <span className="text-[11px]" style={{ color: '#22c55e' }}>TP</span>
+              <span className="text-muted-foreground/50">/</span>
+              <span className="text-[11px]" style={{ color: '#ef4444' }}>SL</span>
+              <span className="ml-0.5 text-[9px] opacity-70">{signalLevelsVisible ? 'ON' : 'OFF'}</span>
+            </button>
+          )}
           {ema20Data && ema20Data.length > 0 && (
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-0.5 bg-blue-500" />
