@@ -184,6 +184,36 @@ export default {
           "0%, 100%": { borderColor: "rgba(34, 197, 94, 0.3)" },
           "50%": { borderColor: "rgba(34, 197, 94, 0.8)" },
         },
+        "zone-bar-pulse": {
+          "0%": { transform: "scale(1)" },
+          "15%": { transform: "scale(1.03)" },
+          "30%": { transform: "scale(0.98)" },
+          "50%": { transform: "scale(1.01)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "dot-pulse": {
+          "0%": { transform: "translateX(-50%) translateY(-50%) scale(1)", opacity: "1" },
+          "25%": { transform: "translateX(-50%) translateY(-50%) scale(1.8)", opacity: "0.7" },
+          "50%": { transform: "translateX(-50%) translateY(-50%) scale(1)", opacity: "1" },
+          "75%": { transform: "translateX(-50%) translateY(-50%) scale(1.4)", opacity: "0.8" },
+          "100%": { transform: "translateX(-50%) translateY(-50%) scale(1)", opacity: "1" },
+        },
+        "ripple-expand": {
+          "0%": { transform: "translateX(-50%) translateY(-50%) scale(0.5)", opacity: "0.8" },
+          "100%": { transform: "translateX(-50%) translateY(-50%) scale(4)", opacity: "0" },
+        },
+        "bar-glow": {
+          "0%": { filter: "brightness(1)" },
+          "30%": { filter: "brightness(1.6)" },
+          "100%": { filter: "brightness(1)" },
+        },
+        "icon-shake": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "20%": { transform: "rotate(-12deg)" },
+          "40%": { transform: "rotate(12deg)" },
+          "60%": { transform: "rotate(-8deg)" },
+          "80%": { transform: "rotate(8deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

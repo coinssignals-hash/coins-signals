@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Target, ShieldAlert } from 'lucide-react';
 
@@ -13,6 +14,8 @@ interface TargetProgressBarProps {
   /** compact = smaller version for SignalCardCompact */
   compact?: boolean;
 }
+
+type PriceZone = 'tp' | 'entry' | 'sl';
 
 /**
  * Horizontal progress bar showing where the current price sits
@@ -32,77 +35,96 @@ export function TargetProgressBar({
   closedPrice,
   compact = false,
 }: TargetProgressBarProps) {
+  // Zone change pulse detection
+  const prevZoneRef = useRef<PriceZone | null>(null);
+  const [pulse, setPulse] = useState(false);
+  const [pulseColor, setPulseColor] = useState<string>('');
+
   // Use closed price if completed, otherwise current price
   const displayPrice = isCompleted && closedPrice ? closedPrice : currentPrice;
-  if (!displayPrice) return null;
 
   const isBuy = action === 'BUY';
+  const totalRange = Math.abs(takeProfit - stopLoss);
 
   // Calculate position as percentage (0% = SL, 50% = Entry, 100% = TP)
-  const totalRange = Math.abs(takeProfit - stopLoss);
-  if (totalRange === 0) return null;
+  let position = 0;
+  let entryPosition = 0;
+  let isAboveEntry = false;
+  let nearEntry = false;
+  let progressColor = 'hsl(45, 80%, 55%)';
+  let isJpy = false;
+  let pipsFromEntry = 0;
+  let targetLabel = 'TP1';
+  let targetPercent = 0;
 
-  let position: number;
-  if (isBuy) {
-    // BUY: SL is below entry, TP is above
-    position = ((displayPrice - stopLoss) / totalRange) * 100;
-  } else {
-    // SELL: SL is above entry, TP is below — invert
-    position = ((stopLoss - displayPrice) / totalRange) * 100;
+  const hasData = !!displayPrice && totalRange > 0;
+
+  if (hasData) {
+    if (isBuy) {
+      position = ((displayPrice - stopLoss) / totalRange) * 100;
+      entryPosition = ((entryPrice - stopLoss) / totalRange) * 100;
+    } else {
+      position = ((stopLoss - displayPrice) / totalRange) * 100;
+      entryPosition = ((stopLoss - entryPrice) / totalRange) * 100;
+    }
+    position = Math.max(0, Math.min(100, position));
+
+    isAboveEntry = position > entryPosition;
+    nearEntry = Math.abs(position - entryPosition) < 5;
+    progressColor = nearEntry
+      ? 'hsl(45, 80%, 55%)'
+      : isAboveEntry
+        ? 'hsl(142, 70%, 50%)'
+        : 'hsl(0, 70%, 55%)';
+
+    isJpy = takeProfit.toString().split('.')[1]?.length <= 2 || Math.abs(takeProfit) > 50;
+    const pipMultiplier = isJpy ? 100 : 10000;
+    pipsFromEntry = Math.abs((displayPrice - entryPrice) * pipMultiplier);
+
+    if (isAboveEntry || nearEntry) {
+      const distToTP = isBuy ? Math.abs(takeProfit - displayPrice) : Math.abs(displayPrice - takeProfit);
+      const totalToTP = isBuy ? Math.abs(takeProfit - entryPrice) : Math.abs(entryPrice - takeProfit);
+      targetPercent = totalToTP > 0 ? Math.min(100, ((totalToTP - distToTP) / totalToTP) * 100) : 0;
+      targetLabel = 'TP1';
+    } else {
+      const distToSL = isBuy ? Math.abs(displayPrice - stopLoss) : Math.abs(stopLoss - displayPrice);
+      const totalToSL = isBuy ? Math.abs(entryPrice - stopLoss) : Math.abs(stopLoss - entryPrice);
+      targetPercent = totalToSL > 0 ? Math.min(100, ((totalToSL - distToSL) / totalToSL) * 100) : 0;
+      targetLabel = 'SL';
+    }
   }
-  position = Math.max(0, Math.min(100, position));
 
-  // Entry position on the bar
-  let entryPosition: number;
-  if (isBuy) {
-    entryPosition = ((entryPrice - stopLoss) / totalRange) * 100;
-  } else {
-    entryPosition = ((stopLoss - entryPrice) / totalRange) * 100;
-  }
+  // Determine current zone
+  const currentZone: PriceZone = !hasData ? 'entry' : nearEntry ? 'entry' : isAboveEntry ? 'tp' : 'sl';
 
-  // Determine zone color
-  const isAboveEntry = position > entryPosition;
-  const nearEntry = Math.abs(position - entryPosition) < 5;
-  const progressColor = nearEntry
-    ? 'hsl(45, 80%, 55%)'
-    : isAboveEntry
-      ? 'hsl(142, 70%, 50%)'
-      : 'hsl(0, 70%, 55%)';
+  // Detect zone transitions and trigger pulse animation
+  useEffect(() => {
+    if (!hasData || isCompleted) return;
 
-  // Pips from entry
-  const isJpy = takeProfit.toString().split('.')[1]?.length <= 2 ||
-    Math.abs(takeProfit) > 50;
-  const pipMultiplier = isJpy ? 100 : 10000;
-  const pipsFromEntry = Math.abs((displayPrice - entryPrice) * pipMultiplier);
+    if (prevZoneRef.current !== null && prevZoneRef.current !== currentZone) {
+      const color = currentZone === 'tp'
+        ? 'hsl(142, 70%, 50%)'
+        : currentZone === 'sl'
+          ? 'hsl(0, 70%, 55%)'
+          : 'hsl(45, 80%, 55%)';
+      setPulseColor(color);
+      setPulse(true);
+      const timer = setTimeout(() => setPulse(false), 1200);
+      return () => clearTimeout(timer);
+    }
+    prevZoneRef.current = currentZone;
+  }, [currentZone, hasData, isCompleted]);
 
-  // Percentage to TP or SL
-  let targetLabel: string;
-  let targetPercent: number;
-  if (isAboveEntry || nearEntry) {
-    // Heading towards TP
-    const distToTP = isBuy
-      ? Math.abs(takeProfit - displayPrice)
-      : Math.abs(displayPrice - takeProfit);
-    const totalToTP = isBuy
-      ? Math.abs(takeProfit - entryPrice)
-      : Math.abs(entryPrice - takeProfit);
-    targetPercent = totalToTP > 0 ? Math.min(100, ((totalToTP - distToTP) / totalToTP) * 100) : 0;
-    targetLabel = 'TP1';
-  } else {
-    // Heading towards SL
-    const distToSL = isBuy
-      ? Math.abs(displayPrice - stopLoss)
-      : Math.abs(stopLoss - displayPrice);
-    const totalToSL = isBuy
-      ? Math.abs(entryPrice - stopLoss)
-      : Math.abs(stopLoss - entryPrice);
-    targetPercent = totalToSL > 0 ? Math.min(100, ((totalToSL - distToSL) / totalToSL) * 100) : 0;
-    targetLabel = 'SL';
-  }
+  // Also update ref when zone doesn't change
+  useEffect(() => {
+    prevZoneRef.current = currentZone;
+  }, [currentZone]);
+
+  if (!hasData) return null;
 
   if (compact) {
     return (
-      <div className="w-full px-4 pb-2">
+      <div className={cn("w-full px-4 pb-2 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
         <div className="relative h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
           {/* Entry marker */}
           <div
@@ -111,18 +133,30 @@ export function TargetProgressBar({
           />
           {/* Progress fill */}
           <div
-            className="absolute top-0 bottom-0 left-0 rounded-full transition-all duration-700 ease-out"
+            className={cn(
+              "absolute top-0 bottom-0 left-0 rounded-full transition-all duration-700 ease-out",
+              pulse && "animate-[bar-glow_1.2s_ease-out]"
+            )}
             style={{
               width: `${position}%`,
               background: `linear-gradient(90deg, hsl(0, 70%, 55%) 0%, ${progressColor} 100%)`,
+              ...(pulse ? { boxShadow: `0 0 12px ${pulseColor}` } : {}),
             }}
           />
+          {/* Pulse ripple overlay */}
+          {pulse && (
+            <div
+              className="absolute inset-0 rounded-full animate-[ripple-expand_1.2s_ease-out_forwards] opacity-0"
+              style={{ background: `radial-gradient(circle, ${pulseColor}40 0%, transparent 70%)` }}
+            />
+          )}
         </div>
         <div className="flex justify-between mt-1">
           <span className="text-[8px] text-rose-400/70 font-mono">SL</span>
           <span className={cn(
-            "text-[8px] font-bold font-mono",
-            nearEntry ? "text-yellow-400" : isAboveEntry ? "text-emerald-400" : "text-rose-400"
+            "text-[8px] font-bold font-mono transition-all duration-300",
+            nearEntry ? "text-yellow-400" : isAboveEntry ? "text-emerald-400" : "text-rose-400",
+            pulse && "scale-110"
           )}>
             {targetLabel} {targetPercent.toFixed(0)}% · {pipsFromEntry.toFixed(1)}p
           </span>
@@ -133,15 +167,15 @@ export function TargetProgressBar({
   }
 
   return (
-    <div className="mx-4 mb-3">
+    <div className={cn("mx-4 mb-3 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
       {/* Labels */}
       <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-1">
-          <ShieldAlert className="w-3 h-3 text-rose-400" />
+        <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'sl' && "scale-110")}>
+          <ShieldAlert className={cn("w-3 h-3 text-rose-400 transition-all", pulse && currentZone === 'sl' && "animate-[icon-shake_0.5s_ease-out]")} />
           <span className="text-[10px] text-rose-400 font-semibold">SL</span>
         </div>
         <div className={cn(
-          "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold",
+          "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all duration-500",
           isCompleted && closedResult === 'tp_hit'
             ? "bg-emerald-500/20 text-emerald-400"
             : isCompleted && closedResult === 'sl_hit'
@@ -150,16 +184,19 @@ export function TargetProgressBar({
                 ? "bg-yellow-500/15 text-yellow-400"
                 : isAboveEntry
                   ? "bg-emerald-500/15 text-emerald-400"
-                  : "bg-rose-500/15 text-rose-400"
-        )}>
+                  : "bg-rose-500/15 text-rose-400",
+          pulse && "scale-110 shadow-lg"
+        )}
+          style={pulse ? { boxShadow: `0 0 16px ${pulseColor}50` } : {}}
+        >
           {isCompleted
             ? closedResult === 'tp_hit' ? '✅ TP Alcanzado' : closedResult === 'sl_hit' ? '❌ SL Alcanzado' : '⏱ Expirada'
             : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)} pips`
           }
         </div>
-        <div className="flex items-center gap-1">
+        <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'tp' && "scale-110")}>
           <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
-          <Target className="w-3 h-3 text-emerald-400" />
+          <Target className={cn("w-3 h-3 text-emerald-400 transition-all", pulse && currentZone === 'tp' && "animate-[icon-shake_0.5s_ease-out]")} />
         </div>
       </div>
 
@@ -172,14 +209,19 @@ export function TargetProgressBar({
           className="absolute top-0 bottom-0 w-0.5 bg-white/50 z-10"
           style={{ left: `${entryPosition}%` }}
         />
-        {/* Price position indicator */}
+        {/* Price position indicator (dot) */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full z-20 border-2 border-white/80 transition-all duration-700 ease-out shadow-lg"
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full z-20 border-2 border-white/80 transition-all duration-700 ease-out shadow-lg",
+            pulse && "animate-[dot-pulse_1.2s_ease-out]"
+          )}
           style={{
             left: `${position}%`,
             transform: `translateX(-50%) translateY(-50%)`,
             backgroundColor: progressColor,
-            boxShadow: `0 0 8px ${progressColor}`,
+            boxShadow: pulse
+              ? `0 0 16px ${pulseColor}, 0 0 32px ${pulseColor}50`
+              : `0 0 8px ${progressColor}`,
           }}
         />
         {/* Fill from SL side to price position */}
@@ -190,6 +232,17 @@ export function TargetProgressBar({
             background: `linear-gradient(90deg, hsl(0, 70%, 45%) 0%, ${progressColor} 100%)`,
           }}
         />
+        {/* Pulse ripple from dot position */}
+        {pulse && (
+          <div
+            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full z-15 animate-[ripple-expand_1s_ease-out_forwards]"
+            style={{
+              left: `${position}%`,
+              transform: 'translateX(-50%) translateY(-50%)',
+              background: `radial-gradient(circle, ${pulseColor}60 0%, transparent 70%)`,
+            }}
+          />
+        )}
       </div>
 
       {/* Price labels */}
