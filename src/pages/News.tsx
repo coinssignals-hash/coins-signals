@@ -276,15 +276,14 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   const volatility = useMemo(() => {
-    if (!data?.monthlyData || data.monthlyData.length === 0) return { level: 'low' as const, value: 25, spread: 0 };
+    if (!data?.monthlyData || data.monthlyData.length === 0) return { level: 'low' as const, value: 25, spread: 0, avg: 0, maxImpact: 0 };
     const impacts = data.monthlyData.map(d => Math.abs(d.impact));
     const avg = impacts.reduce((a, b) => a + b, 0) / impacts.length;
     const max = Math.max(...impacts);
     const spread = max - Math.min(...impacts);
-    // Normalize to 0-100
     const normalized = Math.min(100, Math.round((avg * 8) + (spread * 3)));
     const level = normalized >= 70 ? 'high' as const : normalized >= 40 ? 'medium' as const : 'low' as const;
-    return { level, value: normalized, spread: Math.round(spread * 10) / 10 };
+    return { level, value: normalized, spread: Math.round(spread * 10) / 10, avg: Math.round(avg * 10) / 10, maxImpact: Math.round(max * 10) / 10 };
   }, [data]);
 
   const config = {
@@ -306,9 +305,57 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
     );
   }
 
+  const avgImpact = data?.averageImpact ?? 0;
+  const trend = data?.trend ?? 'neutral';
+
   return (
-    <div className="rounded-lg overflow-hidden px-2.5 py-1.5 relative"
+    <div className="rounded-lg overflow-hidden px-2.5 py-1.5 relative group/vol cursor-pointer"
       style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+      {/* Tooltip */}
+      <div className={cn(
+        'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-44',
+        'opacity-0 group-hover/vol:opacity-100 pointer-events-none',
+        'transition-all duration-200 scale-90 group-hover/vol:scale-100'
+      )}>
+        <div className="px-3 py-2.5 rounded-lg text-xs bg-popover border border-border shadow-xl space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: config.color }}>
+              Volatilidad {config.label}
+            </span>
+            <Activity className="w-3 h-3" style={{ color: config.color }} />
+          </div>
+          <div className="space-y-1 text-[10px]">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Impacto prom.</span>
+              <span className="font-mono font-bold text-foreground">{volatility.avg}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Spread</span>
+              <span className="font-mono font-bold text-foreground">{volatility.spread}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Máx. impacto</span>
+              <span className="font-mono font-bold text-foreground">{volatility.maxImpact}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Promedio hist.</span>
+              <span className={cn('font-mono font-bold', avgImpact >= 0 ? 'text-green-400' : 'text-red-400')}>
+                {avgImpact >= 0 ? '+' : ''}{avgImpact.toFixed(1)}%
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Tendencia</span>
+              <span className={cn('font-bold capitalize',
+                trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-yellow-400'
+              )}>{trend === 'bullish' ? 'Alcista' : trend === 'bearish' ? 'Bajista' : 'Neutral'}</span>
+            </div>
+          </div>
+        </div>
+        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+          <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
+        </div>
+      </div>
+
       {/* Subtle glow for high volatility */}
       {volatility.level === 'high' && (
         <div className="absolute inset-0 rounded-lg opacity-[0.08]"
