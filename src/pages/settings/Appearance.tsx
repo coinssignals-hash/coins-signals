@@ -13,15 +13,18 @@ import type { Language } from '@/i18n/translations';
 export default function Appearance() {
   const [theme, setTheme] = useState('dark');
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('app-font-size') || '100');
-  const [highContrast, setHighContrast] = useState(() => localStorage.getItem('app-high-contrast') === 'true');
+  const [contrastLevel, setContrastLevel] = useState(() => localStorage.getItem('app-contrast-level') || 'normal');
   const [largeText, setLargeText] = useState(() => localStorage.getItem('app-large-text') === 'true');
   const [timezone, setTimezone] = useState('america-bogota');
   const { language, setLanguage, t } = useTranslation();
 
   useEffect(() => {
-    document.documentElement.classList.toggle('high-contrast', highContrast);
-    localStorage.setItem('app-high-contrast', String(highContrast));
-  }, [highContrast]);
+    document.documentElement.classList.remove('contrast-low', 'high-contrast', 'contrast-high');
+    if (contrastLevel === 'low') document.documentElement.classList.add('contrast-low');
+    else if (contrastLevel === 'medium') document.documentElement.classList.add('high-contrast');
+    else if (contrastLevel === 'high') document.documentElement.classList.add('contrast-high');
+    localStorage.setItem('app-contrast-level', contrastLevel);
+  }, [contrastLevel]);
 
   useEffect(() => {
     document.body.classList.toggle('large-text', largeText);
@@ -128,12 +131,34 @@ export default function Appearance() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Alto contraste</p>
-                  <p className="text-xs text-muted-foreground">Mejora la visibilidad de textos y bordes</p>
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Nivel de contraste</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { value: 'normal', label: 'Normal' },
+                    { value: 'low', label: 'Bajo' },
+                    { value: 'medium', label: 'Medio' },
+                    { value: 'high', label: 'Alto' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setContrastLevel(opt.value)}
+                      className={`rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
+                        contrastLevel === opt.value
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-secondary text-secondary-foreground border-border hover:bg-accent/20'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
-                <Switch checked={highContrast} onCheckedChange={setHighContrast} />
+                <p className="text-xs text-muted-foreground">
+                  {contrastLevel === 'normal' && 'Contraste estándar de la aplicación.'}
+                  {contrastLevel === 'low' && 'Contraste suave, ideal para ambientes oscuros.'}
+                  {contrastLevel === 'medium' && 'Mayor contraste en textos y bordes.'}
+                  {contrastLevel === 'high' && 'Máximo contraste para mejor legibilidad.'}
+                </p>
               </div>
               <div className="flex items-center justify-between">
                 <div>

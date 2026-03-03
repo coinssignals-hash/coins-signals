@@ -109,7 +109,17 @@
     --ring: 217 91% 60%;
   }
 
-  /* High contrast mode for accessibility */
+  /* Low contrast - softer for dark environments */
+  .contrast-low,
+  .contrast-low .dark {
+    --foreground: 210 20% 75%;
+    --card-foreground: 210 20% 75%;
+    --muted-foreground: 215 20% 50%;
+    --border: 220 30% 12%;
+    --primary: 217 80% 55%;
+  }
+
+  /* Medium contrast (same as previous high-contrast) */
   .high-contrast,
   .high-contrast .dark {
     --foreground: 210 20% 98%;
@@ -120,6 +130,21 @@
     --bullish: 142 80% 50%;
     --bearish: 0 80% 55%;
     --accent: 38 100% 60%;
+  }
+
+  /* High contrast - maximum legibility */
+  .contrast-high,
+  .contrast-high .dark {
+    --foreground: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --muted-foreground: 215 20% 85%;
+    --border: 220 30% 35%;
+    --primary: 217 100% 70%;
+    --bullish: 142 90% 55%;
+    --bearish: 0 90% 60%;
+    --accent: 38 100% 65%;
+    --card: 222 45% 5%;
+    --secondary: 218 40% 8%;
   }
 }
 
