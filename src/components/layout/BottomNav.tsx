@@ -34,8 +34,8 @@ export function BottomNav() {
   };
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-t border-primary/20">
-      <div className="flex items-center justify-around h-16">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-card/95 backdrop-blur-md border-t border-border safe-bottom">
+      <div className="flex items-center justify-around h-14">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -49,14 +49,14 @@ export function BottomNav() {
               onMouseEnter={onMouseEnter(item.href)}
               onTouchStart={onTouchStart(item.href)}
               className={cn(
-                'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors relative',
+                'flex flex-col items-center gap-0.5 min-w-[48px] min-h-[44px] justify-center px-2 py-1 text-[10px] font-medium transition-colors relative active:scale-95',
                 isActive ? 'text-primary' : 'text-muted-foreground'
               )}
             >
               <div className="relative">
                 <Icon className={cn('w-5 h-5', isActive && 'text-primary')} />
                 {showBadge && (
-                  <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
+                  <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
                     {badgeCount > 99 ? '99+' : badgeCount}
                   </span>
                 )}

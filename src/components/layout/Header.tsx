@@ -31,43 +31,43 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-[hsl(222,45%,7%)]">
-        {/* Top row: hamburger + text logo + circular logo + icons */}
-        <div className="flex items-center justify-between px-3 py-2">
-          {/* Left: hamburger + "Coins Signals" text */}
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground">
-              <Menu className="w-9 h-9" />
+      <header className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur-md safe-top">
+        {/* Top row: compact for mobile */}
+        <div className="flex items-center justify-between px-2 py-1.5">
+          {/* Left: hamburger + brand */}
+          <div className="flex items-center gap-1.5">
+            <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-9 w-9">
+              <Menu className="w-5 h-5" />
             </Button>
-            <span className="text-xl font-extrabold tracking-wider hidden xs:inline" style={{ textShadow: '0 0 12px hsl(217 91% 60% / 0.4)' }}>
-              <span className="bg-gradient-to-r from-[hsl(217,91%,65%)] to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
+            <span className="text-sm font-extrabold tracking-wider hidden xs:inline">
+              <span className="bg-gradient-to-r from-primary to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
               {' '}
-              <span className="bg-gradient-to-r from-[hsl(38,95%,55%)] to-[hsl(0,70%,50%)] bg-clip-text text-transparent">Signals</span>
+              <span className="bg-gradient-to-r from-accent to-destructive bg-clip-text text-transparent">Signals</span>
             </span>
           </div>
 
-          {/* Center: circular logo — bigger */}
+          {/* Center: logo — sized for mobile */}
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
-            <img src={logoImg} alt="Coins Signals" className="h-20 w-auto" />
+            <img src={logoImg} alt="Coins Signals" className="h-12 w-auto" />
           </Link>
 
-          {/* Right: search + bell + analysis icons — brighter */}
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-              <Search className="w-5 h-5" />
+          {/* Right: compact icons */}
+          <div className="flex items-center gap-0.5">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-9 w-9">
+              <Search className="w-4 h-4" />
             </Button>
             <NotificationToggle />
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-              <BarChart3 className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-9 w-9">
+              <BarChart3 className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        {/* Gradient divider line — gold to blue */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-[hsl(38,95%,50%)] via-[hsl(217,91%,60%)] to-[hsl(280,60%,50%)]" />
+        {/* Gradient divider */}
+        <div className="h-[1.5px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
-        {/* Navigation tabs row — bigger text */}
-        <nav className="flex items-center justify-center gap-2 px-3 py-2">
+        {/* Navigation tabs — scrollable on small screens */}
+        <nav className="flex items-center overflow-x-auto scrollbar-hide gap-1 px-2 py-1.5">
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             const showBadge = item.badgeType === 'news' && newsCount > 0 && !isActive;
@@ -79,7 +79,7 @@ export function Header() {
                 onMouseEnter={onMouseEnter(item.href)}
                 onTouchStart={onTouchStart(item.href)}
                 className={cn(
-                  'relative px-4 py-1.5 text-base font-semibold rounded-full transition-colors',
+                  'relative px-3 py-1.5 text-xs font-semibold rounded-full transition-colors whitespace-nowrap flex-shrink-0 active:scale-95',
                   isActive
                     ? 'text-primary-foreground'
                     : 'text-muted-foreground hover:text-foreground'
@@ -88,13 +88,13 @@ export function Header() {
                 {isActive && (
                   <motion.span
                     layoutId="activeTab"
-                    className="absolute inset-0 rounded-full bg-primary shadow-[0_0_14px_hsl(217_91%_60%/0.5)]"
+                    className="absolute inset-0 rounded-full bg-primary shadow-[0_0_10px_hsl(217_91%_60%/0.4)]"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
                 <span className="relative z-10">{item.label}</span>
                 {showBadge && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse z-20">
+                  <span className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse z-20">
                     {newsCount > 99 ? '99+' : newsCount}
                   </span>
                 )}
