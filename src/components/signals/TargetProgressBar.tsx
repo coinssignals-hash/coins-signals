@@ -71,7 +71,8 @@ export function TargetProgressBar({
 
   const toPos = (price: number) => {
     if (isBuy) return ((price - stopLoss) / totalRange) * 100;
-    return ((stopLoss - price) / totalRange) * 100;
+    // SELL: flip bar so TP is on left (0%), SL on right (100%)
+    return ((price - maxTP) / totalRange) * 100;
   };
 
   if (hasRange) {
@@ -87,7 +88,7 @@ export function TargetProgressBar({
   if (hasLivePrice) {
     position = Math.max(0, Math.min(100, toPos(displayPrice)));
 
-    isAboveEntry = position > entryPosition;
+    isAboveEntry = isBuy ? position > entryPosition : position < entryPosition;
     nearEntry = Math.abs(position - entryPosition) < 5;
     progressColor = nearEntry
       ? 'hsl(45, 80%, 55%)'
@@ -156,7 +157,7 @@ export function TargetProgressBar({
             )}
             style={{
               width: `${position}%`,
-              background: `linear-gradient(90deg, hsl(0, 70%, 55%) 0%, ${progressColor} 100%)`,
+              background: `linear-gradient(90deg, ${isBuy ? 'hsl(0, 70%, 55%)' : 'hsl(142, 70%, 45%)'} 0%, ${progressColor} 100%)`,
               ...(pulse ? { boxShadow: `0 0 12px ${pulseColor}` } : {}),
             }}
           />
@@ -169,7 +170,7 @@ export function TargetProgressBar({
           )}
         </div>
         <div className="flex justify-between mt-1">
-          <span className="text-[8px] text-rose-400/70 font-mono">SL</span>
+          <span className={cn("text-[8px] font-mono", isBuy ? "text-rose-400/70" : "text-emerald-400/70")}>{isBuy ? 'SL' : 'TP'}</span>
           <span className={cn(
             "text-[8px] font-bold font-mono transition-all duration-300",
             nearEntry ? "text-yellow-400" : isAboveEntry ? "text-emerald-400" : "text-rose-400",
@@ -177,7 +178,7 @@ export function TargetProgressBar({
           )}>
             {targetLabel} {targetPercent.toFixed(0)}% · {pipsFromEntry.toFixed(1)}p
           </span>
-          <span className="text-[8px] text-emerald-400/70 font-mono">TP</span>
+          <span className={cn("text-[8px] font-mono", isBuy ? "text-emerald-400/70" : "text-rose-400/70")}>{isBuy ? 'TP' : 'SL'}</span>
         </div>
       </div>
     );
@@ -187,9 +188,18 @@ export function TargetProgressBar({
     <div className={cn("mx-4 mb-3 mt-1 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
       {/* Labels */}
       <div className="flex items-center justify-between mb-1.5">
-        <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'sl' && "scale-110")}>
-          <ShieldAlert className={cn("w-3 h-3 text-rose-400 transition-all", pulse && currentZone === 'sl' && "animate-[icon-shake_0.5s_ease-out]")} />
-          <span className="text-[10px] text-rose-400 font-semibold">SL</span>
+        <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && (isBuy ? currentZone === 'sl' : currentZone === 'tp') && "scale-110")}>
+          {isBuy ? (
+            <>
+              <ShieldAlert className={cn("w-3 h-3 text-rose-400 transition-all", pulse && currentZone === 'sl' && "animate-[icon-shake_0.5s_ease-out]")} />
+              <span className="text-[10px] text-rose-400 font-semibold">SL</span>
+            </>
+          ) : (
+            <>
+              <Target className={cn("w-3 h-3 text-emerald-400 transition-all", pulse && currentZone === 'tp' && "animate-[icon-shake_0.5s_ease-out]")} />
+              <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
+            </>
+          )}
         </div>
         <div className={cn(
           "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all duration-500",
@@ -211,15 +221,27 @@ export function TargetProgressBar({
             : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)} pips`
           }
         </div>
-        <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'tp' && "scale-110")}>
-          <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
-          <Target className={cn("w-3 h-3 text-emerald-400 transition-all", pulse && currentZone === 'tp' && "animate-[icon-shake_0.5s_ease-out]")} />
+        <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && (isBuy ? currentZone === 'tp' : currentZone === 'sl') && "scale-110")}>
+          {isBuy ? (
+            <>
+              <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
+              <Target className={cn("w-3 h-3 text-emerald-400 transition-all", pulse && currentZone === 'tp' && "animate-[icon-shake_0.5s_ease-out]")} />
+            </>
+          ) : (
+            <>
+              <span className="text-[10px] text-rose-400 font-semibold">SL</span>
+              <ShieldAlert className={cn("w-3 h-3 text-rose-400 transition-all", pulse && currentZone === 'sl' && "animate-[icon-shake_0.5s_ease-out]")} />
+            </>
+          )}
         </div>
       </div>
 
       {/* Bar */}
       <div className="relative h-2 rounded-full"
-        style={{ background: 'linear-gradient(90deg, hsla(0, 70%, 25%, 0.4) 0%, hsla(210, 30%, 15%, 0.6) 50%, hsla(142, 70%, 25%, 0.4) 100%)' }}
+        style={{ background: isBuy
+          ? 'linear-gradient(90deg, hsla(0, 70%, 25%, 0.4) 0%, hsla(210, 30%, 15%, 0.6) 50%, hsla(142, 70%, 25%, 0.4) 100%)'
+          : 'linear-gradient(90deg, hsla(142, 70%, 25%, 0.4) 0%, hsla(210, 30%, 15%, 0.6) 50%, hsla(0, 70%, 25%, 0.4) 100%)'
+        }}
       >
         {/* Entry marker */}
         <div
@@ -285,7 +307,7 @@ export function TargetProgressBar({
           className="absolute top-0 bottom-0 left-0 rounded-full transition-all duration-700 ease-out opacity-60"
           style={{
             width: `${position}%`,
-            background: `linear-gradient(90deg, hsl(0, 70%, 45%) 0%, ${progressColor} 100%)`,
+            background: `linear-gradient(90deg, ${isBuy ? 'hsl(0, 70%, 45%)' : 'hsl(142, 70%, 45%)'} 0%, ${progressColor} 100%)`,
           }}
         />
         {/* Pulse ripple from dot position */}
