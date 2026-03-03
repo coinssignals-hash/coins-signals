@@ -454,7 +454,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           </div>
         }
 
-        <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
+        <div className="relative px-4 pt-0 pb-2 flex items-center justify-between -mt-1">
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative w-20 h-16 flex-shrink-0">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
