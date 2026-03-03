@@ -1,14 +1,14 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gauge, BarChart3, Activity, Waves, CandlestickChart as CandlestickIcon } from 'lucide-react';
+import { Gauge, BarChart3, Activity, Waves, CandlestickChart as CandlestickIcon, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   ResponsiveContainer, LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ComposedChart,
 } from 'recharts';
-import type { OHLCVCandle, TimeValue, MACDData, BandData, StochasticData } from '@/lib/indicators';
+import type { OHLCVCandle, TimeValue, MACDData, BandData, StochasticData, ADXData } from '@/lib/indicators';
 import {
-  calcRSI, calcMACD, calcSMA, calcEMA, calcBollingerBands, calcStochastic,
+  calcRSI, calcMACD, calcSMA, calcEMA, calcBollingerBands, calcStochastic, calcADX,
 } from '@/lib/indicators';
 
 interface Props {
@@ -282,6 +282,75 @@ function StochasticPanel({ candles }: { candles: OHLCVCandle[] }) {
   );
 }
 
+// ═══════════════ ADX TAB ═══════════════
+function ADXPanel({ candles }: { candles: OHLCVCandle[] }) {
+  const data = useMemo(() => {
+    const adx = calcADX(candles);
+    return adx.map(a => ({
+      time: formatTime(a.time),
+      adx: a.adx,
+      plusDI: a.plusDI,
+      minusDI: a.minusDI,
+    }));
+  }, [candles]);
+
+  const latest = data[data.length - 1];
+  const adxVal = latest?.adx ?? 0;
+  let signal: 'buy' | 'sell' | 'neutral' = 'neutral';
+  let label = 'Sin tendencia';
+  if (latest) {
+    if (adxVal >= 25 && latest.plusDI > latest.minusDI) { signal = 'buy'; label = 'Tendencia alcista'; }
+    else if (adxVal >= 25 && latest.minusDI > latest.plusDI) { signal = 'sell'; label = 'Tendencia bajista'; }
+    else if (adxVal < 20) { label = 'Sin tendencia'; }
+    else { label = 'Débil'; }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="space-x-3">
+          <span className="text-[10px] text-gray-500">ADX: <span className="text-cyan-400 font-mono">{latest?.adx?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-gray-500">+DI: <span className="text-green-400 font-mono">{latest?.plusDI?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-gray-500">-DI: <span className="text-red-400 font-mono">{latest?.minusDI?.toFixed(1) ?? '—'}</span></span>
+        </div>
+        <SignalBadge signal={signal} label={label} />
+      </div>
+      <div className="h-[180px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsla(210, 30%, 25%, 0.3)" />
+            <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#6b7280' }} interval="preserveStartEnd" />
+            <YAxis domain={[0, 'auto']} tick={{ fontSize: 9, fill: '#6b7280' }} />
+            <Tooltip
+              contentStyle={{ background: '#0d1829', border: '1px solid hsl(190, 50%, 20%)', borderRadius: 8, fontSize: 11 }}
+              labelStyle={{ color: '#9ca3af' }}
+            />
+            <ReferenceLine y={25} stroke="hsl(45, 70%, 50%)" strokeDasharray="4 4" strokeOpacity={0.6} />
+            <Line type="monotone" dataKey="adx" stroke="hsl(190, 90%, 50%)" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="plusDI" stroke="hsl(142, 70%, 50%)" strokeWidth={1.5} dot={false} />
+            <Line type="monotone" dataKey="minusDI" stroke="hsl(0, 70%, 55%)" strokeWidth={1.5} dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-[10px]">
+        <div className="bg-gray-500/5 border border-gray-500/10 rounded-lg p-2 text-center">
+          <div className="text-gray-400 font-bold">&lt; 20</div>
+          <div className="text-gray-500">Sin tendencia</div>
+        </div>
+        <div className="bg-cyan-500/5 border border-cyan-500/10 rounded-lg p-2 text-center">
+          <div className="text-cyan-400 font-bold">≥ 25</div>
+          <div className="text-gray-500">Tendencia fuerte</div>
+        </div>
+      </div>
+      <div className="text-[10px] text-gray-500">
+        <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1" /> ADX (14)
+        <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1 ml-3" /> +DI
+        <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1 ml-3" /> -DI
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════ MOVING AVERAGES TAB ═══════════════
 function MovingAveragesPanel({ candles }: { candles: OHLCVCandle[] }) {
   const data = useMemo(() => {
@@ -375,6 +444,7 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
     { value: 'macd', label: 'MACD', icon: BarChart3 },
     { value: 'bollinger', label: 'Bollinger', icon: Waves },
     { value: 'stochastic', label: 'Estoc.', icon: Activity },
+    { value: 'adx', label: 'ADX', icon: TrendingUp },
   ];
 
   return (
@@ -411,6 +481,9 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
           </TabsContent>
           <TabsContent value="stochastic" className="mt-0">
             <StochasticPanel candles={candles} />
+          </TabsContent>
+          <TabsContent value="adx" className="mt-0">
+            <ADXPanel candles={candles} />
           </TabsContent>
         </div>
       </Tabs>
