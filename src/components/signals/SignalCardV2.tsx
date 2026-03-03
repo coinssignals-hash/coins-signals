@@ -455,7 +455,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         }
 
         <div className="relative px-4 pt-1 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-8 relative z-10">
+          <div className="flex items-center gap-3 relative z-10">
             <div className="relative w-20 h-16 flex-shrink-0">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
                 <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
@@ -464,8 +464,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
               </div>
             </div>
-            <div className="flex flex-col gap-1 mt-2">
-              <span className="text-3xl font-extrabold text-white tracking-wide">{displayPair}</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xl font-bold text-white tracking-wide">{displayPair}</span>
               {/* Long/Short position badge */}
               <div
                 className={cn(
