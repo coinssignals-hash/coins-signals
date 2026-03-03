@@ -109,6 +109,17 @@ export interface MonetaryPolicyData {
   nextMeeting: string;
   expectations: string;
   endYearRate: string;
+  sources?: {
+    finnhub: number;
+    fmp: number;
+    marketaux: number;
+    alphaVantage: number;
+  };
+  recentHeadlines?: Array<{
+    title: string;
+    source: string;
+    date: string;
+  }>;
 }
 
 export interface RelevantNewsItem {
