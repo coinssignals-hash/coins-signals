@@ -53,9 +53,10 @@ const NewsDetail = () => {
   const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
 
   const recentNews = useMemo(() => {
-    if (news || !allNews) return [];
-    return allNews.slice(0, 6);
-  }, [news, allNews]);
+    if (!allNews) return [];
+    if (!news) return allNews.slice(0, 8);
+    return allNews.filter(item => item.id !== id).slice(0, 6);
+  }, [news, allNews, id]);
 
   const getBiasFromSentiment = (sentiment: string): 'bullish' | 'bearish' | 'neutral' => {
     if (sentiment === 'bullish') return 'bullish';
@@ -127,54 +128,35 @@ const NewsDetail = () => {
       <PageShell>
         <Header />
         <main className="py-4 px-4 space-y-6">
-          
+          <Link to="/news" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">{t('news_detail_back')}</span>
+          </Link>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          
-
-          {recentNews.length > 0 &&
-          <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
+          {recentNews.length > 0 ? (
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
                 {t('news_detail_recent')}
               </h3>
               <div className="space-y-3">
-                {recentNews.map((item) =>
-              <Link
-                key={item.id}
-                to={`/news/${item.id}`}
-                className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group">
-
-                    {item.image_url &&
-                <img
-                  src={item.image_url}
-                  alt=""
-                  className="w-16 h-16 rounded-md object-cover flex-shrink-0"
-                  onError={(e) => {e.currentTarget.style.display = 'none';}} />
-
-                }
+                {recentNews.map((item) => (
+                  <Link
+                    key={item.id}
+                    to={`/news/${item.id}`}
+                    className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group">
+                    {item.image_url && (
+                      <img
+                        src={item.image_url}
+                        alt=""
+                        className="w-20 h-20 rounded-md object-cover flex-shrink-0"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    )}
                     <div className="flex-1 min-w-0 space-y-1">
                       <h4 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{item.summary}</p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{item.source}</span>
                         <span>•</span>
@@ -184,38 +166,41 @@ const NewsDetail = () => {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {item.affected_currencies.slice(0, 3).map((currency) =>
-                    <span
-                      key={currency}
-                      className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-medium">
-
+                        {item.affected_currencies.slice(0, 3).map((currency) => (
+                          <span
+                            key={currency}
+                            className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-medium">
                             {currency}
                           </span>
-                    )}
+                        ))}
                       </div>
                     </div>
                   </Link>
-              )}
+                ))}
               </div>
             </div>
-          }
+          ) : isLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-24 w-full rounded-lg" />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 space-y-3">
+              <AlertCircle className="w-10 h-10 text-muted-foreground mx-auto" />
+              <p className="text-muted-foreground">{t('news_detail_not_found')}</p>
+            </div>
+          )}
 
-          <div className="flex flex-col gap-2">
-            <Link to="/news">
-              <Button className="w-full gap-2">
-                <ArrowLeft className="w-4 h-4" />
-                {t('news_detail_view_all')}
-              </Button>
-            </Link>
-            <Link to="/">
-              <Button variant="ghost" className="w-full text-muted-foreground">
-                {t('news_detail_go_home')}
-              </Button>
-            </Link>
-          </div>
+          <Link to="/news">
+            <Button className="w-full gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              {t('news_detail_view_all')}
+            </Button>
+          </Link>
         </main>
-      </PageShell>);
-
+      </PageShell>
+    );
   }
 
   return (
@@ -252,6 +237,10 @@ const NewsDetail = () => {
           </div>
           
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">{news.title}</h1>
+          
+          <div className="p-4 rounded-lg bg-card border border-border">
+            <p className="text-foreground leading-relaxed text-base">{news.summary}</p>
+          </div>
           
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             {news.source_logo &&
@@ -446,6 +435,44 @@ const NewsDetail = () => {
             {t('news_detail_view_full_article')} {news.source}
           </Button>
         </a>
+
+        {recentNews.length > 0 && (
+          <div className="space-y-4 pt-2">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              {t('news_detail_recent')}
+            </h3>
+            <div className="space-y-3">
+              {recentNews.map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/news/${item.id}`}
+                  className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group">
+                  {item.image_url && (
+                    <img
+                      src={item.image_url}
+                      alt=""
+                      className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                  )}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <h4 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h4>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{item.source}</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {item.time_ago}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </PageShell>);
 
