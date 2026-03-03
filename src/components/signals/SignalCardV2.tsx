@@ -386,11 +386,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol, chartInterval);
 
 
-  // Circle fill uses absolute score (0-100) for the arc
+  // Circle fill uses absolute percent distance (capped at 100 for arc)
   const circlePercent = useMemo(() => {
     if (!priceDiff.hasData) return 0;
-    return Math.abs(priceDiff.score);
-  }, [priceDiff.hasData, priceDiff.score]);
+    return Math.min(100, Math.abs(priceDiff.percent) * 20); // scale: 5% distance = full arc
+  }, [priceDiff.hasData, priceDiff.percent]);
 
   // Risk percent = SL distance / entry
   const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
@@ -515,8 +515,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <div className={cn(
                   "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
                   priceDiff.hasData ?
-                  priceDiff.isNeutral ? "bg-yellow-500" :
-                  priceDiff.isPositive ? "bg-green-500" : "bg-red-500" :
+                  priceDiff.percent >= 0 ? "bg-green-500" : "bg-red-500" :
                   "bg-cyan-500"
                 )} />
                 <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm rounded-full overflow-hidden">
@@ -531,9 +530,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <circle cx="18" cy="18" r="12" fill={`url(#centerGrad-${signal.id})`} fillOpacity="0.15" />
                   <defs>
                     <linearGradient id={`liveGrad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                      {priceDiff.hasData && priceDiff.isNeutral ?
-                      <><stop offset="0%" stopColor="hsl(45, 90%, 55%)" /><stop offset="100%" stopColor="hsl(35, 80%, 45%)" /></> :
-                      priceDiff.hasData && priceDiff.isPositive ?
+                      {priceDiff.hasData && priceDiff.percent >= 0 ?
                       <><stop offset="0%" stopColor="hsl(160, 80%, 55%)" /><stop offset="100%" stopColor="hsl(120, 70%, 40%)" /></> :
                       priceDiff.hasData ?
                       <><stop offset="0%" stopColor="hsl(10, 80%, 60%)" /><stop offset="100%" stopColor="hsl(350, 70%, 45%)" /></> :
@@ -541,9 +538,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       }
                     </linearGradient>
                     <radialGradient id={`centerGrad-${signal.id}`} cx="50%" cy="30%" r="70%">
-                      {priceDiff.hasData && priceDiff.isNeutral ?
-                      <stop offset="0%" stopColor="hsl(45, 80%, 50%)" /> :
-                      priceDiff.hasData && priceDiff.isPositive ?
+                      {priceDiff.hasData && priceDiff.percent >= 0 ?
                       <stop offset="0%" stopColor="hsl(142, 70%, 50%)" /> :
                       priceDiff.hasData ?
                       <stop offset="0%" stopColor="hsl(0, 70%, 50%)" /> :
@@ -556,38 +551,28 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className={cn(
                     "font-mono text-[13px] font-extrabold leading-none tracking-tight transition-colors duration-300",
-                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
+                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.percent >= 0 ? "text-green-400" : "text-red-400"
                   )}
                   style={{ textShadow: priceDiff.hasData ?
-                    priceDiff.isNeutral ? '0 0 8px hsl(45, 80%, 50%, 0.4)' :
-                    priceDiff.isPositive ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
+                    priceDiff.percent >= 0 ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
                     '0 0 8px hsl(0, 70%, 50%, 0.4)' : 'none'
                   }}>
-                    {priceDiff.hasData ? `${priceDiff.score >= 0 ? "+" : ""}${Math.round(priceDiff.score)}` : "—"}
+                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                   </span>
                   {priceDiff.hasData &&
-                  <>
                     <span className={cn(
                       "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
-                      priceDiff.isNeutral ? "text-yellow-400/70" : priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70"
+                      priceDiff.percent >= 0 ? "text-green-400/70" : "text-red-400/70"
                     )}>
-                      {priceDiff.isNeutral ? "ENTRY" : priceDiff.isPositive ? "TP" : "SL"}
+                      vs Entry
                     </span>
-                    <span className={cn(
-                      "text-[8px] font-semibold leading-none mt-0.5 opacity-60",
-                      priceDiff.isNeutral ? "text-yellow-300" : priceDiff.isPositive ? "text-green-300" : "text-red-300"
-                    )}>
-                      {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
-                    </span>
-                  </>
                   }
                 </div>
               </div>
               {/* Price value below the circle */}
               {priceDiff.hasData ?
               <p className={cn("text-[11px] text-center font-extrabold",
-
-              priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
+              priceDiff.percent >= 0 ? "text-green-400" : "text-red-400"
               )}>
                 {priceDiff.currentPrice.toFixed(3)}
               </p> :
