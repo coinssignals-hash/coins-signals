@@ -748,21 +748,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Candlestick Chart - Loaded via forex-data API */}
             <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
-              {/* S/R Toggle */}
-              <button
-              onClick={(e) => {e.stopPropagation();setShowSR(!showSR);}}
-              className={cn(
-                "absolute top-2 left-2 z-10 px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
-                showSR ?
-                "bg-slate-800/80 border border-slate-600/40" :
-                "bg-slate-800/70 text-slate-500 border border-slate-700/40"
-              )}
-              title="Mostrar/ocultar Soporte y Resistencia">
-              
-                <span className="text-red-400">Soporte</span>
-                <span className="text-slate-500">/</span>
-                <span className="text-green-400">Resistencia</span>
-              </button>
               <CandlestickChart
               data={forexChartData?.candles || []}
               resistance={forexChartData?.resistance ?? 0}
@@ -779,6 +764,23 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               title="Pantalla completa">
               
                 <Maximize2 className="w-4 h-4" />
+              </button>
+            </div>
+            {/* S/R Toggle - Below chart */}
+            <div className="mx-3 mb-3 flex justify-center">
+              <button
+              onClick={(e) => {e.stopPropagation();setShowSR(!showSR);}}
+              className={cn(
+                "px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
+                showSR ?
+                "bg-slate-800/80 border border-slate-600/40" :
+                "bg-slate-800/70 text-slate-500 border border-slate-700/40"
+              )}
+              title="Mostrar/ocultar Soporte y Resistencia">
+              
+                <span className="text-red-400">Soporte</span>
+                <span className="text-slate-500">/</span>
+                <span className="text-green-400">Resistencia</span>
               </button>
             </div>
 
