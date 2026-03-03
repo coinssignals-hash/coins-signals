@@ -17,6 +17,7 @@ import { AlertCircle } from 'lucide-react';
 import { useMemo, useEffect, useState } from 'react';
 import { EconomicCategory } from '@/types/news';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useNewsImage } from '@/hooks/useNewsImage';
 
 const NewsDetail = () => {
   const { id } = useParams<{id: string;}>();
@@ -49,6 +50,14 @@ const NewsDetail = () => {
       cacheNews(news);
     }
   }, [news, isFromCache, cacheNews]);
+
+  const { imageUrl: generatedImageUrl, isGenerating: isGeneratingImage, handleImageError } = useNewsImage(
+    id,
+    news?.title,
+    news?.category,
+    news?.sentiment,
+    news?.image_url
+  );
 
   const { data: aiAnalysis, isLoading: isLoadingAI, error: aiError } = useNewsAIAnalysis(news);
 
@@ -145,12 +154,16 @@ const NewsDetail = () => {
                     key={item.id}
                     to={`/news/${item.id}`}
                     className="flex gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-all group">
-                    {item.image_url && (
+                    {item.image_url ? (
                       <img
                         src={item.image_url}
                         alt=""
                         className="w-20 h-20 rounded-md object-cover flex-shrink-0"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    ) : (
+                      <div className="w-20 h-20 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="w-6 h-6 text-primary" />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0 space-y-1">
                       <h4 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
@@ -220,12 +233,26 @@ const NewsDetail = () => {
           <span className="text-sm">{t('news_detail_back')}</span>
         </Link>
         
-        {news.image_url &&
-        <div className="relative aspect-video rounded-xl overflow-hidden">
-            <img src={news.image_url} alt={news.title} className="w-full h-full object-cover" />
+        {(generatedImageUrl || isGeneratingImage) && (
+          <div className="relative aspect-video rounded-xl overflow-hidden">
+            {isGeneratingImage && !generatedImageUrl ? (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <div className="text-center space-y-2">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
+                  <p className="text-xs text-muted-foreground">{t('news_detail_generating_image') || 'Generando imagen...'}</p>
+                </div>
+              </div>
+            ) : (
+              <img
+                src={generatedImageUrl!}
+                alt={news.title}
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
           </div>
-        }
+        )}
         
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
@@ -238,8 +265,15 @@ const NewsDetail = () => {
           
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">{news.title}</h1>
           
-          <div className="p-4 rounded-lg bg-card border border-border">
+          <div className="p-5 rounded-lg bg-card border border-border space-y-4">
             <p className="text-foreground leading-relaxed text-base">{news.summary}</p>
+            {news.summary.length > 100 && (
+              <div className="pt-2 border-t border-border">
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {news.summary}
+                </p>
+              </div>
+            )}
           </div>
           
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
