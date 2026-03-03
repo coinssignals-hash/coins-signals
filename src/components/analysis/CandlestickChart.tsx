@@ -283,7 +283,7 @@ export function CandlestickChart({
   const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; crosshairX: number; relY: number } | null>(null);
   const [srVisible, setSrVisible] = useState(showSRProp ?? true);
-  const showSupportResistance = showSRProp !== undefined ? showSRProp : srVisible;
+  const showSupportResistance = srVisible;
 
   // Chart layout constants (must match buildChartSvg)
   const SVG_W = 1200, SVG_H = 700;
