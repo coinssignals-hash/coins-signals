@@ -183,14 +183,14 @@ export default function Signals() {
       <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
       {/* Signal Controls Bar */}
-      <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-4 py-2 flex items-center justify-between gap-2">
+      <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
             {/* View Mode Toggle */}
             <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 border border-border/50">
               <button
                 onClick={() => setViewMode('full')}
                 className={cn(
-                  "p-1.5 rounded-md transition-all",
+                  "p-2 rounded-md transition-all active:scale-95",
                   viewMode === 'full' 
                     ? "bg-muted text-foreground shadow-sm" 
                     : "text-muted-foreground hover:text-foreground"
@@ -202,7 +202,7 @@ export default function Signals() {
               <button
                 onClick={() => setViewMode('compact')}
                 className={cn(
-                  "p-1.5 rounded-md transition-all",
+                  "p-2 rounded-md transition-all active:scale-95",
                   viewMode === 'compact' 
                     ? "bg-muted text-foreground shadow-sm" 
                     : "text-muted-foreground hover:text-foreground"
@@ -218,7 +218,7 @@ export default function Signals() {
             <button
               onClick={() => setShowAICenter(!showAICenter)}
               className={cn(
-                "p-2 rounded-full transition-colors",
+                "p-2.5 rounded-full transition-colors active:scale-95",
                 showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
               )}
               title="Centro de Análisis IA"
@@ -230,7 +230,7 @@ export default function Signals() {
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
                 className={cn(
-                  "p-2 rounded-full transition-colors",
+                  "p-2.5 rounded-full transition-colors active:scale-95",
                   showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
                 )}
                 title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}
@@ -241,8 +241,8 @@ export default function Signals() {
           </div>
         </div>
 
-        {/* Day Tab Switcher */}
-        <div className="flex gap-1 px-3 py-2">
+        {/* Day Tab Switcher — edge-to-edge scroll on mobile */}
+        <div className="flex gap-1 px-3 py-2 overflow-x-auto scrollbar-hide -mx-0 sm:mx-0">
         {([
             { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
             { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
@@ -253,7 +253,7 @@ export default function Signals() {
               key={tab.key}
               onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
               className={cn(
-                "flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-1 justify-center",
+                "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
                 dayTab === tab.key && tab.key !== 'calendar'
                   ? tab.key === 'today'
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
@@ -266,7 +266,8 @@ export default function Signals() {
               )}
             >
               {tab.icon}
-              {tab.label}
+              <span className="hidden xs:inline sm:inline">{tab.label}</span>
+              <span className="xs:hidden sm:hidden">{tab.label.slice(0, 3)}</span>
               {tab.count > 0 && (
                 <span className="ml-0.5 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tab.count}</span>
               )}
@@ -278,7 +279,7 @@ export default function Signals() {
             <PopoverTrigger asChild>
               <button
                 className={cn(
-                  "flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all justify-center",
+                  "flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all justify-center active:scale-95",
                   dayTab === 'calendar'
                     ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
@@ -324,14 +325,14 @@ export default function Signals() {
       
 
       {/* Filters Bar */}
-      <div className="bg-slate-900/50 border-b border-slate-700/50 px-4 py-2">
-        <div className="flex items-center justify-between gap-3">
+      <div className="bg-slate-900/50 border-b border-slate-700/50 px-3 sm:px-4 py-2">
+        <div className="flex items-center justify-between gap-2">
           {/* Sort Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors text-sm">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors text-sm active:scale-95">
                 <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-slate-300">{currentSortOption?.label}</span>
+                <span className="text-slate-300 truncate max-w-[120px] sm:max-w-none">{currentSortOption?.label}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48 bg-slate-900 border-slate-700">
@@ -356,7 +357,7 @@ export default function Signals() {
             {showFavoritesOnly && (
               <div className="flex items-center gap-1 text-rose-400">
                 <Heart className="w-3 h-3 fill-current" />
-                <span>{t('signals_favorites')}</span>
+                <span className="hidden sm:inline">{t('signals_favorites')}</span>
               </div>
             )}
             <span>{filteredAndSortedSignals.length} {t('signals_count')}</span>
@@ -365,7 +366,7 @@ export default function Signals() {
       </div>
 
       {/* Signals List grouped by day */}
-      <main className="p-4 space-y-6">
+      <main className="p-3 sm:p-4 space-y-4 sm:space-y-6">
         {showAICenter ? (
           <AICenter onClose={() => setShowAICenter(false)} />
         ) : (
