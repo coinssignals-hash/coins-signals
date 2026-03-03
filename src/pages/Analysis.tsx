@@ -151,12 +151,12 @@ export default function Analysis() {
       <Header />
       <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
-      <main className="py-2 px-1.5 sm:px-4 space-y-2 sm:space-y-3">
+      <main className="py-2 px-1 sm:px-4 space-y-1.5 sm:space-y-3">
         {/* Terminal Header Bar */}
-        <div className="relative z-20 flex items-center gap-1.5 sm:gap-2 flex-wrap bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-lg sm:rounded-xl p-2">
-          <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[160px]" />
+        <div className="relative z-20 flex items-center gap-1 sm:gap-2 bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-lg sm:rounded-xl p-1.5 sm:p-2">
+          <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[120px]" />
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[80px] bg-[#0a1628] border-cyan-900/40 text-xs h-9">
+            <SelectTrigger className="w-[68px] sm:w-[80px] bg-[#0a1628] border-cyan-900/40 text-xs h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-[#0a1628] border-cyan-900/40">
@@ -168,19 +168,19 @@ export default function Analysis() {
           
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9">
+              <Button variant="outline" size="icon" className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-10 w-10 sm:h-9 sm:w-9 active:scale-95 transition-transform">
                 <Bell className="w-4 h-4 text-cyan-400" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[320px] sm:w-[380px] bg-[#0a1628] border-cyan-900/40">
+            <SheetContent className="w-[85vw] max-w-[380px] bg-[#0a1628] border-cyan-900/40">
               <SheetHeader><SheetTitle className="text-white">Alertas</SheetTitle></SheetHeader>
               <div className="mt-4"><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></div>
             </SheetContent>
           </Sheet>
-          <Button variant="outline" size="icon" onClick={() => navigate('/ai-center')} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9" title="Centro de Análisis IA">
+          <Button variant="outline" size="icon" onClick={() => navigate('/ai-center')} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-10 w-10 sm:h-9 sm:w-9 active:scale-95 transition-transform" title="Centro de Análisis IA">
             <Brain className="w-4 h-4 text-purple-400" />
           </Button>
-          <Button variant="outline" size="icon" onClick={refetch} disabled={loading} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-9 w-9">
+          <Button variant="outline" size="icon" onClick={refetch} disabled={loading} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-10 w-10 sm:h-9 sm:w-9 active:scale-95 transition-transform">
             <RefreshCw className={`w-4 h-4 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
@@ -251,43 +251,43 @@ export default function Analysis() {
 
 
         {/* Terminal Panel Tabs */}
-        <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-3">
-          <TabsList className="bg-[#0a1628]/90 border border-cyan-900/30 w-full h-11 p-1 gap-1">
-            <TabsTrigger value="tecnico" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.2)] rounded-lg transition-all">
-              <LineChart className="w-3.5 h-3.5" /> Técnico
+        <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-2 sm:space-y-3">
+          <TabsList className="bg-[#0a1628]/90 border border-cyan-900/30 w-full h-12 sm:h-11 p-1 gap-0.5 sm:gap-1">
+            <TabsTrigger value="tecnico" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
+              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Técnico</span><span className="xs:hidden">Téc.</span>
             </TabsTrigger>
-            <TabsTrigger value="fundamental" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 data-[state=active]:shadow-[0_0_12px_rgba(16,185,129,0.2)] rounded-lg transition-all">
-              <Landmark className="w-3.5 h-3.5" /> Fundamental
+            <TabsTrigger value="fundamental" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 data-[state=active]:shadow-[0_0_12px_rgba(16,185,129,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
+              <Landmark className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Fundamental</span><span className="xs:hidden">Fund.</span>
             </TabsTrigger>
-            <TabsTrigger value="sentimiento" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 data-[state=active]:shadow-[0_0_12px_rgba(168,85,247,0.2)] rounded-lg transition-all">
-              <Brain className="w-3.5 h-3.5" /> Sentimiento
+            <TabsTrigger value="sentimiento" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 data-[state=active]:shadow-[0_0_12px_rgba(168,85,247,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
+              <Brain className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Sentimiento</span><span className="xs:hidden">Sent.</span>
             </TabsTrigger>
-            <TabsTrigger value="estrategia" className="flex-1 text-xs gap-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 data-[state=active]:shadow-[0_0_12px_rgba(245,158,11,0.2)] rounded-lg transition-all">
-              <Target className="w-3.5 h-3.5" /> Estrategia
+            <TabsTrigger value="estrategia" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 data-[state=active]:shadow-[0_0_12px_rgba(245,158,11,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
+              <Target className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Estrategia</span><span className="xs:hidden">Estr.</span>
             </TabsTrigger>
           </TabsList>
 
           {/* ═══════════════════ TÉCNICO ═══════════════════ */}
           <TabsContent value="tecnico" className="space-y-3 mt-0">
             {/* Chart Sub-Tabs */}
-            <div className="flex gap-1 overflow-x-auto pb-1">
+            <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
               {chartTabs.map((tab) =>
               <button
                 key={tab.id}
                 onClick={() => setActiveChart(tab.id)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all active:scale-95 ${
                 activeChart === tab.id ?
                 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' :
                 'text-gray-500 hover:text-gray-300 border border-transparent'}`
                 }>
 
-                  <tab.icon className="w-3 h-3" />{tab.label}
+                  <tab.icon className="w-3.5 h-3.5 sm:w-3 sm:h-3" />{tab.label}
                 </button>
               )}
             </div>
 
             {/* Active Chart */}
-            <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl p-3">
+            <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl p-1.5 sm:p-3">
               {activeChart === 'price' &&
               <PriceChart pair={selectedPair} timeframe={selectedTimeframe}
               priceData={data?.priceData} smaData={data?.smaData} loading={loading} error={error}
