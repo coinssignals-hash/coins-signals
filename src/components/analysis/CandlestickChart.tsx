@@ -275,13 +275,15 @@ export function CandlestickChart({
   isRealtimeConnected = false,
   previousDayDate,
   alertState,
-  showSupportResistance = true,
+  showSupportResistance: showSRProp,
   ema20Data,
   ema50Data,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; crosshairX: number; relY: number } | null>(null);
+  const [srVisible, setSrVisible] = useState(showSRProp ?? true);
+  const showSupportResistance = showSRProp !== undefined ? showSRProp : srVisible;
 
   // Chart layout constants (must match buildChartSvg)
   const SVG_W = 1200, SVG_H = 700;
@@ -503,6 +505,23 @@ export function CandlestickChart({
               </div>
             </>
           )}
+          {/* S/R Toggle Button — next to Soporte */}
+          <button
+            type="button"
+            onClick={() => setSrVisible(v => !v)}
+            className={cn(
+              'flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold transition-colors border',
+              showSupportResistance
+                ? 'border-cyan-700/60 text-cyan-300'
+                : 'border-muted/30 text-muted-foreground'
+            )}
+            style={{ background: showSupportResistance ? 'rgba(0,180,160,0.12)' : 'rgba(255,255,255,0.04)' }}
+          >
+            <span style={{ color: '#00d4aa' }}>S</span>
+            <span className="text-muted-foreground">/</span>
+            <span style={{ color: '#ff4976' }}>R</span>
+            <span className="ml-0.5">{showSupportResistance ? 'ON' : 'OFF'}</span>
+          </button>
           {ema20Data && ema20Data.length > 0 && (
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-0.5 bg-blue-500" />
