@@ -3,12 +3,12 @@ import { TrendingUp, TrendingDown, Minus, Gauge, BarChart3, Waves, Percent } fro
 import { cn } from '@/lib/utils';
 
 interface IndicatorsSummaryChartProps {
-  priceData?: Array<{ time: string; price: number; high: number; low: number; open: number }>;
-  rsiData?: Array<{ time: string; rsi: number }>;
-  macdData?: Array<{ time: string; macd: number; signal: number; histogram: number }>;
+  priceData?: Array<{time: string;price: number;high: number;low: number;open: number;}>;
+  rsiData?: Array<{time: string;rsi: number;}>;
+  macdData?: Array<{time: string;macd: number;signal: number;histogram: number;}>;
   smaData?: {
-    sma20: Array<{ datetime: string; sma: number }>;
-    sma50: Array<{ datetime: string; sma: number }>;
+    sma20: Array<{datetime: string;sma: number;}>;
+    sma50: Array<{datetime: string;sma: number;}>;
   };
   loading?: boolean;
 }
@@ -42,10 +42,10 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
       const prev = macdData[macdData.length - 2];
       let sig: 'buy' | 'sell' | 'neutral' = 'neutral';
       let sc = 0;
-      if (prev.macd < prev.signal && latest.macd > latest.signal) { sig = 'buy'; sc = 80; }
-      else if (prev.macd > prev.signal && latest.macd < latest.signal) { sig = 'sell'; sc = -80; }
-      else if (latest.histogram > 0) { sig = 'buy'; sc = Math.min(50, latest.histogram * 1000); }
-      else { sig = 'sell'; sc = Math.max(-50, latest.histogram * 1000); }
+      if (prev.macd < prev.signal && latest.macd > latest.signal) {sig = 'buy';sc = 80;} else
+      if (prev.macd > prev.signal && latest.macd < latest.signal) {sig = 'sell';sc = -80;} else
+      if (latest.histogram > 0) {sig = 'buy';sc = Math.min(50, latest.histogram * 1000);} else
+      {sig = 'sell';sc = Math.max(-50, latest.histogram * 1000);}
       results.push({ name: 'MACD', signal: sig, value: (latest.histogram >= 0 ? '+' : '') + latest.histogram.toFixed(5), icon: BarChart3, weight: 1.2, score: sc });
     } else {
       results.push({ name: 'MACD', signal: 'neutral', value: '—', icon: BarChart3, weight: 1.2, score: 0 });
@@ -53,13 +53,13 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
 
     // Bollinger
     if (priceData && priceData.length >= 20) {
-      const prices = priceData.slice(-20).map(p => p.price);
+      const prices = priceData.slice(-20).map((p) => p.price);
       const sma = prices.reduce((a, b) => a + b, 0) / 20;
       const stdDev = Math.sqrt(prices.reduce((a, b) => a + Math.pow(b - sma, 2), 0) / 20);
       const upper = sma + 2 * stdDev;
       const lower = sma - 2 * stdDev;
       const current = priceData[priceData.length - 1].price;
-      const pB = ((current - lower) / (upper - lower)) * 100;
+      const pB = (current - lower) / (upper - lower) * 100;
       const sig = pB < 20 ? 'buy' : pB > 80 ? 'sell' : 'neutral';
       const sc = sig === 'buy' ? 80 - pB * 4 : sig === 'sell' ? -(pB - 80) * 4 - 20 : (50 - pB) * 0.6;
       results.push({ name: 'BB', signal: sig, value: `${pB.toFixed(0)}%B`, icon: Waves, weight: 0.8, score: sc });
@@ -70,10 +70,10 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
     // Stochastic
     if (priceData && priceData.length >= 14) {
       const slice = priceData.slice(-14);
-      const hh = Math.max(...slice.map(p => p.high));
-      const ll = Math.min(...slice.map(p => p.low));
+      const hh = Math.max(...slice.map((p) => p.high));
+      const ll = Math.min(...slice.map((p) => p.low));
       const current = priceData[priceData.length - 1].price;
-      const k = ((current - ll) / (hh - ll)) * 100;
+      const k = (current - ll) / (hh - ll) * 100;
       const sig = k < 20 ? 'buy' : k > 80 ? 'sell' : 'neutral';
       const sc = sig === 'buy' ? 80 - k * 4 : sig === 'sell' ? -(k - 80) * 4 - 20 : (50 - k) * 0.5;
       results.push({ name: 'STOCH', signal: sig, value: `${k.toFixed(0)}%K`, icon: Percent, weight: 0.9, score: sc });
@@ -91,10 +91,10 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
       const golden = sma20 > sma50;
       let sig: 'buy' | 'sell' | 'neutral' = 'neutral';
       let sc = 0;
-      if (above20 && above50 && golden) { sig = 'buy'; sc = 70; }
-      else if (!above20 && !above50 && !golden) { sig = 'sell'; sc = -70; }
-      else if (above20 || golden) { sig = 'buy'; sc = 30; }
-      else { sig = 'sell'; sc = -30; }
+      if (above20 && above50 && golden) {sig = 'buy';sc = 70;} else
+      if (!above20 && !above50 && !golden) {sig = 'sell';sc = -70;} else
+      if (above20 || golden) {sig = 'buy';sc = 30;} else
+      {sig = 'sell';sc = -30;}
       results.push({ name: 'SMA', signal: sig, value: golden ? 'Golden' : 'Death', icon: TrendingUp, weight: 1, score: sc });
     } else {
       results.push({ name: 'SMA', signal: 'neutral', value: '—', icon: TrendingUp, weight: 1, score: 0 });
@@ -110,8 +110,8 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
     return {
       overallScore: score,
       overallSignal: score > 25 ? 'buy' as const : score < -25 ? 'sell' as const : 'neutral' as const,
-      buyCount: indicators.filter(i => i.signal === 'buy').length,
-      sellCount: indicators.filter(i => i.signal === 'sell').length,
+      buyCount: indicators.filter((i) => i.signal === 'buy').length,
+      sellCount: indicators.filter((i) => i.signal === 'sell').length
     };
   }, [indicators]);
 
@@ -119,66 +119,66 @@ export function IndicatorsSummaryChart({ priceData, rsiData, macdData, smaData, 
     return (
       <div className="bg-[#0a1628] border border-cyan-900/20 rounded-xl p-3">
         <div className="animate-pulse flex gap-2">
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="flex-1 h-10 bg-cyan-900/10 rounded-lg" />
-          ))}
+          {[1, 2, 3, 4, 5].map((i) =>
+          <div key={i} className="flex-1 h-10 bg-cyan-900/10 rounded-lg" />
+          )}
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   const signalLabel = overallSignal === 'buy' ? 'COMPRA' : overallSignal === 'sell' ? 'VENTA' : 'NEUTRAL';
   const OverallIcon = overallSignal === 'buy' ? TrendingUp : overallSignal === 'sell' ? TrendingDown : Minus;
 
-  return (
-    <div className="bg-[#0a1628] border border-cyan-900/20 rounded-xl p-2.5">
-      {/* Single row: indicators + overall */}
-      <div className="flex items-stretch gap-1.5">
-        {indicators.map((ind) => {
-          const Icon = ind.icon;
-          return (
-            <div
-              key={ind.name}
-              className={cn(
-                "flex-1 flex items-center gap-1.5 px-2 py-1.5 rounded-lg border transition-colors min-w-0",
-                ind.signal === 'buy' && "border-green-500/15 bg-green-500/[0.04]",
-                ind.signal === 'sell' && "border-red-500/15 bg-red-500/[0.04]",
-                ind.signal === 'neutral' && "border-white/[0.06] bg-white/[0.02]",
-              )}
-            >
-              <Icon className={cn(
-                "w-3 h-3 shrink-0",
-                ind.signal === 'buy' && "text-green-500",
-                ind.signal === 'sell' && "text-red-500",
-                ind.signal === 'neutral' && "text-gray-500",
-              )} />
-              <div className="min-w-0">
-                <div className="text-[9px] text-gray-500 font-medium leading-none">{ind.name}</div>
-                <div className={cn(
-                  "text-[11px] font-bold font-mono leading-tight truncate",
-                  ind.signal === 'buy' && "text-green-400",
-                  ind.signal === 'sell' && "text-red-400",
-                  ind.signal === 'neutral' && "text-gray-400",
-                )}>{ind.value}</div>
-              </div>
-            </div>
-          );
-        })}
+  return;
 
-        {/* Overall signal */}
-        <div className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-bold shrink-0",
-          overallSignal === 'buy' && "border-green-500/25 bg-green-500/10 text-green-400",
-          overallSignal === 'sell' && "border-red-500/25 bg-red-500/10 text-red-400",
-          overallSignal === 'neutral' && "border-gray-500/25 bg-gray-500/10 text-gray-400",
-        )}>
-          <OverallIcon className="w-3.5 h-3.5" />
-          <div className="text-center">
-            <div className="text-[9px] leading-none opacity-60">{buyCount}B · {sellCount}S</div>
-            <div className="text-[11px] font-black leading-tight">{signalLabel}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
