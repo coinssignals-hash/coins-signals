@@ -24,12 +24,12 @@ export function PageShell({
 }: PageShellProps) {
   return (
     <PageTransition>
-    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
+    <div className="min-h-[100dvh] bg-background flex justify-center">
       <div className={cn(
-        'relative w-full min-h-screen shadow-2xl',
-        'bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)]',
+        'relative w-full min-h-[100dvh] shadow-2xl',
+        'bg-gradient-to-b from-card via-secondary to-card',
         maxWidth,
-        bottomPadding && 'pb-20',
+        bottomPadding && 'pb-16',
         className,
       )}>
         {children}
