@@ -3,6 +3,9 @@ import { TrendingUp, TrendingDown, Heart, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useRestPrice } from '@/hooks/useRestPrice';
+import { TargetProgressBar } from '@/components/signals/TargetProgressBar';
+import { useSignalAutoClose } from '@/hooks/useSignalAutoClose';
 
 interface SignalCardCompactProps {
   signal: TradingSignal;
@@ -45,7 +48,22 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
   const formattedTime = format(new Date(signal.datetime), "HH:mm", { locale: es });
   const [base, quote] = signal.currencyPair.split('/');
 
-  // Calculate pips
+  const isCompleted = signal.status === 'completed' || signal.status === 'cancelled';
+  const symbol = `${base}/${quote}`;
+  const { quote: liveQuote } = useRestPrice(symbol, isCompleted ? 0 : 30_000);
+  const currentPrice = liveQuote?.price ?? null;
+
+  // Auto-close signal when TP/SL is hit
+  useSignalAutoClose({
+    signalId: signal.id,
+    currencyPair: signal.currencyPair,
+    action: signal.action,
+    entryPrice: signal.entryPrice,
+    takeProfit: signal.takeProfit,
+    stopLoss: signal.stopLoss,
+    status: signal.status,
+    currentPrice,
+  });
   const pips = isBuy 
     ? Math.round((signal.takeProfit - signal.entryPrice) * 10000)
     : Math.round((signal.entryPrice - signal.takeProfit) * 10000);
@@ -196,6 +214,19 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
           <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
         </div>
       </div>
+
+      {/* Target Progress Bar */}
+      <TargetProgressBar
+        entryPrice={signal.entryPrice}
+        takeProfit={signal.takeProfit}
+        stopLoss={signal.stopLoss}
+        currentPrice={currentPrice}
+        action={signal.action}
+        isCompleted={isCompleted}
+        closedResult={signal.closedResult}
+        closedPrice={signal.closedPrice}
+        compact
+      />
 
       {/* Notes section */}
       {signal.notes && (
