@@ -50,6 +50,7 @@ const PageLoader = () => (
 
 import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -104,6 +105,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <OnboardingTour />
+            <PWAInstallBanner />
             <AnimatedRoutes />
           </BrowserRouter>
         </div>
