@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Send, Loader2,
   Eye, EyeOff, Download, Image, ShieldAlert,
-  Save, X, CheckCircle2, XCircle, FileText, List
+  Save, X, CheckCircle2, XCircle, FileText, List, Sparkles
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
@@ -56,6 +56,7 @@ export default function CreateSignal() {
   const [loading, setLoading] = useState(false);
   const [showCardPreview, setShowCardPreview] = useState(false);
   const [downloadingChart, setDownloadingChart] = useState(false);
+  const [generatingNotes, setGeneratingNotes] = useState(false);
 
   // Manage signals state
   const [activeSignals, setActiveSignals] = useState<Signal[]>([]);
@@ -294,6 +295,44 @@ export default function CreateSignal() {
     }
   }, [currencyPair, tp, sl]);
 
+  const handleGenerateNotes = async () => {
+    if (!isValid) {
+      toast.error('Completa los campos de precio antes de generar notas');
+      return;
+    }
+    setGeneratingNotes(true);
+    try {
+      const signal = {
+        currencyPair: currencyPair.toUpperCase(),
+        action,
+        trend,
+        entryPrice: entry,
+        takeProfit: tp,
+        takeProfit2: takeProfit2 ? parseFloat(takeProfit2) : undefined,
+        takeProfit3: takeProfit3 ? parseFloat(takeProfit3) : undefined,
+        stopLoss: sl,
+        probability: calculateProbability(),
+        support: support ? parseFloat(support) : undefined,
+        resistance: resistance ? parseFloat(resistance) : undefined,
+      };
+
+      const { data, error } = await supabase.functions.invoke('analyze-signal', {
+        body: { signal, mode: 'notes' },
+      });
+
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (data?.notes) {
+        setNotes(data.notes);
+        toast.success('Notas generadas con IA');
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al generar notas');
+    } finally {
+      setGeneratingNotes(false);
+    }
+  };
+
   if (roleLoading) {
     return (
       <PageShell showBottomNav={false}>
@@ -509,9 +548,24 @@ export default function CreateSignal() {
 
               {/* Notes */}
               <div>
-                <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                  <FileText className="w-3 h-3" /> Notas / Análisis
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                    <FileText className="w-3 h-3" /> Notas / Análisis
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleGenerateNotes}
+                    disabled={generatingNotes || !isValid}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary hover:bg-primary/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    {generatingNotes ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3 h-3" />
+                    )}
+                    {generatingNotes ? 'Generando...' : 'Generar con IA'}
+                  </button>
+                </div>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
