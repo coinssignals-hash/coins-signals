@@ -484,9 +484,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1 relative z-10">
+          <div className="flex items-center gap-2 relative z-10">
             <div className={cn(
-              "relative w-[72px] h-[72px] transition-transform",
+              "relative w-[72px] h-[72px] transition-transform flex-shrink-0",
               zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
             )}>
               {/* Outer glow ring - uses a blurred circle behind */}
@@ -590,33 +590,29 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 }
               </div>
             </div>
-            {/* Current price + status */}
-            <div className="text-center">
+            {/* Price + Live status beside circle */}
+            <div className="flex flex-col gap-0.5">
               {priceDiff.hasData ?
               <p className={cn(
-                "text-[10px] font-bold",
+                "text-[11px] font-bold",
                 priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
               )}>
                   {priceDiff.currentPrice.toFixed(3)}
                 </p> :
-
               <p className="text-[8px] text-cyan-300/50 leading-tight">{t('signal_entry')}</p>
               }
               <p className="text-[8px] text-cyan-300/50 leading-tight">vs {t('signal_entry')}</p>
-            </div>
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 mt-0.5">
                 <div
                   className={cn(
-                    "w-2.5 h-2.5 rounded-full",
+                    "w-2 h-2 rounded-full",
                     isConnected ?
                     "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]" :
                     priceLoading ?
                     "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse" :
                     "bg-red-400 shadow-[0_0_6px_hsl(0,80%,50%)]"
                   )} />
-
-                <span className="text-[10px] font-bold text-cyan-300 italic">
+                <span className="text-[9px] font-bold text-cyan-300 italic">
                   {isConnected ? "Live" : priceLoading ? t('common_loading') : "N/A"}
                 </span>
               </div>
