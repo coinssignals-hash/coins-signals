@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gauge, BarChart3, Activity, TrendingUp, Waves } from 'lucide-react';
+import { Gauge, BarChart3, Activity, Waves, CandlestickChart as CandlestickIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   ResponsiveContainer, LineChart, Line, AreaChart, Area, BarChart, Bar,
@@ -14,6 +14,7 @@ import {
 interface Props {
   candles: OHLCVCandle[];
   loading?: boolean;
+  priceChart?: ReactNode;
 }
 
 function formatTime(t: string) {
@@ -356,8 +357,8 @@ function MovingAveragesPanel({ candles }: { candles: OHLCVCandle[] }) {
 }
 
 // ═══════════════ MAIN COMPONENT ═══════════════
-export function TechnicalIndicatorsTabs({ candles, loading }: Props) {
-  const [activeTab, setActiveTab] = useState('rsi');
+export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props) {
+  const [activeTab, setActiveTab] = useState('precio');
 
   if (loading || !candles || candles.length === 0) {
     return (
@@ -369,11 +370,11 @@ export function TechnicalIndicatorsTabs({ candles, loading }: Props) {
   }
 
   const tabs = [
+    { value: 'precio', label: 'Precio', icon: CandlestickIcon },
     { value: 'rsi', label: 'RSI', icon: Gauge },
     { value: 'macd', label: 'MACD', icon: BarChart3 },
     { value: 'bollinger', label: 'Bollinger', icon: Waves },
-    { value: 'stochastic', label: 'Stoch', icon: Activity },
-    { value: 'ma', label: 'Medias', icon: TrendingUp },
+    { value: 'stochastic', label: 'Estoc.', icon: Activity },
   ];
 
   return (
@@ -395,6 +396,9 @@ export function TechnicalIndicatorsTabs({ candles, loading }: Props) {
           })}
         </TabsList>
 
+        <TabsContent value="precio" className="mt-0">
+          {priceChart}
+        </TabsContent>
         <div className="p-3">
           <TabsContent value="rsi" className="mt-0">
             <RSIPanel candles={candles} />
@@ -407,9 +411,6 @@ export function TechnicalIndicatorsTabs({ candles, loading }: Props) {
           </TabsContent>
           <TabsContent value="stochastic" className="mt-0">
             <StochasticPanel candles={candles} />
-          </TabsContent>
-          <TabsContent value="ma" className="mt-0">
-            <MovingAveragesPanel candles={candles} />
           </TabsContent>
         </div>
       </Tabs>

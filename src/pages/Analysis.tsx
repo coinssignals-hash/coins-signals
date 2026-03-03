@@ -236,24 +236,24 @@ export default function Analysis() {
 
           {/* ═══════════════════ TÉCNICO ═══════════════════ */}
           <TabsContent value="tecnico" className="space-y-3 mt-0">
-            {/* Candlestick Chart */}
-            <CandlestickChart
-              data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
-              support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
-              realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-              previousDayDate={previousDayData?.date} alertState={alertState} />
+            {/* Technical Indicators with sub-tabs (Precio, RSI, MACD, Bollinger, Estoc.) */}
+            <TechnicalIndicatorsTabs
+              candles={ohlcvCandles}
+              loading={previousDayLoading}
+              priceChart={
+                <CandlestickChart
+                  data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
+                  support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
+                  realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                  previousDayDate={previousDayData?.date} alertState={alertState} />
+              }
+            />
 
             {/* Technical Levels */}
             <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl overflow-hidden">
               <TechnicalLevels symbol={selectedPair} currentPrice={marketStats.currentPrice}
               realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
             </div>
-
-            {/* Technical Indicators with Tabs */}
-            <TechnicalIndicatorsTabs
-              candles={ohlcvCandles}
-              loading={previousDayLoading}
-            />
           </TabsContent>
 
           {/* ═══════════════════ FUNDAMENTAL ═══════════════════ */}
