@@ -8,7 +8,7 @@ import { CurrencyFilter } from '@/components/news/CurrencyFilter';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3, ChevronDown, Languages, Loader2 } from 'lucide-react';
+import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLink, Rss, ArrowUpDown, Zap, BarChart3, ChevronDown, Languages, Loader2, Activity } from 'lucide-react';
 import { useNewsTranslation } from '@/hooks/useNewsTranslation';
 import { NewsAISummaryInline } from '@/components/news/NewsAISummaryInline';
 import { formatDistanceToNow } from 'date-fns';
@@ -269,6 +269,74 @@ function getMarketSession(publishedAt: string): { label: string; color: string; 
   }
 }
 
+// Volatility indicator based on historical impact
+function VolatilityIndicator({ newsId, title, category, currencies }: {
+  newsId: string; title: string; category: EconomicCategory; currencies: Currency[];
+}) {
+  const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
+
+  const volatility = useMemo(() => {
+    if (!data?.monthlyData || data.monthlyData.length === 0) return { level: 'low' as const, value: 25, spread: 0 };
+    const impacts = data.monthlyData.map(d => Math.abs(d.impact));
+    const avg = impacts.reduce((a, b) => a + b, 0) / impacts.length;
+    const max = Math.max(...impacts);
+    const spread = max - Math.min(...impacts);
+    // Normalize to 0-100
+    const normalized = Math.min(100, Math.round((avg * 8) + (spread * 3)));
+    const level = normalized >= 70 ? 'high' as const : normalized >= 40 ? 'medium' as const : 'low' as const;
+    return { level, value: normalized, spread: Math.round(spread * 10) / 10 };
+  }, [data]);
+
+  const config = {
+    high: { color: 'hsl(0, 70%, 55%)', label: 'ALTA', glow: 'hsl(0, 70%, 55%)' },
+    medium: { color: 'hsl(35, 90%, 55%)', label: 'MEDIA', glow: 'hsl(35, 90%, 55%)' },
+    low: { color: 'hsl(160, 80%, 45%)', label: 'BAJA', glow: 'hsl(160, 80%, 45%)' },
+  }[volatility.level];
+
+  if (isLoading) {
+    return (
+      <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
+        style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Volatilidad</span>
+          <Loader2 className="w-3 h-3 text-cyan-400/50 animate-spin" />
+        </div>
+        <div className="h-1 rounded-full bg-slate-800/80 animate-pulse" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-lg overflow-hidden px-2.5 py-1.5 relative"
+      style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+      {/* Subtle glow for high volatility */}
+      {volatility.level === 'high' && (
+        <div className="absolute inset-0 rounded-lg opacity-[0.08]"
+          style={{ background: `radial-gradient(ellipse at center, ${config.glow}, transparent 70%)` }} />
+      )}
+      <div className="flex items-center justify-between mb-1 relative">
+        <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium flex items-center gap-1">
+          <Activity className="w-2.5 h-2.5" style={{ color: config.color }} />
+          Volatilidad
+        </span>
+        <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: config.color }}>
+          {config.label}
+        </span>
+      </div>
+      <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden relative">
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{
+            width: `${volatility.value}%`,
+            background: `linear-gradient(90deg, ${config.color}, ${config.glow})`,
+            boxShadow: volatility.level === 'high' ? `0 0 6px ${config.glow}` : 'none',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 // Modern news card component matching the signal card design
 function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;index: number;translateHook: ReturnType<typeof useNewsTranslation>;}) {
   const [expanded, setExpanded] = useState(false);
@@ -447,14 +515,14 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           )}
         </div>
 
-        {/* Relevance + Sentiment mini bars */}
-        <div className="grid grid-cols-2 gap-2">
+        {/* Relevance + Sentiment + Volatility indicators */}
+        <div className="grid grid-cols-3 gap-1.5">
           {/* Relevance */}
-          <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
+          <div className="rounded-lg overflow-hidden px-2 py-1.5"
             style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Relevancia</span>
-              <span className="font-mono text-[11px] font-bold text-white">{relevancePercent}%</span>
+              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Relev.</span>
+              <span className="font-mono text-[10px] font-bold text-white">{relevancePercent}%</span>
             </div>
             <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden">
               <div
@@ -469,10 +537,10 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
             </div>
           </div>
           {/* Sentiment quick */}
-          <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
+          <div className="rounded-lg overflow-hidden px-2 py-1.5"
             style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Sentimiento</span>
+              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Sent.</span>
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
             </div>
             <div className="flex gap-0.5 h-1 rounded-full overflow-hidden">
@@ -481,6 +549,13 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               <div className="rounded-r-full transition-all duration-500" style={{ width: `${sentimentBreakdown.neg}%`, background: 'hsl(0, 70%, 55%)' }} />
             </div>
           </div>
+          {/* Volatility */}
+          <VolatilityIndicator
+            newsId={news.id}
+            title={news.title}
+            category={news.category as EconomicCategory}
+            currencies={news.affected_currencies}
+          />
         </div>
       </div>
 
