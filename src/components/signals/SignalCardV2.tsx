@@ -769,7 +769,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <button
               onClick={(e) => {e.stopPropagation();setShowSR(!showSR);}}
               className={cn(
-                "absolute bottom-2 left-2 z-10 px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
+                "absolute top-2 left-2 z-10 px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all",
                 showSR ?
                 "bg-slate-800/80 border border-slate-600/40" :
                 "bg-slate-800/70 text-slate-500 border border-slate-700/40"
