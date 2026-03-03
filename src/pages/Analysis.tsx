@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageTransition } from '@/components/layout/PageTransition';
@@ -19,8 +19,7 @@ import { PricePrediction } from '@/components/analysis/PricePrediction';
 import { TechnicalLevels } from '@/components/analysis/TechnicalLevels';
 import { CandlestickChart } from '@/components/analysis/CandlestickChart';
 import { StrategicRecommendations } from '@/components/analysis/StrategicRecommendations';
-import { IndicatorsSummary } from '@/components/analysis/IndicatorsSummary';
-import { calcRSI, calcMACD, calcSMA, calcEMA } from '@/lib/indicators';
+import { TechnicalIndicatorsTabs } from '@/components/analysis/TechnicalIndicatorsTabs';
 import { MarketConclusions } from '@/components/analysis/MarketConclusions';
 import { MonetaryPolicies } from '@/components/analysis/MonetaryPolicies';
 import { MajorNews } from '@/components/analysis/MajorNews';
@@ -105,24 +104,11 @@ export default function Analysis() {
     { enabled: alertConfig.enableSupportResistance, proximityPercent: alertConfig.srProximityPercent, enableSound: alertConfig.srEnableSound }
   );
 
-  // Compute technical indicators from candle data
-  const indicatorData = useMemo(() => {
+  // Prepare candles with volume for indicator computation
+  const ohlcvCandles = useMemo(() => {
     const candles = previousDayData?.candles;
-    if (!candles || candles.length === 0) return null;
-    const ohlcv = candles.map(c => ({ ...c, volume: 0 }));
-    const rsi = calcRSI(ohlcv);
-    const macd = calcMACD(ohlcv);
-    const sma20 = calcSMA(ohlcv, 20);
-    const sma50 = calcSMA(ohlcv, 50);
-    return {
-      priceData: candles.map(c => ({ price: c.close, high: c.high, low: c.low })),
-      rsiData: rsi.map(r => ({ rsi: r.value })),
-      macdData: macd.map(m => ({ macd: m.macd, signal: m.signal, histogram: m.histogram })),
-      smaData: {
-        sma20: sma20.map(s => ({ sma: s.value })),
-        sma50: sma50.map(s => ({ sma: s.value })),
-      },
-    };
+    if (!candles || candles.length === 0) return [];
+    return candles.map(c => ({ ...c, volume: 0 }));
   }, [previousDayData?.candles]);
 
   return (
@@ -263,14 +249,9 @@ export default function Analysis() {
               realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
             </div>
 
-            {/* Indicators Summary */}
-            <IndicatorsSummary
-              pair={selectedPair}
-              timeframe={selectedTimeframe}
-              priceData={indicatorData?.priceData}
-              smaData={indicatorData?.smaData}
-              rsiData={indicatorData?.rsiData}
-              macdData={indicatorData?.macdData}
+            {/* Technical Indicators with Tabs */}
+            <TechnicalIndicatorsTabs
+              candles={ohlcvCandles}
               loading={previousDayLoading}
             />
           </TabsContent>
