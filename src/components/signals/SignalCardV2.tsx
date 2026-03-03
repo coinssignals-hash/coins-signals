@@ -1356,13 +1356,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* News Headlines */}
-                    {marketData.newsHeadlines && marketData.newsHeadlines.length > 0 &&
-                <div className="rounded-lg p-2 mb-2" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
-                        <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block mb-1">📰 Noticias Recientes</span>
-                        {marketData.newsHeadlines.slice(0, 3).map((h, i) =>
-                  <p key={i} className="text-[9px] text-slate-400 leading-tight mb-0.5 line-clamp-1">• {h}</p>
-                  )}
-                      </div>
+                    {marketData.newsHeadlines && marketData.newsHeadlines.length > 0
+
+
+
+
+
+
                 }
 
                     {/* Upcoming Economic Events */}
