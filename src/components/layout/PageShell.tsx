@@ -29,7 +29,7 @@ export function PageShell({
         'relative w-full min-h-[100dvh] shadow-2xl',
         'bg-gradient-to-b from-card via-secondary to-card',
         maxWidth,
-        bottomPadding && 'pb-16',
+        bottomPadding && 'pb-14',
         className,
       )}>
         {children}

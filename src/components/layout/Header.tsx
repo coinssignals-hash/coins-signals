@@ -33,13 +33,13 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur-md safe-top">
         {/* Top row: compact for mobile */}
-        <div className="flex items-center justify-between px-2 py-1.5">
+        <div className="flex items-center justify-between px-2 py-1">
           {/* Left: hamburger + brand */}
-          <div className="flex items-center gap-1.5">
-            <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-9 w-9">
-              <Menu className="w-5 h-5" />
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-8 w-8">
+              <Menu className="w-4.5 h-4.5" />
             </Button>
-            <span className="text-sm font-extrabold tracking-wider hidden xs:inline">
+            <span className="text-xs font-extrabold tracking-wider hidden xs:inline">
               <span className="bg-gradient-to-r from-primary to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
               {' '}
               <span className="bg-gradient-to-r from-accent to-destructive bg-clip-text text-transparent">Signals</span>
@@ -48,26 +48,26 @@ export function Header() {
 
           {/* Center: logo — sized for mobile */}
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
-            <img src={logoImg} alt="Coins Signals" className="h-12 w-auto" />
+            <img src={logoImg} alt="Coins Signals" className="h-9 w-auto" />
           </Link>
 
           {/* Right: compact icons */}
-          <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-9 w-9">
+          <div className="flex items-center gap-0">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
               <Search className="w-4 h-4" />
             </Button>
             <NotificationToggle />
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-9 w-9">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
               <BarChart3 className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
         {/* Gradient divider */}
-        <div className="h-[1.5px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
+        <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
         {/* Navigation tabs — scrollable on small screens */}
-        <nav className="flex items-center overflow-x-auto scrollbar-hide gap-1 px-2 py-1.5">
+        <nav className="flex items-center overflow-x-auto scrollbar-hide gap-0.5 px-1.5 py-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             const showBadge = item.badgeType === 'news' && newsCount > 0 && !isActive;
@@ -79,7 +79,7 @@ export function Header() {
                 onMouseEnter={onMouseEnter(item.href)}
                 onTouchStart={onTouchStart(item.href)}
                 className={cn(
-                  'relative px-3 py-1.5 text-xs font-semibold rounded-full transition-colors whitespace-nowrap flex-shrink-0 active:scale-95',
+                  'nav-link-compact relative px-2.5 py-1 text-[11px] font-semibold rounded-full transition-colors whitespace-nowrap flex-shrink-0 active:scale-95',
                   isActive
                     ? 'text-primary-foreground'
                     : 'text-muted-foreground hover:text-foreground'

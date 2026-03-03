@@ -61,7 +61,7 @@ export function PWAInstallBanner() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="fixed bottom-16 left-2 right-2 z-40 md:bottom-4 md:left-auto md:right-4 md:max-w-sm"
+          className="fixed bottom-14 left-2 right-2 z-40 md:bottom-4 md:left-auto md:right-4 md:max-w-sm"
         >
           <div className="bg-card border border-border rounded-xl p-3 shadow-lg shadow-background/50 flex items-center gap-3">
             <img src={logoImg} alt="" className="w-10 h-10 rounded-lg flex-shrink-0" />
