@@ -328,7 +328,7 @@ function buildChartSvg(
       const zoneH = Math.abs(entY - tpY);
       const zoneX = signalStartX;
       const zoneW = PRED_X2 - zoneX;
-      parts.push(`<rect x="${zoneX}" y="${zoneTop}" width="${zoneW}" height="${zoneH}" fill="rgba(34,197,94,0.07)" />`);
+      parts.push(`<rect x="${zoneX}" y="${zoneTop}" width="${zoneW}" height="${zoneH}" fill="rgba(34,197,94,0.07)" stroke="rgba(34,197,94,0.25)" stroke-width="0.8" rx="2" />`);
       // Stronger shade in prediction zone
       parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(34,197,94,0.06)" />`);
     }
@@ -339,7 +339,7 @@ function buildChartSvg(
       const zoneH = Math.abs(entY - slY);
       const zoneX = signalStartX;
       const zoneW = PRED_X2 - zoneX;
-      parts.push(`<rect x="${zoneX}" y="${zoneTop}" width="${zoneW}" height="${zoneH}" fill="rgba(239,68,68,0.07)" />`);
+      parts.push(`<rect x="${zoneX}" y="${zoneTop}" width="${zoneW}" height="${zoneH}" fill="rgba(239,68,68,0.07)" stroke="rgba(239,68,68,0.25)" stroke-width="0.8" rx="2" />`);
       // Stronger shade in prediction zone
       parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(239,68,68,0.06)" />`);
     }
