@@ -557,7 +557,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     priceDiff.percent >= 0 ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
                     '0 0 8px hsl(0, 70%, 50%, 0.4)' : 'none'
                   }}>
-                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${Math.round(priceDiff.percent)}%` : "—"}
+                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                   </span>
                   {priceDiff.hasData &&
                     <span className={cn(
