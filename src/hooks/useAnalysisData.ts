@@ -110,24 +110,25 @@ export function useMonetaryPolicies(symbol: string) {
   });
 }
 
-// Hook to fetch major news for analysis
-export function useMajorNews(symbol: string) {
+// Shared hook that fetches both major and relevant news in a single call
+export function useAnalysisNews(symbol: string) {
   return useQuery({
-    queryKey: analysisKeys.majorNews(symbol),
-    queryFn: () => analysisApi.getMajorNews(symbol),
+    queryKey: [...analysisKeys.all, 'analysisNews', symbol] as const,
+    queryFn: () => analysisApi.getAnalysisNews(symbol),
     enabled: !!symbol,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-// Hook to fetch relevant news with images
+// Convenience hooks that select from the shared query
+export function useMajorNews(symbol: string) {
+  const query = useAnalysisNews(symbol);
+  return { ...query, data: query.data?.majorNews };
+}
+
 export function useRelevantNews(symbol: string) {
-  return useQuery({
-    queryKey: analysisKeys.relevantNews(symbol),
-    queryFn: () => analysisApi.getRelevantNews(symbol),
-    enabled: !!symbol,
-    staleTime: 5 * 60 * 1000,
-  });
+  const query = useAnalysisNews(symbol);
+  return { ...query, data: query.data?.relevantNews };
 }
 
 // Hook to fetch economic events
