@@ -416,6 +416,123 @@ export function calcMACD(
     .filter(Boolean) as MACDData[];
 }
 
+export interface ADXData {
+  time: string;
+  adx: number;
+  plusDI: number;
+  minusDI: number;
+}
+
+export function calcADX(candles: OHLCVCandle[], period: number = 14): ADXData[] {
+  if (candles.length < period + 1) return [];
+
+  // Calculate +DM, -DM, TR
+  const plusDM: number[] = [];
+  const minusDM: number[] = [];
+  const tr: number[] = [];
+
+  for (let i = 1; i < candles.length; i++) {
+    const upMove = candles[i].high - candles[i - 1].high;
+    const downMove = candles[i - 1].low - candles[i].low;
+    plusDM.push(upMove > downMove && upMove > 0 ? upMove : 0);
+    minusDM.push(downMove > upMove && downMove > 0 ? downMove : 0);
+    tr.push(Math.max(
+      candles[i].high - candles[i].low,
+      Math.abs(candles[i].high - candles[i - 1].close),
+      Math.abs(candles[i].low - candles[i - 1].close)
+    ));
+  }
+
+  // Smoothed averages using Wilder's method
+  let smoothTR = tr.slice(0, period).reduce((a, b) => a + b, 0);
+  let smoothPlusDM = plusDM.slice(0, period).reduce((a, b) => a + b, 0);
+  let smoothMinusDM = minusDM.slice(0, period).reduce((a, b) => a + b, 0);
+
+  const dx: number[] = [];
+  const dxTimes: string[] = [];
+
+  for (let i = period; i < tr.length; i++) {
+    if (i === period) {
+      // first smoothed values already computed
+    } else {
+      smoothTR = smoothTR - smoothTR / period + tr[i];
+      smoothPlusDM = smoothPlusDM - smoothPlusDM / period + plusDM[i];
+      smoothMinusDM = smoothMinusDM - smoothMinusDM / period + minusDM[i];
+    }
+
+    const pdi = smoothTR === 0 ? 0 : (smoothPlusDM / smoothTR) * 100;
+    const mdi = smoothTR === 0 ? 0 : (smoothMinusDM / smoothTR) * 100;
+    const diSum = pdi + mdi;
+    const dxVal = diSum === 0 ? 0 : (Math.abs(pdi - mdi) / diSum) * 100;
+    dx.push(dxVal);
+    dxTimes.push(candles[i + 1].time); // +1 because tr starts at index 1
+  }
+
+  if (dx.length < period) return [];
+
+  // First ADX = SMA of first `period` DX values
+  let adx = dx.slice(0, period).reduce((a, b) => a + b, 0) / period;
+  const results: ADXData[] = [];
+
+  for (let i = period; i < dx.length; i++) {
+    if (i === period) {
+      // Use the initial ADX
+    } else {
+      adx = (adx * (period - 1) + dx[i]) / period;
+    }
+
+    const idx = i; // index into dxTimes
+    if (idx < dxTimes.length) {
+      // Recalculate +DI and -DI for this point
+      const trIdx = idx + period; // map back to tr array
+      let sTR = 0, sPDM = 0, sMDM = 0;
+      // Use simpler approach: just use the smoothed values at this point
+      results.push({
+        time: dxTimes[idx],
+        adx: +adx.toFixed(2),
+        plusDI: +(dx.length > 0 ? ((smoothPlusDM / smoothTR) * 100) : 0).toFixed(2),
+        minusDI: +(dx.length > 0 ? ((smoothMinusDM / smoothTR) * 100) : 0).toFixed(2),
+      });
+    }
+  }
+
+  // Better approach: recalculate with DI tracking
+  // Let me redo this properly
+  const results2: ADXData[] = [];
+  let sTR2 = tr.slice(0, period).reduce((a, b) => a + b, 0);
+  let sPDM2 = plusDM.slice(0, period).reduce((a, b) => a + b, 0);
+  let sMDM2 = minusDM.slice(0, period).reduce((a, b) => a + b, 0);
+  const allDI: { time: string; pdi: number; mdi: number; dx: number }[] = [];
+
+  for (let i = period; i < tr.length; i++) {
+    if (i > period) {
+      sTR2 = sTR2 - sTR2 / period + tr[i];
+      sPDM2 = sPDM2 - sPDM2 / period + plusDM[i];
+      sMDM2 = sMDM2 - sMDM2 / period + minusDM[i];
+    }
+    const pdi2 = sTR2 === 0 ? 0 : (sPDM2 / sTR2) * 100;
+    const mdi2 = sTR2 === 0 ? 0 : (sMDM2 / sTR2) * 100;
+    const diSum2 = pdi2 + mdi2;
+    const dxVal2 = diSum2 === 0 ? 0 : (Math.abs(pdi2 - mdi2) / diSum2) * 100;
+    allDI.push({ time: candles[i + 1]?.time ?? candles[candles.length - 1].time, pdi: pdi2, mdi: mdi2, dx: dxVal2 });
+  }
+
+  if (allDI.length < period) return [];
+  let adx2 = allDI.slice(0, period).reduce((a, b) => a + b.dx, 0) / period;
+
+  for (let i = period; i < allDI.length; i++) {
+    adx2 = (adx2 * (period - 1) + allDI[i].dx) / period;
+    results2.push({
+      time: allDI[i].time,
+      adx: +adx2.toFixed(2),
+      plusDI: +allDI[i].pdi.toFixed(2),
+      minusDI: +allDI[i].mdi.toFixed(2),
+    });
+  }
+
+  return results2;
+}
+
 export function calcStochastic(
   candles: OHLCVCandle[],
   kPeriod: number = 14,
