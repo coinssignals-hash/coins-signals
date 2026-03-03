@@ -7,8 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   RefreshCw, Bell, Clock, Zap, WifiOff,
-  Activity, TrendingUp, BarChart2, Waves, Percent,
-  LineChart, Landmark, Brain, Target, Gauge, Cloud } from
+  LineChart, Landmark, Brain, Target } from
 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DayTabs } from '@/components/analysis/DayTabs';
@@ -25,21 +24,12 @@ import { MonetaryPolicies } from '@/components/analysis/MonetaryPolicies';
 import { MajorNews } from '@/components/analysis/MajorNews';
 import { EconomicEvents } from '@/components/analysis/EconomicEvents';
 import { RelevantNews } from '@/components/analysis/RelevantNews';
-import { PriceChart } from '@/components/analysis/PriceChart';
-import { RSIChart } from '@/components/analysis/RSIChart';
-import { MACDChart } from '@/components/analysis/MACDChart';
-import { BollingerChart } from '@/components/analysis/BollingerChart';
-import { StochasticChart } from '@/components/analysis/StochasticChart';
-import { IndicatorsSummaryChart } from '@/components/analysis/IndicatorsSummaryChart';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
 import { useAlertConfig } from '@/hooks/useAlertConfig';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 
 import { RiskRewardCalculator } from '@/components/analysis/RiskRewardCalculator';
-import { ATRChart } from '@/components/analysis/ATRChart';
 import { HeroDashboard } from '@/components/analysis/HeroDashboard';
-import { ADXChart } from '@/components/analysis/ADXChart';
-import { IchimokuChart } from '@/components/analysis/IchimokuChart';
 import { useMarketData } from '@/hooks/useMarketData';
 import { usePreviousDayCandles } from '@/hooks/usePreviousDayCandles';
 import { useIndicatorAlerts } from '@/hooks/useIndicatorAlerts';
@@ -59,7 +49,6 @@ const timeframes = [
 { value: '1week', label: '1W' }];
 
 
-
 function formatSymbolForPolygon(symbol: string): string {
   const [base, quote] = symbol.split('/');
   const cryptos = ['BTC', 'ETH', 'XRP', 'SOL', 'BNB', 'ADA', 'DOGE', 'DOT', 'AVAX', 'MATIC', 'LINK', 'UNI', 'ATOM', 'LTC', 'XLM', 'SHIB', 'PEPE'];
@@ -67,24 +56,12 @@ function formatSymbolForPolygon(symbol: string): string {
   return `C:${base}${quote || 'USD'}`;
 }
 
-const chartTabs = [
-{ id: 'price', icon: Activity, label: 'Precio' },
-{ id: 'rsi', icon: TrendingUp, label: 'RSI' },
-{ id: 'macd', icon: BarChart2, label: 'MACD' },
-{ id: 'bollinger', icon: Waves, label: 'Bollinger' },
-{ id: 'stochastic', icon: Percent, label: 'Estoc.' },
-{ id: 'atr', icon: Activity, label: 'ATR' },
-{ id: 'adx', icon: Gauge, label: 'ADX' },
-{ id: 'ichimoku', icon: Cloud, label: 'Ichimoku' }];
-
-
 export default function Analysis() {
   const navigate = useNavigate();
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [activePanel, setActivePanel] = useState('tecnico');
-  const [activeChart, setActiveChart] = useState('');
   const { config: alertConfig, updateConfig: setAlertConfig } = useAlertConfig();
 
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
@@ -251,86 +228,12 @@ export default function Analysis() {
 
           {/* ═══════════════════ TÉCNICO ═══════════════════ */}
           <TabsContent value="tecnico" className="space-y-3 mt-0">
-            {/* Indicator Sub-Tabs — above the chart */}
-            <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-              {chartTabs.map((tab) =>
-              <button
-                key={tab.id}
-                onClick={() => setActiveChart(activeChart === tab.id ? '' : tab.id)}
-                className={`flex items-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all active:scale-95 ${
-                activeChart === tab.id ?
-                'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' :
-                'text-gray-500 hover:text-gray-300 border border-transparent'}`
-                }>
-                  <tab.icon className="w-3.5 h-3.5 sm:w-3 sm:h-3" />{tab.label}
-                </button>
-              )}
-            </div>
-
-            {/* Chart container with indicator overlay on top */}
-            <div className="relative">
-              {/* Candlestick Chart — always visible */}
-              <CandlestickChart
-                data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
-                support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
-                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-                previousDayDate={previousDayData?.date} alertState={alertState} />
-
-              {/* Indicator Overlay — on top of the candlestick chart */}
-              {activeChart && activeChart !== '' && (
-                <div className="absolute inset-0 z-20 bg-[#060e1c]/92 backdrop-blur-sm rounded-xl p-1.5 sm:p-3 flex flex-col overflow-hidden">
-                  {/* Close button */}
-                  <button
-                    onClick={() => setActiveChart('')}
-                    className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-gray-800/90 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors text-xs border border-cyan-900/30 shadow-lg"
-                  >
-                    ✕
-                  </button>
-                  <div className="flex-1 min-h-0">
-                  {activeChart === 'price' &&
-                  <PriceChart pair={selectedPair} timeframe={selectedTimeframe}
-                  priceData={data?.priceData} smaData={data?.smaData} loading={loading} error={error}
-                  realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-                  patternAlertConfig={{ enabled: alertConfig.enablePatternAlerts, types: alertConfig.patternAlertTypes, enableSound: alertConfig.patternEnableSound }} />
-                  }
-                  {activeChart === 'rsi' &&
-                  <RSIChart pair={selectedPair} timeframe={selectedTimeframe} rsiData={data?.rsiData} loading={loading} error={error} />
-                  }
-                  {activeChart === 'macd' &&
-                  <MACDChart pair={selectedPair} timeframe={selectedTimeframe} macdData={data?.macdData} loading={loading} error={error} />
-                  }
-                  {activeChart === 'bollinger' &&
-                  <BollingerChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                  apiBBands={data?.bbandsData}
-                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                  }
-                  {activeChart === 'stochastic' &&
-                  <StochasticChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                  apiStochastic={data?.stochasticData}
-                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                  }
-                  {activeChart === 'atr' &&
-                  <ATRChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                  apiATR={data?.atrData}
-                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                  }
-                  {activeChart === 'adx' &&
-                  <ADXChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                  apiADX={data?.adxData}
-                  loading={loading} error={error} />
-                  }
-                  {activeChart === 'ichimoku' &&
-                  <IchimokuChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                  apiIchimoku={data?.ichimokuData}
-                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                  }
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Indicators Summary */}
-            <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
+            {/* Candlestick Chart */}
+            <CandlestickChart
+              data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
+              support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
+              realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+              previousDayDate={previousDayData?.date} alertState={alertState} />
 
             {/* Technical Levels */}
             <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl overflow-hidden">
@@ -362,9 +265,7 @@ export default function Analysis() {
                 symbol={selectedPair} highPrice={marketStats.high} lowPrice={marketStats.low}
                 dailyChange={marketStats.changePercent} pipsChange={marketStats.change}
                 realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-
             </div>
-            <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
           </TabsContent>
 
           {/* ═══════════════════ ESTRATEGIA ═══════════════════ */}
