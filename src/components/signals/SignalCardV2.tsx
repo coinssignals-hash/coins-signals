@@ -825,10 +825,24 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                               </div>
                               <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
                               <div className="flex items-center gap-2">
-                                <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                                  <div className="h-full rounded-full transition-all" style={{ width: `${probability}%`, background: probability >= 70 ? 'hsl(135,70%,50%)' : probability >= 50 ? 'hsl(45,80%,55%)' : 'hsl(0,70%,55%)' }} />
+                                <div className="flex-1 h-2 rounded-full bg-slate-800/80 overflow-hidden relative">
+                                  <div className="absolute inset-0 rounded-full" style={{
+                                    background: 'repeating-linear-gradient(90deg, transparent, transparent 9%, hsla(225,15%,20%,0.4) 9%, hsla(225,15%,20%,0.4) 10%)'
+                                  }} />
+                                  <div className="h-full rounded-full transition-all duration-700 ease-out relative z-10" style={{
+                                    width: `${probability}%`,
+                                    background: probability >= 70
+                                      ? 'linear-gradient(90deg, hsl(160,80%,45%), hsl(135,70%,50%))'
+                                      : probability >= 50
+                                        ? 'linear-gradient(90deg, hsl(45,80%,50%), hsl(38,95%,55%))'
+                                        : 'linear-gradient(90deg, hsl(10,80%,50%), hsl(0,70%,55%))',
+                                    boxShadow: `0 0 8px ${probability >= 70 ? 'hsl(142,70%,45%,0.4)' : probability >= 50 ? 'hsl(45,80%,55%,0.3)' : 'hsl(0,70%,55%,0.3)'}`
+                                  }} />
                                 </div>
-                                <span className="text-xs font-bold text-white">{probability}%</span>
+                                <span className={cn(
+                                  "text-xs font-extrabold font-mono tabular-nums",
+                                  probability >= 70 ? "text-emerald-400" : probability >= 50 ? "text-yellow-400" : "text-rose-400"
+                                )}>{probability}%</span>
                               </div>
                             </div>
                           </CollapsibleContent>

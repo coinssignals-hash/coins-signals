@@ -156,34 +156,51 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
             <div className="text-[9px] text-slate-500 uppercase tabular-nums">Pips</div>
           </div>
 
-          {/* Probability Circle (mini) */}
-          <div className="relative w-10 h-10">
-            <svg className="w-10 h-10 -rotate-90">
+          {/* Probability Circle (enhanced) */}
+          <div className="relative w-11 h-11 flex-shrink-0">
+            {/* Outer glow */}
+            <div className={cn(
+              "absolute -inset-1 rounded-full opacity-25 blur-md",
+              isBuy ? "bg-emerald-500" : "bg-rose-500"
+            )} />
+            <svg viewBox="0 0 44 44" className="w-full h-full -rotate-90 relative z-10">
+              <defs>
+                <linearGradient id={`prob-grad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  {isBuy ? (
+                    <><stop offset="0%" stopColor="hsl(160, 80%, 55%)" /><stop offset="100%" stopColor="hsl(120, 70%, 40%)" /></>
+                  ) : (
+                    <><stop offset="0%" stopColor="hsl(10, 80%, 60%)" /><stop offset="100%" stopColor="hsl(350, 70%, 45%)" /></>
+                  )}
+                </linearGradient>
+              </defs>
+              {/* Track */}
+              <circle cx="22" cy="22" r="18" stroke="hsl(225, 20%, 12%)" strokeWidth="3.5" fill="none" />
+              {/* Tick marks */}
+              <circle cx="22" cy="22" r="18" stroke="hsl(225, 15%, 20%)" strokeWidth="1" fill="none" strokeDasharray="1.2 3.9" opacity="0.5" />
+              {/* Progress arc */}
               <circle
-                cx="20"
-                cy="20"
-                r="16"
-                stroke="rgba(100, 116, 139, 0.2)"
-                strokeWidth="3"
+                cx="22" cy="22" r="18"
+                stroke={`url(#prob-grad-${signal.id})`}
+                strokeWidth="3.5"
                 fill="none"
-              />
-              <circle
-                cx="20"
-                cy="20"
-                r="16"
-                stroke={isBuy ? "#10b981" : "#f43f5e"}
-                strokeWidth="3"
-                fill="none"
-                strokeDasharray={`${(signal.probability / 100) * 100.5} 100.5`}
                 strokeLinecap="round"
+                strokeDasharray={`${(signal.probability / 100) * 113.1} 113.1`}
+                className="transition-all duration-700 ease-out"
+                style={{ filter: 'drop-shadow(0 0 3px currentColor)' }}
               />
+              {/* Center fill */}
+              <circle cx="22" cy="22" r="14" fill="hsl(225, 25%, 8%)" fillOpacity="0.85" />
             </svg>
-            <span className={cn(
-              "absolute inset-0 flex items-center justify-center text-[10px] font-bold",
-              isBuy ? "text-emerald-400" : "text-rose-400"
-            )}>
-              {signal.probability}%
-            </span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+              <span className={cn(
+                "text-[11px] font-extrabold font-mono leading-none",
+                isBuy ? "text-emerald-400" : "text-rose-400"
+              )}
+                style={{ textShadow: `0 0 6px ${isBuy ? 'hsl(142, 70%, 45%, 0.4)' : 'hsl(0, 70%, 50%, 0.4)'}` }}
+              >
+                {signal.probability}%
+              </span>
+            </div>
           </div>
         </div>
 
