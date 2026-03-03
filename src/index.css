@@ -25,7 +25,7 @@
     --secondary-foreground: 210 20% 90%;
 
     --muted: 220 35% 10%;
-    --muted-foreground: 215 20% 55%;
+    --muted-foreground: 215 20% 65%;
 
     --accent: 38 95% 55%;
     --accent-foreground: 225 25% 6%;
@@ -99,7 +99,7 @@
     --secondary: 218 40% 12%;
     --secondary-foreground: 210 20% 90%;
     --muted: 220 35% 10%;
-    --muted-foreground: 215 20% 55%;
+    --muted-foreground: 215 20% 65%;
     --accent: 38 95% 55%;
     --accent-foreground: 225 25% 6%;
     --destructive: 0 70% 50%;
@@ -107,6 +107,19 @@
     --border: 220 30% 15%;
     --input: 220 35% 12%;
     --ring: 217 91% 60%;
+  }
+
+  /* High contrast mode for accessibility */
+  .high-contrast,
+  .high-contrast .dark {
+    --foreground: 210 20% 98%;
+    --card-foreground: 210 20% 98%;
+    --muted-foreground: 215 20% 75%;
+    --border: 220 30% 25%;
+    --primary: 217 91% 65%;
+    --bullish: 142 80% 50%;
+    --bearish: 0 80% 55%;
+    --accent: 38 100% 60%;
   }
 }
 
@@ -127,7 +140,24 @@
     overscroll-behavior-y: contain;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    font-size: 15px;
+    line-height: 1.6;
   }
+
+  /* Larger font size mode */
+  body.large-text {
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  body.large-text h1 { font-size: 1.75rem; }
+  body.large-text h2 { font-size: 1.5rem; }
+  body.large-text h3 { font-size: 1.25rem; }
+  body.large-text .text-xs { font-size: 0.8rem; }
+  body.large-text .text-sm { font-size: 0.9rem; }
+  body.large-text .text-\\[9px\\],
+  body.large-text .text-\\[10px\\],
+  body.large-text .text-\\[11px\\] { font-size: 0.75rem; }
 
   /* Safe area support for notched devices */
   .safe-top {
@@ -422,8 +452,12 @@
 
   /* Optimize font rendering */
   body {
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  body.large-text {
+    font-size: 17px;
   }
 
   /* Better touch targets - only for interactive elements not inside tight layouts */
