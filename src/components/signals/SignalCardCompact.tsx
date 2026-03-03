@@ -102,10 +102,20 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
         <div className="flex-1 min-w-[100px] hidden sm:block">
           <div className="flex items-center gap-3">
             <div>
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">TP</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider">TP1</div>
               <div className="text-emerald-400 font-mono text-xs tabular-nums">
                 {signal.takeProfit}
               </div>
+              {signal.takeProfit2 && (
+                <div className="text-emerald-400/60 font-mono text-[10px] tabular-nums">
+                  TP2: {signal.takeProfit2}
+                </div>
+              )}
+              {signal.takeProfit3 && (
+                <div className="text-emerald-400/40 font-mono text-[10px] tabular-nums">
+                  TP3: {signal.takeProfit3}
+                </div>
+              )}
             </div>
             <div>
               <div className="text-[10px] text-slate-500 uppercase tracking-wider">SL</div>
@@ -186,6 +196,15 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
           <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
         </div>
       </div>
+
+      {/* Notes section */}
+      {signal.notes && (
+        <div className="px-5 pb-3 -mt-1">
+          <p className="text-[10px] text-slate-400 leading-relaxed bg-slate-800/50 rounded-lg px-3 py-2 border border-slate-700/30 italic line-clamp-2">
+            📝 {signal.notes}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
