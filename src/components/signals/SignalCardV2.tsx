@@ -37,6 +37,7 @@ import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalMarketData } from "@/hooks/useSignalMarketData";
 import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
+import { TargetProgressBar } from "@/components/signals/TargetProgressBar";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -665,6 +666,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             background:
             "linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)"
           }} />
+
+        {/* Target Progress Bar — SL ← Price → TP */}
+        <TargetProgressBar
+          entryPrice={entryPrice}
+          takeProfit={takeProfit}
+          stopLoss={stopLoss}
+          currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
+          action={action}
+          isCompleted={isCompleted}
+          closedResult={signal?.closedResult}
+          closedPrice={signal?.closedPrice}
+        />
 
 
         {/* Middle section - 3 badges */}
