@@ -426,15 +426,30 @@
     line-height: 1.5;
   }
 
-  /* Better touch targets */
-  button, a, [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
+  /* Better touch targets - only for interactive elements not inside tight layouts */
+  button:not(.tab-compact):not([data-radix-collection-item]),
+  a:not(.nav-link-compact):not([data-radix-collection-item]),
+  [role="button"]:not(.tab-compact):not([data-radix-collection-item]) {
+    min-height: 40px;
+    min-width: 40px;
   }
 
   /* Compact icon-only buttons */
   button:has(> svg:only-child) {
     min-height: 36px;
     min-width: 36px;
+  }
+
+  /* Ensure text doesn't overflow */
+  h1, h2, h3 {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Extra small device adjustments (< 375px) */
+@media (max-width: 374px) {
+  body {
+    font-size: 13px;
   }
 }

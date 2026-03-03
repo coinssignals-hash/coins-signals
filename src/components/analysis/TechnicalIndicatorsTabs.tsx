@@ -451,17 +451,17 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
   return (
     <div className="bg-[#0a1628] border border-cyan-900/20 rounded-xl overflow-hidden">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-[#060e1a] border-b border-cyan-900/20 w-full h-10 p-0.5 gap-0 rounded-none">
+        <TabsList className="bg-[#060e1a] border-b border-cyan-900/20 w-full h-auto p-0.5 gap-0 rounded-none overflow-x-auto scrollbar-hide flex-nowrap">
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="flex-1 text-[10px] gap-1 rounded-lg data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-400 py-2 transition-all"
+                className="tab-compact flex-1 min-w-0 text-[9px] xs:text-[10px] gap-0.5 rounded-lg data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-400 py-1.5 px-1 xs:px-1.5 transition-all"
               >
-                <Icon className="w-3 h-3" />
-                {tab.label}
+                <Icon className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">{tab.label}</span>
               </TabsTrigger>
             );
           })}
