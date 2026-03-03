@@ -679,6 +679,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         <TargetProgressBar
           entryPrice={entryPrice}
           takeProfit={takeProfit}
+          takeProfit2={signal?.takeProfit2}
+          takeProfit3={signal?.takeProfit3}
           stopLoss={stopLoss}
           currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
           action={action as 'BUY' | 'SELL'}
