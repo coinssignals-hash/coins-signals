@@ -146,14 +146,14 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
 
         {/* Pips & Probability */}
         <div className="flex items-center gap-3">
-          <div className="text-center">
+          <div className="text-center min-w-[50px]">
             <div className={cn(
               "text-sm font-bold tabular-nums",
               isBuy ? "text-emerald-400" : "text-rose-400"
             )}>
               +{pips}
             </div>
-            <div className="text-[9px] text-slate-500 uppercase">Pips</div>
+            <div className="text-[9px] text-slate-500 uppercase tabular-nums">Pips</div>
           </div>
 
           {/* Probability Circle (mini) */}
