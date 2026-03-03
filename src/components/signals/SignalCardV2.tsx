@@ -768,7 +768,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Enhanced Fullscreen Chart Dialog */}
             <Dialog open={chartFullscreen} onOpenChange={setChartFullscreen}>
-              <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden">
+              <DialogContent className="max-w-[100vw] w-[100vw] h-[100dvh] max-h-[100dvh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
                 <div className="h-full flex flex-col overflow-hidden">
                   {/* ── Top Bar ── */}
@@ -827,9 +827,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   </div>
 
                   {/* ── Main Content ── */}
-                  <div className="flex flex-1 overflow-hidden">
-                    {/* Chart Area */}
-                    <div className="flex-1 flex flex-col overflow-y-auto">
+                  <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
+                    {/* Chart Area — takes priority on mobile */}
+                    <div className="flex-1 flex flex-col min-h-0">
                       <ZoomableChart>
                         <CandlestickChart
                         data={forexChartData?.candles || []}
@@ -842,136 +842,93 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       </ZoomableChart>
                     </div>
 
-                    {/* ── Right Sidebar ── */}
-                    <div className="w-52 shrink-0 border-l border-slate-700/50 overflow-y-auto hidden md:flex flex-col" style={{ background: 'hsl(222, 45%, 4%)' }}>
-                      {/* Signal Info */}
-                      <div className="p-3 border-b border-slate-700/30">
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Señal</div>
-                        <div className={cn(
-                        "text-xs font-bold px-2 py-1 rounded text-center mb-2",
-                        action === 'BUY' ?
-                        "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" :
-                        "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                      )}>
-                          {action === 'BUY' ? '↗ LARGO (LONG)' : '↘ CORTO (SHORT)'}
-                        </div>
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                            <div
-                            className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${probability}%`,
-                              background: probability >= 70 ? 'hsl(135,70%,50%)' : probability >= 50 ? 'hsl(45,80%,55%)' : 'hsl(0,70%,55%)'
-                            }} />
-                          
+                    {/* ── Info Panel: below chart on mobile, right sidebar on desktop ── */}
+                    <div className="md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
+                      {/* Mobile: horizontal compact cards / Desktop: vertical sidebar */}
+                      <div className="flex md:flex-col overflow-x-auto md:overflow-x-hidden gap-0">
+                        {/* Signal Info */}
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Señal</div>
+                          <div className={cn(
+                            "text-xs font-bold px-2 py-1 rounded text-center mb-2",
+                            action === 'BUY'
+                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                          )}>
+                            {action === 'BUY' ? '↗ LARGO' : '↘ CORTO'}
                           </div>
-                          <span className="text-xs font-bold text-white">{probability}%</span>
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all"
+                                style={{
+                                  width: `${probability}%`,
+                                  background: probability >= 70 ? 'hsl(135,70%,50%)' : probability >= 50 ? 'hsl(45,80%,55%)' : 'hsl(0,70%,55%)'
+                                }} />
+                            </div>
+                            <span className="text-xs font-bold text-white">{probability}%</span>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Price Levels */}
-                      <div className="p-3 border-b border-slate-700/30">
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Niveles</div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
-                            <span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span>
+                        {/* Price Levels */}
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Niveles</div>
+                          <div className="space-y-1.5">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
+                              <span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-blue-400 font-semibold">Entry</span>
+                              <span className="text-xs font-mono text-blue-300">{entryPrice.toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-rose-400 font-semibold">SL</span>
+                              <span className="text-xs font-mono text-rose-300">{stopLoss.toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-[10px] text-blue-400 font-semibold">Entry</span>
-                            <span className="text-xs font-mono text-blue-300">{entryPrice.toFixed(isJpy ? 3 : 5)}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-[10px] text-rose-400 font-semibold">SL</span>
-                            <span className="text-xs font-mono text-rose-300">{stopLoss.toFixed(isJpy ? 3 : 5)}</span>
-                          </div>
-                        </div>
-                        {/* R:R Ratio */}
-                        <div className="mt-3 pt-2 border-t border-slate-700/30">
-                          <div className="flex justify-between items-center">
+                          <div className="mt-2 pt-2 border-t border-slate-700/30 flex justify-between items-center">
                             <span className="text-[10px] text-slate-500">R:R</span>
                             <span className="text-xs font-bold text-cyan-300">
                               1:{(Math.abs(takeProfit - entryPrice) / Math.abs(stopLoss - entryPrice)).toFixed(1)}
                             </span>
                           </div>
-                          <div className="flex justify-between items-center mt-1">
-                            <span className="text-[10px] text-slate-500">Riesgo</span>
-                            <span className="text-xs font-bold text-amber-400">{riskPercent}%</span>
+                        </div>
+
+                        {/* S/R Levels */}
+                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[130px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">S / R</div>
+                          <div className="space-y-1.5">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-0.5 bg-emerald-500 rounded" />
+                                <span className="text-[10px] text-slate-400">R</span>
+                              </div>
+                              <span className="text-[11px] font-mono text-emerald-300">{(forexChartData?.resistance ?? 0).toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-0.5 bg-rose-500 rounded" />
+                                <span className="text-[10px] text-slate-400">S</span>
+                              </div>
+                              <span className="text-[11px] font-mono text-rose-300">{(forexChartData?.support ?? 0).toFixed(isJpy ? 3 : 5)}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* S/R Levels */}
-                      <div className="p-3 border-b border-slate-700/30">
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Soporte / Resistencia</div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-3 h-0.5 bg-emerald-500 rounded" />
-                              <span className="text-[10px] text-slate-400">Resistencia</span>
-                            </div>
-                            <span className="text-[11px] font-mono text-emerald-300">{(forexChartData?.resistance ?? 0).toFixed(isJpy ? 3 : 5)}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-3 h-0.5 bg-rose-500 rounded" />
-                              <span className="text-[10px] text-slate-400">Soporte</span>
-                            </div>
-                            <span className="text-[11px] font-mono text-rose-300">{(forexChartData?.support ?? 0).toFixed(isJpy ? 3 : 5)}</span>
+                        {/* Trend */}
+                        <div className="p-3 min-w-[120px] md:min-w-0">
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Tendencia</div>
+                          <div className={cn(
+                            "text-xs font-bold text-center py-1.5 rounded",
+                            trend === 'bullish' ? "text-emerald-400 bg-emerald-500/10" :
+                            trend === 'bearish' ? "text-rose-400 bg-rose-500/10" :
+                            "text-amber-400 bg-amber-500/10"
+                          )}>
+                            {trend === 'bullish' ? '📈 Alcista' : trend === 'bearish' ? '📉 Bajista' : '➡️ Lateral'}
                           </div>
                         </div>
-                      </div>
-
-                      {/* OHLC Summary */}
-                      {forexChartData?.candles && forexChartData.candles.length > 0 && (() => {
-                      const last = forexChartData.candles[forexChartData.candles.length - 1];
-                      const isUp = last.close >= last.open;
-                      return (
-                        <div className="p-3 border-b border-slate-700/30">
-                            <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Última Vela</div>
-                            <div className="grid grid-cols-2 gap-1.5">
-                              {[
-                            { label: 'O', value: last.open, color: 'text-slate-300' },
-                            { label: 'H', value: last.high, color: 'text-emerald-400' },
-                            { label: 'L', value: last.low, color: 'text-rose-400' },
-                            { label: 'C', value: last.close, color: isUp ? 'text-emerald-400' : 'text-rose-400' }].
-                            map((item) =>
-                            <div key={item.label} className="flex justify-between">
-                                  <span className="text-[10px] text-slate-600">{item.label}</span>
-                                  <span className={cn("text-[11px] font-mono", item.color)}>
-                                    {item.value.toFixed(isJpy ? 3 : 5)}
-                                  </span>
-                                </div>
-                            )}
-                            </div>
-                          </div>);
-
-                    })()}
-
-                      {/* Trend & Strategy */}
-                      <div className="p-3">
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Tendencia</div>
-                        <div className={cn(
-                        "text-xs font-bold text-center py-1.5 rounded",
-                        trend === 'bullish' ? "text-emerald-400 bg-emerald-500/10" :
-                        trend === 'bearish' ? "text-rose-400 bg-rose-500/10" :
-                        "text-amber-400 bg-amber-500/10"
-                      )}>
-                          {trend === 'bullish' ? '📈 Alcista' : trend === 'bearish' ? '📉 Bajista' : '➡️ Lateral'}
-                        </div>
-                        {aiStrategy?.duration &&
-                      <div className="mt-2">
-                            <div className="text-[10px] text-slate-500">Duración</div>
-                            <div className="text-[11px] text-slate-300 mt-0.5">{String(aiStrategy.duration)}</div>
-                          </div>
-                      }
-                        {aiStrategy?.approach &&
-                      <div className="mt-2">
-                            <div className="text-[10px] text-slate-500">Enfoque</div>
-                            <div className="text-[11px] text-slate-300 mt-0.5">{String(aiStrategy.approach)}</div>
-                          </div>
-                      }
                       </div>
                     </div>
                   </div>
