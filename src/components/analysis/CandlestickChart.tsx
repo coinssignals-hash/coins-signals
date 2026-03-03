@@ -73,8 +73,16 @@ function buildChartSvg(
   const W = 1200, H = 700;
   const PAD = { top: 35, right: 110, bottom: 50, left: 65 };
   const CHART_X1 = PAD.left;
-  const CHART_X2 = W - PAD.right;
-  const CHART_W = CHART_X2 - CHART_X1;
+  const FULL_X2 = W - PAD.right; // full chart right edge including prediction
+  // Reserve ~20% of chart width for prediction zone when signal levels are shown
+  const PRED_RATIO = showSignalLevels ? 0.18 : 0;
+  const CHART_W_FULL = FULL_X2 - CHART_X1;
+  const CANDLE_X2 = CHART_X1 + CHART_W_FULL * (1 - PRED_RATIO); // candles end here
+  const CANDLE_W = CANDLE_X2 - CHART_X1;
+  const PRED_X1 = CANDLE_X2; // prediction zone starts here
+  const PRED_X2 = FULL_X2;   // prediction zone ends here
+  const CHART_X2 = FULL_X2;  // keep for S/R lines etc.
+  const CHART_W = CANDLE_W;  // candle area width
 
   // Price area (full height, no volume)
   const PRICE_TOP = PAD.top;
@@ -123,8 +131,8 @@ function buildChartSvg(
 
   // Helpers
   const yOf = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
-  const xOf = (i: number) => CHART_X1 + (i + 0.5) * (CHART_W / data.length);
-  const cw = CHART_W / data.length;
+  const xOf = (i: number) => CHART_X1 + (i + 0.5) * (CANDLE_W / data.length);
+  const cw = CANDLE_W / data.length;
   const bodyW = Math.max(3, Math.min(14, cw * 0.8));
 
   // Identify last day
@@ -145,6 +153,21 @@ function buildChartSvg(
   </defs>`);
   parts.push(`<rect width="${W}" height="${H}" fill="url(#bg)" rx="8"/>`);
 
+  // Prediction zone background
+  if (showSignalLevels && PRED_RATIO > 0) {
+    // Subtle different background for prediction area
+    parts.push(`<rect x="${PRED_X1}" y="${PRICE_TOP}" width="${PRED_X2 - PRED_X1}" height="${PRICE_H}" fill="rgba(99,102,241,0.04)" />`);
+    // Vertical separator line
+    parts.push(`<line x1="${PRED_X1}" y1="${PRICE_TOP}" x2="${PRED_X1}" y2="${PRICE_BOTTOM}" stroke="rgba(99,102,241,0.25)" stroke-width="1.5" stroke-dasharray="6,4" shape-rendering="crispEdges"/>`);
+    // "PREDICCIÓN" label at top of prediction zone
+    const predMidX = (PRED_X1 + PRED_X2) / 2;
+    parts.push(`<text x="${predMidX}" y="${PRICE_TOP + 18}" fill="rgba(139,92,246,0.5)" text-anchor="middle" font-size="10" font-family="sans-serif" font-weight="bold" letter-spacing="2">PREDICCIÓN</text>`);
+    // Future time grid lines in prediction zone
+    for (let i = 1; i <= 3; i++) {
+      const fx = PRED_X1 + ((PRED_X2 - PRED_X1) * i) / 4;
+      parts.push(`<line x1="${fx}" y1="${PRICE_TOP}" x2="${fx}" y2="${PRICE_BOTTOM}" stroke="rgba(99,102,241,0.08)" stroke-width="0.5" stroke-dasharray="2,6" shape-rendering="crispEdges"/>`);
+    }
+  }
   // Title
   if (title) {
     parts.push(`<text x="${CHART_X1}" y="25" fill="${TEXT_COL}" font-family="sans-serif" font-size="13" font-weight="bold">${title}</text>`);
@@ -258,59 +281,61 @@ function buildChartSvg(
     parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(support, jpy)}</text>`);
   }
 
-  // Signal TP/SL/Entry lines with shaded zones
+  // Signal TP/SL/Entry lines with prediction zone
   if (showSignalLevels) {
     const SIG_TP = '#22c55e';  // green
     const SIG_SL = '#ef4444';  // red
     const SIG_ENTRY = '#f59e0b'; // amber for entry
     const sigLblW = 90, sigLblH = 18, sigFs = 9;
+    const predZoneW = PRED_X2 - PRED_X1;
 
-    // Shaded zones between Entry and TP / SL
+    // Shaded zones ONLY in the prediction area
     if (signalEntry && signalTP) {
       const entY = yOf(signalEntry);
       const tpY = yOf(signalTP);
       const zoneTop = Math.min(entY, tpY);
       const zoneH = Math.abs(entY - tpY);
-      parts.push(`<rect x="${srX1}" y="${zoneTop}" width="${CHART_W}" height="${zoneH}" fill="rgba(34,197,94,0.06)" />`);
+      parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(34,197,94,0.10)" />`);
     }
     if (signalEntry && signalSL) {
       const entY = yOf(signalEntry);
       const slY = yOf(signalSL);
       const zoneTop = Math.min(entY, slY);
       const zoneH = Math.abs(entY - slY);
-      parts.push(`<rect x="${srX1}" y="${zoneTop}" width="${CHART_W}" height="${zoneH}" fill="rgba(239,68,68,0.06)" />`);
+      parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(239,68,68,0.10)" />`);
     }
 
-    // TP line
+    // TP line — extends from last candle area into prediction zone
     if (signalTP) {
       const tpY = yOf(signalTP);
-      parts.push(`<line x1="${srX1}" y1="${tpY}" x2="${srX2}" y2="${tpY}" stroke="${SIG_TP}" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.85" shape-rendering="crispEdges"/>`);
-      // Right label
-      parts.push(`<rect x="${srX2 - sigLblW - 4}" y="${tpY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(34,197,94,0.18)" stroke="${SIG_TP}" stroke-width="0.6"/>`);
-      parts.push(`<text x="${srX2 - sigLblW / 2 - 4}" y="${tpY + sigFs / 3}" fill="${SIG_TP}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">TP ${fmtPrice(signalTP, jpy)}</text>`);
-      // Left arrow label
-      parts.push(`<text x="${CHART_X1 + 6}" y="${tpY + 3}" fill="${SIG_TP}" font-size="10" font-family="sans-serif" font-weight="bold" opacity="0.8">▸ TP</text>`);
+      // Thin dashed line across candle area
+      parts.push(`<line x1="${srX1}" y1="${tpY}" x2="${PRED_X1}" y2="${tpY}" stroke="${SIG_TP}" stroke-width="0.8" stroke-dasharray="4,6" opacity="0.4" shape-rendering="crispEdges"/>`);
+      // Solid prominent line in prediction zone
+      parts.push(`<line x1="${PRED_X1}" y1="${tpY}" x2="${PRED_X2}" y2="${tpY}" stroke="${SIG_TP}" stroke-width="2" stroke-dasharray="8,4" opacity="0.9" shape-rendering="crispEdges"/>`);
+      // Right label in prediction zone
+      parts.push(`<rect x="${PRED_X2 - sigLblW - 4}" y="${tpY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(34,197,94,0.22)" stroke="${SIG_TP}" stroke-width="0.8"/>`);
+      parts.push(`<text x="${PRED_X2 - sigLblW / 2 - 4}" y="${tpY + sigFs / 3}" fill="${SIG_TP}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">TP ${fmtPrice(signalTP, jpy)}</text>`);
+      // Arrow at prediction zone start
+      parts.push(`<text x="${PRED_X1 + 6}" y="${tpY + 3}" fill="${SIG_TP}" font-size="10" font-family="sans-serif" font-weight="bold" opacity="0.9">▸ TP</text>`);
     }
     // SL line
     if (signalSL) {
       const slY = yOf(signalSL);
-      parts.push(`<line x1="${srX1}" y1="${slY}" x2="${srX2}" y2="${slY}" stroke="${SIG_SL}" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.85" shape-rendering="crispEdges"/>`);
-      // Right label
-      parts.push(`<rect x="${srX2 - sigLblW - 4}" y="${slY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(239,68,68,0.18)" stroke="${SIG_SL}" stroke-width="0.6"/>`);
-      parts.push(`<text x="${srX2 - sigLblW / 2 - 4}" y="${slY + sigFs / 3}" fill="${SIG_SL}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(signalSL, jpy)}</text>`);
-      // Left arrow label
-      parts.push(`<text x="${CHART_X1 + 6}" y="${slY + 3}" fill="${SIG_SL}" font-size="10" font-family="sans-serif" font-weight="bold" opacity="0.8">▸ SL</text>`);
+      parts.push(`<line x1="${srX1}" y1="${slY}" x2="${PRED_X1}" y2="${slY}" stroke="${SIG_SL}" stroke-width="0.8" stroke-dasharray="4,6" opacity="0.4" shape-rendering="crispEdges"/>`);
+      parts.push(`<line x1="${PRED_X1}" y1="${slY}" x2="${PRED_X2}" y2="${slY}" stroke="${SIG_SL}" stroke-width="2" stroke-dasharray="8,4" opacity="0.9" shape-rendering="crispEdges"/>`);
+      parts.push(`<rect x="${PRED_X2 - sigLblW - 4}" y="${slY - sigLblH / 2}" width="${sigLblW}" height="${sigLblH}" rx="4" fill="rgba(239,68,68,0.22)" stroke="${SIG_SL}" stroke-width="0.8"/>`);
+      parts.push(`<text x="${PRED_X2 - sigLblW / 2 - 4}" y="${slY + sigFs / 3}" fill="${SIG_SL}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(signalSL, jpy)}</text>`);
+      parts.push(`<text x="${PRED_X1 + 6}" y="${slY + 3}" fill="${SIG_SL}" font-size="10" font-family="sans-serif" font-weight="bold" opacity="0.9">▸ SL</text>`);
     }
     // Entry line
     if (signalEntry) {
       const entY = yOf(signalEntry);
-      parts.push(`<line x1="${srX1}" y1="${entY}" x2="${srX2}" y2="${entY}" stroke="${SIG_ENTRY}" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.8" shape-rendering="crispEdges"/>`);
-      // Right label
+      parts.push(`<line x1="${srX1}" y1="${entY}" x2="${PRED_X1}" y2="${entY}" stroke="${SIG_ENTRY}" stroke-width="0.8" stroke-dasharray="4,6" opacity="0.4" shape-rendering="crispEdges"/>`);
+      parts.push(`<line x1="${PRED_X1}" y1="${entY}" x2="${PRED_X2}" y2="${entY}" stroke="${SIG_ENTRY}" stroke-width="2" stroke-dasharray="6,3" opacity="0.9" shape-rendering="crispEdges"/>`);
       const entLblW = 100;
-      parts.push(`<rect x="${srX2 - entLblW - 4}" y="${entY - sigLblH / 2}" width="${entLblW}" height="${sigLblH}" rx="4" fill="rgba(245,158,11,0.18)" stroke="${SIG_ENTRY}" stroke-width="0.6"/>`);
-      parts.push(`<text x="${srX2 - entLblW / 2 - 4}" y="${entY + sigFs / 3}" fill="${SIG_ENTRY}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">Entry ${fmtPrice(signalEntry, jpy)}</text>`);
-      // Left arrow label
-      parts.push(`<text x="${CHART_X1 + 6}" y="${entY + 3}" fill="${SIG_ENTRY}" font-size="10" font-family="sans-serif" font-weight="bold" opacity="0.8">▸ Entry</text>`);
+      parts.push(`<rect x="${PRED_X2 - entLblW - 4}" y="${entY - sigLblH / 2}" width="${entLblW}" height="${sigLblH}" rx="4" fill="rgba(245,158,11,0.22)" stroke="${SIG_ENTRY}" stroke-width="0.8"/>`);
+      parts.push(`<text x="${PRED_X2 - entLblW / 2 - 4}" y="${entY + sigFs / 3}" fill="${SIG_ENTRY}" text-anchor="middle" font-size="${sigFs}" font-family="monospace" font-weight="bold">Entry ${fmtPrice(signalEntry, jpy)}</text>`);
+      parts.push(`<text x="${PRED_X1 + 6}" y="${entY + 3}" fill="${SIG_ENTRY}" font-size="10" font-family="sans-serif" font-weight="bold" opacity="0.9">▸ Entry</text>`);
     }
   }
 
