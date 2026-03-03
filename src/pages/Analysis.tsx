@@ -32,6 +32,7 @@ import { BollingerChart } from '@/components/analysis/BollingerChart';
 import { StochasticChart } from '@/components/analysis/StochasticChart';
 import { IndicatorsSummaryChart } from '@/components/analysis/IndicatorsSummaryChart';
 import { AlertsPanel } from '@/components/analysis/AlertsPanel';
+import { useAlertConfig } from '@/hooks/useAlertConfig';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 
 import { RiskRewardCalculator } from '@/components/analysis/RiskRewardCalculator';
@@ -58,19 +59,6 @@ const timeframes = [
 { value: '1week', label: '1W' }];
 
 
-interface AlertConfig {
-  rsiOverbought: number;
-  rsiOversold: number;
-  enableRSI: boolean;
-  enableMACD: boolean;
-  enableSMACross: boolean;
-  enableSupportResistance: boolean;
-  srProximityPercent: number;
-  srEnableSound: boolean;
-  enablePatternAlerts: boolean;
-  patternAlertTypes: {bullish: boolean;bearish: boolean;neutral: boolean;};
-  patternEnableSound: boolean;
-}
 
 function formatSymbolForPolygon(symbol: string): string {
   const [base, quote] = symbol.split('/');
@@ -97,13 +85,7 @@ export default function Analysis() {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [activePanel, setActivePanel] = useState('tecnico');
   const [activeChart, setActiveChart] = useState('price');
-  const [alertConfig, setAlertConfig] = useState<AlertConfig>({
-    rsiOverbought: 70, rsiOversold: 30, enableRSI: false, enableMACD: false,
-    enableSMACross: false, enableSupportResistance: false, srProximityPercent: 5,
-    srEnableSound: true, enablePatternAlerts: true,
-    patternAlertTypes: { bullish: true, bearish: true, neutral: false },
-    patternEnableSound: true
-  });
+  const { config: alertConfig, updateConfig: setAlertConfig } = useAlertConfig();
 
   const { data, loading, error, refetch, isRateLimited } = useMarketData(selectedPair, selectedTimeframe);
   const { data: previousDayData, loading: previousDayLoading } = usePreviousDayCandles(selectedPair);
