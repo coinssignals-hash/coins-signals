@@ -2,7 +2,7 @@ import { format, isToday, isTomorrow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import { StaggerList } from '@/components/layout/StaggerList';
 interface SignalsDayGroupProps {
   date: string;
   count: number;
@@ -52,9 +52,9 @@ export function SignalsDayGroup({ date, count, children }: SignalsDayGroupProps)
       </div>
 
       {/* Cards */}
-      <div className="space-y-4">
+      <StaggerList className="space-y-4">
         {children}
-      </div>
+      </StaggerList>
     </section>
   );
 }
