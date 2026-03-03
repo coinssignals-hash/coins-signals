@@ -1,14 +1,21 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
+const SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY") || "";
 const FMP_KEY = Deno.env.get("FMP_API_KEY") || "";
 const MARKETAUX_KEY = Deno.env.get("MARKETAUX_API_KEY") || "";
 const ALPHA_VANTAGE_KEY = Deno.env.get("ALPHA_VANTAGE_API_KEY") || "";
+
+const CACHE_TTL_MINUTES = 15;
 
 const CURRENCY_KEYWORDS: Record<string, string[]> = {
   USD: ["dollar", "fed", "fomc", "powell", "treasury", "us economy", "nonfarm", "cpi us"],
@@ -162,7 +169,29 @@ serve(async (req) => {
     const { symbol } = await req.json();
     if (!symbol) throw new Error("Symbol required");
 
-    const currencies = symbol.replace("/", "").match(/.{3}/g) || ["EUR", "USD"];
+    const cacheKey = `analysis-news`;
+    const normalizedSymbol = symbol.replace("/", "").toUpperCase();
+
+    // ── Check DB cache ──
+    const { data: cached } = await supabase
+      .from("ai_analysis_cache")
+      .select("analysis_data, expires_at")
+      .eq("symbol", normalizedSymbol)
+      .eq("analysis_type", cacheKey)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    if (cached?.analysis_data) {
+      console.log(`[analysis-news] Cache HIT for ${normalizedSymbol}`);
+      return new Response(
+        JSON.stringify(cached.analysis_data),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`[analysis-news] Cache MISS for ${normalizedSymbol}, fetching from APIs...`);
+
+    const currencies = normalizedSymbol.match(/.{3}/g) || ["EUR", "USD"];
 
     // Fetch from all 4 sources in parallel
     const [finnhubNews, fmpNews, marketauxNews, avNews] = await Promise.allSettled([
@@ -191,13 +220,9 @@ serve(async (req) => {
       });
     });
 
-    // Use all if filter is too restrictive
     const pool = relevant.length >= 3 ? relevant : unique;
-
-    // Sort by date descending
     pool.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
-    // Build MajorNews (top high-impact items)
     const majorNews = pool.slice(0, 10).map((a) => {
       const curs = extractCurrencies(`${a.title} ${a.summary}`);
       const type = classifySentiment(`${a.title} ${a.summary}`);
@@ -210,7 +235,6 @@ serve(async (req) => {
       };
     });
 
-    // Build RelevantNews (with images, cards)
     const relevantNews = pool.slice(0, 15).map((a, i) => ({
       id: a.id || `${i}`,
       title: a.title,
@@ -223,8 +247,25 @@ serve(async (req) => {
       currencies: extractCurrencies(`${a.title} ${a.summary}`),
     }));
 
+    const result = { majorNews, relevantNews };
+
+    // ── Save to DB cache ──
+    const expiresAt = new Date(Date.now() + CACHE_TTL_MINUTES * 60 * 1000).toISOString();
+    await supabase.from("ai_analysis_cache").upsert(
+      {
+        symbol: normalizedSymbol,
+        analysis_type: cacheKey,
+        analysis_data: result,
+        expires_at: expiresAt,
+      },
+      { onConflict: "symbol,analysis_type" }
+    ).then(({ error }) => {
+      if (error) console.warn("[analysis-news] Cache write failed:", error.message);
+      else console.log(`[analysis-news] Cached ${normalizedSymbol} until ${expiresAt}`);
+    });
+
     return new Response(
-      JSON.stringify({ majorNews, relevantNews }),
+      JSON.stringify(result),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
