@@ -301,9 +301,14 @@ export function TargetProgressBar({
 
       {/* Bottom price labels */}
       <div className="relative mt-1 h-7">
-        <span className="absolute left-0 text-[9px] text-rose-400/60 font-mono tabular-nums">
-          {stopLoss.toFixed(isJpy ? 2 : 3)}
-        </span>
+        <div className="absolute left-0 flex flex-col items-start">
+          <span className="text-[9px] text-rose-400/60 font-mono tabular-nums">
+            {stopLoss.toFixed(isJpy ? 2 : 3)}
+          </span>
+          <span className="text-[7px] text-rose-400/30 font-semibold uppercase tracking-widest leading-none">
+            SL
+          </span>
+        </div>
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: '50%' }}>
           <span className="text-[9px] text-white/40 font-mono tabular-nums">
             {entryPrice.toFixed(isJpy ? 2 : 3)}
@@ -313,9 +318,14 @@ export function TargetProgressBar({
           </span>
         </div>
         {/* TP1 label */}
-        <span className="absolute text-[9px] text-emerald-400/60 font-mono tabular-nums -translate-x-1/2" style={{ left: `${tp1Pos}%` }}>
-          {takeProfit.toFixed(isJpy ? 2 : 3)}
-        </span>
+        <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
+          <span className="text-[9px] text-emerald-400/60 font-mono tabular-nums">
+            {takeProfit.toFixed(isJpy ? 2 : 3)}
+          </span>
+          <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
+            TP
+          </span>
+        </div>
         {takeProfit2 && tp2Pos !== null && (
           <span className="absolute text-[9px] text-emerald-400/40 font-mono tabular-nums -translate-x-1/2" style={{ left: `${tp2Pos}%` }}>
             TP2
