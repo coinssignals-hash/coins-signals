@@ -201,14 +201,18 @@ const CURRENCY_FLAGS: Record<string, string> = {
   NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr"
 };
 
-function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy
+function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takeProfit3, stopLoss, isJpy
 
-}: {entryPrice: number;takeProfit: number;stopLoss: number;isJpy: boolean;}) {
+}: {entryPrice: number;takeProfit: number;takeProfit2?: number;takeProfit3?: number;stopLoss: number;isJpy: boolean;}) {
   const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy);
+  const tp2 = takeProfit2 ? computePriceMetrics(takeProfit2, entryPrice, isJpy) : null;
+  const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy) : null;
   const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
   return (
     <div className="space-y-2 mx-3 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
+      {tp2 && <PriceRowFull label="TakeProfit 2" {...tp2} />}
+      {tp3 && <PriceRowFull label="TakeProfit 3" {...tp3} />}
       <PriceRowFull label="Stop Loss" {...sl} />
     </div>);
 
@@ -260,6 +264,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // Derive values from signal prop or use defaults
   const entryPrice = signal?.entryPrice ?? 154.950;
   const takeProfit = signal?.takeProfit ?? 155.100;
+  const takeProfit2 = signal?.takeProfit2;
+  const takeProfit3 = signal?.takeProfit3;
   const stopLoss = signal?.stopLoss ?? 154.700;
   const currencyPair = signal?.currencyPair ?? "USD/JPY";
   const action = signal?.action ?? "BUY";
@@ -268,6 +274,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const signalDate = signal?.datetime ? new Date(signal.datetime) : new Date();
   const support = signal?.support;
   const resistance = signal?.resistance;
+  const signalNotes = signal?.notes;
   const status = signal?.status ?? "active";
 
   // Parse currency codes
@@ -756,7 +763,21 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {expanded &&
         <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
-            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
+            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={takeProfit2} takeProfit3={takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
+
+            {/* Notes / Analysis */}
+            {signalNotes && (
+              <div className="mx-3 mb-3 rounded-lg p-3 relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                  border: "1px solid hsla(200, 60%, 35%, 0.3)"
+                }}>
+                <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                  style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
+                <p className="text-[10px] text-cyan-300/60 uppercase tracking-wider font-bold mb-1.5">📝 Análisis</p>
+                <p className="text-xs text-slate-300 leading-relaxed">{signalNotes}</p>
+              </div>
+            )}
 
             {/* Candlestick Chart - Loaded via forex-data API */}
             <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">

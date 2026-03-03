@@ -12,9 +12,12 @@ export interface TradingSignal {
   action: 'BUY' | 'SELL';
   entryPrice: number;
   takeProfit: number;
+  takeProfit2?: number;
+  takeProfit3?: number;
   stopLoss: number;
   support?: number;
   resistance?: number;
+  notes?: string;
   sessionData?: { session: string; volume: string; volatility: string }[];
   analysisData?: { label: string; value: number }[];
   chartImageUrl?: string;
@@ -32,9 +35,12 @@ interface DbSignal {
   action: string;
   entry_price: number;
   take_profit: number;
+  take_profit_2: number | null;
+  take_profit_3: number | null;
   stop_loss: number;
   support: number | null;
   resistance: number | null;
+  notes: string | null;
   session_data: unknown;
   analysis_data: unknown;
   chart_image_url: string | null;
@@ -52,9 +58,12 @@ const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
   action: dbSignal.action as TradingSignal['action'],
   entryPrice: Number(dbSignal.entry_price),
   takeProfit: Number(dbSignal.take_profit),
+  takeProfit2: dbSignal.take_profit_2 ? Number(dbSignal.take_profit_2) : undefined,
+  takeProfit3: dbSignal.take_profit_3 ? Number(dbSignal.take_profit_3) : undefined,
   stopLoss: Number(dbSignal.stop_loss),
   support: dbSignal.support ? Number(dbSignal.support) : undefined,
   resistance: dbSignal.resistance ? Number(dbSignal.resistance) : undefined,
+  notes: dbSignal.notes ?? undefined,
   sessionData: dbSignal.session_data as TradingSignal['sessionData'],
   analysisData: dbSignal.analysis_data as TradingSignal['analysisData'],
   chartImageUrl: dbSignal.chart_image_url ?? undefined,
