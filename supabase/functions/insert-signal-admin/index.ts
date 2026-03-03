@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 async function generateAndUploadChart(
@@ -64,10 +64,31 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify API key authentication
+    // Auth: accept x-api-key OR valid Supabase JWT
     const apiKey = req.headers.get('x-api-key');
     const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
-    if (!apiKey || !expectedApiKey || apiKey !== expectedApiKey) {
+    const authHeader = req.headers.get('authorization');
+    
+    let isAuthed = false;
+    
+    // Method 1: API key
+    if (apiKey && expectedApiKey && apiKey === expectedApiKey) {
+      isAuthed = true;
+    }
+    
+    // Method 2: Supabase JWT (for frontend calls)
+    if (!isAuthed && authHeader) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const authClient = createClient(supabaseUrl, supabaseServiceKey);
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await authClient.auth.getUser(token);
+      if (user && !authError) {
+        isAuthed = true;
+      }
+    }
+    
+    if (!isAuthed) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
