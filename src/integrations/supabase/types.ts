@@ -882,6 +882,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_alert_configs: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_broker_connections: {
         Row: {
           broker_id: string
