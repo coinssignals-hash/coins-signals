@@ -251,14 +251,7 @@ export default function Analysis() {
 
           {/* ═══════════════════ TÉCNICO ═══════════════════ */}
           <TabsContent value="tecnico" className="space-y-3 mt-0">
-            {/* Candlestick Chart — always visible at top */}
-            <CandlestickChart
-              data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
-              support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
-              realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-              previousDayDate={previousDayData?.date} alertState={alertState} />
-
-            {/* Indicator Sub-Tabs */}
+            {/* Indicator Sub-Tabs — above the chart */}
             <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
               {chartTabs.map((tab) =>
               <button
@@ -274,55 +267,67 @@ export default function Analysis() {
               )}
             </div>
 
-            {/* Active Indicator Overlay */}
-            {activeChart && activeChart !== '' && (
-              <div className="bg-[#060e1c]/95 backdrop-blur-sm border border-cyan-900/30 rounded-xl p-1.5 sm:p-3 relative">
-                {/* Close button */}
-                <button
-                  onClick={() => setActiveChart('')}
-                  className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-gray-800/80 hover:bg-gray-700/80 flex items-center justify-center text-gray-400 hover:text-white transition-colors text-xs"
-                >
-                  ✕
-                </button>
-                {activeChart === 'price' &&
-                <PriceChart pair={selectedPair} timeframe={selectedTimeframe}
-                priceData={data?.priceData} smaData={data?.smaData} loading={loading} error={error}
+            {/* Chart container with indicator overlay on top */}
+            <div className="relative">
+              {/* Candlestick Chart — always visible */}
+              <CandlestickChart
+                data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
+                support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
                 realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-                patternAlertConfig={{ enabled: alertConfig.enablePatternAlerts, types: alertConfig.patternAlertTypes, enableSound: alertConfig.patternEnableSound }} />
-                }
-                {activeChart === 'rsi' &&
-                <RSIChart pair={selectedPair} timeframe={selectedTimeframe} rsiData={data?.rsiData} loading={loading} error={error} />
-                }
-                {activeChart === 'macd' &&
-                <MACDChart pair={selectedPair} timeframe={selectedTimeframe} macdData={data?.macdData} loading={loading} error={error} />
-                }
-                {activeChart === 'bollinger' &&
-                <BollingerChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                apiBBands={data?.bbandsData}
-                loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                }
-                {activeChart === 'stochastic' &&
-                <StochasticChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                apiStochastic={data?.stochasticData}
-                loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                }
-                {activeChart === 'atr' &&
-                <ATRChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                apiATR={data?.atrData}
-                loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                }
-                {activeChart === 'adx' &&
-                <ADXChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                apiADX={data?.adxData}
-                loading={loading} error={error} />
-                }
-                {activeChart === 'ichimoku' &&
-                <IchimokuChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
-                apiIchimoku={data?.ichimokuData}
-                loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
-                }
-              </div>
-            )}
+                previousDayDate={previousDayData?.date} alertState={alertState} />
+
+              {/* Indicator Overlay — on top of the candlestick chart */}
+              {activeChart && activeChart !== '' && (
+                <div className="absolute inset-0 z-20 bg-[#060e1c]/92 backdrop-blur-sm rounded-xl p-1.5 sm:p-3 flex flex-col overflow-hidden">
+                  {/* Close button */}
+                  <button
+                    onClick={() => setActiveChart('')}
+                    className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-gray-800/90 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors text-xs border border-cyan-900/30 shadow-lg"
+                  >
+                    ✕
+                  </button>
+                  <div className="flex-1 min-h-0">
+                  {activeChart === 'price' &&
+                  <PriceChart pair={selectedPair} timeframe={selectedTimeframe}
+                  priceData={data?.priceData} smaData={data?.smaData} loading={loading} error={error}
+                  realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                  patternAlertConfig={{ enabled: alertConfig.enablePatternAlerts, types: alertConfig.patternAlertTypes, enableSound: alertConfig.patternEnableSound }} />
+                  }
+                  {activeChart === 'rsi' &&
+                  <RSIChart pair={selectedPair} timeframe={selectedTimeframe} rsiData={data?.rsiData} loading={loading} error={error} />
+                  }
+                  {activeChart === 'macd' &&
+                  <MACDChart pair={selectedPair} timeframe={selectedTimeframe} macdData={data?.macdData} loading={loading} error={error} />
+                  }
+                  {activeChart === 'bollinger' &&
+                  <BollingerChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  apiBBands={data?.bbandsData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                  }
+                  {activeChart === 'stochastic' &&
+                  <StochasticChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  apiStochastic={data?.stochasticData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                  }
+                  {activeChart === 'atr' &&
+                  <ATRChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  apiATR={data?.atrData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                  }
+                  {activeChart === 'adx' &&
+                  <ADXChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  apiADX={data?.adxData}
+                  loading={loading} error={error} />
+                  }
+                  {activeChart === 'ichimoku' &&
+                  <IchimokuChart pair={selectedPair} timeframe={selectedTimeframe} priceData={data?.priceData}
+                  apiIchimoku={data?.ichimokuData}
+                  loading={loading} error={error} realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                  }
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Indicators Summary */}
             <IndicatorsSummaryChart priceData={data?.priceData} rsiData={data?.rsiData} macdData={data?.macdData} smaData={data?.smaData} loading={loading} />
