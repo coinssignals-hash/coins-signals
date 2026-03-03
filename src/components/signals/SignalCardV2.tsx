@@ -23,6 +23,7 @@ import {
   Activity } from
 "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
 import { useSignalRisk } from "@/hooks/useSignalRisk";
@@ -813,236 +814,214 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
                     {/* ── Info Panel: below chart on mobile, right sidebar on desktop ── */}
                     <div className="md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
-                      {/* Mobile: horizontal compact cards / Desktop: vertical sidebar */}
                       <div className="flex md:flex-col overflow-x-auto md:overflow-x-hidden gap-0">
-                        {/* Signal Info */}
-                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Señal</div>
-                          <div className={cn(
-                          "text-xs font-bold px-2 py-1 rounded text-center mb-2",
-                          action === 'BUY' ?
-                          "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" :
-                          "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                        )}>
-                            {action === 'BUY' ? '↗ LARGO' : '↘ CORTO'}
-                          </div>
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                              <div
-                              className="h-full rounded-full transition-all"
-                              style={{
-                                width: `${probability}%`,
-                                background: probability >= 70 ? 'hsl(135,70%,50%)' : probability >= 50 ? 'hsl(45,80%,55%)' : 'hsl(0,70%,55%)'
-                              }} />
+
+                        {/* Signal Info - always visible */}
+                        <Collapsible defaultOpen>
+                          <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Señal</span>
+                            <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-2 border-b border-slate-700/30">
+                              <div className={cn(
+                                "text-xs font-bold px-2 py-1 rounded text-center mb-2",
+                                action === 'BUY' ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                              )}>
+                                {action === 'BUY' ? '↗ LARGO' : '↘ CORTO'}
+                              </div>
+                              <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                  <div className="h-full rounded-full transition-all" style={{ width: `${probability}%`, background: probability >= 70 ? 'hsl(135,70%,50%)' : probability >= 50 ? 'hsl(45,80%,55%)' : 'hsl(0,70%,55%)' }} />
+                                </div>
+                                <span className="text-xs font-bold text-white">{probability}%</span>
+                              </div>
                             </div>
-                            <span className="text-xs font-bold text-white">{probability}%</span>
-                          </div>
-                        </div>
+                          </CollapsibleContent>
+                        </Collapsible>
 
                         {/* Price Levels */}
-                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Niveles</div>
-                          <div className="space-y-1.5">
-                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
-                              <span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span>
+                        <Collapsible defaultOpen>
+                          <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Niveles</span>
+                            <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-2 border-b border-slate-700/30">
+                              <div className="space-y-1.5">
+                                <div className="flex justify-between items-center"><span className="text-[10px] text-emerald-400 font-semibold">TP</span><span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[10px] text-blue-400 font-semibold">Entry</span><span className="text-xs font-mono text-blue-300">{entryPrice.toFixed(isJpy ? 3 : 5)}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[10px] text-rose-400 font-semibold">SL</span><span className="text-xs font-mono text-rose-300">{stopLoss.toFixed(isJpy ? 3 : 5)}</span></div>
+                              </div>
+                              <div className="mt-2 pt-2 border-t border-slate-700/30 flex justify-between items-center">
+                                <span className="text-[10px] text-slate-500">R:R</span>
+                                <span className="text-xs font-bold text-cyan-300">1:{(Math.abs(takeProfit - entryPrice) / Math.abs(stopLoss - entryPrice)).toFixed(1)}</span>
+                              </div>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] text-blue-400 font-semibold">Entry</span>
-                              <span className="text-xs font-mono text-blue-300">{entryPrice.toFixed(isJpy ? 3 : 5)}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-[10px] text-rose-400 font-semibold">SL</span>
-                              <span className="text-xs font-mono text-rose-300">{stopLoss.toFixed(isJpy ? 3 : 5)}</span>
-                            </div>
-                          </div>
-                          <div className="mt-2 pt-2 border-t border-slate-700/30 flex justify-between items-center">
-                            <span className="text-[10px] text-slate-500">R:R</span>
-                            <span className="text-xs font-bold text-cyan-300">
-                              1:{(Math.abs(takeProfit - entryPrice) / Math.abs(stopLoss - entryPrice)).toFixed(1)}
-                            </span>
-                          </div>
-                        </div>
+                          </CollapsibleContent>
+                        </Collapsible>
 
                         {/* S/R Levels */}
-                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[130px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">S / R</div>
-                          <div className="space-y-1.5">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-1">
-                                <div className="w-3 h-0.5 bg-emerald-500 rounded" />
-                                <span className="text-[10px] text-slate-400">R</span>
+                        <Collapsible>
+                          <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">S / R</span>
+                            <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-2 border-b border-slate-700/30 space-y-1.5">
+                              <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-1"><div className="w-3 h-0.5 bg-emerald-500 rounded" /><span className="text-[10px] text-slate-400">R</span></div>
+                                <span className="text-[11px] font-mono text-emerald-300">{(forexChartData?.resistance ?? 0).toFixed(isJpy ? 3 : 5)}</span>
                               </div>
-                              <span className="text-[11px] font-mono text-emerald-300">{(forexChartData?.resistance ?? 0).toFixed(isJpy ? 3 : 5)}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-1">
-                                <div className="w-3 h-0.5 bg-rose-500 rounded" />
-                                <span className="text-[10px] text-slate-400">S</span>
+                              <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-1"><div className="w-3 h-0.5 bg-rose-500 rounded" /><span className="text-[10px] text-slate-400">S</span></div>
+                                <span className="text-[11px] font-mono text-rose-300">{(forexChartData?.support ?? 0).toFixed(isJpy ? 3 : 5)}</span>
                               </div>
-                              <span className="text-[11px] font-mono text-rose-300">{(forexChartData?.support ?? 0).toFixed(isJpy ? 3 : 5)}</span>
                             </div>
-                          </div>
-                        </div>
+                          </CollapsibleContent>
+                        </Collapsible>
 
                         {/* Trend */}
-                        <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Tendencia</div>
-                          <div className={cn(
-                          "text-xs font-bold text-center py-1.5 rounded",
-                          trend === 'bullish' ? "text-emerald-400 bg-emerald-500/10" :
-                          trend === 'bearish' ? "text-rose-400 bg-rose-500/10" :
-                          "text-amber-400 bg-amber-500/10"
-                        )}>
-                            {trend === 'bullish' ? '📈 Alcista' : trend === 'bearish' ? '📉 Bajista' : '➡️ Lateral'}
-                          </div>
-                        </div>
+                        <Collapsible>
+                          <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Tendencia</span>
+                            <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-2 border-b border-slate-700/30">
+                              <div className={cn("text-xs font-bold text-center py-1.5 rounded", trend === 'bullish' ? "text-emerald-400 bg-emerald-500/10" : trend === 'bearish' ? "text-rose-400 bg-rose-500/10" : "text-amber-400 bg-amber-500/10")}>
+                                {trend === 'bullish' ? '📈 Alcista' : trend === 'bearish' ? '📉 Bajista' : '➡️ Lateral'}
+                              </div>
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
 
                         {/* Live Price */}
-                        {quote?.price &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Precio Actual</div>
-                          <div className="text-sm font-bold text-white tabular-nums">{quote.price.toFixed(isJpy ? 3 : 5)}</div>
-                          {priceDiff.hasData &&
-                        <div className="flex items-center gap-2 mt-1">
-                              <span className={cn("text-[10px] font-bold", priceDiff.isPositive ? "text-emerald-400" : "text-rose-400")}>
-                                {priceDiff.pips >= 0 ? '+' : ''}{priceDiff.pips.toFixed(1)} pips
-                              </span>
-                              <span className={cn("text-[10px]", priceDiff.isPositive ? "text-emerald-400/70" : "text-rose-400/70")}>
-                                ({priceDiff.percent >= 0 ? '+' : ''}{priceDiff.percent.toFixed(3)}%)
-                              </span>
+                        {quote?.price && (
+                          <Collapsible>
+                            <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Precio Actual</span>
+                              <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="px-3 pb-2 border-b border-slate-700/30">
+                                <div className="text-sm font-bold text-white tabular-nums">{quote.price.toFixed(isJpy ? 3 : 5)}</div>
+                                {priceDiff.hasData && (
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className={cn("text-[10px] font-bold", priceDiff.isPositive ? "text-emerald-400" : "text-rose-400")}>{priceDiff.pips >= 0 ? '+' : ''}{priceDiff.pips.toFixed(1)} pips</span>
+                                    <span className={cn("text-[10px]", priceDiff.isPositive ? "text-emerald-400/70" : "text-rose-400/70")}>({priceDiff.percent >= 0 ? '+' : ''}{priceDiff.percent.toFixed(3)}%)</span>
+                                  </div>
+                                )}
+                                <PriceAge timestamp={quote.timestamp} />
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        )}
+
+                        {/* Technical Indicators */}
+                        <Collapsible>
+                          <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Indicadores</span>
+                            <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="px-3 pb-2 border-b border-slate-700/30 space-y-2">
+                              {/* RSI */}
+                              {marketData?.rsi14 !== null && marketData?.rsi14 !== undefined && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">RSI (14)</div>
+                                  <div className={cn("text-sm font-bold", marketData.rsi14 > 70 ? 'text-rose-400' : marketData.rsi14 < 30 ? 'text-emerald-400' : 'text-cyan-200')}>{marketData.rsi14.toFixed(1)}</div>
+                                  <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
+                                    <div className="h-full rounded-full transition-all" style={{ width: `${marketData.rsi14}%`, background: marketData.rsi14 > 70 ? 'hsl(0,70%,55%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(195,100%,50%)' }} />
+                                  </div>
+                                  <span className="text-[9px] mt-0.5 block" style={{ color: marketData.rsi14 > 70 ? 'hsl(0,70%,60%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(45,80%,55%)' }}>
+                                    {marketData.rsi14 > 70 ? 'Sobrecompra' : marketData.rsi14 < 30 ? 'Sobreventa' : 'Neutral'}
+                                  </span>
+                                </div>
+                              )}
+                              {/* MACD */}
+                              {marketData?.macdHistogram !== null && marketData?.macdHistogram !== undefined && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">MACD</div>
+                                  <div className={cn("text-sm font-bold", marketData.macdHistogram >= 0 ? 'text-emerald-400' : 'text-rose-400')}>{marketData.macdHistogram >= 0 ? '+' : ''}{marketData.macdHistogram.toFixed(5)}</div>
+                                  <span className={cn("text-[9px]", marketData.macdHistogram >= 0 ? 'text-emerald-400/60' : 'text-rose-400/60')}>{marketData.macdHistogram >= 0 ? '▲ Alcista' : '▼ Bajista'}</span>
+                                </div>
+                              )}
+                              {/* Volatility */}
+                              {marketData?.volatility && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Volatilidad</div>
+                                  <div className={cn("text-xs font-bold", marketData.volatility === 'low' ? 'text-emerald-400' : marketData.volatility === 'moderate' ? 'text-yellow-400' : marketData.volatility === 'high' ? 'text-orange-400' : 'text-rose-400')}>
+                                    {marketData.volatility === 'low' ? '🟢 Baja' : marketData.volatility === 'moderate' ? '🟡 Moderada' : marketData.volatility === 'high' ? '🟠 Alta' : '🔴 Extrema'}
+                                  </div>
+                                  {marketData.atr14 !== null && <span className="text-[9px] text-slate-500 block mt-0.5">ATR: {marketData.atr14.toFixed(isJpy ? 3 : 5)}</span>}
+                                </div>
+                              )}
+                              {/* Spread */}
+                              {marketData?.spreadPips !== null && marketData?.spreadPips !== undefined && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Spread</div>
+                                  <div className="text-sm font-bold text-cyan-200">{marketData.spreadPips.toFixed(1)} <span className="text-[9px] text-slate-500">pips</span></div>
+                                  {marketData.bid !== null && marketData.ask !== null && <div className="text-[9px] text-slate-500 mt-0.5">Bid: {marketData.bid.toFixed(isJpy ? 3 : 5)} / Ask: {marketData.ask.toFixed(isJpy ? 3 : 5)}</div>}
+                                </div>
+                              )}
+                              {/* ADX */}
+                              {marketData?.adx14 !== null && marketData?.adx14 !== undefined && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">ADX (14)</div>
+                                  <div className={cn("text-sm font-bold", marketData.adx14 > 40 ? 'text-emerald-400' : marketData.adx14 > 20 ? 'text-yellow-400' : 'text-slate-400')}>{marketData.adx14.toFixed(1)}</div>
+                                  <span className="text-[9px] text-slate-500">{marketData.adx14 > 40 ? 'Tendencia Fuerte' : marketData.adx14 > 20 ? 'Tendencia Moderada' : 'Sin Tendencia'}</span>
+                                </div>
+                              )}
+                              {/* Stochastic */}
+                              {marketData?.stochK !== null && marketData?.stochK !== undefined && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Estocástico</div>
+                                  <div className={cn("text-xs font-bold", marketData.stochK > 80 ? 'text-rose-400' : marketData.stochK < 20 ? 'text-emerald-400' : 'text-cyan-200')}>K: {marketData.stochK.toFixed(0)} / D: {(marketData.stochD ?? 0).toFixed(0)}</div>
+                                  <span className="text-[9px] text-slate-500">{marketData.stochK > 80 ? 'Sobrecompra' : marketData.stochK < 20 ? 'Sobreventa' : 'Neutral'}</span>
+                                </div>
+                              )}
+                              {/* Bollinger */}
+                              {marketData?.bollingerUpper !== null && marketData?.bollingerUpper !== undefined && (
+                                <div>
+                                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Bollinger</div>
+                                  <div className="space-y-0.5 text-[10px] font-mono">
+                                    <div className="flex justify-between"><span className="text-slate-500">Superior</span><span className="text-emerald-300">{marketData.bollingerUpper.toFixed(isJpy ? 3 : 5)}</span></div>
+                                    <div className="flex justify-between"><span className="text-slate-500">Media</span><span className="text-cyan-300">{(marketData.bollingerMiddle ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
+                                    <div className="flex justify-between"><span className="text-slate-500">Inferior</span><span className="text-rose-300">{(marketData.bollingerLower ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                        }
-                          <PriceAge timestamp={quote.timestamp} />
-                        </div>
-                      }
-
-                        {/* RSI */}
-                        {marketData?.rsi14 !== null && marketData?.rsi14 !== undefined &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">RSI (14)</div>
-                          <div className={cn("text-sm font-bold",
-                        marketData.rsi14 > 70 ? 'text-rose-400' : marketData.rsi14 < 30 ? 'text-emerald-400' : 'text-cyan-200'
-                        )}>
-                            {marketData.rsi14.toFixed(1)}
-                          </div>
-                          <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
-                            <div className="h-full rounded-full transition-all" style={{
-                            width: `${marketData.rsi14}%`,
-                            background: marketData.rsi14 > 70 ? 'hsl(0,70%,55%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(195,100%,50%)'
-                          }} />
-                          </div>
-                          <span className="text-[9px] mt-0.5 block" style={{ color: marketData.rsi14 > 70 ? 'hsl(0,70%,60%)' : marketData.rsi14 < 30 ? 'hsl(135,70%,50%)' : 'hsl(45,80%,55%)' }}>
-                            {marketData.rsi14 > 70 ? 'Sobrecompra' : marketData.rsi14 < 30 ? 'Sobreventa' : 'Neutral'}
-                          </span>
-                        </div>
-                      }
-
-                        {/* MACD */}
-                        {marketData?.macdHistogram !== null && marketData?.macdHistogram !== undefined &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">MACD</div>
-                          <div className={cn("text-sm font-bold", marketData.macdHistogram >= 0 ? 'text-emerald-400' : 'text-rose-400')}>
-                            {marketData.macdHistogram >= 0 ? '+' : ''}{marketData.macdHistogram.toFixed(5)}
-                          </div>
-                          <span className={cn("text-[9px]", marketData.macdHistogram >= 0 ? 'text-emerald-400/60' : 'text-rose-400/60')}>
-                            {marketData.macdHistogram >= 0 ? '▲ Alcista' : '▼ Bajista'}
-                          </span>
-                        </div>
-                      }
-
-                        {/* Volatility */}
-                        {marketData?.volatility &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Volatilidad</div>
-                          <div className={cn("text-xs font-bold",
-                        marketData.volatility === 'low' ? 'text-emerald-400' :
-                        marketData.volatility === 'moderate' ? 'text-yellow-400' :
-                        marketData.volatility === 'high' ? 'text-orange-400' : 'text-rose-400'
-                        )}>
-                            {marketData.volatility === 'low' ? '🟢 Baja' :
-                          marketData.volatility === 'moderate' ? '🟡 Moderada' :
-                          marketData.volatility === 'high' ? '🟠 Alta' : '🔴 Extrema'}
-                          </div>
-                          {marketData.atr14 !== null &&
-                        <span className="text-[9px] text-slate-500 block mt-0.5">ATR: {marketData.atr14.toFixed(isJpy ? 3 : 5)}</span>
-                        }
-                        </div>
-                      }
-
-                        {/* Spread */}
-                        {marketData?.spreadPips !== null && marketData?.spreadPips !== undefined &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[110px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Spread</div>
-                          <div className="text-sm font-bold text-cyan-200">{marketData.spreadPips.toFixed(1)} <span className="text-[9px] text-slate-500">pips</span></div>
-                          {marketData.bid !== null && marketData.ask !== null &&
-                        <div className="text-[9px] text-slate-500 mt-0.5">
-                              Bid: {marketData.bid.toFixed(isJpy ? 3 : 5)} / Ask: {marketData.ask.toFixed(isJpy ? 3 : 5)}
-                            </div>
-                        }
-                        </div>
-                      }
-
-                        {/* ADX */}
-                        {marketData?.adx14 !== null && marketData?.adx14 !== undefined &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">ADX (14)</div>
-                          <div className={cn("text-sm font-bold",
-                        marketData.adx14 > 40 ? 'text-emerald-400' : marketData.adx14 > 20 ? 'text-yellow-400' : 'text-slate-400'
-                        )}>
-                            {marketData.adx14.toFixed(1)}
-                          </div>
-                          <span className="text-[9px] text-slate-500">
-                            {marketData.adx14 > 40 ? 'Tendencia Fuerte' : marketData.adx14 > 20 ? 'Tendencia Moderada' : 'Sin Tendencia'}
-                          </span>
-                        </div>
-                      }
-
-                        {/* Stochastic */}
-                        {marketData?.stochK !== null && marketData?.stochK !== undefined &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Estocástico</div>
-                          <div className={cn("text-xs font-bold",
-                        marketData.stochK > 80 ? 'text-rose-400' : marketData.stochK < 20 ? 'text-emerald-400' : 'text-cyan-200'
-                        )}>
-                            K: {marketData.stochK.toFixed(0)} / D: {(marketData.stochD ?? 0).toFixed(0)}
-                          </div>
-                          <span className="text-[9px] text-slate-500">
-                            {marketData.stochK > 80 ? 'Sobrecompra' : marketData.stochK < 20 ? 'Sobreventa' : 'Neutral'}
-                          </span>
-                        </div>
-                      }
-
-                        {/* Bollinger Bands */}
-                        {marketData?.bollingerUpper !== null && marketData?.bollingerUpper !== undefined &&
-                      <div className="p-3 border-r md:border-r-0 md:border-b border-slate-700/30 min-w-[140px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Bollinger</div>
-                          <div className="space-y-0.5 text-[10px] font-mono">
-                            <div className="flex justify-between"><span className="text-slate-500">Superior</span><span className="text-emerald-300">{marketData.bollingerUpper.toFixed(isJpy ? 3 : 5)}</span></div>
-                            <div className="flex justify-between"><span className="text-slate-500">Media</span><span className="text-cyan-300">{(marketData.bollingerMiddle ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
-                            <div className="flex justify-between"><span className="text-slate-500">Inferior</span><span className="text-rose-300">{(marketData.bollingerLower ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
-                          </div>
-                        </div>
-                      }
+                          </CollapsibleContent>
+                        </Collapsible>
 
                         {/* Overall Signal */}
-                        {marketData?.overallSignal &&
-                      <div className="p-3 min-w-[120px] md:min-w-0">
-                          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Señal Global</div>
-                          <div className={cn(
-                          "text-xs font-bold text-center py-1.5 rounded",
-                          marketData.overallSignal === 'strong_buy' || marketData.overallSignal === 'buy' ? "text-emerald-400 bg-emerald-500/10" :
-                          marketData.overallSignal === 'strong_sell' || marketData.overallSignal === 'sell' ? "text-rose-400 bg-rose-500/10" :
-                          "text-amber-400 bg-amber-500/10"
-                        )}>
-                            {marketData.overallSignal === 'strong_buy' ? '🟢 Compra Fuerte' :
-                          marketData.overallSignal === 'buy' ? '🟢 Compra' :
-                          marketData.overallSignal === 'strong_sell' ? '🔴 Venta Fuerte' :
-                          marketData.overallSignal === 'sell' ? '🔴 Venta' : '🟡 Neutral'}
-                          </div>
-                        </div>
-                      }
+                        {marketData?.overallSignal && (
+                          <Collapsible defaultOpen>
+                            <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
+                              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Señal Global</span>
+                              <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="px-3 pb-2">
+                                <div className={cn(
+                                  "text-xs font-bold text-center py-1.5 rounded",
+                                  marketData.overallSignal === 'strong_buy' || marketData.overallSignal === 'buy' ? "text-emerald-400 bg-emerald-500/10" :
+                                  marketData.overallSignal === 'strong_sell' || marketData.overallSignal === 'sell' ? "text-rose-400 bg-rose-500/10" :
+                                  "text-amber-400 bg-amber-500/10"
+                                )}>
+                                  {marketData.overallSignal === 'strong_buy' ? '🟢 Compra Fuerte' :
+                                  marketData.overallSignal === 'buy' ? '🟢 Compra' :
+                                  marketData.overallSignal === 'strong_sell' ? '🔴 Venta Fuerte' :
+                                  marketData.overallSignal === 'sell' ? '🔴 Venta' : '🟡 Neutral'}
+                                </div>
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        )}
+
                       </div>
                     </div>
                   </div>
