@@ -21,6 +21,18 @@ interface NewsItem {
   relevance_score: number;
 }
 
+// Blocked domains — articles from these sites are excluded entirely
+const BLOCKED_DOMAINS = ['forexcrunch.com'];
+
+function isBlockedUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return BLOCKED_DOMAINS.some(d => hostname === d || hostname.endsWith('.' + d));
+  } catch {
+    return false;
+  }
+}
+
 // Source logos mapping
 const SOURCE_LOGOS: Record<string, string> = {
   'Reuters': 'https://logo.clearbit.com/reuters.com',
@@ -216,10 +228,10 @@ async function fetchFinnhubNews(apiKey: string): Promise<NewsItem[]> {
       }
     }
 
-    // Sort by date, take top 30
+    // Sort by date, take top 40 (increased to compensate for blocked domains)
     allItems.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
     console.log(`[fetch-news] Finnhub total unique: ${allItems.length}`);
-    return allItems.slice(0, 30);
+    return allItems.slice(0, 40);
   } catch (error) {
     console.error('[fetch-news] Finnhub error:', error);
     return [];
@@ -631,7 +643,7 @@ async function fetchAlphaVantageNews(apiKey: string): Promise<NewsItem[]> {
 
     console.log(`[fetch-news] Alpha Vantage returned ${data.feed.length} items`);
 
-    return data.feed.slice(0, 20).map((item: any, i: number) => {
+    return data.feed.slice(0, 30).map((item: any, i: number) => {
       const text = `${item.title} ${item.summary || ''}`;
       
       // Use AV native sentiment
@@ -712,7 +724,8 @@ serve(async (req) => {
     const results = await Promise.allSettled(newsPromises);
     let allNews = results
       .filter((r): r is PromiseFulfilledResult<NewsItem[]> => r.status === 'fulfilled')
-      .flatMap(r => r.value);
+      .flatMap(r => r.value)
+      .filter(item => !isBlockedUrl(item.url));
 
     // Filter by date if specified (match by calendar day)
     if (date) {
