@@ -238,7 +238,7 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
         <div className="mb-3">
             <div className="flex items-center gap-1.5 mb-1.5">
               <Newspaper className="w-3 h-3 text-blue-400" />
-              <span className="text-[9px] text-cyan-300/50 uppercase tracking-wider">Titulares en Tiempo Real</span>
+              
             </div>
             <div className="space-y-1">
               {(data as any).headlines.slice(0, 5).map((h: any, i: number) => {
