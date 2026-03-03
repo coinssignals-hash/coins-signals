@@ -9,8 +9,7 @@ interface Props {
   loading: boolean;
 }
 
-function ScoreGauge({ score, size = 64 }: {score: number;size?: number;}) {
-  // Map -100..100 to 0..100 for the arc
+function ScoreGauge({ score, size = 80 }: {score: number;size?: number;}) {
   const normalized = (score + 100) / 2;
   const clampedPercent = Math.max(0, Math.min(100, normalized));
   const isPositive = score > 0;
@@ -33,16 +32,14 @@ function ScoreGauge({ score, size = 64 }: {score: number;size?: number;}) {
           strokeLinecap="round"
           strokeDasharray={`${clampedPercent * 0.942} ${100 * 0.942}`}
           style={{ filter: `drop-shadow(0 0 4px ${color})` }} />
-        
         <circle cx="18" cy="18" r="12" fill="hsl(225, 25%, 8%)" fillOpacity="0.9" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono text-sm font-extrabold" style={{ color, textShadow: `0 0 6px ${color}40` }}>
+        <span className="font-mono text-base font-extrabold" style={{ color, textShadow: `0 0 6px ${color}40` }}>
           {score > 0 ? "+" : ""}{score}
         </span>
       </div>
     </div>);
-
 }
 
 function SourceBar({
@@ -50,68 +47,60 @@ function SourceBar({
   label,
   score,
   detail
-
-
-
-
-
 }: {icon: React.ReactNode;label: string;score: number;detail: string;}) {
   const normalized = (score + 100) / 2;
   const isPositive = score > 0;
   const color = isPositive ? "hsl(135, 70%, 50%)" : score < -10 ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {icon}
-          <span className="text-[10px] font-semibold text-cyan-200">{label}</span>
+          <span className="text-xs font-semibold text-cyan-200">{label}</span>
         </div>
-        <span className="text-[11px] font-bold" style={{ color }}>
+        <span className="text-sm font-bold" style={{ color }}>
           {score > 0 ? "+" : ""}{score}
         </span>
       </div>
-      <div className="h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+      <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${Math.max(2, normalized)}%`, background: color }} />
-        
       </div>
-      <p className="text-[9px] text-cyan-300/50 leading-tight line-clamp-2">{detail}</p>
+      <p className="text-[11px] text-cyan-300/50 leading-relaxed line-clamp-3">{detail}</p>
     </div>);
-
 }
 
 function FlowComparison({ retail, institutional, detail }: {retail: number;institutional: number;detail: string;}) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <Users className="w-3 h-3 text-purple-400" />
-        <span className="text-[10px] font-semibold text-cyan-200">Flujo de Capital</span>
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <Users className="w-4 h-4 text-purple-400" />
+        <span className="text-xs font-semibold text-cyan-200">Flujo de Capital</span>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="text-[9px] text-cyan-300/60">Retail</span>
-            <span className="text-[10px] font-bold text-orange-400">{retail}%</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[11px] text-cyan-300/60">Retail</span>
+            <span className="text-xs font-bold text-orange-400">{retail}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+          <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
             <div className="h-full rounded-full bg-orange-400 transition-all duration-700" style={{ width: `${retail}%` }} />
           </div>
         </div>
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="text-[9px] text-cyan-300/60">Institucional</span>
-            <span className="text-[10px] font-bold text-blue-400">{institutional}%</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[11px] text-cyan-300/60">Institucional</span>
+            <span className="text-xs font-bold text-blue-400">{institutional}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+          <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
             <div className="h-full rounded-full bg-blue-400 transition-all duration-700" style={{ width: `${institutional}%` }} />
           </div>
         </div>
       </div>
-      <p className="text-[9px] text-cyan-300/50 leading-tight line-clamp-2">{detail}</p>
+      <p className="text-[11px] text-cyan-300/50 leading-relaxed line-clamp-3">{detail}</p>
     </div>);
-
 }
 
 function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSignal: string;trendStrength: string;smaAlignment: string;};}) {
@@ -119,7 +108,7 @@ function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSigna
   const macdColor = indicators.macdSignal === "bullish" ? "hsl(135, 70%, 50%)" : indicators.macdSignal === "bearish" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
 
   return (
-    <div className="grid grid-cols-4 gap-1.5 mt-1.5">
+    <div className="grid grid-cols-4 gap-2 mt-2">
       {[
       { label: "RSI", value: indicators.rsi.toString(), color: rsiColor },
       { label: "MACD", value: indicators.macdSignal === "bullish" ? "↑" : indicators.macdSignal === "bearish" ? "↓" : "→", color: macdColor },
@@ -128,15 +117,13 @@ function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSigna
       map((ind) =>
       <div
         key={ind.label}
-        className="text-center rounded-md py-1"
+        className="text-center rounded-md py-1.5"
         style={{ background: "hsla(210, 80%, 12%, 0.6)", border: "1px solid hsla(200, 60%, 35%, 0.15)" }}>
-        
-          <span className="text-[8px] text-cyan-300/50 block">{ind.label}</span>
-          <span className="text-[11px] font-bold" style={{ color: ind.color }}>{ind.value}</span>
+          <span className="text-[10px] text-cyan-300/50 block">{ind.label}</span>
+          <span className="text-sm font-bold" style={{ color: ind.color }}>{ind.value}</span>
         </div>
       )}
     </div>);
-
 }
 
 export function MarketSentimentDashboard({ data, loading }: Props) {
@@ -150,11 +137,9 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
           background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
           border: "1px solid hsla(200, 60%, 35%, 0.3)"
         }}>
-        
-        <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
-        <span className="text-[10px] text-cyan-300/60 uppercase tracking-wider">Analizando sentimiento del mercado...</span>
+        <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
+        <span className="text-xs text-cyan-300/60 uppercase tracking-wider">Analizando sentimiento del mercado...</span>
       </div>);
-
   }
 
   if (!data) return null;
@@ -180,67 +165,63 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
         background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
         border: "1px solid hsla(200, 60%, 35%, 0.3)"
       }}>
-      
       {/* Top glow */}
       <div
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
         style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
-      
 
-      <div className="p-3">
+      <div className="p-4">
         {/* Header */}
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <BarChart3 className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider">
+        <div className="flex items-center justify-center gap-2.5 mb-4">
+          <BarChart3 className="w-5 h-5 text-cyan-400" />
+          <span className="text-xs font-bold text-cyan-300 uppercase tracking-wider">
             Sentimiento del Mercado
           </span>
-          {loading && <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />}
-          {data.cached && <span className="text-[7px] text-cyan-400/40 uppercase">cache</span>}
+          {loading && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />}
+          {data.cached && <span className="text-[8px] text-cyan-400/40 uppercase">cache</span>}
           {(data as any).realData &&
           <div className="flex gap-0.5 ml-1">
-              {(data as any).realData.alphaVantage && <span className="text-[6px] px-1 py-px rounded bg-green-500/10 text-green-400/70">AV</span>}
-              {(data as any).realData.finnhub && <span className="text-[6px] px-1 py-px rounded bg-blue-500/10 text-blue-400/70">FH</span>}
-              {(data as any).realData.fmp && <span className="text-[6px] px-1 py-px rounded bg-purple-500/10 text-purple-400/70">FMP</span>}
-              {(data as any).realData.marketaux && <span className="text-[6px] px-1 py-px rounded bg-orange-500/10 text-orange-400/70">MX</span>}
+              {(data as any).realData.alphaVantage && <span className="text-[7px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400/70">AV</span>}
+              {(data as any).realData.finnhub && <span className="text-[7px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400/70">FH</span>}
+              {(data as any).realData.fmp && <span className="text-[7px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400/70">FMP</span>}
+              {(data as any).realData.marketaux && <span className="text-[7px] px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400/70">MX</span>}
             </div>
           }
         </div>
 
         {/* Overall Score + Label + Risk */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <ScoreGauge score={data.overallScore} size={56} />
+            <ScoreGauge score={data.overallScore} size={72} />
             <div>
-              <div className="flex items-center gap-1.5">
-                <OverallIcon className="w-4 h-4" style={{ color: overallColor }} />
-                <span className="text-sm font-bold" style={{ color: overallColor }}>
+              <div className="flex items-center gap-2">
+                <OverallIcon className="w-5 h-5" style={{ color: overallColor }} />
+                <span className="text-base font-bold" style={{ color: overallColor }}>
                   {data.overallLabel}
                 </span>
               </div>
-              <span className="text-[10px] text-cyan-300/50">
+              <span className="text-xs text-cyan-300/50">
                 Confianza: {data.confidence}%
               </span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" style={{ color: riskColors[data.riskLevel] }} />
-              <span className="text-[10px] font-bold uppercase" style={{ color: riskColors[data.riskLevel] }}>
+            <div className="flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4" style={{ color: riskColors[data.riskLevel] }} />
+              <span className="text-xs font-bold uppercase" style={{ color: riskColors[data.riskLevel] }}>
                 {data.riskLevel}
               </span>
             </div>
-            <span className="text-[8px] text-cyan-300/40">Riesgo</span>
+            <span className="text-[10px] text-cyan-300/40">Riesgo</span>
           </div>
         </div>
 
         {/* Real Headlines */}
         {(data as any).headlines?.length > 0 &&
-        <div className="mb-3">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              
-              
+        <div className="mb-4">
+            <div className="flex items-center gap-1.5 mb-2">
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {(data as any).headlines.slice(0, 5).map((h: any, i: number) => {
               const sentColor = h.sentiment != null ?
               h.sentiment > 0.1 ? "hsl(135, 70%, 50%)" : h.sentiment < -0.1 ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)" :
@@ -248,82 +229,58 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
               const Wrapper = h.url ? "a" : "div";
               const linkProps = h.url ? { href: h.url, target: "_blank", rel: "noopener noreferrer" } : {};
               return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             })}
             </div>
           </div>
         }
 
         {/* Source bars */}
-        <div className="space-y-2.5 mb-3">
+        <div className="space-y-3.5 mb-4">
           <SourceBar
-            icon={<Newspaper className="w-3 h-3 text-blue-400" />}
+            icon={<Newspaper className="w-4 h-4 text-blue-400" />}
             label="Noticias"
             score={data.sources.news.score}
             detail={data.sources.news.detail} />
-          
           <SourceBar
-            icon={<Activity className="w-3 h-3 text-green-400" />}
+            icon={<Activity className="w-4 h-4 text-green-400" />}
             label="Técnico"
             score={data.sources.technical.score}
             detail={data.sources.technical.detail} />
-          
           {data.sources.technical.indicators &&
           <TechnicalIndicators indicators={data.sources.technical.indicators} />
           }
           <SourceBar
-            icon={<TrendingUp className="w-3 h-3 text-yellow-400" />}
+            icon={<TrendingUp className="w-4 h-4 text-yellow-400" />}
             label="Calidad Señal"
             score={data.sources.signalQuality.score}
             detail={data.sources.signalQuality.detail} />
-          
           <SourceBar
-            icon={<Globe className="w-3 h-3 text-purple-400" />}
+            icon={<Globe className="w-4 h-4 text-purple-400" />}
             label="Macro"
             score={data.sources.macro.score}
             detail={data.sources.macro.detail} />
-          
           <FlowComparison
             retail={data.sources.flow.retailPercent ?? 50}
             institutional={data.sources.flow.institutionalPercent ?? 50}
             detail={data.sources.flow.detail ?? ""} />
-          
         </div>
 
         {/* Key Drivers */}
         {data.keyDrivers?.length > 0 &&
-        <div className="mb-3">
-            <span className="text-[9px] text-cyan-300/50 uppercase tracking-wider block mb-1.5">
+        <div className="mb-4">
+            <span className="text-[11px] text-cyan-300/50 uppercase tracking-wider block mb-2">
               Factores Clave
             </span>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1.5">
               {data.keyDrivers.map((driver, i) =>
             <span
               key={i}
-              className="text-[9px] px-2 py-0.5 rounded-full"
+              className="text-[11px] px-2.5 py-1 rounded-full"
               style={{
                 background: "hsla(200, 60%, 20%, 0.5)",
                 border: "1px solid hsla(200, 60%, 35%, 0.25)",
                 color: "hsl(195, 80%, 70%)"
               }}>
-              
                   {driver}
                 </span>
             )}
@@ -333,20 +290,18 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
 
         {/* Recommendation */}
         <div
-          className="rounded-md p-2.5"
+          className="rounded-md p-3"
           style={{
             background: "hsla(210, 60%, 10%, 0.8)",
             border: "1px solid hsla(200, 60%, 35%, 0.2)"
           }}>
-          
-          <span className="text-[9px] text-yellow-400/80 uppercase tracking-wider block mb-1">
+          <span className="text-[11px] text-yellow-400/80 uppercase tracking-wider block mb-1.5">
             💡 Recomendación
           </span>
-          <p className="text-[10px] text-cyan-100 leading-relaxed">
+          <p className="text-xs text-cyan-100 leading-relaxed">
             {data.recommendation}
           </p>
         </div>
       </div>
     </div>);
-
 }
