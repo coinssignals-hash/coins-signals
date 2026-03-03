@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain } from 'lucide-react';
+import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain, PlusCircle } from 'lucide-react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { SignalCard } from '@/components/signals/SignalCard';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
@@ -18,6 +18,7 @@ import { AICenter } from '@/components/signals/ai-center/AICenter';
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { format, addDays, subDays, startOfWeek, startOfDay, parseISO, isToday, isTomorrow, isYesterday, isSameDay } from 'date-fns';
 import { es, enUS, ptBR, fr } from 'date-fns/locale';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -93,6 +94,7 @@ export default function Signals() {
   const { signals, loading, error } = useSignals();
   const { isFavorite, toggleFavorite, favoriteIds, isAuthenticated } = useFavoriteSignals();
   const { user, profile } = useAuth();
+  const { isAdmin } = useUserRole();
 
   // Persist view mode
   useEffect(() => {
@@ -215,6 +217,15 @@ export default function Signals() {
           </div>
 
           <div className="flex items-center gap-1">
+            {isAdmin && (
+              <button
+                onClick={() => navigate('/create-signal')}
+                className="p-2.5 rounded-full transition-colors active:scale-95 text-accent hover:text-accent/80 hover:bg-accent/10"
+                title="Crear Señal (Admin)"
+              >
+                <PlusCircle className="w-5 h-5" />
+              </button>
+            )}
             <button
               onClick={() => setShowAICenter(!showAICenter)}
               className={cn(

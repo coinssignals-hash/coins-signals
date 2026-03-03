@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
       isAuthed = true;
     }
     
-    // Method 2: Supabase JWT (for frontend calls)
+    // Method 2: Supabase JWT (for frontend calls) — must be admin
     if (!isAuthed && authHeader) {
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -84,7 +84,16 @@ Deno.serve(async (req) => {
       const token = authHeader.replace('Bearer ', '');
       const { data: { user }, error: authError } = await authClient.auth.getUser(token);
       if (user && !authError) {
-        isAuthed = true;
+        // Check admin role
+        const { data: hasAdmin } = await authClient
+          .from('user_roles')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        if (hasAdmin) {
+          isAuthed = true;
+        }
       }
     }
     

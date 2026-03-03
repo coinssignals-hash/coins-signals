@@ -2,9 +2,10 @@ import { useState, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2, Eye, EyeOff, Download, Image } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Send, Loader2, Eye, EyeOff, Download, Image, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const POPULAR_PAIRS = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'NZD/USD', 'USD/CAD',
@@ -13,6 +14,7 @@ const POPULAR_PAIRS = [
 
 export default function CreateSignal() {
   const navigate = useNavigate();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const [currencyPair, setCurrencyPair] = useState('');
   const [action, setAction] = useState<'BUY' | 'SELL'>('BUY');
   const [entryPrice, setEntryPrice] = useState('');
@@ -124,6 +126,36 @@ export default function CreateSignal() {
       setDownloadingChart(false);
     }
   }, [currencyPair, tp, sl]);
+
+  if (roleLoading) {
+    return (
+      <PageShell showBottomNav={false}>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <PageShell showBottomNav={false}>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center gap-4">
+          <ShieldAlert className="w-16 h-16 text-destructive/60" />
+          <h2 className="text-xl font-bold text-foreground">Acceso Restringido</h2>
+          <p className="text-muted-foreground text-sm max-w-xs">
+            Solo los administradores pueden crear señales de trading.
+          </p>
+          <button
+            onClick={() => navigate('/signals')}
+            className="mt-4 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition-all"
+          >
+            Volver a Señales
+          </button>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell showBottomNav={false}>
