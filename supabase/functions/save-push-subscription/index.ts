@@ -32,6 +32,30 @@ serve(async (req) => {
       );
     }
 
+    // Validate endpoint is a valid HTTPS URL
+    try {
+      const endpointUrl = new URL(payload.subscription.endpoint);
+      if (endpointUrl.protocol !== 'https:') {
+        return new Response(
+          JSON.stringify({ error: 'Endpoint must use HTTPS' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid endpoint URL' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate key lengths
+    if (payload.subscription.keys.p256dh.length < 10 || payload.subscription.keys.auth.length < 10) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid subscription keys' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);

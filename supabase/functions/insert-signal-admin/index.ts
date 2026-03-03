@@ -64,6 +64,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Verify API key authentication
+    const apiKey = req.headers.get('x-api-key');
+    const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
+    if (!apiKey || !expectedApiKey || apiKey !== expectedApiKey) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const payload = await req.json();
 
     if (!payload.currency_pair || !payload.entry_price || !payload.take_profit || !payload.stop_loss) {
