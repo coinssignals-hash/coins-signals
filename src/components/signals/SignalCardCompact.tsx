@@ -219,6 +219,8 @@ export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite
       <TargetProgressBar
         entryPrice={signal.entryPrice}
         takeProfit={signal.takeProfit}
+        takeProfit2={signal.takeProfit2}
+        takeProfit3={signal.takeProfit3}
         stopLoss={signal.stopLoss}
         currentPrice={currentPrice}
         action={signal.action}

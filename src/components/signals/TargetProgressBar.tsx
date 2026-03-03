@@ -5,6 +5,8 @@ import { Target, ShieldAlert } from 'lucide-react';
 interface TargetProgressBarProps {
   entryPrice: number;
   takeProfit: number;
+  takeProfit2?: number;
+  takeProfit3?: number;
   stopLoss: number;
   currentPrice: number | null;
   action: 'BUY' | 'SELL';
@@ -27,6 +29,8 @@ type PriceZone = 'tp' | 'entry' | 'sl';
 export function TargetProgressBar({
   entryPrice,
   takeProfit,
+  takeProfit2,
+  takeProfit3,
   stopLoss,
   currentPrice,
   action,
@@ -44,12 +48,19 @@ export function TargetProgressBar({
   const displayPrice = isCompleted && closedPrice ? closedPrice : currentPrice;
 
   const isBuy = action === 'BUY';
-  const totalRange = Math.abs(takeProfit - stopLoss);
+  // Extend range to include TP2/TP3 if present
+  const maxTP = takeProfit3 ?? takeProfit2 ?? takeProfit;
+  const totalRange = isBuy
+    ? Math.abs(maxTP - stopLoss)
+    : Math.abs(stopLoss - maxTP);
   const hasRange = totalRange > 0;
 
-  // Calculate position as percentage (0% = SL, 50% = Entry, 100% = TP)
+  // Calculate position as percentage (0% = SL, 100% = max TP)
   let position = 0;
   let entryPosition = 0;
+  let tp1Position = 0;
+  let tp2Position: number | null = null;
+  let tp3Position: number | null = null;
   let isAboveEntry = false;
   let nearEntry = true;
   let progressColor = 'hsl(45, 80%, 55%)';
@@ -58,25 +69,23 @@ export function TargetProgressBar({
   let targetLabel = 'ENTRY';
   let targetPercent = 0;
 
+  const toPos = (price: number) => {
+    if (isBuy) return ((price - stopLoss) / totalRange) * 100;
+    return ((stopLoss - price) / totalRange) * 100;
+  };
+
   if (hasRange) {
-    if (isBuy) {
-      entryPosition = ((entryPrice - stopLoss) / totalRange) * 100;
-    } else {
-      entryPosition = ((stopLoss - entryPrice) / totalRange) * 100;
-    }
-    entryPosition = Math.max(0, Math.min(100, entryPosition));
+    entryPosition = Math.max(0, Math.min(100, toPos(entryPrice)));
+    tp1Position = Math.max(0, Math.min(100, toPos(takeProfit)));
+    if (takeProfit2) tp2Position = Math.max(0, Math.min(100, toPos(takeProfit2)));
+    if (takeProfit3) tp3Position = Math.max(0, Math.min(100, toPos(takeProfit3)));
     position = entryPosition;
   }
 
   const hasLivePrice = displayPrice !== null && Number.isFinite(displayPrice) && hasRange;
 
   if (hasLivePrice) {
-    if (isBuy) {
-      position = ((displayPrice - stopLoss) / totalRange) * 100;
-    } else {
-      position = ((stopLoss - displayPrice) / totalRange) * 100;
-    }
-    position = Math.max(0, Math.min(100, position));
+    position = Math.max(0, Math.min(100, toPos(displayPrice)));
 
     isAboveEntry = position > entryPosition;
     nearEntry = Math.abs(position - entryPosition) < 5;
@@ -217,6 +226,27 @@ export function TargetProgressBar({
           className="absolute top-0 bottom-0 w-0.5 bg-white/50 z-10"
           style={{ left: `${entryPosition}%` }}
         />
+        {/* TP1 marker */}
+        {(takeProfit2 || takeProfit3) && (
+          <div
+            className="absolute top-0 bottom-0 w-px bg-emerald-400/40 z-10"
+            style={{ left: `${tp1Position}%` }}
+          />
+        )}
+        {/* TP2 marker */}
+        {tp2Position !== null && (
+          <div
+            className="absolute top-0 bottom-0 w-px bg-emerald-400/30 z-10"
+            style={{ left: `${tp2Position}%` }}
+          />
+        )}
+        {/* TP3 marker */}
+        {tp3Position !== null && (
+          <div
+            className="absolute top-0 bottom-0 w-px bg-emerald-400/20 z-10"
+            style={{ left: `${tp3Position}%` }}
+          />
+        )}
         {/* Price position indicator (dot) with price label */}
         <div
           className={cn(
@@ -241,9 +271,7 @@ export function TargetProgressBar({
           )}
           {/* Dot */}
           <div
-            className={cn(
-              "w-3 h-3 rounded-full border-2 border-white/80 shadow-lg",
-            )}
+            className="w-3 h-3 rounded-full border-2 border-white/80 shadow-lg"
             style={{
               backgroundColor: progressColor,
               boxShadow: pulse
@@ -274,16 +302,29 @@ export function TargetProgressBar({
       </div>
 
       {/* Price labels */}
-      <div className="flex justify-between mt-1">
-        <span className="text-[9px] text-rose-400/60 font-mono tabular-nums">
+      <div className="relative mt-1 h-3">
+        <span className="absolute left-0 text-[9px] text-rose-400/60 font-mono tabular-nums">
           {stopLoss.toFixed(isJpy ? 2 : 3)}
         </span>
-        <span className="text-[9px] text-white/40 font-mono tabular-nums">
+        <span className="absolute text-[9px] text-white/40 font-mono tabular-nums -translate-x-1/2"
+          style={{ left: `${entryPosition}%` }}>
           {entryPrice.toFixed(isJpy ? 2 : 3)}
         </span>
-        <span className="text-[9px] text-emerald-400/60 font-mono tabular-nums">
+        <span className="absolute text-[9px] text-emerald-400/60 font-mono tabular-nums -translate-x-1/2"
+          style={{ left: `${tp1Position}%` }}>
           {takeProfit.toFixed(isJpy ? 2 : 3)}
         </span>
+        {takeProfit2 && tp2Position !== null && (
+          <span className="absolute text-[9px] text-emerald-400/40 font-mono tabular-nums -translate-x-1/2"
+            style={{ left: `${tp2Position}%` }}>
+            TP2
+          </span>
+        )}
+        {takeProfit3 && tp3Position !== null && (
+          <span className="absolute right-0 text-[9px] text-emerald-400/30 font-mono tabular-nums">
+            TP3
+          </span>
+        )}
       </div>
     </div>
   );
