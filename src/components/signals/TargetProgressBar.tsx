@@ -115,6 +115,9 @@ export function TargetProgressBar({
   // Determine current zone
   const currentZone: PriceZone = !hasLivePrice ? 'entry' : nearEntry ? 'entry' : isAboveEntry ? 'tp' : 'sl';
 
+  // Did we cross from loss to profit or vice-versa?
+  const [crossed, setCrossed] = useState<'profit' | 'loss' | null>(null);
+
   // Detect zone transitions and trigger pulse animation
   useEffect(() => {
     if (!hasLivePrice || isCompleted) return;
@@ -127,7 +130,17 @@ export function TargetProgressBar({
           : 'hsl(45, 80%, 55%)';
       setPulseColor(color);
       setPulse(true);
-      const timer = setTimeout(() => setPulse(false), 1200);
+
+      // Detect profit ↔ loss crossing (entry is the boundary)
+      const wasLosing = prevZoneRef.current === 'sl';
+      const wasWinning = prevZoneRef.current === 'tp';
+      if (currentZone === 'tp' && (wasLosing || prevZoneRef.current === 'entry')) {
+        setCrossed('profit');
+      } else if (currentZone === 'sl' && (wasWinning || prevZoneRef.current === 'entry')) {
+        setCrossed('loss');
+      }
+
+      const timer = setTimeout(() => { setPulse(false); setCrossed(null); }, 1400);
       return () => clearTimeout(timer);
     }
     prevZoneRef.current = currentZone;
@@ -143,10 +156,23 @@ export function TargetProgressBar({
   if (compact) {
     return (
       <div className={cn("w-full px-4 pb-2 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
-        <div className="relative h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+        <div className="relative h-1.5 rounded-full bg-slate-800/80">
+          {/* Zone-cross flash overlay */}
+          {crossed && (
+            <div
+              className="absolute inset-0 rounded-full z-20 animate-[zone-cross-flash_1.4s_ease-out_forwards]"
+              style={{ background: crossed === 'profit'
+                ? 'linear-gradient(90deg, transparent 30%, hsla(142, 70%, 50%, 0.5) 100%)'
+                : 'linear-gradient(90deg, hsla(0, 70%, 55%, 0.5) 0%, transparent 70%)'
+              }}
+            />
+          )}
           {/* Entry marker */}
           <div
-            className="absolute top-0 bottom-0 w-px bg-white/40 z-10"
+            className={cn(
+              "absolute top-0 bottom-0 w-px z-10 transition-all duration-500",
+              crossed ? "bg-white/80 shadow-[0_0_8px_rgba(255,255,255,0.6)]" : "bg-white/40"
+            )}
             style={{ left: `${entryPosition}%` }}
           />
           {/* Progress fill */}
@@ -161,13 +187,6 @@ export function TargetProgressBar({
               ...(pulse ? { boxShadow: `0 0 12px ${pulseColor}` } : {}),
             }}
           />
-          {/* Pulse ripple overlay */}
-          {pulse && (
-            <div
-              className="absolute inset-0 rounded-full animate-[ripple-expand_1.2s_ease-out_forwards] opacity-0"
-              style={{ background: `radial-gradient(circle, ${pulseColor}40 0%, transparent 70%)` }}
-            />
-          )}
         </div>
         <div className="flex justify-between mt-1">
           <span className={cn("text-[8px] font-mono", isBuy ? "text-rose-400/70" : "text-emerald-400/70")}>{isBuy ? 'SL' : 'TP'}</span>
@@ -243,9 +262,22 @@ export function TargetProgressBar({
           : 'linear-gradient(90deg, hsla(142, 70%, 25%, 0.4) 0%, hsla(210, 30%, 15%, 0.6) 50%, hsla(0, 70%, 25%, 0.4) 100%)'
         }}
       >
+        {/* Zone-cross flash overlay */}
+        {crossed && (
+          <div
+            className="absolute inset-0 rounded-full z-30 animate-[zone-cross-flash_1.4s_ease-out_forwards]"
+            style={{ background: crossed === 'profit'
+              ? 'linear-gradient(90deg, transparent 30%, hsla(142, 70%, 50%, 0.4) 100%)'
+              : 'linear-gradient(90deg, hsla(0, 70%, 55%, 0.4) 0%, transparent 70%)'
+            }}
+          />
+        )}
         {/* Entry marker */}
         <div
-          className="absolute top-0 bottom-0 w-0.5 bg-white/50 z-10"
+          className={cn(
+            "absolute top-0 bottom-0 w-0.5 z-10 transition-all duration-500",
+            crossed ? "bg-white shadow-[0_0_10px_rgba(255,255,255,0.7)]" : "bg-white/50"
+          )}
           style={{ left: `${entryPosition}%` }}
         />
         {/* TP1 marker */}
