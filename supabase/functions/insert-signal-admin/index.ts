@@ -116,23 +116,30 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Insert signal first
+    const insertData: Record<string, unknown> = {
+      currency_pair: payload.currency_pair,
+      datetime: new Date().toISOString(),
+      status: payload.status || 'active',
+      probability: payload.probability || 50,
+      trend: payload.trend || 'bullish',
+      action: payload.action || 'BUY',
+      entry_price: payload.entry_price,
+      take_profit: payload.take_profit,
+      stop_loss: payload.stop_loss,
+      support: payload.support,
+      resistance: payload.resistance,
+      session_data: [],
+      analysis_data: [],
+    };
+
+    // Optional new fields
+    if (payload.take_profit_2 !== undefined) insertData.take_profit_2 = payload.take_profit_2;
+    if (payload.take_profit_3 !== undefined) insertData.take_profit_3 = payload.take_profit_3;
+    if (payload.notes !== undefined) insertData.notes = payload.notes;
+
     const { data, error } = await supabase
       .from('trading_signals')
-      .insert({
-        currency_pair: payload.currency_pair,
-        datetime: new Date().toISOString(),
-        status: payload.status || 'active',
-        probability: payload.probability || 50,
-        trend: payload.trend || 'bullish',
-        action: payload.action || 'BUY',
-        entry_price: payload.entry_price,
-        take_profit: payload.take_profit,
-        stop_loss: payload.stop_loss,
-        support: payload.support,
-        resistance: payload.resistance,
-        session_data: [],
-        analysis_data: [],
-      })
+      .insert(insertData)
       .select()
       .single();
 
