@@ -320,20 +320,28 @@ function buildChartSvg(
       parts.push(`<text x="${markerX}" y="${PRICE_TOP + 10}" fill="${SIG_ENTRY}" text-anchor="middle" font-size="8" font-family="monospace" font-weight="bold">${sigLblTxt}</text>`);
     }
 
-    // Shaded zones ONLY in the prediction area
+    // Shaded zones from signal marker to prediction zone end
     if (signalEntry && signalTP) {
       const entY = yOf(signalEntry);
       const tpY = yOf(signalTP);
       const zoneTop = Math.min(entY, tpY);
       const zoneH = Math.abs(entY - tpY);
-      parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(34,197,94,0.10)" />`);
+      const zoneX = signalStartX;
+      const zoneW = PRED_X2 - zoneX;
+      parts.push(`<rect x="${zoneX}" y="${zoneTop}" width="${zoneW}" height="${zoneH}" fill="rgba(34,197,94,0.07)" />`);
+      // Stronger shade in prediction zone
+      parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(34,197,94,0.06)" />`);
     }
     if (signalEntry && signalSL) {
       const entY = yOf(signalEntry);
       const slY = yOf(signalSL);
       const zoneTop = Math.min(entY, slY);
       const zoneH = Math.abs(entY - slY);
-      parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(239,68,68,0.10)" />`);
+      const zoneX = signalStartX;
+      const zoneW = PRED_X2 - zoneX;
+      parts.push(`<rect x="${zoneX}" y="${zoneTop}" width="${zoneW}" height="${zoneH}" fill="rgba(239,68,68,0.07)" />`);
+      // Stronger shade in prediction zone
+      parts.push(`<rect x="${PRED_X1}" y="${zoneTop}" width="${predZoneW}" height="${zoneH}" fill="rgba(239,68,68,0.06)" />`);
     }
 
     // TP line — starts from signal creation time into prediction zone
