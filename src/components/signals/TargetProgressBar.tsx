@@ -50,14 +50,17 @@ export function TargetProgressBar({
   const isBuy = action === 'BUY';
   // Extend range to include TP2/TP3 if present
   const maxTP = takeProfit3 ?? takeProfit2 ?? takeProfit;
-  const totalRange = isBuy
-    ? Math.abs(maxTP - stopLoss)
-    : Math.abs(stopLoss - maxTP);
-  const hasRange = totalRange > 0;
 
-  // Calculate position as percentage (0% = SL, 100% = max TP)
-  let position = 0;
-  let entryPosition = 0;
+  // Distances from entry to each side
+  const distToSL = Math.abs(entryPrice - stopLoss);
+  const distToTP = Math.abs(maxTP - entryPrice);
+  const hasRange = distToSL > 0 || distToTP > 0;
+
+  // Calculate position as percentage with entry ALWAYS at 50%
+  // Left half (0-50%) maps SL→Entry, Right half (50-100%) maps Entry→maxTP
+  // For SELL: left half = TP side, right half = SL side
+  let position = 50;
+  let entryPosition = 50;
   let tp1Position = 0;
   let tp2Position: number | null = null;
   let tp3Position: number | null = null;
@@ -69,10 +72,24 @@ export function TargetProgressBar({
   let targetLabel = 'ENTRY';
   let targetPercent = 0;
 
+  // Maps price to 0-100% with entry pinned at 50%
   const toPos = (price: number) => {
-    if (isBuy) return ((price - stopLoss) / totalRange) * 100;
-    // SELL: flip bar so TP is on left (0%), SL on right (100%)
-    return ((price - maxTP) / totalRange) * 100;
+    if (isBuy) {
+      // BUY: left=SL, center=entry, right=TP
+      if (price <= entryPrice) {
+        // SL side (0% to 50%)
+        return distToSL > 0 ? 50 - ((entryPrice - price) / distToSL) * 50 : 50;
+      }
+      // TP side (50% to 100%)
+      return distToTP > 0 ? 50 + ((price - entryPrice) / distToTP) * 50 : 50;
+    }
+    // SELL: left=TP, center=entry, right=SL
+    if (price >= entryPrice) {
+      // SL side (50% to 100%)
+      return distToSL > 0 ? 50 + ((price - entryPrice) / distToSL) * 50 : 50;
+    }
+    // TP side (0% to 50%)
+    return distToTP > 0 ? 50 - ((entryPrice - price) / distToTP) * 50 : 50;
   };
 
   if (hasRange) {
