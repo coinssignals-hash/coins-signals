@@ -47,11 +47,6 @@ function fmtTimeLabel(ts: string): string {
   return `${mm}/${dd} ${hh}:${min}`;
 }
 
-function fmtVolume(v: number): string {
-  if (v >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
-  if (v >= 1e3) return `${(v / 1e3).toFixed(1)}K`;
-  return v.toFixed(0);
-}
 
 /* ═══════════════════════════════════════════════════════
  *  Build SVG — dark navy style matching reference image
@@ -73,13 +68,10 @@ function buildChartSvg(
   const CHART_X2 = W - PAD.right;
   const CHART_W = CHART_X2 - CHART_X1;
 
-  // Price area & volume area
-  const VOL_SEP_Y = 560;
+  // Price area (full height, no volume)
   const PRICE_TOP = PAD.top;
-  const PRICE_H = VOL_SEP_Y - PRICE_TOP;
-  const VOL_TOP = VOL_SEP_Y + 12;
-  const VOL_BOTTOM = H - PAD.bottom;
-  const VOL_H = VOL_BOTTOM - VOL_TOP;
+  const PRICE_BOTTOM = H - PAD.bottom;
+  const PRICE_H = PRICE_BOTTOM - PRICE_TOP;
 
   // Colors
   const BG1 = '#050d1a';
@@ -111,16 +103,9 @@ function buildChartSvg(
   minP -= pp; maxP += pp;
   const totalRange = maxP - minP;
 
-  // Mock volume
-  const volumes = data.map((_, i) => 5e6 + Math.abs(Math.sin(i * 0.3)) * 50e6 + ((i * 7) % 10) * 1e6);
-  let maxVol = 0;
-  for (const v of volumes) if (v > maxVol) maxVol = v;
-  if (maxVol === 0) maxVol = 1;
-
   // Helpers
   const yOf = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
   const xOf = (i: number) => CHART_X1 + (i + 0.5) * (CHART_W / data.length);
-  const volYOf = (vol: number) => { const h = (vol / maxVol) * VOL_H; return { y: VOL_BOTTOM - h, h }; };
   const cw = CHART_W / data.length;
   const bodyW = Math.max(3, Math.min(14, cw * 0.8));
 
@@ -147,25 +132,13 @@ function buildChartSvg(
     parts.push(`<text x="${CHART_X1 - 5}" y="${y + 3}" fill="${TEXT_COL}" text-anchor="end" font-size="9" font-family="monospace">${fmtPrice(price, jpy)}</text>`);
   }
 
-  // Volume separator
-  parts.push(`<line x1="${CHART_X1}" y1="${VOL_SEP_Y}" x2="${CHART_X2}" y2="${VOL_SEP_Y}" stroke="${GRID}" stroke-width="0.8" shape-rendering="crispEdges"/>`);
-  parts.push(`<text x="${CHART_X1 + 4}" y="${VOL_SEP_Y + 12}" fill="#475569" font-size="8" font-family="sans-serif" font-weight="600">VOL</text>`);
-
-  // Volume grid
-  for (let i = 1; i <= 3; i++) {
-    const vv = (maxVol * i) / 3;
-    const { y } = volYOf(vv);
-    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${GRID}" stroke-width="0.5" opacity="0.3"/>`);
-    parts.push(`<text x="${CHART_X2 + 5}" y="${y + 3}" fill="${TEXT_COL}" font-size="8" font-family="monospace">${fmtVolume(vv)}</text>`);
-  }
-
   // Day separators + labels
   let prevDay = '';
   for (let i = 0; i < data.length; i++) {
     const dk = dayKey(data[i].time);
     if (dk !== prevDay) {
       const x = CHART_X1 + i * cw;
-      parts.push(`<line x1="${x}" y1="${PRICE_TOP}" x2="${x}" y2="${VOL_BOTTOM}" stroke="${GRID}" stroke-width="0.5" stroke-dasharray="2,6" shape-rendering="crispEdges"/>`);
+      parts.push(`<line x1="${x}" y1="${PRICE_TOP}" x2="${x}" y2="${PRICE_BOTTOM}" stroke="${GRID}" stroke-width="0.5" stroke-dasharray="2,6" shape-rendering="crispEdges"/>`);
       const d = new Date(data[i].time);
       const label = `${DAY_NAMES[d.getDay()]} ${d.getDate()}`;
       parts.push(`<text x="${x + 4}" y="${H - PAD.bottom + 15}" fill="${TEXT_COL}" font-size="10" font-family="sans-serif">${label}</text>`);
@@ -210,12 +183,6 @@ function buildChartSvg(
     parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${wC}" stroke-width="1" shape-rendering="crispEdges"/>`);
     parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="0.5" shape-rendering="crispEdges"/>`);
 
-    // Volume bar
-    const { y: vy, h: vh } = volYOf(volumes[i]);
-    const vc = isLastDay
-      ? (isUp ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)')
-      : (isUp ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)');
-    parts.push(`<rect x="${x - bodyW / 2}" y="${vy}" width="${bodyW}" height="${Math.max(1, vh)}" fill="${vc}" rx="0.3" shape-rendering="crispEdges"/>`);
   }
 
   // EMA overlays
@@ -290,17 +257,12 @@ export function CandlestickChart({
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; volume: string; crosshairX: number; relY: number } | null>(null);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; crosshairX: number; relY: number } | null>(null);
 
   // Chart layout constants (must match buildChartSvg)
   const SVG_W = 1200, SVG_H = 700;
   const CHART_X1 = 65, CHART_W = SVG_W - 110 - 65;
-  const VOL_SEP_Y = 560, PAD_TOP = 35;
-
-  const volumes = useMemo(() =>
-    data.map((_, i) => 5e6 + Math.abs(Math.sin(i * 0.3)) * 50e6 + ((i * 7) % 10) * 1e6),
-    [data]
-  );
+  const PRICE_BOTTOM_PX = SVG_H - 50, PAD_TOP = 35;
 
   // Price range for crosshair price label
   const priceRange = useMemo(() => {
@@ -321,18 +283,15 @@ export function CandlestickChart({
     const scaleY = SVG_H / rect.height;
     const svgX = (e.clientX - rect.left) * scaleX;
     const svgY = (e.clientY - rect.top) * scaleY;
-    if (svgX < CHART_X1 || svgX > CHART_X1 + CHART_W || svgY < PAD_TOP || svgY > VOL_SEP_Y) {
+    if (svgX < CHART_X1 || svgX > CHART_X1 + CHART_W || svgY < PAD_TOP || svgY > PRICE_BOTTOM_PX) {
       setTooltip(null); return;
     }
     const cw = CHART_W / data.length;
     const idx = Math.floor((svgX - CHART_X1) / cw);
     if (idx < 0 || idx >= data.length) { setTooltip(null); return; }
-    const vol = volumes[idx];
-    const volStr = vol >= 1e6 ? `${(vol / 1e6).toFixed(1)}M` : vol >= 1e3 ? `${(vol / 1e3).toFixed(1)}K` : vol.toFixed(0);
-    // Snap crosshair X to candle center
     const candleCenterPx = (CHART_X1 + (idx + 0.5) * cw) / scaleX;
-    setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, candle: data[idx], volume: volStr, crosshairX: candleCenterPx, relY: e.clientY - rect.top });
-  }, [data, volumes]);
+    setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, candle: data[idx], crosshairX: candleCenterPx, relY: e.clientY - rect.top });
+  }, [data]);
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
@@ -409,13 +368,13 @@ export function CandlestickChart({
           const w = containerRef.current!.clientWidth;
           const scaleY = SVG_H / h;
           const chartTopPx = PAD_TOP / scaleY;
-          const chartBottomPx = VOL_SEP_Y / scaleY;
+          const chartBottomPx = PRICE_BOTTOM_PX / scaleY;
           // Price from Y position
           const svgY = tooltip.relY * scaleY;
           const priceAtY = priceRange
-            ? priceRange.max - ((svgY - PAD_TOP) / (VOL_SEP_Y - PAD_TOP)) * (priceRange.max - priceRange.min)
+            ? priceRange.max - ((svgY - PAD_TOP) / (PRICE_BOTTOM_PX - PAD_TOP)) * (priceRange.max - priceRange.min)
             : null;
-          const showPriceLabel = priceAtY !== null && svgY >= PAD_TOP && svgY <= VOL_SEP_Y;
+          const showPriceLabel = priceAtY !== null && svgY >= PAD_TOP && svgY <= PRICE_BOTTOM_PX;
           return (
             <>
               {/* Vertical line snapped to candle */}
@@ -497,8 +456,6 @@ export function CandlestickChart({
                 <span className={cn('text-right font-semibold', isUp ? 'text-green-400' : 'text-red-400')}>
                   {fmtPrice(tooltipCandle.close, jpy)}
                 </span>
-                <span className="text-slate-500">Vol</span>
-                <span className="text-blue-400 text-right">{tooltip.volume}</span>
               </div>
             </div>
           </div>
