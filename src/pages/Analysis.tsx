@@ -98,8 +98,8 @@ export default function Analysis() {
   const [activePanel, setActivePanel] = useState('tecnico');
   const [activeChart, setActiveChart] = useState('price');
   const [alertConfig, setAlertConfig] = useState<AlertConfig>({
-    rsiOverbought: 70, rsiOversold: 30, enableRSI: true, enableMACD: true,
-    enableSMACross: true, enableSupportResistance: true, srProximityPercent: 5,
+    rsiOverbought: 70, rsiOversold: 30, enableRSI: false, enableMACD: false,
+    enableSMACross: false, enableSupportResistance: false, srProximityPercent: 5,
     srEnableSound: true, enablePatternAlerts: true,
     patternAlertTypes: { bullish: true, bearish: true, neutral: false },
     patternEnableSound: true
