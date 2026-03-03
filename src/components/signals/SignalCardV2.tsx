@@ -639,7 +639,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             map((badge) =>
             <div
               key={badge.label}
-              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-1 gap-0"
+              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-0.5 gap-0"
               style={{
                 background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
                 border: "1px solid hsla(200, 60%, 35%, 0.3)"
@@ -671,7 +671,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             className="absolute top-0 left-[10%] right-[10%] h-[1px]"
             style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
 
-          <div className="flex items-center justify-between px-4 py-2.5">
+          <div className="flex items-center justify-between px-4 py-1.5">
             <span className="font-semibold text-white text-sm">{t('signal_entry')}</span>
             <div className="flex items-center gap-2">
               <span className="font-bold text-white text-sm">{entryPrice.toFixed(3)}</span>
