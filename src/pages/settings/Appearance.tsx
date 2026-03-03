@@ -1,19 +1,36 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Palette } from 'lucide-react';
+import { ArrowLeft, Palette, Eye } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useTranslation, LANGUAGE_LABELS, LANGUAGE_FLAGS } from '@/i18n/LanguageContext';
 import type { Language } from '@/i18n/translations';
 
 export default function Appearance() {
   const [theme, setTheme] = useState('dark');
-  const [fontSize, setFontSize] = useState('100');
+  const [fontSize, setFontSize] = useState(() => localStorage.getItem('app-font-size') || '100');
+  const [highContrast, setHighContrast] = useState(() => localStorage.getItem('app-high-contrast') === 'true');
+  const [largeText, setLargeText] = useState(() => localStorage.getItem('app-large-text') === 'true');
   const [timezone, setTimezone] = useState('america-bogota');
   const { language, setLanguage, t } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('high-contrast', highContrast);
+    localStorage.setItem('app-high-contrast', String(highContrast));
+  }, [highContrast]);
+
+  useEffect(() => {
+    document.body.classList.toggle('large-text', largeText);
+    localStorage.setItem('app-large-text', String(largeText));
+  }, [largeText]);
+
+  useEffect(() => {
+    localStorage.setItem('app-font-size', fontSize);
+  }, [fontSize]);
 
   return (
     <PageShell>
@@ -99,6 +116,31 @@ export default function Appearance() {
                     <SelectItem value="asia-tokyo">Tokyo UTC +09:00</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="text-sm text-primary flex items-center gap-2">
+                <Eye className="w-4 h-4" />
+                Accesibilidad
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Alto contraste</p>
+                  <p className="text-xs text-muted-foreground">Mejora la visibilidad de textos y bordes</p>
+                </div>
+                <Switch checked={highContrast} onCheckedChange={setHighContrast} />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Texto grande</p>
+                  <p className="text-xs text-muted-foreground">Aumenta el tamaño base de la tipografía</p>
+                </div>
+                <Switch checked={largeText} onCheckedChange={setLargeText} />
               </div>
             </CardContent>
           </Card>
