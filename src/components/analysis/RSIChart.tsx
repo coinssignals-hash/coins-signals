@@ -63,7 +63,7 @@ const SignalDot = (props: any) => {
   if (!payload?.signalType || !cx || !cy) return null;
 
   const isBullish = payload.signalType === 'exit_oversold' || payload.signalType === 'enter_oversold';
-  const color = isBullish ? '#22c55e' : '#ef4444';
+  const color = isBullish ? '#00d4aa' : '#ff4976';
 
   return (
     <g>
@@ -246,20 +246,20 @@ export function RSIChart({ pair, timeframe, rsiData, loading, error }: RSIChartP
       {/* ── RSI Mini Gauge Bar ── */}
       <div className="relative h-2 rounded-full overflow-hidden bg-gray-800/50">
         {/* Zone colors */}
-        <div className="absolute inset-y-0 left-0 w-[30%] bg-gradient-to-r from-green-500/30 to-green-500/10 rounded-l-full" />
-        <div className="absolute inset-y-0 right-0 w-[30%] bg-gradient-to-l from-red-500/30 to-red-500/10 rounded-r-full" />
+        <div className="absolute inset-y-0 left-0 w-[30%] bg-gradient-to-r from-[#00d4aa]/30 to-[#00d4aa]/10 rounded-l-full" />
+        <div className="absolute inset-y-0 right-0 w-[30%] bg-gradient-to-l from-[#ff4976]/30 to-[#ff4976]/10 rounded-r-full" />
         {/* Position indicator */}
         <div
           className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white shadow-lg transition-all duration-500"
           style={{
             left: `calc(${Math.min(100, Math.max(0, stats.current))}% - 6px)`,
-            backgroundColor: stats.status === 'overbought' ? '#ef4444' : stats.status === 'oversold' ? '#22c55e' : '#06b6d4',
+            backgroundColor: stats.status === 'overbought' ? '#ff4976' : stats.status === 'oversold' ? '#00d4aa' : '#06b6d4',
           }}
         />
         {/* Level markers */}
-        <div className="absolute inset-y-0 left-[30%] w-px bg-green-500/40" />
+        <div className="absolute inset-y-0 left-[30%] w-px" style={{ background: 'rgba(0,212,170,0.4)' }} />
         <div className="absolute inset-y-0 left-[50%] w-px bg-gray-600/30" />
-        <div className="absolute inset-y-0 left-[70%] w-px bg-red-500/40" />
+        <div className="absolute inset-y-0 left-[70%] w-px" style={{ background: 'rgba(255,73,118,0.4)' }} />
       </div>
 
       {/* ── Chart ── */}
@@ -277,12 +277,12 @@ export function RSIChart({ pair, timeframe, rsiData, loading, error }: RSIChartP
                 <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="overboughtZone" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ef4444" stopOpacity={0.12} />
-                <stop offset="100%" stopColor="#ef4444" stopOpacity={0.02} />
+                <stop offset="0%" stopColor="#ff4976" stopOpacity={0.12} />
+                <stop offset="100%" stopColor="#ff4976" stopOpacity={0.02} />
               </linearGradient>
               <linearGradient id="oversoldZone" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#22c55e" stopOpacity={0.02} />
-                <stop offset="100%" stopColor="#22c55e" stopOpacity={0.12} />
+                <stop offset="0%" stopColor="#00d4aa" stopOpacity={0.02} />
+                <stop offset="100%" stopColor="#00d4aa" stopOpacity={0.12} />
               </linearGradient>
             </defs>
 
@@ -309,8 +309,8 @@ export function RSIChart({ pair, timeframe, rsiData, loading, error }: RSIChartP
             <Tooltip content={<RSITooltip />} />
 
             {/* Reference lines */}
-            <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="4 3" strokeOpacity={0.6} />
-            <ReferenceLine y={30} stroke="#22c55e" strokeDasharray="4 3" strokeOpacity={0.6} />
+            <ReferenceLine y={70} stroke="#ff4976" strokeDasharray="4 3" strokeOpacity={0.6} />
+            <ReferenceLine y={30} stroke="#00d4aa" strokeDasharray="4 3" strokeOpacity={0.6} />
             <ReferenceLine y={50} stroke="#374151" strokeDasharray="2 4" strokeOpacity={0.4} />
 
             {/* RSI Area fill */}
@@ -339,7 +339,7 @@ export function RSIChart({ pair, timeframe, rsiData, loading, error }: RSIChartP
       {/* ── Zone Legend ── */}
       <div className="flex items-center justify-between text-[9px] text-gray-600 px-1">
         <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-green-500/40" />
+          <span className="w-2 h-2 rounded-full" style={{ background: 'rgba(0,212,170,0.4)' }} />
           <span>Sobreventa &lt;30</span>
         </div>
         <div className="flex items-center gap-1">
@@ -347,7 +347,7 @@ export function RSIChart({ pair, timeframe, rsiData, loading, error }: RSIChartP
           <span>Neutral 30-70</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-red-500/40" />
+          <span className="w-2 h-2 rounded-full" style={{ background: 'rgba(255,73,118,0.4)' }} />
           <span>Sobrecompra &gt;70</span>
         </div>
       </div>

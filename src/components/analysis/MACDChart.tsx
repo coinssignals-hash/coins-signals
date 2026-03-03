@@ -61,7 +61,7 @@ const CrossoverDot = (props: any) => {
   if (!payload?.crossover || !cx || !cy) return null;
 
   const isBullish = payload.crossover === 'bullish';
-  const color = isBullish ? '#22c55e' : '#ef4444';
+  const color = isBullish ? '#00d4aa' : '#ff4976';
 
   return (
     <g>
@@ -306,9 +306,9 @@ export function MACDChart({ pair, timeframe, macdData, loading, error }: MACDCha
                 const isAccelerating = entry.histAccel === 'accelerating';
                 let fill: string;
                 if (isPositive) {
-                  fill = isAccelerating ? '#22c55e' : '#16a34a80';
+                  fill = isAccelerating ? '#00d4aa' : 'rgba(0,212,170,0.45)';
                 } else {
-                  fill = isAccelerating ? '#ef4444' : '#dc262680';
+                  fill = isAccelerating ? '#ff4976' : 'rgba(255,73,118,0.45)';
                 }
                 return <Cell key={`hist-${index}`} fill={fill} />;
               })}
@@ -353,11 +353,11 @@ export function MACDChart({ pair, timeframe, macdData, loading, error }: MACDCha
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-sm bg-green-500/60" />
+            <span className="w-2 h-2 rounded-sm" style={{ background: 'rgba(0,212,170,0.6)' }} />
             <span>Histograma +</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-sm bg-red-500/60" />
+            <span className="w-2 h-2 rounded-sm" style={{ background: 'rgba(255,73,118,0.6)' }} />
             <span>Histograma −</span>
           </div>
         </div>

@@ -262,8 +262,8 @@ export function BollingerChart({
         </div>
         <div className="relative h-2 rounded-full overflow-hidden bg-gray-800/50">
           {/* Zone gradients */}
-          <div className="absolute inset-y-0 left-0 w-[20%] bg-gradient-to-r from-green-500/25 to-transparent rounded-l-full" />
-          <div className="absolute inset-y-0 right-0 w-[20%] bg-gradient-to-l from-red-500/25 to-transparent rounded-r-full" />
+          <div className="absolute inset-y-0 left-0 w-[20%] bg-gradient-to-r from-[#00d4aa]/25 to-transparent rounded-l-full" />
+          <div className="absolute inset-y-0 right-0 w-[20%] bg-gradient-to-l from-[#ff4976]/25 to-transparent rounded-r-full" />
           {/* Center marker */}
           <div className="absolute inset-y-0 left-1/2 w-px bg-gray-600/40" />
           {/* Position dot */}
@@ -271,7 +271,7 @@ export function BollingerChart({
             className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 border-white shadow-lg transition-all duration-500"
             style={{
               left: `calc(${Math.min(100, Math.max(0, stats.percentB))}% - 6px)`,
-              backgroundColor: stats.percentB > 80 ? '#ef4444' : stats.percentB < 20 ? '#22c55e' : '#06b6d4',
+              backgroundColor: stats.percentB > 80 ? '#ff4976' : stats.percentB < 20 ? '#00d4aa' : '#06b6d4',
             }}
           />
         </div>
@@ -338,9 +338,9 @@ export function BollingerChart({
             <Area type="monotone" dataKey="lower" stroke="none" fill="#0a1628" isAnimationActive={false} />
 
             {/* Band lines */}
-            <Line type="monotone" dataKey="upper" stroke="#ef4444" strokeWidth={1} strokeOpacity={0.5} strokeDasharray="4 2" dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="upper" stroke="#ff4976" strokeWidth={1} strokeOpacity={0.5} strokeDasharray="4 2" dot={false} isAnimationActive={false} />
             <Line type="monotone" dataKey="middle" stroke="#6b7280" strokeWidth={1} strokeDasharray="2 4" dot={false} isAnimationActive={false} />
-            <Line type="monotone" dataKey="lower" stroke="#22c55e" strokeWidth={1} strokeOpacity={0.5} strokeDasharray="4 2" dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="lower" stroke="#00d4aa" strokeWidth={1} strokeOpacity={0.5} strokeDasharray="4 2" dot={false} isAnimationActive={false} />
 
             {/* Price line */}
             <Line
@@ -377,11 +377,11 @@ export function BollingerChart({
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <span className="w-3 h-0.5 rounded-full bg-red-400/50" />
+            <span className="w-3 h-0.5 rounded-full" style={{ background: '#ff4976', opacity: 0.5 }} />
             <span>Banda Sup.</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="w-3 h-0.5 rounded-full bg-green-400/50" />
+            <span className="w-3 h-0.5 rounded-full" style={{ background: '#00d4aa', opacity: 0.5 }} />
             <span>Banda Inf.</span>
           </div>
         </div>
