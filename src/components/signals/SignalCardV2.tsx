@@ -2,9 +2,6 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useForexChartData, type ChartInterval } from "@/hooks/useForexChartData";
 import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { ZoomableChart } from "@/components/signals/ZoomableChart";
-import { IndicatorMiniChart } from "@/components/signals/IndicatorMiniChart";
-import { calcEMA, calcRSI, calcMACD, calcBollingerBands, calcStochastic } from "@/lib/indicators";
-import type { OHLCVCandle } from "@/lib/indicators";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -387,28 +384,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [chartInterval, setChartInterval] = useState<ChartInterval>('30min');
   const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol, chartInterval);
 
-  // Indicator toggles for fullscreen
-  const [showEMA, setShowEMA] = useState(false);
-  const [showRSI, setShowRSI] = useState(false);
-  const [showMACD, setShowMACD] = useState(false);
-  const [showBollinger, setShowBollinger] = useState(false);
-  const [showStochastic, setShowStochastic] = useState(false);
-
-  // Compute indicators from candle data
-  const indicatorData = useMemo(() => {
-    const candles = forexChartData?.candles;
-    if (!candles?.length) return null;
-    // Add volume=0 to satisfy OHLCVCandle interface
-    const ohlcv: OHLCVCandle[] = candles.map((c) => ({ ...c, volume: 0 }));
-    return {
-      ema20: calcEMA(ohlcv, 20),
-      ema50: calcEMA(ohlcv, 50),
-      rsi: calcRSI(ohlcv),
-      macd: calcMACD(ohlcv),
-      bollinger: calcBollingerBands(ohlcv),
-      stochastic: calcStochastic(ohlcv)
-    };
-  }, [forexChartData?.candles]);
 
   // Circle fill uses absolute score (0-100) for the arc
   const circlePercent = useMemo(() => {
@@ -859,29 +834,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     )}
                     </div>
 
-                    {/* Right: Indicator Toggles + Close */}
+                    {/* Right: S/R Toggle + Close */}
                     <div className="flex items-center gap-1">
-                      {([
-                    { key: 'ema', label: 'EMA', active: showEMA, toggle: () => setShowEMA(!showEMA) },
-                    { key: 'rsi', label: 'RSI', active: showRSI, toggle: () => setShowRSI(!showRSI) },
-                    { key: 'macd', label: 'MACD', active: showMACD, toggle: () => setShowMACD(!showMACD) },
-                    { key: 'boll', label: 'BOLL', active: showBollinger, toggle: () => setShowBollinger(!showBollinger) },
-                    { key: 'stoch', label: 'STOCH', active: showStochastic, toggle: () => setShowStochastic(!showStochastic) }] as
-                    const).map((ind) =>
-                    <button
-                      key={ind.key}
-                      onClick={ind.toggle}
-                      className={cn(
-                        "px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all",
-                        ind.active ?
-                        "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" :
-                        "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
-                      )}>
-                      
-                          {ind.label}
-                        </button>
-                    )}
-                      <div className="w-px h-5 bg-slate-700/50 mx-1" />
                       <button
                       onClick={() => setShowSR(!showSR)}
                       className={cn(
@@ -890,7 +844,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" :
                         "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
                       )}>
-                      
                         S/R
                       </button>
                       <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors ml-1">
@@ -912,32 +865,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         realtimePrice={quote?.price}
                         isRealtimeConnected={isConnected}
                         previousDayDate={forexChartData?.date}
-                        showSupportResistance={showSR}
-                        ema20Data={showEMA ? indicatorData?.ema20 : undefined}
-                        ema50Data={showEMA ? indicatorData?.ema50 : undefined} />
-                      
+                        showSupportResistance={showSR} />
                       </ZoomableChart>
-                      {/* Indicator panels below chart */}
-                      {showRSI && indicatorData?.rsi && indicatorData.rsi.length > 0 &&
-                    <div className="px-1 mt-1">
-                          <IndicatorMiniChart type="rsi" data={indicatorData.rsi} />
-                        </div>
-                    }
-                      {showMACD && indicatorData?.macd && indicatorData.macd.length > 0 &&
-                    <div className="px-1 mt-1">
-                          <IndicatorMiniChart type="macd" data={indicatorData.macd} />
-                        </div>
-                    }
-                      {showBollinger && indicatorData?.bollinger && indicatorData.bollinger.length > 0 &&
-                    <div className="px-1 mt-1">
-                          <IndicatorMiniChart type="bollinger" data={indicatorData.bollinger} />
-                        </div>
-                    }
-                      {showStochastic && indicatorData?.stochastic && indicatorData.stochastic.length > 0 &&
-                    <div className="px-1 mt-1">
-                          <IndicatorMiniChart type="stochastic" data={indicatorData.stochastic} />
-                        </div>
-                    }
                     </div>
 
                     {/* ── Right Sidebar ── */}
@@ -1079,11 +1008,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <div className="flex items-center gap-4">
                       <span>Intervalo: <span className="text-slate-300">{chartInterval === '1day' ? '1D' : chartInterval}</span></span>
                       <span>Velas: <span className="text-slate-300">{forexChartData?.candles?.length ?? 0}</span></span>
-                      {showEMA && <span className="text-blue-400">EMA 20/50</span>}
-                      {showRSI && <span className="text-purple-400">RSI</span>}
-                      {showMACD && <span className="text-cyan-400">MACD</span>}
-                      {showBollinger && <span className="text-amber-400">BOLL</span>}
-                      {showStochastic && <span className="text-pink-400">STOCH</span>}
                     </div>
                     <div className="flex items-center gap-4">
                       <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</span>
