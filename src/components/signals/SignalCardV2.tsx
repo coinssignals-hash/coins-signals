@@ -584,9 +584,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               </div>
               {/* Price value below the circle */}
               {priceDiff.hasData ?
-              <p className={cn(
-                "text-[11px] font-bold text-center",
-                priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
+              <p className={cn("text-[11px] text-center font-extrabold",
+
+              priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
               )}>
                 {priceDiff.currentPrice.toFixed(3)}
               </p> :
