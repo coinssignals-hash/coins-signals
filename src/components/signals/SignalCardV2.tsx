@@ -485,19 +485,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             </div>
           </div>
           <div className="flex items-center gap-2 relative z-10">
-            {/* Price + Live status to the left of circle */}
+            {/* Live status to the left of circle */}
             <div className="flex flex-col gap-0.5 items-end text-right">
-              {priceDiff.hasData ?
-              <p className={cn(
-                "text-[11px] font-bold",
-                priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
-              )}>
-                  {priceDiff.currentPrice.toFixed(3)}
-                </p> :
-              <p className="text-[8px] text-cyan-300/50 leading-tight">{t('signal_entry')}</p>
-              }
-              <p className="text-[8px] text-cyan-300/50 leading-tight">vs {t('signal_entry')}</p>
-              <div className="flex items-center gap-1 mt-0.5">
+              <div className="flex items-center gap-1">
                 <div
                   className={cn(
                     "w-2 h-2 rounded-full",
@@ -515,80 +505,93 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <PriceAge timestamp={quote.timestamp} />
               }
             </div>
-            <div className={cn(
-              "relative w-[72px] h-[72px] transition-transform flex-shrink-0",
-              zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
-            )}>
+            {/* Circle with price below */}
+            <div className="flex flex-col items-center gap-0.5">
               <div className={cn(
-                "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
-                priceDiff.hasData ?
-                priceDiff.isNeutral ? "bg-yellow-500" :
-                priceDiff.isPositive ? "bg-green-500" : "bg-red-500" :
-                "bg-cyan-500"
-              )} />
-              <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm rounded-full overflow-hidden">
-                <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 20%, 12%)" strokeWidth="2.5" />
-                <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 15%, 18%)" strokeWidth="1" strokeDasharray="1.5 2" opacity="0.5" />
-                <circle cx="18" cy="18" r="15" fill="none"
-                stroke={`url(#liveGrad-${signal.id})`} strokeWidth="2.8" strokeLinecap="round"
-                strokeDasharray={`${circlePercent * 0.942} ${100 * 0.942}`}
-                className="transition-all duration-700 ease-out"
-                style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
-                <circle cx="18" cy="18" r="12" fill="hsl(225, 25%, 8%)" fillOpacity="0.85" />
-                <circle cx="18" cy="18" r="12" fill={`url(#centerGrad-${signal.id})`} fillOpacity="0.15" />
-                <defs>
-                  <linearGradient id={`liveGrad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    {priceDiff.hasData && priceDiff.isNeutral ?
-                    <><stop offset="0%" stopColor="hsl(45, 90%, 55%)" /><stop offset="100%" stopColor="hsl(35, 80%, 45%)" /></> :
-                    priceDiff.hasData && priceDiff.isPositive ?
-                    <><stop offset="0%" stopColor="hsl(160, 80%, 55%)" /><stop offset="100%" stopColor="hsl(120, 70%, 40%)" /></> :
-                    priceDiff.hasData ?
-                    <><stop offset="0%" stopColor="hsl(10, 80%, 60%)" /><stop offset="100%" stopColor="hsl(350, 70%, 45%)" /></> :
-                    <><stop offset="0%" stopColor="hsl(200, 100%, 55%)" /><stop offset="100%" stopColor="hsl(180, 100%, 50%)" /></>
-                    }
-                  </linearGradient>
-                  <radialGradient id={`centerGrad-${signal.id}`} cx="50%" cy="30%" r="70%">
-                    {priceDiff.hasData && priceDiff.isNeutral ?
-                    <stop offset="0%" stopColor="hsl(45, 80%, 50%)" /> :
-                    priceDiff.hasData && priceDiff.isPositive ?
-                    <stop offset="0%" stopColor="hsl(142, 70%, 50%)" /> :
-                    priceDiff.hasData ?
-                    <stop offset="0%" stopColor="hsl(0, 70%, 50%)" /> :
-                    <stop offset="0%" stopColor="hsl(200, 80%, 50%)" />
-                    }
-                    <stop offset="100%" stopColor="transparent" />
-                  </radialGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className={cn(
-                  "font-mono text-[13px] font-extrabold leading-none tracking-tight transition-colors duration-300",
-                  !priceDiff.hasData ? "text-cyan-300" : priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
-                )}
-                style={{ textShadow: priceDiff.hasData ?
-                  priceDiff.isNeutral ? '0 0 8px hsl(45, 80%, 50%, 0.4)' :
-                  priceDiff.isPositive ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
-                  '0 0 8px hsl(0, 70%, 50%, 0.4)' : 'none'
-                }}>
-                  {priceDiff.hasData ? `${priceDiff.score >= 0 ? "+" : ""}${Math.round(priceDiff.score)}` : "—"}
-                </span>
-                {priceDiff.hasData &&
-                <>
+                "relative w-[72px] h-[72px] transition-transform flex-shrink-0",
+                zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
+              )}>
+                <div className={cn(
+                  "absolute -inset-1 rounded-full opacity-30 blur-md transition-all duration-700",
+                  priceDiff.hasData ?
+                  priceDiff.isNeutral ? "bg-yellow-500" :
+                  priceDiff.isPositive ? "bg-green-500" : "bg-red-500" :
+                  "bg-cyan-500"
+                )} />
+                <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 drop-shadow-sm rounded-full overflow-hidden">
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 20%, 12%)" strokeWidth="2.5" />
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 15%, 18%)" strokeWidth="1" strokeDasharray="1.5 2" opacity="0.5" />
+                  <circle cx="18" cy="18" r="15" fill="none"
+                  stroke={`url(#liveGrad-${signal.id})`} strokeWidth="2.8" strokeLinecap="round"
+                  strokeDasharray={`${circlePercent * 0.942} ${100 * 0.942}`}
+                  className="transition-all duration-700 ease-out"
+                  style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
+                  <circle cx="18" cy="18" r="12" fill="hsl(225, 25%, 8%)" fillOpacity="0.85" />
+                  <circle cx="18" cy="18" r="12" fill={`url(#centerGrad-${signal.id})`} fillOpacity="0.15" />
+                  <defs>
+                    <linearGradient id={`liveGrad-${signal.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                      {priceDiff.hasData && priceDiff.isNeutral ?
+                      <><stop offset="0%" stopColor="hsl(45, 90%, 55%)" /><stop offset="100%" stopColor="hsl(35, 80%, 45%)" /></> :
+                      priceDiff.hasData && priceDiff.isPositive ?
+                      <><stop offset="0%" stopColor="hsl(160, 80%, 55%)" /><stop offset="100%" stopColor="hsl(120, 70%, 40%)" /></> :
+                      priceDiff.hasData ?
+                      <><stop offset="0%" stopColor="hsl(10, 80%, 60%)" /><stop offset="100%" stopColor="hsl(350, 70%, 45%)" /></> :
+                      <><stop offset="0%" stopColor="hsl(200, 100%, 55%)" /><stop offset="100%" stopColor="hsl(180, 100%, 50%)" /></>
+                      }
+                    </linearGradient>
+                    <radialGradient id={`centerGrad-${signal.id}`} cx="50%" cy="30%" r="70%">
+                      {priceDiff.hasData && priceDiff.isNeutral ?
+                      <stop offset="0%" stopColor="hsl(45, 80%, 50%)" /> :
+                      priceDiff.hasData && priceDiff.isPositive ?
+                      <stop offset="0%" stopColor="hsl(142, 70%, 50%)" /> :
+                      priceDiff.hasData ?
+                      <stop offset="0%" stopColor="hsl(0, 70%, 50%)" /> :
+                      <stop offset="0%" stopColor="hsl(200, 80%, 50%)" />
+                      }
+                      <stop offset="100%" stopColor="transparent" />
+                    </radialGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className={cn(
-                    "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
-                    priceDiff.isNeutral ? "text-yellow-400/70" : priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70"
-                  )}>
-                    {priceDiff.isNeutral ? "ENTRY" : priceDiff.isPositive ? "TP" : "SL"}
+                    "font-mono text-[13px] font-extrabold leading-none tracking-tight transition-colors duration-300",
+                    !priceDiff.hasData ? "text-cyan-300" : priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
+                  )}
+                  style={{ textShadow: priceDiff.hasData ?
+                    priceDiff.isNeutral ? '0 0 8px hsl(45, 80%, 50%, 0.4)' :
+                    priceDiff.isPositive ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
+                    '0 0 8px hsl(0, 70%, 50%, 0.4)' : 'none'
+                  }}>
+                    {priceDiff.hasData ? `${priceDiff.score >= 0 ? "+" : ""}${Math.round(priceDiff.score)}` : "—"}
                   </span>
-                  <span className={cn(
-                    "text-[8px] font-semibold leading-none mt-0.5 opacity-60",
-                    priceDiff.isNeutral ? "text-yellow-300" : priceDiff.isPositive ? "text-green-300" : "text-red-300"
-                  )}>
-                    {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
-                  </span>
-                </>
-                }
+                  {priceDiff.hasData &&
+                  <>
+                    <span className={cn(
+                      "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
+                      priceDiff.isNeutral ? "text-yellow-400/70" : priceDiff.isPositive ? "text-green-400/70" : "text-red-400/70"
+                    )}>
+                      {priceDiff.isNeutral ? "ENTRY" : priceDiff.isPositive ? "TP" : "SL"}
+                    </span>
+                    <span className={cn(
+                      "text-[8px] font-semibold leading-none mt-0.5 opacity-60",
+                      priceDiff.isNeutral ? "text-yellow-300" : priceDiff.isPositive ? "text-green-300" : "text-red-300"
+                    )}>
+                      {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
+                    </span>
+                  </>
+                  }
+                </div>
               </div>
+              {/* Price value below the circle */}
+              {priceDiff.hasData ?
+              <p className={cn(
+                "text-[11px] font-bold text-center",
+                priceDiff.isNeutral ? "text-yellow-400" : priceDiff.isPositive ? "text-green-400" : "text-red-400"
+              )}>
+                {priceDiff.currentPrice.toFixed(3)}
+              </p> :
+              <p className="text-[8px] text-cyan-300/50 text-center">{t('signal_entry')}</p>
+              }
             </div>
           </div>
         </div>
