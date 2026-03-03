@@ -96,10 +96,9 @@ export function useIndicatorAlerts(
     });
   }, []);
 
-  const triggerAlert = useCallback((alert: Alert) => {
-    showToastAlert(alert);
-    sendPushNotification(alert);
-  }, [showToastAlert, sendPushNotification]);
+  const triggerAlert = useCallback((_alert: Alert) => {
+    // Toast and push notifications disabled
+  }, []);
 
   const checkRSIAlerts = useCallback((rsiData: Array<{ time: string; rsi: number }>) => {
     if (!mergedConfig.enableRSI || rsiData.length < 2) return;
