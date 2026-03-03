@@ -237,7 +237,7 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
         {(data as any).headlines?.length > 0 &&
         <div className="mb-3">
             <div className="flex items-center gap-1.5 mb-1.5">
-              <Newspaper className="w-3 h-3 text-blue-400" />
+              
               
             </div>
             <div className="space-y-1">
