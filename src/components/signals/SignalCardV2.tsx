@@ -714,9 +714,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               realtimePrice={quote?.price}
               isRealtimeConnected={isConnected}
               previousDayDate={forexChartData?.date}
-              signalTakeProfit={takeProfit}
-              signalStopLoss={stopLoss}
-              signalEntry={entryPrice} />
+               signalTakeProfit={takeProfit}
+               signalStopLoss={stopLoss}
+               signalEntry={entryPrice}
+               signalDatetime={signal?.datetime} />
             
               <button
               onClick={() => setChartFullscreen(true)}
@@ -800,9 +801,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         realtimePrice={quote?.price}
                         isRealtimeConnected={isConnected}
                         previousDayDate={forexChartData?.date}
-                        signalTakeProfit={takeProfit}
-                        signalStopLoss={stopLoss}
-                        signalEntry={entryPrice} />
+                       signalTakeProfit={takeProfit}
+                       signalStopLoss={stopLoss}
+                       signalEntry={entryPrice}
+                       signalDatetime={signal?.datetime} />
                       </ZoomableChart>
                     </div>
 
