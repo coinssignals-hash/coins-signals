@@ -7,26 +7,24 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// In-memory cache
 const cache = new Map<string, { data: unknown; ts: number }>();
-const CACHE_TTL = 5 * 60_000; // 5 min
+const CACHE_TTL = 5 * 60_000;
 
 interface ChartRequest {
   newsTitle: string;
   newsId?: string;
   category: string;
   affectedCurrencies: string[];
-  months?: number;       // how many months back (default 12)
-  year?: number;         // optional: filter to specific year
-  granularity?: "month"; // future: "week" | "day"
+  months?: number;
+  year?: number;
 }
 
 interface MonthPoint {
-  date: string;       // "2025-01" ISO
-  label: string;      // "Ene 2025"
-  impact: number;     // -30 … +30
-  volume: number;     // relative volume 0-100
-  confidence: number; // 0-1
+  date: string;
+  label: string;
+  impact: number;
+  volume: number;
+  confidence: number;
 }
 
 interface CurrencyBreakdown {
@@ -59,7 +57,6 @@ function buildMonthLabels(count: number, year?: number): { date: string; label: 
   const now = new Date();
 
   if (year) {
-    // All months of the specified year up to current month if same year
     const maxMonth = year === now.getFullYear() ? now.getMonth() : 11;
     for (let m = 0; m <= maxMonth; m++) {
       const d = `${year}-${String(m + 1).padStart(2, "0")}`;
@@ -142,16 +139,14 @@ Reply ONLY with valid JSON, no markdown, no explanation:
 }
 Each currency array must have exactly ${monthLabels.length} entries, one per month in order.`;
 
-    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": lovableApiKey,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${lovableApiKey}`,
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1500,
+        model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -160,7 +155,7 @@ Each currency array must have exactly ${monthLabels.length} entries, one per mon
 
     if (aiRes.ok) {
       const aiJson = await aiRes.json();
-      const text = aiJson.content?.[0]?.text || "";
+      const text = aiJson.choices?.[0]?.message?.content || "";
       const match = text.match(/\{[\s\S]*\}/);
       if (match) {
         aiData = JSON.parse(match[0]);
@@ -170,7 +165,6 @@ Each currency array must have exactly ${monthLabels.length} entries, one per mon
       console.error("[news-impact-charts] AI error:", errText);
     }
 
-    // Build response (with fallback if AI failed)
     const currencies: CurrencyBreakdown[] = affectedCurrencies.map((currency) => {
       const raw: { impact: number; volume: number; confidence: number }[] =
         aiData?.currencies?.[currency] || [];
@@ -196,7 +190,6 @@ Each currency array must have exactly ${monthLabels.length} entries, one per mon
       } as CurrencyBreakdown;
     });
 
-    // Aggregate timeline (average across currencies per month)
     const timeline: MonthPoint[] = monthLabels.map((m, i) => {
       const vals = currencies.map((c) => c.points[i]);
       const avgImpact = vals.reduce((s, v) => s + v.impact, 0) / vals.length;
