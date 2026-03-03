@@ -58,7 +58,7 @@ export function DateTabs({
                 key={day.date.toISOString()}
                 onClick={() => onDateChange(day.date)}
                 className={cn(
-                  'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all',
+                  'px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all active:scale-95',
                   selected
                     ? `${theme.bg} ${theme.text} shadow-lg ${theme.shadow}`
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
