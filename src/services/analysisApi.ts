@@ -451,31 +451,23 @@ export const analysisApi = {
     }
   },
 
-  async getMajorNews(symbol: string): Promise<MajorNewsEvent[]> {
+  async getAnalysisNews(symbol: string): Promise<{ majorNews: MajorNewsEvent[]; relevantNews: RelevantNewsItem[] }> {
     try {
       const { data, error } = await supabase.functions.invoke('analysis-news', {
         body: { symbol },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      return (data?.majorNews || []) as MajorNewsEvent[];
+      return {
+        majorNews: (data?.majorNews || []) as MajorNewsEvent[],
+        relevantNews: (data?.relevantNews || []) as RelevantNewsItem[],
+      };
     } catch (e) {
-      console.warn('analysis-news edge function failed for majorNews, using mock:', e);
-      return generateMockMajorNews(symbol);
-    }
-  },
-
-  async getRelevantNews(symbol: string): Promise<RelevantNewsItem[]> {
-    try {
-      const { data, error } = await supabase.functions.invoke('analysis-news', {
-        body: { symbol },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      return (data?.relevantNews || []) as RelevantNewsItem[];
-    } catch (e) {
-      console.warn('analysis-news edge function failed for relevantNews, using mock:', e);
-      return generateMockRelevantNews(symbol);
+      console.warn('analysis-news edge function failed, using mock:', e);
+      return {
+        majorNews: generateMockMajorNews(symbol),
+        relevantNews: generateMockRelevantNews(symbol),
+      };
     }
   },
 
