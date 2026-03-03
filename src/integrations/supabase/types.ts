@@ -828,6 +828,7 @@ export type Database = {
           datetime: string
           entry_price: number
           id: string
+          notes: string | null
           probability: number
           resistance: number | null
           session_data: Json | null
@@ -835,6 +836,8 @@ export type Database = {
           stop_loss: number
           support: number | null
           take_profit: number
+          take_profit_2: number | null
+          take_profit_3: number | null
           trend: string
           updated_at: string
         }
@@ -849,6 +852,7 @@ export type Database = {
           datetime?: string
           entry_price: number
           id?: string
+          notes?: string | null
           probability?: number
           resistance?: number | null
           session_data?: Json | null
@@ -856,6 +860,8 @@ export type Database = {
           stop_loss: number
           support?: number | null
           take_profit: number
+          take_profit_2?: number | null
+          take_profit_3?: number | null
           trend?: string
           updated_at?: string
         }
@@ -870,6 +876,7 @@ export type Database = {
           datetime?: string
           entry_price?: number
           id?: string
+          notes?: string | null
           probability?: number
           resistance?: number | null
           session_data?: Json | null
@@ -877,6 +884,8 @@ export type Database = {
           stop_loss?: number
           support?: number | null
           take_profit?: number
+          take_profit_2?: number | null
+          take_profit_3?: number | null
           trend?: string
           updated_at?: string
         }
