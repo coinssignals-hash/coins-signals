@@ -73,16 +73,21 @@ function buildChartSvg(
   const PRICE_BOTTOM = H - PAD.bottom;
   const PRICE_H = PRICE_BOTTOM - PRICE_TOP;
 
-  // Colors
-  const BG1 = '#050d1a';
-  const BG2 = '#0a1628';
-  const GRID = '#1e3a5f';
-  const TEXT_COL = '#64748b';
-  const UP = '#22c55e';
-  const DN = '#ef4444';
-  const UP_DIM = 'rgba(34,197,94,0.35)';
-  const DN_DIM = 'rgba(239,68,68,0.35)';
-  const WICK_DIM = 'rgba(148,163,184,0.3)';
+  // Colors — professional palette
+  const BG1 = '#060e1c';
+  const BG2 = '#0b1729';
+  const GRID = '#152a47';
+  const GRID_MAJOR = '#1c3560';
+  const TEXT_COL = '#5a6f8a';
+  const UP = '#00d4aa';
+  const DN = '#ff4976';
+  const UP_BODY = '#00d4aa';
+  const DN_BODY = '#ff4976';
+  const UP_DIM = 'rgba(0,212,170,0.28)';
+  const DN_DIM = 'rgba(255,73,118,0.28)';
+  const UP_WICK = 'rgba(0,212,170,0.7)';
+  const DN_WICK = 'rgba(255,73,118,0.7)';
+  const WICK_DIM = 'rgba(100,120,150,0.25)';
 
   if (data.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
@@ -115,8 +120,16 @@ function buildChartSvg(
 
   const parts: string[] = [];
 
-  // Background gradient
-  parts.push(`<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${BG1}"/><stop offset="100%" stop-color="${BG2}"/></linearGradient></defs>`);
+  // Background gradient + candle gradients + glow filters
+  parts.push(`<defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${BG1}"/><stop offset="100%" stop-color="${BG2}"/></linearGradient>
+    <linearGradient id="upGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00f0c0"/><stop offset="100%" stop-color="#00b488"/></linearGradient>
+    <linearGradient id="dnGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b8a"/><stop offset="100%" stop-color="#e0304e"/></linearGradient>
+    <linearGradient id="upGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,212,170,0.35)"/><stop offset="100%" stop-color="rgba(0,180,136,0.2)"/></linearGradient>
+    <linearGradient id="dnGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,73,118,0.35)"/><stop offset="100%" stop-color="rgba(224,48,78,0.2)"/></linearGradient>
+    <filter id="upGlow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${UP}" flood-opacity="0.4"/></filter>
+    <filter id="dnGlow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${DN}" flood-opacity="0.4"/></filter>
+  </defs>`);
   parts.push(`<rect width="${W}" height="${H}" fill="url(#bg)" rx="8"/>`);
 
   // Title
@@ -128,8 +141,9 @@ function buildChartSvg(
   for (let i = 0; i <= 8; i++) {
     const price = minP + (totalRange * i) / 8;
     const y = yOf(price);
-    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${GRID}" stroke-width="0.5" stroke-dasharray="4,4" shape-rendering="crispEdges"/>`);
-    parts.push(`<text x="${CHART_X1 - 5}" y="${y + 3}" fill="${TEXT_COL}" text-anchor="end" font-size="9" font-family="monospace">${fmtPrice(price, jpy)}</text>`);
+    const isMajor = i % 2 === 0;
+    parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${CHART_X2}" y2="${y}" stroke="${isMajor ? GRID_MAJOR : GRID}" stroke-width="${isMajor ? '0.6' : '0.3'}" stroke-dasharray="${isMajor ? '6,4' : '2,6'}" shape-rendering="crispEdges"/>`);
+    parts.push(`<text x="${CHART_X1 - 5}" y="${y + 3}" fill="${TEXT_COL}" text-anchor="end" font-size="9" font-family="monospace" opacity="${isMajor ? '0.9' : '0.6'}">${fmtPrice(price, jpy)}</text>`);
   }
 
   // Day separators + labels
@@ -162,7 +176,7 @@ function buildChartSvg(
     parts.push(`<rect x="${x1}" y="${PRICE_TOP}" width="${CHART_X2 - x1}" height="${PRICE_H}" fill="rgba(34,197,94,0.03)"/>`);
   }
 
-  // Candles + Volume
+  // Candles — professional rendering
   for (let i = 0; i < data.length; i++) {
     const c = data[i];
     const x = xOf(i);
@@ -171,18 +185,28 @@ function buildChartSvg(
 
     const bodyTop = yOf(Math.max(c.open, c.close));
     const bodyBot = yOf(Math.min(c.open, c.close));
-    const bH = Math.max(1, bodyBot - bodyTop);
+    const bH = Math.max(1.5, bodyBot - bodyTop);
     const wickTop = yOf(c.high);
     const wickBot = yOf(c.low);
 
-    let upC: string, dnC: string, wC: string;
-    if (isLastDay) { upC = UP; dnC = DN; wC = isUp ? UP : DN; }
-    else { upC = UP_DIM; dnC = DN_DIM; wC = WICK_DIM; }
-
-    const fill = isUp ? upC : dnC;
-    parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${wC}" stroke-width="1" shape-rendering="crispEdges"/>`);
-    parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="0.5" shape-rendering="crispEdges"/>`);
-
+    if (isLastDay) {
+      const grad = isUp ? 'url(#upGrad)' : 'url(#dnGrad)';
+      const wickCol = isUp ? UP_WICK : DN_WICK;
+      const glow = isUp ? 'url(#upGlow)' : 'url(#dnGlow)';
+      // Split wicks (top & bottom separated from body)
+      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${bodyTop}" stroke="${wickCol}" stroke-width="1.2" stroke-linecap="round"/>`);
+      parts.push(`<line x1="${x}" y1="${bodyBot}" x2="${x}" y2="${wickBot}" stroke="${wickCol}" stroke-width="1.2" stroke-linecap="round"/>`);
+      // Body with gradient + subtle glow
+      parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${grad}" rx="1.5" filter="${glow}" shape-rendering="crispEdges"/>`);
+      // Top highlight shine
+      if (bH > 3) {
+        parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="1.5" fill="rgba(255,255,255,0.12)" rx="1.5"/>`);
+      }
+    } else {
+      const fill = isUp ? 'url(#upGradDim)' : 'url(#dnGradDim)';
+      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${WICK_DIM}" stroke-width="0.8" stroke-linecap="round"/>`);
+      parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="1" shape-rendering="crispEdges"/>`);
+    }
   }
 
   // EMA overlays
@@ -210,14 +234,14 @@ function buildChartSvg(
   if (showSR) {
     // Resistance
     const rY = yOf(resistance);
-    parts.push(`<line x1="${srX1}" y1="${rY}" x2="${srX2}" y2="${rY}" stroke="${UP}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
-    parts.push(`<rect x="${srX2 - lblW - 4}" y="${rY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(34,197,94,0.15)" stroke="${UP}" stroke-width="0.8"/>`);
+    parts.push(`<line x1="${srX1}" y1="${rY}" x2="${srX2}" y2="${rY}" stroke="${UP}" stroke-width="1" stroke-dasharray="10,5" opacity="0.8" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${srX2 - lblW - 4}" y="${rY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(0,212,170,0.12)" stroke="${UP}" stroke-width="0.6"/>`);
     parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${rY + fs / 3}" fill="${UP}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(resistance, jpy)}</text>`);
 
     // Support
     const sY = yOf(support);
-    parts.push(`<line x1="${srX1}" y1="${sY}" x2="${srX2}" y2="${sY}" stroke="${DN}" stroke-width="1.5" stroke-dasharray="8,4" shape-rendering="crispEdges"/>`);
-    parts.push(`<rect x="${srX2 - lblW - 4}" y="${sY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(239,68,68,0.15)" stroke="${DN}" stroke-width="0.8"/>`);
+    parts.push(`<line x1="${srX1}" y1="${sY}" x2="${srX2}" y2="${sY}" stroke="${DN}" stroke-width="1" stroke-dasharray="10,5" opacity="0.8" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${srX2 - lblW - 4}" y="${sY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="rgba(255,73,118,0.12)" stroke="${DN}" stroke-width="0.6"/>`);
     parts.push(`<text x="${srX2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${fmtPrice(support, jpy)}</text>`);
   }
 
@@ -463,19 +487,19 @@ export function CandlestickChart({
       </div>
 
       {/* Legend */}
-      <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0a1628' }}>
+      <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0b1729' }}>
         <div className="flex items-center gap-4">
           {showSupportResistance && (
             <>
               <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t-2 border-dashed border-green-500" />
-                <span className="text-green-400">Resistencia 24h</span>
-                <span className="font-mono font-semibold text-green-300 bg-green-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(resistance, jpy)}</span>
+                <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#00d4aa' }} />
+                <span style={{ color: '#00d4aa' }}>Resistencia 24h</span>
+                <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#00f0c0', background: 'rgba(0,212,170,0.15)' }}>{fmtPrice(resistance, jpy)}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t-2 border-dashed border-red-500" />
-                <span className="text-red-400">Soporte 24h</span>
-                <span className="font-mono font-semibold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded text-xs">{fmtPrice(support, jpy)}</span>
+                <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#ff4976' }} />
+                <span style={{ color: '#ff4976' }}>Soporte 24h</span>
+                <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#ff6b8a', background: 'rgba(255,73,118,0.15)' }}>{fmtPrice(support, jpy)}</span>
               </div>
             </>
           )}
