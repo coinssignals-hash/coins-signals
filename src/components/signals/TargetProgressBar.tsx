@@ -45,27 +45,36 @@ export function TargetProgressBar({
 
   const isBuy = action === 'BUY';
   const totalRange = Math.abs(takeProfit - stopLoss);
+  const hasRange = totalRange > 0;
 
   // Calculate position as percentage (0% = SL, 50% = Entry, 100% = TP)
   let position = 0;
   let entryPosition = 0;
   let isAboveEntry = false;
-  let nearEntry = false;
+  let nearEntry = true;
   let progressColor = 'hsl(45, 80%, 55%)';
-  let isJpy = false;
+  let isJpy = takeProfit.toString().split('.')[1]?.length <= 2 || Math.abs(takeProfit) > 50;
   let pipsFromEntry = 0;
-  let targetLabel = 'TP1';
+  let targetLabel = 'ENTRY';
   let targetPercent = 0;
 
-  const hasData = !!displayPrice && totalRange > 0;
-
-  if (hasData) {
+  if (hasRange) {
     if (isBuy) {
-      position = ((displayPrice - stopLoss) / totalRange) * 100;
       entryPosition = ((entryPrice - stopLoss) / totalRange) * 100;
     } else {
-      position = ((stopLoss - displayPrice) / totalRange) * 100;
       entryPosition = ((stopLoss - entryPrice) / totalRange) * 100;
+    }
+    entryPosition = Math.max(0, Math.min(100, entryPosition));
+    position = entryPosition;
+  }
+
+  const hasLivePrice = displayPrice !== null && Number.isFinite(displayPrice) && hasRange;
+
+  if (hasLivePrice) {
+    if (isBuy) {
+      position = ((displayPrice - stopLoss) / totalRange) * 100;
+    } else {
+      position = ((stopLoss - displayPrice) / totalRange) * 100;
     }
     position = Math.max(0, Math.min(100, position));
 
@@ -77,7 +86,6 @@ export function TargetProgressBar({
         ? 'hsl(142, 70%, 50%)'
         : 'hsl(0, 70%, 55%)';
 
-    isJpy = takeProfit.toString().split('.')[1]?.length <= 2 || Math.abs(takeProfit) > 50;
     const pipMultiplier = isJpy ? 100 : 10000;
     pipsFromEntry = Math.abs((displayPrice - entryPrice) * pipMultiplier);
 
@@ -95,11 +103,11 @@ export function TargetProgressBar({
   }
 
   // Determine current zone
-  const currentZone: PriceZone = !hasData ? 'entry' : nearEntry ? 'entry' : isAboveEntry ? 'tp' : 'sl';
+  const currentZone: PriceZone = !hasLivePrice ? 'entry' : nearEntry ? 'entry' : isAboveEntry ? 'tp' : 'sl';
 
   // Detect zone transitions and trigger pulse animation
   useEffect(() => {
-    if (!hasData || isCompleted) return;
+    if (!hasLivePrice || isCompleted) return;
 
     if (prevZoneRef.current !== null && prevZoneRef.current !== currentZone) {
       const color = currentZone === 'tp'
@@ -113,14 +121,14 @@ export function TargetProgressBar({
       return () => clearTimeout(timer);
     }
     prevZoneRef.current = currentZone;
-  }, [currentZone, hasData, isCompleted]);
+  }, [currentZone, hasLivePrice, isCompleted]);
 
   // Also update ref when zone doesn't change
   useEffect(() => {
     prevZoneRef.current = currentZone;
   }, [currentZone]);
 
-  if (!hasData) return null;
+  if (!hasRange) return null;
 
   if (compact) {
     return (
