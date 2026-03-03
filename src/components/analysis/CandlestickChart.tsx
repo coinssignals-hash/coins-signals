@@ -306,10 +306,18 @@ function buildChartSvg(
 
       // Vertical marker at signal creation time
       const markerX = signalStartX;
+      const sigDate = new Date(signalDatetime);
+      const sigHH = String(sigDate.getHours()).padStart(2, '0');
+      const sigMM = String(sigDate.getMinutes()).padStart(2, '0');
+      const sigDD = String(sigDate.getDate()).padStart(2, '0');
+      const sigMo = String(sigDate.getMonth() + 1).padStart(2, '0');
+      const sigTimeLabel = `${sigDD}/${sigMo} ${sigHH}:${sigMM}`;
       parts.push(`<line x1="${markerX}" y1="${PRICE_TOP}" x2="${markerX}" y2="${PRICE_BOTTOM}" stroke="${SIG_ENTRY}" stroke-width="1.2" stroke-dasharray="6,4" opacity="0.5" shape-rendering="crispEdges"/>`);
-      // Small label at top
-      parts.push(`<rect x="${markerX - 22}" y="${PRICE_TOP}" width="44" height="14" rx="3" fill="rgba(245,158,11,0.25)" stroke="${SIG_ENTRY}" stroke-width="0.6"/>`);
-      parts.push(`<text x="${markerX}" y="${PRICE_TOP + 10}" fill="${SIG_ENTRY}" text-anchor="middle" font-size="8" font-family="sans-serif" font-weight="bold">SEÑAL</text>`);
+      // Label at top with time
+      const sigLblTxt = `SEÑAL ${sigTimeLabel}`;
+      const sigMarkerW = sigLblTxt.length * 5.5 + 12;
+      parts.push(`<rect x="${markerX - sigMarkerW / 2}" y="${PRICE_TOP}" width="${sigMarkerW}" height="14" rx="3" fill="rgba(245,158,11,0.25)" stroke="${SIG_ENTRY}" stroke-width="0.6"/>`);
+      parts.push(`<text x="${markerX}" y="${PRICE_TOP + 10}" fill="${SIG_ENTRY}" text-anchor="middle" font-size="8" font-family="monospace" font-weight="bold">${sigLblTxt}</text>`);
     }
 
     // Shaded zones ONLY in the prediction area
