@@ -149,7 +149,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
         style={{ background: `radial-gradient(ellipse at center, ${isTP ? 'hsl(135, 80%, 45%)' : isSL ? 'hsl(0, 80%, 50%)' : 'hsl(200, 100%, 50%)'} 0%, transparent 70%)` }} />
 
-      <div className="flex items-center justify-between px-3 py-2.5 min-h-[44px]">
+      <div className="flex items-center justify-between px-2 py-2.5 min-h-[44px]">
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <span className="text-sm">{icon}</span>
           <span className="font-semibold text-white text-xs sm:text-sm">{label}</span>
@@ -209,7 +209,7 @@ function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takePr
   const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy) : null;
   const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
   return (
-    <div className="space-y-1.5 mx-3 mb-3">
+    <div className="space-y-1.5 mx-1.5 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
       {tp2 && <PriceRowFull label="TakeProfit 2" {...tp2} />}
       {tp3 && <PriceRowFull label="TakeProfit 3" {...tp3} />}
