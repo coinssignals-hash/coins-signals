@@ -149,21 +149,21 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
         style={{ background: `radial-gradient(ellipse at center, ${isTP ? 'hsl(135, 80%, 45%)' : isSL ? 'hsl(0, 80%, 50%)' : 'hsl(200, 100%, 50%)'} 0%, transparent 70%)` }} />
 
-      <div className="flex items-center justify-between px-2 py-2.5 min-h-[44px]">
+      <div className="flex items-center justify-between px-2 py-1 min-h-[32px]">
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <span className="text-sm">{icon}</span>
-          <span className="font-semibold text-white text-xs sm:text-sm">{label}</span>
+          <span className="font-semibold text-white text-sm sm:text-base">{label}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-center">
-          <span className="text-[10px] sm:text-xs font-bold text-center tabular-nums" style={{ color: accentColor }}>
+          <span className="text-xs sm:text-sm font-bold text-center tabular-nums" style={{ color: accentColor }}>
             {pips} pips
           </span>
-          <span className="text-[10px] sm:text-xs font-bold text-center tabular-nums hidden sm:inline" style={{ color: accentColor }}>
+          <span className="text-xs sm:text-sm font-bold text-center tabular-nums hidden sm:inline" style={{ color: accentColor }}>
             {percent}%
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="font-bold text-white text-xs sm:text-sm font-mono tabular-nums">{price}</span>
+          <span className="font-bold text-white text-sm sm:text-base font-mono tabular-nums">{price}</span>
           <button
             className="text-cyan-400/60 hover:text-cyan-300 transition-colors p-1 -mr-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
             onClick={(e) => {
