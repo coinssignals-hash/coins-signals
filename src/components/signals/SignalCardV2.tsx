@@ -133,21 +133,22 @@ interface PriceRowFullProps {
 }
 
 function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullProps) {
-  const accentColor = isPositive ? "hsl(135, 70%, 50%)" : "hsl(0, 70%, 55%)";
   const isTP = label.startsWith('TakeProfit');
   const isSL = label.startsWith('Stop');
+  // TP siempre verde, SL siempre rojo
+  const accentColor = isTP ? "hsl(135, 70%, 50%)" : "hsl(0, 70%, 55%)";
   const icon = isTP ? '🎯' : isSL ? '🛑' : '';
   return (
     <div
       className="relative rounded-lg overflow-hidden active:scale-[0.98] transition-transform"
       style={{
-        background: "linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)",
-        border: `1px solid ${isTP ? 'hsla(135, 60%, 40%, 0.25)' : isSL ? 'hsla(0, 60%, 40%, 0.25)' : 'hsla(210, 100%, 50%, 0.15)'}`
+        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
+        border: `1px solid ${isTP ? 'hsla(135, 60%, 40%, 0.25)' : 'hsla(0, 60%, 40%, 0.25)'}`
       }}>
 
       <div
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: `radial-gradient(ellipse at center, ${isTP ? 'hsl(135, 80%, 45%)' : isSL ? 'hsl(0, 80%, 50%)' : 'hsl(200, 100%, 50%)'} 0%, transparent 70%)` }} />
+        style={{ background: `radial-gradient(ellipse at center, ${isTP ? 'hsl(135, 80%, 45%)' : 'hsl(0, 80%, 50%)'} 0%, transparent 70%)` }} />
 
       <div className="flex items-center justify-between px-2 py-0.5 min-h-[28px]">
         <div className="flex items-center gap-1.5 flex-shrink-0">
