@@ -212,6 +212,28 @@ export default function Portfolio() {
               </SignalStyleCard>
             )}
 
+            {/* Distribution Charts */}
+            {!loading && accounts.length > 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                {/* By Broker */}
+                <DistributionCard
+                  title="Por Broker"
+                  items={accounts.filter(a => !a.error && a.equity > 0).map(a => ({
+                    label: a.broker_name.replace(/\s*\(Demo\)\s*/i, ''),
+                    value: a.equity,
+                  }))}
+                />
+                {/* By Asset */}
+                <DistributionCard
+                  title="Por Activo"
+                  items={allPositions.filter(p => p.market_value > 0).map(p => ({
+                    label: p.symbol,
+                    value: Math.abs(p.market_value),
+                  }))}
+                />
+              </div>
+            )}
+
             {/* No Accounts */}
             {!loading && accounts.length === 0 && (
               <SignalStyleCard>
@@ -348,5 +370,40 @@ function DetailItem({ label, value, valueColor = 'text-white' }: { label: string
       <p className="text-[9px] text-slate-500 uppercase tracking-wider">{label}</p>
       <p className={cn("text-[11px] font-medium tabular-nums truncate", valueColor)}>{value}</p>
     </div>
+  );
+}
+
+const DIST_COLORS = ['#06b6d4', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444'];
+
+function DistributionCard({ title, items }: { title: string; items: { label: string; value: number }[] }) {
+  const total = items.reduce((s, i) => s + i.value, 0);
+  if (total === 0) return null;
+
+  return (
+    <SignalStyleCard>
+      <div className="p-3 space-y-2">
+        <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-medium">{title}</span>
+        <div className="space-y-2">
+          {items.slice(0, 6).map((item, idx) => {
+            const pct = (item.value / total) * 100;
+            const color = DIST_COLORS[idx % DIST_COLORS.length];
+            return (
+              <div key={`${item.label}-${idx}`} className="space-y-0.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-300 truncate max-w-[70%]">{item.label}</span>
+                  <span className="text-[10px] text-slate-400 tabular-nums">{pct.toFixed(1)}%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%`, backgroundColor: color }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </SignalStyleCard>
   );
 }
