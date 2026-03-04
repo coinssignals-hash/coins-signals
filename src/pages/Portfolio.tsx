@@ -1,40 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  RefreshCw, 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet, 
-  PieChart as PieChartIcon,
-  BarChart3,
-  Clock,
-  AlertCircle,
-  Plus,
-  ChevronDown,
-  Radio
+import {
+  ArrowLeft, RefreshCw, TrendingUp, TrendingDown, Wallet,
+  Clock, AlertCircle, Plus, Radio, ArrowUpRight, ArrowDownRight,
+  BarChart3
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageTransition } from '@/components/layout/PageTransition';
-import { StaggerList } from '@/components/layout/StaggerList';
-import { usePortfolio, AccountData, Position } from '@/hooks/usePortfolio';
+import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { usePortfolio, Position } from '@/hooks/usePortfolio';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tooltip as RechartsTooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
-
-const COLORS = ['#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 function formatCurrency(value: number, currency = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    style: 'currency', currency,
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
   }).format(value);
 }
 
@@ -47,588 +32,304 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
-// Hook to track value changes for animation
-function useValueFlash(value: number) {
-  const prevRef = useRef(value);
-  const [flash, setFlash] = useState<'up' | 'down' | null>(null);
-  
-  useEffect(() => {
-    if (value !== prevRef.current) {
-      setFlash(value > prevRef.current ? 'up' : 'down');
-      prevRef.current = value;
-      const timeout = setTimeout(() => setFlash(null), 500);
-      return () => clearTimeout(timeout);
-    }
-  }, [value]);
-  
-  return flash;
-}
-
 export default function Portfolio() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { accounts, summary, loading, error, lastRefresh, isLive, isDemo, refetch, getAllPositions } = usePortfolio();
-  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
-
-  const toggleAccount = (connectionId: string) => {
-    setExpandedAccounts(prev => {
-      const next = new Set(prev);
-      if (next.has(connectionId)) {
-        next.delete(connectionId);
-      } else {
-        next.add(connectionId);
-      }
-      return next;
-    });
-  };
 
   const allPositions = getAllPositions();
 
-  // Prepare chart data
-  const accountsChartData = accounts
-    .filter(a => !a.error && a.equity > 0)
-    .map(a => ({
-      name: a.broker_name,
-      value: a.equity,
-    }));
+  const positionStats = useMemo(() => {
+    const total = allPositions.length;
+    const buys = allPositions.filter(p => p.side === 'long').length;
+    const sells = allPositions.filter(p => p.side === 'short').length;
+    return { total, buys, sells };
+  }, [allPositions]);
 
-  const positionsChartData = allPositions
-    .filter(p => p.market_value > 0)
-    .slice(0, 6)
-    .map(p => ({
-      name: p.symbol,
-      value: Math.abs(p.market_value),
-    }));
+  const totalInPositions = useMemo(() =>
+    allPositions.reduce((sum, p) => sum + Math.abs(p.market_value), 0),
+  [allPositions]);
 
-  // Show auth banner for non-authenticated users
   const showAuthBanner = !user;
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
-      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
-      <Header />
-      
-      <main className="px-4 py-4">
-        {/* Auth Banner for non-authenticated users */}
-        {showAuthBanner && (
-          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-              <div>
-                <p className="text-amber-200 text-sm font-medium">{t('portfolio_login_banner')}</p>
-                <p className="text-amber-200/70 text-xs">{t('portfolio_login_banner_desc')}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/auth')}
-              className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded-full text-sm font-medium transition-colors whitespace-nowrap"
-            >
-              {t('portfolio_login')}
-            </button>
-          </div>
-        )}
+      <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
+        <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
+          <Header />
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => navigate(-1)} 
-              className="p-2 -ml-2 text-slate-400 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-white text-xl font-bold">{t('portfolio_title')}</h1>
-              <p className="text-slate-400 text-sm">{t('portfolio_subtitle')}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Demo indicator with tooltip */}
-            {isDemo && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/20 rounded-full border border-amber-500/30 cursor-help">
-                    <span className="text-amber-400 text-xs font-medium">DEMO</span>
+          <main className="px-3 sm:px-4 py-4 space-y-4">
+            {/* Auth Banner */}
+            {showAuthBanner && (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  <p className="text-amber-200 text-xs">{t('portfolio_login_banner')}</p>
+                </div>
+                <button
+                  onClick={() => navigate('/auth')}
+                  className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded-full text-xs font-medium transition-colors whitespace-nowrap"
+                >
+                  {t('portfolio_login')}
+                </button>
+              </div>
+            )}
+
+            {/* Page Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-slate-400 hover:text-white transition-colors">
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div>
+                  <h1 className="text-white text-lg font-bold">{t('portfolio_title')}</h1>
+                  <p className="text-slate-400 text-xs">{t('portfolio_subtitle')}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {isDemo && (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/20 rounded-full border border-amber-500/30">
+                    <span className="text-amber-400 text-[10px] font-medium">DEMO</span>
                   </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                  <p>{t('portfolio_demo_tooltip')}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-            {/* Live indicator */}
-            {isLive && !isDemo && (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30">
-                <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-                <span className="text-emerald-400 text-xs font-medium">LIVE</span>
-              </div>
-            )}
-            {lastRefresh && (
-              <span className="text-slate-500 text-xs flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {formatTime(lastRefresh)}
-              </span>
-            )}
-            <button
-              onClick={refetch}
-              disabled={loading}
-              className="p-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
-            >
-              <RefreshCw className={cn("w-5 h-5", loading && "animate-spin")} />
-            </button>
-          </div>
-        </div>
-
-        {/* Error State */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
-            <p className="text-red-400 text-sm flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              {error}
-            </p>
-          </div>
-        )}
-
-        {/* Summary Cards */}
-        <StaggerList className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 items-stretch auto-rows-fr">
-          <AnimatedSummaryCard
-            title={t('portfolio_equity')}
-            value={summary.total_equity}
-            formatFn={formatCurrency}
-            icon={<Wallet className="w-5 h-5" />}
-            loading={loading}
-          />
-          <AnimatedSummaryCard
-            title={t('portfolio_cash')}
-            value={summary.total_cash}
-            formatFn={formatCurrency}
-            icon={<BarChart3 className="w-5 h-5" />}
-            loading={loading}
-          />
-          <AnimatedSummaryCard
-            title={t('portfolio_unrealized_pnl')}
-            value={summary.total_unrealized_pnl}
-            formatFn={formatCurrency}
-            icon={summary.total_unrealized_pnl >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
-            valueColor={summary.total_unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}
-            loading={loading}
-          />
-          <AnimatedSummaryCard
-            title={t('portfolio_positions')}
-            value={summary.total_positions}
-            formatFn={(v) => v.toString()}
-            icon={<PieChartIcon className="w-5 h-5" />}
-            loading={loading}
-          />
-        </StaggerList>
-
-        {/* History Chart */}
-        {!loading && accounts.length > 0 && (
-          <div className="mb-6">
-            <PortfolioHistoryChart />
-          </div>
-        )}
-
-        {/* Charts Row */}
-        {!loading && (accountsChartData.length > 0 || positionsChartData.length > 0) && (
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            {accountsChartData.length > 0 && (
-              <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                <h3 className="text-white font-medium mb-3">Distribución por Broker</h3>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={accountsChartData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={70}
-                        paddingAngle={2}
-                      >
-                        {accountsChartData.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip 
-                        formatter={(value: number) => formatCurrency(value)}
-                        contentStyle={{ 
-                          backgroundColor: '#1e293b', 
-                          border: '1px solid #334155',
-                          borderRadius: '8px',
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {accountsChartData.map((item, index) => (
-                    <div key={item.name} className="flex items-center gap-1.5">
-                      <div 
-                        className="w-2.5 h-2.5 rounded-full" 
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }} 
-                      />
-                      <span className="text-slate-400 text-xs">{item.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {positionsChartData.length > 0 && (
-              <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                <h3 className="text-white font-medium mb-3">Distribución por Activo</h3>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={positionsChartData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={70}
-                        paddingAngle={2}
-                      >
-                        {positionsChartData.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip 
-                        formatter={(value: number) => formatCurrency(value)}
-                        contentStyle={{ 
-                          backgroundColor: '#1e293b', 
-                          border: '1px solid #334155',
-                          borderRadius: '8px',
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {positionsChartData.map((item, index) => (
-                    <div key={item.name} className="flex items-center gap-1.5">
-                      <div 
-                        className="w-2.5 h-2.5 rounded-full" 
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }} 
-                      />
-                      <span className="text-slate-400 text-xs">{item.name}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* No Accounts */}
-        {!loading && accounts.length === 0 && (
-          <div className="text-center py-12 bg-slate-800/30 rounded-xl border border-dashed border-slate-700">
-            <Wallet className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-white font-medium mb-2">No hay brokers conectados</h3>
-            <p className="text-slate-400 text-sm mb-4">Conecta tu primer broker para ver tu portfolio</p>
-            <button
-              onClick={() => navigate('/link-broker')}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full text-sm font-medium transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Vincular Broker
-            </button>
-          </div>
-        )}
-
-        {/* Account Cards */}
-        <StaggerList className="space-y-4">
-          {loading ? (
-            Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                <Skeleton className="h-6 w-32 mb-3" />
-                <Skeleton className="h-8 w-24 mb-2" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            ))
-          ) : (
-            accounts.map(account => (
-              <AccountCard 
-                key={account.connection_id}
-                account={account}
-                isExpanded={expandedAccounts.has(account.connection_id)}
-                onToggle={() => toggleAccount(account.connection_id)}
-              />
-            ))
-          )}
-        </StaggerList>
-
-        {/* All Positions Section */}
-        {!loading && allPositions.length > 0 && (
-          <section className="mt-8">
-            <h2 className="text-white text-lg font-semibold mb-4">Todas las Posiciones</h2>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-700/50">
-                      <th className="text-left text-slate-400 text-xs font-medium px-4 py-3">Símbolo</th>
-                      <th className="text-left text-slate-400 text-xs font-medium px-4 py-3">Broker</th>
-                      <th className="text-right text-slate-400 text-xs font-medium px-4 py-3">Cantidad</th>
-                      <th className="text-right text-slate-400 text-xs font-medium px-4 py-3">Entrada</th>
-                      <th className="text-right text-slate-400 text-xs font-medium px-4 py-3">Valor</th>
-                      <th className="text-right text-slate-400 text-xs font-medium px-4 py-3">PnL</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allPositions.map((pos, i) => (
-                      <tr key={`${pos.broker}-${pos.symbol}-${i}`} className="border-b border-slate-700/30 last:border-0">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <span className={cn(
-                              "text-xs px-1.5 py-0.5 rounded",
-                              pos.side === 'long' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                            )}>
-                              {pos.side === 'long' ? 'L' : 'S'}
-                            </span>
-                            <span className="text-white font-medium">{pos.symbol}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-slate-400 text-sm">{pos.broker}</td>
-                        <td className="px-4 py-3 text-white text-sm text-right">{pos.quantity}</td>
-                        <td className="px-4 py-3 text-slate-300 text-sm text-right">
-                          {formatCurrency(pos.average_entry_price)}
-                        </td>
-                        <td className="px-4 py-3 text-white text-sm text-right">
-                          {formatCurrency(pos.market_value)}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className={cn(
-                            "text-sm font-medium",
-                            pos.unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
-                          )}>
-                            {formatCurrency(pos.unrealized_pnl)}
-                          </div>
-                          <div className={cn(
-                            "text-xs",
-                            pos.unrealized_pnl_percent >= 0 ? 'text-emerald-400/70' : 'text-red-400/70'
-                          )}>
-                            {formatPercent(pos.unrealized_pnl_percent)}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                )}
+                {isLive && !isDemo && (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 rounded-full border border-emerald-500/30">
+                    <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
+                    <span className="text-emerald-400 text-[10px] font-medium">LIVE</span>
+                  </div>
+                )}
+                {lastRefresh && (
+                  <span className="text-slate-500 text-[10px] flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {formatTime(lastRefresh)}
+                  </span>
+                )}
+                <button onClick={refetch} disabled={loading} className="p-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50">
+                  <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+                </button>
               </div>
             </div>
-          </section>
-        )}
-      </main>
 
-      <BottomNav />
+            {/* Error */}
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                <p className="text-red-400 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" /> {error}
+                </p>
+              </div>
+            )}
+
+            {/* Summary Cards Row */}
+            <div className="grid grid-cols-5 gap-3">
+              {/* Equity Card - 3 cols */}
+              <SignalStyleCard className="col-span-3">
+                <div className="p-4 space-y-2">
+                  {loading ? (
+                    <>
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-7 w-28" />
+                      <Skeleton className="h-3 w-20" />
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <Wallet className="w-4 h-4 text-cyan-400" />
+                        <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-medium">Equity Total</span>
+                      </div>
+                      <p className="text-2xl font-bold text-white tabular-nums">{formatCurrency(summary.total_equity)}</p>
+                      <div className="flex items-center gap-3 text-xs">
+                        <div className="flex items-center gap-1 text-slate-400">
+                          <BarChart3 className="w-3 h-3" />
+                          <span>En posiciones:</span>
+                          <span className="text-white font-medium">{formatCurrency(totalInPositions)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {summary.total_unrealized_pnl >= 0 ? (
+                          <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <TrendingDown className="w-3.5 h-3.5 text-red-400" />
+                        )}
+                        <span className={cn(
+                          "text-sm font-semibold tabular-nums",
+                          summary.total_unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
+                        )}>
+                          {summary.total_unrealized_pnl >= 0 ? '+' : ''}{formatCurrency(summary.total_unrealized_pnl)}
+                        </span>
+                        <span className={cn(
+                          "text-[10px] tabular-nums",
+                          summary.total_unrealized_pnl >= 0 ? 'text-emerald-400/70' : 'text-red-400/70'
+                        )}>
+                          {formatPercent(summary.total_equity > 0 ? (summary.total_unrealized_pnl / summary.total_equity) * 100 : 0)}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </SignalStyleCard>
+
+              {/* Positions Summary Card - 2 cols */}
+              <SignalStyleCard className="col-span-2">
+                <div className="p-4 space-y-3">
+                  {loading ? (
+                    <>
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-7 w-12" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-medium">Posiciones</span>
+                      <p className="text-2xl font-bold text-white">{positionStats.total}</p>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <ArrowUpRight className="w-3 h-3 text-emerald-400" />
+                            <span className="text-[10px] text-emerald-400">Compra</span>
+                          </div>
+                          <span className="text-xs font-semibold text-emerald-400">{positionStats.buys}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <ArrowDownRight className="w-3 h-3 text-red-400" />
+                            <span className="text-[10px] text-red-400">Venta</span>
+                          </div>
+                          <span className="text-xs font-semibold text-red-400">{positionStats.sells}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </SignalStyleCard>
+            </div>
+
+            {/* History Chart */}
+            {!loading && accounts.length > 0 && (
+              <SignalStyleCard>
+                <div className="p-3">
+                  <PortfolioHistoryChart />
+                </div>
+              </SignalStyleCard>
+            )}
+
+            {/* No Accounts */}
+            {!loading && accounts.length === 0 && (
+              <SignalStyleCard>
+                <div className="text-center py-10 px-4">
+                  <Wallet className="w-10 h-10 text-slate-600 mx-auto mb-3" />
+                  <h3 className="text-white font-medium mb-1 text-sm">No hay brokers conectados</h3>
+                  <p className="text-slate-400 text-xs mb-4">Conecta tu primer broker para ver tu portfolio</p>
+                  <button
+                    onClick={() => navigate('/link-broker')}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full text-xs font-medium transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Vincular Broker
+                  </button>
+                </div>
+              </SignalStyleCard>
+            )}
+
+            {/* Open Positions List */}
+            {!loading && allPositions.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-1">
+                  <h2 className="text-white text-sm font-semibold">Posiciones Abiertas</h2>
+                  <span className="text-slate-500 text-[10px]">{allPositions.length} activas</span>
+                </div>
+
+                <div className="space-y-2">
+                  {allPositions.map((pos, i) => (
+                    <PositionCard key={`${pos.broker}-${pos.symbol}-${i}`} position={pos} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Loading skeletons */}
+            {loading && (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="rounded-xl border border-cyan-800/20 p-3" style={{ background: 'hsl(205,100%,7%)' }}>
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-9 h-9 rounded-lg" />
+                      <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-3.5 w-20" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                      <Skeleton className="h-5 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+
+          <BottomNav />
+        </div>
       </div>
-    </div>
     </PageTransition>
   );
 }
 
-function AnimatedSummaryCard({
-  title,
-  value,
-  formatFn,
-  icon,
-  valueColor = 'text-white',
-  loading,
-}: {
-  title: string;
-  value: number;
-  formatFn: (v: number) => string;
-  icon: React.ReactNode;
-  valueColor?: string;
-  loading?: boolean;
-}) {
-  const flash = useValueFlash(value);
-  
+/* ── Position Card ─────────────────────────────────── */
+function PositionCard({ position }: { position: Position & { broker: string } }) {
+  const isPnlPositive = position.unrealized_pnl >= 0;
+  const isBuy = position.side === 'long';
+
   return (
-    <div className={cn(
-      "bg-slate-800/50 rounded-xl p-2.5 border transition-all duration-300 h-full min-h-[72px]",
-      flash === 'up' && "border-emerald-500/50 bg-emerald-500/10",
-      flash === 'down' && "border-red-500/50 bg-red-500/10",
-      !flash && "border-slate-700/50"
-    )}>
-      <div className="flex h-full flex-col justify-between gap-1">
-        <div className="flex items-center gap-1.5 text-slate-400 min-w-0">
-          {icon}
-          <span className="text-[10px] leading-none truncate">{title}</span>
+    <SignalStyleCard>
+      <div className="p-3">
+        {/* Row 1: Symbol + Side + PnL */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className={cn(
+              "text-[10px] px-1.5 py-0.5 rounded font-bold uppercase",
+              isBuy ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+            )}>
+              {isBuy ? 'BUY' : 'SELL'}
+            </span>
+            <span className="text-white font-bold text-sm">{position.symbol}</span>
+          </div>
+          <div className="text-right">
+            <span className={cn(
+              "text-sm font-bold tabular-nums",
+              isPnlPositive ? 'text-emerald-400' : 'text-red-400'
+            )}>
+              {isPnlPositive ? '+' : ''}{formatCurrency(position.unrealized_pnl)}
+            </span>
+          </div>
         </div>
-        {loading ? (
-          <Skeleton className="h-5 w-20 self-end" />
-        ) : (
-          <span className={cn(
-            "text-sm font-bold transition-colors duration-300 text-right leading-none tabular-nums truncate",
-            flash === 'up' && "text-emerald-400",
-            flash === 'down' && "text-red-400",
-            !flash && valueColor
-          )}>
-            {formatFn(value)}
+
+        {/* Row 2: Details grid */}
+        <div className="grid grid-cols-4 gap-2">
+          <DetailItem label="Valor" value={formatCurrency(position.market_value)} />
+          <DetailItem label="Lote" value={position.quantity.toString()} />
+          <DetailItem
+            label="PnL %"
+            value={formatPercent(position.unrealized_pnl_percent)}
+            valueColor={isPnlPositive ? 'text-emerald-400' : 'text-red-400'}
+          />
+          <DetailItem label="Entrada" value={`$${position.average_entry_price.toFixed(position.average_entry_price < 10 ? 4 : 2)}`} />
+        </div>
+
+        {/* Row 3: Broker + Current Price */}
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-cyan-800/20">
+          <span className="text-[10px] text-slate-500">{position.broker}</span>
+          <span className="text-[10px] text-slate-400 tabular-nums">
+            Actual: <span className="text-white font-medium">${position.current_price.toFixed(position.current_price < 10 ? 4 : 2)}</span>
           </span>
-        )}
+        </div>
       </div>
-    </div>
+    </SignalStyleCard>
   );
 }
 
-function AccountCard({
-  account,
-  isExpanded,
-  onToggle,
-}: {
-  account: AccountData;
-  isExpanded: boolean;
-  onToggle: () => void;
-}) {
-  const hasError = !!account.error;
-
+function DetailItem({ label, value, valueColor = 'text-white' }: { label: string; value: string; valueColor?: string }) {
   return (
-    <div className={cn(
-      "bg-slate-800/50 rounded-xl border transition-colors",
-      hasError ? "border-red-500/30" : "border-slate-700/50"
-    )}>
-      <button
-        onClick={onToggle}
-        className="w-full p-4 flex items-center justify-between text-left"
-      >
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center text-lg",
-            hasError 
-              ? "bg-red-500/20 border border-red-500/30" 
-              : "bg-gradient-to-br from-cyan-500/30 to-emerald-500/30 border border-cyan-500/30"
-          )}>
-            {hasError ? '⚠️' : '🏦'}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-white font-medium">{account.broker_name}</span>
-              <span className={cn(
-                "text-xs px-1.5 py-0.5 rounded",
-                account.environment === 'live' 
-                  ? "bg-amber-500/20 text-amber-400" 
-                  : "bg-slate-600/50 text-slate-400"
-              )}>
-                {account.environment}
-              </span>
-            </div>
-            {hasError ? (
-              <span className="text-red-400 text-sm">{account.error}</span>
-            ) : (
-              <span className="text-slate-400 text-sm">
-                {formatCurrency(account.equity, account.currency)} • {account.positions.length} posiciones
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {!hasError && (
-            <div className="text-right">
-              <div className={cn(
-                "font-medium",
-                account.unrealized_pnl >= 0 ? "text-emerald-400" : "text-red-400"
-              )}>
-                {account.unrealized_pnl >= 0 ? '+' : ''}{formatCurrency(account.unrealized_pnl)}
-              </div>
-              <div className="text-slate-500 text-xs">PnL no realizado</div>
-            </div>
-          )}
-          <ChevronDown className={cn(
-            "w-5 h-5 text-slate-400 transition-transform duration-300",
-            isExpanded && "rotate-180"
-          )} />
-        </div>
-      </button>
-
-      <div
-        className="grid transition-all duration-300 ease-in-out"
-        style={{ gridTemplateRows: isExpanded && !hasError ? '1fr' : '0fr' }}
-      >
-        <div className="overflow-hidden">
-          <div className="px-4 pb-4 space-y-4">
-            {/* Account Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatItem label="Cash" value={formatCurrency(account.cash_balance, account.currency)} />
-              <StatItem label="Buying Power" value={formatCurrency(account.buying_power, account.currency)} />
-              <StatItem label="Margen Usado" value={formatCurrency(account.margin_used, account.currency)} />
-              <StatItem 
-                label="PnL Hoy" 
-                value={formatCurrency(account.realized_pnl_today, account.currency)}
-                valueColor={account.realized_pnl_today >= 0 ? 'text-emerald-400' : 'text-red-400'}
-              />
-            </div>
-
-            {/* Positions */}
-            {account.positions.length > 0 && (
-              <div>
-                <h4 className="text-slate-400 text-xs font-medium mb-2">Posiciones</h4>
-                <div className="space-y-2">
-                  {account.positions.map((pos, i) => (
-                    <PositionRow key={`${pos.symbol}-${i}`} position={pos} currency={account.currency} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StatItem({ 
-  label, 
-  value, 
-  valueColor = 'text-white' 
-}: { 
-  label: string; 
-  value: string; 
-  valueColor?: string;
-}) {
-  return (
-    <div className="bg-slate-900/50 rounded-lg p-3">
-      <div className="text-slate-500 text-xs mb-1">{label}</div>
-      <div className={cn("text-sm font-medium", valueColor)}>{value}</div>
-    </div>
-  );
-}
-
-function PositionRow({ position, currency }: { position: Position; currency: string }) {
-  return (
-    <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg">
-      <div className="flex items-center gap-2">
-        <span className={cn(
-          "text-xs px-1.5 py-0.5 rounded font-medium",
-          position.side === 'long' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-        )}>
-          {position.side === 'long' ? 'LONG' : 'SHORT'}
-        </span>
-        <span className="text-white font-medium">{position.symbol}</span>
-        <span className="text-slate-500 text-sm">× {position.quantity}</span>
-      </div>
-      <div className="text-right">
-        <div className={cn(
-          "text-sm font-medium",
-          position.unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
-        )}>
-          {formatCurrency(position.unrealized_pnl, currency)}
-        </div>
-        <div className={cn(
-          "text-xs",
-          position.unrealized_pnl_percent >= 0 ? 'text-emerald-400/70' : 'text-red-400/70'
-        )}>
-          {formatPercent(position.unrealized_pnl_percent)}
-        </div>
-      </div>
+    <div>
+      <p className="text-[9px] text-slate-500 uppercase tracking-wider">{label}</p>
+      <p className={cn("text-[11px] font-medium tabular-nums truncate", valueColor)}>{value}</p>
     </div>
   );
 }
