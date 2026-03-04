@@ -149,7 +149,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
         style={{ background: `radial-gradient(ellipse at center, ${isTP ? 'hsl(135, 80%, 45%)' : isSL ? 'hsl(0, 80%, 50%)' : 'hsl(200, 100%, 50%)'} 0%, transparent 70%)` }} />
 
-      <div className="flex items-center justify-between px-2 py-1 min-h-[32px]">
+      <div className="flex items-center justify-between px-2 py-0.5 min-h-[28px]">
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <span className="text-sm">{icon}</span>
           <span className="font-semibold text-white text-sm sm:text-base">{label}</span>
