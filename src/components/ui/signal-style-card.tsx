@@ -31,20 +31,21 @@ export function SignalStyleCard({ children, className, label, ...props }: Signal
             mixBlendMode: 'screen'
           }} />
 
-
         {/* Top glow line */}
         <div
           className="absolute top-0 left-[15%] right-[15%] h-[1px]"
           style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
-
 
         {label &&
         <div className="relative px-4 pt-3 pb-1">
             <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium">{label}</span>
           </div>
         }
-        
+
+        {/* Card content */}
+        <div className="relative">
+          {children}
+        </div>
       </div>
     </div>);
-
 }
