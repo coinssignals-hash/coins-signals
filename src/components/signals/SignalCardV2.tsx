@@ -200,14 +200,18 @@ const CURRENCY_FLAGS: Record<string, string> = {
   NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr"
 };
 
-function TakeProfitStopLossSection({ entryPrice, takeProfit, stopLoss, isJpy
+function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takeProfit3, stopLoss, isJpy
 
-}: {entryPrice: number;takeProfit: number;stopLoss: number;isJpy: boolean;}) {
+}: {entryPrice: number;takeProfit: number;takeProfit2?: number;takeProfit3?: number;stopLoss: number;isJpy: boolean;}) {
   const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy);
+  const tp2 = takeProfit2 ? computePriceMetrics(takeProfit2, entryPrice, isJpy) : null;
+  const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy) : null;
   const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
   return (
     <div className="space-y-2 mx-3 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
+      {tp2 && <PriceRowFull label="TakeProfit 2" {...tp2} />}
+      {tp3 && <PriceRowFull label="TakeProfit 3" {...tp3} />}
       <PriceRowFull label="Stop Loss" {...sl} />
     </div>);
 
@@ -702,7 +706,24 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {expanded &&
         <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
-            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} stopLoss={stopLoss} isJpy={isJpy} />
+            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
+
+            {/* AI Analysis Notes */}
+            {signal?.notes && (
+              <div className="mx-3 mb-3 rounded-lg p-3 relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+                  border: "1px solid hsla(200, 60%, 35%, 0.3)"
+                }}>
+                <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
+                  style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Activity className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">Análisis AI</span>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{signal.notes}</p>
+              </div>
+            )}
 
             {/* Candlestick Chart - Loaded via forex-data API */}
             <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
@@ -860,7 +881,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           <CollapsibleContent>
                             <div className="px-3 pb-2 border-b border-slate-700/30">
                               <div className="space-y-1.5">
-                                <div className="flex justify-between items-center"><span className="text-[10px] text-emerald-400 font-semibold">TP</span><span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[10px] text-emerald-400 font-semibold">TP1</span><span className="text-xs font-mono text-emerald-300">{takeProfit.toFixed(isJpy ? 3 : 5)}</span></div>
+                                {signal?.takeProfit2 && <div className="flex justify-between items-center"><span className="text-[10px] text-emerald-400/70 font-semibold">TP2</span><span className="text-xs font-mono text-emerald-300/70">{signal.takeProfit2.toFixed(isJpy ? 3 : 5)}</span></div>}
+                                {signal?.takeProfit3 && <div className="flex justify-between items-center"><span className="text-[10px] text-emerald-400/50 font-semibold">TP3</span><span className="text-xs font-mono text-emerald-300/50">{signal.takeProfit3.toFixed(isJpy ? 3 : 5)}</span></div>}
                                 <div className="flex justify-between items-center"><span className="text-[10px] text-blue-400 font-semibold">Entry</span><span className="text-xs font-mono text-blue-300">{entryPrice.toFixed(isJpy ? 3 : 5)}</span></div>
                                 <div className="flex justify-between items-center"><span className="text-[10px] text-rose-400 font-semibold">SL</span><span className="text-xs font-mono text-rose-300">{stopLoss.toFixed(isJpy ? 3 : 5)}</span></div>
                               </div>
