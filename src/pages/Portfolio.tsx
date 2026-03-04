@@ -302,7 +302,7 @@ function PositionCard({ position }: { position: Position & { broker: string } })
         </div>
 
         {/* Row 2: Details grid */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-2">
           <DetailItem label="Valor" value={formatCurrency(position.market_value)} />
           <DetailItem label="Lote" value={position.quantity.toString()} />
           <DetailItem
@@ -311,6 +311,16 @@ function PositionCard({ position }: { position: Position & { broker: string } })
             valueColor={isPnlPositive ? 'text-emerald-400' : 'text-red-400'}
           />
           <DetailItem label="Entrada" value={`$${position.average_entry_price.toFixed(position.average_entry_price < 10 ? 4 : 2)}`} />
+          <DetailItem
+            label={position.commission != null ? 'Comisión' : 'Spread'}
+            value={position.commission != null
+              ? `$${position.commission.toFixed(2)}`
+              : position.spread != null
+                ? `${position.spread} pips`
+                : '—'
+            }
+            valueColor="text-amber-400"
+          />
         </div>
 
         {/* Row 3: Broker + Current Price */}
