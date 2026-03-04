@@ -40,7 +40,17 @@ const AICenter = lazy(() => import("./pages/AICenter"));
 const Stocks = lazy(() => import("./pages/Stocks"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2, // 2 min - reduce refetches
+      gcTime: 1000 * 60 * 10, // 10 min garbage collection
+      refetchOnWindowFocus: false,
+      retry: 1,
+      refetchOnReconnect: 'always',
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-background">
