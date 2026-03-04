@@ -760,13 +760,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <style>{`
                   @media (orientation: portrait) {
                     .chart-fullscreen-rotated {
-                      transform-origin: center center;
-                      transform: rotate(90deg) translate(-50%, -50%);
+                      transform-origin: top left;
+                      transform: rotate(90deg) translateY(-100%);
                       width: 100dvh;
                       height: 100vw;
-                      position: absolute;
-                      top: 50%;
-                      left: 50%;
                     }
                   }
                 `}</style>
