@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain, PlusCircle } from 'lucide-react';
 import { PageTransition } from '@/components/layout/PageTransition';
@@ -14,7 +14,10 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Header } from '@/components/layout/Header';
 
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
-import { AICenter } from '@/components/signals/ai-center/AICenter';
+import { LazySection } from '@/components/ui/lazy-section';
+
+// Lazy load heavy AI Center
+const AICenter = lazy(() => import('@/components/signals/ai-center/AICenter').then(m => ({ default: m.AICenter })));
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
@@ -379,7 +382,9 @@ export default function Signals() {
       {/* Signals List grouped by day */}
       <main className="p-3 sm:p-4 space-y-4 sm:space-y-6">
         {showAICenter ? (
-          <AICenter onClose={() => setShowAICenter(false)} />
+          <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <AICenter onClose={() => setShowAICenter(false)} />
+          </Suspense>
         ) : (
           <>
             {/* Performance Stats Panel */}
