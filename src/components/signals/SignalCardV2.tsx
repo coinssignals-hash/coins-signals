@@ -754,27 +754,35 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             </div>
 
             {/* Enhanced Fullscreen Chart Dialog */}
-            <Dialog open={chartFullscreen} onOpenChange={setChartFullscreen}>
+            <Dialog open={chartFullscreen} onOpenChange={(open) => {
+              setChartFullscreen(open);
+              // Try to lock orientation to landscape when opening
+              if (open && screen.orientation?.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+              } else if (!open && screen.orientation?.unlock) {
+                screen.orientation.unlock();
+              }
+            }}>
               <DialogContent className="max-w-[100vw] w-[100vw] h-[100dvh] max-h-[100dvh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden overflow-hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
                 <style>{`
                   @media (orientation: portrait) {
-                    .chart-fullscreen-rotated {
-                      transform-origin: top left;
-                      transform: rotate(90deg) translateY(-100%);
+                    .chart-fs-inner {
+                      position: fixed;
+                      top: 0; left: 0;
                       width: 100dvh;
                       height: 100vw;
+                      transform-origin: top left;
+                      transform: rotate(90deg) translateY(-100%);
+                      z-index: 9999;
+                      background: hsl(222, 45%, 5%);
                     }
-                    .chart-fullscreen-rotated .chart-sidebar {
+                    .chart-fs-inner .chart-sidebar {
                       display: none;
-                    }
-                    .chart-fullscreen-rotated .chart-main {
-                      flex: 1;
-                      min-height: 0;
                     }
                   }
                 `}</style>
-                <div className="chart-fullscreen-rotated h-full flex flex-col overflow-hidden">
+                <div className="chart-fs-inner h-full flex flex-col overflow-hidden">
                   {/* ── Top Bar ── */}
                   <div className="flex items-center justify-between px-3 py-2 border-b border-slate-700/50 bg-[hsl(222,45%,5%)] shrink-0">
                     {/* Left: Symbol + Live Price */}
