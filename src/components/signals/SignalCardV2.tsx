@@ -791,12 +791,15 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   .chart-fs-inner .chart-main .cursor-crosshair {
                     flex: 1;
                     min-height: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                   }
-                  /* Make chart SVG img fill the crosshair container */
+                  /* Chart SVG img — contain to show all candles + date/time axis */
                   .chart-fs-inner .chart-main .cursor-crosshair img {
                     width: 100% !important;
                     height: 100% !important;
-                    object-fit: fill !important;
+                    object-fit: contain !important;
                   }
                   @media (orientation: portrait) {
                     .chart-fs-inner {
