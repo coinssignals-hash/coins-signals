@@ -302,7 +302,7 @@ export function TargetProgressBar({
       {/* Bottom price labels */}
       <div className="relative mt-1 h-7">
         <div className="absolute left-0 flex flex-col items-start">
-          <span className="text-[9px] text-rose-400/60 font-mono tabular-nums">
+          <span className="text-[11px] text-rose-400/60 font-mono tabular-nums">
             {stopLoss.toFixed(isJpy ? 2 : 3)}
           </span>
           <span className="text-[7px] text-rose-400/30 font-semibold uppercase tracking-widest leading-none">
@@ -310,7 +310,7 @@ export function TargetProgressBar({
           </span>
         </div>
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: '50%' }}>
-          <span className="text-[9px] text-white/40 font-mono tabular-nums">
+          <span className="text-[11px] text-white/40 font-mono tabular-nums">
             {entryPrice.toFixed(isJpy ? 2 : 3)}
           </span>
           <span className="text-[7px] text-white/30 font-semibold uppercase tracking-widest leading-none">
@@ -319,7 +319,7 @@ export function TargetProgressBar({
         </div>
         {/* TP1 label */}
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
-          <span className="text-[9px] text-emerald-400/60 font-mono tabular-nums">
+          <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
             {takeProfit.toFixed(isJpy ? 2 : 3)}
           </span>
           <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
@@ -327,12 +327,12 @@ export function TargetProgressBar({
           </span>
         </div>
         {takeProfit2 && tp2Pos !== null && (
-          <span className="absolute text-[9px] text-emerald-400/40 font-mono tabular-nums -translate-x-1/2" style={{ left: `${tp2Pos}%` }}>
+          <span className="absolute text-[11px] text-emerald-400/40 font-mono tabular-nums -translate-x-1/2" style={{ left: `${tp2Pos}%` }}>
             TP2
           </span>
         )}
         {takeProfit3 && tp3Pos !== null && (
-          <span className="absolute right-0 text-[9px] text-emerald-400/30 font-mono tabular-nums">
+          <span className="absolute right-0 text-[11px] text-emerald-400/30 font-mono tabular-nums">
             TP3
           </span>
         )}
