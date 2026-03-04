@@ -74,7 +74,7 @@ function buildChartSvg(
   signalDatetime?: string | null,
 ): string {
   const W = 1200, H = 700;
-  const PAD = { top: 35, right: 110, bottom: 50, left: 65 };
+  const PAD = { top: 35, right: 110, bottom: 55, left: 65 };
   const CHART_X1 = PAD.left;
   const FULL_X2 = W - PAD.right; // full chart right edge including prediction
   // Reserve ~20% of chart width for prediction zone when signal levels are shown
@@ -199,14 +199,16 @@ function buildChartSvg(
     }
   }
 
-  // Time labels (every ~3 hours)
-  const timeInterval = Math.max(1, Math.floor(data.length / 12));
+  // Time labels (date + hour)
+  const timeInterval = Math.max(1, Math.floor(data.length / 16));
   for (let i = 0; i < data.length; i += timeInterval) {
     const x = xOf(i);
     const d = new Date(data[i].time);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mo = String(d.getMonth() + 1).padStart(2, '0');
     const hh = String(d.getHours()).padStart(2, '0');
     const mm = String(d.getMinutes()).padStart(2, '0');
-    parts.push(`<text x="${x}" y="${H - PAD.bottom + 30}" fill="${TEXT_COL}" font-size="8" font-family="monospace" text-anchor="middle">${hh}:${mm}</text>`);
+    parts.push(`<text x="${x}" y="${H - PAD.bottom + 30}" fill="${TEXT_COL}" font-size="8" font-family="monospace" text-anchor="middle">${dd}/${mo} ${hh}:${mm}</text>`);
   }
 
   // Last day highlight background

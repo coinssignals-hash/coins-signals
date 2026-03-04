@@ -42,7 +42,7 @@ function buildChartSvg(
   if (data.length === 0) return '';
 
   const W = 1200, H = 600;
-  const PAD = { top: 30, right: 100, bottom: 45, left: 60 };
+  const PAD = { top: 30, right: 100, bottom: 50, left: 60 };
   const CX1 = PAD.left, CX2 = W - PAD.right, CW = CX2 - CX1;
   const VOL_Y = 480;
   const PH = VOL_Y - PAD.top;
@@ -165,12 +165,16 @@ function buildChartSvg(
   });
 
   // X-axis time labels
-  const step = Math.max(1, Math.floor(n / 8));
+  const step = Math.max(1, Math.floor(n / 12));
   for (let i = 0; i < n; i += step) {
     const c = visibleData[i];
     const d = new Date(c.time);
-    const label = `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
-    svg += `<text x="${xOf(i)}" y="${H - 10}" text-anchor="middle" fill="${TEXT}" font-size="9">${label}</text>`;
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mo = String(d.getMonth() + 1).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    const label = `${dd}/${mo} ${hh}:${mm}`;
+    svg += `<text x="${xOf(i)}" y="${H - 8}" text-anchor="middle" fill="${TEXT}" font-size="9">${label}</text>`;
   }
 
   svg += `</svg>`;
