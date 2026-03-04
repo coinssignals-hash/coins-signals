@@ -302,7 +302,7 @@ function PositionCard({ position }: { position: Position & { broker: string } })
         </div>
 
         {/* Row 2: Details grid */}
-        <div className="grid grid-cols-5 gap-2">
+        <div className={cn("grid gap-2", position.swap != null ? "grid-cols-3" : "grid-cols-5")}>
           <DetailItem label="Valor" value={formatCurrency(position.market_value)} />
           <DetailItem label="Lote" value={position.quantity.toString()} />
           <DetailItem
@@ -321,6 +321,13 @@ function PositionCard({ position }: { position: Position & { broker: string } })
             }
             valueColor="text-amber-400"
           />
+          {position.swap != null && (
+            <DetailItem
+              label="Swap"
+              value={`${position.swap >= 0 ? '+' : ''}$${position.swap.toFixed(2)}`}
+              valueColor={position.swap >= 0 ? 'text-cyan-400' : 'text-orange-400'}
+            />
+          )}
         </div>
 
         {/* Row 3: Broker + Current Price */}
