@@ -766,6 +766,38 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <DialogContent className="max-w-[100vw] w-[100vw] h-[100dvh] max-h-[100dvh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden overflow-hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
                 <style>{`
+                  .chart-fs-inner .chart-main {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                  }
+                  /* Make ZoomableChart fill */
+                  .chart-fs-inner .chart-main > div {
+                    flex: 1;
+                    min-height: 0;
+                    display: flex;
+                    flex-direction: column;
+                  }
+                  /* Make CandlestickChart outer fill */
+                  .chart-fs-inner .chart-main > div > div {
+                    flex: 1;
+                    min-height: 0;
+                    display: flex;
+                    flex-direction: column;
+                  }
+                  /* crosshair container fills */
+                  .chart-fs-inner .chart-main .cursor-crosshair {
+                    flex: 1;
+                    min-height: 0;
+                  }
+                  /* Make chart SVG img fill the crosshair container */
+                  .chart-fs-inner .chart-main .cursor-crosshair img {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: fill !important;
+                  }
                   @media (orientation: portrait) {
                     .chart-fs-inner {
                       position: fixed;
@@ -783,59 +815,37 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   }
                 `}</style>
                 <div className="chart-fs-inner h-full flex flex-col overflow-hidden">
-                  {/* ── Top Bar ── */}
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-slate-700/50 bg-[hsl(222,45%,5%)] shrink-0">
-                    {/* Left: Symbol + Live Price */}
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-white tracking-wide">{displayPair}</span>
-                      {quote?.price &&
+                  {/* ── Compact Top Bar ── */}
+                  <div className="flex items-center justify-between px-2 py-1 border-b border-slate-700/50 bg-[hsl(222,45%,5%)] shrink-0">
                     <div className="flex items-center gap-2">
-                          <span className="text-sm font-mono font-bold text-white">
-                            {quote.price.toFixed(isJpy ? 3 : 5)}
-                          </span>
-                          <span className={cn(
-                        "text-[10px] font-bold font-mono px-1.5 py-0.5 rounded",
-                        priceDiff.isPositive ?
-                        "text-emerald-400 bg-emerald-500/15" :
-                        "text-rose-400 bg-rose-500/15"
+                      <span className="text-xs font-bold text-white tracking-wide">{displayPair}</span>
+                      {quote?.price &&
+                        <span className="text-xs font-mono font-bold text-white">
+                          {quote.price.toFixed(isJpy ? 3 : 5)}
+                        </span>
+                      }
+                      {quote?.price && <span className={cn(
+                        "text-[9px] font-bold font-mono px-1 py-0.5 rounded",
+                        priceDiff.isPositive ? "text-emerald-400 bg-emerald-500/15" : "text-rose-400 bg-rose-500/15"
                       )}>
-                            {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)} pips
-                          </span>
-                          <span className={cn(
-                        "text-[10px] font-bold font-mono",
-                        priceDiff.isPositive ? "text-emerald-400" : "text-rose-400"
-                      )}>
-                            ({priceDiff.isPositive ? "+" : ""}{priceDiff.percent.toFixed(3)}%)
-                          </span>
-                          {isConnected && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
-                        </div>
-                    }
+                        {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
+                      </span>}
+                      {isConnected && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
                     </div>
-
-                    {/* Center: Interval Selector */}
-                    <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto">
+                    <div className="flex items-center gap-px">
                       {(['15min', '30min', '1h', '4h', '1day'] as ChartInterval[]).map((iv) =>
-                    <button
-                      key={iv}
-                      onClick={() => setChartInterval(iv)}
-                      className={cn(
-                        "px-2 sm:px-2.5 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-all min-w-[36px] min-h-[36px]",
-                        chartInterval === iv ?
-                        "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" :
-                        "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
-                      )}>
-                      
+                        <button key={iv} onClick={() => setChartInterval(iv)}
+                          className={cn(
+                            "px-1.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition-all min-w-[28px]",
+                            chartInterval === iv ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" : "text-slate-500 hover:text-slate-300"
+                          )}>
                           {iv === '1day' ? '1D' : iv === '15min' ? '15m' : iv === '30min' ? '30m' : iv}
                         </button>
-                    )}
+                      )}
                     </div>
-
-                    {/* Right: S/R Toggle + Close */}
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => setChartFullscreen(false)} className="p-1.5 rounded hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors ml-1">
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
+                    <button onClick={() => setChartFullscreen(false)} className="p-1 rounded hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
 
                   {/* ── Main Content ── */}
