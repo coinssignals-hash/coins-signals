@@ -11,6 +11,9 @@ export interface Position {
   unrealized_pnl: number;
   unrealized_pnl_percent: number;
   side: 'long' | 'short';
+  commission?: number;
+  spread?: number;
+  swap?: number;
 }
 
 export interface AccountData {
@@ -62,9 +65,9 @@ const DEMO_ACCOUNTS: AccountData[] = [
     currency: 'USD',
     last_updated: new Date().toISOString(),
     positions: [
-      { symbol: 'AAPL', quantity: 50, average_entry_price: 178.50, current_price: 192.30, market_value: 9615, unrealized_pnl: 690, unrealized_pnl_percent: 7.72, side: 'long' },
-      { symbol: 'TSLA', quantity: 25, average_entry_price: 245.00, current_price: 268.40, market_value: 6710, unrealized_pnl: 585, unrealized_pnl_percent: 9.55, side: 'long' },
-      { symbol: 'NVDA', quantity: 30, average_entry_price: 485.20, current_price: 512.80, market_value: 15384, unrealized_pnl: 828, unrealized_pnl_percent: 5.69, side: 'long' },
+      { symbol: 'AAPL', quantity: 50, average_entry_price: 178.50, current_price: 192.30, market_value: 9615, unrealized_pnl: 690, unrealized_pnl_percent: 7.72, side: 'long', commission: 1.50, spread: 0.02 },
+      { symbol: 'TSLA', quantity: 25, average_entry_price: 245.00, current_price: 268.40, market_value: 6710, unrealized_pnl: 585, unrealized_pnl_percent: 9.55, side: 'long', commission: 1.50, spread: 0.05 },
+      { symbol: 'NVDA', quantity: 30, average_entry_price: 485.20, current_price: 512.80, market_value: 15384, unrealized_pnl: 828, unrealized_pnl_percent: 5.69, side: 'long', commission: 1.50, spread: 0.10 },
     ],
   },
   {
@@ -82,8 +85,8 @@ const DEMO_ACCOUNTS: AccountData[] = [
     currency: 'USD',
     last_updated: new Date().toISOString(),
     positions: [
-      { symbol: 'EUR/USD', quantity: 10000, average_entry_price: 1.0892, current_price: 1.0845, market_value: 10845, unrealized_pnl: -470, unrealized_pnl_percent: -4.31, side: 'long' },
-      { symbol: 'BTC/USD', quantity: 0.15, average_entry_price: 42500, current_price: 43200, market_value: 6480, unrealized_pnl: 105, unrealized_pnl_percent: 1.65, side: 'long' },
+      { symbol: 'EUR/USD', quantity: 10000, average_entry_price: 1.0892, current_price: 1.0845, market_value: 10845, unrealized_pnl: -470, unrealized_pnl_percent: -4.31, side: 'long', spread: 1.2, swap: -3.50 },
+      { symbol: 'BTC/USD', quantity: 0.15, average_entry_price: 42500, current_price: 43200, market_value: 6480, unrealized_pnl: 105, unrealized_pnl_percent: 1.65, side: 'long', spread: 15.0, swap: -1.20 },
     ],
   },
 ];
