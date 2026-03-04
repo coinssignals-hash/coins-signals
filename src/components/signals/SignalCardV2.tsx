@@ -765,6 +765,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       width: 100dvh;
                       height: 100vw;
                     }
+                    .chart-fullscreen-rotated .chart-sidebar {
+                      display: none;
+                    }
+                    .chart-fullscreen-rotated .chart-main {
+                      flex: 1;
+                      min-height: 0;
+                    }
                   }
                 `}</style>
                 <div className="chart-fullscreen-rotated h-full flex flex-col overflow-hidden">
@@ -826,7 +833,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   {/* ── Main Content ── */}
                   <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
                     {/* Chart Area — takes priority on mobile */}
-                    <div className="flex-1 flex flex-col min-h-0">
+                    <div className="chart-main flex-1 flex flex-col min-h-0">
                       <ZoomableChart>
                         <CandlestickChart
                         data={forexChartData?.candles || []}
@@ -844,7 +851,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* ── Info Panel: below chart on mobile, right sidebar on desktop ── */}
-                    <div className="md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
+                    <div className="chart-sidebar md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
                       <div className="flex md:flex-col overflow-x-auto md:overflow-x-hidden gap-0">
 
                         {/* Signal Info - always visible */}
