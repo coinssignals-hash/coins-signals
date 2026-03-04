@@ -134,43 +134,44 @@ interface PriceRowFullProps {
 
 function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullProps) {
   const accentColor = isPositive ? "hsl(135, 70%, 50%)" : "hsl(0, 70%, 55%)";
+  const isTP = label.startsWith('TakeProfit');
+  const isSL = label.startsWith('Stop');
+  const icon = isTP ? '🎯' : isSL ? '🛑' : '';
   return (
     <div
-      className="relative rounded-md overflow-hidden"
+      className="relative rounded-lg overflow-hidden active:scale-[0.98] transition-transform"
       style={{
         background: "linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(205, 80%, 8%) 100%)",
-        border: "1px solid hsla(210, 100%, 50%, 0.15)"
+        border: `1px solid ${isTP ? 'hsla(135, 60%, 40%, 0.25)' : isSL ? 'hsla(0, 60%, 40%, 0.25)' : 'hsla(210, 100%, 50%, 0.15)'}`
       }}>
 
       <div
         className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-        style={{ background: "radial-gradient(ellipse at center, hsl(200, 100%, 50%) 0%, transparent 70%)" }} />
+        style={{ background: `radial-gradient(ellipse at center, ${isTP ? 'hsl(135, 80%, 45%)' : isSL ? 'hsl(0, 80%, 50%)' : 'hsl(200, 100%, 50%)'} 0%, transparent 70%)` }} />
 
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "linear-gradient(90deg, hsla(215, 100%, 50%, 0.15) 0%, transparent 80%)" }} />
-
-      <div className="flex items-center justify-between px-4 py-2.5">
-        <span className="font-semibold text-white text-sm w-24 flex-shrink-0">{label}</span>
-        <div className="flex items-center gap-3 flex-1 justify-center">
-          <span className="text-xs font-bold text-center text-primary tabular-nums min-w-[90px] inline-block" style={{ color: accentColor }}>
-            {pips} Pips
+      <div className="flex items-center justify-between px-3 py-2.5 min-h-[44px]">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="text-sm">{icon}</span>
+          <span className="font-semibold text-white text-xs sm:text-sm">{label}</span>
+        </div>
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-center">
+          <span className="text-[10px] sm:text-xs font-bold text-center tabular-nums" style={{ color: accentColor }}>
+            {pips} pips
           </span>
-          <span className="text-xs font-bold text-center text-primary tabular-nums min-w-[80px] inline-block" style={{ color: accentColor }}>
-            {percent} %
+          <span className="text-[10px] sm:text-xs font-bold text-center tabular-nums hidden sm:inline" style={{ color: accentColor }}>
+            {percent}%
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-white text-sm">{price}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold text-white text-xs sm:text-sm font-mono tabular-nums">{price}</span>
           <button
-            className="text-cyan-400/60 hover:text-cyan-300 transition-colors"
+            className="text-cyan-400/60 hover:text-cyan-300 transition-colors p-1 -mr-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
             onClick={(e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(price);
             }}
             title="Copiar precio">
-
-            <Copy className="w-4 h-4" />
+            <Copy className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -208,7 +209,7 @@ function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takePr
   const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy) : null;
   const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
   return (
-    <div className="space-y-2 mx-3 mb-3">
+    <div className="space-y-1.5 mx-3 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
       {tp2 && <PriceRowFull label="TakeProfit 2" {...tp2} />}
       {tp3 && <PriceRowFull label="TakeProfit 3" {...tp3} />}
@@ -459,18 +460,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           </div>
         }
 
-        <div className="relative px-4 pt-0 pb-2 flex items-center justify-between -mt-3">
-          <div className="flex items-center gap-3 relative z-10">
-            <div className="relative w-24 h-18 flex-shrink-0">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
+        <div className="relative px-3 pt-0 pb-2 flex items-center justify-between -mt-3">
+          <div className="flex items-center gap-2.5 relative z-10">
+            <div className="relative w-20 h-14 flex-shrink-0">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
                 <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
               </div>
-              <div className="absolute left-7 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
+              <div className="absolute left-6 sm:left-7 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
                 <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="text-xl font-bold text-white tracking-wide">{displayPair}</span>
+              <span className="text-lg sm:text-xl font-bold text-white tracking-wide">{displayPair}</span>
               {/* Long/Short position badge */}
               <div
                 className={cn(
@@ -513,7 +514,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Circle with price below */}
             <div className="flex flex-col items-center gap-0.5">
               <div className={cn(
-                "relative w-[72px] h-[72px] transition-transform flex-shrink-0",
+                "relative w-[60px] h-[60px] sm:w-[72px] sm:h-[72px] transition-transform flex-shrink-0",
                 zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
               )}>
                 <div className={cn(
@@ -589,7 +590,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
         {/* Accent line */}
         <div
-          className="mx-4 h-[2px] opacity-40 mb-3"
+          className="mx-3 h-[2px] opacity-40 mb-2"
           style={{
             background:
             "linear-gradient(90deg, transparent 0%, hsl(210, 100%, 55%) 30%, hsl(200, 100%, 55%) 70%, transparent 100%)"
@@ -597,28 +598,28 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
 
         {/* Middle section - 3 badges */}
-        <div className="relative px-3 pb-3">
-          <div className="flex gap-2">
+        <div className="relative px-3 pb-2">
+          <div className="flex gap-1.5">
             {[
             {
               label: trend === "bullish" ? t('signal_bullish') : t('signal_bearish'),
               icon: trend === "bullish" ?
-              <TrendingUp className="w-5 h-5 text-green-400" /> :
-              <TrendingDown className="w-5 h-5 text-red-400" />,
+              <TrendingUp className="w-4 h-4 text-green-400" /> :
+              <TrendingDown className="w-4 h-4 text-red-400" />,
               value: `${probability}%`,
               valueClass: "text-cyan-200"
             },
             {
               label: action === "BUY" ? t('signal_buy') : t('signal_sell'),
-              icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
+              icon: <ShieldCheck className="w-4 h-4 text-cyan-400" />,
               value: action === "BUY" ? t('signal_buy') : t('signal_sell'),
               valueClass: action === "BUY" ? "text-green-400" : "text-red-400"
             },
             {
               label: t('signal_risk'),
               icon: riskLoading ?
-              <Loader2 className="w-5 h-5 text-orange-400 animate-spin" /> :
-              <Flame className="w-5 h-5 text-orange-400" />,
+              <Loader2 className="w-4 h-4 text-orange-400 animate-spin" /> :
+              <Flame className="w-4 h-4 text-orange-400" />,
               value: riskLoading ? '...' : aiRisk ? `${aiRisk.score}%` : `${riskPercent}%`,
               valueClass: aiRisk ?
               aiRisk.level === 'low' ? 'text-green-400' :
@@ -630,7 +631,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             map((badge) =>
             <div
               key={badge.label}
-              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-px gap-0"
+              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-1.5 gap-0 min-h-[44px]"
               style={{
                 background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
                 border: "1px solid hsla(200, 60%, 35%, 0.3)"
@@ -640,10 +641,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 className="absolute top-0 left-[15%] right-[15%] h-[1px]"
                 style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
 
-                <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
+                <span className="text-[8px] sm:text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
                 <div className="flex items-center gap-1">
                   {badge.icon}
-                  <span className={cn("font-bold text-sm", badge.valueClass)}>{badge.value}</span>
+                  <span className={cn("font-bold text-xs sm:text-sm", badge.valueClass)}>{badge.value}</span>
                 </div>
               </div>
             )}
@@ -652,7 +653,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
         {/* Entry price bar */}
         <div
-          className="relative mx-3 mb-3 rounded-lg overflow-hidden"
+          className="relative mx-3 mb-2 rounded-lg overflow-hidden"
           style={{
             background: "linear-gradient(180deg, hsl(210, 50%, 10%) 0%, hsl(200, 60%, 14%) 100%)",
             border: "1px solid hsla(200, 60%, 35%, 0.25)"
@@ -662,19 +663,19 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             className="absolute top-0 left-[10%] right-[10%] h-[1px]"
             style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
 
-          <div className="flex items-center justify-between px-4 py-1">
-            <span className="font-semibold text-white text-sm">{t('signal_entry')}</span>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-white text-sm">{entryPrice.toFixed(3)}</span>
+          <div className="flex items-center justify-between px-3 py-1.5 min-h-[40px]">
+            <span className="font-semibold text-white text-xs sm:text-sm">{t('signal_entry')}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-white text-xs sm:text-sm font-mono tabular-nums">{entryPrice.toFixed(3)}</span>
               <button
-                className="text-cyan-400/60 hover:text-cyan-300 transition-colors"
+                className="text-cyan-400/60 hover:text-cyan-300 transition-colors p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                 onClick={(e) => {
                   e.stopPropagation();
                   navigator.clipboard.writeText(entryPrice.toFixed(3));
                 }}
                 title={t('signal_copy_price')}>
 
-                <Copy className="w-4 h-4" />
+                <Copy className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -694,10 +695,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           closedPrice={signal?.closedPrice ?? undefined} />
         
 
-        {/* Expand toggle button - justo debajo del medidor */}
+        {/* Expand toggle button */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center py-2 text-cyan-300/60 hover:text-cyan-300 transition-colors">
+          className="w-full flex items-center justify-center py-2.5 text-cyan-300/60 hover:text-cyan-300 transition-colors active:scale-95 min-h-[44px]">
 
           <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", expanded && "rotate-180")} />
         </button>
@@ -725,24 +726,26 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               </div>
             )}
 
-            {/* Candlestick Chart - Loaded via forex-data API */}
-            <div className="mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
-              <CandlestickChart
-              data={forexChartData?.candles || []}
-              resistance={forexChartData?.resistance ?? 0}
-              support={forexChartData?.support ?? 0}
-              loading={forexChartLoading}
-              realtimePrice={quote?.price}
-              isRealtimeConnected={isConnected}
-              previousDayDate={forexChartData?.date}
-               signalTakeProfit={takeProfit}
-               signalStopLoss={stopLoss}
-               signalEntry={entryPrice}
-               signalDatetime={signal?.datetime} />
+            {/* Candlestick Chart */}
+            <div className="mx-2 sm:mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
+              <div className="h-[200px] sm:h-auto">
+                <CandlestickChart
+                data={forexChartData?.candles || []}
+                resistance={forexChartData?.resistance ?? 0}
+                support={forexChartData?.support ?? 0}
+                loading={forexChartLoading}
+                realtimePrice={quote?.price}
+                isRealtimeConnected={isConnected}
+                previousDayDate={forexChartData?.date}
+                 signalTakeProfit={takeProfit}
+                 signalStopLoss={stopLoss}
+                 signalEntry={entryPrice}
+                 signalDatetime={signal?.datetime} />
+              </div>
             
               <button
               onClick={() => setChartFullscreen(true)}
-              className="absolute top-2 right-2 p-1.5 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 sm:opacity-0 sm:group-hover/chart:opacity-100 transition-opacity z-10"
+              className="absolute top-2 right-2 p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity z-10 min-w-[40px] min-h-[40px] flex items-center justify-center"
               title="Pantalla completa">
               
                 <Maximize2 className="w-4 h-4" />
@@ -784,13 +787,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* Center: Interval Selector */}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto">
                       {(['15min', '30min', '1h', '4h', '1day'] as ChartInterval[]).map((iv) =>
                     <button
                       key={iv}
                       onClick={() => setChartInterval(iv)}
                       className={cn(
-                        "px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all",
+                        "px-2 sm:px-2.5 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-all min-w-[36px] min-h-[36px]",
                         chartInterval === iv ?
                         "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" :
                         "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"
@@ -1076,7 +1079,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* ══════ Real Market Data Panel ══════ */}
             <div
-            className="mx-3 mb-3 rounded-lg relative overflow-hidden"
+            className="mx-2 sm:mx-3 mb-3 rounded-lg relative overflow-hidden"
             style={{
               background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
               border: "1px solid hsla(200, 60%, 35%, 0.3)"
@@ -1084,10 +1087,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <div
               className="absolute top-0 left-[10%] right-[10%] h-[1px]"
               style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
-              <div className="p-3">
-                <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="p-2.5 sm:p-3">
+                <div className="flex items-center justify-center gap-2 mb-2.5">
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                  <p className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider text-center">
+                  <p className="text-[9px] sm:text-[10px] font-bold text-cyan-300 uppercase tracking-wider text-center">
                     Datos de Mercado en Tiempo Real
                   </p>
                   {marketDataLoading && <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />}
@@ -1101,7 +1104,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* Row 1: Price + Spread + Daily Range */}
-                    <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Precio</span>
                         <span className="text-sm font-bold text-white">{marketData.price?.toFixed(isJpy ? 3 : 5) ?? '—'}</span>
@@ -1144,7 +1147,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* Row 2: Volatility + RSI + Stochastic */}
-                    <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Volatilidad</span>
                         <span className={cn("text-sm font-bold",
@@ -1197,7 +1200,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* Row 3: MACD + ADX + Bollinger */}
-                    <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">MACD</span>
                         {marketData.macdHistogram !== null ?
@@ -1241,7 +1244,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* Row 4: SMAs + EMAs + Williams */}
-                    <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">SMA 20/50/200</span>
                         <div className="space-y-0.5">
@@ -1295,7 +1298,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
 
                     {/* Row 5: Momentum + Señal General + Sentimiento */}
-                    <div className="grid grid-cols-3 gap-2 mb-2">
+                    <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                       <div className="rounded-lg p-2 text-center" style={{ background: "hsla(210, 80%, 12%, 0.8)", border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
                         <span className="text-[8px] text-cyan-300/50 uppercase tracking-wider block">Momentum</span>
                         <span className={cn("text-sm font-bold",
@@ -1420,7 +1423,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Strategy Guidance Panel */}
             <div
-            className="mx-3 mb-3 rounded-lg relative overflow-hidden"
+            className="mx-2 sm:mx-3 mb-3 rounded-lg relative overflow-hidden"
             style={{
               background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
               border: "1px solid hsla(200, 60%, 35%, 0.3)"
@@ -1444,7 +1447,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 </div>
 
                 <TooltipProvider delayDuration={100}>
-                  <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="grid grid-cols-2 gap-1.5 mb-2.5">
                     {/* Duración */}
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -1586,16 +1589,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             </div>
 
             {/* Per-currency AI impact scoring */}
-            <div className="relative px-3 pb-3">
+            <div className="relative px-2 sm:px-3 pb-3">
               <div className="flex items-center justify-center gap-1.5 mb-2">
-                <p className="text-[10px] text-cyan-300/50 uppercase tracking-widest text-center">
+                <p className="text-[9px] sm:text-[10px] text-cyan-300/50 uppercase tracking-widest text-center">
                   {t('signal_currency_impact')}
                 </p>
                 {impactLoading &&
               <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
               }
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 {impactData.map((d) =>
               <CurrencyImpactPanel key={d.currency} data={d} />
               )}
