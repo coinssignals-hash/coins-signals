@@ -755,9 +755,22 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Enhanced Fullscreen Chart Dialog */}
             <Dialog open={chartFullscreen} onOpenChange={setChartFullscreen}>
-              <DialogContent className="max-w-[100vw] w-[100vw] h-[100dvh] max-h-[100dvh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden">
+              <DialogContent className="max-w-[100vw] w-[100vw] h-[100dvh] max-h-[100dvh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden overflow-hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
-                <div className="h-full flex flex-col overflow-hidden">
+                <style>{`
+                  @media (orientation: portrait) {
+                    .chart-fullscreen-rotated {
+                      transform-origin: center center;
+                      transform: rotate(90deg) translate(-50%, -50%);
+                      width: 100dvh;
+                      height: 100vw;
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                    }
+                  }
+                `}</style>
+                <div className="chart-fullscreen-rotated h-full flex flex-col overflow-hidden">
                   {/* ── Top Bar ── */}
                   <div className="flex items-center justify-between px-3 py-2 border-b border-slate-700/50 bg-[hsl(222,45%,5%)] shrink-0">
                     {/* Left: Symbol + Live Price */}
