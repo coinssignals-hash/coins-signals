@@ -344,50 +344,63 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
           style={{ background: '#000' }}
           onClick={(e) => { if (e.target === fsRef.current) setFullscreen(false); }}
         >
-          {/* Close button — always top-right of physical screen */}
-          <button
-            onClick={() => setFullscreen(false)}
-            className="absolute top-3 right-3 z-[10001] p-2 rounded-full transition-colors active:scale-90"
-            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
+          {/* Rotated container for portrait → landscape */}
+          <div
+            className="absolute"
+            style={isPortrait ? {
+              top: '50%',
+              left: '50%',
+              width: `${viewportSize.h}px`,
+              height: `${viewportSize.w}px`,
+              transform: 'translate(-50%, -50%) rotate(90deg)',
+            } : {
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+            }}
           >
-            <X className="w-5 h-5 text-white" />
-          </button>
-
-          {/* S/R toggle — always bottom center of physical screen */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-3">
-            <button
-              onClick={() => setShowSR(v => !v)}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all border active:scale-95",
-                showSR
-                  ? "border-cyan-500/50 text-cyan-200"
-                  : "border-slate-600/40 text-slate-400"
-              )}
-              style={{ background: showSR ? 'rgba(0,180,160,0.2)' : 'rgba(255,255,255,0.06)' }}
-            >
-              <div className="flex items-center gap-1">
-                <div className="w-4 h-[2px] rounded-full" style={{ background: '#00e6b4' }} />
-                <span style={{ color: '#00e6b4' }}>Resistencia</span>
-              </div>
-              <span className="text-slate-600">/</span>
-              <div className="flex items-center gap-1">
-                <div className="w-4 h-[2px] rounded-full" style={{ background: '#ff5080' }} />
-                <span style={{ color: '#ff5080' }}>Soporte</span>
-              </div>
-              <span className="text-xs opacity-50 ml-1">{showSR ? 'ON' : 'OFF'}</span>
-            </button>
-          </div>
-
-          {/* Chart fills entire screen */}
-          <div className="absolute inset-0">
+            {/* Chart image fills rotated container */}
             {fullscreenSvgUri && (
               <img
                 src={fullscreenSvgUri}
-                alt={`Gráfico ${currencyPair} 15min - Pantalla completa`}
+                alt={`Gráfico ${currencyPair} 15min`}
                 style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block' }}
                 draggable={false}
               />
             )}
+
+            {/* Close button — top-right of rotated view */}
+            <button
+              onClick={() => setFullscreen(false)}
+              className="absolute top-3 right-3 z-[10001] p-2 rounded-full active:scale-90"
+              style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
+            {/* S/R toggle — bottom center of rotated view */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-3">
+              <button
+                onClick={() => setShowSR(v => !v)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border active:scale-95",
+                  showSR ? "border-cyan-500/50 text-cyan-200" : "border-slate-600/40 text-slate-400"
+                )}
+                style={{ background: showSR ? 'rgba(0,180,160,0.2)' : 'rgba(255,255,255,0.06)' }}
+              >
+                <div className="flex items-center gap-1">
+                  <div className="w-4 h-[2px] rounded-full" style={{ background: '#00e6b4' }} />
+                  <span style={{ color: '#00e6b4' }}>R</span>
+                </div>
+                <span className="text-slate-600">/</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-4 h-[2px] rounded-full" style={{ background: '#ff5080' }} />
+                  <span style={{ color: '#ff5080' }}>S</span>
+                </div>
+                <span className="text-xs opacity-50 ml-1">{showSR ? 'ON' : 'OFF'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
