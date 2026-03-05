@@ -23,6 +23,7 @@ import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
 import { TargetProgressBar } from "@/components/signals/TargetProgressBar";
+import { SignalChart } from "@/components/signals/SignalChart";
 import type { TradingSignal } from "@/hooks/useSignals";
 import bullBg from "@/assets/bull-card-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
@@ -690,6 +691,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
+
+            {/* Candlestick Chart 15min - 7 days */}
+            <SignalChart
+              currencyPair={currencyPair}
+              support={support}
+              resistance={resistance}
+            />
 
             {/* AI Analysis Notes */}
             {signal?.notes &&
