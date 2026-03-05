@@ -31,6 +31,12 @@ interface CandlestickChartProps {
   signalEntry?: number | null;
   /** Signal creation datetime — lines start from this time */
   signalDatetime?: string | null;
+  /** Controlled S/R visibility */
+  controlledSR?: boolean;
+  onSRChange?: (v: boolean) => void;
+  /** Controlled signal levels visibility */
+  controlledSignalLevels?: boolean;
+  onSignalLevelsChange?: (v: boolean) => void;
 }
 
 /* ─── helpers ─── */
@@ -416,13 +422,21 @@ export function CandlestickChart({
   signalStopLoss,
   signalEntry,
   signalDatetime,
+  controlledSR,
+  onSRChange,
+  controlledSignalLevels,
+  onSignalLevelsChange,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; candle: CandleData; crosshairX: number; relY: number } | null>(null);
-  const [srVisible, setSrVisible] = useState(showSRProp ?? true);
-  const [signalLevelsVisible, setSignalLevelsVisible] = useState(false);
+  const [srVisibleInternal, setSrVisibleInternal] = useState(showSRProp ?? true);
+  const [signalLevelsInternal, setSignalLevelsInternal] = useState(false);
   const hasSignalLevels = !!(signalTakeProfit || signalStopLoss || signalEntry);
+  const srVisible = controlledSR !== undefined ? controlledSR : srVisibleInternal;
+  const setSrVisible = onSRChange ? (v: boolean | ((prev: boolean) => boolean)) => onSRChange(typeof v === 'function' ? v(srVisible) : v) : setSrVisibleInternal;
+  const signalLevelsVisible = controlledSignalLevels !== undefined ? controlledSignalLevels : signalLevelsInternal;
+  const setSignalLevelsVisible = onSignalLevelsChange ? (v: boolean | ((prev: boolean) => boolean)) => onSignalLevelsChange(typeof v === 'function' ? v(signalLevelsVisible) : v) : setSignalLevelsInternal;
   const showSupportResistance = srVisible;
 
   // Chart layout constants (must match buildChartSvg)
