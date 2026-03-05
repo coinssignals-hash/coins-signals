@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Bell, TrendingUp, TrendingDown, Activity, Shield, Volume2, CandlestickChart } from 'lucide-react';
+import { Bell, Activity, Shield, Volume2, CandlestickChart, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { playNotificationSound } from '@/utils/notificationSound';
+import { cn } from '@/lib/utils';
 
 interface AlertConfig {
   rsiOverbought: number;
@@ -30,6 +30,130 @@ interface AlertsPanelProps {
   onConfigChange: (config: AlertConfig) => void;
 }
 
+/* ───── Reusable toggle row ───── */
+function AlertToggleRow({
+  icon,
+  iconColor,
+  label,
+  description,
+  checked,
+  onCheckedChange,
+  children,
+}: {
+  icon: React.ReactNode;
+  iconColor: string;
+  label: string;
+  description?: string;
+  checked: boolean;
+  onCheckedChange: (v: boolean) => void;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-3">
+      <button
+        type="button"
+        onClick={() => onCheckedChange(!checked)}
+        className={cn(
+          'group flex items-center gap-3 w-full rounded-xl px-3 py-3 transition-all duration-200 border',
+          checked
+            ? 'bg-primary/10 border-primary/30 shadow-[0_0_12px_-4px_hsl(var(--primary)/0.25)]'
+            : 'bg-card/40 border-border/30 hover:border-border/60'
+        )}
+      >
+        {/* Icon container */}
+        <div className={cn(
+          'flex items-center justify-center w-9 h-9 rounded-lg shrink-0 transition-all duration-200',
+          checked
+            ? `${iconColor} shadow-sm`
+            : 'bg-muted/50'
+        )}>
+          {icon}
+        </div>
+
+        {/* Label & desc */}
+        <div className="flex-1 text-left min-w-0">
+          <span className={cn(
+            'text-sm font-medium transition-colors block',
+            checked ? 'text-foreground' : 'text-muted-foreground'
+          )}>
+            {label}
+          </span>
+          {description && (
+            <span className="text-[10px] text-muted-foreground/70 leading-tight block mt-0.5 truncate">
+              {description}
+            </span>
+          )}
+        </div>
+
+        {/* Toggle */}
+        <Switch
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+          onClick={(e) => e.stopPropagation()}
+          className={cn(
+            'shrink-0 transition-all duration-200',
+            checked && 'shadow-[0_0_8px_-2px_hsl(var(--primary)/0.4)]'
+          )}
+        />
+      </button>
+
+      {/* Expandable children */}
+      {checked && children && (
+        <div className="ml-3 pl-3 border-l-2 border-primary/20 space-y-3 animate-in slide-in-from-top-2 fade-in duration-200">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ───── Mini pattern row ───── */
+function PatternTypeRow({
+  emoji,
+  emojiColor,
+  label,
+  hint,
+  checked,
+  onCheckedChange,
+  onTestSound,
+}: {
+  emoji: string;
+  emojiColor: string;
+  label: string;
+  hint: string;
+  checked: boolean;
+  onCheckedChange: (v: boolean) => void;
+  onTestSound: () => void;
+}) {
+  return (
+    <div className={cn(
+      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-all duration-200 border',
+      checked
+        ? 'bg-card/60 border-border/40'
+        : 'bg-transparent border-transparent'
+    )}>
+      <span className={cn('text-sm', emojiColor)}>{emoji}</span>
+      <div className="flex-1 min-w-0">
+        <span className="text-xs font-medium text-foreground">{label}</span>
+        <span className="text-[9px] text-muted-foreground/60 ml-1">{hint}</span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 w-6 p-0 rounded-md hover:bg-muted/50"
+        onClick={onTestSound}
+      >
+        <Volume2 className="w-3 h-3 text-muted-foreground" />
+      </Button>
+      <Switch
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        className="scale-[0.85]"
+      />
+    </div>
+  );
+}
+
 export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
   const [localConfig, setLocalConfig] = useState(config);
 
@@ -48,266 +172,156 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
     playNotificationSound(`pattern_${type}`);
   };
 
+  const activeCount = [
+    localConfig.enableSupportResistance,
+    localConfig.enablePatternAlerts,
+    localConfig.enableRSI,
+    localConfig.enableMACD,
+    localConfig.enableSMACross,
+  ].filter(Boolean).length;
+
   return (
-    <Card className="bg-card/80 backdrop-blur border-border/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Bell className="h-5 w-5 text-primary" />
-          Configuración de Alertas
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Support/Resistance Alerts */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-500" />
-              <Label htmlFor="enableSR" className="font-medium">Alertas Soporte/Resistencia</Label>
-            </div>
-            <Switch
-              id="enableSR"
-              checked={localConfig.enableSupportResistance}
-              onCheckedChange={(checked) => handleChange('enableSupportResistance', checked)}
-            />
+    <div className="space-y-3">
+      {/* Header badge */}
+      <div className="flex items-center gap-2 px-1">
+        <Bell className="h-4 w-4 text-primary" />
+        <span className="text-sm font-semibold text-foreground">Alertas</span>
+        <span className={cn(
+          'text-[10px] font-mono px-1.5 py-0.5 rounded-full',
+          activeCount > 0
+            ? 'bg-primary/15 text-primary'
+            : 'bg-muted text-muted-foreground'
+        )}>
+          {activeCount} activas
+        </span>
+      </div>
+
+      {/* ── Support/Resistance ── */}
+      <AlertToggleRow
+        icon={<Shield className="w-4 h-4 text-emerald-400" />}
+        iconColor="bg-emerald-500/15"
+        label="Soporte / Resistencia"
+        description="Alertar cerca del S/R del día anterior"
+        checked={localConfig.enableSupportResistance}
+        onCheckedChange={(v) => handleChange('enableSupportResistance', v)}
+      >
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Proximidad</span>
+            <span className="font-mono text-amber-400">{localConfig.srProximityPercent}%</span>
           </div>
-          
-          {localConfig.enableSupportResistance && (
-            <div className="pl-6 space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Proximidad para alertar</span>
-                  <span className="font-mono text-yellow-400">{localConfig.srProximityPercent}%</span>
-                </div>
-                <Slider
-                  value={[localConfig.srProximityPercent]}
-                  onValueChange={([value]) => handleChange('srProximityPercent', value)}
-                  min={1}
-                  max={20}
-                  step={1}
-                  className="w-full"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Alertar cuando el precio esté dentro del {localConfig.srProximityPercent}% del rango
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Volume2 className="h-4 w-4 text-blue-400" />
-                  <Label htmlFor="srSound" className="text-sm">Sonido de alerta</Label>
-                </div>
-                <Switch
-                  id="srSound"
-                  checked={localConfig.srEnableSound}
-                  onCheckedChange={(checked) => handleChange('srEnableSound', checked)}
-                />
-              </div>
-            </div>
-          )}
-          <p className="text-xs text-muted-foreground pl-6">
-            Alertar cuando el precio se acerque al soporte o resistencia del día anterior
-          </p>
-        </div>
-
-        <div className="border-t border-border/50 pt-4" />
-
-        {/* Candlestick Pattern Alerts */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CandlestickChart className="h-4 w-4 text-amber-500" />
-              <Label htmlFor="enablePatterns" className="font-medium">Alertas de Patrones de Velas</Label>
-            </div>
-            <Switch
-              id="enablePatterns"
-              checked={localConfig.enablePatternAlerts}
-              onCheckedChange={(checked) => handleChange('enablePatternAlerts', checked)}
-            />
-          </div>
-          
-          {localConfig.enablePatternAlerts && (
-            <div className="pl-6 space-y-4">
-              {/* Pattern type toggles */}
-              <div className="space-y-3">
-                <p className="text-xs text-muted-foreground">Tipos de patrones a detectar:</p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-400">↑</span>
-                    <Label htmlFor="patternBullish" className="text-sm">Patrones Alcistas</Label>
-                    <span className="text-[10px] text-muted-foreground">(Hammer, Engulfing)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 text-[10px]"
-                      onClick={() => testPatternSound('bullish')}
-                    >
-                      🔊
-                    </Button>
-                    <Switch
-                      id="patternBullish"
-                      checked={localConfig.patternAlertTypes.bullish}
-                      onCheckedChange={(checked) => handlePatternTypeChange('bullish', checked)}
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-red-400">↓</span>
-                    <Label htmlFor="patternBearish" className="text-sm">Patrones Bajistas</Label>
-                    <span className="text-[10px] text-muted-foreground">(Bear Engulfing)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 text-[10px]"
-                      onClick={() => testPatternSound('bearish')}
-                    >
-                      🔊
-                    </Button>
-                    <Switch
-                      id="patternBearish"
-                      checked={localConfig.patternAlertTypes.bearish}
-                      onCheckedChange={(checked) => handlePatternTypeChange('bearish', checked)}
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-amber-400">→</span>
-                    <Label htmlFor="patternNeutral" className="text-sm">Patrones Neutrales</Label>
-                    <span className="text-[10px] text-muted-foreground">(Doji)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 text-[10px]"
-                      onClick={() => testPatternSound('neutral')}
-                    >
-                      🔊
-                    </Button>
-                    <Switch
-                      id="patternNeutral"
-                      checked={localConfig.patternAlertTypes.neutral}
-                      onCheckedChange={(checked) => handlePatternTypeChange('neutral', checked)}
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between pt-2 border-t border-border/30">
-                <div className="flex items-center gap-2">
-                  <Volume2 className="h-4 w-4 text-blue-400" />
-                  <Label htmlFor="patternSound" className="text-sm">Sonido de alerta</Label>
-                </div>
-                <Switch
-                  id="patternSound"
-                  checked={localConfig.patternEnableSound}
-                  onCheckedChange={(checked) => handleChange('patternEnableSound', checked)}
-                />
-              </div>
-            </div>
-          )}
-          <p className="text-xs text-muted-foreground pl-6">
-            Recibir alertas cuando se detecten patrones de velas japonesas en tiempo real
-          </p>
-        </div>
-
-        <div className="border-t border-border/50 pt-4" />
-
-        {/* RSI Alerts */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-yellow-500" />
-              <Label htmlFor="enableRSI" className="font-medium">Alertas RSI</Label>
-            </div>
-            <Switch
-              id="enableRSI"
-              checked={localConfig.enableRSI}
-              onCheckedChange={(checked) => handleChange('enableRSI', checked)}
-            />
-          </div>
-          
-          {localConfig.enableRSI && (
-            <div className="pl-6 space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Sobrecompra</span>
-                  <span className="font-mono text-red-400">{localConfig.rsiOverbought}</span>
-                </div>
-                <Slider
-                  value={[localConfig.rsiOverbought]}
-                  onValueChange={([value]) => handleChange('rsiOverbought', value)}
-                  min={60}
-                  max={90}
-                  step={5}
-                  className="w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Sobreventa</span>
-                  <span className="font-mono text-green-400">{localConfig.rsiOversold}</span>
-                </div>
-                <Slider
-                  value={[localConfig.rsiOversold]}
-                  onValueChange={([value]) => handleChange('rsiOversold', value)}
-                  min={10}
-                  max={40}
-                  step={5}
-                  className="w-full"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* MACD Alerts */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-blue-500" />
-            <Label htmlFor="enableMACD" className="font-medium">Cruces MACD</Label>
-          </div>
-          <Switch
-            id="enableMACD"
-            checked={localConfig.enableMACD}
-            onCheckedChange={(checked) => handleChange('enableMACD', checked)}
+          <Slider
+            value={[localConfig.srProximityPercent]}
+            onValueChange={([val]) => handleChange('srProximityPercent', val)}
+            min={1} max={20} step={1}
+            className="w-full"
           />
         </div>
-        <p className="text-xs text-muted-foreground pl-6 -mt-2">
-          Alertar cuando MACD cruce la línea de señal
-        </p>
-
-        {/* SMA Cross Alerts */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-purple-500" />
-            <Label htmlFor="enableSMACross" className="font-medium">Cruces Precio/SMA</Label>
+            <Volume2 className="h-3.5 w-3.5 text-blue-400" />
+            <Label className="text-xs">Sonido</Label>
           </div>
           <Switch
-            id="enableSMACross"
-            checked={localConfig.enableSMACross}
-            onCheckedChange={(checked) => handleChange('enableSMACross', checked)}
+            checked={localConfig.srEnableSound}
+            onCheckedChange={(v) => handleChange('srEnableSound', v)}
+            className="scale-[0.85]"
           />
         </div>
-        <p className="text-xs text-muted-foreground pl-6 -mt-2">
-          Alertar en Golden Cross, Death Cross y cruces de precio
-        </p>
+      </AlertToggleRow>
 
-        {/* Info */}
-        <div className="mt-4 p-3 rounded-lg bg-primary/10 border border-primary/20">
-          <p className="text-xs text-muted-foreground">
-            Las alertas se enviarán como notificaciones push y como notificaciones dentro de la app cuando se detecten las condiciones configuradas.
-          </p>
+      {/* ── Candle Patterns ── */}
+      <AlertToggleRow
+        icon={<CandlestickChart className="w-4 h-4 text-amber-400" />}
+        iconColor="bg-amber-500/15"
+        label="Patrones de Velas"
+        description="Hammer, Engulfing, Doji y más"
+        checked={localConfig.enablePatternAlerts}
+        onCheckedChange={(v) => handleChange('enablePatternAlerts', v)}
+      >
+        <div className="space-y-1.5">
+          <PatternTypeRow emoji="↑" emojiColor="text-emerald-400" label="Alcistas" hint="Hammer, Engulfing"
+            checked={localConfig.patternAlertTypes.bullish}
+            onCheckedChange={(v) => handlePatternTypeChange('bullish', v)}
+            onTestSound={() => testPatternSound('bullish')}
+          />
+          <PatternTypeRow emoji="↓" emojiColor="text-red-400" label="Bajistas" hint="Bear Engulfing"
+            checked={localConfig.patternAlertTypes.bearish}
+            onCheckedChange={(v) => handlePatternTypeChange('bearish', v)}
+            onTestSound={() => testPatternSound('bearish')}
+          />
+          <PatternTypeRow emoji="→" emojiColor="text-amber-400" label="Neutrales" hint="Doji"
+            checked={localConfig.patternAlertTypes.neutral}
+            onCheckedChange={(v) => handlePatternTypeChange('neutral', v)}
+            onTestSound={() => testPatternSound('neutral')}
+          />
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-center justify-between pt-1 border-t border-border/20">
+          <div className="flex items-center gap-2">
+            <Volume2 className="h-3.5 w-3.5 text-blue-400" />
+            <Label className="text-xs">Sonido global</Label>
+          </div>
+          <Switch
+            checked={localConfig.patternEnableSound}
+            onCheckedChange={(v) => handleChange('patternEnableSound', v)}
+            className="scale-[0.85]"
+          />
+        </div>
+      </AlertToggleRow>
+
+      {/* ── RSI ── */}
+      <AlertToggleRow
+        icon={<Activity className="w-4 h-4 text-yellow-400" />}
+        iconColor="bg-yellow-500/15"
+        label="Alertas RSI"
+        description="Sobrecompra y sobreventa"
+        checked={localConfig.enableRSI}
+        onCheckedChange={(v) => handleChange('enableRSI', v)}
+      >
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Sobrecompra</span>
+              <span className="font-mono text-red-400">{localConfig.rsiOverbought}</span>
+            </div>
+            <Slider value={[localConfig.rsiOverbought]} onValueChange={([v]) => handleChange('rsiOverbought', v)} min={60} max={90} step={5} />
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Sobreventa</span>
+              <span className="font-mono text-emerald-400">{localConfig.rsiOversold}</span>
+            </div>
+            <Slider value={[localConfig.rsiOversold]} onValueChange={([v]) => handleChange('rsiOversold', v)} min={10} max={40} step={5} />
+          </div>
+        </div>
+      </AlertToggleRow>
+
+      {/* ── MACD ── */}
+      <AlertToggleRow
+        icon={<TrendingUp className="w-4 h-4 text-blue-400" />}
+        iconColor="bg-blue-500/15"
+        label="Cruces MACD"
+        description="Cruce de línea de señal"
+        checked={localConfig.enableMACD}
+        onCheckedChange={(v) => handleChange('enableMACD', v)}
+      />
+
+      {/* ── SMA Cross ── */}
+      <AlertToggleRow
+        icon={<TrendingDown className="w-4 h-4 text-purple-400" />}
+        iconColor="bg-purple-500/15"
+        label="Cruces Precio/SMA"
+        description="Golden Cross, Death Cross"
+        checked={localConfig.enableSMACross}
+        onCheckedChange={(v) => handleChange('enableSMACross', v)}
+      />
+
+      {/* Footer info */}
+      <div className="mt-2 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          Las alertas se envían como notificaciones push y dentro de la app.
+        </p>
+      </div>
+    </div>
   );
 }
