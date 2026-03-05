@@ -4,6 +4,7 @@ import { CandlestickChart } from "@/components/analysis/CandlestickChart";
 import { ZoomableChart } from "@/components/signals/ZoomableChart";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { shareChartImage } from "@/utils/shareChart";
 import {
   TrendingUp,
   ShieldCheck,
@@ -393,6 +394,24 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [chartInterval, setChartInterval] = useState<ChartInterval>('30min');
   const { data: forexChartData, loading: forexChartLoading } = useForexChartData(symbol, chartInterval);
 
+  // Share/download chart as PNG
+  const handleShareChart = useCallback(async () => {
+    try {
+      // Find the chart SVG img element in the DOM
+      const svgImg = document.querySelector('.chart-main img[alt*="velas"], .group\\/chart img[alt*="velas"]') as HTMLImageElement | null;
+      if (!svgImg) {
+        // Fallback: try any candlestick chart img
+        const fallback = document.querySelector('img[alt*="velas"]') as HTMLImageElement | null;
+        if (!fallback) return;
+        await shareChartImage(fallback, displayPair);
+        return;
+      }
+      await shareChartImage(svgImg, displayPair);
+    } catch {
+      // silent fail
+    }
+  }, [displayPair]);
+
 
   // Circle fill uses absolute percent distance (capped at 100 for arc)
   const circlePercent = useMemo(() => {
@@ -746,13 +765,20 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                  signalDatetime={signal?.datetime} />
               </div>
             
-              <button
-              onClick={() => setChartFullscreen(true)}
-              className="absolute top-2 right-2 p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity z-10 min-w-[40px] min-h-[40px] flex items-center justify-center"
-              title="Pantalla completa">
-              
-                <Maximize2 className="w-4 h-4" />
-              </button>
+              <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+                <button
+                  onClick={() => handleShareChart()}
+                  className="p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity min-w-[40px] min-h-[40px] flex items-center justify-center"
+                  title="Compartir gráfico">
+                  <Share2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setChartFullscreen(true)}
+                  className="p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity min-w-[40px] min-h-[40px] flex items-center justify-center"
+                  title="Pantalla completa">
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Enhanced Fullscreen Chart Dialog */}
@@ -1141,7 +1167,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         TP/SL
                       </button>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => handleShareChart()}
+                        className="px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border bg-slate-800/60 text-slate-400 border-slate-700/40 hover:text-cyan-300 hover:border-cyan-500/40"
+                      >
+                        <Share2 className="w-3 h-3 inline mr-1" />Compartir
+                      </button>
                       <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</span>
                       <span className="text-slate-600">Coins Signals</span>
                     </div>
