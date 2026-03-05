@@ -306,26 +306,34 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
       {fullscreen && (
         <div
           ref={fsRef}
-          className="fixed inset-0 z-[9999]"
-          style={{ background: '#000', width: '100dvw', height: '100dvh' }}
+          className="fixed z-[9999]"
+          style={{
+            top: 0, left: 0, right: 0, bottom: 0,
+            width: '100vw', height: '100vh',
+            background: '#000',
+            margin: 0, padding: 0,
+            overflow: 'hidden',
+          }}
           onClick={(e) => { if (e.target === fsRef.current) setFullscreen(false); }}
         >
           {/* Rotated container for portrait → landscape */}
           <div
             style={isPortrait ? {
-              position: 'absolute',
+              position: 'fixed',
               top: 0,
               left: 0,
-              width: '100dvh',
-              height: '100dvw',
+              width: '100vh',
+              height: '100vw',
               transformOrigin: 'top left',
-              transform: `translateX(100dvw) rotate(90deg)`,
+              transform: 'translateX(100vw) rotate(90deg)',
+              overflow: 'hidden',
             } : {
-              position: 'absolute',
+              position: 'fixed',
               top: 0,
               left: 0,
-              width: '100%',
-              height: '100%',
+              width: '100vw',
+              height: '100vh',
+              overflow: 'hidden',
             }}
           >
             {/* Chart image fills rotated container */}
@@ -333,7 +341,13 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               <img
                 src={fullscreenSvgUri}
                 alt={`Gráfico ${currencyPair} 15min`}
-                style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block' }}
+                style={{
+                  position: 'absolute',
+                  top: 0, left: 0,
+                  width: '100%', height: '100%',
+                  objectFit: 'fill',
+                  display: 'block',
+                }}
                 draggable={false}
               />
             )}
@@ -341,10 +355,10 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             {/* Close button — top-left */}
             <button
               onClick={() => setFullscreen(false)}
-              className="absolute top-3 left-3 z-[10001] p-1.5 rounded-md active:scale-90 backdrop-blur-sm"
-              style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }}
+              className="absolute top-2 left-2 z-[10001] p-2 rounded-full active:scale-90"
+              style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}
             >
-              <X className="w-4 h-4 text-white" />
+              <X className="w-5 h-5 text-white" />
             </button>
           </div>
         </div>
