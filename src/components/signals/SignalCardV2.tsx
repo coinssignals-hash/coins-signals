@@ -880,41 +880,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       </ZoomableChart>
                     </div>
 
-                    {/* ── Floating Chart Controls (S/R + Signal Mark) ── */}
-                    <div className="absolute bottom-12 left-2 z-30 flex items-center gap-1.5 pointer-events-auto">
-                      <button
-                        type="button"
-                        onClick={() => setShowSR(v => !v)}
-                        className={cn(
-                          'flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-semibold transition-all border active:scale-95 backdrop-blur-sm',
-                          showSR
-                            ? 'border-cyan-600/50 text-cyan-300'
-                            : 'border-slate-600/50 text-slate-400 hover:text-slate-200'
-                        )}
-                        style={{ background: showSR ? 'rgba(0,180,160,0.2)' : 'rgba(15,23,42,0.8)' }}
-                      >
-                        <span style={{ color: '#00d4aa' }}>S</span>
-                        <span className="text-slate-500">/</span>
-                        <span style={{ color: '#ff4976' }}>R</span>
-                        <span className="ml-0.5 text-[9px] opacity-70">{showSR ? 'ON' : 'OFF'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowSignalMark(v => !v)}
-                        className={cn(
-                          'flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-semibold transition-all border active:scale-95 backdrop-blur-sm',
-                          showSignalMark
-                            ? 'border-amber-600/50 text-amber-300'
-                            : 'border-slate-600/50 text-slate-400 hover:text-slate-200'
-                        )}
-                        style={{ background: showSignalMark ? 'rgba(245,158,11,0.2)' : 'rgba(15,23,42,0.8)' }}
-                      >
-                        <span style={{ color: '#22c55e' }}>TP</span>
-                        <span className="text-slate-500">/</span>
-                        <span style={{ color: '#ef4444' }}>SL</span>
-                        <span className="ml-0.5 text-[9px] opacity-70">{showSignalMark ? 'ON' : 'OFF'}</span>
-                      </button>
-                    </div>
 
                     {/* ── Info Panel: below chart on mobile, right sidebar on desktop ── */}
                     <div className="chart-sidebar md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
