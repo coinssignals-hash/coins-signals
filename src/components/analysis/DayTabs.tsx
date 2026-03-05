@@ -22,8 +22,6 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
 
   return (
     <div className="relative flex items-center justify-between w-full bg-gradient-to-r from-slate-900/90 via-slate-800/70 to-slate-900/90 border-y border-cyan-900/20 py-1.5 px-3">
-      {/* Left spacer */}
-      <div className="w-16" />
 
       {/* Date pill - centered */}
       <button
