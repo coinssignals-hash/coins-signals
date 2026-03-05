@@ -874,44 +874,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       </ZoomableChart>
                     </div>
 
-                    {/* ── Floating Mobile Levels (visible only in portrait fullscreen) ── */}
-                    <div className="chart-mobile-levels hidden absolute bottom-2 left-2 right-2 z-30 pointer-events-auto">
-                      <div className="flex items-center gap-1 flex-wrap bg-[hsl(222,45%,5%)]/90 backdrop-blur-sm rounded-lg px-2 py-1.5 border border-slate-700/50">
-                        {/* TP */}
-                        <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/30">
-                          TP1 {takeProfit.toFixed(isJpy ? 3 : 5)}
-                        </span>
-                        {signal?.takeProfit2 && (
-                          <span className="text-[9px] font-bold text-emerald-400/70 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                            TP2 {signal.takeProfit2.toFixed(isJpy ? 3 : 5)}
-                          </span>
-                        )}
-                        {signal?.takeProfit3 && (
-                          <span className="text-[9px] font-bold text-emerald-400/50 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/15">
-                            TP3 {signal.takeProfit3.toFixed(isJpy ? 3 : 5)}
-                          </span>
-                        )}
-                        {/* Entry */}
-                        <span className="text-[9px] font-bold text-blue-400 bg-blue-500/15 px-1.5 py-0.5 rounded border border-blue-500/30">
-                          E {entryPrice.toFixed(isJpy ? 3 : 5)}
-                        </span>
-                        {/* SL */}
-                        <span className="text-[9px] font-bold text-rose-400 bg-rose-500/15 px-1.5 py-0.5 rounded border border-rose-500/30">
-                          SL {stopLoss.toFixed(isJpy ? 3 : 5)}
-                        </span>
-                        {/* S/R */}
-                        <span className="text-[9px] font-bold text-emerald-300/70 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                          R {(forexChartData?.resistance ?? 0).toFixed(isJpy ? 3 : 5)}
-                        </span>
-                        <span className="text-[9px] font-bold text-rose-300/70 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">
-                          S {(forexChartData?.support ?? 0).toFixed(isJpy ? 3 : 5)}
-                        </span>
-                        {/* R:R */}
-                        <span className="text-[9px] font-bold text-cyan-300 bg-cyan-500/15 px-1.5 py-0.5 rounded border border-cyan-500/30">
-                          R:R 1:{(Math.abs(takeProfit - entryPrice) / Math.abs(stopLoss - entryPrice)).toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
 
                     {/* ── Info Panel: below chart on mobile, right sidebar on desktop ── */}
                     <div className="chart-sidebar md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
