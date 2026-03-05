@@ -37,6 +37,8 @@ interface CandlestickChartProps {
   /** Controlled signal levels visibility */
   controlledSignalLevels?: boolean;
   onSignalLevelsChange?: (v: boolean) => void;
+  /** Hide the bottom legend bar */
+  hideLegend?: boolean;
 }
 
 /* ─── helpers ─── */
@@ -426,6 +428,7 @@ export function CandlestickChart({
   onSRChange,
   controlledSignalLevels,
   onSignalLevelsChange,
+  hideLegend = false,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -643,6 +646,7 @@ export function CandlestickChart({
       </div>
 
       {/* Legend */}
+      {!hideLegend && (
       <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0b1729' }}>
         <div className="flex items-center gap-4">
           {showSupportResistance && (
@@ -717,6 +721,7 @@ export function CandlestickChart({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
