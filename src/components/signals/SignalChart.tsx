@@ -341,19 +341,21 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
         <div
           ref={fsRef}
           className="fixed inset-0 z-[9999]"
-          style={{ background: '#000' }}
+          style={{ background: '#000', width: '100dvw', height: '100dvh' }}
           onClick={(e) => { if (e.target === fsRef.current) setFullscreen(false); }}
         >
           {/* Rotated container for portrait → landscape */}
           <div
-            className="absolute"
             style={isPortrait ? {
-              top: '50%',
-              left: '50%',
-              width: `${viewportSize.h}px`,
-              height: `${viewportSize.w}px`,
-              transform: 'translate(-50%, -50%) rotate(90deg)',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100dvh',
+              height: '100dvw',
+              transformOrigin: 'top left',
+              transform: `translateX(100dvw) rotate(90deg)`,
             } : {
+              position: 'absolute',
               top: 0,
               left: 0,
               width: '100%',
