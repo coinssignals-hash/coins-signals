@@ -750,7 +750,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Candlestick Chart */}
             <div className="mx-2 sm:mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
-              <div>
+              <div className="min-h-[200px]">
                 <CandlestickChart
                 data={forexChartData?.candles || []}
                 resistance={forexChartData?.resistance ?? 0}
@@ -824,11 +824,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     align-items: center;
                     justify-content: center;
                   }
-                  /* Chart SVG img — contain to show all candles + date/time axis */
+                  /* Chart SVG img — fill entire available area on mobile */
                   .chart-fs-inner .chart-main .cursor-crosshair img {
                     width: 100% !important;
                     height: 100% !important;
-                    object-fit: contain !important;
+                    object-fit: fill !important;
                   }
                   @media (orientation: portrait) {
                     .chart-fs-inner {
