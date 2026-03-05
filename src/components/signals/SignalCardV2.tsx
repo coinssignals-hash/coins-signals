@@ -408,9 +408,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
       }
       await shareChartImage(svgImg, displayPair);
     } catch {
+
       // silent fail
-    }
-  }, [displayPair]);
+    }}, [displayPair]);
 
 
   // Circle fill uses absolute percent distance (capped at 100 for arc)
@@ -588,10 +588,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                   </span>
                   {priceDiff.hasData &&
-                    <span className={cn(
-                      "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
-                      priceDiff.percent >= 0 ? "text-green-400/70" : "text-red-400/70"
-                    )}>
+                  <span className={cn(
+                    "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
+                    priceDiff.percent >= 0 ? "text-green-400/70" : "text-red-400/70"
+                  )}>
                       vs Entry
                     </span>
                   }
@@ -732,51 +732,51 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
 
             {/* AI Analysis Notes */}
-            {signal?.notes && (
-              <div className="mx-3 mb-3 rounded-lg p-3 relative overflow-hidden"
-                style={{
-                  background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-                  border: "1px solid hsla(200, 60%, 35%, 0.3)"
-                }}>
+            {signal?.notes &&
+          <div className="mx-3 mb-3 rounded-lg p-3 relative overflow-hidden"
+          style={{
+            background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
+            border: "1px solid hsla(200, 60%, 35%, 0.3)"
+          }}>
                 <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                  style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
                 <div className="flex items-center gap-1.5 mb-2">
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
                   <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">Análisis AI</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{signal.notes}</p>
               </div>
-            )}
+          }
 
             {/* Candlestick Chart */}
-            <div className="mx-0 sm:mx-3 mb-3 rounded-none sm:rounded-lg overflow-hidden relative group/chart">
-              <div className="min-h-[220px]">
-                <CandlestickChart
-                data={forexChartData?.candles || []}
-                resistance={forexChartData?.resistance ?? 0}
-                support={forexChartData?.support ?? 0}
-                loading={forexChartLoading}
-                realtimePrice={quote?.price}
-                isRealtimeConnected={isConnected}
-                previousDayDate={forexChartData?.date}
-                 signalTakeProfit={takeProfit}
-                 signalStopLoss={stopLoss}
-                 signalEntry={entryPrice}
-                  signalDatetime={signal?.datetime}
-                  hideLegend />
-              </div>
+            <div className="mx-2 sm:mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
             
               <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
                 <button
-                  onClick={() => handleShareChart()}
-                  className="p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity min-w-[40px] min-h-[40px] flex items-center justify-center"
-                  title="Compartir gráfico">
+                onClick={() => handleShareChart()}
+                className="p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity min-w-[40px] min-h-[40px] flex items-center justify-center"
+                title="Compartir gráfico">
                   <Share2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setChartFullscreen(true)}
-                  className="p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity min-w-[40px] min-h-[40px] flex items-center justify-center"
-                  title="Pantalla completa">
+                onClick={() => setChartFullscreen(true)}
+                className="p-2 rounded-md bg-slate-900/70 text-slate-300 hover:text-white hover:bg-slate-800/90 transition-opacity min-w-[40px] min-h-[40px] flex items-center justify-center"
+                title="Pantalla completa">
                   <Maximize2 className="w-4 h-4" />
                 </button>
               </div>
@@ -784,14 +784,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Enhanced Fullscreen Chart Dialog */}
             <Dialog open={chartFullscreen} onOpenChange={(open) => {
-              setChartFullscreen(open);
-              // Try to lock orientation to landscape when opening
-              if (open && screen.orientation?.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
-              } else if (!open && screen.orientation?.unlock) {
-                screen.orientation.unlock();
-              }
-            }}>
+            setChartFullscreen(open);
+            // Try to lock orientation to landscape when opening
+            if (open && screen.orientation?.lock) {
+              screen.orientation.lock('landscape').catch(() => {});
+            } else if (!open && screen.orientation?.unlock) {
+              screen.orientation.unlock();
+            }
+          }}>
               <DialogContent className="max-w-[100vw] w-[100vw] h-[100dvh] max-h-[100dvh] p-0 border-0 rounded-none bg-[hsl(222,45%,5%)] [&>button]:hidden overflow-hidden">
                 <DialogTitle className="sr-only">Gráfico {signal?.currencyPair}</DialogTitle>
                 <style>{`
@@ -824,11 +824,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     align-items: center;
                     justify-content: center;
                   }
-                  /* Chart SVG img — contain to keep proportions */
+                  /* Chart SVG img — contain to show all candles + date/time axis */
                   .chart-fs-inner .chart-main .cursor-crosshair img {
                     width: 100% !important;
                     height: 100% !important;
-                    object-fit: cover !important;
+                    object-fit: contain !important;
                   }
                   @media (orientation: portrait) {
                     .chart-fs-inner {
@@ -855,28 +855,28 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-white tracking-wide">{displayPair}</span>
                       {quote?.price &&
-                        <span className="text-xs font-mono font-bold text-white">
+                    <span className="text-xs font-mono font-bold text-white">
                           {quote.price.toFixed(isJpy ? 3 : 5)}
                         </span>
-                      }
+                    }
                       {quote?.price && <span className={cn(
-                        "text-[9px] font-bold font-mono px-1 py-0.5 rounded",
-                        priceDiff.isPositive ? "text-emerald-400 bg-emerald-500/15" : "text-rose-400 bg-rose-500/15"
-                      )}>
+                      "text-[9px] font-bold font-mono px-1 py-0.5 rounded",
+                      priceDiff.isPositive ? "text-emerald-400 bg-emerald-500/15" : "text-rose-400 bg-rose-500/15"
+                    )}>
                         {priceDiff.isPositive ? "+" : ""}{priceDiff.pips.toFixed(1)}p
                       </span>}
                       {isConnected && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
                     </div>
                     <div className="flex items-center gap-px">
                       {(['15min', '30min', '1h', '4h', '1day'] as ChartInterval[]).map((iv) =>
-                        <button key={iv} onClick={() => setChartInterval(iv)}
-                          className={cn(
-                            "px-1.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition-all min-w-[28px]",
-                            chartInterval === iv ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" : "text-slate-500 hover:text-slate-300"
-                          )}>
+                    <button key={iv} onClick={() => setChartInterval(iv)}
+                    className={cn(
+                      "px-1.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition-all min-w-[28px]",
+                      chartInterval === iv ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" : "text-slate-500 hover:text-slate-300"
+                    )}>
                           {iv === '1day' ? '1D' : iv === '15min' ? '15m' : iv === '30min' ? '30m' : iv}
                         </button>
-                      )}
+                    )}
                     </div>
                     <button onClick={() => setChartFullscreen(false)} className="p-1 rounded hover:bg-slate-700/60 text-slate-400 hover:text-white transition-colors">
                       <X className="w-4 h-4" />
@@ -903,13 +903,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         controlledSR={showSR}
                         onSRChange={setShowSR}
                         controlledSignalLevels={showSignalMark}
-                        onSignalLevelsChange={setShowSignalMark}
-                        hideLegend />
+                        onSignalLevelsChange={setShowSignalMark} />
                       </ZoomableChart>
 
                       {/* Floating Live Price Badge */}
-                      {quote?.price && (
-                        <div className="absolute top-2 right-14 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-primary/40 bg-[hsl(222,45%,6%/0.9)] backdrop-blur-sm shadow-[0_0_12px_hsl(217,91%,60%/0.25)] animate-fade-in">
+                      {quote?.price &&
+                    <div className="absolute top-2 right-14 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-primary/40 bg-[hsl(222,45%,6%/0.9)] backdrop-blur-sm shadow-[0_0_12px_hsl(217,91%,60%/0.25)] animate-fade-in">
                           <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -917,7 +916,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           <span className="text-[10px] text-primary font-bold uppercase tracking-wider">Live</span>
                           <span className="text-xs font-mono font-bold text-foreground">{quote.price.toFixed(isJpy ? 3 : 5)}</span>
                         </div>
-                      )}
+                    }
                     </div>
 
 
@@ -934,31 +933,31 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           <CollapsibleContent>
                             <div className="px-3 pb-2 border-b border-slate-700/30">
                               <div className={cn(
-                                "text-xs font-bold px-2 py-1 rounded text-center mb-2",
-                                action === 'BUY' ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                              )}>
+                              "text-xs font-bold px-2 py-1 rounded text-center mb-2",
+                              action === 'BUY' ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                            )}>
                                 {action === 'BUY' ? '↗ LARGO' : '↘ CORTO'}
                               </div>
                               <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Probabilidad</div>
                               <div className="flex items-center gap-2">
                                 <div className="flex-1 h-2 rounded-full bg-slate-800/80 overflow-hidden relative">
                                   <div className="absolute inset-0 rounded-full" style={{
-                                    background: 'repeating-linear-gradient(90deg, transparent, transparent 9%, hsla(225,15%,20%,0.4) 9%, hsla(225,15%,20%,0.4) 10%)'
-                                  }} />
+                                  background: 'repeating-linear-gradient(90deg, transparent, transparent 9%, hsla(225,15%,20%,0.4) 9%, hsla(225,15%,20%,0.4) 10%)'
+                                }} />
                                   <div className="h-full rounded-full transition-all duration-700 ease-out relative z-10" style={{
-                                    width: `${probability}%`,
-                                    background: probability >= 70
-                                      ? 'linear-gradient(90deg, hsl(160,80%,45%), hsl(135,70%,50%))'
-                                      : probability >= 50
-                                        ? 'linear-gradient(90deg, hsl(45,80%,50%), hsl(38,95%,55%))'
-                                        : 'linear-gradient(90deg, hsl(10,80%,50%), hsl(0,70%,55%))',
-                                    boxShadow: `0 0 8px ${probability >= 70 ? 'hsl(142,70%,45%,0.4)' : probability >= 50 ? 'hsl(45,80%,55%,0.3)' : 'hsl(0,70%,55%,0.3)'}`
-                                  }} />
+                                  width: `${probability}%`,
+                                  background: probability >= 70 ?
+                                  'linear-gradient(90deg, hsl(160,80%,45%), hsl(135,70%,50%))' :
+                                  probability >= 50 ?
+                                  'linear-gradient(90deg, hsl(45,80%,50%), hsl(38,95%,55%))' :
+                                  'linear-gradient(90deg, hsl(10,80%,50%), hsl(0,70%,55%))',
+                                  boxShadow: `0 0 8px ${probability >= 70 ? 'hsl(142,70%,45%,0.4)' : probability >= 50 ? 'hsl(45,80%,55%,0.3)' : 'hsl(0,70%,55%,0.3)'}`
+                                }} />
                                 </div>
                                 <span className={cn(
-                                  "text-xs font-extrabold font-mono tabular-nums",
-                                  probability >= 70 ? "text-emerald-400" : probability >= 50 ? "text-yellow-400" : "text-rose-400"
-                                )}>{probability}%</span>
+                                "text-xs font-extrabold font-mono tabular-nums",
+                                probability >= 70 ? "text-emerald-400" : probability >= 50 ? "text-yellow-400" : "text-rose-400"
+                              )}>{probability}%</span>
                               </div>
                             </div>
                           </CollapsibleContent>
@@ -1023,8 +1022,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         </Collapsible>
 
                         {/* Live Price */}
-                        {quote?.price && (
-                          <Collapsible>
+                        {quote?.price &&
+                      <Collapsible>
                             <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
                               <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Precio Actual</span>
                               <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
@@ -1032,17 +1031,17 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             <CollapsibleContent>
                               <div className="px-3 pb-2 border-b border-slate-700/30">
                                 <div className="text-sm font-bold text-white tabular-nums">{quote.price.toFixed(isJpy ? 3 : 5)}</div>
-                                {priceDiff.hasData && (
-                                  <div className="flex items-center gap-2 mt-1">
+                                {priceDiff.hasData &&
+                            <div className="flex items-center gap-2 mt-1">
                                     <span className={cn("text-[10px] font-bold", priceDiff.isPositive ? "text-emerald-400" : "text-rose-400")}>{priceDiff.pips >= 0 ? '+' : ''}{priceDiff.pips.toFixed(1)} pips</span>
                                     <span className={cn("text-[10px]", priceDiff.isPositive ? "text-emerald-400/70" : "text-rose-400/70")}>({priceDiff.percent >= 0 ? '+' : ''}{priceDiff.percent.toFixed(3)}%)</span>
                                   </div>
-                                )}
+                            }
                                 <PriceAge timestamp={quote.timestamp} />
                               </div>
                             </CollapsibleContent>
                           </Collapsible>
-                        )}
+                      }
 
                         {/* Technical Indicators */}
                         <Collapsible>
@@ -1053,8 +1052,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           <CollapsibleContent>
                             <div className="px-3 pb-2 border-b border-slate-700/30 space-y-2">
                               {/* RSI */}
-                              {marketData?.rsi14 !== null && marketData?.rsi14 !== undefined && (
-                                <div>
+                              {marketData?.rsi14 !== null && marketData?.rsi14 !== undefined &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">RSI (14)</div>
                                   <div className={cn("text-sm font-bold", marketData.rsi14 > 70 ? 'text-rose-400' : marketData.rsi14 < 30 ? 'text-emerald-400' : 'text-cyan-200')}>{marketData.rsi14.toFixed(1)}</div>
                                   <div className="w-full h-1.5 rounded-full bg-slate-800 mt-1 overflow-hidden">
@@ -1064,52 +1063,52 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                                     {marketData.rsi14 > 70 ? 'Sobrecompra' : marketData.rsi14 < 30 ? 'Sobreventa' : 'Neutral'}
                                   </span>
                                 </div>
-                              )}
+                            }
                               {/* MACD */}
-                              {marketData?.macdHistogram !== null && marketData?.macdHistogram !== undefined && (
-                                <div>
+                              {marketData?.macdHistogram !== null && marketData?.macdHistogram !== undefined &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">MACD</div>
                                   <div className={cn("text-sm font-bold", marketData.macdHistogram >= 0 ? 'text-emerald-400' : 'text-rose-400')}>{marketData.macdHistogram >= 0 ? '+' : ''}{marketData.macdHistogram.toFixed(5)}</div>
                                   <span className={cn("text-[9px]", marketData.macdHistogram >= 0 ? 'text-emerald-400/60' : 'text-rose-400/60')}>{marketData.macdHistogram >= 0 ? '▲ Alcista' : '▼ Bajista'}</span>
                                 </div>
-                              )}
+                            }
                               {/* Volatility */}
-                              {marketData?.volatility && (
-                                <div>
+                              {marketData?.volatility &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Volatilidad</div>
                                   <div className={cn("text-xs font-bold", marketData.volatility === 'low' ? 'text-emerald-400' : marketData.volatility === 'moderate' ? 'text-yellow-400' : marketData.volatility === 'high' ? 'text-orange-400' : 'text-rose-400')}>
                                     {marketData.volatility === 'low' ? '🟢 Baja' : marketData.volatility === 'moderate' ? '🟡 Moderada' : marketData.volatility === 'high' ? '🟠 Alta' : '🔴 Extrema'}
                                   </div>
                                   {marketData.atr14 !== null && <span className="text-[9px] text-slate-500 block mt-0.5">ATR: {marketData.atr14.toFixed(isJpy ? 3 : 5)}</span>}
                                 </div>
-                              )}
+                            }
                               {/* Spread */}
-                              {marketData?.spreadPips !== null && marketData?.spreadPips !== undefined && (
-                                <div>
+                              {marketData?.spreadPips !== null && marketData?.spreadPips !== undefined &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Spread</div>
                                   <div className="text-sm font-bold text-cyan-200">{marketData.spreadPips.toFixed(1)} <span className="text-[9px] text-slate-500">pips</span></div>
                                   {marketData.bid !== null && marketData.ask !== null && <div className="text-[9px] text-slate-500 mt-0.5">Bid: {marketData.bid.toFixed(isJpy ? 3 : 5)} / Ask: {marketData.ask.toFixed(isJpy ? 3 : 5)}</div>}
                                 </div>
-                              )}
+                            }
                               {/* ADX */}
-                              {marketData?.adx14 !== null && marketData?.adx14 !== undefined && (
-                                <div>
+                              {marketData?.adx14 !== null && marketData?.adx14 !== undefined &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">ADX (14)</div>
                                   <div className={cn("text-sm font-bold", marketData.adx14 > 40 ? 'text-emerald-400' : marketData.adx14 > 20 ? 'text-yellow-400' : 'text-slate-400')}>{marketData.adx14.toFixed(1)}</div>
                                   <span className="text-[9px] text-slate-500">{marketData.adx14 > 40 ? 'Tendencia Fuerte' : marketData.adx14 > 20 ? 'Tendencia Moderada' : 'Sin Tendencia'}</span>
                                 </div>
-                              )}
+                            }
                               {/* Stochastic */}
-                              {marketData?.stochK !== null && marketData?.stochK !== undefined && (
-                                <div>
+                              {marketData?.stochK !== null && marketData?.stochK !== undefined &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Estocástico</div>
                                   <div className={cn("text-xs font-bold", marketData.stochK > 80 ? 'text-rose-400' : marketData.stochK < 20 ? 'text-emerald-400' : 'text-cyan-200')}>K: {marketData.stochK.toFixed(0)} / D: {(marketData.stochD ?? 0).toFixed(0)}</div>
                                   <span className="text-[9px] text-slate-500">{marketData.stochK > 80 ? 'Sobrecompra' : marketData.stochK < 20 ? 'Sobreventa' : 'Neutral'}</span>
                                 </div>
-                              )}
+                            }
                               {/* Bollinger */}
-                              {marketData?.bollingerUpper !== null && marketData?.bollingerUpper !== undefined && (
-                                <div>
+                              {marketData?.bollingerUpper !== null && marketData?.bollingerUpper !== undefined &&
+                            <div>
                                   <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Bollinger</div>
                                   <div className="space-y-0.5 text-[10px] font-mono">
                                     <div className="flex justify-between"><span className="text-slate-500">Superior</span><span className="text-emerald-300">{marketData.bollingerUpper.toFixed(isJpy ? 3 : 5)}</span></div>
@@ -1117,14 +1116,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                                     <div className="flex justify-between"><span className="text-slate-500">Inferior</span><span className="text-rose-300">{(marketData.bollingerLower ?? 0).toFixed(isJpy ? 3 : 5)}</span></div>
                                   </div>
                                 </div>
-                              )}
+                            }
                             </div>
                           </CollapsibleContent>
                         </Collapsible>
 
                         {/* Overall Signal */}
-                        {marketData?.overallSignal && (
-                          <Collapsible defaultOpen>
+                        {marketData?.overallSignal &&
+                      <Collapsible defaultOpen>
                             <CollapsibleTrigger className="w-full flex items-center justify-between p-2 hover:bg-slate-800/40 transition-colors border-b border-slate-700/30 group">
                               <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Señal Global</span>
                               <ChevronDown className="w-3 h-3 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
@@ -1132,20 +1131,20 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                             <CollapsibleContent>
                               <div className="px-3 pb-2">
                                 <div className={cn(
-                                  "text-xs font-bold text-center py-1.5 rounded",
-                                  marketData.overallSignal === 'strong_buy' || marketData.overallSignal === 'buy' ? "text-emerald-400 bg-emerald-500/10" :
-                                  marketData.overallSignal === 'strong_sell' || marketData.overallSignal === 'sell' ? "text-rose-400 bg-rose-500/10" :
-                                  "text-amber-400 bg-amber-500/10"
-                                )}>
+                              "text-xs font-bold text-center py-1.5 rounded",
+                              marketData.overallSignal === 'strong_buy' || marketData.overallSignal === 'buy' ? "text-emerald-400 bg-emerald-500/10" :
+                              marketData.overallSignal === 'strong_sell' || marketData.overallSignal === 'sell' ? "text-rose-400 bg-rose-500/10" :
+                              "text-amber-400 bg-amber-500/10"
+                            )}>
                                   {marketData.overallSignal === 'strong_buy' ? '🟢 Compra Fuerte' :
-                                  marketData.overallSignal === 'buy' ? '🟢 Compra' :
-                                  marketData.overallSignal === 'strong_sell' ? '🔴 Venta Fuerte' :
-                                  marketData.overallSignal === 'sell' ? '🔴 Venta' : '🟡 Neutral'}
+                              marketData.overallSignal === 'buy' ? '🟢 Compra' :
+                              marketData.overallSignal === 'strong_sell' ? '🔴 Venta Fuerte' :
+                              marketData.overallSignal === 'sell' ? '🔴 Venta' : '🟡 Neutral'}
                                 </div>
                               </div>
                             </CollapsibleContent>
                           </Collapsible>
-                        )}
+                      }
 
                       </div>
                     </div>
@@ -1159,33 +1158,33 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setShowSR(v => !v)}
-                        className={cn(
-                          "px-2 py-1 rounded font-bold text-[10px] min-h-[28px] border transition-all duration-300 ease-out",
-                          showSR
-                            ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-[0_0_8px_hsl(187_80%_50%/0.25)] scale-105"
-                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300 scale-100"
-                        )}
-                      >
+                      onClick={() => setShowSR((v) => !v)}
+                      className={cn(
+                        "px-2 py-1 rounded font-bold text-[10px] min-h-[28px] border transition-all duration-300 ease-out",
+                        showSR ?
+                        "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-[0_0_8px_hsl(187_80%_50%/0.25)] scale-105" :
+                        "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300 scale-100"
+                      )}>
+                      
                         S/R
                       </button>
                       <button
-                        onClick={() => setShowSignalMark(v => !v)}
-                        className={cn(
-                          "px-2 py-1 rounded font-bold text-[10px] min-h-[28px] border transition-all duration-300 ease-out",
-                          showSignalMark
-                            ? "bg-amber-500/15 text-amber-300 border-amber-500/40 shadow-[0_0_8px_hsl(38_80%_50%/0.25)] scale-105"
-                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300 scale-100"
-                        )}
-                      >
+                      onClick={() => setShowSignalMark((v) => !v)}
+                      className={cn(
+                        "px-2 py-1 rounded font-bold text-[10px] min-h-[28px] border transition-all duration-300 ease-out",
+                        showSignalMark ?
+                        "bg-amber-500/15 text-amber-300 border-amber-500/40 shadow-[0_0_8px_hsl(38_80%_50%/0.25)] scale-105" :
+                        "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300 scale-100"
+                      )}>
+                      
                         TP/SL
                       </button>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => handleShareChart()}
-                        className="px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border bg-slate-800/60 text-slate-400 border-slate-700/40 hover:text-cyan-300 hover:border-cyan-500/40"
-                      >
+                      onClick={() => handleShareChart()}
+                      className="px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border bg-slate-800/60 text-slate-400 border-slate-700/40 hover:text-cyan-300 hover:border-cyan-500/40">
+                      
                         <Share2 className="w-3 h-3 inline mr-1" />Compartir
                       </button>
                       <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</span>
