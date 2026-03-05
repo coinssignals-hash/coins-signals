@@ -165,35 +165,43 @@ export function SignalPerformanceStats({ signals }: SignalPerformanceStatsProps)
               <div className="flex-1 grid grid-cols-2 gap-2">
                 {/* TP Hit */}
                 <div
-                  className="rounded-lg p-2 flex items-center gap-2"
+                  className="rounded-lg p-2.5 space-y-1"
                   style={{
                     background: "hsla(135, 60%, 15%, 0.3)",
                     border: "1px solid hsla(135, 50%, 40%, 0.2)",
                   }}
                 >
-                  <Target className="w-4 h-4 text-emerald-400" />
-                  <div>
-                    <p className="text-lg font-bold text-emerald-400 leading-none">
-                      {stats.tpCount}
-                    </p>
-                    <p className="text-[9px] text-emerald-300/60">TP Hit</p>
+                  <div className="flex items-center gap-1.5">
+                    <Target className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-[10px] text-emerald-300/70 font-medium">TP Hit</span>
+                    <span className="ml-auto text-sm font-bold text-emerald-400">{stats.tpCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-emerald-400/80 font-mono">+{stats.totalPipsWon.toFixed(1)} pips</span>
+                    <span className="text-emerald-300/60 font-mono">
+                      {stats.completed > 0 ? ((stats.tpCount / stats.completed) * 100).toFixed(0) : 0}%
+                    </span>
                   </div>
                 </div>
 
                 {/* SL Hit */}
                 <div
-                  className="rounded-lg p-2 flex items-center gap-2"
+                  className="rounded-lg p-2.5 space-y-1"
                   style={{
                     background: "hsla(0, 60%, 15%, 0.3)",
                     border: "1px solid hsla(0, 50%, 40%, 0.2)",
                   }}
                 >
-                  <ShieldAlert className="w-4 h-4 text-rose-400" />
-                  <div>
-                    <p className="text-lg font-bold text-rose-400 leading-none">
-                      {stats.slCount}
-                    </p>
-                    <p className="text-[9px] text-rose-300/60">SL Hit</p>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                    <span className="text-[10px] text-rose-300/70 font-medium">SL Hit</span>
+                    <span className="ml-auto text-sm font-bold text-rose-400">{stats.slCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-rose-400/80 font-mono">-{stats.totalPipsLost.toFixed(1)} pips</span>
+                    <span className="text-rose-300/60 font-mono">
+                      {stats.completed > 0 ? ((stats.slCount / stats.completed) * 100).toFixed(0) : 0}%
+                    </span>
                   </div>
                 </div>
 
