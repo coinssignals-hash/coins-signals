@@ -79,7 +79,7 @@ function buildChartSvg(
   showSignalLevels = false,
   signalDatetime?: string | null,
 ): string {
-  const W = 1200, H = 700;
+  const W = 1800, H = 1050;
   const PAD = { top: 35, right: 110, bottom: 55, left: 65 };
   const CHART_X1 = PAD.left;
   const FULL_X2 = W - PAD.right; // full chart right edge including prediction
@@ -104,15 +104,15 @@ function buildChartSvg(
   const GRID = '#152a47';
   const GRID_MAJOR = '#1c3560';
   const TEXT_COL = '#5a6f8a';
-  const UP = '#00d4aa';
-  const DN = '#ff4976';
-  const UP_BODY = '#00d4aa';
-  const DN_BODY = '#ff4976';
-  const UP_DIM = 'rgba(0,212,170,0.28)';
-  const DN_DIM = 'rgba(255,73,118,0.28)';
-  const UP_WICK = 'rgba(0,212,170,0.7)';
-  const DN_WICK = 'rgba(255,73,118,0.7)';
-  const WICK_DIM = 'rgba(100,120,150,0.25)';
+  const UP = '#00e6b4';
+  const DN = '#ff5080';
+  const UP_BODY = '#00e6b4';
+  const DN_BODY = '#ff5080';
+  const UP_DIM = 'rgba(0,212,170,0.50)';
+  const DN_DIM = 'rgba(255,73,118,0.50)';
+  const UP_WICK = '#00e6b4';
+  const DN_WICK = '#ff5080';
+  const WICK_DIM = 'rgba(120,140,170,0.45)';
 
   if (data.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
@@ -142,7 +142,7 @@ function buildChartSvg(
   const yOf = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
   const xOf = (i: number) => CHART_X1 + (i + 0.5) * (CANDLE_W / data.length);
   const cw = CANDLE_W / data.length;
-  const bodyW = Math.max(3, Math.min(14, cw * 0.8));
+  const bodyW = Math.max(5, Math.min(22, cw * 0.82));
 
   // Identify last day
   const lastDayStr = dayKey(data[data.length - 1].time);
@@ -155,8 +155,8 @@ function buildChartSvg(
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${BG1}"/><stop offset="100%" stop-color="${BG2}"/></linearGradient>
     <linearGradient id="upGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00f0c0"/><stop offset="100%" stop-color="#00b488"/></linearGradient>
     <linearGradient id="dnGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b8a"/><stop offset="100%" stop-color="#e0304e"/></linearGradient>
-    <linearGradient id="upGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,212,170,0.35)"/><stop offset="100%" stop-color="rgba(0,180,136,0.2)"/></linearGradient>
-    <linearGradient id="dnGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,73,118,0.35)"/><stop offset="100%" stop-color="rgba(224,48,78,0.2)"/></linearGradient>
+    <linearGradient id="upGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,230,180,0.55)"/><stop offset="100%" stop-color="rgba(0,180,136,0.38)"/></linearGradient>
+    <linearGradient id="dnGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,80,128,0.55)"/><stop offset="100%" stop-color="rgba(224,48,78,0.38)"/></linearGradient>
     <filter id="upGlow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${UP}" flood-opacity="0.4"/></filter>
     <filter id="dnGlow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${DN}" flood-opacity="0.4"/></filter>
   </defs>`);
@@ -232,26 +232,26 @@ function buildChartSvg(
 
     const bodyTop = yOf(Math.max(c.open, c.close));
     const bodyBot = yOf(Math.min(c.open, c.close));
-    const bH = Math.max(1.5, bodyBot - bodyTop);
+    const bH = Math.max(2, bodyBot - bodyTop);
     const wickTop = yOf(c.high);
     const wickBot = yOf(c.low);
+    const wickW = isLastDay ? 1.8 : 1.2;
 
     if (isLastDay) {
       const grad = isUp ? 'url(#upGrad)' : 'url(#dnGrad)';
       const wickCol = isUp ? UP_WICK : DN_WICK;
       const glow = isUp ? 'url(#upGlow)' : 'url(#dnGlow)';
-      // Split wicks (top & bottom separated from body)
-      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${bodyTop}" stroke="${wickCol}" stroke-width="1.2" stroke-linecap="round"/>`);
-      parts.push(`<line x1="${x}" y1="${bodyBot}" x2="${x}" y2="${wickBot}" stroke="${wickCol}" stroke-width="1.2" stroke-linecap="round"/>`);
-      // Body with gradient + subtle glow
+      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${bodyTop}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round"/>`);
+      parts.push(`<line x1="${x}" y1="${bodyBot}" x2="${x}" y2="${wickBot}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round"/>`);
       parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${grad}" rx="1.5" filter="${glow}" shape-rendering="crispEdges"/>`);
-      // Top highlight shine
       if (bH > 3) {
         parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="1.5" fill="rgba(255,255,255,0.12)" rx="1.5"/>`);
       }
     } else {
       const fill = isUp ? 'url(#upGradDim)' : 'url(#dnGradDim)';
-      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${wickBot}" stroke="${WICK_DIM}" stroke-width="0.8" stroke-linecap="round"/>`);
+      const wickCol = isUp ? UP_WICK : DN_WICK;
+      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${bodyTop}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round" opacity="0.5"/>`);
+      parts.push(`<line x1="${x}" y1="${bodyBot}" x2="${x}" y2="${wickBot}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round" opacity="0.5"/>`);
       parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="1" shape-rendering="crispEdges"/>`);
     }
   }
