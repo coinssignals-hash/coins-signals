@@ -21,12 +21,10 @@ export function DayTabs({ selectedDay, onSelectDay }: DayTabsProps) {
     <div className="relative w-full bg-slate-900/80 border-y border-slate-700/50">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between w-full px-4 py-2.5 text-sm"
+        className="flex items-center justify-center w-full px-4 py-2.5 text-sm gap-2"
       >
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-cyan-400" />
-          <span className="capitalize text-white font-medium">{selectedLabel}</span>
-        </div>
+        <Calendar className="w-4 h-4 text-cyan-400" />
+        <span className="capitalize text-white font-medium">{selectedLabel}</span>
         <ChevronDown className={cn(
           'w-4 h-4 text-slate-400 transition-transform duration-200',
           open && 'rotate-180'
