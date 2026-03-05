@@ -1147,10 +1147,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       <button
                         onClick={() => setShowSR(v => !v)}
                         className={cn(
-                          "px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border",
+                          "px-2 py-1 rounded font-bold text-[10px] min-h-[28px] border transition-all duration-300 ease-out",
                           showSR
-                            ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40"
-                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300"
+                            ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-[0_0_8px_hsl(187_80%_50%/0.25)] scale-105"
+                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300 scale-100"
                         )}
                       >
                         S/R
@@ -1158,10 +1158,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                       <button
                         onClick={() => setShowSignalMark(v => !v)}
                         className={cn(
-                          "px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border",
+                          "px-2 py-1 rounded font-bold text-[10px] min-h-[28px] border transition-all duration-300 ease-out",
                           showSignalMark
-                            ? "bg-amber-500/15 text-amber-300 border-amber-500/40"
-                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300"
+                            ? "bg-amber-500/15 text-amber-300 border-amber-500/40 shadow-[0_0_8px_hsl(38_80%_50%/0.25)] scale-105"
+                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300 scale-100"
                         )}
                       >
                         TP/SL
