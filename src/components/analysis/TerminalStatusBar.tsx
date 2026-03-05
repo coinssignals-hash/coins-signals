@@ -68,33 +68,33 @@ export function TerminalStatusBar({ symbol, currentPrice, high, low, isRealtimeC
   const position = range > 0 ? ((currentPrice - low) / range) * 100 : 50;
 
   return (
-    <div className="flex items-center gap-3 overflow-x-auto pb-0.5 scrollbar-hide">
+    <div className="grid grid-cols-4 gap-1 sm:flex sm:items-center sm:gap-2 sm:overflow-x-auto pb-0.5 scrollbar-hide">
       {/* Active Sessions */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg shrink-0">
-        <Globe className="w-3 h-3 text-cyan-500" />
-        {activeSessions.length > 0 ? activeSessions.map(s => (
-          <span key={s.name} className={cn("text-[10px] font-medium flex items-center gap-0.5", s.color)}>
-            <span>{s.emoji}</span>
-            <span className="hidden sm:inline">{s.name}</span>
-          </span>
-        )) : (
-          <span className="text-[10px] text-gray-500">Cerrado</span>
-        )}
+      <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg col-span-1">
+        <Globe className="w-3 h-3 text-cyan-500 shrink-0" />
+        <div className="flex items-center gap-0.5 overflow-hidden">
+          {activeSessions.length > 0 ? activeSessions.slice(0, 2).map(s => (
+            <span key={s.name} className={cn("text-[9px] sm:text-[10px] font-medium flex items-center gap-0.5", s.color)}>
+              <span className="text-[10px]">{s.emoji}</span>
+              <span className="hidden sm:inline">{s.name}</span>
+            </span>
+          )) : (
+            <span className="text-[9px] text-gray-500">Off</span>
+          )}
+        </div>
       </div>
 
       {/* Spread */}
-      <div className="flex items-center gap-1 px-2.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg shrink-0">
-        <Zap className="w-3 h-3 text-yellow-500" />
-        <span className="text-[10px] text-gray-400">Spread</span>
-        <span className="text-[10px] font-bold text-yellow-400 tabular-nums">{spread.toFixed(1)} {unit}</span>
+      <div className="flex items-center justify-center gap-0.5 sm:gap-1 px-1.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg col-span-1">
+        <Zap className="w-3 h-3 text-yellow-500 shrink-0" />
+        <span className="text-[9px] sm:text-[10px] font-bold text-yellow-400 tabular-nums">{spread.toFixed(1)}<span className="text-gray-500 font-normal ml-0.5 hidden xs:inline">{unit}</span></span>
       </div>
 
       {/* Daily Range */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg shrink-0 min-w-[120px]">
-        <Activity className="w-3 h-3 text-cyan-500" />
-        <span className="text-[10px] text-gray-400">Rango</span>
-        <span className="text-[10px] font-bold text-cyan-400 tabular-nums">{rangePips}p</span>
-        <div className="w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden relative">
+      <div className="flex items-center justify-center gap-1 px-1.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg col-span-1">
+        <Activity className="w-3 h-3 text-cyan-500 shrink-0" />
+        <span className="text-[9px] sm:text-[10px] font-bold text-cyan-400 tabular-nums">{rangePips}p</span>
+        <div className="w-8 sm:w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden relative hidden xs:block">
           <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-gray-500 to-green-500 opacity-30 rounded-full" />
           <div
             className="absolute top-0 w-1.5 h-1.5 bg-white rounded-full shadow-lg shadow-white/50 transition-all"
@@ -104,8 +104,8 @@ export function TerminalStatusBar({ symbol, currentPrice, high, low, isRealtimeC
       </div>
 
       {/* UTC Clock */}
-      <div className="flex items-center gap-1 px-2.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg shrink-0">
-        <Clock className="w-3 h-3 text-gray-500" />
+      <div className="flex items-center justify-center gap-0.5 sm:gap-1 px-1.5 py-1.5 bg-[#0a1628]/80 border border-cyan-900/30 rounded-lg col-span-1">
+        <Clock className="w-3 h-3 text-gray-500 shrink-0" />
         <UTCClock />
       </div>
     </div>
