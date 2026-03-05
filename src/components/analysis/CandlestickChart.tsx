@@ -37,6 +37,8 @@ interface CandlestickChartProps {
   /** Controlled signal levels visibility */
   controlledSignalLevels?: boolean;
   onSignalLevelsChange?: (v: boolean) => void;
+  /** Hide built-in legend row (useful when custom external controls are rendered) */
+  hideLegend?: boolean;
 }
 
 /* ─── helpers ─── */
@@ -426,6 +428,7 @@ export function CandlestickChart({
   onSRChange,
   controlledSignalLevels,
   onSignalLevelsChange,
+  hideLegend = false,
 }: CandlestickChartProps) {
   const jpy = isJpyPair(support, resistance);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -643,80 +646,82 @@ export function CandlestickChart({
       </div>
 
       {/* Legend */}
-      <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0b1729' }}>
-        <div className="flex items-center gap-4">
-          {showSupportResistance && (
-            <>
-              <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#00d4aa' }} />
-                <span style={{ color: '#00d4aa' }}>Resistencia 24h</span>
-                <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#00f0c0', background: 'rgba(0,212,170,0.15)' }}>{fmtPrice(resistance, jpy)}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#ff4976' }} />
-                <span style={{ color: '#ff4976' }}>Soporte 24h</span>
-                <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#ff6b8a', background: 'rgba(255,73,118,0.15)' }}>{fmtPrice(support, jpy)}</span>
-              </div>
-            </>
-          )}
-          {/* S/R Toggle Button — next to Soporte */}
-          <button
-            type="button"
-            onClick={() => setSrVisible(v => !v)}
-            className={cn(
-              'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
-              showSupportResistance
-                ? 'border-cyan-600/50 text-cyan-300'
-                : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+      {!hideLegend && (
+        <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0b1729' }}>
+          <div className="flex items-center gap-4">
+            {showSupportResistance && (
+              <>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#00d4aa' }} />
+                  <span style={{ color: '#00d4aa' }}>Resistencia 24h</span>
+                  <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#00f0c0', background: 'rgba(0,212,170,0.15)' }}>{fmtPrice(resistance, jpy)}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#ff4976' }} />
+                  <span style={{ color: '#ff4976' }}>Soporte 24h</span>
+                  <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#ff6b8a', background: 'rgba(255,73,118,0.15)' }}>{fmtPrice(support, jpy)}</span>
+                </div>
+              </>
             )}
-            style={{ background: showSupportResistance ? 'rgba(0,180,160,0.15)' : 'rgba(255,255,255,0.05)' }}
-          >
-            <span className="text-[11px]" style={{ color: '#00d4aa' }}>S</span>
-            <span className="text-muted-foreground/50">/</span>
-            <span className="text-[11px]" style={{ color: '#ff4976' }}>R</span>
-            <span className="ml-0.5 text-[9px] opacity-70">{showSupportResistance ? 'ON' : 'OFF'}</span>
-          </button>
-          {/* TP/SL Signal Toggle Button */}
-          {hasSignalLevels && (
+            {/* S/R Toggle Button — next to Soporte */}
             <button
               type="button"
-              onClick={() => setSignalLevelsVisible(v => !v)}
+              onClick={() => setSrVisible(v => !v)}
               className={cn(
                 'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
-                signalLevelsVisible
-                  ? 'border-amber-600/50 text-amber-300'
+                showSupportResistance
+                  ? 'border-cyan-600/50 text-cyan-300'
                   : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
               )}
-              style={{ background: signalLevelsVisible ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)' }}
+              style={{ background: showSupportResistance ? 'rgba(0,180,160,0.15)' : 'rgba(255,255,255,0.05)' }}
             >
-              <span className="text-[11px]" style={{ color: '#22c55e' }}>TP</span>
+              <span className="text-[11px]" style={{ color: '#00d4aa' }}>S</span>
               <span className="text-muted-foreground/50">/</span>
-              <span className="text-[11px]" style={{ color: '#ef4444' }}>SL</span>
-              <span className="ml-0.5 text-[9px] opacity-70">{signalLevelsVisible ? 'ON' : 'OFF'}</span>
+              <span className="text-[11px]" style={{ color: '#ff4976' }}>R</span>
+              <span className="ml-0.5 text-[9px] opacity-70">{showSupportResistance ? 'ON' : 'OFF'}</span>
             </button>
-          )}
-          {ema20Data && ema20Data.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-0.5 bg-blue-500" />
-              <span className="text-blue-400">EMA 20</span>
-            </div>
-          )}
-          {ema50Data && ema50Data.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-0.5 bg-amber-500" />
-              <span className="text-amber-400">EMA 50</span>
+            {/* TP/SL Signal Toggle Button */}
+            {hasSignalLevels && (
+              <button
+                type="button"
+                onClick={() => setSignalLevelsVisible(v => !v)}
+                className={cn(
+                  'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
+                  signalLevelsVisible
+                    ? 'border-amber-600/50 text-amber-300'
+                    : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+                )}
+                style={{ background: signalLevelsVisible ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)' }}
+              >
+                <span className="text-[11px]" style={{ color: '#22c55e' }}>TP</span>
+                <span className="text-muted-foreground/50">/</span>
+                <span className="text-[11px]" style={{ color: '#ef4444' }}>SL</span>
+                <span className="ml-0.5 text-[9px] opacity-70">{signalLevelsVisible ? 'ON' : 'OFF'}</span>
+              </button>
+            )}
+            {ema20Data && ema20Data.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-0.5 bg-blue-500" />
+                <span className="text-blue-400">EMA 20</span>
+              </div>
+            )}
+            {ema50Data && ema50Data.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-0.5 bg-amber-500" />
+                <span className="text-amber-400">EMA 50</span>
+              </div>
+            )}
+          </div>
+          {realtimePrice && (
+            <div className="flex items-center gap-1">
+              <div className={cn('w-2 h-2 rounded-full', isRealtimeConnected ? 'bg-blue-500 animate-pulse' : 'bg-indigo-500')} />
+              <span className={isRealtimeConnected ? 'text-blue-400' : 'text-indigo-400'}>
+                Actual {realtimePrice.toFixed(5)}
+              </span>
             </div>
           )}
         </div>
-        {realtimePrice && (
-          <div className="flex items-center gap-1">
-            <div className={cn('w-2 h-2 rounded-full', isRealtimeConnected ? 'bg-blue-500 animate-pulse' : 'bg-indigo-500')} />
-            <span className={isRealtimeConnected ? 'text-blue-400' : 'text-indigo-400'}>
-              Actual {realtimePrice.toFixed(5)}
-            </span>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

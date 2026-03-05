@@ -876,10 +876,45 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         controlledSR={showSR}
                         onSRChange={setShowSR}
                         controlledSignalLevels={showSignalMark}
-                        onSignalLevelsChange={setShowSignalMark} />
+                        onSignalLevelsChange={setShowSignalMark}
+                        hideLegend
+                        />
                       </ZoomableChart>
-                    </div>
 
+                      {/* Controles visibles debajo del gráfico en fullscreen */}
+                      <div className="chart-mobile-levels shrink-0 flex items-center gap-2 px-3 py-2 border-t border-slate-700/40 bg-[hsl(222,45%,6%)]">
+                        <button
+                          type="button"
+                          onClick={() => setShowSR(v => !v)}
+                          className={cn(
+                            'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
+                            showSR
+                              ? 'border-cyan-600/50 text-cyan-300'
+                              : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+                          )}
+                        >
+                          <span className="text-[11px] text-cyan-300">S</span>
+                          <span className="text-muted-foreground/50">/</span>
+                          <span className="text-[11px] text-rose-400">R</span>
+                          <span className="ml-0.5 text-[9px] opacity-70">{showSR ? 'ON' : 'OFF'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowSignalMark(v => !v)}
+                          className={cn(
+                            'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
+                            showSignalMark
+                              ? 'border-amber-600/50 text-amber-300'
+                              : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+                          )}
+                        >
+                          <span className="text-[11px] text-emerald-400">TP</span>
+                          <span className="text-muted-foreground/50">/</span>
+                          <span className="text-[11px] text-red-400">SL</span>
+                          <span className="ml-0.5 text-[9px] opacity-70">{showSignalMark ? 'ON' : 'OFF'}</span>
+                        </button>
+                      </div>
+                    </div>
 
                     {/* ── Info Panel: below chart on mobile, right sidebar on desktop ── */}
                     <div className="chart-sidebar md:w-52 shrink-0 border-t md:border-t-0 md:border-l border-slate-700/50 overflow-y-auto overflow-x-hidden" style={{ background: 'hsl(222, 45%, 4%)' }}>
