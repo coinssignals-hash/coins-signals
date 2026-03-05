@@ -885,7 +885,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   {/* ── Main Content ── */}
                   <div className="relative flex flex-col md:flex-row flex-1 overflow-hidden">
                     {/* Chart Area — takes priority on mobile */}
-                    <div className="chart-main flex-1 flex flex-col min-h-0">
+                    <div className="chart-main flex-1 flex flex-col min-h-0 relative">
                       <ZoomableChart>
                         <CandlestickChart
                         data={forexChartData?.candles || []}
@@ -904,6 +904,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         controlledSignalLevels={showSignalMark}
                         onSignalLevelsChange={setShowSignalMark} />
                       </ZoomableChart>
+
+                      {/* Floating Live Price Badge */}
+                      {quote?.price && (
+                        <div className="absolute top-2 right-14 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-primary/40 bg-[hsl(222,45%,6%/0.9)] backdrop-blur-sm shadow-[0_0_12px_hsl(217,91%,60%/0.25)] animate-fade-in">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                          </span>
+                          <span className="text-[10px] text-primary font-bold uppercase tracking-wider">Live</span>
+                          <span className="text-xs font-mono font-bold text-foreground">{quote.price.toFixed(isJpy ? 3 : 5)}</span>
+                        </div>
+                      )}
                     </div>
 
 
