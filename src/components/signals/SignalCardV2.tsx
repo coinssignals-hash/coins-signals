@@ -824,11 +824,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     align-items: center;
                     justify-content: center;
                   }
-                  /* Chart SVG img — fill entire available area on mobile */
+                  /* Chart SVG img — contain to keep proportions */
                   .chart-fs-inner .chart-main .cursor-crosshair img {
                     width: 100% !important;
                     height: 100% !important;
-                    object-fit: fill !important;
+                    object-fit: contain !important;
                   }
                   @media (orientation: portrait) {
                     .chart-fs-inner {
