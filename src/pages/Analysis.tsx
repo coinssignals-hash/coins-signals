@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
-  RefreshCw, Bell, Clock, Zap, WifiOff,
+  Bell, Clock, Zap, WifiOff,
   LineChart, Landmark, Brain, Target } from
 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -121,7 +121,7 @@ export default function Analysis() {
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
-      <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
+      <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} onAICenter={() => navigate('/ai-center')} onRefresh={refetch} isLoading={loading} />
 
       <main className="py-2 px-1 sm:px-4 space-y-1.5 sm:space-y-3">
         {/* Terminal Header Bar */}
@@ -149,12 +149,6 @@ export default function Analysis() {
               <div className="mt-4"><Suspense fallback={<SectionLoader />}><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></Suspense></div>
             </SheetContent>
           </Sheet>
-          <Button variant="outline" size="icon" onClick={() => navigate('/ai-center')} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-10 w-10 sm:h-9 sm:w-9 active:scale-95 transition-transform" title="Centro de Análisis IA">
-            <Brain className="w-4 h-4 text-purple-400" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={refetch} disabled={loading} className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-10 w-10 sm:h-9 sm:w-9 active:scale-95 transition-transform">
-            <RefreshCw className={`w-4 h-4 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
         </div>
 
         {/* Hero Dashboard Summary */}
