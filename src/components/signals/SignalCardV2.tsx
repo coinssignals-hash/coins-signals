@@ -750,7 +750,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Candlestick Chart */}
             <div className="mx-2 sm:mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
-              <div className="h-[200px] sm:h-auto">
+              <div>
                 <CandlestickChart
                 data={forexChartData?.candles || []}
                 resistance={forexChartData?.resistance ?? 0}
@@ -903,7 +903,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         controlledSR={showSR}
                         onSRChange={setShowSR}
                         controlledSignalLevels={showSignalMark}
-                        onSignalLevelsChange={setShowSignalMark} />
+                        onSignalLevelsChange={setShowSignalMark}
+                        hideLegend />
                       </ZoomableChart>
 
                       {/* Floating Live Price Badge */}
