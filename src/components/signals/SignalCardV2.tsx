@@ -762,7 +762,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                  signalTakeProfit={takeProfit}
                  signalStopLoss={stopLoss}
                  signalEntry={entryPrice}
-                 signalDatetime={signal?.datetime} />
+                  signalDatetime={signal?.datetime}
+                  hideLegend />
               </div>
             
               <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
