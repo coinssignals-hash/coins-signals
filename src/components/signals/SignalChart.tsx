@@ -218,7 +218,7 @@ function buildSignalChartSvg(
 export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, className }: SignalChartProps) {
   const symbol = currencyPair.replace('/', '');
   const { data: chartData, loading, error } = useForexChartData(symbol, '15min');
-  const [showSR, setShowSR] = useState(false);
+  const showSR = true; // Always show S/R lines
   const [fullscreen, setFullscreen] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const [viewportSize, setViewportSize] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -299,40 +299,6 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             />
           )}
 
-          {/* S/R toggle bar */}
-          <div
-            className="flex items-center justify-center gap-3 px-3 py-2"
-            style={{ background: '#0b1729', borderTop: '1px solid rgba(21,42,71,0.6)' }}
-          >
-            <button
-              onClick={() => setShowSR(v => !v)}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold transition-all border active:scale-95",
-                showSR
-                  ? "border-cyan-600/50 text-cyan-200"
-                  : "border-slate-600/30 text-slate-400 hover:text-slate-200"
-              )}
-              style={{ background: showSR ? 'rgba(0,180,160,0.12)' : 'rgba(255,255,255,0.03)' }}
-            >
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-[2px] rounded-full" style={{ background: '#00e6b4' }} />
-                <span style={{ color: '#00e6b4' }}>R</span>
-              </div>
-              <span className="text-slate-500">/</span>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-[2px] rounded-full" style={{ background: '#ff5080' }} />
-                <span style={{ color: '#ff5080' }}>S</span>
-              </div>
-              <span className="text-[10px] opacity-60 ml-1">{showSR ? 'ON' : 'OFF'}</span>
-            </button>
-
-            {showSR && (
-              <div className="flex items-center gap-3 text-[10px] font-mono">
-                <span style={{ color: '#00e6b4' }}>R: {fmtPrice(resistance, jpy)}</span>
-                <span style={{ color: '#ff5080' }}>S: {fmtPrice(support, jpy)}</span>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -372,32 +338,14 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               />
             )}
 
-            {/* Controls — top-left grouped */}
-            <div className="absolute top-3 left-3 z-[10001] flex items-center gap-2">
-              <button
-                onClick={() => setFullscreen(false)}
-                className="p-1.5 rounded-md active:scale-90 backdrop-blur-sm"
-                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }}
-              >
-                <X className="w-4 h-4 text-white" />
-              </button>
-
-              <button
-                onClick={() => setShowSR(v => !v)}
-                className={cn(
-                  "flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-semibold border active:scale-95 backdrop-blur-sm",
-                  showSR ? "border-cyan-600/50 text-cyan-200" : "border-slate-600/30 text-slate-400"
-                )}
-                style={{ background: showSR ? 'rgba(0,180,160,0.18)' : 'rgba(6,14,28,0.7)' }}
-              >
-                <div className="w-2 h-[2px] rounded-full" style={{ background: '#00e6b4' }} />
-                <span style={{ color: '#00e6b4' }}>R</span>
-                <span className="text-slate-600 mx-0.5">/</span>
-                <div className="w-2 h-[2px] rounded-full" style={{ background: '#ff5080' }} />
-                <span style={{ color: '#ff5080' }}>S</span>
-                <span className="text-[8px] opacity-50 ml-0.5">{showSR ? 'ON' : 'OFF'}</span>
-              </button>
-            </div>
+            {/* Close button — top-left */}
+            <button
+              onClick={() => setFullscreen(false)}
+              className="absolute top-3 left-3 z-[10001] p-1.5 rounded-md active:scale-90 backdrop-blur-sm"
+              style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)' }}
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
           </div>
         </div>
       )}
