@@ -1113,9 +1113,33 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
                   {/* ── Bottom Status Bar ── */}
                   <div className="flex items-center justify-between px-3 py-1.5 border-t border-slate-700/50 bg-[hsl(222,45%,4%)] shrink-0 text-[10px] text-slate-500 font-mono">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <span>Intervalo: <span className="text-slate-300">{chartInterval === '1day' ? '1D' : chartInterval}</span></span>
                       <span>Velas: <span className="text-slate-300">{forexChartData?.candles?.length ?? 0}</span></span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setShowSR(v => !v)}
+                        className={cn(
+                          "px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border",
+                          showSR
+                            ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40"
+                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300"
+                        )}
+                      >
+                        S/R
+                      </button>
+                      <button
+                        onClick={() => setShowSignalMark(v => !v)}
+                        className={cn(
+                          "px-2 py-1 rounded font-bold text-[10px] transition-all min-h-[28px] border",
+                          showSignalMark
+                            ? "bg-amber-500/15 text-amber-300 border-amber-500/40"
+                            : "bg-slate-800/60 text-slate-500 border-slate-700/40 hover:text-slate-300"
+                        )}
+                      >
+                        TP/SL
+                      </button>
                     </div>
                     <div className="flex items-center gap-4">
                       <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC</span>
