@@ -221,11 +221,21 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const [showSR, setShowSR] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
+  const [viewportSize, setViewportSize] = useState({ w: window.innerWidth, h: window.innerHeight });
 
   const support = propSupport ?? chartData?.support ?? 0;
   const resistance = propResistance ?? chartData?.resistance ?? 0;
   const candles = chartData?.candles ?? [];
   const jpy = isJpyPair(support, resistance);
+
+  // Track viewport size for fullscreen rotation
+  useEffect(() => {
+    const onResize = () => setViewportSize({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const isPortrait = viewportSize.h > viewportSize.w;
 
   // Inline SVG (compact)
   const inlineSvgUri = useMemo(() => {
@@ -234,7 +244,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, [candles, support, resistance, showSR]);
 
-  // Fullscreen SVG (HD landscape)
+  // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
     if (!candles.length || !fullscreen) return null;
     const svg = buildSignalChartSvg(candles, support, resistance, showSR, 2340, 1080);
@@ -330,20 +340,20 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
       {fullscreen && (
         <div
           ref={fsRef}
-          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          className="fixed inset-0 z-[9999]"
           style={{ background: '#000' }}
           onClick={(e) => { if (e.target === fsRef.current) setFullscreen(false); }}
         >
-          {/* Close button */}
+          {/* Close button — always top-right of physical screen */}
           <button
             onClick={() => setFullscreen(false)}
             className="absolute top-3 right-3 z-[10001] p-2 rounded-full transition-colors active:scale-90"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
+            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}
           >
             <X className="w-5 h-5 text-white" />
           </button>
 
-          {/* S/R toggle in fullscreen */}
+          {/* S/R toggle — always bottom center of physical screen */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-3">
             <button
               onClick={() => setShowSR(v => !v)}
@@ -368,23 +378,16 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             </button>
           </div>
 
-          {/* Chart — rotated landscape on portrait screens, fills entire screen */}
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ padding: '0' }}
-          >
-            <div
-              className="portrait:rotate-90 portrait:origin-center portrait:w-[100dvh] portrait:h-[100dvw] landscape:w-full landscape:h-full flex items-center justify-center"
-            >
-              {fullscreenSvgUri && (
-                <img
-                  src={fullscreenSvgUri}
-                  alt={`Gráfico ${currencyPair} 15min - Pantalla completa`}
-                  className="w-full h-full object-fill"
-                  draggable={false}
-                />
-              )}
-            </div>
+          {/* Chart fills entire screen */}
+          <div className="absolute inset-0">
+            {fullscreenSvgUri && (
+              <img
+                src={fullscreenSvgUri}
+                alt={`Gráfico ${currencyPair} 15min - Pantalla completa`}
+                style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block' }}
+                draggable={false}
+              />
+            )}
           </div>
         </div>
       )}
