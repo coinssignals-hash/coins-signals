@@ -749,8 +749,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             )}
 
             {/* Candlestick Chart */}
-            <div className="mx-2 sm:mx-3 mb-3 rounded-lg overflow-hidden relative group/chart">
-              <div className="min-h-[200px]">
+            <div className="mx-0 sm:mx-3 mb-3 rounded-none sm:rounded-lg overflow-hidden relative group/chart">
+              <div className="min-h-[220px]">
                 <CandlestickChart
                 data={forexChartData?.candles || []}
                 resistance={forexChartData?.resistance ?? 0}
