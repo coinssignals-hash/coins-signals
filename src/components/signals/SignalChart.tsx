@@ -379,28 +379,22 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               <X className="w-5 h-5 text-white" />
             </button>
 
-            {/* S/R toggle — bottom center of rotated view */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-3">
-              <button
-                onClick={() => setShowSR(v => !v)}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border active:scale-95",
-                  showSR ? "border-cyan-500/50 text-cyan-200" : "border-slate-600/40 text-slate-400"
-                )}
-                style={{ background: showSR ? 'rgba(0,180,160,0.2)' : 'rgba(255,255,255,0.06)' }}
-              >
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-[2px] rounded-full" style={{ background: '#00e6b4' }} />
-                  <span style={{ color: '#00e6b4' }}>R</span>
-                </div>
-                <span className="text-slate-600">/</span>
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-[2px] rounded-full" style={{ background: '#ff5080' }} />
-                  <span style={{ color: '#ff5080' }}>S</span>
-                </div>
-                <span className="text-xs opacity-50 ml-1">{showSR ? 'ON' : 'OFF'}</span>
-              </button>
-            </div>
+            {/* S/R toggle — top-left of rotated view, compact */}
+            <button
+              onClick={() => setShowSR(v => !v)}
+              className={cn(
+                "absolute top-3 left-3 z-[10001] flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border active:scale-95 backdrop-blur-sm",
+                showSR ? "border-cyan-600/50 text-cyan-200" : "border-slate-600/30 text-slate-400"
+              )}
+              style={{ background: showSR ? 'rgba(0,180,160,0.18)' : 'rgba(6,14,28,0.7)' }}
+            >
+              <div className="w-2.5 h-[2px] rounded-full" style={{ background: '#00e6b4' }} />
+              <span style={{ color: '#00e6b4' }}>R</span>
+              <span className="text-slate-600 mx-0.5">/</span>
+              <div className="w-2.5 h-[2px] rounded-full" style={{ background: '#ff5080' }} />
+              <span style={{ color: '#ff5080' }}>S</span>
+              <span className="text-[9px] opacity-50 ml-1">{showSR ? 'ON' : 'OFF'}</span>
+            </button>
           </div>
         </div>
       )}
