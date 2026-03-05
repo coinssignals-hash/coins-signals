@@ -45,9 +45,12 @@ function buildSignalChartSvg(
   showSR: boolean,
   width: number,
   height: number,
+  compact = false,
 ): string {
   const W = width, H = height;
-  const PAD = { top: 30, right: 100, bottom: 50, left: 60 };
+  const PAD = compact
+    ? { top: 18, right: 55, bottom: 30, left: 40 }
+    : { top: 30, right: 100, bottom: 50, left: 60 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
   const CHART_W = CHART_X2 - CHART_X1;
@@ -221,19 +224,27 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const showSR = true; // Always show S/R lines
   const [fullscreen, setFullscreen] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
-  const [viewportSize, setViewportSize] = useState({ w: window.innerWidth, h: window.innerHeight });
+  const getVpSize = () => ({
+    w: Math.max(window.innerWidth, document.documentElement.clientWidth),
+    h: Math.max(window.innerHeight, document.documentElement.clientHeight),
+  });
+  const [viewportSize, setViewportSize] = useState(getVpSize);
+
+  // Track viewport size for fullscreen rotation
+  useEffect(() => {
+    const onResize = () => setViewportSize(getVpSize());
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
 
   const support = propSupport ?? chartData?.support ?? 0;
   const resistance = propResistance ?? chartData?.resistance ?? 0;
   const candles = chartData?.candles ?? [];
   const jpy = isJpyPair(support, resistance);
-
-  // Track viewport size for fullscreen rotation
-  useEffect(() => {
-    const onResize = () => setViewportSize({ w: window.innerWidth, h: window.innerHeight });
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
 
   const isPortrait = viewportSize.h > viewportSize.w;
 
@@ -247,14 +258,21 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
     if (!candles.length || !fullscreen) return null;
-    const svg = buildSignalChartSvg(candles, support, resistance, showSR, 2340, 1080);
+    // Use viewport dimensions for exact aspect ratio match
+    const fsW = isPortrait ? viewportSize.h : viewportSize.w;
+    const fsH = isPortrait ? viewportSize.w : viewportSize.h;
+    // Scale up for crisp rendering but maintain aspect ratio
+    const scale = Math.max(1, Math.ceil(2340 / fsW));
+    const svg = buildSignalChartSvg(candles, support, resistance, showSR, fsW * scale, fsH * scale, true);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, showSR, fullscreen]);
+  }, [candles, support, resistance, showSR, fullscreen, isPortrait, viewportSize]);
 
-  // Lock body scroll in fullscreen
+  // Lock body scroll in fullscreen + recalculate viewport
   useEffect(() => {
     if (fullscreen) {
       document.body.style.overflow = 'hidden';
+      // Recalculate after a tick to ensure accurate measurements
+      requestAnimationFrame(() => setViewportSize(getVpSize()));
       return () => { document.body.style.overflow = ''; };
     }
   }, [fullscreen]);
@@ -308,8 +326,9 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
           ref={fsRef}
           className="fixed z-[9999]"
           style={{
-            top: 0, left: 0, right: 0, bottom: 0,
-            width: '100vw', height: '100vh',
+            top: 0, left: 0,
+            width: `${viewportSize.w}px`,
+            height: `${viewportSize.h}px`,
             background: '#000',
             margin: 0, padding: 0,
             overflow: 'hidden',
@@ -319,20 +338,20 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
           {/* Rotated container for portrait → landscape */}
           <div
             style={isPortrait ? {
-              position: 'fixed',
+              position: 'absolute',
               top: 0,
               left: 0,
-              width: '100vh',
-              height: '100vw',
+              width: `${viewportSize.h}px`,
+              height: `${viewportSize.w}px`,
               transformOrigin: 'top left',
-              transform: 'translateX(100vw) rotate(90deg)',
+              transform: `translateX(${viewportSize.w}px) rotate(90deg)`,
               overflow: 'hidden',
             } : {
-              position: 'fixed',
+              position: 'absolute',
               top: 0,
               left: 0,
-              width: '100vw',
-              height: '100vh',
+              width: '100%',
+              height: '100%',
               overflow: 'hidden',
             }}
           >
