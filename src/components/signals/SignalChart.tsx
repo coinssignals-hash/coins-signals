@@ -368,10 +368,10 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             </button>
           </div>
 
-          {/* Chart — rotated landscape on portrait screens */}
+          {/* Chart — rotated landscape on portrait screens, fills entire screen */}
           <div
-            className="w-full h-full flex items-center justify-center landscape:p-2"
-            style={{ padding: '8px' }}
+            className="w-full h-full flex items-center justify-center"
+            style={{ padding: '0' }}
           >
             <div
               className="portrait:rotate-90 portrait:origin-center portrait:w-[100dvh] portrait:h-[100dvw] landscape:w-full landscape:h-full flex items-center justify-center"
@@ -380,7 +380,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                 <img
                   src={fullscreenSvgUri}
                   alt={`Gráfico ${currencyPair} 15min - Pantalla completa`}
-                  className="max-w-full max-h-full object-contain"
+                  className="w-full h-full object-fill"
                   draggable={false}
                 />
               )}
