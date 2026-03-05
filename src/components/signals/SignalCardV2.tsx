@@ -828,7 +828,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   .chart-fs-inner .chart-main .cursor-crosshair img {
                     width: 100% !important;
                     height: 100% !important;
-                    object-fit: contain !important;
+                    object-fit: cover !important;
                   }
                   @media (orientation: portrait) {
                     .chart-fs-inner {
