@@ -18,15 +18,15 @@ export function DayTabs({ selectedDay, onSelectDay }: DayTabsProps) {
   const selectedLabel = format(selectedDay, "EEEE dd 'de' MMMM", { locale: es });
 
   return (
-    <div className="relative w-full bg-slate-900/80 border-y border-slate-700/50">
+    <div className="relative flex justify-center w-full bg-slate-900/80 border-y border-slate-700/50 py-1">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-center w-full px-4 py-2.5 text-sm gap-2"
+        className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] rounded-full bg-slate-800/60 border border-slate-700/40"
       >
-        <Calendar className="w-4 h-4 text-cyan-400" />
-        <span className="capitalize text-white font-medium">{selectedLabel}</span>
+        <Calendar className="w-3 h-3 text-cyan-400" />
+        <span className="capitalize text-white/90 font-medium">{selectedLabel}</span>
         <ChevronDown className={cn(
-          'w-4 h-4 text-slate-400 transition-transform duration-200',
+          'w-3 h-3 text-slate-400 transition-transform duration-200',
           open && 'rotate-180'
         )} />
       </button>
