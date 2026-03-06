@@ -2,6 +2,7 @@ import { TrendingUp, TrendingDown, ArrowUpDown, BarChart3, Target, Shield } from
 import { cn, formatPrice } from '@/lib/utils';
 
 interface QuickStatsGridProps {
+  symbol?: string;
   currentPrice: number;
   change: number;
   changePercent: number;
