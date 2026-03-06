@@ -93,8 +93,16 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
   // Start/stop polling based on page visibility
   const startPolling = useCallback(() => {
     if (intervalRef.current) return;
+    setCountdown(POLL_INTERVAL / 1000);
     pollSymbols();
-    intervalRef.current = setInterval(pollSymbols, 15000);
+    intervalRef.current = setInterval(() => {
+      setCountdown(POLL_INTERVAL / 1000);
+      pollSymbols();
+    }, POLL_INTERVAL);
+    // Countdown ticker every second
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => Math.max(0, prev - 1));
+    }, 1000);
     setIsConnected(true);
   }, [pollSymbols]);
 
@@ -102,6 +110,10 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
+    }
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
     }
     setIsConnected(false);
   }, []);
