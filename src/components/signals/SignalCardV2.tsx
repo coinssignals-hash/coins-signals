@@ -651,7 +651,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
 
           <div className="flex items-center justify-between px-3 py-1.5 min-h-[40px]">
-            <span className="font-semibold text-white sm:text-sm text-sm">{t('signal_entry')}</span>
+            <span className="font-semibold text-white sm:text-sm text-base">{t('signal_entry')}</span>
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-white sm:text-sm font-mono tabular-nums text-lg">{entryPrice.toFixed(3)}</span>
               <button
