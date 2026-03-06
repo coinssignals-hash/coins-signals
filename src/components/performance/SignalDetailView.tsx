@@ -122,7 +122,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
             </div>
             <div>
               <span className="text-muted-foreground">Take Profit</span>
-              <p className="text-green-500 font-bold font-mono-numbers">{(signal.takeProfit - 0.4).toFixed(3)}</p>
+              <p className="text-green-500 font-bold font-mono-numbers">{formatPrice(signal.takeProfit - 0.4, signal.pair)}</p>
             </div>
           </div>
         </div>
