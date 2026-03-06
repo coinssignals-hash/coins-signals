@@ -198,7 +198,6 @@ export default function Signals() {
                 <PlusCircle className="w-5 h-5" />
               </button>
             }
-            <NotificationToggle />
           </div>
         </div>
 
