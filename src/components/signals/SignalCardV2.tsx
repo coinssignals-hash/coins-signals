@@ -482,14 +482,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <div
                   className={cn(
                     "w-2 h-2 rounded-full",
-                    isConnected ?
+                    isConnected && isLivePrice ?
                     "bg-green-400 shadow-[0_0_6px_hsl(135,80%,50%)]" :
+                    isConnected && !isLivePrice ?
+                    "bg-amber-400 shadow-[0_0_6px_hsl(45,80%,50%)]" :
                     priceLoading ?
                     "bg-yellow-400 shadow-[0_0_6px_hsl(45,80%,50%)] animate-pulse" :
                     "bg-red-400 shadow-[0_0_6px_hsl(0,80%,50%)]"
                   )} />
                 <span className="text-[9px] font-bold text-cyan-300 italic">
-                  {isConnected ? "Live" : priceLoading ? t('common_loading') : "N/A"}
+                  {isConnected && isLivePrice ? "Live" : isConnected ? "Offline" : priceLoading ? t('common_loading') : "N/A"}
                 </span>
               </div>
               {priceDiff.hasData && quote?.timestamp &&
