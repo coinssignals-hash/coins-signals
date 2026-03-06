@@ -65,11 +65,11 @@ export function useProgressBarState(props: TargetProgressBarProps): {
   const hasLivePrice = displayPrice !== null && Number.isFinite(displayPrice) && hasRange;
 
   // Activated = price has reached entry (order filled)
-  // BUY: activated when price <= entry (dipped to entry)
-  // SELL: activated when price >= entry (risen to entry)
+  // BUY: activated when price rises to entry or above
+  // SELL: activated when price drops to entry or below
   // Completed signals are always activated
   const isActivated = isCompleted || (hasLivePrice && (
-    isBuy ? displayPrice <= entryPrice : displayPrice >= entryPrice
+    isBuy ? displayPrice >= entryPrice : displayPrice <= entryPrice
   ));
 
   if (hasLivePrice) {
