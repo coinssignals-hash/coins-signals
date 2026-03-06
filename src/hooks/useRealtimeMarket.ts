@@ -86,23 +86,47 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
     return quotes.get(symbol) || null;
   }, [quotes]);
 
+  // Start/stop polling based on page visibility
+  const startPolling = useCallback(() => {
+    if (intervalRef.current) return;
+    pollSymbols();
+    intervalRef.current = setInterval(pollSymbols, 5000);
+    setIsConnected(true);
+  }, [pollSymbols]);
+
+  const stopPolling = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setIsConnected(false);
+  }, []);
+
   useEffect(() => {
     if (initialSymbols.length === 0) return;
 
     initialSymbols.forEach(s => subscribedSymbolsRef.current.add(s));
-    
-    // Initial fetch
-    pollSymbols();
-    setIsConnected(true);
 
-    // Poll every 5 seconds for real-time updates
-    intervalRef.current = setInterval(pollSymbols, 5000);
+    // Only poll when page is visible
+    if (document.visibilityState === 'visible') {
+      startPolling();
+    }
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      setIsConnected(false);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      stopPolling();
     };
-  }, [initialSymbols.join(','), pollSymbols]);
+  }, [initialSymbols.join(','), startPolling, stopPolling]);
 
   return {
     quotes,
