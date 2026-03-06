@@ -62,7 +62,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
               y={signal.entryPrice} 
               stroke="#3b82f6" 
               strokeDasharray="3 3"
-              label={{ value: formatPrice(signal.entryPrice, signal.pair), position: 'right', fill: '#3b82f6', fontSize: 10 }}
+              label={{ value: formatPrice(signal.entryPrice, signal.currencyPair), position: 'right', fill: '#3b82f6', fontSize: 10 }}
             />
             <ReferenceLine 
               y={signal.stopLoss} 
