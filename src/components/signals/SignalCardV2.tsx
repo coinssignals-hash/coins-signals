@@ -432,8 +432,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           "bg-rose-500/20 text-rose-400 border-rose-500/30"
         )}>
             {signal.closedResult === 'tp_hit' ?
-          `✅ Take Profit ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}` :
-          `❌ Stop Loss ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}`
+          `✅ Take Profit ${t('signal_reached')} — ${formatPrice(signal.closedPrice ?? 0, currencyPair)}` :
+          `❌ Stop Loss ${t('signal_reached')} — ${formatPrice(signal.closedPrice ?? 0, currencyPair)}`
           }
           </div>
         }
