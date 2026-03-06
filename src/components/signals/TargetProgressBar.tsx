@@ -235,15 +235,24 @@ export function TargetProgressBar({
 
         {/* TP1 marker (when there are multiple TPs) */}
         {(takeProfit2 || takeProfit3) && (
-          <div className="absolute top-0 bottom-0 w-px bg-emerald-400/40 z-10" style={{ left: `${tp1Pos}%` }} />
+          <div className="absolute z-10 flex flex-col items-center" style={{ left: `${tp1Pos}%`, top: '-3px', bottom: '-3px' }}>
+            <div className="w-0.5 h-full bg-emerald-400/50 rounded-full" />
+            <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-400/70 border border-emerald-300/50" />
+          </div>
         )}
         {/* TP2 marker */}
         {tp2Pos !== null && (
-          <div className="absolute top-0 bottom-0 w-px bg-emerald-400/30 z-10" style={{ left: `${tp2Pos}%` }} />
+          <div className="absolute z-10 flex flex-col items-center" style={{ left: `${tp2Pos}%`, top: '-3px', bottom: '-3px' }}>
+            <div className="w-0.5 h-full bg-emerald-300/40 rounded-full" />
+            <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-300/60 border border-emerald-200/40" />
+          </div>
         )}
         {/* TP3 marker */}
         {tp3Pos !== null && (
-          <div className="absolute top-0 bottom-0 w-px bg-emerald-400/20 z-10" style={{ left: `${tp3Pos}%` }} />
+          <div className="absolute z-10 flex flex-col items-center" style={{ left: `${tp3Pos}%`, top: '-3px', bottom: '-3px' }}>
+            <div className="w-0.5 h-full bg-emerald-200/30 rounded-full" />
+            <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-200/50 border border-emerald-100/30" />
+          </div>
         )}
 
         {/* Current price dot + floating label */}
@@ -284,7 +293,8 @@ export function TargetProgressBar({
       </div>
 
       {/* Bottom price labels */}
-      <div className="relative mt-1 h-7">
+      <div className={cn("relative mt-1", (takeProfit2 || takeProfit3) ? "h-14" : "h-7")}>
+        {/* SL price */}
         <div className="absolute left-0 flex flex-col items-start">
           <span className="text-[11px] text-rose-400/60 font-mono tabular-nums">
             {formatPrice(stopLoss, isJpy ? 'JPY' : 'EUR/USD')}
@@ -293,6 +303,8 @@ export function TargetProgressBar({
             SL
           </span>
         </div>
+
+        {/* Entry price + status badge */}
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: '50%' }}>
           <span className="text-[11px] text-white/40 font-mono tabular-nums">
             {formatPrice(entryPrice, isJpy ? 'JPY' : 'EUR/USD')}
@@ -300,7 +312,6 @@ export function TargetProgressBar({
           <span className="text-[7px] text-white/30 font-semibold uppercase tracking-widest leading-none">
             Entry
           </span>
-          {/* Status badge below Entry */}
           <div className={cn(
             "flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-bold mt-1 transition-all duration-500",
             isCompleted && closedResult === 'tp_hit' ? "bg-emerald-500/20 text-emerald-400"
@@ -318,24 +329,55 @@ export function TargetProgressBar({
             }
           </div>
         </div>
-        {/* TP label + price at end of bar */}
-        <div className="absolute right-0 flex flex-col items-end">
-          <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
-            {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
-          </span>
-          <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
-            TP
-          </span>
-        </div>
-        {takeProfit2 && tp2Pos !== null && (
-          <span className="absolute text-[11px] text-emerald-400/40 font-mono tabular-nums -translate-x-1/2" style={{ left: `${tp2Pos}%` }}>
-            TP2
-          </span>
-        )}
-        {takeProfit3 && tp3Pos !== null && (
-          <span className="absolute right-0 top-5 text-[11px] text-emerald-400/30 font-mono tabular-nums">
-            TP3
-          </span>
+
+        {/* TP prices - stacked when multiple */}
+        {!(takeProfit2 || takeProfit3) ? (
+          /* Single TP */
+          <div className="absolute right-0 flex flex-col items-end">
+            <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
+              {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
+            </span>
+            <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
+              TP
+            </span>
+          </div>
+        ) : (
+          /* Multiple TPs - positioned at their marker locations */
+          <>
+            {/* TP1 */}
+            <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
+              <span className="text-[10px] text-emerald-400/70 font-mono tabular-nums leading-tight">
+                {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
+              </span>
+              <span className="text-[7px] text-emerald-400/50 font-bold uppercase tracking-wider leading-none">
+                TP1
+              </span>
+            </div>
+
+            {/* TP2 */}
+            {takeProfit2 && tp2Pos !== null && (
+              <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp2Pos}%`, top: '20px' }}>
+                <span className="text-[10px] text-emerald-300/60 font-mono tabular-nums leading-tight">
+                  {formatPrice(takeProfit2, isJpy ? 'JPY' : 'EUR/USD')}
+                </span>
+                <span className="text-[7px] text-emerald-300/40 font-bold uppercase tracking-wider leading-none">
+                  TP2
+                </span>
+              </div>
+            )}
+
+            {/* TP3 */}
+            {takeProfit3 && tp3Pos !== null && (
+              <div className="absolute right-0 flex flex-col items-end" style={{ top: '40px' }}>
+                <span className="text-[10px] text-emerald-200/50 font-mono tabular-nums leading-tight">
+                  {formatPrice(takeProfit3, isJpy ? 'JPY' : 'EUR/USD')}
+                </span>
+                <span className="text-[7px] text-emerald-200/30 font-bold uppercase tracking-wider leading-none">
+                  TP3
+                </span>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
