@@ -30,11 +30,13 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
     const el = containerRef.current;
     if (!el) return { x: tx, y: ty };
     const r = el.getBoundingClientRect();
-    const maxX = (r.width * (s - 1)) / 2;
-    const maxY = (r.height * (s - 1)) / 2;
+    // Content scaled dimensions vs container
+    const overflowX = (r.width * s - r.width) / 2;
+    const overflowY = (r.height * s - r.height) / 2;
+    // Clamp so scaled content never leaves the container edges
     return {
-      x: Math.max(-maxX, Math.min(maxX, tx)),
-      y: Math.max(-maxY, Math.min(maxY, ty)),
+      x: Math.max(-overflowX, Math.min(overflowX, tx)),
+      y: Math.max(-overflowY, Math.min(overflowY, ty)),
     };
   }, []);
 
