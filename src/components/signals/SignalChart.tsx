@@ -618,11 +618,6 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                       IND
                     </span>
                     <ChevronDown className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.4)' }} />
-                    {fsIndicators.size > 0 && (
-                      <span className="ml-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.3)', color: '#a78bfa' }}>
-                        {fsIndicators.size}
-                      </span>
-                    )}
                   </button>
 
                   {showIndMenu && (
@@ -632,12 +627,13 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                         background: 'rgba(6,14,28,0.95)',
                         border: '1px solid rgba(167,139,250,0.25)',
                         backdropFilter: 'blur(12px)',
-                        minWidth: '130px',
+                        minWidth: '150px',
                       }}
                     >
                       {(['rsi', 'macd', 'bollinger', 'stochastic', 'adx'] as IndicatorType[]).map(ind => {
                         const active = fsIndicators.has(ind);
                         const col = INDICATOR_COLORS[ind];
+                        const val = indicatorValues[ind];
                         return (
                           <button
                             key={ind}
@@ -657,15 +653,45 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                               className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
                               style={{ background: active ? col : 'rgba(255,255,255,0.15)', border: `1px solid ${active ? col : 'rgba(255,255,255,0.2)'}` }}
                             />
-                            <span className="text-[11px] font-semibold" style={{ color: active ? col : 'rgba(255,255,255,0.6)' }}>
+                            <span className="text-[11px] font-semibold flex-1" style={{ color: active ? col : 'rgba(255,255,255,0.6)' }}>
                               {INDICATOR_LABELS[ind]}
                             </span>
+                            {val && (
+                              <span className="text-[9px] font-mono" style={{ color: active ? col : 'rgba(255,255,255,0.4)' }}>
+                                {val}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
                     </div>
                   )}
                 </div>
+
+                {/* Active indicator value badges */}
+                {fsIndicators.size > 0 && (
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {Array.from(fsIndicators).map(ind => {
+                      const col = INDICATOR_COLORS[ind];
+                      const val = indicatorValues[ind];
+                      return (
+                        <span
+                          key={ind}
+                          className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold"
+                          style={{
+                            background: `${col}20`,
+                            border: `1px solid ${col}40`,
+                            color: col,
+                            backdropFilter: 'blur(6px)',
+                          }}
+                        >
+                          {INDICATOR_LABELS[ind]}
+                          {val && <span style={{ opacity: 0.9 }}>{val}</span>}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Top-right controls: S/R toggle + config + close */}
