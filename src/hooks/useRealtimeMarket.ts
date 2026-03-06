@@ -17,6 +17,7 @@ interface UseRealtimeMarketReturn {
   isReconnecting: boolean;
   reconnectAttempt: number;
   error: string | null;
+  countdown: number;
   subscribe: (symbols: string[]) => void;
   unsubscribe: (symbols: string[]) => void;
   getQuote: (symbol: string) => RealtimeQuote | null;
