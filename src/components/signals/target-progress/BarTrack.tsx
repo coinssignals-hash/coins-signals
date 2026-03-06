@@ -58,36 +58,40 @@ export function BarTrack({ state, pulse: p, takeProfit2, takeProfit3 }: BarTrack
         </div>
       )}
 
-      {/* Current price dot + floating label */}
-      <div
-        className={cn("absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center transition-all duration-700 ease-out", pulse && "animate-[dot-pulse_1.2s_ease-out]")}
-        style={{ left: `${position}%`, transform: 'translateX(-50%) translateY(-50%)' }}
-      >
-        {hasLivePrice && (
-          <div className={cn(
-            "absolute -top-4 whitespace-nowrap px-1 py-px rounded text-[8px] font-bold font-mono tabular-nums",
-            nearEntry ? "bg-yellow-500/20 text-yellow-400" : isAboveEntry ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
-          )}>
-            {formatPrice(displayPrice!, isJpy ? 'JPY' : 'EUR/USD')}
-          </div>
-        )}
+      {/* Current price dot + floating label — only when activated */}
+      {isActivated && (
         <div
-          className="w-3 h-3 rounded-full border-2 border-white/80 shadow-lg"
-          style={{
-            backgroundColor: progressColor,
-            boxShadow: pulse ? `0 0 16px ${pulseColor}, 0 0 32px ${pulseColor}50` : `0 0 8px ${progressColor}`,
-          }}
-        />
-      </div>
+          className={cn("absolute top-1/2 -translate-y-1/2 z-20 flex flex-col items-center transition-all duration-700 ease-out", pulse && "animate-[dot-pulse_1.2s_ease-out]")}
+          style={{ left: `${position}%`, transform: 'translateX(-50%) translateY(-50%)' }}
+        >
+          {hasLivePrice && (
+            <div className={cn(
+              "absolute -top-4 whitespace-nowrap px-1 py-px rounded text-[8px] font-bold font-mono tabular-nums",
+              nearEntry ? "bg-yellow-500/20 text-yellow-400" : isAboveEntry ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+            )}>
+              {formatPrice(displayPrice!, isJpy ? 'JPY' : 'EUR/USD')}
+            </div>
+          )}
+          <div
+            className="w-3 h-3 rounded-full border-2 border-white/80 shadow-lg"
+            style={{
+              backgroundColor: progressColor,
+              boxShadow: pulse ? `0 0 16px ${pulseColor}, 0 0 32px ${pulseColor}50` : `0 0 8px ${progressColor}`,
+            }}
+          />
+        </div>
+      )}
 
-      {/* Fill from left to price position */}
-      <div
-        className="absolute top-0 bottom-0 left-0 rounded-full transition-all duration-700 ease-out opacity-60"
-        style={{ width: `${position}%`, background: fillGradient }}
-      />
+      {/* Fill from left to price position — only when activated */}
+      {isActivated && (
+        <div
+          className="absolute top-0 bottom-0 left-0 rounded-full transition-all duration-700 ease-out opacity-60"
+          style={{ width: `${position}%`, background: fillGradient }}
+        />
+      )}
 
       {/* Pulse ripple */}
-      {pulse && (
+      {pulse && isActivated && (
         <div
           className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full z-[15] animate-[ripple-expand_1s_ease-out_forwards]"
           style={{ left: `${position}%`, transform: 'translateX(-50%) translateY(-50%)', background: `radial-gradient(circle, ${pulseColor}60 0%, transparent 70%)` }}
