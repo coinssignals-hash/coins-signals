@@ -44,7 +44,7 @@ describe('StatusBadge', () => {
     render(
       <StatusBadge state={{ ...baseState, targetLabel: 'ENTRY', targetPercent: 10, pipsFromEntry: 5, displayPrice: 1.101 }} pulse={noPulse} isCompleted closedResult="expired" />,
     );
-    expect(screen.getByText(/⏱ ENTRY 10% · 5\.0p @ 1\.10100/)).toBeInTheDocument();
+    expect(screen.getByText(/⏱ ENTRY 10\.0% · 5\.00p @ 1\.10100/)).toBeInTheDocument();
   });
 
   it('shows progress text when not completed', () => {
