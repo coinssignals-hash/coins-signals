@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import {
   TrendingUp,
   ShieldCheck,
@@ -175,10 +176,11 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   const percent = (target - entry) / entry * 100;
   const isPositive = pips >= 0;
   const sign = isPositive ? "+ " : "- ";
+  const sym = isJpy ? 'JPY' : 'EUR/USD';
   return {
-    pips: `${sign}${Math.abs(pips).toFixed(1)}`,
+    pips: `${sign}${Math.abs(pips).toFixed(2)}`,
     percent: `${sign}${Math.abs(percent).toFixed(3)}`,
-    price: target.toFixed(3),
+    price: formatPrice(target, sym),
     isPositive
   };
 }
@@ -383,7 +385,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   }, [priceDiff.hasData, priceDiff.percent]);
 
   // Risk percent = SL distance / entry
-  const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
+  const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(2);
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
       {/* Completed overlay */}
@@ -550,7 +552,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     priceDiff.percent >= 0 ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
                     '0 0 8px hsl(0, 70%, 50%, 0.4)' : 'none'
                   }}>
-                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
+                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(3)}%` : "—"}
                   </span>
                   {priceDiff.hasData &&
                   <span className={cn(
@@ -567,7 +569,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <p className={cn("text-[11px] text-center font-extrabold",
               priceDiff.percent >= 0 ? "text-green-400" : "text-red-400"
               )}>
-                {priceDiff.currentPrice.toFixed(3)}
+                {formatPrice(priceDiff.currentPrice, symbol)}
               </p> :
               <p className="text-[8px] text-cyan-300/50 text-center">{t('signal_entry')}</p>
               }
@@ -653,12 +655,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           <div className="flex items-center justify-between px-3 py-1.5 min-h-[40px]">
             <span className="font-semibold text-white sm:text-sm text-base">{t('signal_entry')}</span>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-white sm:text-sm font-mono tabular-nums text-lg">{entryPrice.toFixed(3)}</span>
+              <span className="font-bold text-white sm:text-sm font-mono tabular-nums text-lg">{formatPrice(entryPrice, symbol)}</span>
               <button
                 className="text-cyan-400/60 hover:text-cyan-300 transition-colors p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigator.clipboard.writeText(entryPrice.toFixed(3));
+                  navigator.clipboard.writeText(formatPrice(entryPrice, symbol));
                 }}
                 title={t('signal_copy_price')}>
 

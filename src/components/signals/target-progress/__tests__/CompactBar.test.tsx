@@ -34,6 +34,6 @@ describe('CompactBar', () => {
 
   it('shows progress info text', () => {
     render(<CompactBar state={baseState} pulse={noPulse} />);
-    expect(screen.getByText('TP1 40% · 15.5p')).toBeInTheDocument();
+    expect(screen.getByText('TP1 40.0% · 15.50p')).toBeInTheDocument();
   });
 });

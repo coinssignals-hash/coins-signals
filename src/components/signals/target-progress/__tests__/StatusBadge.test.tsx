@@ -30,21 +30,21 @@ describe('StatusBadge', () => {
     render(
       <StatusBadge state={{ ...baseState, targetLabel: 'TP1', targetPercent: 100, pipsFromEntry: 50, displayPrice: 1.105 }} pulse={noPulse} isCompleted closedResult="tp_hit" />,
     );
-    expect(screen.getByText(/✅ TP1 100% · 50\.0p @ 1\.10500/)).toBeInTheDocument();
+    expect(screen.getByText(/✅ TP1 100\.0% · 50\.00p @ 1\.10500/)).toBeInTheDocument();
   });
 
   it('shows SL hit with pips and closed price when completed with sl_hit', () => {
     render(
       <StatusBadge state={{ ...baseState, targetLabel: 'SL', targetPercent: 100, pipsFromEntry: 30, displayPrice: 1.095 }} pulse={noPulse} isCompleted closedResult="sl_hit" />,
     );
-    expect(screen.getByText(/❌ SL 100% · 30\.0p @ 1\.09500/)).toBeInTheDocument();
+    expect(screen.getByText(/❌ SL 100\.0% · 30\.00p @ 1\.09500/)).toBeInTheDocument();
   });
 
   it('shows expired with pips and closed price when completed with other result', () => {
     render(
       <StatusBadge state={{ ...baseState, targetLabel: 'ENTRY', targetPercent: 10, pipsFromEntry: 5, displayPrice: 1.101 }} pulse={noPulse} isCompleted closedResult="expired" />,
     );
-    expect(screen.getByText(/⏱ ENTRY 10% · 5\.0p @ 1\.10100/)).toBeInTheDocument();
+    expect(screen.getByText(/⏱ ENTRY 10\.0% · 5\.00p @ 1\.10100/)).toBeInTheDocument();
   });
 
   it('shows progress text when not completed', () => {
@@ -55,6 +55,6 @@ describe('StatusBadge', () => {
         isCompleted={false}
       />,
     );
-    expect(screen.getByText('TP1 46% · 12.3p')).toBeInTheDocument();
+    expect(screen.getByText('TP1 45.6% · 12.30p')).toBeInTheDocument();
   });
 });

@@ -50,14 +50,14 @@ describe('TargetProgressBar integration', () => {
     render(
       <TargetProgressBar {...baseBuy} currentPrice={1.1050} isCompleted closedResult="tp_hit" closedPrice={1.1050} />,
     );
-    expect(screen.getByText(/✅.*TP1.*100%/)).toBeInTheDocument();
+    expect(screen.getByText(/✅.*TP1.*100\.0%/)).toBeInTheDocument();
   });
 
   it('shows ❌ badge with pips when completed with sl_hit', () => {
     render(
       <TargetProgressBar {...baseBuy} currentPrice={1.0950} isCompleted closedResult="sl_hit" closedPrice={1.0950} />,
     );
-    expect(screen.getByText(/❌.*SL.*100%/)).toBeInTheDocument();
+    expect(screen.getByText(/❌.*SL.*100\.0%/)).toBeInTheDocument();
   });
 
   it('shows ⏱ badge with pips when completed with expired', () => {
@@ -106,7 +106,7 @@ describe('TargetProgressBar integration', () => {
   it('shows near-entry status when price equals entry', () => {
     render(<TargetProgressBar {...baseBuy} currentPrice={1.1000} />);
     // Near entry: badge shows yellow styling with 0% progress
-    expect(screen.getByText(/0% · 0\.0p/)).toBeInTheDocument();
+    expect(screen.getByText(/0\.0% · 0\.00p/)).toBeInTheDocument();
   });
 
   it('displays entry price in labels', () => {

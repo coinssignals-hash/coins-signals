@@ -97,19 +97,19 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-center">
           <div className="text-[9px] text-gray-500 uppercase">Riesgo</div>
-          <div className="text-red-400 font-mono font-bold text-sm">{calc.riskPips.toFixed(1)}p</div>
+          <div className="text-red-400 font-mono font-bold text-sm">{calc.riskPips.toFixed(2)}p</div>
           <div className="text-red-400/70 text-[10px] font-mono">-${calc.potentialLoss.toFixed(2)}</div>
         </div>
         <div className={cn("border rounded-lg p-2 text-center", calc.ratio >= 2 ? "bg-green-500/10 border-green-500/20" : calc.ratio >= 1 ? "bg-yellow-500/10 border-yellow-500/20" : "bg-red-500/10 border-red-500/20")}>
           <div className="text-[9px] text-gray-500 uppercase">Ratio R:R</div>
           <div className={cn("font-bold text-lg tabular-nums", ratioColor)}>
-            1:{calc.ratio.toFixed(1)}
+            1:{calc.ratio.toFixed(2)}
           </div>
           <div className={cn("text-[10px] font-medium", ratioColor)}>{ratioLabel}</div>
         </div>
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-2 text-center">
           <div className="text-[9px] text-gray-500 uppercase">Beneficio</div>
-          <div className="text-green-400 font-mono font-bold text-sm">{calc.rewardPips.toFixed(1)}p</div>
+          <div className="text-green-400 font-mono font-bold text-sm">{calc.rewardPips.toFixed(2)}p</div>
           <div className="text-green-400/70 text-[10px] font-mono">+${calc.potentialProfit.toFixed(2)}</div>
         </div>
       </div>

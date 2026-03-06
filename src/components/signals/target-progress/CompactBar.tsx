@@ -35,7 +35,7 @@ export function CompactBar({ state, pulse: p }: CompactBarProps) {
           nearEntry ? "text-yellow-400" : isAboveEntry ? "text-emerald-400" : "text-rose-400",
           pulse && "scale-110"
         )}>
-          {targetLabel} {targetPercent.toFixed(0)}% · {pipsFromEntry.toFixed(1)}p
+          {targetLabel} {targetPercent.toFixed(1)}% · {pipsFromEntry.toFixed(2)}p
         </span>
         <span className="text-[8px] text-emerald-400/70 font-mono">TP</span>
       </div>
