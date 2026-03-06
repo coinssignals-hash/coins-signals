@@ -694,7 +694,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {expanded &&
         <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
-            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
+            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} currencyPair={currencyPair} />
 
             {/* Candlestick Chart 15min - 7 days */}
             <SignalChart
