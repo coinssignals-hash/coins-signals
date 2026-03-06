@@ -409,7 +409,7 @@ export default function Signals() {
             {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
 
             {dayTab === 'yesterday' &&
-              <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+              <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length} activeCount={yesterdaySignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                 {yesterdaySignals.length === 0 ?
                 <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_yesterday')}</p> :
 
@@ -421,7 +421,7 @@ export default function Signals() {
             {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
 
             {dayTab === 'calendar' && calendarDate &&
-              <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
+              <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length} activeCount={calendarSignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                 {calendarSignals.length === 0 ?
                 <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_date')}</p> :
 
@@ -435,12 +435,12 @@ export default function Signals() {
                 <TodaySignalsGroup signals={todaySignals} />
                 {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
                 {yesterdaySignals.length > 0 &&
-                <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+                <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length} activeCount={yesterdaySignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                     {yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)}
                   </SignalsDayGroup>
                 }
                 {otherDayGroups.map(([day, daySignals]) =>
-                <SignalsDayGroup key={day} date={day} count={daySignals.length}>
+                <SignalsDayGroup key={day} date={day} count={daySignals.length} activeCount={daySignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                     {daySignals.map((signal) =>
                   <SignalCardV2 key={signal.id} signal={signal} />
                   )}

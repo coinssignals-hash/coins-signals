@@ -1,6 +1,7 @@
 import { Clock } from 'lucide-react';
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { StaggerList } from '@/components/layout/StaggerList';
+import { TodayActivesBadge } from '@/components/signals/today/TodaySignalsGroup';
 import type { TradingSignal } from '@/hooks/useSignals';
 
 interface TomorrowSignalsGroupProps {
@@ -8,6 +9,8 @@ interface TomorrowSignalsGroupProps {
 }
 
 export function TomorrowSignalsGroup({ signals }: TomorrowSignalsGroupProps) {
+  const activeCount = signals.filter(s => s.status === 'active' || s.status === 'pending').length;
+
   if (signals.length === 0) {
     return (
       <section className="space-y-3">
@@ -33,6 +36,7 @@ export function TomorrowSignalsGroup({ signals }: TomorrowSignalsGroupProps) {
         </div>
         <span className="text-sm font-semibold text-amber-300">Mañana</span>
         <div className="ml-auto flex items-center gap-2">
+          <TodayActivesBadge count={activeCount} />
           <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
             {signals.length} {signals.length === 1 ? 'señal' : 'señales'}
           </span>
