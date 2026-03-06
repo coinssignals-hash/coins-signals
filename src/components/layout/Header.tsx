@@ -48,7 +48,7 @@ export function Header() {
 
           {/* Center: logo — sized for mobile */}
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
-            <img src={logoImg} alt="Coins Signals" className="h-9 w-auto" />
+            <img src={logoImg} alt="Coins Signals" className="h-12 w-auto" />
           </Link>
 
           {/* Right: compact icons */}
