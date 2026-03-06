@@ -19,6 +19,10 @@ interface SignalData {
   resistance?: number;
 }
 
+// In-memory cache: key -> { data, ts }
+const cache = new Map<string, { data: unknown; ts: number }>();
+const CACHE_TTL = 60 * 60_000; // 60 minutes
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -26,6 +30,16 @@ serve(async (req) => {
 
   try {
     const { signal, mode, language } = await req.json() as { signal: SignalData; mode?: string; language?: string };
+
+    const lang = language || 'es';
+    const cacheKey = `${signal.currencyPair}_${signal.entryPrice}_${signal.takeProfit}_${signal.stopLoss}_${mode || 'default'}_${lang}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      console.log('Cache hit for', cacheKey);
+      return new Response(JSON.stringify({ ...(cached.data as object), cached: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
