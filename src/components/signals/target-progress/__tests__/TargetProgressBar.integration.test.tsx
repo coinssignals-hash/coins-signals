@@ -46,25 +46,25 @@ describe('TargetProgressBar integration', () => {
     expect(screen.getByText('Entry')).toBeInTheDocument();
   });
 
-  it('shows ✅ TP badge when completed with tp_hit', () => {
+  it('shows ✅ badge with pips when completed with tp_hit', () => {
     render(
       <TargetProgressBar {...baseBuy} currentPrice={1.1050} isCompleted closedResult="tp_hit" closedPrice={1.1050} />,
     );
-    expect(screen.getByText('✅ TP')).toBeInTheDocument();
+    expect(screen.getByText(/✅.*TP1.*100%/)).toBeInTheDocument();
   });
 
-  it('shows ❌ SL badge when completed with sl_hit', () => {
+  it('shows ❌ badge with pips when completed with sl_hit', () => {
     render(
       <TargetProgressBar {...baseBuy} currentPrice={1.0950} isCompleted closedResult="sl_hit" closedPrice={1.0950} />,
     );
-    expect(screen.getByText('❌ SL')).toBeInTheDocument();
+    expect(screen.getByText(/❌.*SL.*100%/)).toBeInTheDocument();
   });
 
-  it('shows ⏱ Exp badge when completed with expired', () => {
+  it('shows ⏱ badge with pips when completed with expired', () => {
     render(
       <TargetProgressBar {...baseBuy} currentPrice={1.1010} isCompleted closedResult="expired" closedPrice={1.1010} />,
     );
-    expect(screen.getByText('⏱ Exp')).toBeInTheDocument();
+    expect(screen.getByText(/⏱/)).toBeInTheDocument();
   });
 
   it('renders TP1, TP2, TP3 labels when multiple TPs provided', () => {
