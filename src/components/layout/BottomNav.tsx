@@ -54,7 +54,7 @@ export function BottomNav() {
               )}
             >
               <div className="relative">
-                <Icon className={cn('w-[18px] h-[18px]', isActive && 'text-primary')} />
+                <Icon className={cn('w-[22px] h-[22px]', isActive && 'text-primary')} />
                 {showBadge && (
                   <span className="absolute -top-1 -right-1.5 min-w-[13px] h-3 px-0.5 flex items-center justify-center text-[8px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
                     {badgeCount > 99 ? '99+' : badgeCount}
