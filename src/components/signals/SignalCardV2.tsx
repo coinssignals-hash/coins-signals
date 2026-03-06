@@ -653,7 +653,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           <div className="flex items-center justify-between px-3 py-1.5 min-h-[40px]">
             <span className="font-semibold text-white sm:text-sm text-sm">{t('signal_entry')}</span>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-white sm:text-sm font-mono tabular-nums text-sm">{entryPrice.toFixed(3)}</span>
+              <span className="font-bold text-white sm:text-sm font-mono tabular-nums text-lg">{entryPrice.toFixed(3)}</span>
               <button
                 className="text-cyan-400/60 hover:text-cyan-300 transition-colors p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                 onClick={(e) => {
