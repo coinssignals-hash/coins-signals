@@ -62,7 +62,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice }: PricePr
           <span className={`flex items-center gap-1 ${trendColor}`}>
             {trendIcon}
           </span>
-          <span className="text-cyan-400 text-2xl font-bold font-mono">{data.currentPrice.toFixed(4)}</span>
+          <span className="text-cyan-400 text-2xl font-bold font-mono">{formatPrice(data.currentPrice, symbol)}</span>
         </div>
       </div>
 
