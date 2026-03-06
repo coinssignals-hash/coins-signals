@@ -144,10 +144,10 @@ Evaluate the risk.`;
       const risk = JSON.parse(riskToolCall.function.arguments);
       console.log('Risk assessed:', JSON.stringify(risk));
 
-      return new Response(JSON.stringify({
-        risk,
-        generatedAt: new Date().toISOString()
-      }), {
+      const riskResult = { risk, generatedAt: new Date().toISOString() };
+      cache.set(cacheKey, { data: riskResult, ts: Date.now() });
+      if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+      return new Response(JSON.stringify(riskResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
