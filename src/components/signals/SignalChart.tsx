@@ -407,6 +407,8 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const [fsSR, setFsSR] = useState(true);
   const [fsSignalLines, setFsSignalLines] = useState(false);
   const [showTfMenu, setShowTfMenu] = useState(false);
+  const [fsIndicators, setFsIndicators] = useState<Set<IndicatorType>>(new Set());
+  const [showIndMenu, setShowIndMenu] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const getVpSize = () => ({
     w: Math.max(window.innerWidth, document.documentElement.clientWidth),
