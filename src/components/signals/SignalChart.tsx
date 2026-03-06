@@ -136,8 +136,8 @@ function buildSignalChartSvg(
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${BG1}"/><stop offset="100%" stop-color="${BG2}"/></linearGradient>
     <linearGradient id="upGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00f0c0"/><stop offset="100%" stop-color="#00b488"/></linearGradient>
     <linearGradient id="dnGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff6b8a"/><stop offset="100%" stop-color="#e0304e"/></linearGradient>
-    <linearGradient id="upGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,230,180,0.45)"/><stop offset="100%" stop-color="rgba(0,180,136,0.28)"/></linearGradient>
-    <linearGradient id="dnGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,80,128,0.45)"/><stop offset="100%" stop-color="rgba(224,48,78,0.28)"/></linearGradient>
+    <linearGradient id="upGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d4aa"/><stop offset="100%" stop-color="#00b488"/></linearGradient>
+    <linearGradient id="dnGradDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff4976"/><stop offset="100%" stop-color="#e0304e"/></linearGradient>
     <filter id="upGlow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${UP}" flood-opacity="0.4"/></filter>
     <filter id="dnGlow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${DN}" flood-opacity="0.4"/></filter>
     <linearGradient id="todayBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(56,189,248,0.08)"/><stop offset="100%" stop-color="rgba(56,189,248,0.02)"/></linearGradient>
@@ -250,10 +250,10 @@ function buildSignalChartSvg(
       parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${grad}" rx="1" filter="${glow}" shape-rendering="crispEdges"/>`);
     } else {
       const fill = isUp ? 'url(#upGradDim)' : 'url(#dnGradDim)';
-      const wickCol = isUp ? '#00e6b4' : '#ff5080';
-      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${bodyTop}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round" opacity="0.45"/>`);
-      parts.push(`<line x1="${x}" y1="${bodyBot}" x2="${x}" y2="${wickBot}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round" opacity="0.45"/>`);
-      parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="1" shape-rendering="crispEdges"/>`);
+      const wickCol = isUp ? '#00d4aa' : '#ff4976';
+      parts.push(`<line x1="${x}" y1="${wickTop}" x2="${x}" y2="${bodyTop}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round" opacity="0.85"/>`);
+      parts.push(`<line x1="${x}" y1="${bodyBot}" x2="${x}" y2="${wickBot}" stroke="${wickCol}" stroke-width="${wickW}" stroke-linecap="round" opacity="0.85"/>`);
+      parts.push(`<rect x="${x - bodyW / 2}" y="${bodyTop}" width="${bodyW}" height="${bH}" fill="${fill}" rx="1" opacity="0.9" shape-rendering="crispEdges"/>`);
     }
   }
 
