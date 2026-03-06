@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, ArrowUpDown, BarChart3, Target, Shield } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 
 interface QuickStatsGridProps {
   currentPrice: number;
