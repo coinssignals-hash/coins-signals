@@ -219,40 +219,40 @@ export default function Signals() {
 
             
 
-          <div className="flex items-center gap-1">
-            {isAdmin &&
-              <button
-                onClick={() => navigate('/create-signal')}
-                className="p-2.5 rounded-full transition-colors active:scale-95 text-accent hover:text-accent/80 hover:bg-accent/10"
-                title="Crear Señal (Admin)">
-                
-                <PlusCircle className="w-5 h-5" />
-              </button>
-              }
-            <button
-                onClick={() => setShowAICenter(!showAICenter)}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors active:scale-95",
-                  showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                )}
-                title="Centro de Análisis IA">
-                
-              <Brain className="w-5 h-5" />
-            </button>
-            <NotificationToggle />
-            {isAuthenticated &&
-              <button
-                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors active:scale-95",
-                  showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
-                )}
-                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}>
-                
-                <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
-              </button>
-              }
-          </div>
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
         </div>
 
         {/* Day Tab Switcher — edge-to-edge scroll on mobile */}
@@ -366,18 +366,15 @@ export default function Signals() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Action icons */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setShowAICenter(!showAICenter)}
-              className={cn(
-                "p-2 rounded-full transition-colors active:scale-95",
-                showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-              )}
-              title="Centro de Análisis IA">
-              <Brain className="w-4.5 h-4.5" />
-            </button>
-            <NotificationToggle />
+          {/* Results count */}
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            {showFavoritesOnly &&
+                <div className="flex items-center gap-1 text-rose-400">
+                <Heart className="w-3 h-3 fill-current" />
+                <span className="hidden sm:inline">{t('signals_favorites')}</span>
+              </div>
+                }
+            
           </div>
         </div>
       </div>
