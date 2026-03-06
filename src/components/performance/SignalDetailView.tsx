@@ -110,7 +110,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
               <span className="text-muted-foreground">Entrada Sugerida</span>
-              <p className="text-blue-400 font-bold font-mono-numbers">{formatPrice(signal.entryPrice, signal.pair)}</p>
+              <p className="text-blue-400 font-bold font-mono-numbers">{formatPrice(signal.entryPrice, signal.currencyPair)}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Take Profit</span>
