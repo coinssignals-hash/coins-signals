@@ -206,7 +206,13 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const encryptionKey = Deno.env.get('ENCRYPTION_KEY') || 'default-key';
+    const encryptionKey = Deno.env.get('ENCRYPTION_KEY');
+    if (!encryptionKey || encryptionKey === 'default-key') {
+      return new Response(JSON.stringify({ error: 'Server configuration error: encryption key not set' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
