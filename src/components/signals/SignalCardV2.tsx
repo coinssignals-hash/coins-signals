@@ -670,20 +670,6 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           </div>
         </div>
 
-        {/* Target Progress Bar - SL/Entry/TP meter */}
-        <TargetProgressBar
-          entryPrice={entryPrice}
-          takeProfit={takeProfit}
-          takeProfit2={signal?.takeProfit2}
-          takeProfit3={signal?.takeProfit3}
-          stopLoss={stopLoss}
-          currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
-          action={action as 'BUY' | 'SELL'}
-          isCompleted={isCompleted}
-          closedResult={signal?.closedResult ?? undefined}
-          closedPrice={signal?.closedPrice ?? undefined} />
-        
-
         {/* Expand toggle button */}
         <button
           onClick={() => setExpanded(!expanded)}
@@ -695,6 +681,19 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {/* Expanded content */}
         {expanded &&
         <div className="animate-in slide-in-from-top-2 duration-300">
+            {/* Target Progress Bar - SL/Entry/TP meter */}
+            <TargetProgressBar
+              entryPrice={entryPrice}
+              takeProfit={takeProfit}
+              takeProfit2={signal?.takeProfit2}
+              takeProfit3={signal?.takeProfit3}
+              stopLoss={stopLoss}
+              currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
+              action={action as 'BUY' | 'SELL'}
+              isCompleted={isCompleted}
+              closedResult={signal?.closedResult ?? undefined}
+              closedPrice={signal?.closedPrice ?? undefined} />
+
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
 
