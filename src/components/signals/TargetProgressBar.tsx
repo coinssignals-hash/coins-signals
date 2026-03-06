@@ -235,15 +235,24 @@ export function TargetProgressBar({
 
         {/* TP1 marker (when there are multiple TPs) */}
         {(takeProfit2 || takeProfit3) && (
-          <div className="absolute top-0 bottom-0 w-px bg-emerald-400/40 z-10" style={{ left: `${tp1Pos}%` }} />
+          <div className="absolute z-10 flex flex-col items-center" style={{ left: `${tp1Pos}%`, top: '-3px', bottom: '-3px' }}>
+            <div className="w-0.5 h-full bg-emerald-400/50 rounded-full" />
+            <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-400/70 border border-emerald-300/50" />
+          </div>
         )}
         {/* TP2 marker */}
         {tp2Pos !== null && (
-          <div className="absolute top-0 bottom-0 w-px bg-emerald-400/30 z-10" style={{ left: `${tp2Pos}%` }} />
+          <div className="absolute z-10 flex flex-col items-center" style={{ left: `${tp2Pos}%`, top: '-3px', bottom: '-3px' }}>
+            <div className="w-0.5 h-full bg-emerald-300/40 rounded-full" />
+            <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-300/60 border border-emerald-200/40" />
+          </div>
         )}
         {/* TP3 marker */}
         {tp3Pos !== null && (
-          <div className="absolute top-0 bottom-0 w-px bg-emerald-400/20 z-10" style={{ left: `${tp3Pos}%` }} />
+          <div className="absolute z-10 flex flex-col items-center" style={{ left: `${tp3Pos}%`, top: '-3px', bottom: '-3px' }}>
+            <div className="w-0.5 h-full bg-emerald-200/30 rounded-full" />
+            <div className="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-200/50 border border-emerald-100/30" />
+          </div>
         )}
 
         {/* Current price dot + floating label */}
