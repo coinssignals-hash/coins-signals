@@ -429,30 +429,8 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   // Compute current indicator values for badges
   const indicatorValues = useMemo(() => {
     if (!candles.length) return {} as Record<IndicatorType, string>;
-    const d = candles as IndCandleData[];
-    const vals: Partial<Record<IndicatorType, string>> = {};
-    const rsi = calcRSI(d);
-    const lastRsi = [...rsi].reverse().find(v => v !== null);
-    if (lastRsi != null) vals.rsi = lastRsi.toFixed(1);
-
-    const macd = calcMACD(d);
-    const lastMacd = [...macd].reverse().find(m => m.macd !== null);
-    if (lastMacd?.macd != null) vals.macd = lastMacd.macd.toFixed(4);
-
-    const stoch = calcStochastic(d);
-    const lastK = [...stoch].reverse().find(s => s.k !== null);
-    if (lastK?.k != null) vals.stochastic = lastK.k.toFixed(1);
-
-    const adx = calcADX(d);
-    const lastAdx = [...adx].reverse().find(a => a.adx !== null);
-    if (lastAdx?.adx != null) vals.adx = lastAdx.adx.toFixed(1);
-
-    const bb = calcBollinger(d);
-    const lastBb = [...bb].reverse().find(b => b.middle !== null);
-    if (lastBb?.middle != null) vals.bollinger = lastBb.middle.toFixed(4);
-
-    return vals as Record<IndicatorType, string>;
-  }, [candles]);
+    return getIndicatorCurrentValues(activeIndArray, candles as IndCandleData[]);
+  }, [candles, activeIndArray]);
 
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
