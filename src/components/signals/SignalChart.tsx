@@ -452,7 +452,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     const scale = Math.max(1, Math.ceil(2340 / fsW));
     const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel, signalLevels, fsSignalLines, activeIndArray);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel, signalLevels, fsSignalLines]);
+  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel, signalLevels, fsSignalLines, activeIndArray]);
 
   // Lock body scroll in fullscreen + recalculate viewport
   useEffect(() => {
