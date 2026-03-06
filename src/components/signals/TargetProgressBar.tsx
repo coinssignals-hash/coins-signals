@@ -199,27 +199,11 @@ export function TargetProgressBar({
   // ─── FULL version ───
   return (
     <div className={cn("mx-4 mb-3 mt-1 transition-all duration-300", pulse && "animate-[zone-bar-pulse_1.2s_ease-out]")}>
-      {/* Top labels: SL — status — TP */}
+      {/* Top labels: SL — TP */}
       <div className="flex items-center justify-between mb-1.5">
         <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'sl' && "scale-110")}>
           <ShieldAlert className={cn("w-3 h-3 text-rose-400 transition-all", pulse && currentZone === 'sl' && "animate-[icon-shake_0.5s_ease-out]")} />
           <span className="text-[10px] text-rose-400 font-semibold">SL</span>
-        </div>
-        <div className={cn(
-          "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all duration-500",
-          isCompleted && closedResult === 'tp_hit' ? "bg-emerald-500/20 text-emerald-400"
-            : isCompleted && closedResult === 'sl_hit' ? "bg-rose-500/20 text-rose-400"
-              : nearEntry ? "bg-yellow-500/15 text-yellow-400"
-                : isAboveEntry ? "bg-emerald-500/15 text-emerald-400"
-                  : "bg-rose-500/15 text-rose-400",
-          pulse && "scale-110 shadow-lg"
-        )}
-          style={pulse ? { boxShadow: `0 0 16px ${pulseColor}50` } : {}}
-        >
-          {isCompleted
-            ? closedResult === 'tp_hit' ? '✅ TP Alcanzado' : closedResult === 'sl_hit' ? '❌ SL Alcanzado' : '⏱ Expirada'
-            : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)} pips`
-          }
         </div>
         <div className={cn("flex items-center gap-1 transition-all duration-500", pulse && currentZone === 'tp' && "scale-110")}>
           <span className="text-[10px] text-emerald-400 font-semibold">TP</span>
@@ -316,7 +300,23 @@ export function TargetProgressBar({
           <span className="text-[7px] text-white/30 font-semibold uppercase tracking-widest leading-none">
             Entry
           </span>
-        </div>
+          {/* Status badge below Entry */}
+          <div className={cn(
+            "flex items-center gap-1 px-1.5 py-px rounded-full text-[8px] font-bold mt-0.5 transition-all duration-500",
+            isCompleted && closedResult === 'tp_hit' ? "bg-emerald-500/20 text-emerald-400"
+              : isCompleted && closedResult === 'sl_hit' ? "bg-rose-500/20 text-rose-400"
+                : nearEntry ? "bg-yellow-500/15 text-yellow-400"
+                  : isAboveEntry ? "bg-emerald-500/15 text-emerald-400"
+                    : "bg-rose-500/15 text-rose-400",
+            pulse && "scale-110 shadow-lg"
+          )}
+            style={pulse ? { boxShadow: `0 0 12px ${pulseColor}50` } : {}}
+          >
+            {isCompleted
+              ? closedResult === 'tp_hit' ? '✅ TP' : closedResult === 'sl_hit' ? '❌ SL' : '⏱ Exp'
+              : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`
+            }
+          </div>
         {/* TP1 label */}
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
           <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
@@ -336,6 +336,7 @@ export function TargetProgressBar({
             TP3
           </span>
         )}
+        </div>
       </div>
     </div>
   );
