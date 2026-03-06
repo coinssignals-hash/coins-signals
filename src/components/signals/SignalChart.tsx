@@ -5,10 +5,10 @@ import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData
 import { Skeleton } from '@/components/ui/skeleton';
 import { ZoomableChart } from './ZoomableChart';
 import {
-  type IndicatorType, type CandleData as IndCandleData,
+  type IndicatorType,
   INDICATOR_LABELS, INDICATOR_COLORS,
-  buildIndicatorOverlay, buildBollingerOverlay,
-  calcRSI, calcMACD, calcStochastic, calcADX, calcBollinger,
+  buildPriceOverlays, getIndicatorCurrentValues,
+  type CandleData as IndCandleData,
 } from './chartIndicators';
 
 const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
