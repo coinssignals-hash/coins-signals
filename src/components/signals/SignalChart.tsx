@@ -278,13 +278,14 @@ function buildSignalChartSvg(
   // ── Signal level zones (Entry→TP as green box, Entry→SL as red box) ──
   if (showSignalLevels && signalLevels) {
     const { entryPrice, takeProfit, takeProfit2, stopLoss, signalDatetime } = signalLevels;
-    const TP1_COL = '#22c55e';
-    const TP2_COL = '#4ade80';
-    const SL_COL = '#ef4444';
-    const ENTRY_COL = '#38bdf8';
-    const lblW = compact ? 100 : 85;
-    const lblH = compact ? 20 : 16;
-    const fs = compact ? 11 : 9;
+    // Palette aligned with analysis theme: Teal for bullish, Rose for bearish
+    const TP1_COL = '#00d4aa';   // teal — consistent with bullish palette
+    const TP2_COL = '#34d399';   // emerald-lighter for extended TP
+    const SL_COL = '#ff4976';    // rose — consistent with bearish palette
+    const ENTRY_COL = '#38bdf8'; // cyan-blue for entry (neutral)
+    const lblW = compact ? 105 : 88;
+    const lblH = compact ? 22 : 18;
+    const fs = compact ? 12 : 10;
 
     // Find x position of signal arrival
     const sigDate = new Date(signalDatetime);
@@ -302,51 +303,54 @@ function buildSignalChartSvg(
     const tp1Y = yOf(takeProfit);
     const slY = yOf(stopLoss);
 
-    // TP zone: green filled rectangle from entry price to TP price, starting at signal X
+    // TP zone: teal filled rectangle from entry to TP1
     const tpBoxTop = Math.min(entryY, tp1Y);
     const tpBoxH = Math.abs(tp1Y - entryY);
-    parts.push(`<rect x="${sigX}" y="${tpBoxTop}" width="${zoneWidth}" height="${tpBoxH}" fill="${TP1_COL}" opacity="0.10" rx="2"/>`);
+    parts.push(`<rect x="${sigX}" y="${tpBoxTop}" width="${zoneWidth}" height="${tpBoxH}" fill="${TP1_COL}" opacity="0.14" rx="2"/>`);
+    // Subtle inner border on TP zone
+    parts.push(`<rect x="${sigX}" y="${tpBoxTop}" width="${zoneWidth}" height="${tpBoxH}" fill="none" stroke="${TP1_COL}" stroke-width="0.5" opacity="0.25" rx="2"/>`);
 
-    // TP2 zone (lighter green, extends beyond TP1)
+    // TP2 zone (lighter, extends beyond TP1)
     if (takeProfit2) {
       const tp2Y = yOf(takeProfit2);
       const tp2BoxTop = Math.min(tp1Y, tp2Y);
       const tp2BoxH = Math.abs(tp2Y - tp1Y);
-      parts.push(`<rect x="${sigX}" y="${tp2BoxTop}" width="${zoneWidth}" height="${tp2BoxH}" fill="${TP2_COL}" opacity="0.07" rx="2"/>`);
+      parts.push(`<rect x="${sigX}" y="${tp2BoxTop}" width="${zoneWidth}" height="${tp2BoxH}" fill="${TP2_COL}" opacity="0.09" rx="2"/>`);
+      parts.push(`<rect x="${sigX}" y="${tp2BoxTop}" width="${zoneWidth}" height="${tp2BoxH}" fill="none" stroke="${TP2_COL}" stroke-width="0.4" opacity="0.2" rx="2"/>`);
     }
 
-    // SL zone: red filled rectangle from entry price to SL price, starting at signal X
+    // SL zone: rose filled rectangle from entry to SL
     const slBoxTop = Math.min(entryY, slY);
     const slBoxH = Math.abs(slY - entryY);
-    parts.push(`<rect x="${sigX}" y="${slBoxTop}" width="${zoneWidth}" height="${slBoxH}" fill="${SL_COL}" opacity="0.10" rx="2"/>`);
+    parts.push(`<rect x="${sigX}" y="${slBoxTop}" width="${zoneWidth}" height="${slBoxH}" fill="${SL_COL}" opacity="0.12" rx="2"/>`);
+    parts.push(`<rect x="${sigX}" y="${slBoxTop}" width="${zoneWidth}" height="${slBoxH}" fill="none" stroke="${SL_COL}" stroke-width="0.5" opacity="0.22" rx="2"/>`);
 
     // Vertical signal arrival line
-    parts.push(`<line x1="${sigX}" y1="${PRICE_TOP}" x2="${sigX}" y2="${PRICE_BOTTOM}" stroke="${ENTRY_COL}" stroke-width="1.2" stroke-dasharray="6,3" opacity="0.5" shape-rendering="crispEdges"/>`);
-    parts.push(`<text x="${sigX}" y="${PRICE_TOP - 4}" fill="${ENTRY_COL}" text-anchor="middle" font-size="${compact ? 10 : 8}" font-family="sans-serif" font-weight="bold" opacity="0.7">▼ SEÑAL</text>`);
+    parts.push(`<line x1="${sigX}" y1="${PRICE_TOP}" x2="${sigX}" y2="${PRICE_BOTTOM}" stroke="${ENTRY_COL}" stroke-width="1.4" stroke-dasharray="6,3" opacity="0.55" shape-rendering="crispEdges"/>`);
+    parts.push(`<text x="${sigX}" y="${PRICE_TOP - 5}" fill="${ENTRY_COL}" text-anchor="middle" font-size="${compact ? 11 : 9}" font-family="sans-serif" font-weight="bold" opacity="0.75">▼ SEÑAL</text>`);
 
-    // Horizontal lines only from signal X to right
-    // Entry
-    parts.push(`<line x1="${sigX}" y1="${entryY}" x2="${lineEndX}" y2="${entryY}" stroke="${ENTRY_COL}" stroke-width="1.2" stroke-dasharray="8,4" opacity="0.8" shape-rendering="crispEdges"/>`);
-    parts.push(`<rect x="${lineEndX - lblW - 4}" y="${entryY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${ENTRY_COL}" fill-opacity="0.15" stroke="${ENTRY_COL}" stroke-width="0.6"/>`);
-    parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${entryY + fs / 3}" fill="${ENTRY_COL}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">ENTRY ${fmtPrice(entryPrice, jpy)}</text>`);
+    // Entry line + label
+    parts.push(`<line x1="${sigX}" y1="${entryY}" x2="${lineEndX}" y2="${entryY}" stroke="${ENTRY_COL}" stroke-width="1.4" stroke-dasharray="8,4" opacity="0.85" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${lineEndX - lblW - 4}" y="${entryY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${ENTRY_COL}" fill-opacity="0.2" stroke="${ENTRY_COL}" stroke-width="0.7"/>`);
+    parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${entryY + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">ENTRY ${fmtPrice(entryPrice, jpy)}</text>`);
 
-    // TP1
-    parts.push(`<line x1="${sigX}" y1="${tp1Y}" x2="${lineEndX}" y2="${tp1Y}" stroke="${TP1_COL}" stroke-width="1.2" stroke-dasharray="10,5" opacity="0.8" shape-rendering="crispEdges"/>`);
-    parts.push(`<rect x="${lineEndX - lblW - 4}" y="${tp1Y - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${TP1_COL}" fill-opacity="0.15" stroke="${TP1_COL}" stroke-width="0.6"/>`);
-    parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${tp1Y + fs / 3}" fill="${TP1_COL}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">TP1 ${fmtPrice(takeProfit, jpy)}</text>`);
+    // TP1 line + label
+    parts.push(`<line x1="${sigX}" y1="${tp1Y}" x2="${lineEndX}" y2="${tp1Y}" stroke="${TP1_COL}" stroke-width="1.4" stroke-dasharray="10,5" opacity="0.9" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${lineEndX - lblW - 4}" y="${tp1Y - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${TP1_COL}" fill-opacity="0.2" stroke="${TP1_COL}" stroke-width="0.7"/>`);
+    parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${tp1Y + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">TP1 ${fmtPrice(takeProfit, jpy)}</text>`);
 
-    // TP2
+    // TP2 line + label
     if (takeProfit2) {
       const tp2Y = yOf(takeProfit2);
-      parts.push(`<line x1="${sigX}" y1="${tp2Y}" x2="${lineEndX}" y2="${tp2Y}" stroke="${TP2_COL}" stroke-width="1" stroke-dasharray="10,5" opacity="0.7" shape-rendering="crispEdges"/>`);
-      parts.push(`<rect x="${lineEndX - lblW - 4}" y="${tp2Y - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${TP2_COL}" fill-opacity="0.12" stroke="${TP2_COL}" stroke-width="0.6"/>`);
-      parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${tp2Y + fs / 3}" fill="${TP2_COL}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">TP2 ${fmtPrice(takeProfit2, jpy)}</text>`);
+      parts.push(`<line x1="${sigX}" y1="${tp2Y}" x2="${lineEndX}" y2="${tp2Y}" stroke="${TP2_COL}" stroke-width="1.2" stroke-dasharray="10,5" opacity="0.75" shape-rendering="crispEdges"/>`);
+      parts.push(`<rect x="${lineEndX - lblW - 4}" y="${tp2Y - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${TP2_COL}" fill-opacity="0.18" stroke="${TP2_COL}" stroke-width="0.6"/>`);
+      parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${tp2Y + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">TP2 ${fmtPrice(takeProfit2, jpy)}</text>`);
     }
 
-    // SL
-    parts.push(`<line x1="${sigX}" y1="${slY}" x2="${lineEndX}" y2="${slY}" stroke="${SL_COL}" stroke-width="1.2" stroke-dasharray="6,4" opacity="0.8" shape-rendering="crispEdges"/>`);
-    parts.push(`<rect x="${lineEndX - lblW - 4}" y="${slY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${SL_COL}" fill-opacity="0.15" stroke="${SL_COL}" stroke-width="0.6"/>`);
-    parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${slY + fs / 3}" fill="${SL_COL}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(stopLoss, jpy)}</text>`);
+    // SL line + label
+    parts.push(`<line x1="${sigX}" y1="${slY}" x2="${lineEndX}" y2="${slY}" stroke="${SL_COL}" stroke-width="1.4" stroke-dasharray="6,4" opacity="0.9" shape-rendering="crispEdges"/>`);
+    parts.push(`<rect x="${lineEndX - lblW - 4}" y="${slY - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${SL_COL}" fill-opacity="0.2" stroke="${SL_COL}" stroke-width="0.7"/>`);
+    parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${slY + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(stopLoss, jpy)}</text>`);
   }
 
   // Title
