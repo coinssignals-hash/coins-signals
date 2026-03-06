@@ -135,6 +135,7 @@ export function useProgressBarState(props: TargetProgressBarProps): {
       hasLivePrice, displayPrice, fillGradient,
       currentZone, isJpy,
       hasMultipleTPs: !!(takeProfit2 || takeProfit3),
+      isActivated,
     },
     pulse: { pulse, pulseColor, crossed },
     hasRange,

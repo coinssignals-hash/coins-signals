@@ -18,6 +18,7 @@ const baseState: ProgressBarState = {
   displayPrice: 1.1025,
   fillGradient: 'linear-gradient(90deg, red, green)',
   currentZone: 'tp',
+  isActivated: true,
   isJpy: false,
   hasMultipleTPs: true,
 };
