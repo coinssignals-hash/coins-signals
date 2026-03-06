@@ -596,7 +596,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                         minWidth: '150px',
                       }}
                     >
-                      {(['rsi', 'macd', 'bollinger', 'stochastic', 'adx'] as IndicatorType[]).map(ind => {
+                      {(['bollinger', 'ema20', 'ema50', 'sma200', 'parabolicSar'] as IndicatorType[]).map(ind => {
                         const active = fsIndicators.has(ind);
                         const col = INDICATOR_COLORS[ind];
                         const val = indicatorValues[ind];
