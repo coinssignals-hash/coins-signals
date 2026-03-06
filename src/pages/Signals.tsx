@@ -200,29 +200,6 @@ export default function Signals() {
             }
             <NotificationToggle />
           </div>
-
-          <div className="flex items-center gap-1">
-            <button
-                onClick={() => setShowAICenter(!showAICenter)}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors active:scale-95",
-                  showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                )}
-                title="Centro de Análisis IA">
-              <Brain className="w-5 h-5" />
-            </button>
-            {isAuthenticated &&
-              <button
-                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors active:scale-95",
-                  showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
-                )}
-                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}>
-                <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
-              </button>
-            }
-          </div>
         </div>
 
         {/* Day Tab Switcher — edge-to-edge scroll on mobile */}
