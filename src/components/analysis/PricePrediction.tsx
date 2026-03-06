@@ -4,6 +4,7 @@ import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { formatPrice } from '@/lib/utils';
 
 interface PricePredictionProps {
   symbol: string;
@@ -61,22 +62,22 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice }: PricePr
           <span className={`flex items-center gap-1 ${trendColor}`}>
             {trendIcon}
           </span>
-          <span className="text-cyan-400 text-2xl font-bold font-mono">{data.currentPrice.toFixed(4)}</span>
+          <span className="text-cyan-400 text-2xl font-bold font-mono">{formatPrice(data.currentPrice, symbol)}</span>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-slate-800/60 rounded-lg">
         <div className="text-center">
           <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_low')}</p>
-          <p className="text-red-400 font-mono font-semibold">{data.predictedLow.toFixed(4)}</p>
+          <p className="text-red-400 font-mono font-semibold">{formatPrice(data.predictedLow, symbol)}</p>
         </div>
         <div className="text-center">
           <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_close')}</p>
-          <p className="text-white font-mono font-semibold">{data.predictedClose.toFixed(4)}</p>
+          <p className="text-white font-mono font-semibold">{formatPrice(data.predictedClose, symbol)}</p>
         </div>
         <div className="text-center">
           <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_high')}</p>
-          <p className="text-green-400 font-mono font-semibold">{data.predictedHigh.toFixed(4)}</p>
+          <p className="text-green-400 font-mono font-semibold">{formatPrice(data.predictedHigh, symbol)}</p>
         </div>
       </div>
 

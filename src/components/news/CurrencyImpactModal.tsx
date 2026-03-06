@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import { supabase } from '@/integrations/supabase/client';
 import { TrendingUp, TrendingDown, Minus, Activity, Loader2 } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 import type { Currency } from '@/types/news';
 
 interface SignalMatch {
@@ -147,7 +148,7 @@ function SignalRow({ signal, getQuote }: { signal: SignalMatch; getQuote: (s: st
             !diff ? 'text-muted-foreground' :
             diff.isPositive ? 'text-green-400' : 'text-red-400'
           }`}>
-            {diff ? `${diff.isPositive ? '+' : ''}${diff.percent.toFixed(2)}%` : '—'}
+            {diff ? `${diff.isPositive ? '+' : ''}${diff.percent.toFixed(3)}%` : '—'}
           </span>
         </div>
       </div>
@@ -165,10 +166,10 @@ function SignalRow({ signal, getQuote }: { signal: SignalMatch; getQuote: (s: st
           </span>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-          <span>Entrada: {signal.entry_price.toFixed(4)}</span>
+          <span>Entrada: {formatPrice(signal.entry_price, signal.currency_pair)}</span>
           {diff && (
             <span className={diff.isPositive ? 'text-green-400' : 'text-red-400'}>
-              Actual: {diff.currentPrice.toFixed(4)}
+              Actual: {formatPrice(diff.currentPrice, signal.currency_pair)}
             </span>
           )}
         </div>

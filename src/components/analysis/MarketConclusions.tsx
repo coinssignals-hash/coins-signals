@@ -4,6 +4,7 @@ import { ChevronDown, Loader2 } from 'lucide-react';
 import { useMarketConclusions } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { formatPrice } from '@/lib/utils';
 
 interface MarketConclusionsProps {
   symbol: string;
@@ -59,7 +60,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
                       {data.shortTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      {t('analysis_probability_label')}: {data.shortTerm.probability}% | {t('analysis_target_label')}: {data.shortTerm.target.toFixed(4)}
+                      {t('analysis_probability_label')}: {data.shortTerm.probability}% | {t('analysis_target_label')}: {formatPrice(data.shortTerm.target, symbol)}
                     </p>
                   </div>
                   
@@ -69,7 +70,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
                       {data.mediumTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      {t('analysis_probability_label')}: {data.mediumTerm.probability}% | {t('analysis_range_label')}: {data.mediumTerm.range.min.toFixed(4)}-{data.mediumTerm.range.max.toFixed(4)}
+                      {t('analysis_probability_label')}: {data.mediumTerm.probability}% | {t('analysis_range_label')}: {formatPrice(data.mediumTerm.range.min, symbol)}-{formatPrice(data.mediumTerm.range.max, symbol)}
                     </p>
                   </div>
                   
@@ -79,7 +80,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
                       {data.longTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      {t('analysis_target_label')}: {data.longTerm.target.toFixed(4)}
+                      {t('analysis_target_label')}: {formatPrice(data.longTerm.target, symbol)}
                     </p>
                   </div>
                 </div>

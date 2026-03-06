@@ -1,7 +1,8 @@
 import { TrendingUp, TrendingDown, ArrowUpDown, BarChart3, Target, Shield } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 
 interface QuickStatsGridProps {
+  symbol?: string;
   currentPrice: number;
   change: number;
   changePercent: number;
@@ -14,6 +15,7 @@ interface QuickStatsGridProps {
 }
 
 export function QuickStatsGrid({
+  symbol,
   currentPrice,
   change,
   changePercent,
@@ -35,16 +37,16 @@ export function QuickStatsGrid({
   const stats = [
     {
       label: 'Cambio',
-      value: `${isPositive ? '+' : ''}${changePercent.toFixed(2)}%`,
-      subValue: `${isPositive ? '+' : ''}${(pips).toFixed(1)}p`,
+      value: `${isPositive ? '+' : ''}${changePercent.toFixed(3)}%`,
+      subValue: `${isPositive ? '+' : ''}${(pips).toFixed(2)}p`,
       icon: isPositive ? TrendingUp : TrendingDown,
       color: isPositive ? 'text-green-400' : 'text-red-400',
       bgColor: isPositive ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20',
     },
     {
       label: 'High / Low',
-      value: high.toFixed(4),
-      subValue: low.toFixed(4),
+      value: formatPrice(high, symbol),
+      subValue: formatPrice(low, symbol),
       icon: ArrowUpDown,
       color: 'text-cyan-400',
       bgColor: 'bg-cyan-500/10 border-cyan-500/20',
@@ -52,16 +54,16 @@ export function QuickStatsGrid({
     },
     {
       label: 'Resistencia',
-      value: resistance.toFixed(4),
-      subValue: `${((resistance - displayPrice) * 10000).toFixed(0)}p`,
+      value: formatPrice(resistance, symbol),
+      subValue: `${((resistance - displayPrice) * 10000).toFixed(2)}p`,
       icon: Target,
       color: 'text-red-400',
       bgColor: 'bg-red-500/10 border-red-500/20',
     },
     {
       label: 'Soporte',
-      value: support.toFixed(4),
-      subValue: `${((displayPrice - support) * 10000).toFixed(0)}p`,
+      value: formatPrice(support, symbol),
+      subValue: `${((displayPrice - support) * 10000).toFixed(2)}p`,
       icon: Shield,
       color: 'text-green-400',
       bgColor: 'bg-green-500/10 border-green-500/20',
@@ -77,7 +79,7 @@ export function QuickStatsGrid({
     {
       label: 'Sesgo',
       value: bias,
-      subValue: `Pos: ${((displayPrice - low) / (range || 1) * 100).toFixed(0)}%`,
+      subValue: `Pos: ${((displayPrice - low) / (range || 1) * 100).toFixed(1)}%`,
       icon: isPositive ? TrendingUp : TrendingDown,
       color: biasColor,
       bgColor: bias === 'Alcista' ? 'bg-green-500/10 border-green-500/20' : bias === 'Bajista' ? 'bg-red-500/10 border-red-500/20' : 'bg-gray-500/10 border-gray-500/20',

@@ -207,6 +207,7 @@ export default function Analysis() {
 
         {/* Quick Stats Grid - NEW */}
         <QuickStatsGrid
+          symbol={selectedPair}
           currentPrice={marketStats.currentPrice}
           change={marketStats.change}
           changePercent={marketStats.changePercent}

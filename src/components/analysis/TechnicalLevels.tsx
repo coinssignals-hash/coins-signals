@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { useTechnicalLevels } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { formatPrice } from '@/lib/utils';
 
 interface TechnicalLevelsProps {
   symbol: string;
@@ -61,7 +62,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
       <div className="space-y-4 text-sm">
         <div className="flex items-center justify-between p-3 bg-slate-800/60 rounded-lg">
           <span className="text-gray-400">{t('analysis_pivot_point')}</span>
-          <span className="text-white font-mono font-bold">{data.pivot.toFixed(4)}</span>
+          <span className="text-white font-mono font-bold">{formatPrice(data.pivot, symbol)}</span>
         </div>
 
         <div>
@@ -69,7 +70,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
           <div className="space-y-2">
             {data.resistances.map((level, index) => (
               <div key={index} className="flex items-start gap-2 p-2 bg-slate-800/60 rounded">
-                <span className="text-red-400 font-mono font-bold shrink-0">{level.level.toFixed(4)}</span>
+                <span className="text-red-400 font-mono font-bold shrink-0">{formatPrice(level.level, symbol)}</span>
                 <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
                   {getStrengthLabel(level.strength)}
                 </span>
@@ -86,7 +87,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
           <div className="space-y-2">
             {data.supports.map((level, index) => (
               <div key={index} className="flex items-start gap-2 p-2 bg-slate-800/60 rounded">
-                <span className="text-green-400 font-mono font-bold shrink-0">{level.level.toFixed(4)}</span>
+                <span className="text-green-400 font-mono font-bold shrink-0">{formatPrice(level.level, symbol)}</span>
                 <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
                   {getStrengthLabel(level.strength)}
                 </span>
@@ -105,7 +106,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
               {data.fibonacci.map((fib, index) => (
                 <div key={index} className="text-center p-2 bg-slate-800/60 rounded">
                   <p className="text-blue-400 text-xs">{fib.level}</p>
-                  <p className="text-white font-mono text-xs">{fib.price.toFixed(4)}</p>
+                  <p className="text-white font-mono text-xs">{formatPrice(fib.price, symbol)}</p>
                 </div>
               ))}
             </div>
