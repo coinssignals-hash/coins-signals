@@ -12,8 +12,12 @@ export function StatusBadge({ state, pulse: p, isCompleted, closedResult }: Stat
   const { nearEntry, isAboveEntry, targetLabel, targetPercent, pipsFromEntry } = state;
   const { pulse, pulseColor } = p;
 
+  const icon = isCompleted
+    ? closedResult === 'tp_hit' ? '✅' : closedResult === 'sl_hit' ? '❌' : '⏱'
+    : '';
+
   const statusText = isCompleted
-    ? closedResult === 'tp_hit' ? '✅ TP' : closedResult === 'sl_hit' ? '❌ SL' : '⏱ Exp'
+    ? `${icon} ${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`
     : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`;
 
   return (
