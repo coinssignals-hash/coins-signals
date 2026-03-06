@@ -697,6 +697,13 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               currencyPair={currencyPair}
               support={support}
               resistance={resistance}
+              signalLevels={{
+                entryPrice,
+                takeProfit,
+                takeProfit2: signal?.takeProfit2 ?? undefined,
+                stopLoss,
+                signalDatetime: signal?.datetime ?? new Date().toISOString(),
+              }}
             />
 
             {/* AI Analysis Notes */}
