@@ -40,6 +40,11 @@ import {
   TooltipProvider,
   TooltipTrigger } from
 "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger } from
+"@/components/ui/popover";
 
 interface SignalCardV2Props {
   signal?: TradingSignal;
