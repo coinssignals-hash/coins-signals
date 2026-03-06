@@ -50,7 +50,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
               orientation="right"
-              tickFormatter={(value) => value.toFixed(3)}
+              tickFormatter={(value) => formatPrice(value, signal.pair)}
             />
             <ReferenceLine 
               y={signal.takeProfit} 
