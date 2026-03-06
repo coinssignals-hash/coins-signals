@@ -302,7 +302,7 @@ export function TargetProgressBar({
           </span>
           {/* Status badge below Entry */}
           <div className={cn(
-            "flex items-center gap-1 px-1.5 py-px rounded-full text-[8px] font-bold mt-0.5 transition-all duration-500",
+            "flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-bold mt-1 transition-all duration-500",
             isCompleted && closedResult === 'tp_hit' ? "bg-emerald-500/20 text-emerald-400"
               : isCompleted && closedResult === 'sl_hit' ? "bg-rose-500/20 text-rose-400"
                 : nearEntry ? "bg-yellow-500/15 text-yellow-400"
