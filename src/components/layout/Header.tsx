@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logoImg from '@/assets/logo.svg';
+import logoImg from '@/assets/g174-2.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, Search, Bell,
@@ -48,7 +48,7 @@ export function Header() {
 
           {/* Center: logo — sized for mobile */}
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
-            <img src={logoImg} alt="Coins Signals" className="h-9 w-auto" />
+            <img src={logoImg} alt="Coins Signals" className="h-12 w-auto" />
           </Link>
 
           {/* Right: compact icons */}
