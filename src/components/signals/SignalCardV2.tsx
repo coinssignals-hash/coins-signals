@@ -282,7 +282,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability,
     support, resistance
   } : null, [currencyPair, action, trend, entryPrice, takeProfit, stopLoss, probability, support, resistance, signal]);
-  const { strategy: aiStrategy, loading: strategyLoading } = useSignalStrategy(strategyInput, expanded);
+  const { strategy: aiStrategy, loading: strategyLoading } = useSignalStrategy(strategyInput, true);
 
   // AI risk assessment (fetched in background immediately)
   const { risk: aiRisk, loading: riskLoading } = useSignalRisk(strategyInput);
