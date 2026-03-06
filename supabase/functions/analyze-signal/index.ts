@@ -347,10 +347,10 @@ Analiza y devuelve la estrategia óptima.`;
       const strategy = JSON.parse(toolCall.function.arguments);
       console.log('Strategy generated:', JSON.stringify(strategy));
 
-      return new Response(JSON.stringify({
-        strategy,
-        generatedAt: new Date().toISOString()
-      }), {
+      const result = { strategy, generatedAt: new Date().toISOString() };
+      cache.set(cacheKey, { data: result, ts: Date.now() });
+      if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+      return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
