@@ -362,22 +362,10 @@ function buildSignalChartSvg(
     parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${slY + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(stopLoss, jpy)}</text>`);
   }
 
-  // ── Bollinger overlay (drawn on price chart) ──
-  if (activeIndicators.includes('bollinger')) {
+  // ── All price overlays (Bollinger, EMA, SMA, Parabolic SAR) ──
+  if (activeIndicators.length > 0) {
     const yOfPrice = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
-    parts.push(buildBollingerOverlay(data as IndCandleData[], xOf, yOfPrice));
-  }
-
-  // ── Overlay indicator panels (RSI, MACD, Stochastic, ADX) ──
-  const overlayIndicators = activeIndicators.filter(i => i !== 'bollinger');
-  for (let si = 0; si < overlayIndicators.length; si++) {
-    parts.push(buildIndicatorOverlay(overlayIndicators[si], data as IndCandleData[], si, overlayIndicators.length, {
-      chartX1: CHART_X1,
-      chartX2: CHART_X2,
-      priceTop: PRICE_TOP,
-      priceBottom: PRICE_BOTTOM,
-      xOf,
-    }));
+    parts.push(buildPriceOverlays(activeIndicators, data as IndCandleData[], xOf, yOfPrice));
   }
 
   // Title
