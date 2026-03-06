@@ -30,7 +30,7 @@ describe('StatusBadge', () => {
     render(
       <StatusBadge state={{ ...baseState, targetLabel: 'TP1', targetPercent: 100, pipsFromEntry: 50, displayPrice: 1.105 }} pulse={noPulse} isCompleted closedResult="tp_hit" />,
     );
-    expect(screen.getByText(/✅ TP1 100% · 50\.0p @ 1\.10500/)).toBeInTheDocument();
+    expect(screen.getByText(/✅ TP1 100\.0% · 50\.00p @ 1\.10500/)).toBeInTheDocument();
   });
 
   it('shows SL hit with pips and closed price when completed with sl_hit', () => {
