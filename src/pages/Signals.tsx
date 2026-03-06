@@ -374,7 +374,7 @@ export default function Signals() {
                 <span className="hidden sm:inline">{t('signals_favorites')}</span>
               </div>
                 }
-            <span>{filteredAndSortedSignals.length} {t('signals_count')}</span>
+            
           </div>
         </div>
       </div>
