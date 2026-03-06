@@ -15,6 +15,7 @@ interface QuickStatsGridProps {
 }
 
 export function QuickStatsGrid({
+  symbol,
   currentPrice,
   change,
   changePercent,
