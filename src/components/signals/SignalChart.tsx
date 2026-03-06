@@ -575,13 +575,13 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                     onClick={() => setShowIndMenu(prev => !prev)}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
                     style={{
-                      background: fsIndicators.size > 0 ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.08)',
-                      border: `1px solid ${fsIndicators.size > 0 ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.2)'}`,
+                      background: fsIndicators.length > 0 ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.08)',
+                      border: `1px solid ${fsIndicators.length > 0 ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.2)'}`,
                       backdropFilter: 'blur(8px)',
                     }}
                   >
-                    <Activity className="w-3.5 h-3.5" style={{ color: fsIndicators.size > 0 ? '#a78bfa' : 'rgba(255,255,255,0.6)' }} />
-                    <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsIndicators.size > 0 ? '#a78bfa' : 'rgba(255,255,255,0.5)' }}>
+                    <Activity className="w-3.5 h-3.5" style={{ color: fsIndicators.length > 0 ? '#a78bfa' : 'rgba(255,255,255,0.6)' }} />
+                    <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsIndicators.length > 0 ? '#a78bfa' : 'rgba(255,255,255,0.5)' }}>
                       IND
                     </span>
                     <ChevronDown className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.4)' }} />
@@ -594,41 +594,69 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                         background: 'rgba(6,14,28,0.95)',
                         border: '1px solid rgba(167,139,250,0.25)',
                         backdropFilter: 'blur(12px)',
-                        minWidth: '150px',
+                        minWidth: '170px',
                       }}
                     >
-                      {(['bollinger', 'ema20', 'ema50', 'sma200', 'parabolicSar'] as IndicatorType[]).map(ind => {
-                        const active = fsIndicators.has(ind);
-                        const col = INDICATOR_COLORS[ind];
-                        const val = indicatorValues[ind];
+                      {DEFAULT_PRESETS.map((preset, idx) => {
+                        const activeIdx = fsIndicators.findIndex(c => c.id === preset.id);
+                        const active = activeIdx >= 0;
+                        const activeCfg = active ? fsIndicators[activeIdx] : preset;
+                        const col = getIndicatorColor(preset, idx);
+                        const val = indicatorValues[activeCfg.id];
+                        const showPeriod = preset.kind !== 'parabolicSar';
                         return (
-                          <button
-                            key={ind}
-                            onClick={() => {
-                              setFsIndicators(prev => {
-                                const next = new Set(prev);
-                                next.has(ind) ? next.delete(ind) : next.add(ind);
-                                return next;
-                              });
-                            }}
-                            className="flex items-center gap-2 px-3 py-2 text-left transition-colors"
-                            style={{
-                              background: active ? `${col}15` : 'transparent',
-                            }}
+                          <div
+                            key={preset.id}
+                            className="flex items-center gap-2 px-3 py-1.5 transition-colors"
+                            style={{ background: active ? `${col}15` : 'transparent' }}
                           >
-                            <span
-                              className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
-                              style={{ background: active ? col : 'rgba(255,255,255,0.15)', border: `1px solid ${active ? col : 'rgba(255,255,255,0.2)'}` }}
-                            />
-                            <span className="text-[11px] font-semibold flex-1" style={{ color: active ? col : 'rgba(255,255,255,0.6)' }}>
-                              {INDICATOR_LABELS[ind]}
-                            </span>
+                            <button
+                              onClick={() => {
+                                setFsIndicators(prev => {
+                                  const exists = prev.findIndex(c => c.id === preset.id);
+                                  if (exists >= 0) return prev.filter((_, i) => i !== exists);
+                                  return [...prev, { ...preset }];
+                                });
+                              }}
+                              className="flex items-center gap-2 flex-1"
+                            >
+                              <span
+                                className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                                style={{ background: active ? col : 'rgba(255,255,255,0.15)', border: `1px solid ${active ? col : 'rgba(255,255,255,0.2)'}` }}
+                              />
+                              <span className="text-[11px] font-semibold" style={{ color: active ? col : 'rgba(255,255,255,0.6)' }}>
+                                {getIndicatorLabel(activeCfg)}
+                              </span>
+                            </button>
+                            {showPeriod && active && (
+                              <div className="flex items-center gap-0.5">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFsIndicators(prev => prev.map(c => c.id === preset.id && c.period > 2
+                                      ? { ...c, period: c.period - 1 } : c));
+                                  }}
+                                  className="w-4 h-4 flex items-center justify-center rounded text-[10px] font-bold"
+                                  style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
+                                >−</button>
+                                <span className="text-[9px] font-mono w-5 text-center" style={{ color: col }}>{activeCfg.period}</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFsIndicators(prev => prev.map(c => c.id === preset.id && c.period < 500
+                                      ? { ...c, period: c.period + 1 } : c));
+                                  }}
+                                  className="w-4 h-4 flex items-center justify-center rounded text-[10px] font-bold"
+                                  style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
+                                >+</button>
+                              </div>
+                            )}
                             {val && (
-                              <span className="text-[9px] font-mono" style={{ color: active ? col : 'rgba(255,255,255,0.4)' }}>
+                              <span className="text-[8px] font-mono" style={{ color: active ? col : 'rgba(255,255,255,0.4)' }}>
                                 {val}
                               </span>
                             )}
-                          </button>
+                          </div>
                         );
                       })}
                     </div>
@@ -636,14 +664,14 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                 </div>
 
                 {/* Active indicator value badges */}
-                {fsIndicators.size > 0 && (
+                {fsIndicators.length > 0 && (
                   <div className="flex items-center gap-1 flex-wrap">
-                    {Array.from(fsIndicators).map(ind => {
-                      const col = INDICATOR_COLORS[ind];
-                      const val = indicatorValues[ind];
+                    {fsIndicators.map((cfg, idx) => {
+                      const col = getIndicatorColor(cfg, idx);
+                      const val = indicatorValues[cfg.id];
                       return (
                         <span
-                          key={ind}
+                          key={cfg.id}
                           className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold"
                           style={{
                             background: `${col}20`,
@@ -652,7 +680,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                             backdropFilter: 'blur(6px)',
                           }}
                         >
-                          {INDICATOR_LABELS[ind]}
+                          {getIndicatorLabel(cfg)}
                           {val && <span style={{ opacity: 0.9 }}>{val}</span>}
                         </span>
                       );
