@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Maximize2, X, TrendingUp } from 'lucide-react';
+import { Maximize2, X, TrendingUp, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForexChartData } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -50,7 +50,7 @@ function buildSignalChartSvg(
 ): string {
   const W = width, H = height;
   const PAD = compact
-    ? { top: 18, right: 55, bottom: 30, left: 40 }
+    ? { top: 18, right: 55, bottom: 50, left: 40 }
     : { top: 30, right: 100, bottom: 50, left: 60 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
@@ -142,7 +142,8 @@ function buildSignalChartSvg(
       parts.push(`<line x1="${x}" y1="${PRICE_TOP}" x2="${x}" y2="${PRICE_BOTTOM}" stroke="${GRID}" stroke-width="0.5" stroke-dasharray="2,6" shape-rendering="crispEdges"/>`);
       const d = new Date(data[i].time);
       const label = `${DAY_NAMES[d.getDay()]} ${d.getDate()}`;
-      parts.push(`<text x="${x + 4}" y="${H - PAD.bottom + 15}" fill="${TEXT_COL}" font-size="10" font-family="sans-serif">${label}</text>`);
+      const dayFs = compact ? 14 : 10;
+      parts.push(`<text x="${x + 4}" y="${H - PAD.bottom + 18}" fill="${TEXT_COL}" font-size="${dayFs}" font-family="sans-serif" font-weight="${compact ? 'bold' : 'normal'}">${label}</text>`);
       prevDay = dk;
     }
   }
@@ -156,7 +157,8 @@ function buildSignalChartSvg(
     const mo = String(d.getMonth() + 1).padStart(2, '0');
     const hh = String(d.getHours()).padStart(2, '0');
     const mm = String(d.getMinutes()).padStart(2, '0');
-    parts.push(`<text x="${x}" y="${H - PAD.bottom + 30}" fill="${TEXT_COL}" font-size="7" font-family="monospace" text-anchor="middle">${dd}/${mo} ${hh}:${mm}</text>`);
+    const timeFs = compact ? 11 : 7;
+    parts.push(`<text x="${x}" y="${H - PAD.bottom + 38}" fill="${TEXT_COL}" font-size="${timeFs}" font-family="monospace" text-anchor="middle">${dd}/${mo} ${hh}:${mm}</text>`);
   }
 
   // Candles
@@ -359,7 +361,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               flexDirection: 'column',
             }}
           >
-            {/* Chart area — fills all available space */}
+            {/* Chart area — fills all space */}
             <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
               {fullscreenSvgUri && (
                 <ZoomableChart className="absolute inset-0 w-full h-full">
@@ -376,38 +378,45 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                 </ZoomableChart>
               )}
 
-              {/* Close button — top-left */}
-              <button
-                onClick={() => setFullscreen(false)}
-                className="absolute top-2 left-2 z-[10001] p-2 rounded-full active:scale-90"
-                style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}
-              >
-                <X className="w-5 h-5 text-white" />
-              </button>
-            </div>
+              {/* Top-right controls: S/R toggle + config + close */}
+              <div className="absolute top-2 right-2 z-[10001] flex items-center gap-2">
+                {/* S/R toggle */}
+                <button
+                  onClick={() => setFsSR(prev => !prev)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+                  style={{
+                    background: fsSR ? 'rgba(0,230,180,0.15)' : 'rgba(255,255,255,0.08)',
+                    border: `1px solid ${fsSR ? 'rgba(0,230,180,0.4)' : 'rgba(255,255,255,0.2)'}`,
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <TrendingUp className="w-3.5 h-3.5" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }} />
+                  <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }}>
+                    S/R
+                  </span>
+                </button>
 
-            {/* Bottom bar with S/R toggle — below the chart */}
-            <div
-              className="flex items-center justify-end shrink-0"
-              style={{
-                height: '32px',
-                background: '#060e1c',
-                paddingRight: '12px',
-              }}
-            >
-              <button
-                onClick={() => setFsSR(prev => !prev)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md active:scale-95 transition-all"
-                style={{
-                  background: fsSR ? 'rgba(0,230,180,0.15)' : 'rgba(255,255,255,0.08)',
-                  border: `1px solid ${fsSR ? 'rgba(0,230,180,0.4)' : 'rgba(255,255,255,0.2)'}`,
-                }}
-              >
-                <TrendingUp className="w-3 h-3" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }} />
-                <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }}>
-                  S/R
-                </span>
-              </button>
+                {/* Config button (placeholder) */}
+                <button
+                  className="p-2 rounded-lg active:scale-95 transition-all"
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <Settings2 className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
+                </button>
+
+                {/* Close button */}
+                <button
+                  onClick={() => setFullscreen(false)}
+                  className="p-2 rounded-full active:scale-90"
+                  style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
