@@ -26,7 +26,9 @@ export function useRestPrice(symbol: string, pollIntervalMs = 30_000, fallbackPr
   });
   const [loading, setLoading] = useState(!priceCache.has(symbol));
   const [error, setError] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(Math.ceil(pollIntervalMs / 1000));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchPrice = useCallback(async () => {
