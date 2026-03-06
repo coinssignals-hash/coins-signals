@@ -30,11 +30,13 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
     const el = containerRef.current;
     if (!el) return { x: tx, y: ty };
     const r = el.getBoundingClientRect();
-    const maxX = (r.width * (s - 1)) / 2;
-    const maxY = (r.height * (s - 1)) / 2;
+    // Content scaled dimensions vs container
+    const overflowX = (r.width * s - r.width) / 2;
+    const overflowY = (r.height * s - r.height) / 2;
+    // Clamp so scaled content never leaves the container edges
     return {
-      x: Math.max(-maxX, Math.min(maxX, tx)),
-      y: Math.max(-maxY, Math.min(maxY, ty)),
+      x: Math.max(-overflowX, Math.min(overflowX, tx)),
+      y: Math.max(-overflowY, Math.min(overflowY, ty)),
     };
   }, []);
 
@@ -168,10 +170,10 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={{ touchAction: isZoomed ? 'none' : 'pan-y' }}
+        style={{ touchAction: isZoomed ? 'none' : 'pan-y', clipPath: 'inset(0)' }}
       >
         <div
-          className="w-full"
+          className="w-full will-change-transform"
           style={{
             transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
             transformOrigin: 'center center',
