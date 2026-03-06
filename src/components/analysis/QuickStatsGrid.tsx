@@ -45,8 +45,8 @@ export function QuickStatsGrid({
     },
     {
       label: 'High / Low',
-      value: high.toFixed(4),
-      subValue: low.toFixed(4),
+      value: formatPrice(high, symbol),
+      subValue: formatPrice(low, symbol),
       icon: ArrowUpDown,
       color: 'text-cyan-400',
       bgColor: 'bg-cyan-500/10 border-cyan-500/20',
