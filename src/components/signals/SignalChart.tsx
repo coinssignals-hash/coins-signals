@@ -8,6 +8,7 @@ import {
   type IndicatorType, type CandleData as IndCandleData,
   INDICATOR_LABELS, INDICATOR_COLORS,
   buildIndicatorOverlay, buildBollingerOverlay,
+  calcRSI, calcMACD, calcStochastic, calcADX, calcBollinger,
 } from './chartIndicators';
 
 const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
