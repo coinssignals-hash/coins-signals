@@ -442,13 +442,15 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, [candles, support, resistance, showSR, intervalLabel, signalLevels]);
 
+  const activeIndArray = useMemo(() => Array.from(fsIndicators), [fsIndicators]);
+
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
     if (!candles.length || !fullscreen) return null;
     const fsW = isPortrait ? viewportSize.h : viewportSize.w;
     const fsH = isPortrait ? viewportSize.w : viewportSize.h;
     const scale = Math.max(1, Math.ceil(2340 / fsW));
-    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel, signalLevels, fsSignalLines);
+    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel, signalLevels, fsSignalLines, activeIndArray);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel, signalLevels, fsSignalLines]);
 
