@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { Loader2 } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
@@ -671,46 +672,63 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         </div>
 
         {/* Compact Target Progress Bar - always visible */}
-        {!expanded && (
-          <TargetProgressBar
-            entryPrice={entryPrice}
-            takeProfit={takeProfit}
-            takeProfit2={signal?.takeProfit2}
-            takeProfit3={signal?.takeProfit3}
-            stopLoss={stopLoss}
-            currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
-            action={action as 'BUY' | 'SELL'}
-            isCompleted={isCompleted}
-            closedResult={signal?.closedResult ?? undefined}
-            closedPrice={signal?.closedPrice ?? undefined}
-            compact
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {!expanded ? (
+            <motion.div
+              key="compact-bar"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <TargetProgressBar
+                entryPrice={entryPrice}
+                takeProfit={takeProfit}
+                takeProfit2={signal?.takeProfit2}
+                takeProfit3={signal?.takeProfit3}
+                stopLoss={stopLoss}
+                currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
+                action={action as 'BUY' | 'SELL'}
+                isCompleted={isCompleted}
+                closedResult={signal?.closedResult ?? undefined}
+                closedPrice={signal?.closedPrice ?? undefined}
+                compact
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="full-bar"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <TargetProgressBar
+                entryPrice={entryPrice}
+                takeProfit={takeProfit}
+                takeProfit2={signal?.takeProfit2}
+                takeProfit3={signal?.takeProfit3}
+                stopLoss={stopLoss}
+                currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
+                action={action as 'BUY' | 'SELL'}
+                isCompleted={isCompleted}
+                closedResult={signal?.closedResult ?? undefined}
+                closedPrice={signal?.closedPrice ?? undefined}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Expand toggle button */}
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full flex items-center justify-center py-2.5 text-cyan-300/60 hover:text-cyan-300 transition-colors active:scale-95 min-h-[44px]">
-
           <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", expanded && "rotate-180")} />
         </button>
 
         {/* Expanded content */}
         {expanded &&
         <div className="animate-in slide-in-from-top-2 duration-300">
-            {/* Target Progress Bar - full version */}
-            <TargetProgressBar
-              entryPrice={entryPrice}
-              takeProfit={takeProfit}
-              takeProfit2={signal?.takeProfit2}
-              takeProfit3={signal?.takeProfit3}
-              stopLoss={stopLoss}
-              currentPrice={priceDiff.hasData ? priceDiff.currentPrice : null}
-              action={action as 'BUY' | 'SELL'}
-              isCompleted={isCompleted}
-              closedResult={signal?.closedResult ?? undefined}
-              closedPrice={signal?.closedPrice ?? undefined} />
-
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
 
