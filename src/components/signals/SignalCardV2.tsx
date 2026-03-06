@@ -169,7 +169,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
 }
 
 // Helper: compute pips and percent between two prices
-function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
+function computePriceMetrics(target: number, entry: number, isJpy: boolean, symbol?: string) {
   const pipMultiplier = isJpy ? 100 : 10000;
   const pips = (target - entry) * pipMultiplier;
   const percent = (target - entry) / entry * 100;
@@ -178,7 +178,7 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   return {
     pips: `${sign}${Math.abs(pips).toFixed(1)}`,
     percent: `${sign}${Math.abs(percent).toFixed(3)}`,
-    price: target.toFixed(3),
+    price: formatPrice(target, symbol || (isJpy ? 'JPY' : 'EUR/USD')),
     isPositive
   };
 }
