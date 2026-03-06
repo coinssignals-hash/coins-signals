@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logoImg from '@/assets/logo.svg';
+import logoImg from '@/assets/g174-2.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, Search, Bell,
