@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { useTechnicalLevels } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { formatPrice } from '@/lib/utils';
 
 interface TechnicalLevelsProps {
   symbol: string;
