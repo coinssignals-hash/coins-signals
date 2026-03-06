@@ -54,8 +54,8 @@ export function QuickStatsGrid({
     },
     {
       label: 'Resistencia',
-      value: resistance.toFixed(4),
-      subValue: `${((resistance - displayPrice) * 10000).toFixed(0)}p`,
+      value: formatPrice(resistance, symbol),
+      subValue: `${((resistance - displayPrice) * 10000).toFixed(2)}p`,
       icon: Target,
       color: 'text-red-400',
       bgColor: 'bg-red-500/10 border-red-500/20',
