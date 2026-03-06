@@ -12,7 +12,7 @@ export function BarTrack({ state, pulse: p, takeProfit2, takeProfit3 }: BarTrack
   const {
     position, tp1Pos, tp2Pos, tp3Pos,
     hasLivePrice, displayPrice, nearEntry, isAboveEntry,
-    progressColor, fillGradient, isJpy, hasMultipleTPs,
+    progressColor, fillGradient, isJpy, hasMultipleTPs, isActivated,
   } = state;
   const { pulse, pulseColor, crossed } = p;
 
