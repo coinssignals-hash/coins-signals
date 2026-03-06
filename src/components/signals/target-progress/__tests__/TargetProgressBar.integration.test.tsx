@@ -105,8 +105,8 @@ describe('TargetProgressBar integration', () => {
 
   it('shows near-entry status when price equals entry', () => {
     render(<TargetProgressBar {...baseBuy} currentPrice={1.1000} />);
-    // Status badge shows "ENTRY 0% · 0.0p"
-    expect(screen.getByText(/ENTRY/)).toBeInTheDocument();
+    // Near entry: badge shows yellow styling with 0% progress
+    expect(screen.getByText(/0% · 0\.0p/)).toBeInTheDocument();
   });
 
   it('displays entry price in labels', () => {
