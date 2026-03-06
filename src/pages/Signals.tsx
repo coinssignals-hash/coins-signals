@@ -435,7 +435,7 @@ export default function Signals() {
                 <TodaySignalsGroup signals={todaySignals} />
                 {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
                 {yesterdaySignals.length > 0 &&
-                <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+                <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length} activeCount={yesterdaySignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                     {yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)}
                   </SignalsDayGroup>
                 }
