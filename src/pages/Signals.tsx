@@ -17,7 +17,7 @@ import { NotificationToggle } from '@/components/notifications/NotificationToggl
 import { LazySection } from '@/components/ui/lazy-section';
 
 // Lazy load heavy AI Center
-const AICenter = lazy(() => import('@/components/signals/ai-center/AICenter').then(m => ({ default: m.AICenter })));
+const AICenter = lazy(() => import('@/components/signals/ai-center/AICenter').then((m) => ({ default: m.AICenter })));
 import { useSignals, TradingSignal } from '@/hooks/useSignals';
 import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,8 +33,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  DropdownMenuTrigger } from
+'@/components/ui/dropdown-menu';
 
 type ViewMode = 'full' | 'compact';
 type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
@@ -43,33 +43,33 @@ type DayTab = 'today' | 'tomorrow' | 'yesterday' | 'calendar' | 'all';
 function useSortOptions() {
   const { t } = useTranslation();
   return [
-    { value: 'date-desc' as SortOption, label: t('signals_sort_recent'), icon: <Clock className="w-4 h-4" /> },
-    { value: 'date-asc' as SortOption, label: t('signals_sort_oldest'), icon: <Clock className="w-4 h-4" /> },
-    { value: 'probability-desc' as SortOption, label: t('signals_sort_prob_high'), icon: <TrendingUp className="w-4 h-4" /> },
-    { value: 'probability-asc' as SortOption, label: t('signals_sort_prob_low'), icon: <TrendingUp className="w-4 h-4" /> },
-    { value: 'pips-desc' as SortOption, label: t('signals_sort_pips_high'), icon: <Target className="w-4 h-4" /> },
-    { value: 'pips-asc' as SortOption, label: t('signals_sort_pips_low'), icon: <Target className="w-4 h-4" /> },
-  ];
+  { value: 'date-desc' as SortOption, label: t('signals_sort_recent'), icon: <Clock className="w-4 h-4" /> },
+  { value: 'date-asc' as SortOption, label: t('signals_sort_oldest'), icon: <Clock className="w-4 h-4" /> },
+  { value: 'probability-desc' as SortOption, label: t('signals_sort_prob_high'), icon: <TrendingUp className="w-4 h-4" /> },
+  { value: 'probability-asc' as SortOption, label: t('signals_sort_prob_low'), icon: <TrendingUp className="w-4 h-4" /> },
+  { value: 'pips-desc' as SortOption, label: t('signals_sort_pips_high'), icon: <Target className="w-4 h-4" /> },
+  { value: 'pips-asc' as SortOption, label: t('signals_sort_pips_low'), icon: <Target className="w-4 h-4" /> }];
+
 }
 
 // Calculate pips for a signal
 const calculatePips = (signal: TradingSignal): number => {
   const isBuy = signal.action === 'BUY';
-  return isBuy 
-    ? Math.round((signal.takeProfit - signal.entryPrice) * 10000)
-    : Math.round((signal.entryPrice - signal.takeProfit) * 10000);
+  return isBuy ?
+  Math.round((signal.takeProfit - signal.entryPrice) * 10000) :
+  Math.round((signal.entryPrice - signal.takeProfit) * 10000);
 };
 
 // Generate week days dynamically
 const generateWeekDays = () => {
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-  
+
   return Array.from({ length: 7 }, (_, i) => {
     const date = addDays(weekStart, i);
     return {
       date: format(date, 'yyyy-MM-dd'),
-      label: `${format(date, 'EEE')} ${format(date, 'd')}`,
+      label: `${format(date, 'EEE')} ${format(date, 'd')}`
     };
   });
 };
@@ -83,17 +83,17 @@ export default function Signals() {
   const [dayTab, setDayTab] = useState<DayTab>('today');
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  
+
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showAICenter, setShowAICenter] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    return (localStorage.getItem('signals-view-mode') as ViewMode) || 'full';
+    return localStorage.getItem('signals-view-mode') as ViewMode || 'full';
   });
   const [sortBy, setSortBy] = useState<SortOption>(() => {
-    return (localStorage.getItem('signals-sort-by') as SortOption) || 'date-desc';
+    return localStorage.getItem('signals-sort-by') as SortOption || 'date-desc';
   });
   const [expandedSignalId, setExpandedSignalId] = useState<string | null>(null);
-  
+
   const { signals, loading, error } = useSignals();
   const { isFavorite, toggleFavorite, favoriteIds, isAuthenticated } = useFavoriteSignals();
   const { user, profile } = useAuth();
@@ -111,9 +111,9 @@ export default function Signals() {
 
   // Filter and sort signals
   const filteredAndSortedSignals = useMemo(() => {
-    let result = showFavoritesOnly 
-      ? signals.filter(s => favoriteIds.has(s.id))
-      : signals;
+    let result = showFavoritesOnly ?
+    signals.filter((s) => favoriteIds.has(s.id)) :
+    signals;
 
     // Sort signals
     result = [...result].sort((a, b) => {
@@ -170,7 +170,7 @@ export default function Signals() {
     return filteredAndSortedSignals.filter((s) => isSameDay(parseISO(s.datetime), calendarDate));
   }, [filteredAndSortedSignals, calendarDate]);
 
-  const currentSortOption = sortOptions.find(opt => opt.value === sortBy);
+  const currentSortOption = sortOptions.find((opt) => opt.value === sortBy);
 
   const getInitials = () => {
     if (profile?.first_name) {
@@ -189,153 +189,153 @@ export default function Signals() {
       <Header />
       {/* Signal Controls Bar */}
       <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1">
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 border border-border/50">
-              <button
-                onClick={() => setViewMode('full')}
-                className={cn(
-                  "p-2 rounded-md transition-all active:scale-95",
-                  viewMode === 'full' 
-                    ? "bg-muted text-foreground shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                title="Vista completa"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('compact')}
-                className={cn(
-                  "p-2 rounded-md transition-all active:scale-95",
-                  viewMode === 'compact' 
-                    ? "bg-muted text-foreground shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                title="Vista compacta"
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
           <div className="flex items-center gap-1">
-            {isAdmin && (
+            {isAdmin &&
               <button
                 onClick={() => navigate('/create-signal')}
                 className="p-2.5 rounded-full transition-colors active:scale-95 text-accent hover:text-accent/80 hover:bg-accent/10"
-                title="Crear Señal (Admin)"
-              >
+                title="Crear Señal (Admin)">
+                
                 <PlusCircle className="w-5 h-5" />
               </button>
-            )}
+              }
             <button
-              onClick={() => setShowAICenter(!showAICenter)}
-              className={cn(
-                "p-2.5 rounded-full transition-colors active:scale-95",
-                showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-              )}
-              title="Centro de Análisis IA"
-            >
+                onClick={() => setShowAICenter(!showAICenter)}
+                className={cn(
+                  "p-2.5 rounded-full transition-colors active:scale-95",
+                  showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="Centro de Análisis IA">
+                
               <Brain className="w-5 h-5" />
             </button>
             <NotificationToggle />
-            {isAuthenticated && (
+            {isAuthenticated &&
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
                 className={cn(
                   "p-2.5 rounded-full transition-colors active:scale-95",
                   showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
                 )}
-                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}
-              >
+                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}>
+                
                 <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
               </button>
-            )}
+              }
           </div>
         </div>
 
         {/* Day Tab Switcher — edge-to-edge scroll on mobile */}
         <div className="flex gap-1 px-3 py-2 overflow-x-auto scrollbar-hide -mx-0 sm:mx-0">
-        {([
+        {[
             { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
             { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
             { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
-            { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
-          ]).map((tab) => (
+            { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 }].
+            map((tab) =>
             <button
               key={tab.key}
-              onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
+              onClick={() => {setDayTab(tab.key);setCalendarDate(undefined);}}
               className={cn(
                 "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
-                dayTab === tab.key && tab.key !== 'calendar'
-                  ? tab.key === 'today'
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                    : tab.key === 'yesterday'
-                      ? "bg-violet-600 text-white shadow-lg shadow-violet-500/30"
-                      : tab.key === 'tomorrow'
-                        ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
-                        : "bg-slate-600 text-white shadow-lg shadow-slate-500/30"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-              )}
-            >
+                dayTab === tab.key && tab.key !== 'calendar' ?
+                tab.key === 'today' ?
+                "bg-blue-600 text-white shadow-lg shadow-blue-500/30" :
+                tab.key === 'yesterday' ?
+                "bg-violet-600 text-white shadow-lg shadow-violet-500/30" :
+                tab.key === 'tomorrow' ?
+                "bg-amber-600 text-white shadow-lg shadow-amber-500/30" :
+                "bg-slate-600 text-white shadow-lg shadow-slate-500/30" :
+                "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              )}>
+              
               {tab.icon}
               <span className="hidden xs:inline sm:inline">{tab.label}</span>
               <span className="xs:hidden sm:hidden">{tab.label.slice(0, 3)}</span>
-              {tab.count > 0 && (
-                <span className="ml-0.5 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tab.count}</span>
-              )}
+              {tab.count > 0 &&
+              <span className="ml-0.5 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tab.count}</span>
+              }
             </button>
-          ))}
+            )}
 
           {/* Calendar picker */}
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
               <button
-                className={cn(
-                  "flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all justify-center active:scale-95",
-                  dayTab === 'calendar'
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                )}
-              >
+                  className={cn(
+                    "flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all justify-center active:scale-95",
+                    dayTab === 'calendar' ?
+                    "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30" :
+                    "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                  )}>
+                  
                 <CalendarIcon className="w-3.5 h-3.5" />
-                {dayTab === 'calendar' && calendarDate
-                  ? format(calendarDate, 'd MMM', { locale: dateLocale })
-                  : ''}
+                {dayTab === 'calendar' && calendarDate ?
+                  format(calendarDate, 'd MMM', { locale: dateLocale }) :
+                  ''}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-700" align="end">
               <Calendar
-                mode="single"
-                selected={calendarDate}
-                onSelect={(date) => {
-                  setCalendarDate(date);
-                  setDayTab('calendar');
-                  setCalendarOpen(false);
-                }}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
-                locale={dateLocale}
-              />
+                  mode="single"
+                  selected={calendarDate}
+                  onSelect={(date) => {
+                    setCalendarDate(date);
+                    setDayTab('calendar');
+                    setCalendarOpen(false);
+                  }}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                  locale={dateLocale} />
+                
             </PopoverContent>
           </Popover>
         </div>
 
         {/* Calendar date indicator */}
-        {dayTab === 'calendar' && calendarDate && (
+        {dayTab === 'calendar' && calendarDate &&
           <div className="flex items-center gap-2 px-4 pb-2">
             <span className="text-xs text-emerald-400">
               {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: dateLocale })}
             </span>
             <button
-              onClick={() => { setDayTab('today'); setCalendarDate(undefined); }}
-              className="text-slate-500 hover:text-slate-300"
-            >
+              onClick={() => {setDayTab('today');setCalendarDate(undefined);}}
+              className="text-slate-500 hover:text-slate-300">
+              
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-        )}
+          }
       
 
       {/* Filters Bar */}
@@ -343,37 +343,37 @@ export default function Signals() {
         <div className="flex items-center justify-between gap-2">
           {/* Sort Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors text-sm active:scale-95">
-                <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-slate-300 truncate max-w-[120px] sm:max-w-none">{currentSortOption?.label}</span>
-              </button>
-            </DropdownMenuTrigger>
+            
+
+
+
+
+                
             <DropdownMenuContent align="start" className="w-48 bg-slate-900 border-slate-700">
-              {sortOptions.map((option) => (
-                <DropdownMenuItem
-                  key={option.value}
-                  onClick={() => setSortBy(option.value)}
-                  className={cn(
-                    "flex items-center gap-2 cursor-pointer",
-                    sortBy === option.value && "bg-slate-800 text-white"
-                  )}
-                >
+              {sortOptions.map((option) =>
+                  <DropdownMenuItem
+                    key={option.value}
+                    onClick={() => setSortBy(option.value)}
+                    className={cn(
+                      "flex items-center gap-2 cursor-pointer",
+                      sortBy === option.value && "bg-slate-800 text-white"
+                    )}>
+                    
                   {option.icon}
                   <span>{option.label}</span>
                 </DropdownMenuItem>
-              ))}
+                  )}
             </DropdownMenuContent>
           </DropdownMenu>
 
           {/* Results count */}
           <div className="flex items-center gap-2 text-xs text-slate-500">
-            {showFavoritesOnly && (
-              <div className="flex items-center gap-1 text-rose-400">
+            {showFavoritesOnly &&
+                <div className="flex items-center gap-1 text-rose-400">
                 <Heart className="w-3 h-3 fill-current" />
                 <span className="hidden sm:inline">{t('signals_favorites')}</span>
               </div>
-            )}
+                }
             <span>{filteredAndSortedSignals.length} {t('signals_count')}</span>
           </div>
         </div>
@@ -381,73 +381,73 @@ export default function Signals() {
 
       {/* Signals List grouped by day */}
       <main className="p-3 sm:p-4 space-y-4 sm:space-y-6">
-        {showAICenter ? (
-          <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+        {showAICenter ?
+            <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
             <AICenter onClose={() => setShowAICenter(false)} />
-          </Suspense>
-        ) : (
-          <>
-            {/* Performance Stats Panel */}
-            {!loading && signals.length > 0 && (
-              <SignalPerformanceStats signals={signals} />
-            )}
+          </Suspense> :
 
-            {loading && (
+            <>
+            {/* Performance Stats Panel */}
+            {!loading && signals.length > 0 &&
+              <SignalPerformanceStats signals={signals} />
+              }
+
+            {loading &&
               <div className="flex justify-center py-10">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            )}
-            {error && (
+              }
+            {error &&
               <p className="text-destructive text-center py-4">{error}</p>
-            )}
-            {!loading && filteredAndSortedSignals.length === 0 && (
+              }
+            {!loading && filteredAndSortedSignals.length === 0 &&
               <p className="text-muted-foreground text-center py-10">{t('signals_no_signals')}</p>
-            )}
+              }
 
             {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
 
-            {dayTab === 'yesterday' && (
+            {dayTab === 'yesterday' &&
               <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
-                {yesterdaySignals.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_yesterday')}</p>
-                ) : (
-                  yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
-                )}
+                {yesterdaySignals.length === 0 ?
+                <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_yesterday')}</p> :
+
+                yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
+                }
               </SignalsDayGroup>
-            )}
+              }
 
             {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
 
-            {dayTab === 'calendar' && calendarDate && (
+            {dayTab === 'calendar' && calendarDate &&
               <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
-                {calendarSignals.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_date')}</p>
-                ) : (
-                  calendarSignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
-                )}
-              </SignalsDayGroup>
-            )}
+                {calendarSignals.length === 0 ?
+                <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_date')}</p> :
 
-            {dayTab === 'all' && (
+                calendarSignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)
+                }
+              </SignalsDayGroup>
+              }
+
+            {dayTab === 'all' &&
               <>
                 <TodaySignalsGroup signals={todaySignals} />
                 {tomorrowSignals.length > 0 && <TomorrowSignalsGroup signals={tomorrowSignals} />}
-                {yesterdaySignals.length > 0 && (
-                  <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+                {yesterdaySignals.length > 0 &&
+                <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
                     {yesterdaySignals.map((signal) => <SignalCardV2 key={signal.id} signal={signal} />)}
                   </SignalsDayGroup>
-                )}
-                {otherDayGroups.map(([day, daySignals]) => (
-                  <SignalsDayGroup key={day} date={day} count={daySignals.length}>
-                    {daySignals.map((signal) => (
-                      <SignalCardV2 key={signal.id} signal={signal} />
-                    ))}
+                }
+                {otherDayGroups.map(([day, daySignals]) =>
+                <SignalsDayGroup key={day} date={day} count={daySignals.length}>
+                    {daySignals.map((signal) =>
+                  <SignalCardV2 key={signal.id} signal={signal} />
+                  )}
                   </SignalsDayGroup>
-                ))}
+                )}
               </>
-            )}
+              }
           </>
-        )}
+            }
       </main>
 
 
@@ -455,6 +455,6 @@ export default function Signals() {
       <BottomNav />
       </div>
     </div>
-    </PageTransition>
-  );
+    </PageTransition>);
+
 }
