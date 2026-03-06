@@ -5,6 +5,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// In-memory cache: key -> { data, ts }
+const cache = new Map<string, { data: unknown; ts: number }>();
+const CACHE_TTL = 60 * 60_000; // 60 minutes
+
 interface SignalData {
   currencyPair: string;
   action: string;
@@ -30,6 +34,15 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
+    }
+
+    // Cache check
+    const cacheKey = `${signal.currencyPair}_${signal.entryPrice}_${signal.takeProfit}_${signal.stopLoss}_${mode || 'full'}_${language || 'es'}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return new Response(JSON.stringify({ ...cached.data as object, cached: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     console.log('Analyzing signal:', signal.currencyPair, 'mode:', mode);
@@ -131,10 +144,10 @@ Evaluate the risk.`;
       const risk = JSON.parse(riskToolCall.function.arguments);
       console.log('Risk assessed:', JSON.stringify(risk));
 
-      return new Response(JSON.stringify({
-        risk,
-        generatedAt: new Date().toISOString()
-      }), {
+      const riskResult = { risk, generatedAt: new Date().toISOString() };
+      cache.set(cacheKey, { data: riskResult, ts: Date.now() });
+      if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+      return new Response(JSON.stringify(riskResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -198,10 +211,10 @@ Genera una nota breve de análisis para acompañar esta señal.`;
         throw new Error('No notes generated');
       }
 
-      return new Response(JSON.stringify({
-        notes: generatedNotes.trim(),
-        generatedAt: new Date().toISOString()
-      }), {
+      const notesResult = { notes: generatedNotes.trim(), generatedAt: new Date().toISOString() };
+      cache.set(cacheKey, { data: notesResult, ts: Date.now() });
+      if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+      return new Response(JSON.stringify(notesResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -333,10 +346,10 @@ Analiza y devuelve la estrategia óptima.`;
       const strategy = JSON.parse(toolCall.function.arguments);
       console.log('Strategy generated:', JSON.stringify(strategy));
 
-      return new Response(JSON.stringify({
-        strategy,
-        generatedAt: new Date().toISOString()
-      }), {
+      const strategyResult = { strategy, generatedAt: new Date().toISOString() };
+      cache.set(cacheKey, { data: strategyResult, ts: Date.now() });
+      if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+      return new Response(JSON.stringify(strategyResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -410,10 +423,10 @@ Genera un análisis profesional y detallado.`;
       throw new Error('No analysis generated');
     }
 
-    return new Response(JSON.stringify({
-      analysis,
-      generatedAt: new Date().toISOString()
-    }), {
+    const fullResult = { analysis, generatedAt: new Date().toISOString() };
+    cache.set(cacheKey, { data: fullResult, ts: Date.now() });
+    if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+    return new Response(JSON.stringify(fullResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
