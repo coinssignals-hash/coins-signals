@@ -339,45 +339,45 @@ export default function Signals() {
       
 
       {/* Filters Bar */}
-      <div className="bg-slate-900/50 border-b border-slate-700/50 px-3 sm:px-4 py-2">
-        <div className="flex items-center justify-between gap-2">
-          {/* Sort Dropdown */}
-          <DropdownMenu>
-            
+      
 
 
 
 
-                
-            <DropdownMenuContent align="start" className="w-48 bg-slate-900 border-slate-700">
-              {sortOptions.map((option) =>
-                  <DropdownMenuItem
-                    key={option.value}
-                    onClick={() => setSortBy(option.value)}
-                    className={cn(
-                      "flex items-center gap-2 cursor-pointer",
-                      sortBy === option.value && "bg-slate-800 text-white"
-                    )}>
-                    
-                  {option.icon}
-                  <span>{option.label}</span>
-                </DropdownMenuItem>
-                  )}
-            </DropdownMenuContent>
-          </DropdownMenu>
 
-          {/* Results count */}
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            {showFavoritesOnly &&
-                <div className="flex items-center gap-1 text-rose-400">
-                <Heart className="w-3 h-3 fill-current" />
-                <span className="hidden sm:inline">{t('signals_favorites')}</span>
-              </div>
-                }
-            
-          </div>
-        </div>
-      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
 
       {/* Signals List grouped by day */}
       <main className="p-3 sm:p-4 space-y-4 sm:space-y-6">
