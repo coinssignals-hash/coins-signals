@@ -28,7 +28,7 @@ interface SignalInput {
 
 // In-memory cache keyed by signal fingerprint
 const strategyCache = new Map<string, { strategy: SignalStrategy; timestamp: number }>();
-const CACHE_TTL = 30 * 60 * 1000; // 30 min
+const CACHE_TTL = 60 * 60 * 1000; // 60 min
 
 function getCacheKey(signal: SignalInput): string {
   return `${signal.currencyPair}-${signal.entryPrice}-${signal.takeProfit}-${signal.stopLoss}`;
