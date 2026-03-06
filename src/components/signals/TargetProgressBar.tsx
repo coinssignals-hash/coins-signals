@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { Target, ShieldAlert } from 'lucide-react';
 
 interface TargetProgressBarProps {
