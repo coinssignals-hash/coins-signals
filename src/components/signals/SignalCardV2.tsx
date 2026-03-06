@@ -35,12 +35,6 @@ import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
 import { es, enUS, ptBR, fr } from "date-fns/locale";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger } from
-"@/components/ui/tooltip";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger } from
@@ -233,18 +227,16 @@ function PriceAge({ timestamp }: {timestamp: number;}) {
   const exactDate = new Date(timestamp).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={cn("text-[8px] font-mono tabular-nums cursor-help", color)}>
-            ⏱ {label} ago
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" className="text-[10px] font-mono">
-          <p>{exactDate} — {exactTime}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>);
+    <Popover>
+      <PopoverTrigger asChild>
+        <span className={cn("text-[8px] font-mono tabular-nums cursor-pointer active:scale-95 transition-transform", color)}>
+          ⏱ {label} ago
+        </span>
+      </PopoverTrigger>
+      <PopoverContent side="bottom" className="w-auto text-[10px] font-mono bg-[hsl(225,25%,10%)] border-cyan-500/20 text-cyan-100 p-2 shadow-xl shadow-black/40">
+        <p>{exactDate} — {exactTime}</p>
+      </PopoverContent>
+    </Popover>);
 
 }
 
