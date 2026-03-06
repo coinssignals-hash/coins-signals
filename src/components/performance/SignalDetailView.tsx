@@ -1,5 +1,6 @@
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { type SignalData } from './SignalsList';
+import { formatPrice } from '@/lib/utils';
 
 interface SignalDetailViewProps {
   signal: SignalData;
