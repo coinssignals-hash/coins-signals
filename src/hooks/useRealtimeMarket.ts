@@ -17,7 +17,6 @@ interface UseRealtimeMarketReturn {
   isReconnecting: boolean;
   reconnectAttempt: number;
   error: string | null;
-  countdown: number;
   subscribe: (symbols: string[]) => void;
   unsubscribe: (symbols: string[]) => void;
   getQuote: (symbol: string) => RealtimeQuote | null;
@@ -28,15 +27,12 @@ interface UseRealtimeMarketReturn {
  * WebSocket connections to Polygon require POLYGON_API_KEY which may not be configured.
  */
 export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMarketReturn {
-  const POLL_INTERVAL = 15000;
   const [quotes, setQuotes] = useState<Map<string, RealtimeQuote>>(new Map());
   const [isConnected, setIsConnected] = useState(false);
   const [isReconnecting] = useState(false);
   const [reconnectAttempt] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(POLL_INTERVAL / 1000);
   const subscribedSymbolsRef = useRef<Set<string>>(new Set(initialSymbols));
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchQuote = useCallback(async (symbol: string) => {
@@ -93,16 +89,8 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
   // Start/stop polling based on page visibility
   const startPolling = useCallback(() => {
     if (intervalRef.current) return;
-    setCountdown(POLL_INTERVAL / 1000);
     pollSymbols();
-    intervalRef.current = setInterval(() => {
-      setCountdown(POLL_INTERVAL / 1000);
-      pollSymbols();
-    }, POLL_INTERVAL);
-    // Countdown ticker every second
-    countdownRef.current = setInterval(() => {
-      setCountdown(prev => Math.max(0, prev - 1));
-    }, 1000);
+    intervalRef.current = setInterval(pollSymbols, 15000);
     setIsConnected(true);
   }, [pollSymbols]);
 
@@ -110,10 +98,6 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
-    }
-    if (countdownRef.current) {
-      clearInterval(countdownRef.current);
-      countdownRef.current = null;
     }
     setIsConnected(false);
   }, []);
@@ -150,7 +134,6 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
     isReconnecting,
     reconnectAttempt,
     error,
-    countdown,
     subscribe,
     unsubscribe,
     getQuote,
