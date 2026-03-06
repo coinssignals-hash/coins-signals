@@ -424,18 +424,18 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         </div>
 
         {/* Completed result banner */}
-        {status === 'completed' && signal?.closedResult &&
-        <div className={cn(
-          "relative z-50 mx-4 mb-2 px-3 py-2 rounded-lg text-center text-xs font-bold uppercase tracking-wider border",
-          signal.closedResult === 'tp_hit' ?
-          "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
-          "bg-rose-500/20 text-rose-400 border-rose-500/30"
-        )}>
-            {signal.closedResult === 'tp_hit' ?
-          `✅ Take Profit ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}` :
-          `❌ Stop Loss ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}`
-          }
-          </div>
+        {status === 'completed' && signal?.closedResult
+
+
+
+
+
+
+
+
+
+
+
         }
 
         {/* Auto-expired banner (completed without TP/SL hit) */}
