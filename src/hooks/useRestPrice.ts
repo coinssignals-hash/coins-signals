@@ -105,12 +105,21 @@ export function useRestPrice(symbol: string, pollIntervalMs = 30_000, fallbackPr
 
   useEffect(() => {
     if (pollIntervalMs <= 0) return;
+    const seconds = Math.ceil(pollIntervalMs / 1000);
+    setCountdown(seconds);
     fetchPrice();
-    intervalRef.current = setInterval(fetchPrice, pollIntervalMs);
+    intervalRef.current = setInterval(() => {
+      setCountdown(seconds);
+      fetchPrice();
+    }, pollIntervalMs);
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => Math.max(0, prev - 1));
+    }, 1000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
     };
   }, [fetchPrice, pollIntervalMs]);
 
-  return { quote, loading, error, refetch: fetchPrice };
+  return { quote, loading, error, countdown, refetch: fetchPrice };
 }
