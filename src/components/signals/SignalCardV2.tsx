@@ -546,7 +546,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <span className={cn(
                     "font-mono font-extrabold leading-none tracking-tight transition-colors duration-300",
                     !priceDiff.hasData ? "text-cyan-300" : priceDiff.percent >= 0 ? "text-green-400" : "text-red-400",
-                    priceDiff.hasData && Math.abs(priceDiff.percent) >= 10 ? "text-[10px]" : "text-[12px]"
+                    priceDiff.hasData && Math.abs(priceDiff.percent) >= 10 ? "text-[11px]" : "text-[13px]"
                   )}
                   style={{ textShadow: priceDiff.hasData ?
                     priceDiff.percent >= 0 ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
