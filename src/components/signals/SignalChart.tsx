@@ -367,18 +367,14 @@ function buildSignalChartSvg(
     parts.push(buildBollingerOverlay(data as IndCandleData[], xOf, yOfPrice));
   }
 
-  // ── Sub-chart indicators ──
-  const priceChartBottom = PRICE_BOTTOM + 50; // below x-axis labels
-  for (let si = 0; si < subIndicators.length; si++) {
-    const indType = subIndicators[si];
-    const subY1 = priceChartBottom + si * SUB_CHART_H;
-    const subY2 = subY1 + SUB_CHART_H - 4; // small gap
-    parts.push(buildIndicatorSubChart(indType, data as IndCandleData[], {
-      x1: CHART_X1,
-      x2: CHART_X2,
-      y1: subY1,
-      y2: subY2,
-      dataLen: data.length,
+  // ── Overlay indicator panels (RSI, MACD, Stochastic, ADX) ──
+  const overlayIndicators = activeIndicators.filter(i => i !== 'bollinger');
+  for (let si = 0; si < overlayIndicators.length; si++) {
+    parts.push(buildIndicatorOverlay(overlayIndicators[si], data as IndCandleData[], si, overlayIndicators.length, {
+      chartX1: CHART_X1,
+      chartX2: CHART_X2,
+      priceTop: PRICE_TOP,
+      priceBottom: PRICE_BOTTOM,
       xOf,
     }));
   }
