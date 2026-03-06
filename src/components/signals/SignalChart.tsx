@@ -390,7 +390,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const [fsSR, setFsSR] = useState(true);
   const [fsSignalLines, setFsSignalLines] = useState(false);
   const [showTfMenu, setShowTfMenu] = useState(false);
-  const [fsIndicators, setFsIndicators] = useState<Set<IndicatorType>>(new Set());
+  const [fsIndicators, setFsIndicators] = useState<IndicatorConfig[]>([]);
   const [showIndMenu, setShowIndMenu] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const getVpSize = () => ({
