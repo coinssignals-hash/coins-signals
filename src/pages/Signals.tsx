@@ -409,7 +409,7 @@ export default function Signals() {
             {dayTab === 'today' && <TodaySignalsGroup signals={todaySignals} />}
 
             {dayTab === 'yesterday' &&
-              <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length}>
+              <SignalsDayGroup date={format(subDays(new Date(), 1), 'yyyy-MM-dd')} count={yesterdaySignals.length} activeCount={yesterdaySignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                 {yesterdaySignals.length === 0 ?
                 <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_yesterday')}</p> :
 
