@@ -12,6 +12,7 @@ export function useProgressBarState(props: TargetProgressBarProps): {
   } = props;
 
   const prevZoneRef = useRef<PriceZone | null>(null);
+  const activatedRef = useRef(false);
   const [pulse, setPulse] = useState(false);
   const [pulseColor, setPulseColor] = useState('');
   const [crossed, setCrossed] = useState<'profit' | 'loss' | null>(null);
@@ -64,13 +65,18 @@ export function useProgressBarState(props: TargetProgressBarProps): {
 
   const hasLivePrice = displayPrice !== null && Number.isFinite(displayPrice) && hasRange;
 
-  // Activated = price has reached entry (order filled)
-  // BUY: activated when price rises to entry or above
-  // SELL: activated when price drops to entry or below
-  // Completed signals are always activated
-  const isActivated = isCompleted || (hasLivePrice && (
-    isBuy ? displayPrice >= entryPrice : displayPrice <= entryPrice
-  ));
+  // Sticky activation: once price reaches entry, stays activated until signal closes (TP/SL hit)
+  // Reset ref when signalId changes (via isCompleted toggling or new props)
+  if (isCompleted) {
+    activatedRef.current = false; // reset for next signal reuse
+  }
+
+  if (hasLivePrice && !activatedRef.current && !isCompleted) {
+    const reached = isBuy ? displayPrice >= entryPrice : displayPrice <= entryPrice;
+    if (reached) activatedRef.current = true;
+  }
+
+  const isActivated = isCompleted || activatedRef.current;
 
   if (hasLivePrice) {
     position = Math.max(0, Math.min(100, toPos(displayPrice)));
