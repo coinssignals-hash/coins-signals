@@ -79,6 +79,7 @@ export function useCurrencyImpactAI(signal: {
     } catch (err) {
       console.error("Currency impact AI error:", err);
       setError(err instanceof Error ? err.message : "Error");
+      fetchedRef.current = null; // allow retry on error
       // Fallback to static data
       const clean = signal.currencyPair.replace(/[^A-Z]/gi, "").toUpperCase();
       setData([
