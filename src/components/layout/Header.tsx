@@ -4,8 +4,8 @@ import logoImg from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, Search, Bell,
-  BarChart3, Wallet, BarChart2
-} from 'lucide-react';
+  BarChart3, Wallet, BarChart2 } from
+'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { MainDrawer } from './MainDrawer';
@@ -22,12 +22,12 @@ export function Header() {
   const { t } = useTranslation();
 
   const navItems = [
-    { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
-    { icon: BarChart2, label: t('nav_ideas'), href: '/', badgeType: null },
-    { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
-    { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
-    { icon: BarChart3, label: 'Acciones', href: '/stocks', badgeType: null },
-  ];
+  { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
+  { icon: BarChart2, label: t('nav_ideas'), href: '/', badgeType: null },
+  { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
+  { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio', badgeType: null },
+  { icon: BarChart3, label: 'Acciones', href: '/stocks', badgeType: null }];
+
 
   return (
     <>
@@ -67,44 +67,44 @@ export function Header() {
         <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
         {/* Navigation tabs — scrollable on small screens */}
-        <nav className="flex items-center overflow-x-auto scrollbar-hide gap-0.5 px-1.5 py-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.href;
-            const showBadge = item.badgeType === 'news' && newsCount > 0 && !isActive;
+        
 
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onMouseEnter={onMouseEnter(item.href)}
-                onTouchStart={onTouchStart(item.href)}
-                className={cn(
-                  'nav-link-compact relative px-2.5 py-1 text-[11px] font-semibold rounded-full transition-colors whitespace-nowrap flex-shrink-0 active:scale-95',
-                  isActive
-                    ? 'text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="activeTab"
-                    className="absolute inset-0 rounded-full bg-primary shadow-[0_0_10px_hsl(217_91%_60%/0.4)]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10">{item.label}</span>
-                {showBadge && (
-                  <span className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse z-20">
-                    {newsCount > 99 ? '99+' : newsCount}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       </header>
 
       <MainDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
-    </>
-  );
+    </>);
+
 }
