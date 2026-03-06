@@ -719,6 +719,16 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           )}
         </AnimatePresence>
 
+        {/* Expand toggle button */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center py-2.5 text-cyan-300/60 hover:text-cyan-300 transition-colors active:scale-95 min-h-[44px]">
+          <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", expanded && "rotate-180")} />
+        </button>
+
+        {/* Expanded content */}
+        {expanded &&
+        <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
             <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
 
