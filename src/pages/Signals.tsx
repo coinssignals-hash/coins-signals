@@ -366,15 +366,18 @@ export default function Signals() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Results count */}
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            {showFavoritesOnly &&
-                <div className="flex items-center gap-1 text-rose-400">
-                <Heart className="w-3 h-3 fill-current" />
-                <span className="hidden sm:inline">{t('signals_favorites')}</span>
-              </div>
-                }
-            
+          {/* Action icons */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowAICenter(!showAICenter)}
+              className={cn(
+                "p-2 rounded-full transition-colors active:scale-95",
+                showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+              )}
+              title="Centro de Análisis IA">
+              <Brain className="w-4.5 h-4.5" />
+            </button>
+            <NotificationToggle />
           </div>
         </div>
       </div>
