@@ -143,7 +143,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'forex' | 'crypto'>('all');
   const containerRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavoriteSymbols();
 
