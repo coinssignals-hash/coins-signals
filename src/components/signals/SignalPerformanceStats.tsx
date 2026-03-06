@@ -87,9 +87,11 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
         className="flex items-center gap-2 w-full px-4 py-3 hover:bg-white/[0.03] transition-colors"
       >
         <BarChart3 className="w-4 h-4 text-cyan-400" />
-        <span className="text-xs font-bold text-cyan-200 uppercase tracking-wider flex-1 text-left">
+        <span className="text-xs font-bold text-cyan-200 uppercase tracking-wider text-left">
           Rendimiento de Señales
         </span>
+        {activesBadge}
+        <span className="ml-auto" />
         <span className={cn("text-xs font-mono font-bold", winRateColor)}>
           {stats.winRate.toFixed(0)}% WR
         </span>
