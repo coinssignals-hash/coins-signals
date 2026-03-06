@@ -272,7 +272,7 @@ export function TargetProgressBar({
               "absolute -top-4 whitespace-nowrap px-1 py-px rounded text-[8px] font-bold font-mono tabular-nums",
               nearEntry ? "bg-yellow-500/20 text-yellow-400" : isAboveEntry ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
             )}>
-              {displayPrice!.toFixed(isJpy ? 2 : 3)}
+              {formatPrice(displayPrice!, isJpy ? 'JPY' : 'EUR/USD')}
             </div>
           )}
           <div
