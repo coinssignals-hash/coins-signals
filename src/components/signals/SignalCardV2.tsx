@@ -190,13 +190,13 @@ const CURRENCY_FLAGS: Record<string, string> = {
   NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr"
 };
 
-function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takeProfit3, stopLoss, isJpy
+function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takeProfit3, stopLoss, isJpy, currencyPair
 
-}: {entryPrice: number;takeProfit: number;takeProfit2?: number;takeProfit3?: number;stopLoss: number;isJpy: boolean;}) {
-  const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy);
-  const tp2 = takeProfit2 ? computePriceMetrics(takeProfit2, entryPrice, isJpy) : null;
-  const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy) : null;
-  const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
+}: {entryPrice: number;takeProfit: number;takeProfit2?: number;takeProfit3?: number;stopLoss: number;isJpy: boolean;currencyPair?: string;}) {
+  const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy, currencyPair);
+  const tp2 = takeProfit2 ? computePriceMetrics(takeProfit2, entryPrice, isJpy, currencyPair) : null;
+  const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy, currencyPair) : null;
+  const sl = computePriceMetrics(stopLoss, entryPrice, isJpy, currencyPair);
   return (
     <div className="space-y-1.5 mx-1.5 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
