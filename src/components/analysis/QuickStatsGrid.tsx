@@ -37,8 +37,8 @@ export function QuickStatsGrid({
   const stats = [
     {
       label: 'Cambio',
-      value: `${isPositive ? '+' : ''}${changePercent.toFixed(2)}%`,
-      subValue: `${isPositive ? '+' : ''}${(pips).toFixed(1)}p`,
+      value: `${isPositive ? '+' : ''}${changePercent.toFixed(3)}%`,
+      subValue: `${isPositive ? '+' : ''}${(pips).toFixed(2)}p`,
       icon: isPositive ? TrendingUp : TrendingDown,
       color: isPositive ? 'text-green-400' : 'text-red-400',
       bgColor: isPositive ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20',
