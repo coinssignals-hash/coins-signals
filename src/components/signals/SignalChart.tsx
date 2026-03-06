@@ -383,7 +383,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             {/* S/R toggle — bottom-right */}
             <button
               onClick={() => setFsSR(prev => !prev)}
-              className="absolute bottom-3 right-3 z-[10001] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+              className="absolute bottom-1 right-3 z-[10001] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
               style={{
                 background: fsSR ? 'rgba(0,230,180,0.15)' : 'rgba(255,255,255,0.08)',
                 border: `1px solid ${fsSR ? 'rgba(0,230,180,0.4)' : 'rgba(255,255,255,0.2)'}`,
