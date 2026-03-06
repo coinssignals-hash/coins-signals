@@ -1,5 +1,4 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ZoomableChartProps {
@@ -107,21 +106,6 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
 
   return (
     <div className={cn('relative w-full', className)}>
-      {/* Zoom controls */}
-      <div className="absolute top-3 right-3 z-20 flex flex-col gap-1">
-        <button onClick={zoomIn} className="p-1.5 rounded-md bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors backdrop-blur-sm" title="Zoom in">
-          <ZoomIn className="w-4 h-4" />
-        </button>
-        <button onClick={zoomOut} className="p-1.5 rounded-md bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors backdrop-blur-sm" title="Zoom out">
-          <ZoomOut className="w-4 h-4" />
-        </button>
-        {isZoomed && (
-          <button onClick={resetZoom} className="p-1.5 rounded-md bg-slate-900/80 text-cyan-300 hover:text-white hover:bg-slate-800 transition-colors backdrop-blur-sm" title="Resetear zoom">
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
       {/* Zoom indicator */}
       {isZoomed && (
         <div className="absolute bottom-3 left-3 z-20 px-2 py-1 rounded-md bg-slate-900/80 backdrop-blur-sm text-[10px] font-mono text-cyan-300">
