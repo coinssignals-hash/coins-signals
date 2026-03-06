@@ -7,7 +7,7 @@ import { ZoomableChart } from './ZoomableChart';
 import {
   type IndicatorType, type CandleData as IndCandleData,
   INDICATOR_LABELS, INDICATOR_COLORS,
-  buildIndicatorSubChart, buildBollingerOverlay,
+  buildIndicatorOverlay, buildBollingerOverlay,
 } from './chartIndicators';
 
 const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
