@@ -77,11 +77,11 @@ vi.mock('@/integrations/supabase/client', () => {
     };
     // Make the chain work as a promise
     Object.defineProperty(chain, 'then', {
-      value: (onFulfilled: Function, onRejected?: Function) =>
+      value: (onFulfilled?: (v: any) => any, onRejected?: (r: any) => any) =>
         Promise.resolve(result).then(onFulfilled, onRejected),
     });
     Object.defineProperty(chain, 'catch', {
-      value: (onRejected: Function) => Promise.resolve(result).catch(onRejected),
+      value: (onRejected?: (r: any) => any) => Promise.resolve(result).catch(onRejected),
     });
     return chain;
   };
