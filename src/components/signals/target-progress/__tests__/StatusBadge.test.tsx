@@ -25,25 +25,25 @@ const baseState: ProgressBarState = {
 const noPulse: PulseState = { pulse: false, pulseColor: '', crossed: null };
 
 describe('StatusBadge', () => {
-  it('shows TP hit when completed with tp_hit', () => {
+  it('shows TP hit with pips when completed with tp_hit', () => {
     render(
-      <StatusBadge state={baseState} pulse={noPulse} isCompleted closedResult="tp_hit" />,
+      <StatusBadge state={{ ...baseState, targetLabel: 'TP1', targetPercent: 100, pipsFromEntry: 50 }} pulse={noPulse} isCompleted closedResult="tp_hit" />,
     );
-    expect(screen.getByText('✅ TP')).toBeInTheDocument();
+    expect(screen.getByText('✅ TP1 100% · 50.0p')).toBeInTheDocument();
   });
 
-  it('shows SL hit when completed with sl_hit', () => {
+  it('shows SL hit with pips when completed with sl_hit', () => {
     render(
-      <StatusBadge state={baseState} pulse={noPulse} isCompleted closedResult="sl_hit" />,
+      <StatusBadge state={{ ...baseState, targetLabel: 'SL', targetPercent: 100, pipsFromEntry: 30 }} pulse={noPulse} isCompleted closedResult="sl_hit" />,
     );
-    expect(screen.getByText('❌ SL')).toBeInTheDocument();
+    expect(screen.getByText('❌ SL 100% · 30.0p')).toBeInTheDocument();
   });
 
-  it('shows expired when completed with other result', () => {
+  it('shows expired with pips when completed with other result', () => {
     render(
-      <StatusBadge state={baseState} pulse={noPulse} isCompleted closedResult="expired" />,
+      <StatusBadge state={{ ...baseState, targetLabel: 'ENTRY', targetPercent: 10, pipsFromEntry: 5 }} pulse={noPulse} isCompleted closedResult="expired" />,
     );
-    expect(screen.getByText('⏱ Exp')).toBeInTheDocument();
+    expect(screen.getByText('⏱ ENTRY 10% · 5.0p')).toBeInTheDocument();
   });
 
   it('shows progress text when not completed', () => {
