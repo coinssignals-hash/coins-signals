@@ -190,45 +190,18 @@ export default function Signals() {
       {/* Signal Controls Bar */}
       <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
-            {/* View Mode Toggle */}
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              
-          </div>
-
-          <div className="flex items-center gap-1">
             {isAdmin &&
               <button
                 onClick={() => navigate('/create-signal')}
                 className="p-2.5 rounded-full transition-colors active:scale-95 text-accent hover:text-accent/80 hover:bg-accent/10"
                 title="Crear Señal (Admin)">
-                
                 <PlusCircle className="w-5 h-5" />
               </button>
-              }
+            }
+            <NotificationToggle />
+          </div>
+
+          <div className="flex items-center gap-1">
             <button
                 onClick={() => setShowAICenter(!showAICenter)}
                 className={cn(
@@ -236,10 +209,8 @@ export default function Signals() {
                   showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
                 )}
                 title="Centro de Análisis IA">
-                
               <Brain className="w-5 h-5" />
             </button>
-            <NotificationToggle />
             {isAuthenticated &&
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
@@ -248,10 +219,9 @@ export default function Signals() {
                   showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
                 )}
                 title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}>
-                
                 <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
               </button>
-              }
+            }
           </div>
         </div>
 
