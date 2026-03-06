@@ -90,7 +90,7 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
   const startPolling = useCallback(() => {
     if (intervalRef.current) return;
     pollSymbols();
-    intervalRef.current = setInterval(pollSymbols, 5000);
+    intervalRef.current = setInterval(pollSymbols, 15000);
     setIsConnected(true);
   }, [pollSymbols]);
 
