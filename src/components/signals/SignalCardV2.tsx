@@ -274,8 +274,10 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // Build polygon symbol for REST price
   const symbol = `${baseCurrency}/${quoteCurrency}`;
   const isCompleted = status === 'completed' || status === 'cancelled';
-  const { quote, loading: priceLoading } = useRestPrice(symbol, isCompleted ? 0 : 30_000);
+  const closedFallback = isCompleted ? (signal?.closed_price ?? entryPrice) : entryPrice;
+  const { quote, loading: priceLoading } = useRestPrice(symbol, isCompleted ? 0 : 30_000, closedFallback);
   const isConnected = !!quote;
+  const isLivePrice = quote?.isLive !== false;
 
   // AI strategy (fetched in background when card expands)
   const strategyInput = useMemo(() => signal ? {
