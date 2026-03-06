@@ -300,26 +300,24 @@ export function TargetProgressBar({
           <span className="text-[7px] text-white/30 font-semibold uppercase tracking-widest leading-none">
             Entry
           </span>
+          {/* Status badge below Entry */}
+          <div className={cn(
+            "flex items-center gap-1 px-1.5 py-px rounded-full text-[8px] font-bold mt-0.5 transition-all duration-500",
+            isCompleted && closedResult === 'tp_hit' ? "bg-emerald-500/20 text-emerald-400"
+              : isCompleted && closedResult === 'sl_hit' ? "bg-rose-500/20 text-rose-400"
+                : nearEntry ? "bg-yellow-500/15 text-yellow-400"
+                  : isAboveEntry ? "bg-emerald-500/15 text-emerald-400"
+                    : "bg-rose-500/15 text-rose-400",
+            pulse && "scale-110 shadow-lg"
+          )}
+            style={pulse ? { boxShadow: `0 0 12px ${pulseColor}50` } : {}}
+          >
+            {isCompleted
+              ? closedResult === 'tp_hit' ? '✅ TP' : closedResult === 'sl_hit' ? '❌ SL' : '⏱ Exp'
+              : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`
+            }
+          </div>
         </div>
-        {/* TP1 label */}
-        <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
-          <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
-            {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
-          </span>
-          <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
-            TP
-          </span>
-        </div>
-        {takeProfit2 && tp2Pos !== null && (
-          <span className="absolute text-[11px] text-emerald-400/40 font-mono tabular-nums -translate-x-1/2" style={{ left: `${tp2Pos}%` }}>
-            TP2
-          </span>
-        )}
-        {takeProfit3 && tp3Pos !== null && (
-          <span className="absolute right-0 text-[11px] text-emerald-400/30 font-mono tabular-nums">
-            TP3
-          </span>
-        )}
       </div>
     </div>
   );
