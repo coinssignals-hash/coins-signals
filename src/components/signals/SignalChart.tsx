@@ -1,9 +1,14 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Maximize2, X, TrendingUp, Clock, BarChart3 } from 'lucide-react';
+import { Maximize2, X, TrendingUp, Clock, BarChart3, ChevronDown, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ZoomableChart } from './ZoomableChart';
+import {
+  type IndicatorType, type CandleData as IndCandleData,
+  INDICATOR_LABELS, INDICATOR_COLORS,
+  buildIndicatorSubChart, buildBollingerOverlay,
+} from './chartIndicators';
 
 const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
   { value: '5min', label: '5M' },
@@ -66,13 +71,19 @@ function buildSignalChartSvg(
   intervalLabel = '15min',
   signalLevels?: SignalLevels,
   showSignalLevels = false,
+  activeIndicators: IndicatorType[] = [],
 ): string {
-  const W = width, H = height;
+  // Sub-chart indicators (not bollinger which is an overlay)
+  const subIndicators = activeIndicators.filter(i => i !== 'bollinger');
+  const SUB_CHART_H = 80; // height per sub-chart
+  const totalSubH = subIndicators.length * SUB_CHART_H;
+  const W = width, H = height + totalSubH;
+
   // Reserve extra space on the right for "next day" empty zone
-  const NEXT_DAY_RATIO = 0.12; // 12% of chart width for next day
+  const NEXT_DAY_RATIO = 0.12;
   const PAD = compact
-    ? { top: 18, right: 55, bottom: 50, left: 40 }
-    : { top: 30, right: 100, bottom: 50, left: 60 };
+    ? { top: 18, right: 55, bottom: 50 + totalSubH, left: 40 }
+    : { top: 30, right: 100, bottom: 50 + totalSubH, left: 60 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
   const CHART_W_FULL = CHART_X2 - CHART_X1;
@@ -353,6 +364,28 @@ function buildSignalChartSvg(
     parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${slY + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(stopLoss, jpy)}</text>`);
   }
 
+  // ── Bollinger overlay (drawn on price chart) ──
+  if (activeIndicators.includes('bollinger')) {
+    const yOfPrice = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
+    parts.push(buildBollingerOverlay(data as IndCandleData[], xOf, yOfPrice));
+  }
+
+  // ── Sub-chart indicators ──
+  const priceChartBottom = PRICE_BOTTOM + 50; // below x-axis labels
+  for (let si = 0; si < subIndicators.length; si++) {
+    const indType = subIndicators[si];
+    const subY1 = priceChartBottom + si * SUB_CHART_H;
+    const subY2 = subY1 + SUB_CHART_H - 4; // small gap
+    parts.push(buildIndicatorSubChart(indType, data as IndCandleData[], {
+      x1: CHART_X1,
+      x2: CHART_X2,
+      y1: subY1,
+      y2: subY2,
+      dataLen: data.length,
+      xOf,
+    }));
+  }
+
   // Title
   parts.push(`<text x="${CHART_X1}" y="20" fill="${TEXT_COL}" font-family="sans-serif" font-size="11" font-weight="bold">${intervalLabel}</text>`);
 
@@ -374,6 +407,8 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const [fsSR, setFsSR] = useState(true);
   const [fsSignalLines, setFsSignalLines] = useState(false);
   const [showTfMenu, setShowTfMenu] = useState(false);
+  const [fsIndicators, setFsIndicators] = useState<Set<IndicatorType>>(new Set());
+  const [showIndMenu, setShowIndMenu] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const getVpSize = () => ({
     w: Math.max(window.innerWidth, document.documentElement.clientWidth),
@@ -407,15 +442,17 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, [candles, support, resistance, showSR, intervalLabel, signalLevels]);
 
+  const activeIndArray = useMemo(() => Array.from(fsIndicators), [fsIndicators]);
+
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
     if (!candles.length || !fullscreen) return null;
     const fsW = isPortrait ? viewportSize.h : viewportSize.w;
     const fsH = isPortrait ? viewportSize.w : viewportSize.h;
     const scale = Math.max(1, Math.ceil(2340 / fsW));
-    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel, signalLevels, fsSignalLines);
+    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel, signalLevels, fsSignalLines, activeIndArray);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel, signalLevels, fsSignalLines]);
+  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel, signalLevels, fsSignalLines, activeIndArray]);
 
   // Lock body scroll in fullscreen + recalculate viewport
   useEffect(() => {
@@ -526,8 +563,8 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                 </ZoomableChart>
               )}
 
-              {/* Top-left: Signal levels toggle */}
-              <div className="absolute top-2 left-2 z-[10001]">
+              {/* Top-left: Signal levels toggle + Indicators dropdown */}
+              <div className="absolute top-2 left-2 z-[10001] flex items-center gap-2">
                 <button
                   onClick={() => setFsSignalLines(prev => !prev)}
                   className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
@@ -542,6 +579,71 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                     SEÑAL
                   </span>
                 </button>
+
+                {/* Indicators dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowIndMenu(prev => !prev)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+                    style={{
+                      background: fsIndicators.size > 0 ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.08)',
+                      border: `1px solid ${fsIndicators.size > 0 ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.2)'}`,
+                      backdropFilter: 'blur(8px)',
+                    }}
+                  >
+                    <Activity className="w-3.5 h-3.5" style={{ color: fsIndicators.size > 0 ? '#a78bfa' : 'rgba(255,255,255,0.6)' }} />
+                    <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsIndicators.size > 0 ? '#a78bfa' : 'rgba(255,255,255,0.5)' }}>
+                      IND
+                    </span>
+                    <ChevronDown className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.4)' }} />
+                    {fsIndicators.size > 0 && (
+                      <span className="ml-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.3)', color: '#a78bfa' }}>
+                        {fsIndicators.size}
+                      </span>
+                    )}
+                  </button>
+
+                  {showIndMenu && (
+                    <div
+                      className="absolute top-full left-0 mt-1 flex flex-col gap-0.5 rounded-lg overflow-hidden"
+                      style={{
+                        background: 'rgba(6,14,28,0.95)',
+                        border: '1px solid rgba(167,139,250,0.25)',
+                        backdropFilter: 'blur(12px)',
+                        minWidth: '130px',
+                      }}
+                    >
+                      {(['rsi', 'macd', 'bollinger', 'stochastic', 'adx'] as IndicatorType[]).map(ind => {
+                        const active = fsIndicators.has(ind);
+                        const col = INDICATOR_COLORS[ind];
+                        return (
+                          <button
+                            key={ind}
+                            onClick={() => {
+                              setFsIndicators(prev => {
+                                const next = new Set(prev);
+                                next.has(ind) ? next.delete(ind) : next.add(ind);
+                                return next;
+                              });
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 text-left transition-colors"
+                            style={{
+                              background: active ? `${col}15` : 'transparent',
+                            }}
+                          >
+                            <span
+                              className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                              style={{ background: active ? col : 'rgba(255,255,255,0.15)', border: `1px solid ${active ? col : 'rgba(255,255,255,0.2)'}` }}
+                            />
+                            <span className="text-[11px] font-semibold" style={{ color: active ? col : 'rgba(255,255,255,0.6)' }}>
+                              {INDICATOR_LABELS[ind]}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Top-right controls: S/R toggle + config + close */}
