@@ -36,8 +36,8 @@ export function Header() {
         <div className="flex items-center justify-between px-3 py-2.5">
           {/* Left: hamburger + brand */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-8 w-8">
-              <Menu className="w-4.5 h-4.5" />
+            <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-10 w-10">
+              <Menu className="w-9 h-9" />
             </Button>
             <span className="text-xs font-extrabold tracking-wider hidden xs:inline">
               <span className="bg-gradient-to-r from-primary to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
