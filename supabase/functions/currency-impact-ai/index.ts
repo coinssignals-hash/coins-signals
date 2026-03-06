@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // In-memory cache: key -> { data, ts }
 const cache = new Map<string, { data: unknown; ts: number }>();
-const CACHE_TTL = 60 * 60_000; // 60 minutes
+const CACHE_TTL = 30 * 60_000; // 30 minutes
 
 interface SignalInput {
   currencyPair: string;
