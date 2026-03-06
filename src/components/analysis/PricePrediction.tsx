@@ -4,6 +4,7 @@ import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { formatPrice } from '@/lib/utils';
 
 interface PricePredictionProps {
   symbol: string;
