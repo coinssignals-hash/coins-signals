@@ -55,6 +55,6 @@ describe('StatusBadge', () => {
         isCompleted={false}
       />,
     );
-    expect(screen.getByText('TP1 46% · 12.3p')).toBeInTheDocument();
+    expect(screen.getByText('TP1 45.6% · 12.30p')).toBeInTheDocument();
   });
 });
