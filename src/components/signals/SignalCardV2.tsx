@@ -40,6 +40,11 @@ import {
   TooltipProvider,
   TooltipTrigger } from
 "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger } from
+"@/components/ui/popover";
 
 interface SignalCardV2Props {
   signal?: TradingSignal;
@@ -793,117 +798,111 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 }
                 </div>
 
-                <TooltipProvider delayDuration={100}>
                   <div className="grid grid-cols-2 gap-1.5 mb-2.5">
                     {/* Duración */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <div
-                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
                         style={{
                           background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
                           border: "1px solid hsla(200, 60%, 35%, 0.2)"
                         }}>
-
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_duration')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.duration.value ?? "Intradía"}</span>
                         </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                      </PopoverTrigger>
+                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 {aiStrategy?.duration.value ?? "Intradía"}</p>
                         <p className="leading-relaxed">{aiStrategy?.duration.explanation ?? "Operaciones que se abren y cierran dentro del mismo día de trading, reduciendo riesgo de gaps nocturnos."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
                           Análisis para {currencyPair}
                         </div>
-                      </TooltipContent>
-                    </Tooltip>
+                      </PopoverContent>
+                    </Popover>
 
                     {/* Enfoque */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <div
-                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
                         style={{
                           background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
                           border: "1px solid hsla(200, 60%, 35%, 0.2)"
                         }}>
-
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_approach')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.approach.value ?? "Smart Money"}</span>
                         </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                      </PopoverTrigger>
+                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 {aiStrategy?.approach.value ?? "Smart Money"}</p>
                         <p className="leading-relaxed">{aiStrategy?.approach.explanation ?? "Estrategia basada en seguir el flujo de capital institucional, identificando zonas de liquidez y bloques de órdenes."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
                           Confluencia con estructura de mercado
                         </div>
-                      </TooltipContent>
-                    </Tooltip>
+                      </PopoverContent>
+                    </Popover>
 
                     {/* Mejor Sesión */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <div
-                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
                         style={{
                           background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
                           border: "1px solid hsla(200, 60%, 35%, 0.2)"
                         }}>
-
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_session')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.session.value ?? "New York"}</span>
                         </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                      </PopoverTrigger>
+                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕐 {aiStrategy?.session.value ?? "New York"}</p>
                         <p className="leading-relaxed">{aiStrategy?.session.explanation ?? "Sesión con mayor volumen y liquidez para este par."}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                      </PopoverContent>
+                    </Popover>
 
                     {/* Mejor Hora */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <div
-                        className="rounded-lg p-2.5 cursor-help relative overflow-hidden group"
+                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
                         style={{
                           background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
                           border: "1px solid hsla(200, 60%, 35%, 0.2)"
                         }}>
-
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_best_time')}</span>
                             <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                           </div>
                           <span className="text-xs font-bold text-cyan-100">{aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</span>
                         </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                      </PopoverTrigger>
+                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">⏰ {aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</p>
                         <p className="leading-relaxed">{aiStrategy?.bestTime.explanation ?? "Rango horario con mayor actividad y mejores oportunidades."}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   {/* Velas de Confirmación - full width with diagram */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
+                  <Popover>
+                    <PopoverTrigger asChild>
                       <div
-                      className="rounded-lg p-3 cursor-help relative overflow-hidden group"
+                      className="rounded-lg p-3 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
                       style={{
                         background: "linear-gradient(135deg, hsla(210, 80%, 10%, 0.9) 0%, hsla(200, 60%, 14%, 0.7) 100%)",
                         border: "1px solid hsla(200, 60%, 35%, 0.25)"
                       }}>
-
                         <div className="flex items-start gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-1.5 mb-1.5">
@@ -916,22 +915,20 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                           <div
                           className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
                           style={{ border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
-
                             <img src={pinbarPattern} alt={aiStrategy?.confirmationCandle.value ?? "Pin Bar"} className="w-full h-full object-cover" draggable={false} />
                           </div>
                         </div>
                       </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
+                    </PopoverTrigger>
+                    <PopoverContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                       <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ {aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</p>
                       <p className="leading-relaxed mb-2">{aiStrategy?.confirmationCandle.explanation ?? "Vela con mecha larga y cuerpo pequeño que indica rechazo del precio en una zona clave."}</p>
                       <img src={pinbarPattern} alt="Patrón de velas" className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
                       <div className="text-[10px] text-cyan-300/50 text-center">
                         Buscar confluencia con niveles S/R y volumen
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                    </PopoverContent>
+                  </Popover>
               </div>
             </div>
 
