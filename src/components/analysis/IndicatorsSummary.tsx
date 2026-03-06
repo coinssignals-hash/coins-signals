@@ -93,9 +93,9 @@ export function IndicatorsSummary({
 
       if (aboveBoth && golden) { maSignal = 'buy'; maLabel = 'Alcista'; maStrength = 80; maDetail = 'Golden Cross'; }
       else if (belowBoth && !golden) { maSignal = 'sell'; maLabel = 'Bajista'; maStrength = 80; maDetail = 'Death Cross'; }
-      else if (aboveBoth) { maSignal = 'buy'; maLabel = 'Por encima'; maStrength = 55; maDetail = `SMA20: ${sma20.toFixed(4)}`; }
-      else if (belowBoth) { maSignal = 'sell'; maLabel = 'Por debajo'; maStrength = 55; maDetail = `SMA20: ${sma20.toFixed(4)}`; }
-      else { maLabel = 'Mixto'; maDetail = `SMA20: ${sma20.toFixed(4)}`; }
+      else if (aboveBoth) { maSignal = 'buy'; maLabel = 'Por encima'; maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      else if (belowBoth) { maSignal = 'sell'; maLabel = 'Por debajo'; maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      else { maLabel = 'Mixto'; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
     }
     result.push({
       title: 'Medias Móviles',

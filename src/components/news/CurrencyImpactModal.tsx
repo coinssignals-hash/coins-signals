@@ -166,10 +166,10 @@ function SignalRow({ signal, getQuote }: { signal: SignalMatch; getQuote: (s: st
           </span>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-          <span>Entrada: {signal.entry_price.toFixed(4)}</span>
+          <span>Entrada: {formatPrice(signal.entry_price, signal.currency_pair)}</span>
           {diff && (
             <span className={diff.isPositive ? 'text-green-400' : 'text-red-400'}>
-              Actual: {diff.currentPrice.toFixed(4)}
+              Actual: {formatPrice(diff.currentPrice, signal.currency_pair)}
             </span>
           )}
         </div>

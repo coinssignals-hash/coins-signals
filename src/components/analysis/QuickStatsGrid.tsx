@@ -79,7 +79,7 @@ export function QuickStatsGrid({
     {
       label: 'Sesgo',
       value: bias,
-      subValue: `Pos: ${((displayPrice - low) / (range || 1) * 100).toFixed(0)}%`,
+      subValue: `Pos: ${((displayPrice - low) / (range || 1) * 100).toFixed(1)}%`,
       icon: isPositive ? TrendingUp : TrendingDown,
       color: biasColor,
       bgColor: bias === 'Alcista' ? 'bg-green-500/10 border-green-500/20' : bias === 'Bajista' ? 'bg-red-500/10 border-red-500/20' : 'bg-gray-500/10 border-gray-500/20',
