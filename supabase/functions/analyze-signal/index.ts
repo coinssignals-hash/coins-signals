@@ -36,6 +36,15 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
+    // Cache check
+    const cacheKey = `${signal.currencyPair}_${signal.entryPrice}_${signal.takeProfit}_${signal.stopLoss}_${mode || 'full'}_${language || 'es'}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return new Response(JSON.stringify({ ...cached.data as object, cached: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     console.log('Analyzing signal:', signal.currencyPair, 'mode:', mode);
 
     const isJpy = signal.currencyPair.includes('JPY');
