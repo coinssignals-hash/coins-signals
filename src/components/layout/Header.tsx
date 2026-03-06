@@ -33,7 +33,7 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur-md safe-top">
         {/* Top row: compact for mobile */}
-        <div className="flex items-center justify-between px-2 py-1">
+        <div className="flex items-center justify-between px-3 py-2.5">
           {/* Left: hamburger + brand */}
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-8 w-8">
