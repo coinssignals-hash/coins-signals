@@ -25,11 +25,11 @@ const baseState: ProgressBarState = {
 const noPulse: PulseState = { pulse: false, pulseColor: '', crossed: null };
 
 describe('StatusBadge', () => {
-  it('shows TP hit with pips when completed with tp_hit', () => {
+  it('shows TP hit with pips and closed price when completed with tp_hit', () => {
     render(
-      <StatusBadge state={{ ...baseState, targetLabel: 'TP1', targetPercent: 100, pipsFromEntry: 50 }} pulse={noPulse} isCompleted closedResult="tp_hit" />,
+      <StatusBadge state={{ ...baseState, targetLabel: 'TP1', targetPercent: 100, pipsFromEntry: 50, displayPrice: 1.105 }} pulse={noPulse} isCompleted closedResult="tp_hit" />,
     );
-    expect(screen.getByText('✅ TP1 100% · 50.0p')).toBeInTheDocument();
+    expect(screen.getByText(/✅ TP1 100% · 50\.0p @ 1\.10500/)).toBeInTheDocument();
   });
 
   it('shows SL hit with pips when completed with sl_hit', () => {
