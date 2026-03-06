@@ -569,7 +569,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <p className={cn("text-[11px] text-center font-extrabold",
               priceDiff.percent >= 0 ? "text-green-400" : "text-red-400"
               )}>
-                {priceDiff.currentPrice.toFixed(3)}
+                {formatPrice(priceDiff.currentPrice, symbol)}
               </p> :
               <p className="text-[8px] text-cyan-300/50 text-center">{t('signal_entry')}</p>
               }
