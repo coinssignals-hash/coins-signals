@@ -503,7 +503,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Circle with price below */}
             <div className="flex flex-col items-center gap-0.5">
               <div className={cn(
-                "relative w-[60px] h-[60px] sm:w-[72px] sm:h-[72px] transition-transform flex-shrink-0",
+                "relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] transition-transform flex-shrink-0",
                 zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
               )}>
                 <div className={cn(
@@ -546,7 +546,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <span className={cn(
                     "font-mono font-extrabold leading-none tracking-tight transition-colors duration-300",
                     !priceDiff.hasData ? "text-cyan-300" : priceDiff.percent >= 0 ? "text-green-400" : "text-red-400",
-                    priceDiff.hasData && Math.abs(priceDiff.percent) >= 10 ? "text-[10px]" : "text-[12px]"
+                    priceDiff.hasData && Math.abs(priceDiff.percent) >= 10 ? "text-[11px]" : "text-[13px]"
                   )}
                   style={{ textShadow: priceDiff.hasData ?
                     priceDiff.percent >= 0 ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
