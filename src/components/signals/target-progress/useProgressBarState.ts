@@ -12,6 +12,7 @@ export function useProgressBarState(props: TargetProgressBarProps): {
   } = props;
 
   const prevZoneRef = useRef<PriceZone | null>(null);
+  const activatedRef = useRef(false);
   const [pulse, setPulse] = useState(false);
   const [pulseColor, setPulseColor] = useState('');
   const [crossed, setCrossed] = useState<'profit' | 'loss' | null>(null);
