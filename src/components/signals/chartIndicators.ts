@@ -186,7 +186,7 @@ export function calcADX(data: CandleData[], period = 14): ADXResult[] {
   return result;
 }
 
-/* ─── SVG Sub-chart Renderer ─── */
+/* ─── Types ─── */
 export type IndicatorType = 'rsi' | 'macd' | 'bollinger' | 'stochastic' | 'adx';
 
 export const INDICATOR_LABELS: Record<IndicatorType, string> = {
@@ -205,38 +205,7 @@ export const INDICATOR_COLORS: Record<IndicatorType, string> = {
   adx: '#34d399',
 };
 
-interface SubChartParams {
-  x1: number;
-  x2: number;
-  y1: number;
-  y2: number;
-  dataLen: number;
-  xOf: (i: number) => number;
-}
-
-function drawOscillatorBg(p: SubChartParams, label: string, color: string, levels: number[], rangeMin: number, rangeMax: number): string[] {
-  const parts: string[] = [];
-  const { x1, x2, y1, y2 } = p;
-  const h = y2 - y1;
-  const yOf = (v: number) => y1 + h * (1 - (v - rangeMin) / (rangeMax - rangeMin));
-
-  // Background
-  parts.push(`<rect x="${x1}" y="${y1}" width="${x2 - x1}" height="${h}" fill="rgba(6,14,28,0.6)"/>`);
-  parts.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#1c3560" stroke-width="0.5"/>`);
-
-  // Level lines
-  for (const lv of levels) {
-    const ly = yOf(lv);
-    parts.push(`<line x1="${x1}" y1="${ly}" x2="${x2}" y2="${ly}" stroke="#152a47" stroke-width="0.4" stroke-dasharray="3,5"/>`);
-    parts.push(`<text x="${x1 - 3}" y="${ly + 3}" fill="#5a6f8a" text-anchor="end" font-size="8" font-family="monospace">${lv}</text>`);
-  }
-
-  // Label
-  parts.push(`<text x="${x1 + 4}" y="${y1 + 11}" fill="${color}" font-size="9" font-family="sans-serif" font-weight="bold" opacity="0.8">${label}</text>`);
-
-  return parts;
-}
-
+/* ─── SVG Polyline helper ─── */
 function polyline(xOf: (i: number) => number, values: (number | null)[], yOf: (v: number) => number, color: string, width = 1.2, dash?: string): string {
   let d = '';
   let started = false;
@@ -251,12 +220,70 @@ function polyline(xOf: (i: number) => number, values: (number | null)[], yOf: (v
   return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
 }
 
-export function buildIndicatorSubChart(
+/* ─── Overlay panel positions ─── */
+// Each overlay indicator gets a small semi-transparent panel rendered in a specific
+// area of the price chart. We stack them vertically from the bottom-left.
+
+interface OverlayParams {
+  chartX1: number;
+  chartX2: number;
+  priceTop: number;
+  priceBottom: number;
+  xOf: (i: number) => number;
+}
+
+// Returns the slot position for the nth overlay panel (0-indexed)
+function getOverlaySlot(index: number, total: number, params: OverlayParams): { x1: number; x2: number; y1: number; y2: number } {
+  const { chartX1, chartX2, priceTop, priceBottom } = params;
+  const chartH = priceBottom - priceTop;
+  const panelH = Math.min(chartH * 0.22, 100); // max 22% of chart height per panel
+  const gap = 3;
+  
+  // Stack from bottom upward
+  const y2 = priceBottom - gap - index * (panelH + gap);
+  const y1 = y2 - panelH;
+  
+  return { x1: chartX1, x2: chartX2, y1, y2 };
+}
+
+function drawOverlayBg(slot: { x1: number; x2: number; y1: number; y2: number }, label: string, color: string, levels: { value: number; label: string }[], rangeMin: number, rangeMax: number): string[] {
+  const parts: string[] = [];
+  const { x1, x2, y1, y2 } = slot;
+  const h = y2 - y1;
+  const yOf = (v: number) => y1 + h * (1 - (v - rangeMin) / (rangeMax - rangeMin));
+
+  // Semi-transparent background
+  parts.push(`<rect x="${x1}" y="${y1}" width="${x2 - x1}" height="${h}" fill="rgba(6,14,28,0.75)" rx="3"/>`);
+  parts.push(`<rect x="${x1}" y="${y1}" width="${x2 - x1}" height="${h}" fill="none" stroke="rgba(100,116,139,0.15)" stroke-width="0.5" rx="3"/>`);
+
+  // Level lines
+  for (const lv of levels) {
+    const ly = yOf(lv.value);
+    if (ly >= y1 && ly <= y2) {
+      parts.push(`<line x1="${x1 + 2}" y1="${ly}" x2="${x2 - 2}" y2="${ly}" stroke="rgba(100,116,139,0.2)" stroke-width="0.4" stroke-dasharray="3,5"/>`);
+      parts.push(`<text x="${x1 + 6}" y="${ly - 2}" fill="rgba(100,116,139,0.5)" font-size="7" font-family="monospace">${lv.label}</text>`);
+    }
+  }
+
+  // Label
+  parts.push(`<text x="${x1 + 8}" y="${y1 + 11}" fill="${color}" font-size="9" font-family="sans-serif" font-weight="bold" opacity="0.9">${label}</text>`);
+
+  return parts;
+}
+
+/* ─── Build overlay for a single indicator ─── */
+export function buildIndicatorOverlay(
   type: IndicatorType,
   data: CandleData[],
-  params: SubChartParams,
+  index: number,
+  total: number,
+  params: OverlayParams,
 ): string {
-  const { x1, x2, y1, y2 } = params;
+  // Bollinger is handled separately as a price overlay
+  if (type === 'bollinger') return '';
+
+  const slot = getOverlaySlot(index, total, params);
+  const { x1, x2, y1, y2 } = slot;
   const h = y2 - y1;
   const parts: string[] = [];
   const color = INDICATOR_COLORS[type];
@@ -265,11 +292,18 @@ export function buildIndicatorSubChart(
   if (type === 'rsi') {
     const rsi = calcRSI(data);
     const yOf = (v: number) => y1 + h * (1 - v / 100);
-    parts.push(...drawOscillatorBg(params, label, color, [30, 50, 70], 0, 100));
+    parts.push(...drawOverlayBg(slot, label, color, [
+      { value: 30, label: '30' }, { value: 50, label: '50' }, { value: 70, label: '70' },
+    ], 0, 100));
     // Overbought/oversold zones
-    parts.push(`<rect x="${x1}" y="${yOf(100)}" width="${x2 - x1}" height="${yOf(70) - yOf(100)}" fill="rgba(255,73,118,0.06)"/>`);
-    parts.push(`<rect x="${x1}" y="${yOf(30)}" width="${x2 - x1}" height="${yOf(0) - yOf(30)}" fill="rgba(0,212,170,0.06)"/>`);
+    parts.push(`<rect x="${x1}" y="${yOf(100)}" width="${x2 - x1}" height="${yOf(70) - yOf(100)}" fill="rgba(255,73,118,0.06)" rx="3"/>`);
+    parts.push(`<rect x="${x1}" y="${yOf(30)}" width="${x2 - x1}" height="${yOf(0) - yOf(30)}" fill="rgba(0,212,170,0.06)" rx="3"/>`);
     parts.push(polyline(params.xOf, rsi, yOf, color, 1.4));
+    // Show current value
+    const lastRsi = [...rsi].reverse().find(v => v !== null);
+    if (lastRsi !== null && lastRsi !== undefined) {
+      parts.push(`<text x="${x2 - 8}" y="${y1 + 11}" fill="${color}" font-size="8" font-family="monospace" text-anchor="end" opacity="0.9">${lastRsi.toFixed(1)}</text>`);
+    }
   }
 
   if (type === 'macd') {
@@ -289,22 +323,23 @@ export function buildIndicatorSubChart(
     minV -= pad; maxV += pad;
     const yOf = (v: number) => y1 + h * (1 - (v - minV) / (maxV - minV));
 
-    parts.push(...drawOscillatorBg(params, label, color, [], minV, maxV));
+    parts.push(...drawOverlayBg(slot, label, color, [], 0, 0));
     // Zero line
     if (minV < 0 && maxV > 0) {
       const zy = yOf(0);
-      parts.push(`<line x1="${x1}" y1="${zy}" x2="${x2}" y2="${zy}" stroke="#5a6f8a" stroke-width="0.4" stroke-dasharray="3,5"/>`);
+      parts.push(`<line x1="${x1 + 2}" y1="${zy}" x2="${x2 - 2}" y2="${zy}" stroke="rgba(100,116,139,0.3)" stroke-width="0.4" stroke-dasharray="3,5"/>`);
     }
     // Histogram bars
-    const barW = Math.max(1, (x2 - x1) / data.length * 0.6);
+    const barW = Math.max(1, (x2 - x1) / data.length * 0.5);
     for (let i = 0; i < histVals.length; i++) {
       const hv = histVals[i];
       if (hv === null) continue;
       const bx = params.xOf(i);
+      if (bx < x1 || bx > x2) continue;
       const zy = yOf(0);
       const by = yOf(hv);
       const bCol = hv >= 0 ? '#00d4aa' : '#ff4976';
-      parts.push(`<rect x="${bx - barW / 2}" y="${Math.min(zy, by)}" width="${barW}" height="${Math.abs(by - zy)}" fill="${bCol}" opacity="0.5"/>`);
+      parts.push(`<rect x="${bx - barW / 2}" y="${Math.min(zy, by)}" width="${barW}" height="${Math.abs(by - zy)}" fill="${bCol}" opacity="0.4"/>`);
     }
     parts.push(polyline(params.xOf, macdVals, yOf, '#60a5fa', 1.3));
     parts.push(polyline(params.xOf, sigVals, yOf, '#f97316', 1, '3,2'));
@@ -315,11 +350,18 @@ export function buildIndicatorSubChart(
     const kVals = stoch.map(s => s.k);
     const dVals = stoch.map(s => s.d);
     const yOf = (v: number) => y1 + h * (1 - v / 100);
-    parts.push(...drawOscillatorBg(params, label, color, [20, 50, 80], 0, 100));
-    parts.push(`<rect x="${x1}" y="${yOf(100)}" width="${x2 - x1}" height="${yOf(80) - yOf(100)}" fill="rgba(255,73,118,0.06)"/>`);
-    parts.push(`<rect x="${x1}" y="${yOf(20)}" width="${x2 - x1}" height="${yOf(0) - yOf(20)}" fill="rgba(0,212,170,0.06)"/>`);
+    parts.push(...drawOverlayBg(slot, label, color, [
+      { value: 20, label: '20' }, { value: 50, label: '50' }, { value: 80, label: '80' },
+    ], 0, 100));
+    parts.push(`<rect x="${x1}" y="${yOf(100)}" width="${x2 - x1}" height="${yOf(80) - yOf(100)}" fill="rgba(255,73,118,0.06)" rx="3"/>`);
+    parts.push(`<rect x="${x1}" y="${yOf(20)}" width="${x2 - x1}" height="${yOf(0) - yOf(20)}" fill="rgba(0,212,170,0.06)" rx="3"/>`);
     parts.push(polyline(params.xOf, kVals, yOf, '#f472b6', 1.3));
     parts.push(polyline(params.xOf, dVals, yOf, '#818cf8', 1, '3,2'));
+    // Current value
+    const lastK = [...kVals].reverse().find(v => v !== null);
+    if (lastK !== null && lastK !== undefined) {
+      parts.push(`<text x="${x2 - 8}" y="${y1 + 11}" fill="${color}" font-size="8" font-family="monospace" text-anchor="end" opacity="0.9">${lastK.toFixed(1)}</text>`);
+    }
   }
 
   if (type === 'adx') {
@@ -328,18 +370,23 @@ export function buildIndicatorSubChart(
     const plusVals = adx.map(a => a.plusDI);
     const minusVals = adx.map(a => a.minusDI);
     const yOf = (v: number) => y1 + h * (1 - Math.min(v, 80) / 80);
-    parts.push(...drawOscillatorBg(params, label, color, [20, 40, 60], 0, 80));
-    // Trend strength zone
-    parts.push(`<rect x="${x1}" y="${yOf(80)}" width="${x2 - x1}" height="${yOf(25) - yOf(80)}" fill="rgba(52,211,153,0.04)"/>`);
+    parts.push(...drawOverlayBg(slot, label, color, [
+      { value: 20, label: '20' }, { value: 40, label: '40' },
+    ], 0, 80));
     parts.push(polyline(params.xOf, adxVals, yOf, '#34d399', 1.5));
     parts.push(polyline(params.xOf, plusVals, yOf, '#00d4aa', 0.9, '2,2'));
     parts.push(polyline(params.xOf, minusVals, yOf, '#ff4976', 0.9, '2,2'));
+    // Current value
+    const lastAdx = [...adxVals].reverse().find(v => v !== null);
+    if (lastAdx !== null && lastAdx !== undefined) {
+      parts.push(`<text x="${x2 - 8}" y="${y1 + 11}" fill="${color}" font-size="8" font-family="monospace" text-anchor="end" opacity="0.9">${lastAdx.toFixed(1)}</text>`);
+    }
   }
 
   return parts.join('\n');
 }
 
-// Bollinger is an overlay on the price chart, not a sub-chart
+// Bollinger is an overlay on the price chart, not a panel
 export function buildBollingerOverlay(
   data: CandleData[],
   xOf: (i: number) => number,

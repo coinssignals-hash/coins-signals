@@ -7,7 +7,7 @@ import { ZoomableChart } from './ZoomableChart';
 import {
   type IndicatorType, type CandleData as IndCandleData,
   INDICATOR_LABELS, INDICATOR_COLORS,
-  buildIndicatorSubChart, buildBollingerOverlay,
+  buildIndicatorOverlay, buildBollingerOverlay,
 } from './chartIndicators';
 
 const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
@@ -73,17 +73,14 @@ function buildSignalChartSvg(
   showSignalLevels = false,
   activeIndicators: IndicatorType[] = [],
 ): string {
-  // Sub-chart indicators (not bollinger which is an overlay)
-  const subIndicators = activeIndicators.filter(i => i !== 'bollinger');
-  const SUB_CHART_H = 80; // height per sub-chart
-  const totalSubH = subIndicators.length * SUB_CHART_H;
-  const W = width, H = height + totalSubH;
+  // All indicators are overlays now — no sub-chart height needed
+  const W = width, H = height;
 
   // Reserve extra space on the right for "next day" empty zone
   const NEXT_DAY_RATIO = 0.12;
   const PAD = compact
-    ? { top: 18, right: 55, bottom: 50 + totalSubH, left: 40 }
-    : { top: 30, right: 100, bottom: 50 + totalSubH, left: 60 };
+    ? { top: 18, right: 55, bottom: 50, left: 40 }
+    : { top: 30, right: 100, bottom: 50, left: 60 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
   const CHART_W_FULL = CHART_X2 - CHART_X1;
@@ -370,18 +367,14 @@ function buildSignalChartSvg(
     parts.push(buildBollingerOverlay(data as IndCandleData[], xOf, yOfPrice));
   }
 
-  // ── Sub-chart indicators ──
-  const priceChartBottom = PRICE_BOTTOM + 50; // below x-axis labels
-  for (let si = 0; si < subIndicators.length; si++) {
-    const indType = subIndicators[si];
-    const subY1 = priceChartBottom + si * SUB_CHART_H;
-    const subY2 = subY1 + SUB_CHART_H - 4; // small gap
-    parts.push(buildIndicatorSubChart(indType, data as IndCandleData[], {
-      x1: CHART_X1,
-      x2: CHART_X2,
-      y1: subY1,
-      y2: subY2,
-      dataLen: data.length,
+  // ── Overlay indicator panels (RSI, MACD, Stochastic, ADX) ──
+  const overlayIndicators = activeIndicators.filter(i => i !== 'bollinger');
+  for (let si = 0; si < overlayIndicators.length; si++) {
+    parts.push(buildIndicatorOverlay(overlayIndicators[si], data as IndCandleData[], si, overlayIndicators.length, {
+      chartX1: CHART_X1,
+      chartX2: CHART_X2,
+      priceTop: PRICE_TOP,
+      priceBottom: PRICE_BOTTOM,
       xOf,
     }));
   }
