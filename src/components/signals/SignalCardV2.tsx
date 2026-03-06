@@ -275,7 +275,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const symbol = `${baseCurrency}/${quoteCurrency}`;
   const isCompleted = status === 'completed' || status === 'cancelled';
   const closedFallback = isCompleted ? signal?.closedPrice ?? entryPrice : entryPrice;
-  const { quote, loading: priceLoading } = useRestPrice(symbol, isCompleted ? 0 : 30_000, closedFallback);
+  const { quote, loading: priceLoading, countdown } = useRestPrice(symbol, isCompleted ? 0 : 30_000, closedFallback);
   const isConnected = !!quote;
   const isLivePrice = quote?.isLive !== false;
 
