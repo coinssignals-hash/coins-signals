@@ -12,10 +12,19 @@ const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
   { value: '4h', label: '4H' },
 ];
 
+interface SignalLevels {
+  entryPrice: number;
+  takeProfit: number;
+  takeProfit2?: number;
+  stopLoss: number;
+  signalDatetime: string; // ISO string of when signal was created
+}
+
 interface SignalChartProps {
   currencyPair: string;
   support?: number;
   resistance?: number;
+  signalLevels?: SignalLevels;
   className?: string;
 }
 
@@ -55,6 +64,8 @@ function buildSignalChartSvg(
   height: number,
   compact = false,
   intervalLabel = '15min',
+  signalLevels?: SignalLevels,
+  showSignalLevels = false,
 ): string {
   const W = width, H = height;
   // Reserve extra space on the right for "next day" empty zone
@@ -96,6 +107,14 @@ function buildSignalChartSvg(
   if (showSR) {
     minP = Math.min(minP, support);
     maxP = Math.max(maxP, resistance);
+  }
+  if (showSignalLevels && signalLevels) {
+    minP = Math.min(minP, signalLevels.stopLoss, signalLevels.entryPrice, signalLevels.takeProfit);
+    maxP = Math.max(maxP, signalLevels.stopLoss, signalLevels.entryPrice, signalLevels.takeProfit);
+    if (signalLevels.takeProfit2) {
+      minP = Math.min(minP, signalLevels.takeProfit2);
+      maxP = Math.max(maxP, signalLevels.takeProfit2);
+    }
   }
   const pr = maxP - minP || 0.0001;
   const pp = pr * 0.05;
@@ -256,6 +275,59 @@ function buildSignalChartSvg(
     parts.push(`<text x="${CHART_X2 - lblW / 2 - 4}" y="${sY + fs / 3}" fill="${DN}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">S ${fmtPrice(support, jpy)}</text>`);
   }
 
+  // ── Signal level lines (Entry, TP1, TP2, SL) ──
+  if (showSignalLevels && signalLevels) {
+    const { entryPrice, takeProfit, takeProfit2, stopLoss, signalDatetime } = signalLevels;
+    const ENTRY_COL = '#38bdf8'; // cyan-blue for entry
+    const TP1_COL = '#22c55e';   // green
+    const TP2_COL = '#4ade80';   // lighter green
+    const SL_COL = '#ef4444';    // red
+    const lblW = compact ? 100 : 85;
+    const lblH = compact ? 20 : 16;
+    const fs = compact ? 11 : 9;
+
+    // Find x position of signal arrival (vertical marker line)
+    const sigDate = new Date(signalDatetime);
+    let sigIdx = -1;
+    for (let i = 0; i < data.length; i++) {
+      if (new Date(data[i].time) >= sigDate) { sigIdx = i; break; }
+    }
+    // If signal is after all data, place at last candle
+    if (sigIdx === -1 && data.length > 0) sigIdx = data.length - 1;
+
+    // Vertical signal arrival line
+    if (sigIdx >= 0) {
+      const sigX = xOf(sigIdx);
+      parts.push(`<line x1="${sigX}" y1="${PRICE_TOP}" x2="${sigX}" y2="${PRICE_BOTTOM}" stroke="${ENTRY_COL}" stroke-width="1.2" stroke-dasharray="6,3" opacity="0.6" shape-rendering="crispEdges"/>`);
+      parts.push(`<text x="${sigX}" y="${PRICE_TOP - 4}" fill="${ENTRY_COL}" text-anchor="middle" font-size="${compact ? 10 : 8}" font-family="sans-serif" font-weight="bold" opacity="0.7">▼ SEÑAL</text>`);
+    }
+
+    const lineEndX = CHART_X2;
+
+    // Helper to draw a signal level line
+    const drawLevel = (price: number, color: string, label: string, dashArray: string) => {
+      const y = yOf(price);
+      // Shaded zone
+      parts.push(`<rect x="${CHART_X1}" y="${y - 6}" width="${CHART_W_FULL}" height="12" fill="${color}" opacity="0.06"/>`);
+      // Line
+      parts.push(`<line x1="${CHART_X1}" y1="${y}" x2="${lineEndX}" y2="${y}" stroke="${color}" stroke-width="1.2" stroke-dasharray="${dashArray}" opacity="0.8" shape-rendering="crispEdges"/>`);
+      // Label box on right
+      parts.push(`<rect x="${lineEndX - lblW - 4}" y="${y - lblH / 2}" width="${lblW}" height="${lblH}" rx="4" fill="${color}" fill-opacity="0.15" stroke="${color}" stroke-width="0.6"/>`);
+      parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${y + fs / 3}" fill="${color}" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">${label} ${fmtPrice(price, jpy)}</text>`);
+    };
+
+    // Entry price
+    drawLevel(entryPrice, ENTRY_COL, 'ENTRY', '8,4');
+    // Take Profit 1
+    drawLevel(takeProfit, TP1_COL, 'TP1', '10,5');
+    // Take Profit 2 (if exists)
+    if (takeProfit2) {
+      drawLevel(takeProfit2, TP2_COL, 'TP2', '10,5');
+    }
+    // Stop Loss
+    drawLevel(stopLoss, SL_COL, 'SL', '6,4');
+  }
+
   // Title
   parts.push(`<text x="${CHART_X1}" y="20" fill="${TEXT_COL}" font-family="sans-serif" font-size="11" font-weight="bold">${intervalLabel}</text>`);
 
@@ -268,13 +340,14 @@ function buildSignalChartSvg(
 /* ═══════════════════════════════════════════
  *  SignalChart Component
  * ═══════════════════════════════════════════ */
-export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, className }: SignalChartProps) {
+export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, signalLevels, className }: SignalChartProps) {
   const symbol = currencyPair.replace('/', '');
   const [activeInterval, setActiveInterval] = useState<ChartInterval>('15min');
   const { data: chartData, loading, error } = useForexChartData(symbol, activeInterval);
   const showSR = true;
   const [fullscreen, setFullscreen] = useState(false);
   const [fsSR, setFsSR] = useState(true);
+  const [fsSignalLines, setFsSignalLines] = useState(false);
   const [showTfMenu, setShowTfMenu] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const getVpSize = () => ({
@@ -305,9 +378,9 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const intervalLabel = TIMEFRAME_OPTIONS.find(t => t.value === activeInterval)?.label ?? '15M';
   const inlineSvgUri = useMemo(() => {
     if (!candles.length) return null;
-    const svg = buildSignalChartSvg(candles, support, resistance, showSR, 1200, 600, false, intervalLabel);
+    const svg = buildSignalChartSvg(candles, support, resistance, showSR, 1200, 600, false, intervalLabel, signalLevels, false);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, showSR, intervalLabel]);
+  }, [candles, support, resistance, showSR, intervalLabel, signalLevels]);
 
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
@@ -315,9 +388,9 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     const fsW = isPortrait ? viewportSize.h : viewportSize.w;
     const fsH = isPortrait ? viewportSize.w : viewportSize.h;
     const scale = Math.max(1, Math.ceil(2340 / fsW));
-    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel);
+    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel, signalLevels, fsSignalLines);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel]);
+  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel, signalLevels, fsSignalLines]);
 
   // Lock body scroll in fullscreen + recalculate viewport
   useEffect(() => {
@@ -428,17 +501,21 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                 </ZoomableChart>
               )}
 
-              {/* Top-left: placeholder button (to configure later) */}
+              {/* Top-left: Signal levels toggle */}
               <div className="absolute top-2 left-2 z-[10001]">
                 <button
+                  onClick={() => setFsSignalLines(prev => !prev)}
                   className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
                   style={{
-                    background: 'rgba(255,255,255,0.08)',
-                    border: '1px solid rgba(255,255,255,0.2)',
+                    background: fsSignalLines ? 'rgba(56,189,248,0.15)' : 'rgba(255,255,255,0.08)',
+                    border: `1px solid ${fsSignalLines ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.2)'}`,
                     backdropFilter: 'blur(8px)',
                   }}
                 >
-                  <BarChart3 className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.6)' }} />
+                  <BarChart3 className="w-3.5 h-3.5" style={{ color: fsSignalLines ? '#38bdf8' : 'rgba(255,255,255,0.6)' }} />
+                  <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsSignalLines ? '#38bdf8' : 'rgba(255,255,255,0.5)' }}>
+                    SEÑAL
+                  </span>
                 </button>
               </div>
 
