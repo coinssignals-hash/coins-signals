@@ -311,7 +311,7 @@ export function TargetProgressBar({
         </div>
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: '50%' }}>
           <span className="text-[11px] text-white/40 font-mono tabular-nums">
-            {entryPrice.toFixed(isJpy ? 2 : 3)}
+            {formatPrice(entryPrice, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
           <span className="text-[7px] text-white/30 font-semibold uppercase tracking-widest leading-none">
             Entry
