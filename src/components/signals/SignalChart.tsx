@@ -425,13 +425,13 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, [candles, support, resistance, showSR, intervalLabel, signalLevels]);
 
-  const activeIndArray = useMemo(() => Array.from(fsIndicators), [fsIndicators]);
+  const activeIndArray = fsIndicators;
 
   // Compute current indicator values for badges
   const indicatorValues = useMemo(() => {
-    if (!candles.length) return {} as Record<IndicatorType, string>;
-    return getIndicatorCurrentValues(activeIndArray, candles as IndCandleData[]);
-  }, [candles, activeIndArray]);
+    if (!candles.length || !fsIndicators.length) return {} as Record<string, string>;
+    return getIndicatorCurrentValues(fsIndicators, candles as IndCandleData[]);
+  }, [candles, fsIndicators]);
 
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
