@@ -50,7 +50,7 @@ describe('TargetProgressBar integration', () => {
     render(
       <TargetProgressBar {...baseBuy} currentPrice={1.1050} isCompleted closedResult="tp_hit" closedPrice={1.1050} />,
     );
-    expect(screen.getByText(/✅.*TP1.*100%/)).toBeInTheDocument();
+    expect(screen.getByText(/✅.*TP1.*100\.0%/)).toBeInTheDocument();
   });
 
   it('shows ❌ badge with pips when completed with sl_hit', () => {
