@@ -56,7 +56,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
               y={signal.takeProfit} 
               stroke="#22c55e" 
               strokeDasharray="3 3"
-              label={{ value: formatPrice(signal.takeProfit, signal.pair), position: 'right', fill: '#22c55e', fontSize: 10 }}
+              label={{ value: formatPrice(signal.takeProfit, signal.currencyPair), position: 'right', fill: '#22c55e', fontSize: 10 }}
             />
             <ReferenceLine 
               y={signal.entryPrice} 
