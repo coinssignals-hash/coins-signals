@@ -317,8 +317,9 @@ export function TargetProgressBar({
               : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`
             }
           </div>
-        {/* TP1 label */}
-        <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
+        </div>
+        {/* TP label + price at end of bar */}
+        <div className="absolute right-0 flex flex-col items-end">
           <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
             {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
@@ -332,11 +333,10 @@ export function TargetProgressBar({
           </span>
         )}
         {takeProfit3 && tp3Pos !== null && (
-          <span className="absolute right-0 text-[11px] text-emerald-400/30 font-mono tabular-nums">
+          <span className="absolute right-0 top-5 text-[11px] text-emerald-400/30 font-mono tabular-nums">
             TP3
           </span>
         )}
-        </div>
       </div>
     </div>
   );
