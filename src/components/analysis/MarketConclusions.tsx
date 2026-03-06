@@ -70,7 +70,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
                       {data.mediumTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      {t('analysis_probability_label')}: {data.mediumTerm.probability}% | {t('analysis_range_label')}: {data.mediumTerm.range.min.toFixed(4)}-{data.mediumTerm.range.max.toFixed(4)}
+                      {t('analysis_probability_label')}: {data.mediumTerm.probability}% | {t('analysis_range_label')}: {formatPrice(data.mediumTerm.range.min, symbol)}-{formatPrice(data.mediumTerm.range.max, symbol)}
                     </p>
                   </div>
                   
