@@ -60,7 +60,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
                       {data.shortTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      {t('analysis_probability_label')}: {data.shortTerm.probability}% | {t('analysis_target_label')}: {data.shortTerm.target.toFixed(4)}
+                      {t('analysis_probability_label')}: {data.shortTerm.probability}% | {t('analysis_target_label')}: {formatPrice(data.shortTerm.target, symbol)}
                     </p>
                   </div>
                   
