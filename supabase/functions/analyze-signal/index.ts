@@ -5,6 +5,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// In-memory cache: key -> { data, ts }
+const cache = new Map<string, { data: unknown; ts: number }>();
+const CACHE_TTL = 60 * 60_000; // 60 minutes
+
 interface SignalData {
   currencyPair: string;
   action: string;
