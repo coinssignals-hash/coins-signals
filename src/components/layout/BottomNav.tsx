@@ -19,7 +19,7 @@ export function BottomNav() {
     { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
     { icon: Brain, label: 'IA', href: '/ai-center', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
-    { icon: Settings, label: t('nav_settings'), href: '/settings', badgeType: null },
+    { icon: Wallet, label: t('nav_portfolio') || 'Portfolio', href: '/portfolio', badgeType: null },
   ];
 
   useEffect(() => {
