@@ -170,10 +170,10 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={{ touchAction: isZoomed ? 'none' : 'pan-y' }}
+        style={{ touchAction: isZoomed ? 'none' : 'pan-y', clipPath: 'inset(0)' }}
       >
         <div
-          className="w-full"
+          className="w-full will-change-transform"
           style={{
             transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
             transformOrigin: 'center center',
