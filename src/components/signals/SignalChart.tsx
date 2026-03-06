@@ -364,6 +364,28 @@ function buildSignalChartSvg(
     parts.push(`<text x="${lineEndX - lblW / 2 - 4}" y="${slY + fs / 3}" fill="#fff" text-anchor="middle" font-size="${fs}" font-family="monospace" font-weight="bold">SL ${fmtPrice(stopLoss, jpy)}</text>`);
   }
 
+  // ── Bollinger overlay (drawn on price chart) ──
+  if (activeIndicators.includes('bollinger')) {
+    const yOfPrice = (price: number) => PRICE_TOP + PRICE_H * (1 - (price - minP) / totalRange);
+    parts.push(buildBollingerOverlay(data as IndCandleData[], xOf, yOfPrice));
+  }
+
+  // ── Sub-chart indicators ──
+  const priceChartBottom = PRICE_BOTTOM + 50; // below x-axis labels
+  for (let si = 0; si < subIndicators.length; si++) {
+    const indType = subIndicators[si];
+    const subY1 = priceChartBottom + si * SUB_CHART_H;
+    const subY2 = subY1 + SUB_CHART_H - 4; // small gap
+    parts.push(buildIndicatorSubChart(indType, data as IndCandleData[], {
+      x1: CHART_X1,
+      x2: CHART_X2,
+      y1: subY1,
+      y2: subY2,
+      dataLen: data.length,
+      xOf,
+    }));
+  }
+
   // Title
   parts.push(`<text x="${CHART_X1}" y="20" fill="${TEXT_COL}" font-family="sans-serif" font-size="11" font-weight="bold">${intervalLabel}</text>`);
 
