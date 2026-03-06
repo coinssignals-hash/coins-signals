@@ -150,6 +150,7 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
     isReconnecting,
     reconnectAttempt,
     error,
+    countdown,
     subscribe,
     unsubscribe,
     getQuote,
