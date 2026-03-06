@@ -421,7 +421,7 @@ export default function Signals() {
             {dayTab === 'tomorrow' && <TomorrowSignalsGroup signals={tomorrowSignals} />}
 
             {dayTab === 'calendar' && calendarDate &&
-              <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length}>
+              <SignalsDayGroup date={format(calendarDate, 'yyyy-MM-dd')} count={calendarSignals.length} activeCount={calendarSignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                 {calendarSignals.length === 0 ?
                 <p className="text-muted-foreground text-center py-6 text-sm">{t('signals_no_date')}</p> :
 
