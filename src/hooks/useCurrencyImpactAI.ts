@@ -18,7 +18,7 @@ interface UseCurrencyImpactAIReturn {
 
 // In-memory cache
 const cache = new Map<string, { data: CurrencyImpactAI[]; ts: number }>();
-const CACHE_TTL = 30 * 60_000; // 30 min
+const CACHE_TTL = 60 * 60_000; // 60 min
 
 export function useCurrencyImpactAI(signal: {
   currencyPair: string;
