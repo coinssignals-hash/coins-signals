@@ -321,6 +321,7 @@ export default function Signals() {
                 title="Centro de Análisis IA">
               <Brain className="w-4.5 h-4.5" />
             </button>
+            <NotificationToggle />
             {isAuthenticated &&
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
