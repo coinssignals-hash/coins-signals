@@ -9,31 +9,63 @@ export interface CandleData {
 }
 
 /* ─── Types ─── */
-export type IndicatorType = 'bollinger' | 'ema20' | 'ema50' | 'sma200' | 'parabolicSar';
+export type IndicatorKind = 'bollinger' | 'ema' | 'sma' | 'parabolicSar';
 
-export const INDICATOR_LABELS: Record<IndicatorType, string> = {
+export interface IndicatorConfig {
+  kind: IndicatorKind;
+  period: number; // ignored for parabolicSar
+  id: string;     // unique key e.g. "ema-20"
+}
+
+export const INDICATOR_KIND_LABELS: Record<IndicatorKind, string> = {
   bollinger: 'Bollinger',
-  ema20: 'EMA 20',
-  ema50: 'EMA 50',
-  sma200: 'SMA 200',
+  ema: 'EMA',
+  sma: 'SMA',
   parabolicSar: 'SAR',
 };
 
-export const INDICATOR_COLORS: Record<IndicatorType, string> = {
+export const INDICATOR_KIND_COLORS: Record<IndicatorKind, string> = {
   bollinger: '#fbbf24',
-  ema20: '#a78bfa',
-  ema50: '#60a5fa',
-  sma200: '#f472b6',
+  ema: '#a78bfa',
+  sma: '#f472b6',
   parabolicSar: '#34d399',
 };
 
+// Different shades for multiple EMAs/SMAs
+const EMA_COLORS = ['#a78bfa', '#60a5fa', '#c084fc', '#818cf8'];
+const SMA_COLORS = ['#f472b6', '#fb923c', '#e879f9', '#f43f5e'];
+
+export function getIndicatorColor(config: IndicatorConfig, index: number): string {
+  if (config.kind === 'ema') return EMA_COLORS[index % EMA_COLORS.length];
+  if (config.kind === 'sma') return SMA_COLORS[index % SMA_COLORS.length];
+  return INDICATOR_KIND_COLORS[config.kind];
+}
+
+export function getIndicatorLabel(config: IndicatorConfig): string {
+  if (config.kind === 'parabolicSar') return 'SAR';
+  return `${INDICATOR_KIND_LABELS[config.kind]} ${config.period}`;
+}
+
+export function makeIndicatorId(kind: IndicatorKind, period: number): string {
+  return kind === 'parabolicSar' ? 'parabolicSar' : `${kind}-${period}`;
+}
+
+/* Default presets */
+export const DEFAULT_PRESETS: IndicatorConfig[] = [
+  { kind: 'bollinger', period: 20, id: 'bollinger-20' },
+  { kind: 'ema', period: 9, id: 'ema-9' },
+  { kind: 'ema', period: 21, id: 'ema-21' },
+  { kind: 'ema', period: 50, id: 'ema-50' },
+  { kind: 'sma', period: 200, id: 'sma-200' },
+  { kind: 'parabolicSar', period: 0, id: 'parabolicSar' },
+];
+
 /* ─── Calculations ─── */
 
-function ema(values: number[], period: number): (number | null)[] {
+function emaCalc(values: number[], period: number): (number | null)[] {
   if (values.length < period) return values.map(() => null);
   const k = 2 / (period + 1);
   const result: (number | null)[] = [];
-  // Start EMA from the SMA of first `period` values
   let sum = 0;
   for (let i = 0; i < period; i++) {
     sum += values[i];
@@ -48,7 +80,7 @@ function ema(values: number[], period: number): (number | null)[] {
   return result;
 }
 
-function sma(values: number[], period: number): (number | null)[] {
+function smaCalc(values: number[], period: number): (number | null)[] {
   return values.map((_, i) => {
     if (i < period - 1) return null;
     const slice = values.slice(i - period + 1, i + 1);
@@ -57,19 +89,14 @@ function sma(values: number[], period: number): (number | null)[] {
 }
 
 export function calcEMA(data: CandleData[], period: number): (number | null)[] {
-  return ema(data.map(d => d.close), period);
+  return emaCalc(data.map(d => d.close), period);
 }
 
 export function calcSMA(data: CandleData[], period: number): (number | null)[] {
-  return sma(data.map(d => d.close), period);
+  return smaCalc(data.map(d => d.close), period);
 }
 
-// ── Bollinger Bands ──
-export interface BollingerResult {
-  upper: number | null;
-  middle: number | null;
-  lower: number | null;
-}
+export interface BollingerResult { upper: number | null; middle: number | null; lower: number | null; }
 
 export function calcBollinger(data: CandleData[], period = 20, mult = 2): BollingerResult[] {
   const closes = data.map(d => d.close);
@@ -83,11 +110,9 @@ export function calcBollinger(data: CandleData[], period = 20, mult = 2): Bollin
   });
 }
 
-// ── Parabolic SAR ──
 export function calcParabolicSAR(data: CandleData[], afStep = 0.02, afMax = 0.2): (number | null)[] {
   if (data.length < 2) return data.map(() => null);
   const result: (number | null)[] = [null];
-
   let isUpTrend = data[1].close > data[0].close;
   let af = afStep;
   let ep = isUpTrend ? data[0].high : data[0].low;
@@ -96,50 +121,25 @@ export function calcParabolicSAR(data: CandleData[], afStep = 0.02, afMax = 0.2)
   for (let i = 1; i < data.length; i++) {
     const prevSar = sar;
     sar = prevSar + af * (ep - prevSar);
-
     if (isUpTrend) {
-      // Clamp SAR to not go above prior two lows
       if (i >= 2) sar = Math.min(sar, data[i - 1].low, data[i - 2].low);
       else sar = Math.min(sar, data[i - 1].low);
-
       if (data[i].low < sar) {
-        // Reverse to downtrend
-        isUpTrend = false;
-        sar = ep;
-        ep = data[i].low;
-        af = afStep;
-      } else {
-        if (data[i].high > ep) {
-          ep = data[i].high;
-          af = Math.min(af + afStep, afMax);
-        }
-      }
+        isUpTrend = false; sar = ep; ep = data[i].low; af = afStep;
+      } else if (data[i].high > ep) { ep = data[i].high; af = Math.min(af + afStep, afMax); }
     } else {
-      // Clamp SAR to not go below prior two highs
       if (i >= 2) sar = Math.max(sar, data[i - 1].high, data[i - 2].high);
       else sar = Math.max(sar, data[i - 1].high);
-
       if (data[i].high > sar) {
-        // Reverse to uptrend
-        isUpTrend = true;
-        sar = ep;
-        ep = data[i].high;
-        af = afStep;
-      } else {
-        if (data[i].low < ep) {
-          ep = data[i].low;
-          af = Math.min(af + afStep, afMax);
-        }
-      }
+        isUpTrend = true; sar = ep; ep = data[i].high; af = afStep;
+      } else if (data[i].low < ep) { ep = data[i].low; af = Math.min(af + afStep, afMax); }
     }
-
     result.push(sar);
   }
   return result;
 }
 
-/* ─── SVG helpers ─── */
-
+/* ─── SVG polyline ─── */
 function polyline(xOf: (i: number) => number, values: (number | null)[], yOf: (v: number) => number, color: string, width = 1.2, dash?: string): string {
   let d = '';
   let started = false;
@@ -154,38 +154,37 @@ function polyline(xOf: (i: number) => number, values: (number | null)[], yOf: (v
   return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
 }
 
-/* ─── Build all active overlays on the price chart ─── */
+/* ─── Build all active overlays ─── */
 export function buildPriceOverlays(
-  activeIndicators: IndicatorType[],
+  configs: IndicatorConfig[],
   data: CandleData[],
   xOf: (i: number) => number,
   yOf: (price: number) => number,
 ): string {
-  if (!activeIndicators.length || !data.length) return '';
+  if (!configs.length || !data.length) return '';
   const parts: string[] = [];
+  let emaIdx = 0, smaIdx = 0;
 
-  for (const type of activeIndicators) {
-    const color = INDICATOR_COLORS[type];
+  for (const cfg of configs) {
+    const color = cfg.kind === 'ema'
+      ? EMA_COLORS[emaIdx++ % EMA_COLORS.length]
+      : cfg.kind === 'sma'
+        ? SMA_COLORS[smaIdx++ % SMA_COLORS.length]
+        : INDICATOR_KIND_COLORS[cfg.kind];
 
-    if (type === 'bollinger') {
-      const bb = calcBollinger(data);
+    if (cfg.kind === 'bollinger') {
+      const bb = calcBollinger(data, cfg.period);
       const upper = bb.map(b => b.upper);
       const middle = bb.map(b => b.middle);
       const lower = bb.map(b => b.lower);
-
-      // Fill between upper and lower
       const validIndices: number[] = [];
       for (let i = 0; i < upper.length; i++) {
         if (upper[i] !== null && lower[i] !== null) validIndices.push(i);
       }
       if (validIndices.length > 1) {
         let fillD = `M${xOf(validIndices[0])},${yOf(upper[validIndices[0]]!)}`;
-        for (let j = 1; j < validIndices.length; j++) {
-          fillD += ` L${xOf(validIndices[j])},${yOf(upper[validIndices[j]]!)}`;
-        }
-        for (let j = validIndices.length - 1; j >= 0; j--) {
-          fillD += ` L${xOf(validIndices[j])},${yOf(lower[validIndices[j]]!)}`;
-        }
+        for (let j = 1; j < validIndices.length; j++) fillD += ` L${xOf(validIndices[j])},${yOf(upper[validIndices[j]]!)}`;
+        for (let j = validIndices.length - 1; j >= 0; j--) fillD += ` L${xOf(validIndices[j])},${yOf(lower[validIndices[j]]!)}`;
         fillD += 'Z';
         parts.push(`<path d="${fillD}" fill="rgba(251,191,36,0.06)" stroke="none"/>`);
       }
@@ -194,32 +193,21 @@ export function buildPriceOverlays(
       parts.push(polyline(xOf, lower, yOf, color, 0.8, '4,3'));
     }
 
-    if (type === 'ema20') {
-      const vals = calcEMA(data, 20);
-      parts.push(polyline(xOf, vals, yOf, color, 1.3));
+    if (cfg.kind === 'ema') {
+      parts.push(polyline(xOf, calcEMA(data, cfg.period), yOf, color, 1.3));
     }
 
-    if (type === 'ema50') {
-      const vals = calcEMA(data, 50);
-      parts.push(polyline(xOf, vals, yOf, color, 1.3));
+    if (cfg.kind === 'sma') {
+      parts.push(polyline(xOf, calcSMA(data, cfg.period), yOf, color, 1.5, '6,3'));
     }
 
-    if (type === 'sma200') {
-      const vals = calcSMA(data, 200);
-      parts.push(polyline(xOf, vals, yOf, color, 1.5, '6,3'));
-    }
-
-    if (type === 'parabolicSar') {
+    if (cfg.kind === 'parabolicSar') {
       const sarVals = calcParabolicSAR(data);
-      // Draw as dots instead of a line
       for (let i = 0; i < sarVals.length; i++) {
         const v = sarVals[i];
         if (v === null) continue;
-        const x = xOf(i);
-        const y = yOf(v);
-        const isBelow = v < data[i].close;
-        const dotColor = isBelow ? '#34d399' : '#ff4976';
-        parts.push(`<circle cx="${x}" cy="${y}" r="1.8" fill="${dotColor}" opacity="0.85"/>`);
+        const dotColor = v < data[i].close ? '#34d399' : '#ff4976';
+        parts.push(`<circle cx="${xOf(i)}" cy="${yOf(v)}" r="1.8" fill="${dotColor}" opacity="0.85"/>`);
       }
     }
   }
@@ -229,42 +217,35 @@ export function buildPriceOverlays(
 
 /* ─── Get current values for badges ─── */
 export function getIndicatorCurrentValues(
-  activeIndicators: IndicatorType[],
+  configs: IndicatorConfig[],
   data: CandleData[],
-): Record<IndicatorType, string> {
-  const vals: Partial<Record<IndicatorType, string>> = {};
-  if (!data.length) return vals as Record<IndicatorType, string>;
-
+): Record<string, string> {
+  const vals: Record<string, string> = {};
+  if (!data.length) return vals;
   const jpy = data[0].close > 10;
   const fmt = (n: number) => jpy ? n.toFixed(3) : n.toFixed(5);
 
-  for (const type of activeIndicators) {
-    if (type === 'bollinger') {
-      const bb = calcBollinger(data);
+  for (const cfg of configs) {
+    if (cfg.kind === 'bollinger') {
+      const bb = calcBollinger(data, cfg.period);
       const last = [...bb].reverse().find(b => b.middle !== null);
-      if (last?.middle != null) vals.bollinger = fmt(last.middle);
+      if (last?.middle != null) vals[cfg.id] = fmt(last.middle);
     }
-    if (type === 'ema20') {
-      const v = calcEMA(data, 20);
+    if (cfg.kind === 'ema') {
+      const v = calcEMA(data, cfg.period);
       const last = [...v].reverse().find(x => x !== null);
-      if (last != null) vals.ema20 = fmt(last);
+      if (last != null) vals[cfg.id] = fmt(last);
     }
-    if (type === 'ema50') {
-      const v = calcEMA(data, 50);
+    if (cfg.kind === 'sma') {
+      const v = calcSMA(data, cfg.period);
       const last = [...v].reverse().find(x => x !== null);
-      if (last != null) vals.ema50 = fmt(last);
+      if (last != null) vals[cfg.id] = fmt(last);
     }
-    if (type === 'sma200') {
-      const v = calcSMA(data, 200);
-      const last = [...v].reverse().find(x => x !== null);
-      if (last != null) vals.sma200 = fmt(last);
-    }
-    if (type === 'parabolicSar') {
+    if (cfg.kind === 'parabolicSar') {
       const v = calcParabolicSAR(data);
       const last = [...v].reverse().find(x => x !== null);
-      if (last != null) vals.parabolicSar = fmt(last);
+      if (last != null) vals[cfg.id] = fmt(last);
     }
   }
-
-  return vals as Record<IndicatorType, string>;
+  return vals;
 }
