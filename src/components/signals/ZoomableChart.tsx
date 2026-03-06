@@ -8,15 +8,22 @@ interface ZoomableChartProps {
 
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
-const ZOOM_STEP = 0.3;
 
 export function ZoomableChart({ children, className }: ZoomableChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
+  const isPinching = useRef(false);
+  const lastPinchDist = useRef<number | null>(null);
+  const lastTouchCenter = useRef<{ x: number; y: number } | null>(null);
   const panStart = useRef({ x: 0, y: 0 });
   const translateStart = useRef({ x: 0, y: 0 });
+  const scaleRef = useRef(1);
+  const translateRef = useRef({ x: 0, y: 0 });
+
+  // Keep refs in sync
+  useEffect(() => { scaleRef.current = scale; }, [scale]);
+  useEffect(() => { translateRef.current = translate; }, [translate]);
 
   const clampTranslate = useCallback((tx: number, ty: number, s: number) => {
     if (s <= 1) return { x: 0, y: 0 };
@@ -31,9 +38,10 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
     };
   }, []);
 
+  // Desktop wheel zoom
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+    const delta = e.deltaY > 0 ? -0.3 : 0.3;
     setScale(prev => {
       const next = Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev + delta));
       if (next <= 1) setTranslate({ x: 0, y: 0 });
@@ -48,31 +56,27 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
     return () => el.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
 
-  // Pointer pan
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    if (scale <= 1) return;
-    setIsPanning(true);
-    panStart.current = { x: e.clientX, y: e.clientY };
-    translateStart.current = { ...translate };
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  }, [scale, translate]);
-
-  const onPointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isPanning) return;
-    const dx = e.clientX - panStart.current.x;
-    const dy = e.clientY - panStart.current.y;
-    setTranslate(clampTranslate(translateStart.current.x + dx, translateStart.current.y + dy, scale));
-  }, [isPanning, scale, clampTranslate]);
-
-  const onPointerUp = useCallback(() => {
-    setIsPanning(false);
+  // Touch handling - separate pinch (2 fingers = zoom only) from pan (1 finger when zoomed)
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      // Start pinch - just record distance, NO movement
+      isPinching.current = true;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastPinchDist.current = Math.hypot(dx, dy);
+      lastTouchCenter.current = null; // don't track center to avoid movement
+    } else if (e.touches.length === 1 && scaleRef.current > 1) {
+      // Start pan (only when zoomed)
+      panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      translateStart.current = { ...translateRef.current };
+    }
   }, []);
 
-  // Touch pinch
-  const lastPinchDist = useRef<number | null>(null);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
+      // Pinch zoom - scale only, no panning
+      e.preventDefault();
+      isPinching.current = true;
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.hypot(dx, dy);
@@ -85,22 +89,44 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
         });
       }
       lastPinchDist.current = dist;
+    } else if (e.touches.length === 1 && !isPinching.current && scaleRef.current > 1) {
+      // Single finger pan when zoomed
+      e.preventDefault();
+      const dx = e.touches[0].clientX - panStart.current.x;
+      const dy = e.touches[0].clientY - panStart.current.y;
+      setTranslate(clampTranslate(
+        translateStart.current.x + dx,
+        translateStart.current.y + dy,
+        scaleRef.current
+      ));
+    }
+  }, [clampTranslate]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      lastPinchDist.current = null;
+      lastTouchCenter.current = null;
+      // Small delay to prevent pan starting right after pinch ends
+      setTimeout(() => { isPinching.current = false; }, 100);
+    }
+    // If one finger remains after pinch, reset pan start
+    if (e.touches.length === 1 && scaleRef.current > 1) {
+      panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      translateStart.current = { ...translateRef.current };
     }
   }, []);
 
-  const onTouchEnd = useCallback(() => {
-    lastPinchDist.current = null;
+  // Double tap to reset
+  const lastTap = useRef(0);
+  const handleDoubleTap = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      setScale(1);
+      setTranslate({ x: 0, y: 0 });
+    }
+    lastTap.current = now;
   }, []);
-
-  const zoomIn = () => setScale(prev => Math.min(MAX_SCALE, prev + ZOOM_STEP));
-  const zoomOut = () => {
-    setScale(prev => {
-      const next = Math.max(MIN_SCALE, prev - ZOOM_STEP);
-      if (next <= 1) setTranslate({ x: 0, y: 0 });
-      return next;
-    });
-  };
-  const resetZoom = () => { setScale(1); setTranslate({ x: 0, y: 0 }); };
 
   const isZoomed = scale > 1;
 
@@ -116,20 +142,18 @@ export function ZoomableChart({ children, className }: ZoomableChartProps) {
       {/* Zoomable area */}
       <div
         ref={containerRef}
-        className={cn('w-full overflow-hidden', isZoomed ? 'cursor-grab' : '', isPanning && 'cursor-grabbing')}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        style={{ touchAction: 'none' }}
+        className={cn('w-full overflow-hidden', isZoomed ? 'cursor-grab' : '')}
+        onTouchStart={(e) => { handleTouchStart(e); handleDoubleTap(e); }}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ touchAction: isZoomed ? 'none' : 'pan-y' }}
       >
         <div
-          className="w-full transition-transform duration-100 ease-out"
+          className="w-full"
           style={{
             transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
             transformOrigin: 'center center',
+            transition: isPinching.current ? 'none' : 'transform 0.1s ease-out',
           }}
         >
           {children}
