@@ -198,7 +198,6 @@ export default function Signals() {
                 <PlusCircle className="w-5 h-5" />
               </button>
             }
-            <NotificationToggle />
           </div>
         </div>
 
@@ -322,6 +321,7 @@ export default function Signals() {
                 title="Centro de Análisis IA">
               <Brain className="w-4.5 h-4.5" />
             </button>
+            <NotificationToggle />
             {isAuthenticated &&
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
