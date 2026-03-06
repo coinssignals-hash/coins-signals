@@ -501,7 +501,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             {/* Circle with price below */}
             <div className="flex flex-col items-center gap-0.5">
               <div className={cn(
-                "relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] transition-transform flex-shrink-0",
+                "relative w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] transition-transform flex-shrink-0",
                 zonePulse && "animate-[zone-pulse_0.8s_ease-out]"
               )}>
                 <div className={cn(
