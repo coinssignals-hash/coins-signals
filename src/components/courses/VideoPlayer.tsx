@@ -32,7 +32,7 @@ export function VideoPlayer({ src, poster, title, onEnded }: VideoPlayerProps) {
   const [showControls, setShowControls] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
 
-  const controlsTimeout = useRef<NodeJS.Timeout>();
+  const controlsTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     const video = videoRef.current;

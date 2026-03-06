@@ -115,7 +115,7 @@ export function usePortfolio() {
   const [isLive, setIsLive] = useState(false);
   const [realtimePrices, setRealtimePrices] = useState<Map<string, RealtimePriceUpdate>>(new Map());
   const wsRef = useRef<WebSocket | null>(null);
-  const liveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const liveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDemo = !session?.access_token;
 
   const fetchPortfolio = useCallback(async () => {
