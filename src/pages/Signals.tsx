@@ -389,7 +389,9 @@ export default function Signals() {
             <>
             {/* Performance Stats Panel */}
             {!loading && signals.length > 0 &&
-              <SignalPerformanceStats signals={signals} />
+              <SignalPerformanceStats signals={signals} activesBadge={
+                <TodayActivesBadge count={signals.filter(s => s.status === 'active' || s.status === 'pending').length} />
+              } />
               }
 
             {loading &&
