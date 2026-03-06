@@ -7,7 +7,7 @@ import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { SignalsDayTabs } from '@/components/signals/SignalsDayTabs';
 import { SignalsDayGroup } from '@/components/signals/SignalsDayGroup';
-import { TodaySignalsGroup } from '@/components/signals/today/TodaySignalsGroup';
+import { TodaySignalsGroup, TodayActivesBadge } from '@/components/signals/today/TodaySignalsGroup';
 import { TomorrowSignalsGroup } from '@/components/signals/tomorrow/TomorrowSignalsGroup';
 import { SignalPerformanceStats } from '@/components/signals/SignalPerformanceStats';
 import { BottomNav } from '@/components/layout/BottomNav';
