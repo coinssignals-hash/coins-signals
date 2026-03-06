@@ -190,68 +190,15 @@ export default function Signals() {
       {/* Signal Controls Bar */}
       <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
-            {/* View Mode Toggle */}
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              
-          </div>
-
-          <div className="flex items-center gap-1">
             {isAdmin &&
               <button
                 onClick={() => navigate('/create-signal')}
                 className="p-2.5 rounded-full transition-colors active:scale-95 text-accent hover:text-accent/80 hover:bg-accent/10"
                 title="Crear Señal (Admin)">
-                
                 <PlusCircle className="w-5 h-5" />
               </button>
-              }
-            <button
-                onClick={() => setShowAICenter(!showAICenter)}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors active:scale-95",
-                  showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
-                )}
-                title="Centro de Análisis IA">
-                
-              <Brain className="w-5 h-5" />
-            </button>
+            }
             <NotificationToggle />
-            {isAuthenticated &&
-              <button
-                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={cn(
-                  "p-2.5 rounded-full transition-colors active:scale-95",
-                  showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
-                )}
-                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}>
-                
-                <Heart className={cn("w-5 h-5", showFavoritesOnly && "fill-current")} />
-              </button>
-              }
           </div>
         </div>
 
@@ -341,30 +288,52 @@ export default function Signals() {
       {/* Filters Bar */}
       <div className="bg-slate-900/50 border-b border-slate-700/50 px-3 sm:px-4 py-2">
         <div className="flex items-center justify-between gap-2">
-          {/* Sort Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors text-sm active:scale-95">
-                <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-slate-300 truncate max-w-[120px] sm:max-w-none">{currentSortOption?.label}</span>
+          {/* Sort Dropdown + Action Icons */}
+          <div className="flex items-center gap-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors text-sm active:scale-95">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="text-slate-300 truncate max-w-[120px] sm:max-w-none">{currentSortOption?.label}</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 bg-slate-900 border-slate-700">
+                {sortOptions.map((option) =>
+                    <DropdownMenuItem
+                      key={option.value}
+                      onClick={() => setSortBy(option.value)}
+                      className={cn(
+                        "flex items-center gap-2 cursor-pointer",
+                        sortBy === option.value && "bg-slate-800 text-white"
+                      )}>
+                    {option.icon}
+                    <span>{option.label}</span>
+                  </DropdownMenuItem>
+                    )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <button
+                onClick={() => setShowAICenter(!showAICenter)}
+                className={cn(
+                  "p-2 rounded-full transition-colors active:scale-95",
+                  showAICenter ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="Centro de Análisis IA">
+              <Brain className="w-4.5 h-4.5" />
+            </button>
+            {isAuthenticated &&
+              <button
+                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                className={cn(
+                  "p-2 rounded-full transition-colors active:scale-95",
+                  showFavoritesOnly ? "text-destructive" : "text-muted-foreground hover:text-foreground"
+                )}
+                title={showFavoritesOnly ? "Ver todas las señales" : "Ver solo favoritos"}>
+                <Heart className={cn("w-4.5 h-4.5", showFavoritesOnly && "fill-current")} />
               </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 bg-slate-900 border-slate-700">
-              {sortOptions.map((option) =>
-                  <DropdownMenuItem
-                    key={option.value}
-                    onClick={() => setSortBy(option.value)}
-                    className={cn(
-                      "flex items-center gap-2 cursor-pointer",
-                      sortBy === option.value && "bg-slate-800 text-white"
-                    )}>
-                    
-                  {option.icon}
-                  <span>{option.label}</span>
-                </DropdownMenuItem>
-                  )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+          </div>
 
           {/* Results count */}
           <div className="flex items-center gap-2 text-xs text-slate-500">
