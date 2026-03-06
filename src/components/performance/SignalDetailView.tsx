@@ -68,7 +68,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
               y={signal.stopLoss} 
               stroke="#ef4444" 
               strokeDasharray="3 3"
-              label={{ value: formatPrice(signal.stopLoss, signal.pair), position: 'right', fill: '#ef4444', fontSize: 10 }}
+              label={{ value: formatPrice(signal.stopLoss, signal.currencyPair), position: 'right', fill: '#ef4444', fontSize: 10 }}
             />
             <Area 
               type="monotone" 
