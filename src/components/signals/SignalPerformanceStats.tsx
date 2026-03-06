@@ -9,7 +9,7 @@ interface SignalPerformanceStatsProps {
   activesBadge?: React.ReactNode;
 }
 
-export function SignalPerformanceStats({ signals }: SignalPerformanceStatsProps) {
+export function SignalPerformanceStats({ signals, activesBadge }: SignalPerformanceStatsProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
