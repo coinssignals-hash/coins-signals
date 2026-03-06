@@ -6,6 +6,7 @@ import { useTranslation } from "@/i18n/LanguageContext";
 
 interface SignalPerformanceStatsProps {
   signals: TradingSignal[];
+  activesBadge?: React.ReactNode;
 }
 
 export function SignalPerformanceStats({ signals }: SignalPerformanceStatsProps) {
