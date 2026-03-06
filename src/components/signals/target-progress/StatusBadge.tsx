@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import type { ProgressBarState, PulseState } from './types';
 
 interface StatusBadgeProps {
@@ -9,15 +9,18 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ state, pulse: p, isCompleted, closedResult }: StatusBadgeProps) {
-  const { nearEntry, isAboveEntry, targetLabel, targetPercent, pipsFromEntry } = state;
+  const { nearEntry, isAboveEntry, targetLabel, targetPercent, pipsFromEntry, displayPrice, isJpy } = state;
   const { pulse, pulseColor } = p;
+  const sym = isJpy ? 'JPY' : 'EUR/USD';
 
   const icon = isCompleted
     ? closedResult === 'tp_hit' ? '✅' : closedResult === 'sl_hit' ? '❌' : '⏱'
     : '';
 
+  const priceStr = isCompleted && displayPrice != null ? ` @ ${formatPrice(displayPrice, sym)}` : '';
+
   const statusText = isCompleted
-    ? `${icon} ${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`
+    ? `${icon} ${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p${priceStr}`
     : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`;
 
   return (
