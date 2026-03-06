@@ -95,8 +95,8 @@ export function useRealtimeMarket(initialSymbols: string[] = []): UseRealtimeMar
     pollSymbols();
     setIsConnected(true);
 
-    // Poll every 15 seconds (respectful rate)
-    intervalRef.current = setInterval(pollSymbols, 15000);
+    // Poll every 5 seconds for real-time updates
+    intervalRef.current = setInterval(pollSymbols, 5000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
