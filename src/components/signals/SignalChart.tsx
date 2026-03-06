@@ -346,6 +346,8 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               transformOrigin: 'top left',
               transform: `translateX(${viewportSize.w}px) rotate(90deg)`,
               overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
             } : {
               position: 'absolute',
               top: 0,
@@ -353,48 +355,60 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               width: '100%',
               height: '100%',
               overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            {/* Chart image fills rotated container with pinch-to-zoom */}
-            {fullscreenSvgUri && (
-              <ZoomableChart className="absolute inset-0 w-full h-full">
-                <img
-                  src={fullscreenSvgUri}
-                  alt={`Gráfico ${currencyPair} 15min`}
-                  style={{
-                    width: '100%', height: '100%',
-                    objectFit: 'fill',
-                    display: 'block',
-                  }}
-                  draggable={false}
-                />
-              </ZoomableChart>
-            )}
+            {/* Chart area — fills all available space */}
+            <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
+              {fullscreenSvgUri && (
+                <ZoomableChart className="absolute inset-0 w-full h-full">
+                  <img
+                    src={fullscreenSvgUri}
+                    alt={`Gráfico ${currencyPair} 15min`}
+                    style={{
+                      width: '100%', height: '100%',
+                      objectFit: 'fill',
+                      display: 'block',
+                    }}
+                    draggable={false}
+                  />
+                </ZoomableChart>
+              )}
 
-            {/* Close button — top-left */}
-            <button
-              onClick={() => setFullscreen(false)}
-              className="absolute top-2 left-2 z-[10001] p-2 rounded-full active:scale-90"
-              style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
+              {/* Close button — top-left */}
+              <button
+                onClick={() => setFullscreen(false)}
+                className="absolute top-2 left-2 z-[10001] p-2 rounded-full active:scale-90"
+                style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+            </div>
 
-            {/* S/R toggle — bottom-right */}
-            <button
-              onClick={() => setFsSR(prev => !prev)}
-              className="absolute bottom-1 right-3 z-[10001] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+            {/* Bottom bar with S/R toggle — below the chart */}
+            <div
+              className="flex items-center justify-end shrink-0"
               style={{
-                background: fsSR ? 'rgba(0,230,180,0.15)' : 'rgba(255,255,255,0.08)',
-                border: `1px solid ${fsSR ? 'rgba(0,230,180,0.4)' : 'rgba(255,255,255,0.2)'}`,
-                backdropFilter: 'blur(8px)',
+                height: '32px',
+                background: '#060e1c',
+                paddingRight: '12px',
               }}
             >
-              <TrendingUp className="w-3.5 h-3.5" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }} />
-              <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }}>
-                S/R
-              </span>
-            </button>
+              <button
+                onClick={() => setFsSR(prev => !prev)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md active:scale-95 transition-all"
+                style={{
+                  background: fsSR ? 'rgba(0,230,180,0.15)' : 'rgba(255,255,255,0.08)',
+                  border: `1px solid ${fsSR ? 'rgba(0,230,180,0.4)' : 'rgba(255,255,255,0.2)'}`,
+                }}
+              >
+                <TrendingUp className="w-3 h-3" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }} />
+                <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }}>
+                  S/R
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       )}
