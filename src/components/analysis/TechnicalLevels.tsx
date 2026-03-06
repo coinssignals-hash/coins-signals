@@ -70,7 +70,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
           <div className="space-y-2">
             {data.resistances.map((level, index) => (
               <div key={index} className="flex items-start gap-2 p-2 bg-slate-800/60 rounded">
-                <span className="text-red-400 font-mono font-bold shrink-0">{level.level.toFixed(4)}</span>
+                <span className="text-red-400 font-mono font-bold shrink-0">{formatPrice(level.level, symbol)}</span>
                 <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
                   {getStrengthLabel(level.strength)}
                 </span>
