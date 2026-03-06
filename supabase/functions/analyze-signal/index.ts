@@ -212,10 +212,10 @@ Genera una nota breve de análisis para acompañar esta señal.`;
         throw new Error('No notes generated');
       }
 
-      return new Response(JSON.stringify({
-        notes: generatedNotes.trim(),
-        generatedAt: new Date().toISOString()
-      }), {
+      const result = { notes: generatedNotes.trim(), generatedAt: new Date().toISOString() };
+      cache.set(cacheKey, { data: result, ts: Date.now() });
+      if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+      return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
