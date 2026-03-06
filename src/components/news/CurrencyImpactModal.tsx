@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import { supabase } from '@/integrations/supabase/client';
 import { TrendingUp, TrendingDown, Minus, Activity, Loader2 } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 import type { Currency } from '@/types/news';
 
 interface SignalMatch {
