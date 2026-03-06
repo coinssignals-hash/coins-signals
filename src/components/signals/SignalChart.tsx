@@ -73,17 +73,14 @@ function buildSignalChartSvg(
   showSignalLevels = false,
   activeIndicators: IndicatorType[] = [],
 ): string {
-  // Sub-chart indicators (not bollinger which is an overlay)
-  const subIndicators = activeIndicators.filter(i => i !== 'bollinger');
-  const SUB_CHART_H = 80; // height per sub-chart
-  const totalSubH = subIndicators.length * SUB_CHART_H;
-  const W = width, H = height + totalSubH;
+  // All indicators are overlays now — no sub-chart height needed
+  const W = width, H = height;
 
   // Reserve extra space on the right for "next day" empty zone
   const NEXT_DAY_RATIO = 0.12;
   const PAD = compact
-    ? { top: 18, right: 55, bottom: 50 + totalSubH, left: 40 }
-    : { top: 30, right: 100, bottom: 50 + totalSubH, left: 60 };
+    ? { top: 18, right: 55, bottom: 50, left: 40 }
+    : { top: 30, right: 100, bottom: 50, left: 60 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
   const CHART_W_FULL = CHART_X2 - CHART_X1;
