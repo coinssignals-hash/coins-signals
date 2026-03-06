@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Maximize2, X, TrendingUp, Clock } from 'lucide-react';
+import { Maximize2, X, TrendingUp, Clock, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -57,12 +57,17 @@ function buildSignalChartSvg(
   intervalLabel = '15min',
 ): string {
   const W = width, H = height;
+  // Reserve extra space on the right for "next day" empty zone
+  const NEXT_DAY_RATIO = 0.12; // 12% of chart width for next day
   const PAD = compact
     ? { top: 18, right: 55, bottom: 50, left: 40 }
     : { top: 30, right: 100, bottom: 50, left: 60 };
   const CHART_X1 = PAD.left;
   const CHART_X2 = W - PAD.right;
-  const CHART_W = CHART_X2 - CHART_X1;
+  const CHART_W_FULL = CHART_X2 - CHART_X1;
+  const NEXT_DAY_W = Math.round(CHART_W_FULL * NEXT_DAY_RATIO);
+  const CHART_W = CHART_W_FULL - NEXT_DAY_W; // candle area
+  const NEXT_DAY_X = CHART_X1 + CHART_W;
   const PRICE_TOP = PAD.top;
   const PRICE_BOTTOM = H - PAD.bottom;
   const PRICE_H = PRICE_BOTTOM - PRICE_TOP;
@@ -132,7 +137,7 @@ function buildSignalChartSvg(
     parts.push(`<text x="${midX}" y="${PRICE_TOP + 16}" fill="rgba(56,189,248,0.4)" text-anchor="middle" font-size="11" font-family="sans-serif" font-weight="bold" letter-spacing="3">HOY</text>`);
   }
 
-  // Horizontal grid + price labels
+  // Horizontal grid + price labels (span full width including next day zone)
   for (let i = 0; i <= 8; i++) {
     const price = minP + (totalRange * i) / 8;
     const y = yOf(price);
@@ -169,7 +174,41 @@ function buildSignalChartSvg(
     parts.push(`<text x="${x}" y="${H - PAD.bottom + 38}" fill="${TEXT_COL}" font-size="${timeFs}" font-family="monospace" text-anchor="middle">${dd}/${mo} ${hh}:${mm}</text>`);
   }
 
-  // Candles
+  // ── Next day empty zone ──
+  {
+    // Determine next day from last candle
+    const lastCandle = data[data.length - 1];
+    const lastDate = new Date(lastCandle.time);
+    const nextDate = new Date(lastDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    const nextDayName = DAY_NAMES[nextDate.getDay()];
+    const nextDayNum = nextDate.getDate();
+
+    // Background tint for next day zone
+    parts.push(`<rect x="${NEXT_DAY_X}" y="${PRICE_TOP}" width="${NEXT_DAY_W}" height="${PRICE_H}" fill="rgba(15,25,45,0.5)"/>`);
+
+    // Day separator line
+    parts.push(`<line x1="${NEXT_DAY_X}" y1="${PRICE_TOP}" x2="${NEXT_DAY_X}" y2="${PRICE_BOTTOM}" stroke="${GRID_MAJOR}" stroke-width="0.8" stroke-dasharray="4,4" shape-rendering="crispEdges"/>`);
+
+    // Day label
+    const dayFs = compact ? 14 : 10;
+    parts.push(`<text x="${NEXT_DAY_X + 4}" y="${H - PAD.bottom + 18}" fill="${TEXT_COL}" font-size="${dayFs}" font-family="sans-serif" font-weight="${compact ? 'bold' : 'normal'}" opacity="0.6">${nextDayName} ${nextDayNum}</text>`);
+
+    // Hour gridlines inside next day zone
+    const hoursToShow = [0, 4, 8, 12, 16, 20];
+    const hourFs = compact ? 10 : 7;
+    for (const h of hoursToShow) {
+      const frac = h / 24;
+      const hx = NEXT_DAY_X + frac * NEXT_DAY_W;
+      // Vertical tick line
+      parts.push(`<line x1="${hx}" y1="${PRICE_BOTTOM - 4}" x2="${hx}" y2="${PRICE_BOTTOM}" stroke="${GRID}" stroke-width="0.5" shape-rendering="crispEdges"/>`);
+      // Hour label
+      const hLabel = `${String(h).padStart(2, '0')}:00`;
+      parts.push(`<text x="${hx}" y="${H - PAD.bottom + 38}" fill="${TEXT_COL}" font-size="${hourFs}" font-family="monospace" text-anchor="middle" opacity="0.5">${hLabel}</text>`);
+    }
+  }
+
+
   for (let i = 0; i < data.length; i++) {
     const c = data[i];
     const x = xOf(i);
@@ -388,6 +427,20 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                   />
                 </ZoomableChart>
               )}
+
+              {/* Top-left: placeholder button (to configure later) */}
+              <div className="absolute top-2 left-2 z-[10001]">
+                <button
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <BarChart3 className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.6)' }} />
+                </button>
+              </div>
 
               {/* Top-right controls: S/R toggle + config + close */}
               <div className="absolute top-2 right-2 z-[10001] flex items-center gap-2">
