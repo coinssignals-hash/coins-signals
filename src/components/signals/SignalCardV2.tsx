@@ -493,6 +493,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 <span className="text-[9px] font-bold text-cyan-300 italic">
                   {isConnected && isLivePrice ? "Live" : isConnected ? "Offline" : priceLoading ? t('common_loading') : "N/A"}
                 </span>
+                {isConnected && !isCompleted && (
+                  <span className="text-[8px] font-mono tabular-nums text-cyan-300/50 ml-0.5">
+                    {countdown}s
+                  </span>
+                )}
               </div>
               {priceDiff.hasData && quote?.timestamp &&
               <PriceAge timestamp={quote.timestamp} />
