@@ -3,13 +3,16 @@ import { es } from 'date-fns/locale';
 import { Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { StaggerList } from '@/components/layout/StaggerList';
+import { TodayActivesBadge } from '@/components/signals/today/TodaySignalsGroup';
+
 interface SignalsDayGroupProps {
   date: string;
   count: number;
+  activeCount?: number;
   children: React.ReactNode;
 }
 
-export function SignalsDayGroup({ date, count, children }: SignalsDayGroupProps) {
+export function SignalsDayGroup({ date, count, activeCount = 0, children }: SignalsDayGroupProps) {
   const dateObj = new Date(date);
   const today = isToday(dateObj);
   const tomorrow = isTomorrow(dateObj);
@@ -22,7 +25,6 @@ export function SignalsDayGroup({ date, count, children }: SignalsDayGroupProps)
 
   return (
     <section className="space-y-3">
-      {/* Day header */}
       <div className={cn(
         "flex items-center gap-2 px-1 py-2 rounded-lg",
         today
@@ -41,17 +43,19 @@ export function SignalsDayGroup({ date, count, children }: SignalsDayGroupProps)
         )}>
           {label}
         </span>
-        <span className={cn(
-          "ml-auto text-xs px-2 py-0.5 rounded-full",
-          today
-            ? "bg-blue-500/20 text-blue-400"
-            : "bg-slate-700/50 text-slate-500"
-        )}>
-          {count} {count === 1 ? 'señal' : 'señales'}
-        </span>
+        <div className="ml-auto flex items-center gap-2">
+          <TodayActivesBadge count={activeCount} />
+          <span className={cn(
+            "text-xs px-2 py-0.5 rounded-full",
+            today
+              ? "bg-blue-500/20 text-blue-400"
+              : "bg-slate-700/50 text-slate-500"
+          )}>
+            {count} {count === 1 ? 'señal' : 'señales'}
+          </span>
+        </div>
       </div>
 
-      {/* Cards */}
       <StaggerList className="space-y-4">
         {children}
       </StaggerList>
