@@ -176,10 +176,11 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   const percent = (target - entry) / entry * 100;
   const isPositive = pips >= 0;
   const sign = isPositive ? "+ " : "- ";
+  const sym = isJpy ? 'JPY' : 'EUR/USD';
   return {
-    pips: `${sign}${Math.abs(pips).toFixed(1)}`,
+    pips: `${sign}${Math.abs(pips).toFixed(2)}`,
     percent: `${sign}${Math.abs(percent).toFixed(3)}`,
-    price: target.toFixed(3),
+    price: formatPrice(target, sym),
     isPositive
   };
 }
