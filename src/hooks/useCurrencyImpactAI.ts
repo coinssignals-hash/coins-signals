@@ -32,20 +32,27 @@ export function useCurrencyImpactAI(signal: {
   const [data, setData] = useState<CurrencyImpactAI[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fetchedRef = useRef<string | null>(null);
   const { language } = useTranslation();
 
   const fetchData = useCallback(async () => {
     if (!signal) return;
 
     const cacheKey = `${signal.currencyPair}_${signal.action}_${signal.entryPrice}_${language}`;
+
+    // Already fetched this exact key
+    if (fetchedRef.current === cacheKey) return;
+
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
       setData(cached.data);
+      fetchedRef.current = cacheKey;
       return;
     }
 
     setLoading(true);
     setError(null);
+    fetchedRef.current = cacheKey;
 
     try {
       const { data: result, error: fnError } = await supabase.functions.invoke("currency-impact-ai", {
