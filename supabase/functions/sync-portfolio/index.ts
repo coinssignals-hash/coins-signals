@@ -455,7 +455,10 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const encryptionKey = Deno.env.get('ENCRYPTION_KEY') || 'default-key';
+    const encryptionKey = Deno.env.get('ENCRYPTION_KEY');
+    if (!encryptionKey || encryptionKey === 'default-key') {
+      throw new Error('ENCRYPTION_KEY environment variable is required and must not be the default value');
+    }
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
