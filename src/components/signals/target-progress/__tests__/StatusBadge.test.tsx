@@ -18,6 +18,7 @@ const baseState: ProgressBarState = {
   displayPrice: 1.1,
   fillGradient: '',
   currentZone: 'entry',
+  isActivated: true,
   isJpy: false,
   hasMultipleTPs: false,
 };

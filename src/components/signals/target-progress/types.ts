@@ -33,6 +33,8 @@ export interface ProgressBarState {
   currentZone: PriceZone;
   isJpy: boolean;
   hasMultipleTPs: boolean;
+  /** True when market price has reached entry (order filled) */
+  isActivated: boolean;
 }
 
 export interface PulseState {

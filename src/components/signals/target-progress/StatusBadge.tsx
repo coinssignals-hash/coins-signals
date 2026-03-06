@@ -9,9 +9,18 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ state, pulse: p, isCompleted, closedResult }: StatusBadgeProps) {
-  const { nearEntry, isAboveEntry, targetLabel, targetPercent, pipsFromEntry, displayPrice, isJpy } = state;
+  const { nearEntry, isAboveEntry, targetLabel, targetPercent, pipsFromEntry, displayPrice, isJpy, isActivated } = state;
   const { pulse, pulseColor } = p;
   const sym = isJpy ? 'JPY' : 'EUR/USD';
+
+  // Not activated yet — show pending badge
+  if (!isActivated && !isCompleted) {
+    return (
+      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full font-bold mt-1 text-[10px] sm:text-xs bg-white/10 text-white/50 whitespace-nowrap">
+        ⏳ Pendiente
+      </div>
+    );
+  }
 
   const icon = isCompleted
     ? closedResult === 'tp_hit' ? '✅' : closedResult === 'sl_hit' ? '❌' : '⏱'
