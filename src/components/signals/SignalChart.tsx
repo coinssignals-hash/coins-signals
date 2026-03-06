@@ -563,8 +563,8 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                 </ZoomableChart>
               )}
 
-              {/* Top-left: Signal levels toggle */}
-              <div className="absolute top-2 left-2 z-[10001]">
+              {/* Top-left: Signal levels toggle + Indicators dropdown */}
+              <div className="absolute top-2 left-2 z-[10001] flex items-center gap-2">
                 <button
                   onClick={() => setFsSignalLines(prev => !prev)}
                   className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
@@ -579,6 +579,71 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                     SEÑAL
                   </span>
                 </button>
+
+                {/* Indicators dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowIndMenu(prev => !prev)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+                    style={{
+                      background: fsIndicators.size > 0 ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.08)',
+                      border: `1px solid ${fsIndicators.size > 0 ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.2)'}`,
+                      backdropFilter: 'blur(8px)',
+                    }}
+                  >
+                    <Activity className="w-3.5 h-3.5" style={{ color: fsIndicators.size > 0 ? '#a78bfa' : 'rgba(255,255,255,0.6)' }} />
+                    <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsIndicators.size > 0 ? '#a78bfa' : 'rgba(255,255,255,0.5)' }}>
+                      IND
+                    </span>
+                    <ChevronDown className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.4)' }} />
+                    {fsIndicators.size > 0 && (
+                      <span className="ml-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center" style={{ background: 'rgba(167,139,250,0.3)', color: '#a78bfa' }}>
+                        {fsIndicators.size}
+                      </span>
+                    )}
+                  </button>
+
+                  {showIndMenu && (
+                    <div
+                      className="absolute top-full left-0 mt-1 flex flex-col gap-0.5 rounded-lg overflow-hidden"
+                      style={{
+                        background: 'rgba(6,14,28,0.95)',
+                        border: '1px solid rgba(167,139,250,0.25)',
+                        backdropFilter: 'blur(12px)',
+                        minWidth: '130px',
+                      }}
+                    >
+                      {(['rsi', 'macd', 'bollinger', 'stochastic', 'adx'] as IndicatorType[]).map(ind => {
+                        const active = fsIndicators.has(ind);
+                        const col = INDICATOR_COLORS[ind];
+                        return (
+                          <button
+                            key={ind}
+                            onClick={() => {
+                              setFsIndicators(prev => {
+                                const next = new Set(prev);
+                                next.has(ind) ? next.delete(ind) : next.add(ind);
+                                return next;
+                              });
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 text-left transition-colors"
+                            style={{
+                              background: active ? `${col}15` : 'transparent',
+                            }}
+                          >
+                            <span
+                              className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                              style={{ background: active ? col : 'rgba(255,255,255,0.15)', border: `1px solid ${active ? col : 'rgba(255,255,255,0.2)'}` }}
+                            />
+                            <span className="text-[11px] font-semibold" style={{ color: active ? col : 'rgba(255,255,255,0.6)' }}>
+                              {INDICATOR_LABELS[ind]}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Top-right controls: S/R toggle + config + close */}
