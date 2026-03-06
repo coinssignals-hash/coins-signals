@@ -62,7 +62,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
       <div className="space-y-4 text-sm">
         <div className="flex items-center justify-between p-3 bg-slate-800/60 rounded-lg">
           <span className="text-gray-400">{t('analysis_pivot_point')}</span>
-          <span className="text-white font-mono font-bold">{data.pivot.toFixed(4)}</span>
+          <span className="text-white font-mono font-bold">{formatPrice(data.pivot, symbol)}</span>
         </div>
 
         <div>
