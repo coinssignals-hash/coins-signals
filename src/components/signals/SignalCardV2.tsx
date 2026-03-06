@@ -35,12 +35,6 @@ import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
 import { es, enUS, ptBR, fr } from "date-fns/locale";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger } from
-"@/components/ui/tooltip";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger } from
