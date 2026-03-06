@@ -69,7 +69,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice }: PricePr
       <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-slate-800/60 rounded-lg">
         <div className="text-center">
           <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_low')}</p>
-          <p className="text-red-400 font-mono font-semibold">{data.predictedLow.toFixed(4)}</p>
+          <p className="text-red-400 font-mono font-semibold">{formatPrice(data.predictedLow, symbol)}</p>
         </div>
         <div className="text-center">
           <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_close')}</p>
