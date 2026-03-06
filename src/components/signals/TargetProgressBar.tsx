@@ -320,7 +320,7 @@ export function TargetProgressBar({
         {/* TP1 label */}
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
           <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
-            {takeProfit.toFixed(isJpy ? 2 : 3)}
+            {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
           <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
             TP
