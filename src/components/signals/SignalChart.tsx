@@ -73,7 +73,7 @@ function buildSignalChartSvg(
   intervalLabel = '15min',
   signalLevels?: SignalLevels,
   showSignalLevels = false,
-  activeIndicators: IndicatorType[] = [],
+  activeIndicators: IndicatorConfig[] = [],
 ): string {
   // All indicators are overlays now — no sub-chart height needed
   const W = width, H = height;
