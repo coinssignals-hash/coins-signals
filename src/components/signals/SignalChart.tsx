@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, X, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForexChartData } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -222,8 +222,9 @@ function buildSignalChartSvg(
 export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, className }: SignalChartProps) {
   const symbol = currencyPair.replace('/', '');
   const { data: chartData, loading, error } = useForexChartData(symbol, '15min');
-  const showSR = true; // Always show S/R lines
+  const showSR = true; // Always show S/R lines in inline
   const [fullscreen, setFullscreen] = useState(false);
+  const [fsSR, setFsSR] = useState(true); // S/R toggle for fullscreen
   const fsRef = useRef<HTMLDivElement>(null);
   const getVpSize = () => ({
     w: Math.max(window.innerWidth, document.documentElement.clientWidth),
@@ -259,14 +260,12 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
     if (!candles.length || !fullscreen) return null;
-    // Use viewport dimensions for exact aspect ratio match
     const fsW = isPortrait ? viewportSize.h : viewportSize.w;
     const fsH = isPortrait ? viewportSize.w : viewportSize.h;
-    // Scale up for crisp rendering but maintain aspect ratio
     const scale = Math.max(1, Math.ceil(2340 / fsW));
-    const svg = buildSignalChartSvg(candles, support, resistance, showSR, fsW * scale, fsH * scale, true);
+    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, showSR, fullscreen, isPortrait, viewportSize]);
+  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize]);
 
   // Lock body scroll in fullscreen + recalculate viewport
   useEffect(() => {
@@ -379,6 +378,22 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.3)' }}
             >
               <X className="w-5 h-5 text-white" />
+            </button>
+
+            {/* S/R toggle — bottom-right */}
+            <button
+              onClick={() => setFsSR(prev => !prev)}
+              className="absolute bottom-3 right-3 z-[10001] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+              style={{
+                background: fsSR ? 'rgba(0,230,180,0.15)' : 'rgba(255,255,255,0.08)',
+                border: `1px solid ${fsSR ? 'rgba(0,230,180,0.4)' : 'rgba(255,255,255,0.2)'}`,
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <TrendingUp className="w-3.5 h-3.5" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }} />
+              <span className="text-[10px] font-semibold tracking-wide" style={{ color: fsSR ? '#00e6b4' : 'rgba(255,255,255,0.5)' }}>
+                S/R
+              </span>
             </button>
           </div>
         </div>
