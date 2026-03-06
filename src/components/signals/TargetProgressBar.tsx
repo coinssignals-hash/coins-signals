@@ -303,7 +303,7 @@ export function TargetProgressBar({
       <div className="relative mt-1 h-7">
         <div className="absolute left-0 flex flex-col items-start">
           <span className="text-[11px] text-rose-400/60 font-mono tabular-nums">
-            {stopLoss.toFixed(isJpy ? 2 : 3)}
+            {formatPrice(stopLoss, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
           <span className="text-[7px] text-rose-400/30 font-semibold uppercase tracking-widest leading-none">
             SL
