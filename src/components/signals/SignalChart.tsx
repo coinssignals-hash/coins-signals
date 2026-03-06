@@ -3,6 +3,7 @@ import { Maximize2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForexChartData } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ZoomableChart } from './ZoomableChart';
 
 interface SignalChartProps {
   currencyPair: string;
@@ -355,20 +356,20 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
               overflow: 'hidden',
             }}
           >
-            {/* Chart image fills rotated container */}
+            {/* Chart image fills rotated container with pinch-to-zoom */}
             {fullscreenSvgUri && (
-              <img
-                src={fullscreenSvgUri}
-                alt={`Gráfico ${currencyPair} 15min`}
-                style={{
-                  position: 'absolute',
-                  top: 0, left: 0,
-                  width: '100%', height: '100%',
-                  objectFit: 'fill',
-                  display: 'block',
-                }}
-                draggable={false}
-              />
+              <ZoomableChart className="absolute inset-0 w-full h-full">
+                <img
+                  src={fullscreenSvgUri}
+                  alt={`Gráfico ${currencyPair} 15min`}
+                  style={{
+                    width: '100%', height: '100%',
+                    objectFit: 'fill',
+                    display: 'block',
+                  }}
+                  draggable={false}
+                />
+              </ZoomableChart>
             )}
 
             {/* Close button — top-left */}
