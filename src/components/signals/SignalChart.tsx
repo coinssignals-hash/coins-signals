@@ -1,9 +1,14 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Maximize2, X, TrendingUp, Clock, BarChart3 } from 'lucide-react';
+import { Maximize2, X, TrendingUp, Clock, BarChart3, ChevronDown, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ZoomableChart } from './ZoomableChart';
+import {
+  type IndicatorType, type CandleData as IndCandleData,
+  INDICATOR_LABELS, INDICATOR_COLORS,
+  buildIndicatorSubChart, buildBollingerOverlay,
+} from './chartIndicators';
 
 const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
   { value: '5min', label: '5M' },
