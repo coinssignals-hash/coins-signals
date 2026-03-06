@@ -77,7 +77,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice }: PricePr
         </div>
         <div className="text-center">
           <p className="text-gray-400 text-xs mb-1">{t('analysis_expected_high')}</p>
-          <p className="text-green-400 font-mono font-semibold">{data.predictedHigh.toFixed(4)}</p>
+          <p className="text-green-400 font-mono font-semibold">{formatPrice(data.predictedHigh, symbol)}</p>
         </div>
       </div>
 

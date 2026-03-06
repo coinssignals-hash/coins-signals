@@ -80,7 +80,7 @@ export function MarketConclusions({ symbol, currentPrice }: MarketConclusionsPro
                       {data.longTerm.label}
                     </p>
                     <p className="text-gray-300 text-xs">
-                      {t('analysis_target_label')}: {data.longTerm.target.toFixed(4)}
+                      {t('analysis_target_label')}: {formatPrice(data.longTerm.target, symbol)}
                     </p>
                   </div>
                 </div>

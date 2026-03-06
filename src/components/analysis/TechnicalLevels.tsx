@@ -106,7 +106,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
               {data.fibonacci.map((fib, index) => (
                 <div key={index} className="text-center p-2 bg-slate-800/60 rounded">
                   <p className="text-blue-400 text-xs">{fib.level}</p>
-                  <p className="text-white font-mono text-xs">{fib.price.toFixed(4)}</p>
+                  <p className="text-white font-mono text-xs">{formatPrice(fib.price, symbol)}</p>
                 </div>
               ))}
             </div>
