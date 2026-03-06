@@ -424,10 +424,10 @@ Genera un análisis profesional y detallado.`;
       throw new Error('No analysis generated');
     }
 
-    return new Response(JSON.stringify({
-      analysis,
-      generatedAt: new Date().toISOString()
-    }), {
+    const result = { analysis, generatedAt: new Date().toISOString() };
+    cache.set(cacheKey, { data: result, ts: Date.now() });
+    if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
+    return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
