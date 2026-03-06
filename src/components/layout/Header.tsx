@@ -39,7 +39,7 @@ export function Header() {
             <Button variant="ghost" size="icon" onClick={() => setDrawerOpen(true)} className="text-muted-foreground h-10 w-10">
               <Menu className="w-9 h-9" />
             </Button>
-            <span className="text-xs font-extrabold tracking-wider hidden xs:inline">
+            <span className="text-base font-extrabold tracking-wider hidden xs:inline">
               <span className="bg-gradient-to-r from-primary to-[hsl(200,80%,55%)] bg-clip-text text-transparent">Coins</span>
               {' '}
               <span className="bg-gradient-to-r from-accent to-destructive bg-clip-text text-transparent">Signals</span>
