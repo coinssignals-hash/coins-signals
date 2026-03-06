@@ -440,7 +440,7 @@ export default function Signals() {
                   </SignalsDayGroup>
                 }
                 {otherDayGroups.map(([day, daySignals]) =>
-                <SignalsDayGroup key={day} date={day} count={daySignals.length}>
+                <SignalsDayGroup key={day} date={day} count={daySignals.length} activeCount={daySignals.filter(s => s.status === 'active' || s.status === 'pending').length}>
                     {daySignals.map((signal) =>
                   <SignalCardV2 key={signal.id} signal={signal} />
                   )}
