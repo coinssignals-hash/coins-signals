@@ -385,7 +385,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   }, [priceDiff.hasData, priceDiff.percent]);
 
   // Risk percent = SL distance / entry
-  const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(0);
+  const riskPercent = Math.abs((stopLoss - entryPrice) / entryPrice * 100).toFixed(2);
   return (
     <div className={cn("relative w-full rounded-xl overflow-hidden", className)}>
       {/* Completed overlay */}
