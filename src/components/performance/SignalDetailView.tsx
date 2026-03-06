@@ -1,5 +1,6 @@
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { type SignalData } from './SignalsList';
+import { formatPrice } from '@/lib/utils';
 
 interface SignalDetailViewProps {
   signal: SignalData;
@@ -49,25 +50,25 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
               orientation="right"
-              tickFormatter={(value) => value.toFixed(3)}
+              tickFormatter={(value) => formatPrice(value, signal.currencyPair)}
             />
             <ReferenceLine 
               y={signal.takeProfit} 
               stroke="#22c55e" 
               strokeDasharray="3 3"
-              label={{ value: signal.takeProfit.toFixed(3), position: 'right', fill: '#22c55e', fontSize: 10 }}
+              label={{ value: formatPrice(signal.takeProfit, signal.currencyPair), position: 'right', fill: '#22c55e', fontSize: 10 }}
             />
             <ReferenceLine 
               y={signal.entryPrice} 
               stroke="#3b82f6" 
               strokeDasharray="3 3"
-              label={{ value: signal.entryPrice.toFixed(3), position: 'right', fill: '#3b82f6', fontSize: 10 }}
+              label={{ value: formatPrice(signal.entryPrice, signal.currencyPair), position: 'right', fill: '#3b82f6', fontSize: 10 }}
             />
             <ReferenceLine 
               y={signal.stopLoss} 
               stroke="#ef4444" 
               strokeDasharray="3 3"
-              label={{ value: signal.stopLoss.toFixed(3), position: 'right', fill: '#ef4444', fontSize: 10 }}
+              label={{ value: formatPrice(signal.stopLoss, signal.currencyPair), position: 'right', fill: '#ef4444', fontSize: 10 }}
             />
             <Area 
               type="monotone" 
@@ -109,11 +110,11 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
               <span className="text-muted-foreground">Entrada Sugerida</span>
-              <p className="text-blue-400 font-bold font-mono-numbers">{signal.entryPrice.toFixed(3)}</p>
+              <p className="text-blue-400 font-bold font-mono-numbers">{formatPrice(signal.entryPrice, signal.currencyPair)}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Take Profit</span>
-              <p className="text-green-500 font-bold font-mono-numbers">{signal.takeProfit.toFixed(3)}</p>
+              <p className="text-green-500 font-bold font-mono-numbers">{formatPrice(signal.takeProfit, signal.currencyPair)}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Pips Promedios</span>
@@ -121,7 +122,7 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
             </div>
             <div>
               <span className="text-muted-foreground">Take Profit</span>
-              <p className="text-green-500 font-bold font-mono-numbers">{(signal.takeProfit - 0.4).toFixed(3)}</p>
+              <p className="text-green-500 font-bold font-mono-numbers">{formatPrice(signal.takeProfit - 0.4, signal.currencyPair)}</p>
             </div>
           </div>
         </div>

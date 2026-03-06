@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import {
   TrendingUp,
   ShieldCheck,
@@ -169,7 +169,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
 }
 
 // Helper: compute pips and percent between two prices
-function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
+function computePriceMetrics(target: number, entry: number, isJpy: boolean, symbol?: string) {
   const pipMultiplier = isJpy ? 100 : 10000;
   const pips = (target - entry) * pipMultiplier;
   const percent = (target - entry) / entry * 100;
@@ -178,7 +178,7 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   return {
     pips: `${sign}${Math.abs(pips).toFixed(1)}`,
     percent: `${sign}${Math.abs(percent).toFixed(3)}`,
-    price: target.toFixed(3),
+    price: formatPrice(target, symbol || (isJpy ? 'JPY' : 'EUR/USD')),
     isPositive
   };
 }
@@ -190,13 +190,13 @@ const CURRENCY_FLAGS: Record<string, string> = {
   NOK: "no", MXN: "mx", ZAR: "za", BRL: "br", INR: "in", KRW: "kr"
 };
 
-function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takeProfit3, stopLoss, isJpy
+function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takeProfit3, stopLoss, isJpy, currencyPair
 
-}: {entryPrice: number;takeProfit: number;takeProfit2?: number;takeProfit3?: number;stopLoss: number;isJpy: boolean;}) {
-  const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy);
-  const tp2 = takeProfit2 ? computePriceMetrics(takeProfit2, entryPrice, isJpy) : null;
-  const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy) : null;
-  const sl = computePriceMetrics(stopLoss, entryPrice, isJpy);
+}: {entryPrice: number;takeProfit: number;takeProfit2?: number;takeProfit3?: number;stopLoss: number;isJpy: boolean;currencyPair?: string;}) {
+  const tp1 = computePriceMetrics(takeProfit, entryPrice, isJpy, currencyPair);
+  const tp2 = takeProfit2 ? computePriceMetrics(takeProfit2, entryPrice, isJpy, currencyPair) : null;
+  const tp3 = takeProfit3 ? computePriceMetrics(takeProfit3, entryPrice, isJpy, currencyPair) : null;
+  const sl = computePriceMetrics(stopLoss, entryPrice, isJpy, currencyPair);
   return (
     <div className="space-y-1.5 mx-1.5 mb-3">
       <PriceRowFull label="TakeProfit 1" {...tp1} />
@@ -432,8 +432,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           "bg-rose-500/20 text-rose-400 border-rose-500/30"
         )}>
             {signal.closedResult === 'tp_hit' ?
-          `✅ Take Profit ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}` :
-          `❌ Stop Loss ${t('signal_reached')} — ${(signal.closedPrice ?? 0).toFixed(3)}`
+          `✅ Take Profit ${t('signal_reached')} — ${formatPrice(signal.closedPrice ?? 0, currencyPair)}` :
+          `❌ Stop Loss ${t('signal_reached')} — ${formatPrice(signal.closedPrice ?? 0, currencyPair)}`
           }
           </div>
         }
@@ -567,7 +567,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               <p className={cn("text-[11px] text-center font-extrabold",
               priceDiff.percent >= 0 ? "text-green-400" : "text-red-400"
               )}>
-                {priceDiff.currentPrice.toFixed(3)}
+                {formatPrice(priceDiff.currentPrice, currencyPair)}
               </p> :
               <p className="text-[8px] text-cyan-300/50 text-center">{t('signal_entry')}</p>
               }
@@ -653,12 +653,12 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           <div className="flex items-center justify-between px-3 py-1.5 min-h-[40px]">
             <span className="font-semibold text-white text-xs sm:text-sm">{t('signal_entry')}</span>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-white text-xs sm:text-sm font-mono tabular-nums">{entryPrice.toFixed(3)}</span>
+              <span className="font-bold text-white text-xs sm:text-sm font-mono tabular-nums">{formatPrice(entryPrice, currencyPair)}</span>
               <button
                 className="text-cyan-400/60 hover:text-cyan-300 transition-colors p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigator.clipboard.writeText(entryPrice.toFixed(3));
+                  navigator.clipboard.writeText(formatPrice(entryPrice, currencyPair));
                 }}
                 title={t('signal_copy_price')}>
 
@@ -694,7 +694,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         {expanded &&
         <div className="animate-in slide-in-from-top-2 duration-300">
             {/* TP / SL bars */}
-            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} />
+            <TakeProfitStopLossSection entryPrice={entryPrice} takeProfit={takeProfit} takeProfit2={signal?.takeProfit2} takeProfit3={signal?.takeProfit3} stopLoss={stopLoss} isJpy={isJpy} currencyPair={currencyPair} />
 
             {/* Candlestick Chart 15min - 7 days */}
             <SignalChart

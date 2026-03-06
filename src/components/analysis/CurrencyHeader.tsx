@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, Wifi, WifiOff, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice, getDecimals } from '@/lib/utils';
 import { useEffect, useState, useRef } from 'react';
 
 // Currency/Asset visual mapping with flags and logos

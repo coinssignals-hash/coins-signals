@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { Target, ShieldAlert } from 'lucide-react';
 
 interface TargetProgressBarProps {
@@ -272,7 +272,7 @@ export function TargetProgressBar({
               "absolute -top-4 whitespace-nowrap px-1 py-px rounded text-[8px] font-bold font-mono tabular-nums",
               nearEntry ? "bg-yellow-500/20 text-yellow-400" : isAboveEntry ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
             )}>
-              {displayPrice!.toFixed(isJpy ? 2 : 3)}
+              {formatPrice(displayPrice!, isJpy ? 'JPY' : 'EUR/USD')}
             </div>
           )}
           <div
@@ -303,7 +303,7 @@ export function TargetProgressBar({
       <div className="relative mt-1 h-7">
         <div className="absolute left-0 flex flex-col items-start">
           <span className="text-[11px] text-rose-400/60 font-mono tabular-nums">
-            {stopLoss.toFixed(isJpy ? 2 : 3)}
+            {formatPrice(stopLoss, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
           <span className="text-[7px] text-rose-400/30 font-semibold uppercase tracking-widest leading-none">
             SL
@@ -311,7 +311,7 @@ export function TargetProgressBar({
         </div>
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: '50%' }}>
           <span className="text-[11px] text-white/40 font-mono tabular-nums">
-            {entryPrice.toFixed(isJpy ? 2 : 3)}
+            {formatPrice(entryPrice, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
           <span className="text-[7px] text-white/30 font-semibold uppercase tracking-widest leading-none">
             Entry
@@ -320,7 +320,7 @@ export function TargetProgressBar({
         {/* TP1 label */}
         <div className="absolute -translate-x-1/2 flex flex-col items-center" style={{ left: `${tp1Pos}%` }}>
           <span className="text-[11px] text-emerald-400/60 font-mono tabular-nums">
-            {takeProfit.toFixed(isJpy ? 2 : 3)}
+            {formatPrice(takeProfit, isJpy ? 'JPY' : 'EUR/USD')}
           </span>
           <span className="text-[7px] text-emerald-400/30 font-semibold uppercase tracking-widest leading-none">
             TP
