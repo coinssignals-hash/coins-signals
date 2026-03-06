@@ -1,9 +1,16 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Maximize2, X, TrendingUp, Settings2 } from 'lucide-react';
+import { Maximize2, X, TrendingUp, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useForexChartData } from '@/hooks/useForexChartData';
+import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ZoomableChart } from './ZoomableChart';
+
+const TIMEFRAME_OPTIONS: { value: ChartInterval; label: string }[] = [
+  { value: '5min', label: '5M' },
+  { value: '15min', label: '15M' },
+  { value: '1h', label: '1H' },
+  { value: '4h', label: '4H' },
+];
 
 interface SignalChartProps {
   currencyPair: string;
@@ -47,6 +54,7 @@ function buildSignalChartSvg(
   width: number,
   height: number,
   compact = false,
+  intervalLabel = '15min',
 ): string {
   const W = width, H = height;
   const PAD = compact
@@ -210,7 +218,7 @@ function buildSignalChartSvg(
   }
 
   // Title
-  parts.push(`<text x="${CHART_X1}" y="20" fill="${TEXT_COL}" font-family="sans-serif" font-size="11" font-weight="bold">15min · 7 días</text>`);
+  parts.push(`<text x="${CHART_X1}" y="20" fill="${TEXT_COL}" font-family="sans-serif" font-size="11" font-weight="bold">${intervalLabel}</text>`);
 
   // Border
   parts.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="${GRID}" stroke-width="1" rx="6"/>`);
@@ -223,10 +231,12 @@ function buildSignalChartSvg(
  * ═══════════════════════════════════════════ */
 export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, className }: SignalChartProps) {
   const symbol = currencyPair.replace('/', '');
-  const { data: chartData, loading, error } = useForexChartData(symbol, '15min');
-  const showSR = true; // Always show S/R lines in inline
+  const [activeInterval, setActiveInterval] = useState<ChartInterval>('15min');
+  const { data: chartData, loading, error } = useForexChartData(symbol, activeInterval);
+  const showSR = true;
   const [fullscreen, setFullscreen] = useState(false);
-  const [fsSR, setFsSR] = useState(true); // S/R toggle for fullscreen
+  const [fsSR, setFsSR] = useState(true);
+  const [showTfMenu, setShowTfMenu] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const getVpSize = () => ({
     w: Math.max(window.innerWidth, document.documentElement.clientWidth),
@@ -253,11 +263,12 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
   const isPortrait = viewportSize.h > viewportSize.w;
 
   // Inline SVG (compact)
+  const intervalLabel = TIMEFRAME_OPTIONS.find(t => t.value === activeInterval)?.label ?? '15M';
   const inlineSvgUri = useMemo(() => {
     if (!candles.length) return null;
-    const svg = buildSignalChartSvg(candles, support, resistance, showSR, 1200, 600);
+    const svg = buildSignalChartSvg(candles, support, resistance, showSR, 1200, 600, false, intervalLabel);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, showSR]);
+  }, [candles, support, resistance, showSR, intervalLabel]);
 
   // Fullscreen SVG — generate landscape (2340x1080) always
   const fullscreenSvgUri = useMemo(() => {
@@ -265,9 +276,9 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
     const fsW = isPortrait ? viewportSize.h : viewportSize.w;
     const fsH = isPortrait ? viewportSize.w : viewportSize.h;
     const scale = Math.max(1, Math.ceil(2340 / fsW));
-    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true);
+    const svg = buildSignalChartSvg(candles, support, resistance, fsSR, fsW * scale, fsH * scale, true, intervalLabel);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize]);
+  }, [candles, support, resistance, fsSR, fullscreen, isPortrait, viewportSize, intervalLabel]);
 
   // Lock body scroll in fullscreen + recalculate viewport
   useEffect(() => {
@@ -396,17 +407,52 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
                   </span>
                 </button>
 
-                {/* Config button (placeholder) */}
-                <button
-                  className="p-2 rounded-lg active:scale-95 transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.08)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    backdropFilter: 'blur(8px)',
-                  }}
-                >
-                  <Settings2 className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
-                </button>
+                {/* Timeframe selector */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowTfMenu(prev => !prev)}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+                    style={{
+                      background: 'rgba(56,189,248,0.12)',
+                      border: '1px solid rgba(56,189,248,0.3)',
+                      backdropFilter: 'blur(8px)',
+                    }}
+                  >
+                    <Clock className="w-3.5 h-3.5" style={{ color: 'rgba(56,189,248,0.9)' }} />
+                    <span className="text-[10px] font-bold tracking-wide" style={{ color: 'rgba(56,189,248,0.9)' }}>
+                      {TIMEFRAME_OPTIONS.find(t => t.value === activeInterval)?.label ?? '15M'}
+                    </span>
+                  </button>
+
+                  {showTfMenu && (
+                    <div
+                      className="absolute top-full right-0 mt-1 flex flex-col gap-0.5 rounded-lg overflow-hidden"
+                      style={{
+                        background: 'rgba(6,14,28,0.95)',
+                        border: '1px solid rgba(56,189,248,0.25)',
+                        backdropFilter: 'blur(12px)',
+                        minWidth: '64px',
+                      }}
+                    >
+                      {TIMEFRAME_OPTIONS.map(tf => (
+                        <button
+                          key={tf.value}
+                          onClick={() => {
+                            setActiveInterval(tf.value);
+                            setShowTfMenu(false);
+                          }}
+                          className="px-3 py-1.5 text-[11px] font-semibold tracking-wide transition-colors text-left"
+                          style={{
+                            color: activeInterval === tf.value ? '#38bdf8' : 'rgba(255,255,255,0.6)',
+                            background: activeInterval === tf.value ? 'rgba(56,189,248,0.12)' : 'transparent',
+                          }}
+                        >
+                          {tf.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Close button */}
                 <button

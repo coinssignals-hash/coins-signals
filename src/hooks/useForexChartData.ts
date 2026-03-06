@@ -16,9 +16,10 @@ interface ForexChartData {
   date: string;
 }
 
-export type ChartInterval = '15min' | '30min' | '1h' | '4h' | '1day';
+export type ChartInterval = '5min' | '15min' | '30min' | '1h' | '4h' | '1day';
 
 const INTERVAL_CONFIG: Record<ChartInterval, { outputsize: string; label: string }> = {
+  '5min':  { outputsize: '672', label: '5min' },    // ~2.3 days
   '15min': { outputsize: '672', label: '15min' },   // 7 days
   '30min': { outputsize: '336', label: '30min' },   // 7 days
   '1h':    { outputsize: '168', label: '1H' },      // 7 days
