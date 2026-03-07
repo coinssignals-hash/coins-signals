@@ -107,7 +107,7 @@ function getCategoryIcon(category: string): string {
   const icons: Record<string, string> = {
     monetary_policy: '🏦', inflation: '📈', employment: '👔', gdp: '📊',
     trade: '🌐', central_bank: '🏛️', geopolitics: '🌍', commodities: '⛽',
-    stocks: '📉', crypto: '₿', market: '💹', other: '📰',
+    stocks: '📉', crypto: '₿', market: '💹', other: '📰'
   };
   return icons[category] || '📰';
 }
@@ -179,10 +179,10 @@ function FeaturedHistoricalChart({
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
-  return (
-    <div className="absolute bottom-3 right-3 w-24 bg-black/60 backdrop-blur-sm rounded-lg p-2">
-      <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
-    </div>);
+  return;
+
+
+
 
 }
 
@@ -257,7 +257,7 @@ function ImpactBadge({ currency, impact }: {currency: Currency;impact: number;})
 }
 
 // Get market session based on publish time
-function getMarketSession(publishedAt: string): { label: string; color: string; icon: string } {
+function getMarketSession(publishedAt: string): {label: string;color: string;icon: string;} {
   try {
     const hour = new Date(publishedAt).getUTCHours();
     if (hour >= 0 && hour < 8) return { label: 'TOKYO', color: 'hsl(0, 70%, 55%)', icon: '🇯🇵' };
@@ -270,18 +270,18 @@ function getMarketSession(publishedAt: string): { label: string; color: string; 
 }
 
 // Volatility indicator based on historical impact
-function VolatilityIndicator({ newsId, title, category, currencies }: {
-  newsId: string; title: string; category: EconomicCategory; currencies: Currency[];
-}) {
+function VolatilityIndicator({ newsId, title, category, currencies
+
+}: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   const volatility = useMemo(() => {
     if (!data?.monthlyData || data.monthlyData.length === 0) return { level: 'low' as const, value: 25, spread: 0, avg: 0, maxImpact: 0 };
-    const impacts = data.monthlyData.map(d => Math.abs(d.impact));
+    const impacts = data.monthlyData.map((d) => Math.abs(d.impact));
     const avg = impacts.reduce((a, b) => a + b, 0) / impacts.length;
     const max = Math.max(...impacts);
     const spread = max - Math.min(...impacts);
-    const normalized = Math.min(100, Math.round((avg * 8) + (spread * 3)));
+    const normalized = Math.min(100, Math.round(avg * 8 + spread * 3));
     const level = normalized >= 70 ? 'high' as const : normalized >= 40 ? 'medium' as const : 'low' as const;
     return { level, value: normalized, spread: Math.round(spread * 10) / 10, avg: Math.round(avg * 10) / 10, maxImpact: Math.round(max * 10) / 10 };
   }, [data]);
@@ -289,20 +289,20 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
   const config = {
     high: { color: 'hsl(0, 70%, 55%)', label: 'ALTA', glow: 'hsl(0, 70%, 55%)' },
     medium: { color: 'hsl(35, 90%, 55%)', label: 'MEDIA', glow: 'hsl(35, 90%, 55%)' },
-    low: { color: 'hsl(160, 80%, 45%)', label: 'BAJA', glow: 'hsl(160, 80%, 45%)' },
+    low: { color: 'hsl(160, 80%, 45%)', label: 'BAJA', glow: 'hsl(160, 80%, 45%)' }
   }[volatility.level];
 
   if (isLoading) {
     return (
       <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
-        style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+      style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
         <div className="flex items-center justify-between mb-1">
           <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Volatilidad</span>
           <Loader2 className="w-3 h-3 text-cyan-400/50 animate-spin" />
         </div>
         <div className="h-1 rounded-full bg-slate-800/80 animate-pulse" />
-      </div>
-    );
+      </div>);
+
   }
 
   const avgImpact = data?.averageImpact ?? 0;
@@ -310,7 +310,7 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
 
   return (
     <div className="rounded-lg overflow-hidden px-2.5 py-1.5 relative group/vol cursor-pointer"
-      style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+    style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
       {/* Tooltip */}
       <div className={cn(
         'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-44',
@@ -346,7 +346,7 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Tendencia</span>
               <span className={cn('font-bold capitalize',
-                trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-yellow-400'
+              trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-yellow-400'
               )}>{trend === 'bullish' ? 'Alcista' : trend === 'bearish' ? 'Bajista' : 'Neutral'}</span>
             </div>
           </div>
@@ -357,10 +357,10 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
       </div>
 
       {/* Subtle glow for high volatility */}
-      {volatility.level === 'high' && (
-        <div className="absolute inset-0 rounded-lg opacity-[0.08]"
-          style={{ background: `radial-gradient(ellipse at center, ${config.glow}, transparent 70%)` }} />
-      )}
+      {volatility.level === 'high' &&
+      <div className="absolute inset-0 rounded-lg opacity-[0.08]"
+      style={{ background: `radial-gradient(ellipse at center, ${config.glow}, transparent 70%)` }} />
+      }
       <div className="flex items-center justify-between mb-1 relative">
         <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium flex items-center gap-1">
           <Activity className="w-2.5 h-2.5" style={{ color: config.color }} />
@@ -376,12 +376,12 @@ function VolatilityIndicator({ newsId, title, category, currencies }: {
           style={{
             width: `${volatility.value}%`,
             background: `linear-gradient(90deg, ${config.color}, ${config.glow})`,
-            boxShadow: volatility.level === 'high' ? `0 0 6px ${config.glow}` : 'none',
-          }}
-        />
+            boxShadow: volatility.level === 'high' ? `0 0 6px ${config.glow}` : 'none'
+          }} />
+        
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Modern news card component matching the signal card design
@@ -428,16 +428,16 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
 
       {/* Hero Image */}
       <Link to={`/news/${news.id}`} className="block relative aspect-[5/3] sm:aspect-[2/1] overflow-hidden">
-        {news.image_url ? (
-          <img
-            src={news.image_url}
-            alt={news.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
-            style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
+        {news.image_url ?
+        <img
+          src={news.image_url}
+          alt={news.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          onError={(e) => {(e.target as HTMLImageElement).style.display = 'none';}} /> :
+
+
+        <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
             <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern id={`grid-${news.id}`} width="24" height="24" patternUnits="userSpaceOnUse">
@@ -447,37 +447,37 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               <rect width="100%" height="100%" fill={`url(#grid-${news.id})`} />
             </svg>
             <div className="absolute inset-0 opacity-[0.04]" style={{
-              backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 40px, hsl(200,80%,60%) 40px, hsl(200,80%,60%) 41px)',
-            }} />
+            backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 40px, hsl(200,80%,60%) 40px, hsl(200,80%,60%) 41px)'
+          }} />
             <div className="absolute w-32 h-32 rounded-full" style={{
-              background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`,
-            }} />
+            background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`
+          }} />
             <span className="text-7xl select-none drop-shadow-lg relative z-10 animate-[placeholder-enter_0.8s_ease-out_both]" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
           </div>
-        )}
+        }
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.3)] to-transparent" />
 
         {/* Overlaid badges - top left */}
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md"
-            style={{ background: `${sentimentColor}25`, border: `1px solid ${sentimentColor}50`, color: sentimentColor }}>
+          style={{ background: `${sentimentColor}25`, border: `1px solid ${sentimentColor}50`, color: sentimentColor }}>
             <SentimentIcon className="w-3 h-3 inline mr-0.5 -mt-0.5" />
             {sentimentLabel}
           </span>
           <span className="px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider backdrop-blur-md"
-            style={{ background: 'hsla(200, 100%, 50%, 0.15)', border: '1px solid hsla(200, 80%, 55%, 0.3)', color: 'hsl(200, 100%, 75%)' }}>
+          style={{ background: 'hsla(200, 100%, 50%, 0.15)', border: '1px solid hsla(200, 80%, 55%, 0.3)', color: 'hsl(200, 100%, 75%)' }}>
             {news.category}
           </span>
           {/* Market session badge */}
           <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest backdrop-blur-md flex items-center gap-1"
-            style={{ background: `${session.color}15`, border: `1px solid ${session.color}35`, color: session.color }}>
+          style={{ background: `${session.color}15`, border: `1px solid ${session.color}35`, color: session.color }}>
             <span className="text-[10px]">{session.icon}</span>
             {session.label}
           </span>
         </div>
 
         <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] text-white/70 backdrop-blur-md rounded-full px-2 py-0.5"
-          style={{ background: 'hsla(0,0%,0%,0.4)' }}>
+        style={{ background: 'hsla(0,0%,0%,0.4)' }}>
           <Clock className="w-3 h-3" />
           {news.time_ago}
         </div>
@@ -495,29 +495,29 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <h3 className="font-semibold text-[15px] text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-snug">
             {displayTitle}
           </h3>
-          {isTranslated && (
-            <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
+          {isTranslated &&
+          <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
               <Languages className="w-2.5 h-2.5" /> Traducido
             </span>
-          )}
+          }
         </Link>
 
         {/* Summary snippet */}
-        {news.summary && (
-          <p className="text-[12px] text-cyan-100/50 line-clamp-2 leading-relaxed">
+        {news.summary &&
+        <p className="text-[12px] text-cyan-100/50 line-clamp-2 leading-relaxed">
             {news.summary}
           </p>
-        )}
+        }
 
         {/* Source & metadata row */}
         <div className="flex items-center gap-2 text-xs">
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
-            {news.source_logo ? (
-              <img src={news.source_logo} alt={news.source} className="w-4 h-4 rounded-sm object-contain"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-            ) : (
-              <Rss className="w-3.5 h-3.5 text-cyan-400" />
-            )}
+            {news.source_logo ?
+            <img src={news.source_logo} alt={news.source} className="w-4 h-4 rounded-sm object-contain"
+            onError={(e) => {(e.target as HTMLImageElement).style.display = 'none';}} /> :
+
+            <Rss className="w-3.5 h-3.5 text-cyan-400" />
+            }
             <span className="font-medium text-cyan-200/70 text-xs truncate">{news.source}</span>
             <span className="text-cyan-500/30">•</span>
             <span className="text-[10px] text-cyan-300/40 flex items-center gap-0.5 shrink-0">
@@ -530,43 +530,43 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (isTranslated) clearTranslation(news.id);
-                else translateText(news.id, news.title, targetLang);
+                if (isTranslated) clearTranslation(news.id);else
+                translateText(news.id, news.title, targetLang);
               }}
               disabled={isTranslating}
               className={cn(
                 "flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all",
-                isTranslated
-                  ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-                  : "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+                isTranslated ?
+                "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
+                "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
               )}>
               {isTranslating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Languages className="w-3 h-3" />}
               {isTranslated ? 'Original' : targetLabel}
             </button>
-            {news.url && (
-              <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                className="text-cyan-400 hover:text-cyan-300">
+            {news.url &&
+            <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+            className="text-cyan-400 hover:text-cyan-300">
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
-            )}
+            }
           </div>
         </div>
 
         {/* Currency impact badges row */}
         <div className="flex items-center gap-1.5 flex-wrap">
           {impacts.map(({ currency, impact }) => <ImpactBadge key={currency} currency={currency} impact={impact} />)}
-          {news.affected_currencies.length > 3 && (
-            <span className="text-[10px] text-cyan-400/50 font-medium">
+          {news.affected_currencies.length > 3 &&
+          <span className="text-[10px] text-cyan-400/50 font-medium">
               +{news.affected_currencies.length - 3} más
             </span>
-          )}
+          }
         </div>
 
         {/* Relevance + Sentiment + Volatility indicators */}
         <div className="grid grid-cols-3 gap-1.5">
           {/* Relevance */}
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
-            style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+          style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
               <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Relev.</span>
               <span className="font-mono text-[10px] font-bold text-white">{relevancePercent}%</span>
@@ -577,15 +577,15 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
                 style={{
                   width: `${relevancePercent}%`,
                   background: relevancePercent >= 80 ? 'linear-gradient(90deg, hsl(160, 80%, 45%), hsl(135, 70%, 50%))' :
-                    relevancePercent >= 50 ? 'linear-gradient(90deg, hsl(200, 100%, 45%), hsl(180, 100%, 50%))' :
-                      'linear-gradient(90deg, hsl(45, 80%, 45%), hsl(35, 90%, 55%))'
-                }}
-              />
+                  relevancePercent >= 50 ? 'linear-gradient(90deg, hsl(200, 100%, 45%), hsl(180, 100%, 50%))' :
+                  'linear-gradient(90deg, hsl(45, 80%, 45%), hsl(35, 90%, 55%))'
+                }} />
+              
             </div>
           </div>
           {/* Sentiment quick */}
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
-            style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+          style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
               <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Sent.</span>
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
@@ -601,25 +601,25 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
             newsId={news.id}
             title={news.title}
             category={news.category as EconomicCategory}
-            currencies={news.affected_currencies}
-          />
+            currencies={news.affected_currencies} />
+          
         </div>
       </div>
 
       {/* Expandable toggle */}
       <button onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center py-2 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10 active:bg-white/5">
+      className="w-full flex items-center justify-center py-2 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10 active:bg-white/5">
         <span className="text-[10px] uppercase tracking-wider mr-1.5 font-medium">{expanded ? 'Menos' : 'Más análisis'}</span>
         <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', expanded && 'rotate-180')} />
       </button>
 
       {/* Expanded content */}
-      {expanded && (
-        <div className="px-3 pb-3 space-y-3 animate-fade-in">
+      {expanded &&
+      <div className="px-3 pb-3 space-y-3 animate-fade-in">
           <div className="rounded-lg p-3 relative overflow-hidden"
-            style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
+        style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
             <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-              style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
             <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">Análisis de Sentimiento</span>
             <div className="space-y-1.5">
               <NewsImpactBar label="Alcista" value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
@@ -630,9 +630,9 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <HistoricalImpactSection newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
           <NewsAISummaryInline news={news} />
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
 // Featured news card for top story
 function FeaturedCard({ news }: {news: NewsListItem;}) {
@@ -656,14 +656,14 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
       }}>
 
       <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-        style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
-        {news.image_url ? (
-          <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
-            style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
+        {news.image_url ?
+        <img src={news.image_url} alt={news.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" /> :
+
+        <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, hsl(210, 80%, 12%) 0%, hsl(200, 60%, 8%) 50%, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '210'}, 40%, 15%) 100%)` }}>
             <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern id={`grid-feat-${news.id}`} width="24" height="24" patternUnits="userSpaceOnUse">
@@ -673,30 +673,30 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
               <rect width="100%" height="100%" fill={`url(#grid-feat-${news.id})`} />
             </svg>
             <div className="absolute inset-0 opacity-[0.04]" style={{
-              backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 40px, hsl(200,80%,60%) 40px, hsl(200,80%,60%) 41px)',
-            }} />
+            backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 40px, hsl(200,80%,60%) 40px, hsl(200,80%,60%) 41px)'
+          }} />
             <div className="absolute w-40 h-40 rounded-full" style={{
-              background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`,
-            }} />
+            background: `radial-gradient(circle, hsl(${news.sentiment === 'bullish' ? '150' : news.sentiment === 'bearish' ? '0' : '200'}, 60%, 40%, 0.15) 0%, transparent 70%)`
+          }} />
             <span className="text-8xl select-none drop-shadow-lg relative z-10 animate-[placeholder-enter_0.8s_ease-out_both]" style={{ opacity: 0.35 }}>{getCategoryIcon(news.category)}</span>
           </div>
-        )}
+        }
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(210,100%,5%)] via-[hsl(210,100%,5%,0.4)] to-transparent" />
 
         <div className="absolute top-3 left-3 flex items-center gap-2">
           <span className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md"
-            style={{ background: 'hsla(200, 100%, 50%, 0.2)', border: '1px solid hsla(200, 80%, 55%, 0.4)', color: 'hsl(200, 100%, 75%)' }}>
+          style={{ background: 'hsla(200, 100%, 50%, 0.2)', border: '1px solid hsla(200, 80%, 55%, 0.4)', color: 'hsl(200, 100%, 75%)' }}>
             🔥 Top News
           </span>
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md"
-            style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
+          style={{ background: `${sentimentColor}20`, border: `1px solid ${sentimentColor}40`, color: sentimentColor }}>
             {sentimentLabel}
           </span>
         </div>
 
         {/* Relevance badge top-right */}
         <div className="absolute top-3 right-3 backdrop-blur-md rounded-full px-2.5 py-1 flex items-center gap-1.5"
-          style={{ background: 'hsla(0,0%,0%,0.5)', border: '1px solid hsla(200,60%,40%,0.3)' }}>
+        style={{ background: 'hsla(0,0%,0%,0.5)', border: '1px solid hsla(200,60%,40%,0.3)' }}>
           <Zap className="w-3 h-3 text-cyan-400" />
           <span className="text-xs font-bold text-white">{relevancePercent}%</span>
         </div>
@@ -718,15 +718,15 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </Link>
-  );
+    </Link>);
+
 }
 
 // Currency quick filter pills
 const QUICK_CURRENCIES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD'];
 
 // Source filter dropdown
-const SOURCE_COLORS: Record<string, { bg: string; text: string }> = {
+const SOURCE_COLORS: Record<string, {bg: string;text: string;}> = {
   'Finnhub': { bg: 'bg-green-500/20', text: 'text-green-400' },
   'NewsAPI': { bg: 'bg-orange-500/20', text: 'text-orange-400' },
   'FXStreet': { bg: 'bg-purple-500/20', text: 'text-purple-400' },
@@ -735,12 +735,12 @@ const SOURCE_COLORS: Record<string, { bg: string; text: string }> = {
   'MarketAux': { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
   'ForexFactory': { bg: 'bg-blue-500/20', text: 'text-blue-400' },
   'FMP': { bg: 'bg-teal-500/20', text: 'text-teal-400' },
-  'Alpha Vantage': { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
+  'Alpha Vantage': { bg: 'bg-indigo-500/20', text: 'text-indigo-400' }
 };
 
 function QuickSourceFilter({
   selected, onChange, news
-}: { selected: string[]; onChange: (sources: string[]) => void; news?: RealNewsItem[] }) {
+}: {selected: string[];onChange: (sources: string[]) => void;news?: RealNewsItem[];}) {
   const sources = useMemo(() => {
     const counts: Record<string, number> = {};
     if (news) {
@@ -749,9 +749,9 @@ function QuickSourceFilter({
         counts[src] = (counts[src] || 0) + 1;
       });
     }
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([name, count]) => ({ name, count }));
+    return Object.entries(counts).
+    sort((a, b) => b[1] - a[1]).
+    map(([name, count]) => ({ name, count }));
   }, [news]);
 
   const isAll = selected.length === 0;
@@ -776,11 +776,11 @@ function QuickSourceFilter({
           <span className="truncate max-w-[100px]">
             {isAll ? 'Fuentes' : selected.length === 1 ? selected[0] : `${selected.length} fuentes`}
           </span>
-          {!isAll && (
-            <span className="min-w-[20px] h-5 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">
+          {!isAll &&
+          <span className="min-w-[20px] h-5 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">
               {selected.length}
             </span>
-          )}
+          }
           <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
@@ -807,12 +807,12 @@ function QuickSourceFilter({
                 </span>
                 <span className="ml-auto text-xs text-muted-foreground">{count}</span>
               </span>
-            </DropdownMenuCheckboxItem>
-          );
+            </DropdownMenuCheckboxItem>);
+
         })}
       </DropdownMenuContent>
-    </DropdownMenu>
-  );
+    </DropdownMenu>);
+
 }
 
 function QuickCurrencyFilter({
@@ -980,10 +980,10 @@ const News = () => {
       <main className="px-3 sm:px-4 py-3 sm:py-4 space-y-3">
         {/* Date Tabs */}
         <DateTabs
-            selectedDate={selectedDate}
-            onDateChange={setSelectedDate}
-            onRefresh={handleRefresh}
-            isRefreshing={isRefreshing} />
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+              onRefresh={handleRefresh}
+              isRefreshing={isRefreshing} />
 
         
         {/* Section Header + Currency Filter */}
@@ -992,21 +992,21 @@ const News = () => {
             <div className="flex items-center gap-2">
               <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('news_title')}</h1>
               {selectedCurrencies.length > 0 &&
-                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+                  <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
                   {filteredNews.length}
                 </span>
-              }
+                  }
             </div>
             <div className="flex items-center gap-1.5">
               <QuickSourceFilter
-                selected={selectedSources}
-                onChange={setSelectedSources}
-                news={news} />
+                    selected={selectedSources}
+                    onChange={setSelectedSources}
+                    news={news} />
               <QuickCurrencyFilter
-                selected={selectedCurrencies}
-                onChange={setSelectedCurrencies}
-                allLabel={t('news_all_currencies')}
-                news={news} />
+                    selected={selectedCurrencies}
+                    onChange={setSelectedCurrencies}
+                    allLabel={t('news_all_currencies')}
+                    news={news} />
             </div>
           </div>
           {/* Last updated — compact */}
@@ -1020,58 +1020,58 @@ const News = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
           {/* Sort modes */}
           {[
-            { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: 'Recientes' },
-            { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: 'Impacto' },
-            { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: 'Volatilidad' }].
-            map(({ key, icon, label }) =>
-            <button
-              key={key}
-              onClick={() => setSortMode(key)}
-              className={cn(
-                'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all border active:scale-95',
-                sortMode === key ?
-                'bg-accent border-accent text-accent-foreground shadow-sm' :
-                'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
-              )}>
+              { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: 'Recientes' },
+              { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: 'Impacto' },
+              { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: 'Volatilidad' }].
+              map(({ key, icon, label }) =>
+              <button
+                key={key}
+                onClick={() => setSortMode(key)}
+                className={cn(
+                  'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all border active:scale-95',
+                  sortMode === key ?
+                  'bg-accent border-accent text-accent-foreground shadow-sm' :
+                  'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
+                )}>
 
               {icon}
               <span>{label}</span>
             </button>
-            )}
+              )}
 
           {/* Divider */}
           <div className="w-px h-5 bg-border/60 flex-shrink-0 mx-0.5" />
 
           {/* Sentiment toggles */}
           {[
-            { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: 'Alcista', activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
-            { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: 'Bajista', activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
-            { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: 'Neutral', activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' }].
-            map(({ key, icon, label, activeClass }) =>
-            <button
-              key={key}
-              onClick={() => toggleSentiment(key)}
-              className={cn(
-                'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all border active:scale-95',
-                sentimentFilters.has(key) ?
-                activeClass :
-                'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
-              )}>
+              { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: 'Alcista', activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
+              { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: 'Bajista', activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
+              { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: 'Neutral', activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' }].
+              map(({ key, icon, label, activeClass }) =>
+              <button
+                key={key}
+                onClick={() => toggleSentiment(key)}
+                className={cn(
+                  'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all border active:scale-95',
+                  sentimentFilters.has(key) ?
+                  activeClass :
+                  'bg-card/50 border-border/50 text-muted-foreground hover:border-primary/30 hover:text-foreground'
+                )}>
 
               {icon}
               <span>{label}</span>
             </button>
-            )}
+              )}
 
           {/* Clear all filters */}
           {(sentimentFilters.size > 0 || sortMode !== 'recent' || selectedSources.length > 0) &&
-            <button
-              onClick={() => {setSentimentFilters(new Set());setSortMode('recent');setSelectedSources([]);}}
-              className="flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium text-destructive hover:bg-destructive/10 transition-all active:scale-95">
+              <button
+                onClick={() => {setSentimentFilters(new Set());setSortMode('recent');setSelectedSources([]);}}
+                className="flex-shrink-0 px-3 py-2 rounded-full text-xs font-medium text-destructive hover:bg-destructive/10 transition-all active:scale-95">
 
               ✕ Reset
             </button>
-            }
+              }
         </div>
 
         {/* Advanced Filters */}
@@ -1082,47 +1082,47 @@ const News = () => {
 
 
 
-          }
+            }
         
         {/* Sources — hidden on mobile, visible on desktop */}
         <div className="hidden sm:flex items-center gap-2 overflow-x-auto scrollbar-hide text-xs text-muted-foreground">
             <span className="text-[10px] uppercase tracking-wider flex-shrink-0">{t('news_sources')}:</span>
             <div className="flex items-center gap-1">
               {Object.entries(SOURCE_COLORS).map(([name, colors]) => {
-                const isActive = selectedSources.includes(name);
-                const isFiltering = selectedSources.length > 0;
-                return (
-                  <button
-                    key={name}
-                    onClick={() => {
-                      if (isActive) {
-                        setSelectedSources(selectedSources.filter(s => s !== name));
-                      } else {
-                        setSelectedSources([...selectedSources, name]);
-                      }
-                    }}
-                    className={cn(
-                      'px-1.5 py-0.5 rounded text-[10px] font-medium transition-all cursor-pointer border',
-                      isActive
-                        ? `${colors.bg} ${colors.text} border-current ring-1 ring-current/30 scale-105`
-                        : isFiltering
-                          ? `bg-muted/30 text-muted-foreground/40 border-transparent`
-                          : `${colors.bg} ${colors.text} border-transparent`
-                    )}
-                  >
+                  const isActive = selectedSources.includes(name);
+                  const isFiltering = selectedSources.length > 0;
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => {
+                        if (isActive) {
+                          setSelectedSources(selectedSources.filter((s) => s !== name));
+                        } else {
+                          setSelectedSources([...selectedSources, name]);
+                        }
+                      }}
+                      className={cn(
+                        'px-1.5 py-0.5 rounded text-[10px] font-medium transition-all cursor-pointer border',
+                        isActive ?
+                        `${colors.bg} ${colors.text} border-current ring-1 ring-current/30 scale-105` :
+                        isFiltering ?
+                        `bg-muted/30 text-muted-foreground/40 border-transparent` :
+                        `${colors.bg} ${colors.text} border-transparent`
+                      )}>
+                      
                     {name}
-                  </button>
-                );
-              })}
+                  </button>);
+
+                })}
             </div>
         </div>
         
         {/* Loading State */}
         {isLoading &&
-          <div className="space-y-4">
+            <div className="space-y-4">
             <Skeleton className="h-48 w-full rounded-2xl" />
             {[1, 2, 3, 4].map((i) =>
-            <div key={i} className="flex gap-3">
+              <div key={i} className="flex gap-3">
                 <Skeleton className="w-24 h-24 rounded-lg flex-shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-full" />
@@ -1130,72 +1130,72 @@ const News = () => {
                   <Skeleton className="h-6 w-1/2" />
                 </div>
               </div>
-            )}
+              )}
           </div>
-          }
+            }
         
         {/* Error State */}
         {error &&
-          <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl bg-red-500/10 border border-red-500/30">
+            <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl bg-red-500/10 border border-red-500/30">
             <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
             <h2 className="text-lg font-semibold text-foreground mb-2">{t('news_error_loading')}</h2>
             <p className="text-muted-foreground text-sm mb-4">
               {error instanceof Error ? error.message : t('news_unknown_error')}
             </p>
             <button
-              onClick={handleRefresh}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                onClick={handleRefresh}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
 
               {t('news_retry')}
             </button>
           </div>
-          }
+            }
         
         {/* News Content */}
         {!isLoading && !error &&
-          <>
+            <>
             {filteredNews.length === 0 ?
-            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="flex flex-col items-center justify-center py-12 text-center">
                 <p className="text-muted-foreground">
                   {selectedCurrencies.length > 0 ?
-                t('news_no_news_currencies') :
-                t('news_no_news_date')}
+                  t('news_no_news_currencies') :
+                  t('news_no_news_date')}
                 </p>
                 {selectedCurrencies.length > 0 &&
-              <button
-                onClick={() => setSelectedCurrencies([])}
-                className="mt-3 text-sm text-primary hover:text-primary/80">
+                <button
+                  onClick={() => setSelectedCurrencies([])}
+                  className="mt-3 text-sm text-primary hover:text-primary/80">
 
                     {t('news_clear_filters')}
                   </button>
-              }
+                }
               </div> :
 
-            <div className="space-y-4">
+              <div className="space-y-4">
                 {/* Featured News */}
                 {featuredNews && <FeaturedCard news={featuredNews} />}
                 
                 {/* Top News Label */}
                 {otherNews.length > 0 &&
-              <div className="flex items-center gap-2 pt-2">
+                <div className="flex items-center gap-2 pt-2">
                     <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
                       <span>📰</span>
                       <span>{t('news_top_news')}</span>
                     </div>
                     <div className="flex-1 h-px bg-border/50" />
                   </div>
-              }
+                }
                 
                 {/* News List */}
                 <StaggerList className="space-y-3">
                   {otherNews.map((newsItem, index) =>
-                <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
-                )}
+                  <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
+                  )}
                 </StaggerList>
               </div>
-            }
+              }
           </>
-          }
+            }
       </main>
       </div>
       <BottomNav />
