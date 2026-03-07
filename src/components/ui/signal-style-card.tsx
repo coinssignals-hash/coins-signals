@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import bullBg from '@/assets/bull-card-bg.svg';
+import bullBg from '@/assets/brand-logo-bg.svg';
 
 interface SignalStyleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;

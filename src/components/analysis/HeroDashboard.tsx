@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useMultiPairPrices, MultiPairQuote } from '@/hooks/useMultiPairPrices';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import bullBg from '@/assets/bull-card-bg.svg';
+import bullBg from '@/assets/brand-logo-bg.svg';
 
 const CURRENCY_FLAGS: Record<string, string> = {
   USD: "us", EUR: "eu", GBP: "gb", JPY: "jp", AUD: "au", CAD: "ca",
