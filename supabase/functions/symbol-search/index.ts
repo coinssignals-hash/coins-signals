@@ -98,9 +98,11 @@ serve(async (req) => {
       outputType = '&outputtype=forex';
     } else if (type === 'crypto') {
       outputType = '&outputtype=cryptocurrency';
+    } else if (type === 'etf') {
+      outputType = '&outputtype=etf';
     }
 
-    const url = `https://api.twelvedata.com/symbol_search?symbol=${encodeURIComponent(trimmedQuery)}${outputType}&apikey=${TWELVE_DATA_API_KEY}`;
+    const url = `https://api.twelvedata.com/symbol_search?symbol=${encodeURIComponent(trimmedQuery)}${outputType}&show_plan=false&apikey=${TWELVE_DATA_API_KEY}`;
 
     console.log('Searching symbols for:', trimmedQuery, 'type:', type);
 
@@ -112,9 +114,10 @@ serve(async (req) => {
       throw new Error(data.message || 'Error searching symbols');
     }
 
-    // Filter and format results - focus on Forex and Crypto
+    // Return all instrument types when type is 'all'
     const results: SymbolResult[] = (data.data || [])
       .filter((item: SymbolResult) => {
+        if (type === 'all') return true;
         const instrumentType = item.instrument_type?.toLowerCase() || '';
         if (type === 'forex') {
           return instrumentType === 'forex' || instrumentType === 'currency';
@@ -122,10 +125,18 @@ serve(async (req) => {
         if (type === 'crypto') {
           return instrumentType === 'cryptocurrency' || instrumentType === 'digital currency';
         }
-        // For 'all', show forex and crypto primarily
-        return ['forex', 'currency', 'cryptocurrency', 'digital currency'].includes(instrumentType);
+        if (type === 'stock') {
+          return instrumentType === 'common stock' || instrumentType === 'equity';
+        }
+        if (type === 'etf') {
+          return instrumentType === 'etf';
+        }
+        if (type === 'index') {
+          return instrumentType === 'index';
+        }
+        return true;
       })
-      .slice(0, 20) // Limit to 20 results
+      .slice(0, 30)
       .map((item: SymbolResult) => ({
         symbol: item.symbol,
         name: item.instrument_name,
