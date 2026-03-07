@@ -33,7 +33,7 @@ export function AICenter({ onClose }: Props) {
   const [symbol, setSymbol] = useState('EUR/USD');
   const [customSymbol, setCustomSymbol] = useState('');
   const [modelSettings, setModelSettings] = useState<AIModelSettings>({
-    model: 'google/gemini-2.5-flash',
+    models: ['google/gemini-2.5-flash'],
     temperature: 0.3,
     maxTokens: 4096
   });
@@ -96,7 +96,8 @@ export function AICenter({ onClose }: Props) {
       symbol: activeSymbol,
       candles: forexData?.candles || [],
       indicators,
-      model: modelSettings.model,
+      model: modelSettings.models[0],
+      models: modelSettings.models,
       temperature: modelSettings.temperature
     });
     setModuleStatuses((prev) => ({

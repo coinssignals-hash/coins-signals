@@ -1,21 +1,24 @@
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Settings2, Cpu, Zap, Brain } from 'lucide-react';
+import { Settings2, Cpu, Zap, Brain, Check } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 export interface AIModelSettings {
-  model: string;
+  models: string[];
   temperature: number;
   maxTokens: number;
+  /** @deprecated use models[0] instead */
+  model?: string;
 }
 
+const MAX_MODELS = 3;
+
 const MODELS = [
-  { id: 'google/gemini-2.5-flash', label: 'Gemini Flash', icon: Zap, desc: 'Rápido y eficiente' },
-  { id: 'google/gemini-2.5-pro', label: 'Gemini Pro', icon: Brain, desc: 'Máxima precisión' },
-  { id: 'google/gemini-3-flash-preview', label: 'Gemini 3 Flash', icon: Zap, desc: 'Nueva generación' },
-  { id: 'openai/gpt-5', label: 'GPT-5', icon: Cpu, desc: 'Potente y preciso' },
-  { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', icon: Zap, desc: 'Rápido y equilibrado' },
-  { id: 'openai/gpt-5.2', label: 'GPT-5.2', icon: Brain, desc: 'Razonamiento avanzado' },
+  { id: 'google/gemini-2.5-flash', label: 'Gemini Flash', icon: Zap, desc: 'Rápido y eficiente', provider: 'Google' },
+  { id: 'google/gemini-2.5-pro', label: 'Gemini Pro', icon: Brain, desc: 'Máxima precisión', provider: 'Google' },
+  { id: 'google/gemini-3-flash-preview', label: 'Gemini 3 Flash', icon: Zap, desc: 'Nueva generación', provider: 'Google' },
+  { id: 'openai/gpt-5', label: 'GPT-5', icon: Cpu, desc: 'Potente y preciso', provider: 'OpenAI' },
+  { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', icon: Zap, desc: 'Rápido y equilibrado', provider: 'OpenAI' },
+  { id: 'openai/gpt-5.2', label: 'GPT-5.2', icon: Brain, desc: 'Razonamiento avanzado', provider: 'OpenAI' },
 ];
 
 interface Props {
@@ -25,39 +28,81 @@ interface Props {
 
 export function AIModelConfig({ settings, onChange }: Props) {
   const { t } = useTranslation();
+  const selected = settings.models;
+
+  const toggle = (id: string) => {
+    if (selected.includes(id)) {
+      if (selected.length <= 1) return; // must keep at least 1
+      onChange({ ...settings, models: selected.filter((m) => m !== id) });
+    } else {
+      if (selected.length >= MAX_MODELS) return; // max 3
+      onChange({ ...settings, models: [...selected, id] });
+    }
+  };
+
+  const googleModels = MODELS.filter((m) => m.provider === 'Google');
+  const openaiModels = MODELS.filter((m) => m.provider === 'OpenAI');
+
+  const renderModel = (m: typeof MODELS[0]) => {
+    const Icon = m.icon;
+    const isSelected = selected.includes(m.id);
+    const disabled = !isSelected && selected.length >= MAX_MODELS;
+
+    return (
+      <button
+        key={m.id}
+        onClick={() => toggle(m.id)}
+        disabled={disabled}
+        className={cn(
+          "flex items-center gap-3 p-3 rounded-lg border transition-all text-left",
+          isSelected
+            ? "border-primary bg-primary/10 text-foreground"
+            : disabled
+              ? "border-border bg-card/50 text-muted-foreground/50 cursor-not-allowed"
+              : "border-border bg-card hover:bg-secondary/50 text-muted-foreground"
+        )}
+      >
+        <div className={cn(
+          "w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all",
+          isSelected ? "bg-primary border-primary" : "border-muted-foreground/40"
+        )}>
+          {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
+        </div>
+        <Icon className={cn("w-5 h-5", isSelected ? "text-primary" : "text-muted-foreground")} />
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium">{m.label}</div>
+          <div className="text-xs text-muted-foreground">{m.desc}</div>
+        </div>
+      </button>
+    );
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-        <Settings2 className="w-4 h-4 text-primary" />
-        Configuración del Modelo IA
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Settings2 className="w-4 h-4 text-primary" />
+          Configuración IA
+        </div>
+        <span className="text-xs text-muted-foreground font-mono">
+          {selected.length}/{MAX_MODELS} activos
+        </span>
       </div>
 
-      {/* Model selection */}
-      <div className="grid gap-2">
-        {MODELS.map((m) => {
-          const Icon = m.icon;
-          const selected = settings.model === m.id;
-          return (
-            <button
-              key={m.id}
-              onClick={() => onChange({ ...settings, model: m.id })}
-              className={cn(
-                "flex items-center gap-3 p-3 rounded-lg border transition-all text-left",
-                selected
-                  ? "border-primary bg-primary/10 text-foreground"
-                  : "border-border bg-card hover:bg-secondary/50 text-muted-foreground"
-              )}
-            >
-              <Icon className={cn("w-5 h-5", selected ? "text-primary" : "text-muted-foreground")} />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium">{m.label}</div>
-                <div className="text-xs text-muted-foreground">{m.desc}</div>
-              </div>
-              {selected && <div className="w-2 h-2 rounded-full bg-primary" />}
-            </button>
-          );
-        })}
+      {/* Google models */}
+      <div className="space-y-1.5">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-1">Google Gemini</div>
+        <div className="grid gap-1.5">
+          {googleModels.map(renderModel)}
+        </div>
+      </div>
+
+      {/* OpenAI models */}
+      <div className="space-y-1.5">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-1">OpenAI GPT</div>
+        <div className="grid gap-1.5">
+          {openaiModels.map(renderModel)}
+        </div>
       </div>
 
       {/* Temperature */}
