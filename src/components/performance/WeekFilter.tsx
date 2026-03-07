@@ -29,7 +29,8 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
   const weekNumber = getWeekNumber(selectedWeek);
 
   return (
-    <SignalStyleCard className="p-3">
+    <Card className="bg-card border-border">
+      <CardContent className="p-3">
       <div className="flex items-center justify-between gap-2">
         {/* Week Navigation */}
         <div className="flex items-center gap-1">
