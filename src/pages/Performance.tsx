@@ -3,18 +3,28 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { Button } from '@/components/ui/button';
+import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  TrendingUp, 
+  Target, 
+  Zap, 
+  BarChart3, 
+  Award,
+  Activity,
+  ShieldCheck
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { WeeklySummary } from '@/components/performance/WeeklySummary';
 import { WeekFilter } from '@/components/performance/WeekFilter';
-import { DayTabs } from '@/components/performance/DayTabs';
-import { MarketTabs } from '@/components/performance/MarketTabs';
 import { DailyBreakdownTable } from '@/components/performance/DailyBreakdownTable';
 import { SignalsList, type SignalData } from '@/components/performance/SignalsList';
 import { DailyActivityChart } from '@/components/performance/DailyActivityChart';
 import { CurrencyPairCard } from '@/components/performance/CurrencyPairCard';
+import { PrecisionGauge } from '@/components/performance/PrecisionGauge';
+import { StreakWidget } from '@/components/performance/StreakWidget';
 import { 
   usePerformance, 
   useSessionPerformance, 
@@ -23,7 +33,6 @@ import {
   type PerformanceSignal 
 } from '@/hooks/usePerformance';
 
-// Transform database signal to UI signal format
 const transformSignal = (signal: PerformanceSignal): SignalData => {
   const datetime = new Date(signal.datetime);
   const pips = Math.round(Math.abs(signal.take_profit - signal.entry_price) * 10000);
@@ -47,7 +56,6 @@ const transformSignal = (signal: PerformanceSignal): SignalData => {
   };
 };
 
-// Default fallback data
 const defaultSessionData = [
   { name: 'New York', percentage: 0, pips: 0, isPositive: true },
   { name: 'Londres', percentage: 0, pips: 0, isPositive: true },
@@ -55,22 +63,20 @@ const defaultSessionData = [
 ];
 
 const defaultDailyActivityData = [
-  { day: 'Lunes', pips: 0 },
-  { day: 'Martes', pips: 0 },
-  { day: 'Miercoles', pips: 0 },
-  { day: 'Jueves', pips: 0 },
-  { day: 'Viernes', pips: 0 },
+  { day: 'Lun', pips: 0 },
+  { day: 'Mar', pips: 0 },
+  { day: 'Mie', pips: 0 },
+  { day: 'Jue', pips: 0 },
+  { day: 'Vie', pips: 0 },
 ];
 
 const defaultCurrencyPairs = [
-  { pair: 'EUR USD', currentPrice: 1.0850, change: 0, highPrice: 1.0900, lowPrice: 1.0800 },
-  { pair: 'GBP USD', currentPrice: 1.2650, change: 0, highPrice: 1.2700, lowPrice: 1.2600 },
+  { pair: 'EUR USD', currentPrice: 1.0850, change: 0, highPrice: 1.0900, lowPrice: 1.0800, totalSignals: 0 },
+  { pair: 'GBP USD', currentPrice: 1.2650, change: 0, highPrice: 1.2700, lowPrice: 1.2600, totalSignals: 0 },
 ];
 
 export default function Performance() {
   const { t } = useTranslation();
-  const [selectedDay, setSelectedDay] = useState('Viernes');
-  const [selectedMarket, setSelectedMarket] = useState('Forex');
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState(new Date());
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
@@ -78,7 +84,6 @@ export default function Performance() {
     to: undefined,
   });
 
-  // Fetch real data from Supabase
   const { data: performance, isLoading: isLoadingPerformance } = usePerformance(
     selectedWeek, 
     dateRange.from && dateRange.to ? dateRange : undefined
@@ -99,13 +104,10 @@ export default function Performance() {
     dateRange.from && dateRange.to ? dateRange : undefined
   );
 
-  // Get signals for the expanded day
   const expandedDaySignals = useMemo(() => {
     if (!expandedDay || !performance?.dailyData) return [];
-    
     const dayData = performance.dailyData.find(d => d.day === expandedDay);
     if (!dayData?.signals) return [];
-    
     return dayData.signals.map(transformSignal);
   }, [expandedDay, performance?.dailyData]);
 
@@ -115,7 +117,6 @@ export default function Performance() {
 
   const isLoading = isLoadingPerformance || isLoadingSessions || isLoadingPairs || isLoadingActivity;
 
-  // Use real data or fallbacks
   const weeklyData = performance ? {
     weekNumber: performance.weekNumber,
     totalSignals: performance.totalSignals,
@@ -125,128 +126,189 @@ export default function Performance() {
     pipsLost: performance.pipsLost,
     successRate: performance.successRate,
   } : {
-    weekNumber: 1,
-    totalSignals: 0,
-    successfulSignals: 0,
-    lostSignals: 0,
-    pipsGained: 0,
-    pipsLost: 0,
-    successRate: 0,
+    weekNumber: 1, totalSignals: 0, successfulSignals: 0, lostSignals: 0,
+    pipsGained: 0, pipsLost: 0, successRate: 0,
   };
 
   const dailyData = performance?.dailyData || [];
   const weekTotal = performance?.weekTotal || {
-    day: '0',
-    date: '',
-    totalSignals: 0,
-    positivas: 0,
-    negativos: 0,
-    pipsWins: 0,
-    pipsLoss: 0,
+    day: '0', date: '', totalSignals: 0, positivas: 0, negativos: 0, pipsWins: 0, pipsLoss: 0,
   };
+
+  // Calculate additional metrics
+  const netPips = weeklyData.pipsGained + weeklyData.pipsLost;
+  const avgPipsPerSignal = weeklyData.totalSignals > 0 ? Math.round(netPips / weeklyData.totalSignals) : 0;
+  const riskRewardRatio = weeklyData.pipsLost !== 0 
+    ? Math.abs(weeklyData.pipsGained / weeklyData.pipsLost).toFixed(1) 
+    : '∞';
 
   return (
     <PageShell>
       <Header />
       
-      <main className="container py-4">
-        {/* Back Button */}
-        <div className="flex items-center gap-4 mb-4">
-          <Link to="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          {isLoading && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              {t('perf_loading')}
+      <main className="container py-4 max-w-2xl mx-auto space-y-4">
+        {/* Hero Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <SignalStyleCard className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Link to="/">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors">
+                    <ArrowLeft className="w-4 h-4 text-primary" />
+                  </div>
+                </Link>
+                <div>
+                  <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                    Rendimiento
+                  </h1>
+                  <p className="text-xs text-muted-foreground">Análisis de precisión semanal</p>
+                </div>
+              </div>
+              {isLoading && (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-xs text-primary">Cargando...</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </SignalStyleCard>
+        </motion.div>
 
         {/* Week Filter */}
-        <WeekFilter 
-          selectedWeek={selectedWeek}
-          onWeekChange={setSelectedWeek}
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-        />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <WeekFilter 
+            selectedWeek={selectedWeek}
+            onWeekChange={setSelectedWeek}
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+          />
+        </motion.div>
+
+        {/* Quick Stats Grid */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.15 }}
+          className="grid grid-cols-4 gap-2"
+        >
+          {[
+            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400' },
+            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400' },
+            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400' },
+            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400' },
+          ].map((stat, i) => (
+            <SignalStyleCard key={i} className="p-3 text-center">
+              <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} />
+              <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
+              <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+            </SignalStyleCard>
+          ))}
+        </motion.div>
+
+        {/* Precision Gauge + Streak */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-2 gap-3"
+        >
+          {isLoadingPerformance ? (
+            <>
+              <Skeleton className="h-44 rounded-xl" />
+              <Skeleton className="h-44 rounded-xl" />
+            </>
+          ) : (
+            <>
+              <PrecisionGauge 
+                successRate={weeklyData.successRate} 
+                totalSignals={weeklyData.totalSignals}
+                successfulSignals={weeklyData.successfulSignals}
+                lostSignals={weeklyData.lostSignals}
+              />
+              <StreakWidget 
+                pipsGained={weeklyData.pipsGained}
+                pipsLost={weeklyData.pipsLost}
+                successRate={weeklyData.successRate}
+                weekNumber={weeklyData.weekNumber}
+              />
+            </>
+          )}
+        </motion.div>
 
         {/* Weekly Summary */}
-        {isLoadingPerformance ? (
-          <div className="mb-6">
-            <Skeleton className="h-6 w-48 mb-4" />
-            <Skeleton className="h-32 w-full rounded-lg" />
-          </div>
-        ) : (
-          <WeeklySummary {...weeklyData} />
-        )}
-
-        {/* Day Tabs */}
-        <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          {isLoadingPerformance ? (
+            <Skeleton className="h-36 rounded-xl" />
+          ) : (
+            <WeeklySummary {...weeklyData} />
+          )}
+        </motion.div>
 
         {/* Daily Breakdown Table */}
-        {isLoadingPerformance ? (
-          <Skeleton className="h-64 w-full rounded-lg mb-4" />
-        ) : dailyData.length > 0 ? (
-          <DailyBreakdownTable 
-            data={dailyData} 
-            weekTotal={weekTotal}
-            expandedDay={expandedDay}
-            onToggleDay={handleToggleDay}
-          />
-        ) : (
-          <div className="bg-card border border-border rounded-lg p-8 text-center mb-4">
-            <p className="text-muted-foreground">{t('perf_no_signals_week')}</p>
-          </div>
-        )}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          {isLoadingPerformance ? (
+            <Skeleton className="h-64 rounded-xl" />
+          ) : dailyData.length > 0 ? (
+            <DailyBreakdownTable 
+              data={dailyData} 
+              weekTotal={weekTotal}
+              expandedDay={expandedDay}
+              onToggleDay={handleToggleDay}
+            />
+          ) : (
+            <SignalStyleCard className="p-8 text-center">
+              <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
+            </SignalStyleCard>
+          )}
+        </motion.div>
 
         {/* Signals List (when day is expanded) */}
         {expandedDay && expandedDaySignals.length > 0 && (
-          <div className="animate-fade-in">
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
             <SignalsList signals={expandedDaySignals} />
-          </div>
+          </motion.div>
         )}
-
-        {/* Market Tabs */}
-        <MarketTabs selectedMarket={selectedMarket} onSelectMarket={setSelectedMarket} />
 
         {/* Daily Activity Chart */}
-        {isLoadingActivity || isLoadingSessions ? (
-          <Skeleton className="h-48 w-full rounded-lg mb-4" />
-        ) : (
-          <DailyActivityChart 
-            data={dailyActivityData || defaultDailyActivityData} 
-            sessions={sessionData || defaultSessionData}
-            market={selectedMarket}
-          />
-        )}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          {isLoadingActivity || isLoadingSessions ? (
+            <Skeleton className="h-52 rounded-xl" />
+          ) : (
+            <DailyActivityChart 
+              data={dailyActivityData || defaultDailyActivityData} 
+              sessions={sessionData || defaultSessionData}
+            />
+          )}
+        </motion.div>
 
         {/* Currency Pairs Section */}
-        <div className="mb-4">
-          <h3 className="text-sm font-bold text-foreground text-center mb-3">{t('perf_most_moved')}</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Award className="w-4 h-4 text-amber-400" />
+            <h3 className="text-sm font-bold text-foreground">Pares Más Activos</h3>
+          </div>
           {isLoadingPairs ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Skeleton className="h-40 w-full rounded-lg" />
-              <Skeleton className="h-40 w-full rounded-lg" />
-            </div>
-          ) : (currencyPairs && currencyPairs.length > 0) ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currencyPairs.map((pair) => (
-                <CurrencyPairCard key={pair.pair} {...pair} />
-              ))}
+            <div className="grid grid-cols-1 gap-3">
+              <Skeleton className="h-44 rounded-xl" />
+              <Skeleton className="h-44 rounded-xl" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {defaultCurrencyPairs.map((pair) => (
+            <div className="grid grid-cols-1 gap-3">
+              {(currencyPairs && currencyPairs.length > 0 ? currencyPairs : defaultCurrencyPairs).map((pair) => (
                 <CurrencyPairCard key={pair.pair} {...pair} />
               ))}
             </div>
           )}
-        </div>
-      </main>
+        </motion.div>
 
+        <div className="h-20" />
+      </main>
     </PageShell>
   );
 }

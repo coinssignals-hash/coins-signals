@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SignalStyleCard } from '@/components/ui/signal-style-card';
 
 export interface DailyData {
   day: string;
@@ -20,57 +21,56 @@ interface DailyBreakdownTableProps {
 
 export function DailyBreakdownTable({ data, weekTotal, expandedDay, onToggleDay }: DailyBreakdownTableProps) {
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden mb-4">
+    <SignalStyleCard className="overflow-hidden">
       {/* Header */}
-      <div className="grid grid-cols-6 gap-1 p-3 border-b border-border text-xs text-muted-foreground">
-        <div></div>
-        <div className="text-center">Total Señales</div>
-        <div className="text-center">Positivas</div>
-        <div className="text-center">Negativos</div>
-        <div className="text-center">Pips Wins</div>
-        <div className="text-center">Pips Loss</div>
+      <div className="grid grid-cols-6 gap-1 px-3 py-2 border-b border-border/50">
+        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Día</div>
+        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">Total</div>
+        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">TP</div>
+        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">SL</div>
+        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">+Pips</div>
+        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">-Pips</div>
       </div>
 
       {/* Daily Rows */}
       {data.map((dayData) => (
-        <div key={dayData.day}>
-          <button
-            onClick={() => onToggleDay(dayData.day)}
-            className={cn(
-              'w-full grid grid-cols-6 gap-1 p-3 border-b border-border hover:bg-secondary/50 transition-colors',
-              expandedDay === dayData.day && 'bg-secondary/30'
+        <button
+          key={dayData.day}
+          onClick={() => onToggleDay(dayData.day)}
+          className={cn(
+            'w-full grid grid-cols-6 gap-1 px-3 py-2.5 border-b border-border/30 hover:bg-primary/5 transition-all duration-200',
+            expandedDay === dayData.day && 'bg-primary/5 border-l-2 border-l-primary'
+          )}
+        >
+          <div className="flex items-center gap-1 text-xs">
+            <span className="text-foreground font-medium">{dayData.day.slice(0, 3)}</span>
+            <span className="text-[10px] text-muted-foreground">{dayData.date}</span>
+            {expandedDay === dayData.day ? (
+              <ChevronUp className="w-3 h-3 text-primary" />
+            ) : (
+              <ChevronDown className="w-3 h-3 text-muted-foreground" />
             )}
-          >
-            <div className="flex items-center gap-1 text-xs">
-              <span className="text-foreground font-medium">{dayData.day}</span>
-              <span className="text-muted-foreground">{dayData.date}</span>
-              {expandedDay === dayData.day ? (
-                <ChevronUp className="w-3 h-3 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="w-3 h-3 text-muted-foreground" />
-              )}
-            </div>
-            <div className="text-center text-blue-400 font-bold font-mono-numbers">{dayData.totalSignals.toString().padStart(2, '0')}</div>
-            <div className="text-center text-green-500 font-bold font-mono-numbers">{dayData.positivas.toString().padStart(2, '0')}</div>
-            <div className="text-center text-red-500 font-bold font-mono-numbers">{dayData.negativos.toString().padStart(2, '0')}</div>
-            <div className="text-center text-green-500 font-bold font-mono-numbers">+ {dayData.pipsWins}</div>
-            <div className="text-center text-red-500 font-bold font-mono-numbers">- {dayData.pipsLoss}</div>
-          </button>
-        </div>
+          </div>
+          <div className="text-center text-sm text-blue-400 font-bold tabular-nums">{dayData.totalSignals}</div>
+          <div className="text-center text-sm text-emerald-400 font-bold tabular-nums">{dayData.positivas}</div>
+          <div className="text-center text-sm text-rose-400 font-bold tabular-nums">{dayData.negativos}</div>
+          <div className="text-center text-xs text-emerald-400 font-bold tabular-nums">+{dayData.pipsWins}</div>
+          <div className="text-center text-xs text-rose-400 font-bold tabular-nums">-{dayData.pipsLoss}</div>
+        </button>
       ))}
 
       {/* Week Total Row */}
-      <div className="grid grid-cols-6 gap-1 p-3 bg-secondary/30">
+      <div className="grid grid-cols-6 gap-1 px-3 py-2.5" style={{ background: 'linear-gradient(90deg, hsla(var(--primary)/0.08), transparent)' }}>
         <div className="flex flex-col text-xs">
-          <span className="text-amber-400 font-medium">Semana {weekTotal.day}</span>
-          <span className="text-muted-foreground">{weekTotal.date}</span>
+          <span className="text-amber-400 font-bold">S{weekTotal.day}</span>
+          <span className="text-[9px] text-muted-foreground tabular-nums">{weekTotal.date}</span>
         </div>
-        <div className="text-center text-blue-400 font-bold font-mono-numbers">{weekTotal.totalSignals}</div>
-        <div className="text-center text-green-500 font-bold font-mono-numbers">{weekTotal.positivas}</div>
-        <div className="text-center text-red-500 font-bold font-mono-numbers">{weekTotal.negativos}</div>
-        <div className="text-center text-green-500 font-bold font-mono-numbers">+ {weekTotal.pipsWins}</div>
-        <div className="text-center text-red-500 font-bold font-mono-numbers">- {weekTotal.pipsLoss}</div>
+        <div className="text-center text-sm text-blue-400 font-extrabold tabular-nums">{weekTotal.totalSignals}</div>
+        <div className="text-center text-sm text-emerald-400 font-extrabold tabular-nums">{weekTotal.positivas}</div>
+        <div className="text-center text-sm text-rose-400 font-extrabold tabular-nums">{weekTotal.negativos}</div>
+        <div className="text-center text-xs text-emerald-400 font-extrabold tabular-nums">+{weekTotal.pipsWins}</div>
+        <div className="text-center text-xs text-rose-400 font-extrabold tabular-nums">-{weekTotal.pipsLoss}</div>
       </div>
-    </div>
+    </SignalStyleCard>
   );
 }
