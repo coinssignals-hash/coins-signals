@@ -180,7 +180,7 @@ function FeaturedHistoricalChart({
   return (
     <div className="flex items-center gap-1 mt-1">
       {data.monthlyData.slice(0, 4).map((evt, i) => {
-        const impact = evt.averageImpact ?? 0;
+        const impact = evt.impact ?? 0;
         const isPositive = impact >= 0;
         return (
           <div key={i} className="flex items-center gap-0.5">
