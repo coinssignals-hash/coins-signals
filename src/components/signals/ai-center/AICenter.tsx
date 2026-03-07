@@ -96,7 +96,8 @@ export function AICenter({ onClose }: Props) {
       symbol: activeSymbol,
       candles: forexData?.candles || [],
       indicators,
-      model: modelSettings.model,
+      model: modelSettings.models[0],
+      models: modelSettings.models,
       temperature: modelSettings.temperature
     });
     setModuleStatuses((prev) => ({
