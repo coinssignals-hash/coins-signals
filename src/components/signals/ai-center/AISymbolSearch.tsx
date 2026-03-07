@@ -160,7 +160,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
       </div>
 
       {/* Dropdown */}
-      {open && (query.length >= 2) && (
+      {open && (
         <div
           className="absolute z-50 top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden shadow-2xl"
           style={{
