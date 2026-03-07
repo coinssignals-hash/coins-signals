@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { format, addDays, subDays, isToday, isTomorrow, isYesterday } from 'date-fns';
-import { es, enUS, ptBR, fr } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
 import { RefreshCw, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -21,8 +21,7 @@ export function DateTabs({
   className 
 }: DateTabsProps) {
   const { language } = useTranslation();
-  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
   
   // Generate days: yesterday, today, tomorrow + 4 more days back
   const days = [
