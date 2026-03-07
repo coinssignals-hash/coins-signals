@@ -98,6 +98,9 @@ function Stocks() {
               )}
             </div>
 
+            {/* Market Indices Ticker */}
+            {!selectedSymbol && <MarketIndicesTicker />}
+
             {/* Search */}
             {!selectedSymbol && (
               <div className="relative">
