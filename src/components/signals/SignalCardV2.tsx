@@ -33,7 +33,7 @@ import brandLogo from "@/assets/g174.svg";
 
 import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
-import { es, enUS, ptBR, fr } from "date-fns/locale";
+import { useDateLocale } from "@/hooks/useDateLocale";
 import {
   Popover,
   PopoverContent,
