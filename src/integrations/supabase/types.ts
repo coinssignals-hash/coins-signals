@@ -594,46 +594,58 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
           email_notifications_enabled: boolean | null
           first_name: string | null
           id: string
           last_name: string | null
+          phone: string | null
           push_notifications_enabled: boolean | null
           signal_alerts_enabled: boolean | null
           timezone: string | null
+          trading_mode: string | null
           updated_at: string
           whatsapp_notifications_enabled: boolean | null
           whatsapp_number: string | null
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
           country?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email_notifications_enabled?: boolean | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          phone?: string | null
           push_notifications_enabled?: boolean | null
           signal_alerts_enabled?: boolean | null
           timezone?: string | null
+          trading_mode?: string | null
           updated_at?: string
           whatsapp_notifications_enabled?: boolean | null
           whatsapp_number?: string | null
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
           country?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email_notifications_enabled?: boolean | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          phone?: string | null
           push_notifications_enabled?: boolean | null
           signal_alerts_enabled?: boolean | null
           timezone?: string | null
+          trading_mode?: string | null
           updated_at?: string
           whatsapp_notifications_enabled?: boolean | null
           whatsapp_number?: string | null
