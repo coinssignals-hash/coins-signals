@@ -195,8 +195,8 @@ export function AICenter({ onClose }: Props) {
           <AISymbolSearch
             value={customSymbol}
             onChange={setCustomSymbol}
-            onSelect={(s) => { setCustomSymbol(s); setSymbol(s); }}
-          />
+            onSelect={(s) => {setCustomSymbol(s);setSymbol(s);}} />
+          
           <button
             onClick={handleFetchData}
             disabled={forexLoading}
@@ -212,29 +212,29 @@ export function AICenter({ onClose }: Props) {
         </div>
 
         {/* Quick pair chips */}
-        <div className="flex flex-wrap gap-1.5">
-          {POPULAR_PAIRS.map((pair) => (
-            <button
-              key={pair}
-              onClick={() => { setSymbol(pair); setCustomSymbol(''); }}
-              className={cn(
-                "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all",
-                symbol === pair && !customSymbol
-                  ? "text-white"
-                  : "text-slate-500 hover:text-slate-300"
-              )}
-              style={symbol === pair && !customSymbol ? {
-                background: 'hsl(200, 80%, 15%)',
-                border: '1px solid hsl(200, 60%, 30%)',
-              } : {
-                background: 'hsl(210, 50%, 10%)',
-                border: '1px solid hsl(210, 40%, 16%)',
-              }}
-            >
-              {pair}
-            </button>
-          ))}
-        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       </div>
 
       {/* Data Status */}
