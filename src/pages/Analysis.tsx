@@ -221,18 +221,18 @@ export default function Analysis() {
 
         {/* Terminal Panel Tabs */}
         <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-2 sm:space-y-3">
-          <TabsList className="bg-[#0a1628]/90 border border-cyan-900/30 w-full h-12 sm:h-11 p-1 gap-0.5 sm:gap-1">
-            <TabsTrigger value="tecnico" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 data-[state=active]:shadow-[0_0_12px_rgba(6,182,212,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
-              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Técnico</span><span className="xs:hidden">Téc.</span>
+          <TabsList className="bg-[#060e1a]/95 backdrop-blur-md border border-cyan-900/20 w-full h-14 sm:h-12 p-1.5 gap-1 rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.4)]">
+            <TabsTrigger value="tecnico" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-cyan-500/25 data-[state=active]:to-cyan-600/10 data-[state=active]:text-cyan-300 data-[state=active]:shadow-[0_0_16px_rgba(6,182,212,0.25),inset_0_1px_0_rgba(6,182,212,0.15)] data-[state=active]:border data-[state=active]:border-cyan-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
+              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Téc.</span>
             </TabsTrigger>
-            <TabsTrigger value="fundamental" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 data-[state=active]:shadow-[0_0_12px_rgba(16,185,129,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
-              <Landmark className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Fundamental</span><span className="xs:hidden">Fund.</span>
+            <TabsTrigger value="fundamental" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-emerald-500/25 data-[state=active]:to-emerald-600/10 data-[state=active]:text-emerald-300 data-[state=active]:shadow-[0_0_16px_rgba(16,185,129,0.25),inset_0_1px_0_rgba(16,185,129,0.15)] data-[state=active]:border data-[state=active]:border-emerald-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
+              <Landmark className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Fund.</span>
             </TabsTrigger>
-            <TabsTrigger value="sentimiento" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 data-[state=active]:shadow-[0_0_12px_rgba(168,85,247,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
-              <Brain className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Sentimiento</span><span className="xs:hidden">Sent.</span>
+            <TabsTrigger value="sentimiento" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-purple-500/25 data-[state=active]:to-purple-600/10 data-[state=active]:text-purple-300 data-[state=active]:shadow-[0_0_16px_rgba(168,85,247,0.25),inset_0_1px_0_rgba(168,85,247,0.15)] data-[state=active]:border data-[state=active]:border-purple-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
+              <Brain className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Sent.</span>
             </TabsTrigger>
-            <TabsTrigger value="estrategia" className="flex-1 text-[11px] sm:text-xs gap-1 sm:gap-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 data-[state=active]:shadow-[0_0_12px_rgba(245,158,11,0.2)] rounded-lg transition-all active:scale-95 py-2.5 sm:py-2">
-              <Target className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="hidden xs:inline">Estrategia</span><span className="xs:hidden">Estr.</span>
+            <TabsTrigger value="estrategia" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-amber-500/25 data-[state=active]:to-amber-600/10 data-[state=active]:text-amber-300 data-[state=active]:shadow-[0_0_16px_rgba(245,158,11,0.25),inset_0_1px_0_rgba(245,158,11,0.15)] data-[state=active]:border data-[state=active]:border-amber-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
+              <Target className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Estr.</span>
             </TabsTrigger>
           </TabsList>
 
