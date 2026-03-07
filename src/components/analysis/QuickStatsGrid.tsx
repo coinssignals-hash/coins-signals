@@ -92,21 +92,21 @@ export function QuickStatsGrid({
         <div
           key={stat.label}
           className={cn(
-            "p-2 rounded-lg border transition-all hover:scale-[1.02]",
+            "p-2 rounded-lg border transition-all duration-700 ease-in-out hover:scale-[1.02]",
             stat.bgColor
           )}
         >
           <div className="flex items-center gap-1 mb-1">
-            <stat.icon className={cn("w-3 h-3", stat.color)} />
+            <stat.icon className={cn("w-3 h-3 transition-colors duration-700", stat.color)} />
             <span className="text-[9px] text-gray-500 uppercase tracking-wider truncate">{stat.label}</span>
           </div>
-          <div className={cn("text-xs font-bold font-mono tabular-nums", stat.color)}>
+          <div className={cn("text-xs font-bold font-mono tabular-nums transition-colors duration-700", stat.color)}>
             {stat.value}
           </div>
           {stat.dualLine ? (
-            <div className="text-[9px] font-mono text-red-400 tabular-nums">{stat.subValue}</div>
+            <div className="text-[9px] font-mono text-red-400 tabular-nums transition-colors duration-700">{stat.subValue}</div>
           ) : (
-            <div className="text-[9px] text-gray-500 tabular-nums">{stat.subValue}</div>
+            <div className="text-[9px] text-gray-500 tabular-nums transition-colors duration-700">{stat.subValue}</div>
           )}
         </div>
       ))}
