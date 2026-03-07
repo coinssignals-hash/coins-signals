@@ -1,0 +1,5 @@
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS date_of_birth date DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS address text DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS phone text DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS trading_mode text DEFAULT 'demo';
