@@ -147,38 +147,22 @@ export default function Performance() {
     <PageShell>
       <Header />
       
-      <main className="container py-4 max-w-2xl mx-auto space-y-4">
-        {/* Hero Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <SignalStyleCard className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Link to="/">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                    <ArrowLeft className="w-4 h-4 text-primary" />
-                  </div>
-                </Link>
-                <div>
-                  <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                    Rendimiento
-                  </h1>
-                  <p className="text-xs text-muted-foreground">Análisis de precisión semanal</p>
-                </div>
-              </div>
-              {isLoading && (
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs text-primary">Cargando...</span>
-                </div>
-              )}
+      <main className="py-6 px-4 space-y-5">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link to="/">
+              <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
+            </Link>
+            <h1 className="text-xl font-bold text-foreground">Rendimiento</h1>
+          </div>
+          {isLoading && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs text-primary">Cargando...</span>
             </div>
-          </SignalStyleCard>
-        </motion.div>
+          )}
+        </div>
 
         {/* Week Filter */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
