@@ -227,7 +227,7 @@ export function AICenter({ onClose }: Props) {
                 }}
               >
                 <div
-                  className="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
                   style={isActive ? {
                     background: `linear-gradient(135deg, ${tab.color}30, ${tab.color}10)`,
                     boxShadow: `0 0 10px -3px ${tab.color}40`,
@@ -235,7 +235,7 @@ export function AICenter({ onClose }: Props) {
                     background: 'hsl(210, 30%, 10%)',
                   }}
                 >
-                  <TabIcon className="w-4 h-4" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
+                  <TabIcon className="w-5 h-5" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
                 </div>
                 <span className="text-[9px] font-bold leading-none whitespace-nowrap">
                   {tab.label}
