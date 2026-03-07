@@ -40,13 +40,17 @@ export function useFullAnalysis(symbol: string, currentPrice: number) {
   });
 }
 
-// Hook to fetch market sentiment
+// Hook to fetch market sentiment — cached 30 min, kept in memory 45 min
 export function useMarketSentiment(symbol: string) {
   return useQuery({
     queryKey: analysisKeys.sentiment(symbol),
     queryFn: () => analysisApi.getSentiment(symbol),
     enabled: !!symbol,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,   // 30 min — won't refetch while fresh
+    gcTime: 45 * 60 * 1000,      // 45 min — keeps data in memory for instant switch-back
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 }
 
