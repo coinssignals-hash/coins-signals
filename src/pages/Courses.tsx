@@ -3,15 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, FileText, Video, Headphones, Play, Clock, CheckCircle,
   BookOpen, Trophy, TrendingUp, BarChart3, Gem, Bitcoin, Flame,
-  ChevronRight, Lock, Star, Zap, GraduationCap
+  ChevronRight, Star, Zap, GraduationCap, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +20,8 @@ const categories = [
     icon: BookOpen,
     gradient: 'from-blue-500/20 to-cyan-500/10',
     accent: 'text-blue-400',
+    ring: 'ring-blue-500/30',
+    glow: 'shadow-[0_0_20px_hsl(217_91%_60%/0.15)]',
     modules: [
       {
         title: 'Introducción al trading',
@@ -64,6 +64,8 @@ const categories = [
     icon: TrendingUp,
     gradient: 'from-cyan-500/20 to-teal-500/10',
     accent: 'text-cyan-400',
+    ring: 'ring-cyan-500/30',
+    glow: 'shadow-[0_0_20px_hsl(187_72%_50%/0.15)]',
     modules: [
       {
         title: 'Fundamentos del mercado Forex',
@@ -107,6 +109,8 @@ const categories = [
     icon: BarChart3,
     gradient: 'from-emerald-500/20 to-green-500/10',
     accent: 'text-emerald-400',
+    ring: 'ring-emerald-500/30',
+    glow: 'shadow-[0_0_20px_hsl(160_84%_39%/0.15)]',
     modules: [
       {
         title: 'Fundamentos de la Bolsa',
@@ -148,6 +152,8 @@ const categories = [
     icon: Gem,
     gradient: 'from-amber-500/20 to-yellow-500/10',
     accent: 'text-amber-400',
+    ring: 'ring-amber-500/30',
+    glow: 'shadow-[0_0_20px_hsl(38_92%_50%/0.15)]',
     modules: [
       {
         title: 'Trading con materias primas',
@@ -178,6 +184,8 @@ const categories = [
     icon: Bitcoin,
     gradient: 'from-purple-500/20 to-violet-500/10',
     accent: 'text-purple-400',
+    ring: 'ring-purple-500/30',
+    glow: 'shadow-[0_0_20px_hsl(271_76%_53%/0.15)]',
     modules: [
       {
         title: 'Fundamentos de criptomonedas',
@@ -214,6 +222,7 @@ const categories = [
     ]
   }
 ];
+
 const getTypeIcon = (type: string, size = 'w-4 h-4') => {
   switch (type) {
     case 'pdf': return <FileText className={cn(size, 'text-rose-400')} />;
@@ -227,6 +236,11 @@ const difficultyColor = (d: string) => {
   if (d === 'Principiante') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
   if (d === 'Intermedio') return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
   return 'bg-rose-500/15 text-rose-400 border-rose-500/30';
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 18 },
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.07, duration: 0.4, ease: 'easeOut' as const } }),
 };
 
 export default function Courses() {
@@ -253,97 +267,139 @@ export default function Courses() {
 
       <main className="py-4 px-4 pb-28 space-y-5">
         {/* Back */}
-        <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4" />
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group">
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           Volver
         </Link>
 
-        {/* Hero Card */}
-        <SignalStyleCard>
-          <div className="p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/30 to-cyan-500/20 flex items-center justify-center border border-cyan-700/30">
-                  <GraduationCap className="w-6 h-6 text-cyan-300" />
+        {/* Hero Card — enhanced */}
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
+          <SignalStyleCard>
+            <div className="relative p-5 space-y-4 overflow-hidden">
+              {/* Decorative bg glow */}
+              <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-cyan-500/6 blur-3xl pointer-events-none" />
+
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 via-cyan-500/20 to-blue-600/10 flex items-center justify-center border border-cyan-700/30 shadow-[0_0_20px_hsl(217_91%_60%/0.2)]"
+                    whileHover={{ scale: 1.08, rotate: 3 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <GraduationCap className="w-6 h-6 text-cyan-300" />
+                  </motion.div>
+                  <div>
+                    <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
+                      Academia de Trading
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                    </h1>
+                    <p className="text-xs text-muted-foreground">Domina los mercados paso a paso</p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-lg font-bold text-foreground">Academia de Trading</h1>
-                  <p className="text-xs text-muted-foreground">Domina los mercados paso a paso</p>
+                <div className="text-right">
+                  <motion.span
+                    className="text-2xl font-bold text-primary tabular-nums"
+                    key={stats.percentage}
+                    initial={{ scale: 1.2, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
+                  >
+                    {stats.percentage}%
+                  </motion.span>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Progreso</p>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-primary tabular-nums">{stats.percentage}%</span>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Progreso</p>
+
+              {/* Progress Bar — enhanced */}
+              <div className="relative space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{stats.completed} de {stats.total} lecciones</span>
+                  <span className="flex items-center gap-1 text-primary">
+                    <Flame className="w-3 h-3" />
+                    {stats.completed > 0 ? 'En progreso' : 'Comienza ahora'}
+                  </span>
+                </div>
+                <div className="h-2.5 rounded-full bg-secondary/60 overflow-hidden border border-border/20">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-primary via-cyan-400 to-primary relative"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${stats.percentage}%` }}
+                    transition={{ duration: 1.2, ease: 'easeOut' }}
+                  >
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.15)_50%,transparent_100%)] animate-[shimmer_2s_ease-in-out_infinite]" />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Quick Stats — enhanced */}
+              <div className="relative grid grid-cols-3 gap-3">
+                {[
+                  { icon: BookOpen, label: 'Cursos', value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
+                  { icon: Trophy, label: 'Completadas', value: stats.completed, color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5' },
+                  { icon: Star, label: 'Módulos', value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5' },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    custom={i}
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeUp}
+                    whileHover={{ scale: 1.04, y: -2 }}
+                    className={cn(
+                      'text-center p-3 rounded-xl bg-gradient-to-b border border-border/30 cursor-default',
+                      stat.bg
+                    )}
+                  >
+                    <stat.icon className={cn('w-4 h-4 mx-auto mb-1.5', stat.color)} />
+                    <p className="text-lg font-bold text-foreground tabular-nums">{stat.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+                  </motion.div>
+                ))}
               </div>
             </div>
+          </SignalStyleCard>
+        </motion.div>
 
-            {/* Progress Bar */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{stats.completed} de {stats.total} lecciones</span>
-                <span className="flex items-center gap-1 text-primary">
-                  <Flame className="w-3 h-3" />
-                  {stats.completed > 0 ? 'En progreso' : 'Comienza ahora'}
-                </span>
-              </div>
-              <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-primary via-cyan-400 to-primary"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${stats.percentage}%` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
-                />
-              </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { icon: BookOpen, label: 'Cursos', value: categories.length, color: 'text-blue-400' },
-                { icon: Trophy, label: 'Completadas', value: stats.completed, color: 'text-amber-400' },
-                { icon: Star, label: 'Módulos', value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400' },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center p-2 rounded-lg bg-secondary/40 border border-border/30">
-                  <stat.icon className={cn('w-4 h-4 mx-auto mb-1', stat.color)} />
-                  <p className="text-base font-bold text-foreground tabular-nums">{stat.value}</p>
-                  <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </SignalStyleCard>
-
-        {/* Category Tabs */}
+        {/* Category Tabs — pill style with active glow */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isActive = activeCategory === cat.id;
             return (
-              <button
+              <motion.button
                 key={cat.id}
                 onClick={() => { setActiveCategory(cat.id); setExpandedModule(null); }}
+                whileTap={{ scale: 0.95 }}
                 className={cn(
-                  'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all border',
+                  'relative flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border',
                   isActive
-                    ? 'bg-primary/15 border-primary/40 text-primary shadow-[0_0_12px_hsl(217_91%_60%/0.2)]'
-                    : 'bg-secondary/40 border-border/30 text-muted-foreground hover:text-foreground hover:border-border'
+                    ? cn('bg-primary/15 border-primary/40 text-primary', cat.glow)
+                    : 'bg-secondary/40 border-border/30 text-muted-foreground hover:text-foreground hover:border-border hover:bg-secondary/60'
                 )}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className={cn('w-3.5 h-3.5', isActive && 'drop-shadow-[0_0_4px_currentColor]')} />
                 {cat.name}
-              </button>
+                {isActive && (
+                  <motion.div
+                    layoutId="categoryIndicator"
+                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-primary"
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  />
+                )}
+              </motion.button>
             );
           })}
         </div>
 
-        {/* Modules */}
+        {/* Modules — enhanced cards */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, y: -14 }}
+            transition={{ duration: 0.3 }}
             className="space-y-3"
           >
             {currentCategory.modules.map((module, idx) => {
@@ -353,52 +409,78 @@ export default function Courses() {
               const modulePercent = Math.round((completedCount / module.lessons.length) * 100);
 
               return (
-                <div key={moduleKey} className="rounded-xl border border-border/40 bg-card/60 overflow-hidden backdrop-blur-sm">
+                <motion.div
+                  key={moduleKey}
+                  custom={idx}
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeUp}
+                  className={cn(
+                    'rounded-xl border overflow-hidden backdrop-blur-sm transition-all duration-300',
+                    isExpanded
+                      ? 'border-primary/30 bg-card/80 shadow-[0_4px_24px_rgba(0,0,0,0.15)]'
+                      : 'border-border/40 bg-card/60 hover:border-border/60'
+                  )}
+                >
                   {/* Module Header */}
                   <button
                     onClick={() => setExpandedModule(isExpanded ? null : moduleKey)}
-                    className="w-full text-left p-4 flex items-center gap-3 hover:bg-secondary/30 transition-colors"
+                    className="w-full text-left p-4 flex items-center gap-3 hover:bg-secondary/20 transition-all"
                   >
-                    <div className={cn(
-                      'w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br',
-                      currentCategory.gradient
-                    )}>
+                    <motion.div
+                      className={cn(
+                        'w-11 h-11 rounded-xl flex items-center justify-center bg-gradient-to-br border border-white/5',
+                        currentCategory.gradient
+                      )}
+                      whileHover={{ rotate: 5, scale: 1.05 }}
+                    >
                       {getTypeIcon(module.type, 'w-5 h-5')}
-                    </div>
+                    </motion.div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
+                      <div className="flex items-center gap-2 mb-1">
                         <p className="text-sm font-semibold text-foreground truncate">{module.title}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={cn('text-[10px] px-1.5 py-0.5 rounded border', difficultyColor(module.difficulty))}>
+                        <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', difficultyColor(module.difficulty))}>
                           {module.difficulty}
                         </span>
                         <span className="text-[11px] text-muted-foreground">{module.lessons.length} lecciones</span>
                         {completedCount > 0 && (
-                          <span className="text-[11px] text-primary font-medium">{completedCount}/{module.lessons.length}</span>
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary">
+                            {completedCount}/{module.lessons.length}
+                          </Badge>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {modulePercent === 100 && (
-                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                        <motion.div
+                          className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 300 }}
+                        >
                           <CheckCircle className="w-4 h-4 text-emerald-400" />
-                        </div>
+                        </motion.div>
                       )}
-                      <ChevronRight className={cn(
-                        'w-4 h-4 text-muted-foreground transition-transform duration-200',
-                        isExpanded && 'rotate-90'
-                      )} />
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 90 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </motion.div>
                     </div>
                   </button>
 
-                  {/* Progress bar under header */}
+                  {/* Progress bar */}
                   {completedCount > 0 && (
                     <div className="px-4 pb-0">
-                      <div className="h-0.5 rounded-full bg-secondary overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-primary to-cyan-400 transition-all duration-700"
-                          style={{ width: `${modulePercent}%` }}
+                      <div className="h-1 rounded-full bg-secondary/60 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-primary to-cyan-400"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${modulePercent}%` }}
+                          transition={{ duration: 0.7, ease: 'easeOut' }}
                         />
                       </div>
                     </div>
@@ -411,32 +493,33 @@ export default function Courses() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                       >
-                        <div className="px-4 pb-4 pt-3 space-y-1.5">
+                        <div className="px-4 pb-4 pt-3 space-y-2">
                           {module.lessons.map((lesson, lessonIdx) => {
                             const completed = isLessonCompleted(lesson.id);
                             return (
                               <motion.div
                                 key={lesson.id}
-                                initial={{ opacity: 0, x: -8 }}
+                                initial={{ opacity: 0, x: -12 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: lessonIdx * 0.05 }}
+                                transition={{ delay: lessonIdx * 0.06, duration: 0.3 }}
                                 onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
+                                whileHover={{ x: 4 }}
                                 className={cn(
-                                  'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all group',
+                                  'flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all group',
                                   completed
-                                    ? 'bg-primary/8 hover:bg-primary/12 border border-primary/20'
-                                    : 'bg-secondary/30 hover:bg-secondary/50 border border-transparent'
+                                    ? 'bg-primary/8 hover:bg-primary/12 border border-primary/20 shadow-[0_0_12px_hsl(217_91%_60%/0.06)]'
+                                    : 'bg-secondary/20 hover:bg-secondary/40 border border-transparent hover:border-border/30'
                                 )}
                               >
                                 {/* Number / Check */}
                                 <div className={cn(
-                                  'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold',
+                                  'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold transition-all',
                                   completed
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-secondary border border-border text-muted-foreground'
+                                    ? 'bg-primary text-primary-foreground shadow-[0_0_10px_hsl(217_91%_60%/0.3)]'
+                                    : 'bg-secondary border border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-foreground'
                                 )}>
                                   {completed ? <CheckCircle className="w-3.5 h-3.5" /> : lessonIdx + 1}
                                 </div>
@@ -444,8 +527,8 @@ export default function Courses() {
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
                                   <p className={cn(
-                                    'text-sm truncate',
-                                    completed ? 'text-foreground' : 'text-foreground/80'
+                                    'text-sm truncate transition-colors',
+                                    completed ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'
                                   )}>
                                     {lesson.title}
                                   </p>
@@ -458,13 +541,17 @@ export default function Courses() {
                                   </div>
                                 </div>
 
-                                {/* Play */}
-                                <div className={cn(
-                                  'w-8 h-8 rounded-full flex items-center justify-center transition-all',
-                                  'bg-secondary/50 group-hover:bg-primary/20 group-hover:scale-110'
-                                )}>
+                                {/* Play button — enhanced */}
+                                <motion.div
+                                  className={cn(
+                                    'w-9 h-9 rounded-full flex items-center justify-center transition-all',
+                                    'bg-secondary/50 group-hover:bg-primary/20 border border-transparent group-hover:border-primary/30'
+                                  )}
+                                  whileHover={{ scale: 1.15 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
                                   <Play className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors ml-0.5" />
-                                </div>
+                                </motion.div>
                               </motion.div>
                             );
                           })}
@@ -472,34 +559,47 @@ export default function Courses() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               );
             })}
           </motion.div>
         </AnimatePresence>
 
-        {/* Featured Cards */}
+        {/* Featured Cards — glass morphism style */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-blue-900/5 p-4 space-y-2">
-            <div className="w-9 h-9 rounded-lg bg-blue-500/15 flex items-center justify-center">
-              <Video className="w-5 h-5 text-blue-400" />
+          <motion.div
+            whileHover={{ y: -3, scale: 1.02 }}
+            className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-blue-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden"
+          >
+            <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-blue-500/8 blur-2xl" />
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center border border-blue-500/20">
+                <Video className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-sm font-bold text-foreground mt-2">Videos</p>
+              <p className="text-[11px] text-muted-foreground">12 videos disponibles</p>
+              <div className="flex items-center gap-1 text-[10px] text-blue-400 mt-1.5 font-medium">
+                <Zap className="w-3 h-3" /> Nuevos cada semana
+              </div>
             </div>
-            <p className="text-sm font-semibold text-foreground">Videos</p>
-            <p className="text-[11px] text-muted-foreground">12 videos disponibles</p>
-            <div className="flex items-center gap-1 text-[10px] text-blue-400">
-              <Zap className="w-3 h-3" /> Nuevos cada semana
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -3, scale: 1.02 }}
+            className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 via-purple-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden"
+          >
+            <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-purple-500/8 blur-2xl" />
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center border border-purple-500/20">
+                <Headphones className="w-5 h-5 text-purple-400" />
+              </div>
+              <p className="text-sm font-bold text-foreground mt-2">Podcasts</p>
+              <p className="text-[11px] text-muted-foreground">8 episodios</p>
+              <div className="flex items-center gap-1 text-[10px] text-purple-400 mt-1.5 font-medium">
+                <Zap className="w-3 h-3" /> Escucha offline
+              </div>
             </div>
-          </div>
-          <div className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-purple-900/5 p-4 space-y-2">
-            <div className="w-9 h-9 rounded-lg bg-purple-500/15 flex items-center justify-center">
-              <Headphones className="w-5 h-5 text-purple-400" />
-            </div>
-            <p className="text-sm font-semibold text-foreground">Podcasts</p>
-            <p className="text-[11px] text-muted-foreground">8 episodios</p>
-            <div className="flex items-center gap-1 text-[10px] text-purple-400">
-              <Zap className="w-3 h-3" /> Escucha offline
-            </div>
-          </div>
+          </motion.div>
         </div>
       </main>
     </PageShell>
