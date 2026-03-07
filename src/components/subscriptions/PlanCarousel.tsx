@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Star, Crown, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import brandLogo from '@/assets/g174.svg';
 
 interface Plan {
@@ -24,11 +24,13 @@ interface Plan {
 interface PlanCarouselProps {
   plans: Plan[];
   billingPeriod: 'weekly' | 'monthly';
+  activeTier?: string | null;
+  onSubscribe?: (planId: string) => void;
 }
 
-export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
+export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: PlanCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(1);
-  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const goTo = (index: number) => {
     if (index >= 0 && index < plans.length) setActiveIndex(index);
@@ -42,9 +44,18 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
     else if (x > threshold || vx > 300) goTo(activeIndex - 1);
   };
 
+  const handleSubscribe = async (planId: string) => {
+    if (!onSubscribe) return;
+    setLoadingPlan(planId);
+    try {
+      await onSubscribe(planId);
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <div className="relative flex flex-col items-center">
-      {/* Stacked cards container with swipe */}
       <motion.div
         className="relative w-full flex justify-center items-start touch-pan-y"
         style={{ minHeight: '540px' }}
@@ -57,8 +68,8 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
           const offset = index - activeIndex;
           const isActive = offset === 0;
           const isLeft = offset < 0;
-          const isRight = offset > 0;
           const absOffset = Math.abs(offset);
+          const isCurrentPlan = activeTier === plan.id;
 
           return (
             <motion.div
@@ -82,13 +93,21 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
               <Card
                 className={cn(
                   'relative overflow-hidden border transition-all duration-300',
-                  isActive ? 'border-primary/60 shadow-2xl shadow-primary/15' : 'border-border/40 shadow-lg',
+                  isCurrentPlan
+                    ? 'border-accent shadow-2xl shadow-accent/20 ring-2 ring-accent/40'
+                    : isActive ? 'border-primary/60 shadow-2xl shadow-primary/15' : 'border-border/40 shadow-lg',
                 )}
               >
-                {/* Gradient overlay */}
+                {/* Current plan badge */}
+                {isCurrentPlan && (
+                  <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center text-xs font-bold py-1 z-10 flex items-center justify-center gap-1">
+                    <Crown className="w-3 h-3" />
+                    Tu Plan Actual
+                  </div>
+                )}
+
                 <div className={cn('absolute inset-0 bg-gradient-to-br opacity-40', plan.color)} />
 
-                {/* Brand watermark */}
                 <img
                   src={brandLogo}
                   alt=""
@@ -96,13 +115,11 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
                   className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-32 opacity-[0.10] pointer-events-none select-none"
                 />
 
-                {/* Glow effect for active */}
-                {isActive && (
+                {isActive && !isCurrentPlan && (
                   <div className="absolute -inset-px rounded-xl bg-gradient-to-b from-primary/20 via-transparent to-accent/10 pointer-events-none" />
                 )}
 
-                <CardContent className="relative p-5">
-                  {/* Header */}
+                <CardContent className={cn('relative p-5', isCurrentPlan && 'pt-8')}>
                   <div className="flex items-center justify-between mb-3">
                     <Badge className={cn('text-xs font-bold px-3 py-1', plan.badgeColor)}>
                       {plan.name}
@@ -115,14 +132,9 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
                     )}
                   </div>
 
-                  <h3 className="text-sm font-semibold text-primary mb-1">
-                    {plan.subtitle}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mb-4 line-clamp-2">
-                    {plan.description}
-                  </p>
+                  <h3 className="text-sm font-semibold text-primary mb-1">{plan.subtitle}</h3>
+                  <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{plan.description}</p>
 
-                  {/* Price */}
                   <div className="mb-4 flex items-baseline gap-1">
                     <span className="text-4xl font-extrabold text-foreground tracking-tight">
                       ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceWeekly}
@@ -132,10 +144,8 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
                     </span>
                   </div>
 
-                  {/* Divider */}
                   <div className="h-px bg-border/60 mb-4" />
 
-                  {/* Features */}
                   <ul className="space-y-2 mb-5">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs">
@@ -147,20 +157,31 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
                     ))}
                   </ul>
 
-                  {/* CTA */}
                   <div className="space-y-2">
-                    <Button
-                      className={cn(
-                        'w-full font-semibold',
-                        plan.featured
-                          ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-                          : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50'
-                      )}
-                    >
-                      Suscribirme
-                    </Button>
+                    {isCurrentPlan ? (
+                      <Button disabled className="w-full font-semibold bg-accent/20 text-accent border border-accent/30">
+                        <Crown className="w-4 h-4 mr-1.5" />
+                        Plan Activo
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={(e) => { e.stopPropagation(); handleSubscribe(plan.id); }}
+                        disabled={loadingPlan === plan.id}
+                        className={cn(
+                          'w-full font-semibold',
+                          plan.featured
+                            ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                            : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50'
+                        )}
+                      >
+                        {loadingPlan === plan.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                        ) : null}
+                        Suscribirme
+                      </Button>
+                    )}
 
-                    {plan.featured && (
+                    {plan.featured && !isCurrentPlan && (
                       <Button variant="outline" className="w-full border-primary/40 text-primary hover:bg-primary/10 text-xs">
                         7 Días Gratis
                       </Button>
@@ -173,7 +194,6 @@ export function PlanCarousel({ plans, billingPeriod }: PlanCarouselProps) {
         })}
       </motion.div>
 
-      {/* Navigation */}
       <div className="flex items-center gap-6 mt-4">
         <button
           onClick={() => goTo(activeIndex - 1)}
