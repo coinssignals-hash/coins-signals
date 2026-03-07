@@ -125,22 +125,26 @@ export default function Analysis() {
 
       <main className="py-2 px-1 sm:px-4 space-y-1.5 sm:space-y-3">
         {/* Terminal Header Bar */}
-        <div className="relative z-20 flex items-center gap-1 sm:gap-2 bg-[#0d1829]/80 backdrop-blur-sm border border-cyan-900/30 rounded-lg sm:rounded-xl p-1.5 sm:p-2">
+        <div className="relative z-20 flex items-center gap-1.5 sm:gap-2 bg-[#060e1a]/95 backdrop-blur-md border border-cyan-900/20 rounded-2xl p-2 sm:p-2.5 shadow-[0_2px_20px_rgba(0,0,0,0.4)]">
+          {/* Top glow accent */}
+          <div className="absolute top-0 left-[20%] right-[20%] h-[1px] rounded-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.4), transparent)' }} />
+          
           <SymbolSearch value={selectedPair} onChange={setSelectedPair} className="flex-1 min-w-[120px]" />
+          
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[68px] sm:w-[80px] bg-[#0a1628] border-cyan-900/40 text-xs h-9">
+            <SelectTrigger className="w-[72px] sm:w-[82px] bg-gradient-to-b from-[#0c1a30] to-[#081220] border-cyan-900/25 text-[11px] font-medium h-10 sm:h-9 rounded-xl shadow-inner text-cyan-300 transition-all active:scale-[0.96]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a1628] border-cyan-900/40">
+            <SelectContent className="bg-[#0a1628] border-cyan-900/30 rounded-xl shadow-2xl">
               {timeframes.map((tf) =>
-              <SelectItem key={tf.value} value={tf.value} className="text-xs">{tf.label}</SelectItem>
+              <SelectItem key={tf.value} value={tf.value} className="text-xs font-medium">{tf.label}</SelectItem>
               )}
             </SelectContent>
           </Select>
           
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0 border-cyan-900/40 bg-[#0a1628] h-10 w-10 sm:h-9 sm:w-9 active:scale-95 transition-transform">
+              <Button variant="outline" size="icon" className="shrink-0 border-cyan-900/25 bg-gradient-to-b from-[#0c1a30] to-[#081220] h-10 w-10 sm:h-9 sm:w-9 rounded-xl active:scale-[0.96] transition-all shadow-inner hover:border-cyan-700/40">
                 <Bell className="w-4 h-4 text-cyan-400" />
               </Button>
             </SheetTrigger>
