@@ -146,6 +146,38 @@
     --card: 222 45% 5%;
     --secondary: 218 40% 8%;
   }
+
+  /* Font scale classes */
+  html.font-scale-85 { font-size: 13px; }
+  html.font-scale-100 { font-size: 15px; }
+  html.font-scale-115 { font-size: 17px; }
+  html.font-scale-130 { font-size: 19px; }
+
+  /* Reduced motion */
+  html.reduce-motion *,
+  html.reduce-motion *::before,
+  html.reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Compact mode */
+  html.compact-mode {
+    --radius: 0.5rem;
+  }
+  html.compact-mode body {
+    line-height: 1.4;
+  }
+
+  /* Color accent overrides */
+  html.accent-blue { --primary: 217 91% 60%; --ring: 217 91% 60%; }
+  html.accent-cyan { --primary: 187 72% 50%; --ring: 187 72% 50%; }
+  html.accent-green { --primary: 142 70% 45%; --ring: 142 70% 45%; }
+  html.accent-amber { --primary: 38 95% 55%; --ring: 38 95% 55%; }
+  html.accent-rose { --primary: 346 77% 50%; --ring: 346 77% 50%; }
+  html.accent-violet { --primary: 271 76% 53%; --ring: 271 76% 53%; }
 }
 
 @layer base {
