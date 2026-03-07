@@ -196,10 +196,7 @@ function SentimentCircle({ sentiment, relevance }: {sentiment: 'bullish' | 'bear
   const SentIcon = isBullish ? TrendingUp : isBearish ? TrendingDown : Minus;
   const label = isBullish ? 'Bull' : isBearish ? 'Bear' : 'Neutral';
   const textColor = isBullish ? 'text-green-400' : isBearish ? 'text-red-400' : 'text-cyan-300';
-  return (
-    <div className="relative w-[56px] h-[56px] flex-shrink-0">
-      <div className={cn('absolute -inset-0.5 rounded-full opacity-25 blur-md transition-all duration-700', isBullish ? 'bg-green-500' : isBearish ? 'bg-red-500' : 'bg-cyan-500')} />
-      
+  return;
 
 
 
@@ -213,12 +210,15 @@ function SentimentCircle({ sentiment, relevance }: {sentiment: 'bullish' | 'bear
 
 
 
-      
-      
 
 
-      
-    </div>);
+
+
+
+
+
+
+
 
 }
 
