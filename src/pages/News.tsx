@@ -171,19 +171,29 @@ function FeaturedHistoricalChart({
   title,
   category,
   currencies
-
-
-
-
-
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
-  return;
+  if (isLoading) return <div className="h-12 w-full animate-pulse rounded bg-slate-800/40" />;
+  if (!data?.historical_events?.length) return null;
 
-
-
-
+  return (
+    <div className="flex items-center gap-1 mt-1">
+      {data.historical_events.slice(0, 4).map((evt: any, i: number) => {
+        const impact = evt.impact_score ?? 0;
+        const isPositive = impact >= 0;
+        return (
+          <div key={i} className="flex items-center gap-0.5">
+            <div
+              className={cn("h-4 rounded-sm", isPositive ? "bg-green-500/60" : "bg-red-500/60")}
+              style={{ width: `${Math.max(6, Math.abs(impact) * 3)}px` }}
+            />
+          </div>
+        );
+      })}
+      <span className="text-[9px] text-slate-500 ml-1">{data.historical_events.length} eventos</span>
+    </div>
+  );
 }
 
 
