@@ -68,8 +68,25 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  const loadDefaults = useCallback(async (type: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('symbol-search', {
+        body: { query: 'popular', type, defaults: true },
+      });
+      if (!error && data?.data) {
+        setResults(data.data);
+      }
+    } catch { /* silent */ } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const searchSymbols = useCallback(async (q: string, type: string) => {
-    if (q.length < 2) { setResults([]); return; }
+    if (q.length < 2) {
+      await loadDefaults(type);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('symbol-search', {
@@ -78,12 +95,10 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
       if (!error && data?.data) {
         setResults(data.data);
       }
-    } catch {
-      // silent
-    } finally {
+    } catch { /* silent */ } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadDefaults]);
 
   const handleInputChange = (val: string) => {
     const upper = val.toUpperCase();
