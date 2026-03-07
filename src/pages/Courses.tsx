@@ -247,8 +247,21 @@ export default function Courses() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('inicio');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const [mediaFilter, setMediaFilter] = useState<'video' | 'podcast' | null>(null);
   const { isLessonCompleted, progress } = useCourseProgress();
 
+  // Collect all lessons by type across all categories
+  const allByType = useMemo(() => {
+    const all = categories.flatMap(cat =>
+      cat.modules.flatMap(mod =>
+        mod.lessons.map(l => ({ ...l, moduleName: mod.title, categoryName: cat.name, categoryAccent: cat.accent }))
+      )
+    );
+    return {
+      video: all.filter(l => l.type === 'video'),
+      podcast: all.filter(l => l.type === 'podcast'),
+    };
+  }, []);
   const currentCategory = categories.find(c => c.id === activeCategory)!;
 
   const stats = useMemo(() => {
