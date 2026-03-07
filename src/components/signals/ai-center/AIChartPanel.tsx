@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Maximize2, X, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Maximize2, X, TrendingUp, TrendingDown, Minus, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import type { OHLCVCandle } from '@/lib/indicators';
 import type { DetectedPattern } from '@/lib/candle-patterns';
 
