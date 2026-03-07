@@ -13,6 +13,9 @@ const MODELS = [
   { id: 'google/gemini-2.5-flash', label: 'Gemini Flash', icon: Zap, desc: 'Rápido y eficiente' },
   { id: 'google/gemini-2.5-pro', label: 'Gemini Pro', icon: Brain, desc: 'Máxima precisión' },
   { id: 'google/gemini-3-flash-preview', label: 'Gemini 3 Flash', icon: Zap, desc: 'Nueva generación' },
+  { id: 'openai/gpt-5', label: 'GPT-5', icon: Cpu, desc: 'Potente y preciso' },
+  { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', icon: Zap, desc: 'Rápido y equilibrado' },
+  { id: 'openai/gpt-5.2', label: 'GPT-5.2', icon: Brain, desc: 'Razonamiento avanzado' },
 ];
 
 interface Props {
