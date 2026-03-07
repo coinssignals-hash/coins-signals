@@ -194,7 +194,7 @@ export default function About() {
                 <CardContent className="p-4">
                   <div className="flex gap-3">
                     <Avatar className="w-14 h-14 border-2 border-border shrink-0">
-                      <AvatarImage src="" />
+                      <AvatarImage src={m.avatar} alt={m.name} />
                       <AvatarFallback className="bg-secondary text-foreground text-sm font-bold">
                         {m.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
