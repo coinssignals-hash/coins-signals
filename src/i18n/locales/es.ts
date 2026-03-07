@@ -1,7 +1,7 @@
 import type { TranslationKeys } from '../translations';
 
 const es: TranslationKeys = {
-  nav_ideas: 'Ideas',
+  nav_analysis: 'Análisis',
   nav_portfolio: 'Portfolio',
   nav_news: 'Noticias',
   nav_signals: 'Señales',
