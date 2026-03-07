@@ -97,9 +97,9 @@ function AnimatedRoutes() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/create-signal" element={<CreateSignal />} />
           
-          <Route path="/ai-center" element={<AICenter />} />
-          <Route path="/stocks" element={<Stocks />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/ai-center" element={<SubscriptionGate requiredTier="plus" featureName="Centro de IA"><AICenter /></SubscriptionGate>} />
+          <Route path="/stocks" element={<SubscriptionGate requiredTier="plus" featureName="Análisis de Acciones"><Stocks /></SubscriptionGate>} />
+          <Route path="/portfolio" element={<SubscriptionGate requiredTier="premium" featureName="Portfolio Multi-Broker"><Portfolio /></SubscriptionGate>} />
         </Routes>
       </Suspense>
     </AnimatePresence>
