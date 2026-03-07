@@ -10,7 +10,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Activity, Wallet
+  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
