@@ -214,10 +214,10 @@ function SentimentCircle({ sentiment, relevance }: {sentiment: 'bullish' | 'bear
           </linearGradient>
         </defs>
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <SentIcon className={cn('w-3.5 h-3.5', textColor)} />
-        <span className={cn('text-[8px] font-bold mt-0.5', textColor)}>{label}</span>
-      </div>
+      
+
+
+      
     </div>);
 
 }
