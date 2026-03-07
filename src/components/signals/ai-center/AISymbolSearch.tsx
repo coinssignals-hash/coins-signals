@@ -142,7 +142,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
           placeholder="Buscar símbolo: AAPL, EUR/USD, BTC..."
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => { if (results.length > 0 || query.length >= 2) setOpen(true); }}
+          onFocus={() => { setOpen(true); if (results.length === 0) loadDefaults(activeTab); }}
           className="w-full pl-9 pr-16 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all"
           style={{
             background: 'hsl(210, 100%, 8%)',
