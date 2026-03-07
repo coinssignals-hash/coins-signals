@@ -398,6 +398,12 @@ export default function Auth() {
             </div>
             <CardTitle className="text-2xl">{getTitle()}</CardTitle>
             <p className="text-sm text-muted-foreground mt-2">{getDescription()}</p>
+            {referralCode && mode === 'register' && (
+              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/25 text-xs text-accent font-medium">
+                <Gift className="w-3.5 h-3.5" />
+                Referido por: {referralCode}
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             {mode === 'verify-pending' ? (
