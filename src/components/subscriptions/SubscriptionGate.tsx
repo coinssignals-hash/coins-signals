@@ -18,7 +18,7 @@ const TIER_LEVEL: Record<string, number> = {
 };
 
 export function SubscriptionGate({ children, requiredTier, featureName }: SubscriptionGateProps) {
-  const { subscribed, tier, loading } = useSubscription();
+  const { subscribed, tier, loading, onTrial } = useSubscription();
 
   if (loading) {
     return (
@@ -26,6 +26,11 @@ export function SubscriptionGate({ children, requiredTier, featureName }: Subscr
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  // Trial users get full premium access
+  if (onTrial) {
+    return <>{children}</>;
   }
 
   if (!subscribed) {

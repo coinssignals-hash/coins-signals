@@ -90,7 +90,7 @@ const plans = [
 export default function Subscriptions() {
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
   const [searchParams] = useSearchParams();
-  const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription } = useSubscription();
+  const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription, onTrial, trialDaysLeft } = useSubscription();
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -139,8 +139,24 @@ export default function Subscriptions() {
           </div>
         </div>
 
+        {/* Trial banner */}
+        {onTrial && (
+          <div className="mx-4 mb-4 p-4 rounded-xl bg-gradient-to-r from-amber-500/15 to-orange-500/10 border border-amber-500/30 text-center space-y-1">
+            <p className="text-sm font-bold text-amber-400">
+              🎉 ¡Prueba gratuita activa!
+            </p>
+            <p className="text-xs text-amber-300/80">
+              Tienes acceso completo a todas las funciones Premium por{' '}
+              <span className="font-bold text-amber-200">{trialDaysLeft} {trialDaysLeft === 1 ? 'día' : 'días'}</span> más.
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Suscríbete antes de que termine para no perder el acceso.
+            </p>
+          </div>
+        )}
+
         {/* Active plan banner */}
-        {subscribed && tier && (
+        {subscribed && !onTrial && tier && (
           <div className="mx-4 mb-4 p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
             <p className="text-sm text-primary font-medium">
               Plan activo: <span className="font-bold capitalize">{tier}</span>
