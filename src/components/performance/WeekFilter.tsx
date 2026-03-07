@@ -123,6 +123,7 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
           </span>
         </div>
       )}
-    </SignalStyleCard>
+      </CardContent>
+    </Card>
   );
 }
