@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, KeyRound } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, KeyRound, Gift } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.object({
@@ -23,6 +23,7 @@ type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'verify-pending';
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +32,21 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  // Capture referral code from URL
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) {
+      setReferralCode(ref.toUpperCase());
+      localStorage.setItem('referral_code', ref.toUpperCase());
+      // Auto-switch to register mode when coming from referral link
+      setMode('register');
+    } else {
+      const stored = localStorage.getItem('referral_code');
+      if (stored) setReferralCode(stored);
+    }
+  }, [searchParams]);
 
   // Check if we're in password reset mode (user clicked reset link in email)
   useEffect(() => {
@@ -245,12 +261,36 @@ export default function Auth() {
 
         // Check if email confirmation is required
         if (data.user && !data.session) {
+          // Register referral if code exists
+          if (referralCode && data.user.id) {
+            try {
+              await supabase.functions.invoke('referrals', {
+                body: { action: 'register', referral_code: referralCode, referred_user_id: data.user.id },
+              });
+              localStorage.removeItem('referral_code');
+            } catch (refErr) {
+              console.error('Referral registration error:', refErr);
+            }
+          }
+
           setMode('verify-pending');
           toast({
             title: '¡Revisa tu email!',
             description: 'Te hemos enviado un enlace de verificación',
           });
         } else {
+          // Register referral for auto-confirmed signups
+          if (referralCode && data.user?.id) {
+            try {
+              await supabase.functions.invoke('referrals', {
+                body: { action: 'register', referral_code: referralCode, referred_user_id: data.user.id },
+              });
+              localStorage.removeItem('referral_code');
+            } catch (refErr) {
+              console.error('Referral registration error:', refErr);
+            }
+          }
+
           toast({
             title: '¡Cuenta creada!',
             description: 'Tu cuenta ha sido creada exitosamente',
@@ -358,6 +398,12 @@ export default function Auth() {
             </div>
             <CardTitle className="text-2xl">{getTitle()}</CardTitle>
             <p className="text-sm text-muted-foreground mt-2">{getDescription()}</p>
+            {referralCode && mode === 'register' && (
+              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/25 text-xs text-accent font-medium">
+                <Gift className="w-3.5 h-3.5" />
+                Referido por: {referralCode}
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             {mode === 'verify-pending' ? (
