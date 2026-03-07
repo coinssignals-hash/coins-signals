@@ -361,7 +361,7 @@ export default function Courses() {
           </SignalStyleCard>
         </motion.div>
 
-        {/* Category Tabs — pill style with active glow */}
+        {/* Category Tabs — centered icon + label */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
           {categories.map((cat) => {
             const Icon = cat.icon;
@@ -372,14 +372,14 @@ export default function Courses() {
                 onClick={() => { setActiveCategory(cat.id); setExpandedModule(null); }}
                 whileTap={{ scale: 0.95 }}
                 className={cn(
-                  'relative flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border',
+                  'relative flex flex-col items-center justify-center gap-1 min-w-[68px] px-3 py-2.5 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all border',
                   isActive
                     ? cn('bg-primary/15 border-primary/40 text-primary', cat.glow)
                     : 'bg-secondary/40 border-border/30 text-muted-foreground hover:text-foreground hover:border-border hover:bg-secondary/60'
                 )}
               >
-                <Icon className={cn('w-3.5 h-3.5', isActive && 'drop-shadow-[0_0_4px_currentColor]')} />
-                {cat.name}
+                <Icon className={cn('w-4 h-4', isActive && 'drop-shadow-[0_0_4px_currentColor]')} />
+                <span className="leading-none">{cat.name}</span>
                 {isActive && (
                   <motion.div
                     layoutId="categoryIndicator"
