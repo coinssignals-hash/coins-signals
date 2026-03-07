@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/hooks/useAuth';
-import brandLogo from '@/assets/g174.svg';
+
 
 export default function Referrals() {
   const { isAuthenticated } = useAuth();
@@ -79,15 +79,10 @@ export default function Referrals() {
         </div>
 
         {/* Hero Card */}
-        <Card className="relative overflow-hidden border-primary/30 shadow-xl shadow-primary/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-accent/10 to-transparent" />
-          <img
-            src={brandLogo} alt="" aria-hidden="true"
-            className="absolute -bottom-6 -right-6 w-36 h-36 opacity-[0.06] pointer-events-none select-none"
-          />
-          <CardContent className="relative p-6 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-accent/15 mx-auto mb-4 flex items-center justify-center">
-              <Gift className="w-8 h-8 text-accent" />
+        <Card className="bg-card border-border">
+          <CardContent className="p-6 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-accent/10 mx-auto mb-4 flex items-center justify-center border border-accent/20">
+              <Gift className="w-7 h-7 text-accent" />
             </div>
             <h2 className="text-2xl font-extrabold text-foreground mb-1">
               Gana Hasta <span className="text-accent">$25</span>
