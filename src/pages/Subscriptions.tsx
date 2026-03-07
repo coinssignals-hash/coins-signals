@@ -90,7 +90,7 @@ const plans = [
 export default function Subscriptions() {
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
   const [searchParams] = useSearchParams();
-  const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription } = useSubscription();
+  const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription, onTrial, trialDaysLeft } = useSubscription();
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
