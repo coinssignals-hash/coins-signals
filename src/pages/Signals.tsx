@@ -23,7 +23,7 @@ import { useFavoriteSignals } from '@/hooks/useFavoriteSignals';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { format, addDays, subDays, startOfWeek, startOfDay, parseISO, isToday, isTomorrow, isYesterday, isSameDay } from 'date-fns';
-import { es, enUS, ptBR, fr } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';

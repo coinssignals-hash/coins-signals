@@ -12,7 +12,7 @@ import { AlertCircle, Filter, Clock, TrendingUp, TrendingDown, Minus, ExternalLi
 import { useNewsTranslation } from '@/hooks/useNewsTranslation';
 import { NewsAISummaryInline } from '@/components/news/NewsAISummaryInline';
 import { formatDistanceToNow } from 'date-fns';
-import { es, enUS, ptBR, fr } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Currency, CURRENCIES, EconomicCategory } from '@/types/news';
 import { Link } from 'react-router-dom';

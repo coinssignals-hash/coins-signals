@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { translations, type Language, LANGUAGE_LABELS, LANGUAGE_FLAGS } from './translations';
+import { loadTranslations, getTranslationsSync, type Language, LANGUAGE_LABELS, LANGUAGE_FLAGS } from './translations';
 
 interface LanguageContextValue {
   language: Language;
@@ -14,9 +14,16 @@ const STORAGE_KEY = 'app-language';
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && stored in translations) return stored as Language;
+    if (stored && ['es', 'en', 'pt', 'fr'].includes(stored)) return stored as Language;
     return 'es';
   });
+
+  const [, setReady] = useState(0);
+
+  // Pre-load the active language on mount / change
+  useEffect(() => {
+    loadTranslations(language).then(() => setReady(r => r + 1));
+  }, [language]);
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
@@ -24,7 +31,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const t = useCallback((key: string): string => {
-    const dict = translations[language] as Record<string, string>;
+    const dict = getTranslationsSync(language) as Record<string, string>;
     return dict[key] ?? key;
   }, [language]);
 
