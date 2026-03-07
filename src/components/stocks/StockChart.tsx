@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AreaChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart, Bar, Cell, BarChart } from 'recharts';
 import type { HistoricalPrice } from '@/hooks/useStockData';
@@ -86,18 +85,20 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
 
   if (loading) {
     return (
-      <Card className="p-4 bg-card border-border">
-        <Skeleton className="h-4 w-40 mb-3" />
-        <Skeleton className="h-48 w-full" />
-      </Card>
+      <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4"
+        style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
+        <Skeleton className="h-4 w-40 mb-3 bg-slate-800/50" />
+        <Skeleton className="h-48 w-full bg-slate-800/50" />
+      </div>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <Card className="p-4 bg-card border-border">
-        <p className="text-sm text-muted-foreground text-center py-8">Sin datos históricos disponibles</p>
-      </Card>
+      <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4"
+        style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
+        <p className="text-sm text-slate-500 text-center py-8">Sin datos históricos disponibles</p>
+      </div>
     );
   }
 
@@ -107,143 +108,151 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
   const tickInterval = period === '1w' ? 0 : period === '1m' ? 4 : period === '1y' ? 30 : period === '5y' ? 120 : 'preserveStartEnd';
 
   return (
-    <Card className="p-4 bg-card border-border">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-foreground">Histórico</h3>
-        <div className="flex items-center gap-1">
-          {PERIODS.map(p => (
+    <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
+      
+      <div className="absolute top-0 left-[15%] right-[15%] h-[1px]" style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-cyan-200">Histórico</h3>
+          <div className="flex items-center gap-1">
+            {PERIODS.map(p => (
+              <button
+                key={p.value}
+                onClick={() => onPeriodChange(p.value)}
+                className={cn(
+                  "px-2.5 py-1 text-xs font-medium rounded-lg transition-all active:scale-95",
+                  period === p.value
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                    : "text-slate-500 hover:text-slate-300 hover:bg-white/5"
+                )}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Overlay toggles */}
+        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          {OVERLAYS.map(o => (
             <button
-              key={p.value}
-              onClick={() => onPeriodChange(p.value)}
+              key={o.key}
+              onClick={() => toggleOverlay(o.key)}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded transition-all",
-                period === p.value
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                "px-2 py-0.5 text-[10px] font-medium rounded-full border transition-all active:scale-95",
+                activeOverlays.has(o.key)
+                  ? "border-transparent text-white"
+                  : "border-cyan-800/30 text-slate-500 hover:text-slate-300"
               )}
+              style={activeOverlays.has(o.key) ? { backgroundColor: o.color } : undefined}
             >
-              {p.label}
+              {o.label}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Overlay toggles */}
-      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-        {OVERLAYS.map(o => (
-          <button
-            key={o.key}
-            onClick={() => toggleOverlay(o.key)}
-            className={cn(
-              "px-2 py-0.5 text-[10px] font-medium rounded-full border transition-all",
-              activeOverlays.has(o.key)
-                ? "border-transparent text-white"
-                : "border-border text-muted-foreground hover:text-foreground"
-            )}
-            style={activeOverlays.has(o.key) ? { backgroundColor: o.color } : undefined}
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-slate-500 font-mono">
+            {data[0]?.date} → {data[data.length - 1]?.date}
+          </span>
+          <span className={cn("text-xs font-semibold", isPositive ? "text-[hsl(142,70%,45%)]" : "text-[hsl(0,70%,55%)]")}>
+            {isPositive ? '+' : ''}{((data[data.length - 1].close - data[0].close) / data[0].close * 100).toFixed(2)}%
+          </span>
+        </div>
 
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-muted-foreground font-mono">
-          {data[0]?.date} → {data[data.length - 1]?.date}
-        </span>
-        <span className={cn("text-xs font-semibold", isPositive ? "text-[hsl(142,70%,45%)]" : "text-destructive")}>
-          {isPositive ? '+' : ''}{((data[data.length - 1].close - data[0].close) / data[0].close * 100).toFixed(2)}%
-        </span>
-      </div>
-
-      <ResponsiveContainer width="100%" height={220}>
-        <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-          <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
-              <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 10, fill: 'hsl(215, 20%, 55%)' }}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(v) => v?.slice(5)}
-            interval={tickInterval as any}
-          />
-          <YAxis
-            tick={{ fontSize: 10, fill: 'hsl(215, 20%, 55%)' }}
-            tickLine={false}
-            axisLine={false}
-            domain={['auto', 'auto']}
-            tickFormatter={(v) => `$${v}`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px',
-              fontSize: '11px',
-            }}
-            labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
-            formatter={(value: number | null, name: string) => {
-              if (value == null) return ['-', name];
-              const labels: Record<string, string> = { price: 'Precio', sma20: 'SMA 20', sma50: 'SMA 50', ema12: 'EMA 12', ema26: 'EMA 26' };
-              return [`$${value.toFixed(2)}`, labels[name] || name];
-            }}
-          />
-          <Area
-            type="monotone"
-            dataKey="price"
-            stroke={lineColor}
-            strokeWidth={2}
-            fill={`url(#${gradientId})`}
-          />
-          {OVERLAYS.map(o => activeOverlays.has(o.key) && (
-            <Line
-              key={o.key}
-              type="monotone"
-              dataKey={o.key}
-              stroke={o.color}
-              strokeWidth={1.5}
-              dot={false}
-              connectNulls={false}
-              strokeDasharray={o.key.startsWith('ema') ? '4 2' : undefined}
+        <ResponsiveContainer width="100%" height={220}>
+          <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => v?.slice(5)}
+              interval={tickInterval as any}
             />
-          ))}
-        </ComposedChart>
-      </ResponsiveContainer>
-
-      {/* Volume chart */}
-      <div className="mt-1 border-t border-border/20 pt-1">
-        <div className="text-[10px] text-muted-foreground mb-0.5 pl-1">Vol</div>
-        <ResponsiveContainer width="100%" height={50}>
-          <BarChart data={chartData} margin={{ top: 0, right: 5, left: -20, bottom: 0 }}>
-            <XAxis dataKey="date" hide />
-            <YAxis hide domain={[0, 'auto']} />
+            <YAxis
+              tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }}
+              tickLine={false}
+              axisLine={false}
+              domain={['auto', 'auto']}
+              tickFormatter={(v) => `$${v}`}
+            />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
+                backgroundColor: 'hsl(220, 40%, 8%)',
+                border: '1px solid hsl(200, 60%, 25%)',
                 borderRadius: '8px',
                 fontSize: '11px',
+                color: 'white',
               }}
-              labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
-              formatter={(value: number) => {
-                if (value >= 1e6) return [`${(value / 1e6).toFixed(1)}M`, 'Volumen'];
-                if (value >= 1e3) return [`${(value / 1e3).toFixed(1)}K`, 'Volumen'];
-                return [value.toFixed(0), 'Volumen'];
+              labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
+              formatter={(value: number | null, name: string) => {
+                if (value == null) return ['-', name];
+                const labels: Record<string, string> = { price: 'Precio', sma20: 'SMA 20', sma50: 'SMA 50', ema12: 'EMA 12', ema26: 'EMA 26' };
+                return [`$${value.toFixed(2)}`, labels[name] || name];
               }}
             />
-            <Bar dataKey="volume" radius={[1, 1, 0, 0]}>
-              {chartData.map((entry, i) => (
-                <Cell key={i} fill={entry.volColor} fillOpacity={0.6} />
-              ))}
-            </Bar>
-          </BarChart>
+            <Area
+              type="monotone"
+              dataKey="price"
+              stroke={lineColor}
+              strokeWidth={2}
+              fill={`url(#${gradientId})`}
+            />
+            {OVERLAYS.map(o => activeOverlays.has(o.key) && (
+              <Line
+                key={o.key}
+                type="monotone"
+                dataKey={o.key}
+                stroke={o.color}
+                strokeWidth={1.5}
+                dot={false}
+                connectNulls={false}
+                strokeDasharray={o.key.startsWith('ema') ? '4 2' : undefined}
+              />
+            ))}
+          </ComposedChart>
         </ResponsiveContainer>
+
+        {/* Volume chart */}
+        <div className="mt-1 border-t border-cyan-800/15 pt-1">
+          <div className="text-[10px] text-slate-500 mb-0.5 pl-1">Vol</div>
+          <ResponsiveContainer width="100%" height={50}>
+            <BarChart data={chartData} margin={{ top: 0, right: 5, left: -20, bottom: 0 }}>
+              <XAxis dataKey="date" hide />
+              <YAxis hide domain={[0, 'auto']} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'hsl(220, 40%, 8%)',
+                  border: '1px solid hsl(200, 60%, 25%)',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  color: 'white',
+                }}
+                labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
+                formatter={(value: number) => {
+                  if (value >= 1e6) return [`${(value / 1e6).toFixed(1)}M`, 'Volumen'];
+                  if (value >= 1e3) return [`${(value / 1e3).toFixed(1)}K`, 'Volumen'];
+                  return [value.toFixed(0), 'Volumen'];
+                }}
+              />
+              <Bar dataKey="volume" radius={[1, 1, 0, 0]}>
+                {chartData.map((entry, i) => (
+                  <Cell key={i} fill={entry.volColor} fillOpacity={0.6} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
