@@ -17,9 +17,10 @@ interface Props {
   value: string;
   onChange: (symbol: string) => void;
   onSelect: (symbol: string) => void;
+  activeCategory?: string;
 }
 
-const TYPE_TABS = [
+export const INSTRUMENT_TABS = [
   { key: 'all', label: 'Todos', icon: Sparkles, color: 'hsl(200, 90%, 55%)' },
   { key: 'favorites', label: 'Favoritos', icon: Star, color: 'hsl(45, 90%, 55%)' },
   { key: 'forex', label: 'Forex', icon: TrendingUp, color: 'hsl(200, 90%, 55%)' },
@@ -50,14 +51,14 @@ function getTypeLabel(type: string): string {
   return type || '—';
 }
 
-export function AISymbolSearch({ value, onChange, onSelect }: Props) {
+export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'all' }: Props) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('all');
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const prevCategoryRef = useRef(activeCategory);
 
   const { favorites, isFavorite, addFavorite, removeFavorite } = useFavoriteSymbols();
 
@@ -70,6 +71,20 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  // React to external category changes
+  useEffect(() => {
+    if (prevCategoryRef.current !== activeCategory) {
+      prevCategoryRef.current = activeCategory;
+      if (activeCategory === 'favorites') return;
+      if (query.length >= 2) {
+        searchSymbols(query, activeCategory);
+      } else {
+        loadDefaults(activeCategory);
+      }
+      setOpen(true);
+    }
+  }, [activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadDefaults = useCallback(async (type: string) => {
     if (type === 'favorites') return;
@@ -110,22 +125,11 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     setQuery(upper);
     onChange(upper);
     setOpen(true);
-    if (activeTab === 'favorites') setActiveTab('all');
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      searchSymbols(upper, activeTab === 'favorites' ? 'all' : activeTab);
+      searchSymbols(upper, activeCategory === 'favorites' ? 'all' : activeCategory);
     }, 350);
-  };
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (tab === 'favorites') return;
-    if (query.length >= 2) {
-      searchSymbols(query, tab);
-    } else {
-      loadDefaults(tab);
-    }
   };
 
   const handleSelect = (symbol: string) => {
@@ -155,7 +159,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     removeFavorite(symbol);
   };
 
-  const showFavorites = activeTab === 'favorites';
+  const showFavorites = activeCategory === 'favorites';
   const favoriteResults: SearchResult[] = favorites.map(f => ({
     symbol: f.symbol,
     name: f.symbol_name || '',
@@ -186,7 +190,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
             placeholder="Buscar: AAPL, EUR/USD, BTC..."
             value={query}
             onChange={(e) => handleInputChange(e.target.value)}
-            onFocus={() => { setOpen(true); if (results.length === 0 && activeTab !== 'favorites') loadDefaults(activeTab); }}
+            onFocus={() => { setOpen(true); if (results.length === 0 && !showFavorites) loadDefaults(activeCategory); }}
             className="w-full pl-10 pr-16 py-3 rounded-2xl text-sm text-white placeholder:text-slate-600 focus:outline-none transition-all font-medium"
             style={{
               background: 'radial-gradient(ellipse at top left, hsl(210, 80%, 10%) 0%, hsl(210, 100%, 6%) 100%)',
@@ -216,7 +220,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
             background: 'radial-gradient(ellipse at top center, hsl(210, 70%, 8%) 0%, hsl(210, 100%, 4%) 100%)',
             border: '1px solid hsl(200, 40%, 16%)',
             boxShadow: '0 20px 60px -12px hsla(210, 80%, 5%, 0.8), 0 0 40px -8px hsla(200, 90%, 50%, 0.08)',
-            maxHeight: '440px',
+            maxHeight: '400px',
           }}
         >
           {/* Accent top line */}
@@ -227,52 +231,8 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
             }}
           />
 
-          {/* Category Tabs */}
-          <div
-            className="flex items-center gap-1 px-2.5 py-2.5 overflow-x-auto scrollbar-none"
-            style={{ borderBottom: '1px solid hsl(210, 40%, 12%)' }}
-          >
-            {TYPE_TABS.map((tab) => {
-              const TabIcon = tab.icon;
-              const isActive = activeTab === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => handleTabChange(tab.key)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all duration-200",
-                    isActive
-                      ? "text-white scale-[1.02]"
-                      : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]"
-                  )}
-                  style={isActive ? {
-                    background: `linear-gradient(135deg, ${tab.color}20, ${tab.color}08)`,
-                    border: `1px solid ${tab.color}40`,
-                    boxShadow: `0 0 12px -4px ${tab.color}30`,
-                  } : {
-                    border: '1px solid transparent',
-                  }}
-                >
-                  <TabIcon className="w-3 h-3" style={{ color: isActive ? tab.color : undefined }} />
-                  {tab.label}
-                  {tab.key === 'favorites' && favorites.length > 0 && (
-                    <span
-                      className="text-[8px] px-1.5 py-0.5 rounded-full font-black leading-none"
-                      style={{
-                        background: isActive ? 'hsl(45, 80%, 25%)' : 'hsl(210, 30%, 15%)',
-                        color: isActive ? 'hsl(45, 90%, 65%)' : 'hsl(210, 20%, 50%)',
-                      }}
-                    >
-                      {favorites.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
           {/* Favorites quick-access chips */}
-          {activeTab !== 'favorites' && favorites.length > 0 && (
+          {!showFavorites && favorites.length > 0 && (
             <div
               className="flex items-center gap-1.5 px-3 py-2 overflow-x-auto scrollbar-none"
               style={{
@@ -292,7 +252,6 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
                     style={{
                       background: `linear-gradient(135deg, ${favConfig.bg}, hsl(210, 60%, 8%))`,
                       border: `1px solid ${favConfig.color}25`,
-                      boxShadow: `0 0 8px -3px ${favConfig.color}20`,
                     }}
                   >
                     {fav.symbol}
@@ -303,8 +262,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
           )}
 
           {/* Results List */}
-          <div className="overflow-y-auto" style={{ maxHeight: '300px' }}>
-            {/* Favorites empty */}
+          <div className="overflow-y-auto" style={{ maxHeight: '320px' }}>
             {showFavorites && favorites.length === 0 && (
               <div className="py-10 text-center">
                 <div
@@ -321,7 +279,6 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
               </div>
             )}
 
-            {/* Search empty */}
             {!showFavorites && displayResults.length === 0 && !loading && (
               <div className="py-10 text-center">
                 <div
@@ -339,7 +296,6 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
               </div>
             )}
 
-            {/* Loading skeleton */}
             {loading && displayResults.length === 0 && (
               <div className="px-3 py-2 space-y-1">
                 {[...Array(5)].map((_, i) => (
@@ -367,19 +323,16 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
                   className="w-full flex items-center gap-3 px-3 py-2.5 transition-all duration-150 text-left group hover:bg-white/[0.04]"
                   style={{ borderBottom: '1px solid hsl(210, 40%, 8%)' }}
                 >
-                  {/* Icon */}
                   <div
                     className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-150 group-hover:scale-110"
                     style={{
                       background: `linear-gradient(135deg, ${config.bg}, ${config.color}10)`,
                       border: `1px solid ${config.color}25`,
-                      boxShadow: `0 0 10px -4px ${config.color}20`,
                     }}
                   >
                     <IconComp className="w-3.5 h-3.5" style={{ color: config.color }} />
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-[13px] font-bold text-white font-mono tracking-wide">{item.symbol}</span>
@@ -397,7 +350,6 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
                     <p className="text-[10px] text-slate-500 truncate mt-0.5">{item.name}</p>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {showFavorites ? (
                       <button
@@ -421,7 +373,6 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
                         style={starred ? {
                           background: 'linear-gradient(135deg, hsl(45, 60%, 15%), hsl(45, 40%, 10%))',
                           border: '1px solid hsl(45, 50%, 28%)',
-                          boxShadow: '0 0 10px -3px hsl(45, 90%, 55%, 0.3)',
                         } : {
                           background: 'hsl(210, 30%, 10%)',
                           border: '1px solid hsl(210, 25%, 18%)',
