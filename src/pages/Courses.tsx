@@ -74,7 +74,7 @@ export default function Courses() {
 
         {/* Hero Card — enhanced */}
         <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
-          <SignalStyleCard>
+          <div className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden">
             <div className="relative p-5 space-y-4 overflow-hidden">
               {/* Decorative bg glow */}
               <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
@@ -83,11 +83,11 @@ export default function Courses() {
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <motion.div
-                    className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 via-cyan-500/20 to-blue-600/10 flex items-center justify-center border border-cyan-700/30 shadow-[0_0_20px_hsl(217_91%_60%/0.2)]"
+                    className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 via-cyan-500/20 to-blue-600/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_hsl(217_91%_60%/0.15)]"
                     whileHover={{ scale: 1.08, rotate: 3 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <GraduationCap className="w-6 h-6 text-cyan-300" />
+                    <GraduationCap className="w-6 h-6 text-primary" />
                   </motion.div>
                   <div>
                     <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
@@ -111,7 +111,7 @@ export default function Courses() {
                 </div>
               </div>
 
-              {/* Progress Bar — enhanced */}
+              {/* Progress Bar */}
               <div className="relative space-y-1.5">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{stats.completed} de {stats.total} lecciones</span>
@@ -132,7 +132,7 @@ export default function Courses() {
                 </div>
               </div>
 
-              {/* Quick Stats — enhanced */}
+              {/* Quick Stats */}
               <div className="relative grid grid-cols-3 gap-3">
                 {[
                   { icon: BookOpen, label: 'Cursos', value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
@@ -158,7 +158,7 @@ export default function Courses() {
                 ))}
               </div>
             </div>
-          </SignalStyleCard>
+          </div>
         </motion.div>
 
         {/* Category Tabs — centered icon + label */}
