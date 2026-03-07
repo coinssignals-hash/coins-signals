@@ -36,11 +36,11 @@ const values = [
 ];
 
 const teamMembers = [
-  { name: 'Isabella Walker', role: 'Atención al Cliente', desc: 'Resolución de solicitudes, gestión de quejas y experiencias positivas. Comunicación clara, empatía y manejo de alta presión.', year: 2023 },
-  { name: 'Cristopher Hayes', role: 'Mercado Internacional', desc: 'Identificación de oportunidades comerciales, negociación con clientes extranjeros y análisis de tendencias globales.', year: 2021 },
-  { name: 'Edith Sanchez', role: 'Marketing Digital', desc: 'Estrategias de marca, campañas digitales y optimización de posicionamiento en mercados competitivos.', year: 2022 },
-  { name: 'Andres Lopez', role: 'Contador Senior', desc: 'Gestión contable, análisis financiero y cumplimiento tributario. Elaboración de estados financieros.', year: 2021 },
-  { name: 'Kenji Tanaka', role: 'Ingeniero de Software', desc: 'Diseño, desarrollo y optimización de aplicaciones escalables. Backend y frontend con frameworks modernos.', year: 2023 },
+  { name: 'Isabella Walker', role: 'Atención al Cliente', desc: 'Resolución de solicitudes, gestión de quejas y experiencias positivas. Comunicación clara, empatía y manejo de alta presión.', year: 2023, avatar: isabellaAvatar },
+  { name: 'Cristopher Hayes', role: 'Mercado Internacional', desc: 'Identificación de oportunidades comerciales, negociación con clientes extranjeros y análisis de tendencias globales.', year: 2021, avatar: cristopherAvatar },
+  { name: 'Edith Sanchez', role: 'Marketing Digital', desc: 'Estrategias de marca, campañas digitales y optimización de posicionamiento en mercados competitivos.', year: 2022, avatar: edithAvatar },
+  { name: 'Andres Lopez', role: 'Contador Senior', desc: 'Gestión contable, análisis financiero y cumplimiento tributario. Elaboración de estados financieros.', year: 2021, avatar: andresAvatar },
+  { name: 'Kenji Tanaka', role: 'Ingeniero de Software', desc: 'Diseño, desarrollo y optimización de aplicaciones escalables. Backend y frontend con frameworks modernos.', year: 2023, avatar: kenjiAvatar },
 ];
 
 const milestones = [
