@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/hooks/useAuth';
-import brandLogo from '@/assets/g174.svg';
+
 
 export default function Referrals() {
   const { isAuthenticated } = useAuth();
