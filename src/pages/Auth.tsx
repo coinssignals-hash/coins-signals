@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, KeyRound } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, KeyRound, Gift } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.object({
