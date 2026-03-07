@@ -8,6 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import aboutHero from '@/assets/about-hero.jpg';
+import isabellaAvatar from '@/assets/team/isabella-walker.jpg';
+import cristopherAvatar from '@/assets/team/cristopher-hayes.jpg';
+import edithAvatar from '@/assets/team/edith-sanchez.jpg';
+import andresAvatar from '@/assets/team/andres-lopez.jpg';
+import kenjiAvatar from '@/assets/team/kenji-tanaka.jpg';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -31,11 +36,11 @@ const values = [
 ];
 
 const teamMembers = [
-  { name: 'Isabella Walker', role: 'Atención al Cliente', desc: 'Resolución de solicitudes, gestión de quejas y experiencias positivas. Comunicación clara, empatía y manejo de alta presión.', year: 2023 },
-  { name: 'Cristopher Hayes', role: 'Mercado Internacional', desc: 'Identificación de oportunidades comerciales, negociación con clientes extranjeros y análisis de tendencias globales.', year: 2021 },
-  { name: 'Edith Sanchez', role: 'Marketing Digital', desc: 'Estrategias de marca, campañas digitales y optimización de posicionamiento en mercados competitivos.', year: 2022 },
-  { name: 'Andres Lopez', role: 'Contador Senior', desc: 'Gestión contable, análisis financiero y cumplimiento tributario. Elaboración de estados financieros.', year: 2021 },
-  { name: 'Kenji Tanaka', role: 'Ingeniero de Software', desc: 'Diseño, desarrollo y optimización de aplicaciones escalables. Backend y frontend con frameworks modernos.', year: 2023 },
+  { name: 'Isabella Walker', role: 'Atención al Cliente', desc: 'Resolución de solicitudes, gestión de quejas y experiencias positivas. Comunicación clara, empatía y manejo de alta presión.', year: 2023, avatar: isabellaAvatar },
+  { name: 'Cristopher Hayes', role: 'Mercado Internacional', desc: 'Identificación de oportunidades comerciales, negociación con clientes extranjeros y análisis de tendencias globales.', year: 2021, avatar: cristopherAvatar },
+  { name: 'Edith Sanchez', role: 'Marketing Digital', desc: 'Estrategias de marca, campañas digitales y optimización de posicionamiento en mercados competitivos.', year: 2022, avatar: edithAvatar },
+  { name: 'Andres Lopez', role: 'Contador Senior', desc: 'Gestión contable, análisis financiero y cumplimiento tributario. Elaboración de estados financieros.', year: 2021, avatar: andresAvatar },
+  { name: 'Kenji Tanaka', role: 'Ingeniero de Software', desc: 'Diseño, desarrollo y optimización de aplicaciones escalables. Backend y frontend con frameworks modernos.', year: 2023, avatar: kenjiAvatar },
 ];
 
 const milestones = [
@@ -189,7 +194,7 @@ export default function About() {
                 <CardContent className="p-4">
                   <div className="flex gap-3">
                     <Avatar className="w-14 h-14 border-2 border-border shrink-0">
-                      <AvatarImage src="" />
+                      <AvatarImage src={m.avatar} alt={m.name} />
                       <AvatarFallback className="bg-secondary text-foreground text-sm font-bold">
                         {m.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
