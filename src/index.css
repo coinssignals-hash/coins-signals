@@ -253,15 +253,14 @@
     line-height: 1.6;
   }
 
-  /* Larger font size mode */
+  /* Larger font size mode — stacks on top of font-scale */
   body.large-text {
-    font-size: 17px;
     line-height: 1.7;
   }
 
-  body.large-text h1 { font-size: 1.75rem; }
-  body.large-text h2 { font-size: 1.5rem; }
-  body.large-text h3 { font-size: 1.25rem; }
+  body.large-text h1 { font-size: 1.6rem; }
+  body.large-text h2 { font-size: 1.35rem; }
+  body.large-text h3 { font-size: 1.15rem; }
   body.large-text .text-xs { font-size: 0.8rem; }
   body.large-text .text-sm { font-size: 0.9rem; }
   body.large-text .text-\\[9px\\],
