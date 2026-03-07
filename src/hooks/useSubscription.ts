@@ -9,6 +9,9 @@ export interface SubscriptionState {
   subscriptionEnd: string | null;
   tier: string | null;
   loading: boolean;
+  onTrial: boolean;
+  trialEndsAt: string | null;
+  trialDaysLeft: number;
 }
 
 export function useSubscription() {
@@ -19,13 +22,16 @@ export function useSubscription() {
     subscriptionEnd: null,
     tier: null,
     loading: true,
+    onTrial: false,
+    trialEndsAt: null,
+    trialDaysLeft: 0,
   });
 
   const checkSubscription = useCallback(async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setState(prev => ({ ...prev, subscribed: false, tier: null, loading: false }));
+        setState(prev => ({ ...prev, subscribed: false, tier: null, loading: false, onTrial: false, trialDaysLeft: 0 }));
         return;
       }
 
@@ -41,6 +47,11 @@ export function useSubscription() {
         tier = found ? found[0] : null;
       }
 
+      // If on trial with no paid tier, grant premium access
+      if (data?.on_trial && !tier) {
+        tier = 'premium';
+      }
+
       setState({
         subscribed: data?.subscribed ?? false,
         productId: data?.product_id ?? null,
@@ -48,6 +59,9 @@ export function useSubscription() {
         subscriptionEnd: data?.subscription_end ?? null,
         tier,
         loading: false,
+        onTrial: data?.on_trial ?? false,
+        trialEndsAt: data?.trial_ends_at ?? null,
+        trialDaysLeft: data?.trial_days_left ?? 0,
       });
     } catch (err) {
       console.error('Error checking subscription:', err);
@@ -58,10 +72,8 @@ export function useSubscription() {
   useEffect(() => {
     checkSubscription();
 
-    // Re-check every 60s
     const interval = setInterval(checkSubscription, 60000);
 
-    // Re-check on auth change
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
       checkSubscription();
     });

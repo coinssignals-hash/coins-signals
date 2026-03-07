@@ -12,6 +12,8 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+const FREE_TRIAL_DAYS = 7;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -42,38 +44,59 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
 
-    if (customers.data.length === 0) {
-      logStep("No Stripe customer found");
-      return new Response(JSON.stringify({ subscribed: false }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      });
-    }
-
-    const customerId = customers.data[0].id;
-    logStep("Found customer", { customerId });
-
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "active",
-      limit: 1,
-    });
-
-    const hasActiveSub = subscriptions.data.length > 0;
+    let hasActiveSub = false;
     let productId = null;
     let priceId = null;
     let subscriptionEnd = null;
 
-    if (hasActiveSub) {
-      const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      priceId = subscription.items.data[0].price.id;
-      productId = subscription.items.data[0].price.product;
-      logStep("Active subscription", { productId, priceId, subscriptionEnd });
+    if (customers.data.length > 0) {
+      const customerId = customers.data[0].id;
+      logStep("Found customer", { customerId });
+
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "active",
+        limit: 1,
+      });
+
+      hasActiveSub = subscriptions.data.length > 0;
+
+      if (hasActiveSub) {
+        const subscription = subscriptions.data[0];
+        subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+        priceId = subscription.items.data[0].price.id;
+        productId = subscription.items.data[0].price.product;
+        logStep("Active subscription", { productId, priceId, subscriptionEnd });
+      }
+    } else {
+      logStep("No Stripe customer found");
+    }
+
+    // Check free trial eligibility if no active Stripe subscription
+    let onTrial = false;
+    let trialEndsAt: string | null = null;
+    let trialDaysLeft = 0;
+
+    if (!hasActiveSub && user.created_at) {
+      const createdAt = new Date(user.created_at);
+      const trialEnd = new Date(createdAt.getTime() + FREE_TRIAL_DAYS * 24 * 60 * 60 * 1000);
+      const now = new Date();
+
+      if (now < trialEnd) {
+        onTrial = true;
+        trialEndsAt = trialEnd.toISOString();
+        trialDaysLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+        logStep("User on free trial", { trialEndsAt, trialDaysLeft });
+      } else {
+        logStep("Free trial expired", { trialEnd: trialEnd.toISOString() });
+      }
     }
 
     return new Response(JSON.stringify({
-      subscribed: hasActiveSub,
+      subscribed: hasActiveSub || onTrial,
+      on_trial: onTrial,
+      trial_ends_at: trialEndsAt,
+      trial_days_left: trialDaysLeft,
       product_id: productId,
       price_id: priceId,
       subscription_end: subscriptionEnd,
