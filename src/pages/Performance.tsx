@@ -182,16 +182,20 @@ export default function Performance() {
           className="grid grid-cols-4 gap-2"
         >
           {[
-            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400' },
-            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400' },
-            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400' },
-            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400' },
+            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
           ].map((stat, i) => (
-            <SignalStyleCard key={i} className="p-3 text-center">
-              <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} />
-              <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
-              <div className="text-[10px] text-muted-foreground">{stat.label}</div>
-            </SignalStyleCard>
+            <Card key={i} className="bg-card border-border">
+              <CardContent className="p-3 text-center">
+                <div className={`w-8 h-8 rounded-lg ${stat.bg} mx-auto mb-1.5 flex items-center justify-center`}>
+                  <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                </div>
+                <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
+                <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+              </CardContent>
+            </Card>
           ))}
         </motion.div>
 
