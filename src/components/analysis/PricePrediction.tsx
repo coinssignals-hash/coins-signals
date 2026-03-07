@@ -15,8 +15,7 @@ interface PricePredictionProps {
 
 export function PricePrediction({ symbol, currentPrice, realtimePrice }: PricePredictionProps) {
   const { t, language } = useTranslation();
-  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
 
   const { data, isLoading, error } = usePricePrediction(symbol, currentPrice);
 

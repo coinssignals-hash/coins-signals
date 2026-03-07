@@ -246,8 +246,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   // S/R toggle now managed internally by CandlestickChart
   const { t, language } = useTranslation();
 
-  const DATE_LOCALES = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
 
   // Derive values from signal prop or use defaults
   const entryPrice = signal?.entryPrice ?? 154.950;

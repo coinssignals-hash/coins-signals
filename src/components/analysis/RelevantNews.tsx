@@ -11,8 +11,7 @@ interface RelevantNewsProps {
 
 export function RelevantNews({ symbol }: RelevantNewsProps) {
   const { t, language } = useTranslation();
-  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
   const { data: news, isLoading, error } = useRelevantNews(symbol);
 
   if (isLoading) {

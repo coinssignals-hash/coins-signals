@@ -21,8 +21,7 @@ export function DateTabs({
   className 
 }: DateTabsProps) {
   const { language } = useTranslation();
-  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
   
   // Generate days: yesterday, today, tomorrow + 4 more days back
   const days = [
