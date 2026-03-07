@@ -1,15 +1,18 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Button } from '@/components/ui/button';
-import { Shield, ArrowLeft } from 'lucide-react';
+import { Shield, ArrowLeft, Settings2, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PlanCarousel } from '@/components/subscriptions/PlanCarousel';
+import { useSubscription } from '@/hooks/useSubscription';
+import { SUBSCRIPTION_TIERS } from '@/config/subscriptionTiers';
+import { toast } from 'sonner';
 
 const plans = [
   {
-    id: 'basico',
+    id: 'basico' as const,
     name: 'Básico',
     subtitle: 'Essencial Para las Primeras Operaciones',
     description: 'Ideal si solo quieres comenzar',
@@ -30,7 +33,7 @@ const plans = [
     ],
   },
   {
-    id: 'plus',
+    id: 'plus' as const,
     name: 'Plus',
     subtitle: 'Plus Forex + Acciones + Cripto Multiactivos',
     description: 'Ideal para aumentar tus ganancias semanales con todas las herramientas',
@@ -55,7 +58,7 @@ const plans = [
     ],
   },
   {
-    id: 'premium',
+    id: 'premium' as const,
     name: 'Premium Pro Trader',
     subtitle: 'Multi-Brokers',
     description: 'Para profesionales que quieren sacar el mejor partido del mercado',
@@ -86,19 +89,69 @@ const plans = [
 
 export default function Subscriptions() {
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
+  const [searchParams] = useSearchParams();
+  const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription } = useSubscription();
+
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast.success('¡Suscripción activada exitosamente!');
+      checkSubscription();
+    } else if (searchParams.get('canceled') === 'true') {
+      toast.info('Proceso de suscripción cancelado');
+    }
+  }, [searchParams, checkSubscription]);
+
+  const handleSubscribe = async (planId: string) => {
+    try {
+      const tierConfig = SUBSCRIPTION_TIERS[planId as keyof typeof SUBSCRIPTION_TIERS];
+      if (!tierConfig) return;
+      const priceId = billingPeriod === 'monthly' ? tierConfig.monthly_price_id : tierConfig.weekly_price_id;
+      await startCheckout(priceId);
+    } catch (err) {
+      toast.error('Error al iniciar el checkout');
+      console.error(err);
+    }
+  };
 
   return (
     <PageShell>
       <Header />
       
       <main className="py-6">
-        <div className="flex items-center gap-4 mb-6 px-4">
-          <Link to="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-6 px-4">
+          <div className="flex items-center gap-4">
+            <Link to="/">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
+          <div className="flex items-center gap-2">
+            {subscribed && (
+              <Button variant="outline" size="sm" onClick={openPortal} className="text-xs gap-1.5 border-primary/40 text-primary">
+                <Settings2 className="w-3.5 h-3.5" />
+                Gestionar
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" onClick={checkSubscription} className="h-8 w-8">
+              <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
             </Button>
-          </Link>
+          </div>
         </div>
+
+        {/* Active plan banner */}
+        {subscribed && tier && (
+          <div className="mx-4 mb-4 p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
+            <p className="text-sm text-primary font-medium">
+              Plan activo: <span className="font-bold capitalize">{tier}</span>
+              {subscriptionEnd && (
+                <span className="text-muted-foreground ml-2">
+                  · Renueva el {new Date(subscriptionEnd).toLocaleDateString('es-ES')}
+                </span>
+              )}
+            </p>
+          </div>
+        )}
 
         {/* Hero Section */}
         <div className="text-center mb-6 px-4">
@@ -142,7 +195,12 @@ export default function Subscriptions() {
         </div>
 
         {/* Pricing Carousel */}
-        <PlanCarousel plans={plans} billingPeriod={billingPeriod} />
+        <PlanCarousel
+          plans={plans}
+          billingPeriod={billingPeriod}
+          activeTier={tier}
+          onSubscribe={handleSubscribe}
+        />
 
         {/* Footer Info */}
         <div className="text-center space-y-4 mt-8 px-4">
