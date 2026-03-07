@@ -250,10 +250,12 @@ export default function Performance() {
               onToggleDay={handleToggleDay}
             />
           ) : (
-            <SignalStyleCard className="p-8 text-center">
-              <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
-            </SignalStyleCard>
+            <Card className="bg-card border-border">
+              <CardContent className="p-8 text-center">
+                <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
+              </CardContent>
+            </Card>
           )}
         </motion.div>
 
