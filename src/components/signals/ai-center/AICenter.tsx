@@ -192,20 +192,11 @@ export function AICenter({ onClose }: Props) {
       {/* Symbol Selection */}
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400/40" />
-            <input
-              type="text"
-              placeholder="Par personalizado (ej: USD/CAD)"
-              value={customSymbol}
-              onChange={(e) => setCustomSymbol(e.target.value.toUpperCase())}
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all"
-              style={{
-                background: 'hsl(210, 100%, 8%)',
-                border: '1px solid hsl(200, 60%, 20%)'
-              }} />
-            
-          </div>
+          <AISymbolSearch
+            value={customSymbol}
+            onChange={setCustomSymbol}
+            onSelect={(s) => { setCustomSymbol(s); setSymbol(s); }}
+          />
           <button
             onClick={handleFetchData}
             disabled={forexLoading}
@@ -215,37 +206,35 @@ export function AICenter({ onClose }: Props) {
               color: 'white',
               boxShadow: '0 0 16px -4px hsla(200, 90%, 50%, 0.3)'
             }}>
-            
             {forexLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
             Datos
           </button>
         </div>
 
         {/* Quick pair chips */}
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        <div className="flex flex-wrap gap-1.5">
+          {POPULAR_PAIRS.map((pair) => (
+            <button
+              key={pair}
+              onClick={() => { setSymbol(pair); setCustomSymbol(''); }}
+              className={cn(
+                "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all",
+                symbol === pair && !customSymbol
+                  ? "text-white"
+                  : "text-slate-500 hover:text-slate-300"
+              )}
+              style={symbol === pair && !customSymbol ? {
+                background: 'hsl(200, 80%, 15%)',
+                border: '1px solid hsl(200, 60%, 30%)',
+              } : {
+                background: 'hsl(210, 50%, 10%)',
+                border: '1px solid hsl(210, 40%, 16%)',
+              }}
+            >
+              {pair}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Data Status */}
