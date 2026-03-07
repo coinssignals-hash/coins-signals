@@ -192,18 +192,60 @@ export function AICenter({ onClose }: Props) {
         </div>
       }
 
-      {/* Symbol Selection */}
+      {/* Instrument Category Tabs */}
+      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none px-1 py-1">
+        {INSTRUMENT_TABS.map((tab) => {
+          const TabIcon = tab.icon;
+          const isActive = instrumentCategory === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setInstrumentCategory(tab.key)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all duration-200",
+                isActive
+                  ? "text-white"
+                  : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]"
+              )}
+              style={isActive ? {
+                background: `linear-gradient(135deg, ${tab.color}20, ${tab.color}08)`,
+                border: `1px solid ${tab.color}40`,
+                boxShadow: `0 0 12px -4px ${tab.color}30`,
+              } : {
+                border: '1px solid transparent',
+              }}
+            >
+              <TabIcon className="w-3 h-3" style={{ color: isActive ? tab.color : undefined }} />
+              {tab.label}
+              {tab.key === 'favorites' && favorites.length > 0 && (
+                <span
+                  className="text-[8px] px-1.5 py-0.5 rounded-full font-black leading-none"
+                  style={{
+                    background: isActive ? 'hsl(45, 80%, 25%)' : 'hsl(210, 30%, 15%)',
+                    color: isActive ? 'hsl(45, 90%, 65%)' : 'hsl(210, 20%, 50%)',
+                  }}
+                >
+                  {favorites.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Symbol Search + Fetch */}
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
           <AISymbolSearch
             value={customSymbol}
             onChange={setCustomSymbol}
-            onSelect={(s) => {setCustomSymbol(s);setSymbol(s);}} />
+            onSelect={(s) => {setCustomSymbol(s);setSymbol(s);}}
+            activeCategory={instrumentCategory} />
           
           <button
             onClick={handleFetchData}
             disabled={forexLoading}
-            className="px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 disabled:opacity-40 active:scale-95"
+            className="px-4 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 disabled:opacity-40 active:scale-95"
             style={{
               background: 'linear-gradient(135deg, hsl(200, 90%, 45%), hsl(190, 80%, 40%))',
               color: 'white',
@@ -213,31 +255,6 @@ export function AICenter({ onClose }: Props) {
             Datos
           </button>
         </div>
-
-        {/* Quick pair chips */}
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
       </div>
 
       {/* Data Status */}
