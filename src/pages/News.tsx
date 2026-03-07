@@ -199,21 +199,21 @@ function SentimentCircle({ sentiment, relevance }: {sentiment: 'bullish' | 'bear
   return (
     <div className="relative w-[56px] h-[56px] flex-shrink-0">
       <div className={cn('absolute -inset-0.5 rounded-full opacity-25 blur-md transition-all duration-700', isBullish ? 'bg-green-500' : isBearish ? 'bg-red-500' : 'bg-cyan-500')} />
-      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90 rounded-full overflow-hidden">
-        <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 20%, 12%)" strokeWidth="2.5" />
-        <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(225, 15%, 18%)" strokeWidth="1" strokeDasharray="1.5 2" opacity="0.5" />
-        <circle cx="18" cy="18" r="15" fill="none" stroke={`url(#${gradId})`} strokeWidth="2.8" strokeLinecap="round"
-        strokeDasharray={`${circlePercent * 0.942} ${100 * 0.942}`} className="transition-all duration-700 ease-out"
-        style={{ filter: 'drop-shadow(0 0 3px currentColor)' }} />
-        <circle cx="18" cy="18" r="12" fill="hsl(225, 25%, 8%)" fillOpacity="0.85" />
-        <defs>
-          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            {isBullish ? <><stop offset="0%" stopColor="hsl(160, 80%, 55%)" /><stop offset="100%" stopColor="hsl(120, 70%, 40%)" /></> :
-            isBearish ? <><stop offset="0%" stopColor="hsl(10, 80%, 60%)" /><stop offset="100%" stopColor="hsl(350, 70%, 45%)" /></> :
-            <><stop offset="0%" stopColor="hsl(200, 100%, 55%)" /><stop offset="100%" stopColor="hsl(180, 100%, 50%)" /></>}
-          </linearGradient>
-        </defs>
-      </svg>
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
       
 
 
