@@ -193,44 +193,68 @@ export function AICenter({ onClose }: Props) {
       }
 
       {/* Instrument Category Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none px-1 py-1">
-        {INSTRUMENT_TABS.map((tab) => {
-          const TabIcon = tab.icon;
-          const isActive = instrumentCategory === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setInstrumentCategory(tab.key)}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all duration-200",
-                isActive
-                  ? "text-white"
-                  : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]"
-              )}
-              style={isActive ? {
-                background: `linear-gradient(135deg, ${tab.color}20, ${tab.color}08)`,
-                border: `1px solid ${tab.color}40`,
-                boxShadow: `0 0 12px -4px ${tab.color}30`,
-              } : {
-                border: '1px solid transparent',
-              }}
-            >
-              <TabIcon className="w-3 h-3" style={{ color: isActive ? tab.color : undefined }} />
-              {tab.label}
-              {tab.key === 'favorites' && favorites.length > 0 && (
-                <span
-                  className="text-[8px] px-1.5 py-0.5 rounded-full font-black leading-none"
-                  style={{
-                    background: isActive ? 'hsl(45, 80%, 25%)' : 'hsl(210, 30%, 15%)',
-                    color: isActive ? 'hsl(45, 90%, 65%)' : 'hsl(210, 20%, 50%)',
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{
+          background: 'radial-gradient(ellipse at top center, hsl(210, 70%, 8%) 0%, hsl(210, 100%, 4%) 100%)',
+          border: '1px solid hsl(210, 40%, 14%)',
+        }}
+      >
+        <div
+          className="h-[1.5px]"
+          style={{ background: 'linear-gradient(90deg, transparent, hsl(200, 90%, 50%), hsl(270, 80%, 55%), transparent)' }}
+        />
+        <div className="flex items-center gap-0.5 px-1.5 py-2 overflow-x-auto scrollbar-none">
+          {INSTRUMENT_TABS.map((tab) => {
+            const TabIcon = tab.icon;
+            const isActive = instrumentCategory === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setInstrumentCategory(tab.key)}
+                className={cn(
+                  "flex flex-col items-center gap-1 min-w-[52px] py-2 px-2 rounded-xl transition-all duration-200 active:scale-95",
+                  isActive
+                    ? "text-white"
+                    : "text-slate-500 hover:text-slate-300"
+                )}
+                style={isActive ? {
+                  background: `linear-gradient(180deg, ${tab.color}18, ${tab.color}06)`,
+                  border: `1px solid ${tab.color}30`,
+                  boxShadow: `0 4px 12px -4px ${tab.color}25`,
+                } : {
+                  border: '1px solid transparent',
+                }}
+              >
+                <div
+                  className="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+                  style={isActive ? {
+                    background: `linear-gradient(135deg, ${tab.color}30, ${tab.color}10)`,
+                    boxShadow: `0 0 10px -3px ${tab.color}40`,
+                  } : {
+                    background: 'hsl(210, 30%, 10%)',
                   }}
                 >
-                  {favorites.length}
+                  <TabIcon className="w-4 h-4" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
+                </div>
+                <span className="text-[9px] font-bold leading-none whitespace-nowrap">
+                  {tab.label}
                 </span>
-              )}
-            </button>
-          );
-        })}
+                {tab.key === 'favorites' && favorites.length > 0 && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 text-[7px] w-4 h-4 rounded-full font-black flex items-center justify-center"
+                    style={{
+                      background: 'hsl(45, 80%, 50%)',
+                      color: 'hsl(45, 90%, 10%)',
+                    }}
+                  >
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Symbol Search + Fetch */}
