@@ -40,6 +40,8 @@ export function AICenter({ onClose }: Props) {
   const [moduleStatuses, setModuleStatuses] = useState<Record<string, ModuleStatus>>({});
   const [showConfig, setShowConfig] = useState(false);
   const [showSignalCreator, setShowSignalCreator] = useState(false);
+  const [instrumentCategory, setInstrumentCategory] = useState('all');
+  const { favorites } = useFavoriteSymbols();
 
   const { data: forexData, loading: forexLoading, error: forexError, fetchData } = useForexData();
   const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis } = useAIAnalysis();
