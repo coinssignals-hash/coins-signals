@@ -34,7 +34,7 @@ const LinkBroker = lazy(() => import("./pages/LinkBroker"));
 const Analysis = lazy(() => import("./pages/Analysis"));
 const Portfolio = lazy(() => import("./pages/Portfolio"));
 const CreateSignal = lazy(() => import("./pages/CreateSignal"));
-const CurrencyImpact = lazy(() => import("./pages/CurrencyImpact"));
+
 const AICenter = lazy(() => import("./pages/AICenter"));
 const Stocks = lazy(() => import("./pages/Stocks"));
 const NotFound = lazy(() => import("./pages/NotFound"));
