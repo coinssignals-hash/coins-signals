@@ -242,6 +242,17 @@ function MainSection({ onNavigate }: { onNavigate: (s: Section) => void }) {
     </motion.div>
   );
 }
+function SocialBtn({ label, color, icon, onClick }: { label: string; color: string; icon: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-col items-center gap-1.5 bg-secondary border border-border/50 rounded-xl py-3 hover:bg-secondary/80 transition-colors"
+    >
+      <span style={{ color }}>{icon}</span>
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+    </button>
+  );
+}
 
 function ContactRow({ icon: Icon, title, detail, color, onClick }: any) {
   return (
