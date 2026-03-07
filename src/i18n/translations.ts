@@ -16,7 +16,7 @@ export const LANGUAGE_FLAGS: Record<Language, string> = {
 
 export type TranslationKeys = {
   // Navigation
-  nav_ideas: string;
+  nav_analysis: string;
   nav_portfolio: string;
   nav_news: string;
   nav_signals: string;
@@ -134,26 +134,6 @@ export type TranslationKeys = {
   signal_short: string;
   signal_reached: string;
   signal_expired: string;
-  // Index / Analysis page
-  index_timeframe_5min: string;
-  index_timeframe_15min: string;
-  index_timeframe_30min: string;
-  index_timeframe_1h: string;
-  index_timeframe_4h: string;
-  index_timeframe_1day: string;
-  index_timeframe_1week: string;
-  index_indicator_alerts: string;
-  index_api_limit: string;
-  index_api_limit_desc: string;
-  index_reconnecting: string;
-  index_reconnecting_desc: string;
-  index_realtime_lost: string;
-  index_cached_data: string;
-  index_tab_price: string;
-  index_tab_rsi: string;
-  index_tab_macd: string;
-  index_tab_bollinger: string;
-  index_tab_stochastic: string;
   // News page
   news_title: string;
   news_currencies: string;

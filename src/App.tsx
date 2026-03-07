@@ -8,7 +8,6 @@ import { Loader2 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 
 // Lazy load all pages
-// Index page removed - Analysis is now the home page
 const News = lazy(() => import("./pages/News"));
 const SavedNews = lazy(() => import("./pages/SavedNews"));
 const Signals = lazy(() => import("./pages/Signals"));
