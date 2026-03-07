@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
+
 import { Badge } from '@/components/ui/badge';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { categories } from '@/data/coursesData';
