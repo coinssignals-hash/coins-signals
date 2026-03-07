@@ -111,8 +111,8 @@ const categories = [
         type: 'podcast',
         difficulty: 'Intermedio',
         lessons: [
-          { id: '1.1', title: 'Oro y Plata: guía completa', duration: '45 min', type: 'podcast' },
-          { id: '1.2', title: 'Petróleo: factores que mueven el precio', duration: '35 min', type: 'podcast' },
+          { id: 'p1.1', title: 'Oro y Plata: guía completa', duration: '45 min', type: 'podcast' },
+          { id: 'p1.2', title: 'Petróleo: factores que mueven el precio', duration: '35 min', type: 'podcast' },
         ]
       }
     ]
