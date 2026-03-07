@@ -1,7 +1,7 @@
 import type { TranslationKeys } from '../translations';
 
 const pt: TranslationKeys = {
-  nav_ideas: 'Ideias', nav_portfolio: 'Portfólio', nav_news: 'Notícias', nav_signals: 'Sinais',
+  nav_analysis: 'Análise', nav_portfolio: 'Portfólio', nav_news: 'Notícias', nav_signals: 'Sinais',
   nav_courses: 'Cursos', nav_brokers: 'Corretoras', nav_performance: 'Desempenho',
   nav_referrals: 'Indicações', nav_support: 'Suporte', nav_about: 'Sobre Nós',
   nav_settings: 'Configurações', nav_more: 'Mais', nav_saved_news: 'Notícias Salvas',
