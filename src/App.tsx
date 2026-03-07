@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { SubscriptionGate } from "@/components/subscriptions/SubscriptionGate";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -93,11 +94,11 @@ function AnimatedRoutes() {
           <Route path="/about" element={<About />} />
           <Route path="/broker-rating" element={<BrokerRating />} />
           <Route path="/link-broker" element={<LinkBroker />} />
-          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/portfolio" element={<SubscriptionGate requiredTier="premium" featureName="Portfolio Multi-Broker"><Portfolio /></SubscriptionGate>} />
           <Route path="/create-signal" element={<CreateSignal />} />
           
-          <Route path="/ai-center" element={<AICenter />} />
-          <Route path="/stocks" element={<Stocks />} />
+          <Route path="/ai-center" element={<SubscriptionGate requiredTier="plus" featureName="Centro de IA"><AICenter /></SubscriptionGate>} />
+          <Route path="/stocks" element={<SubscriptionGate requiredTier="plus" featureName="Análisis de Acciones"><Stocks /></SubscriptionGate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
