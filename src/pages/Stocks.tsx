@@ -23,6 +23,7 @@ import { StockCompare } from '@/components/stocks/StockCompare';
 import { StockPriceAlerts } from '@/components/stocks/StockPriceAlerts';
 import { useStockAlertMonitor } from '@/hooks/useStockPriceAlerts';
 import brandLogo from '@/assets/g174.svg';
+import { MarketIndicesTicker } from '@/components/stocks/MarketIndicesTicker';
 
 const POPULAR_STOCKS = [
   { symbol: 'AAPL', name: 'Apple' },
@@ -96,6 +97,9 @@ function Stocks() {
                 </button>
               )}
             </div>
+
+            {/* Market Indices Ticker */}
+            {!selectedSymbol && <MarketIndicesTicker />}
 
             {/* Search */}
             {!selectedSymbol && (
