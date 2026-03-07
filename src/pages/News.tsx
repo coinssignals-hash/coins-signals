@@ -175,12 +175,12 @@ function FeaturedHistoricalChart({
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   if (isLoading) return <div className="h-12 w-full animate-pulse rounded bg-slate-800/40" />;
-  if (!data?.historical_events?.length) return null;
+  if (!data?.monthlyData?.length) return null;
 
   return (
     <div className="flex items-center gap-1 mt-1">
-      {data.historical_events.slice(0, 4).map((evt: any, i: number) => {
-        const impact = evt.impact_score ?? 0;
+      {data.monthlyData.slice(0, 4).map((evt, i) => {
+        const impact = evt.averageImpact ?? 0;
         const isPositive = impact >= 0;
         return (
           <div key={i} className="flex items-center gap-0.5">
@@ -191,7 +191,7 @@ function FeaturedHistoricalChart({
           </div>
         );
       })}
-      <span className="text-[9px] text-slate-500 ml-1">{data.historical_events.length} eventos</span>
+      <span className="text-[9px] text-slate-500 ml-1">{data.monthlyData.length} meses</span>
     </div>
   );
 }
