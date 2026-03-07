@@ -247,8 +247,21 @@ export default function Courses() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('inicio');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const [mediaFilter, setMediaFilter] = useState<'video' | 'podcast' | null>(null);
   const { isLessonCompleted, progress } = useCourseProgress();
 
+  // Collect all lessons by type across all categories
+  const allByType = useMemo(() => {
+    const all = categories.flatMap(cat =>
+      cat.modules.flatMap(mod =>
+        mod.lessons.map(l => ({ ...l, moduleName: mod.title, categoryName: cat.name, categoryAccent: cat.accent }))
+      )
+    );
+    return {
+      video: all.filter(l => l.type === 'video'),
+      podcast: all.filter(l => l.type === 'podcast'),
+    };
+  }, []);
   const currentCategory = categories.find(c => c.id === activeCategory)!;
 
   const stats = useMemo(() => {
@@ -565,11 +578,16 @@ export default function Courses() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Featured Cards — glass morphism style */}
+        {/* Featured Cards — clickable to expand media lists */}
         <div className="grid grid-cols-2 gap-3">
-          <motion.div
+          <motion.button
             whileHover={{ y: -3, scale: 1.02 }}
-            className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-blue-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden"
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setMediaFilter(mediaFilter === 'video' ? null : 'video')}
+            className={cn(
+              'rounded-xl border bg-gradient-to-br from-blue-500/10 via-blue-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden text-left transition-all',
+              mediaFilter === 'video' ? 'border-blue-500/40 shadow-[0_0_20px_hsl(217_91%_60%/0.15)]' : 'border-blue-500/20'
+            )}
           >
             <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-blue-500/8 blur-2xl" />
             <div className="relative">
@@ -577,16 +595,21 @@ export default function Courses() {
                 <Video className="w-5 h-5 text-blue-400" />
               </div>
               <p className="text-sm font-bold text-foreground mt-2">Videos</p>
-              <p className="text-[11px] text-muted-foreground">12 videos disponibles</p>
+              <p className="text-[11px] text-muted-foreground">{allByType.video.length} videos disponibles</p>
               <div className="flex items-center gap-1 text-[10px] text-blue-400 mt-1.5 font-medium">
-                <Zap className="w-3 h-3" /> Nuevos cada semana
+                <Zap className="w-3 h-3" /> {mediaFilter === 'video' ? 'Toca para cerrar' : 'Toca para ver todos'}
               </div>
             </div>
-          </motion.div>
+          </motion.button>
 
-          <motion.div
+          <motion.button
             whileHover={{ y: -3, scale: 1.02 }}
-            className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 via-purple-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden"
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setMediaFilter(mediaFilter === 'podcast' ? null : 'podcast')}
+            className={cn(
+              'rounded-xl border bg-gradient-to-br from-purple-500/10 via-purple-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden text-left transition-all',
+              mediaFilter === 'podcast' ? 'border-purple-500/40 shadow-[0_0_20px_hsl(271_76%_53%/0.15)]' : 'border-purple-500/20'
+            )}
           >
             <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-purple-500/8 blur-2xl" />
             <div className="relative">
@@ -594,13 +617,103 @@ export default function Courses() {
                 <Headphones className="w-5 h-5 text-purple-400" />
               </div>
               <p className="text-sm font-bold text-foreground mt-2">Podcasts</p>
-              <p className="text-[11px] text-muted-foreground">8 episodios</p>
+              <p className="text-[11px] text-muted-foreground">{allByType.podcast.length} episodios</p>
               <div className="flex items-center gap-1 text-[10px] text-purple-400 mt-1.5 font-medium">
-                <Zap className="w-3 h-3" /> Escucha offline
+                <Zap className="w-3 h-3" /> {mediaFilter === 'podcast' ? 'Toca para cerrar' : 'Toca para ver todos'}
               </div>
             </div>
-          </motion.div>
+          </motion.button>
         </div>
+
+        {/* Expanded media list */}
+        <AnimatePresence>
+          {mediaFilter && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className={cn(
+                'rounded-xl border p-4 space-y-3 backdrop-blur-sm',
+                mediaFilter === 'video'
+                  ? 'border-blue-500/20 bg-blue-500/5'
+                  : 'border-purple-500/20 bg-purple-500/5'
+              )}>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    {mediaFilter === 'video' ? <Video className="w-4 h-4 text-blue-400" /> : <Headphones className="w-4 h-4 text-purple-400" />}
+                    {mediaFilter === 'video' ? `Todos los Videos (${allByType.video.length})` : `Todos los Podcasts (${allByType.podcast.length})`}
+                  </h3>
+                  <button onClick={() => setMediaFilter(null)} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    Cerrar ✕
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {(mediaFilter === 'video' ? allByType.video : allByType.podcast).map((lesson, i) => {
+                    const completed = isLessonCompleted(lesson.id);
+                    return (
+                      <motion.div
+                        key={lesson.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
+                        whileHover={{ x: 4 }}
+                        className={cn(
+                          'flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all group',
+                          completed
+                            ? 'bg-primary/8 border border-primary/20'
+                            : 'bg-secondary/20 hover:bg-secondary/40 border border-transparent hover:border-border/30'
+                        )}
+                      >
+                        {/* Icon */}
+                        <div className={cn(
+                          'w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0',
+                          completed
+                            ? 'bg-primary text-primary-foreground shadow-[0_0_10px_hsl(217_91%_60%/0.3)]'
+                            : mediaFilter === 'video'
+                              ? 'bg-blue-500/15 border border-blue-500/20'
+                              : 'bg-purple-500/15 border border-purple-500/20'
+                        )}>
+                          {completed
+                            ? <CheckCircle className="w-4 h-4" />
+                            : <Play className="w-3.5 h-3.5 text-muted-foreground ml-0.5" />
+                          }
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className={cn('text-sm truncate', completed ? 'text-foreground font-medium' : 'text-foreground/80')}>
+                            {lesson.title}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <Badge variant="outline" className={cn(
+                              'text-[9px] px-1.5 py-0 h-4 border-border/40',
+                              lesson.categoryAccent
+                            )}>
+                              {lesson.categoryName}
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">{lesson.moduleName}</span>
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                              <Clock className="w-2.5 h-2.5" />
+                              {lesson.duration}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Arrow */}
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </PageShell>
   );
