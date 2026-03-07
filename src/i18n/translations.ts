@@ -16,7 +16,7 @@ export const LANGUAGE_FLAGS: Record<Language, string> = {
 
 export type TranslationKeys = {
   // Navigation
-  nav_ideas: string;
+  nav_analysis: string;
   nav_portfolio: string;
   nav_news: string;
   nav_signals: string;
