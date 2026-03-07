@@ -15,7 +15,7 @@ export function BottomNav() {
   const { t } = useTranslation();
 
   const navItems = [
-    { icon: BarChart2, label: t('nav_ideas'), href: '/', badgeType: null },
+    { icon: BarChart2, label: t('nav_analysis'), href: '/', badgeType: null },
     { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
     { icon: Brain, label: 'IA', href: '/ai-center', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
