@@ -137,7 +137,13 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
 
                 <CardContent className={cn('relative p-5', isCurrentPlan && 'pt-8')}>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge className={cn('text-xs font-bold px-3 py-1', plan.badgeColor)}>
+                    <Badge className={cn(
+                      'text-xs font-bold px-3 py-1 border',
+                      plan.id === 'basico' && 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
+                      plan.id === 'plus' && 'bg-primary/15 text-primary border-primary/30',
+                      plan.id === 'premium' && 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+                    )}>
+                      <Zap className="w-3 h-3 mr-1" />
                       {plan.name}
                     </Badge>
                     {plan.featured && (
@@ -148,11 +154,16 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                     )}
                   </div>
 
-                  <h3 className="text-sm font-semibold text-primary mb-1">{plan.subtitle}</h3>
+                  <h3 className="text-sm font-semibold text-foreground mb-1">{plan.subtitle}</h3>
                   <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{plan.description}</p>
 
                   <div className="mb-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold text-foreground tracking-tight">
+                    <span className={cn(
+                      'text-4xl font-extrabold tracking-tight',
+                      plan.id === 'basico' && 'text-yellow-400',
+                      plan.id === 'plus' && 'text-primary',
+                      plan.id === 'premium' && 'text-blue-400',
+                    )}>
                       ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceWeekly}
                     </span>
                     <span className="text-sm text-muted-foreground font-medium">
@@ -160,22 +171,37 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                     </span>
                   </div>
 
-                  <div className="h-px bg-border/60 mb-4" />
+                  <div className={cn(
+                    'h-px mb-4',
+                    plan.id === 'basico' && 'bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent',
+                    plan.id === 'plus' && 'bg-gradient-to-r from-transparent via-primary/30 to-transparent',
+                    plan.id === 'premium' && 'bg-gradient-to-r from-transparent via-blue-500/30 to-transparent',
+                  )} />
 
                   <ul className="space-y-2 mb-5">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs">
-                        <div className="mt-0.5 w-4 h-4 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
-                          <Check className="w-2.5 h-2.5 text-primary" />
+                        <div className={cn(
+                          'mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0',
+                          plan.id === 'basico' && 'bg-yellow-500/10',
+                          plan.id === 'plus' && 'bg-primary/10',
+                          plan.id === 'premium' && 'bg-blue-500/10',
+                        )}>
+                          <Check className={cn(
+                            'w-2.5 h-2.5',
+                            plan.id === 'basico' && 'text-yellow-400',
+                            plan.id === 'plus' && 'text-primary',
+                            plan.id === 'premium' && 'text-blue-400',
+                          )} />
                         </div>
-                        <span className="text-foreground/85">{feature}</span>
+                        <span className="text-foreground/80">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <div className="space-y-2">
                     {isCurrentPlan ? (
-                      <Button disabled className="w-full font-semibold bg-accent/20 text-accent border border-accent/30">
+                      <Button disabled className="w-full font-semibold bg-accent/15 text-accent border border-accent/25">
                         <Crown className="w-4 h-4 mr-1.5" />
                         Plan Activo
                       </Button>
@@ -184,10 +210,10 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                         onClick={(e) => { e.stopPropagation(); handleSubscribe(plan.id); }}
                         disabled={loadingPlan === plan.id}
                         className={cn(
-                          'w-full font-semibold',
-                          plan.featured
-                            ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-                            : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50'
+                          'w-full font-semibold transition-all',
+                          plan.id === 'basico' && 'bg-yellow-500/15 hover:bg-yellow-500/25 text-yellow-400 border border-yellow-500/30',
+                          plan.id === 'plus' && 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.3)]',
+                          plan.id === 'premium' && 'bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 border border-blue-500/30',
                         )}
                       >
                         {loadingPlan === plan.id ? (
@@ -198,7 +224,7 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                     )}
 
                     {plan.featured && !isCurrentPlan && (
-                      <Button variant="outline" className="w-full border-primary/40 text-primary hover:bg-primary/10 text-xs">
+                      <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs shadow-[0_0_8px_hsl(var(--primary)/0.1)]">
                         7 Días Gratis
                       </Button>
                     )}
