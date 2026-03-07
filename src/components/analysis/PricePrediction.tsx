@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { es, enUS, ptBR, fr } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
 import { Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePricePrediction } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
