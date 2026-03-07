@@ -1,4 +1,3 @@
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -24,6 +23,14 @@ function formatBigNumber(n: number): string {
   return `$${n.toLocaleString()}`;
 }
 
+const tooltipStyle = {
+  backgroundColor: 'hsl(220, 40%, 8%)',
+  border: '1px solid hsl(200, 60%, 25%)',
+  borderRadius: '8px',
+  fontSize: '11px',
+  color: 'white',
+};
+
 function IncomeChart({ data }: { data: any[] }) {
   const chartData = [...data].reverse().map(d => ({
     year: d.calendarYear || d.date?.slice(0, 4),
@@ -36,10 +43,9 @@ function IncomeChart({ data }: { data: any[] }) {
     <div className="space-y-3">
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
-          <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'hsl(215, 20%, 55%)' }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fontSize: 9, fill: 'hsl(215, 20%, 55%)' }} tickLine={false} axisLine={false} tickFormatter={(v) => formatBigNumber(v)} />
-          <Tooltip
-            contentStyle={{ backgroundColor: 'hsl(222, 45%, 7%)', border: '1px solid hsl(220, 30%, 15%)', borderRadius: '8px', fontSize: '11px' }}
+          <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fontSize: 9, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false} tickFormatter={(v) => formatBigNumber(v)} />
+          <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
             formatter={(v: number, name: string) => [formatBigNumber(v), name === 'revenue' ? 'Ingresos' : name === 'netIncome' ? 'Beneficio Neto' : 'Beneficio Bruto']}
           />
           <Bar dataKey="revenue" fill="hsl(200, 80%, 50%)" radius={[3, 3, 0, 0]} />
@@ -51,7 +57,6 @@ function IncomeChart({ data }: { data: any[] }) {
         </BarChart>
       </ResponsiveContainer>
 
-      {/* Key metrics from latest */}
       {data[0] && (
         <div className="grid grid-cols-2 gap-2">
           {[
@@ -60,11 +65,11 @@ function IncomeChart({ data }: { data: any[] }) {
             { label: 'Margen Bruto', value: data[0].revenue ? `${((data[0].grossProfit / data[0].revenue) * 100).toFixed(1)}%` : 'N/A', icon: Wallet },
             { label: 'Margen Neto', value: data[0].revenue ? `${((data[0].netIncome / data[0].revenue) * 100).toFixed(1)}%` : 'N/A', icon: ArrowDownUp },
           ].map(m => (
-            <div key={m.label} className="bg-secondary/50 rounded-lg p-2 flex items-center gap-2">
-              <m.icon className="w-3.5 h-3.5 text-primary shrink-0" />
+            <div key={m.label} className="bg-[hsl(210,50%,10%)]/80 border border-cyan-800/15 rounded-lg p-2 flex items-center gap-2">
+              <m.icon className="w-3.5 h-3.5 text-cyan-400/60 shrink-0" />
               <div>
-                <p className="text-[10px] text-muted-foreground">{m.label}</p>
-                <p className="text-xs font-mono font-semibold text-foreground">{m.value}</p>
+                <p className="text-[10px] text-cyan-300/40">{m.label}</p>
+                <p className="text-xs font-mono font-semibold text-white">{m.value}</p>
               </div>
             </div>
           ))}
@@ -86,10 +91,9 @@ function BalanceChart({ data }: { data: any[] }) {
     <div className="space-y-3">
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
-          <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'hsl(215, 20%, 55%)' }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fontSize: 9, fill: 'hsl(215, 20%, 55%)' }} tickLine={false} axisLine={false} tickFormatter={(v) => formatBigNumber(v)} />
-          <Tooltip
-            contentStyle={{ backgroundColor: 'hsl(222, 45%, 7%)', border: '1px solid hsl(220, 30%, 15%)', borderRadius: '8px', fontSize: '11px' }}
+          <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fontSize: 9, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false} tickFormatter={(v) => formatBigNumber(v)} />
+          <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
             formatter={(v: number, name: string) => [formatBigNumber(v), name === 'totalAssets' ? 'Activos' : name === 'totalDebt' ? 'Deuda' : 'Patrimonio']}
           />
           <Bar dataKey="totalAssets" fill="hsl(200, 80%, 50%)" radius={[3, 3, 0, 0]} />
@@ -101,12 +105,12 @@ function BalanceChart({ data }: { data: any[] }) {
       {data[0] && (
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Activos', value: formatBigNumber(data[0].totalAssets), color: 'text-blue-400' },
-            { label: 'Deuda', value: formatBigNumber(data[0].totalDebt), color: 'text-red-400' },
-            { label: 'Patrimonio', value: formatBigNumber(data[0].totalStockholdersEquity), color: 'text-green-400' },
+            { label: 'Activos', value: formatBigNumber(data[0].totalAssets), color: 'text-[hsl(200,80%,50%)]' },
+            { label: 'Deuda', value: formatBigNumber(data[0].totalDebt), color: 'text-[hsl(0,60%,55%)]' },
+            { label: 'Patrimonio', value: formatBigNumber(data[0].totalStockholdersEquity), color: 'text-[hsl(142,60%,45%)]' },
           ].map(m => (
-            <div key={m.label} className="bg-secondary/50 rounded-lg p-2 text-center">
-              <p className="text-[10px] text-muted-foreground">{m.label}</p>
+            <div key={m.label} className="bg-[hsl(210,50%,10%)]/80 border border-cyan-800/15 rounded-lg p-2 text-center">
+              <p className="text-[10px] text-cyan-300/40">{m.label}</p>
               <p className={`text-xs font-mono font-semibold ${m.color}`}>{m.value}</p>
             </div>
           ))}
@@ -129,10 +133,9 @@ function CashFlowChart({ data }: { data: any[] }) {
     <div className="space-y-3">
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
-          <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'hsl(215, 20%, 55%)' }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fontSize: 9, fill: 'hsl(215, 20%, 55%)' }} tickLine={false} axisLine={false} tickFormatter={(v) => formatBigNumber(v)} />
-          <Tooltip
-            contentStyle={{ backgroundColor: 'hsl(222, 45%, 7%)', border: '1px solid hsl(220, 30%, 15%)', borderRadius: '8px', fontSize: '11px' }}
+          <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fontSize: 9, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false} tickFormatter={(v) => formatBigNumber(v)} />
+          <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
             formatter={(v: number, name: string) => {
               const labels: Record<string, string> = { operating: 'Operativo', investing: 'Inversión', financing: 'Financiamiento', freeCashFlow: 'Flujo Libre' };
               return [formatBigNumber(v), labels[name] || name];
@@ -153,9 +156,9 @@ function CashFlowChart({ data }: { data: any[] }) {
             { label: 'Flujo Operativo', value: formatBigNumber(data[0].operatingCashFlow) },
             { label: 'Flujo Libre', value: formatBigNumber(data[0].freeCashFlow) },
           ].map(m => (
-            <div key={m.label} className="bg-secondary/50 rounded-lg p-2 text-center">
-              <p className="text-[10px] text-muted-foreground">{m.label}</p>
-              <p className="text-xs font-mono font-semibold text-foreground">{m.value}</p>
+            <div key={m.label} className="bg-[hsl(210,50%,10%)]/80 border border-cyan-800/15 rounded-lg p-2 text-center">
+              <p className="text-[10px] text-cyan-300/40">{m.label}</p>
+              <p className="text-xs font-mono font-semibold text-white">{m.value}</p>
             </div>
           ))}
         </div>
@@ -167,43 +170,51 @@ function CashFlowChart({ data }: { data: any[] }) {
 export function StockFinancialsCard({ data, loading }: Props) {
   if (loading) {
     return (
-      <Card className="p-4 bg-card border-border space-y-3">
-        <Skeleton className="h-5 w-40" />
-        <Skeleton className="h-48 w-full" />
-      </Card>
+      <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4 space-y-3"
+        style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
+        <Skeleton className="h-5 w-40 bg-slate-800/50" />
+        <Skeleton className="h-48 w-full bg-slate-800/50" />
+      </div>
     );
   }
 
   if (!data || (!data.income?.length && !data.balance?.length && !data.cashFlow?.length)) {
     return (
-      <Card className="p-4 bg-card border-border">
-        <p className="text-sm text-muted-foreground text-center py-4">Estados financieros no disponibles</p>
-      </Card>
+      <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4"
+        style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
+        <p className="text-sm text-slate-500 text-center py-4">Estados financieros no disponibles</p>
+      </div>
     );
   }
 
   return (
-    <Card className="p-4 bg-card border-border">
-      <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-        <DollarSign className="w-4 h-4 text-primary" />
-        Estados Financieros
-      </h3>
-      <Tabs defaultValue="income" className="w-full">
-        <TabsList className="w-full bg-secondary/50">
-          <TabsTrigger value="income" className="flex-1 text-xs">Ingresos</TabsTrigger>
-          <TabsTrigger value="balance" className="flex-1 text-xs">Balance</TabsTrigger>
-          <TabsTrigger value="cashflow" className="flex-1 text-xs">Flujo</TabsTrigger>
-        </TabsList>
-        <TabsContent value="income" className="mt-3">
-          {data.income?.length > 0 ? <IncomeChart data={data.income} /> : <p className="text-xs text-muted-foreground text-center py-4">Sin datos</p>}
-        </TabsContent>
-        <TabsContent value="balance" className="mt-3">
-          {data.balance?.length > 0 ? <BalanceChart data={data.balance} /> : <p className="text-xs text-muted-foreground text-center py-4">Sin datos</p>}
-        </TabsContent>
-        <TabsContent value="cashflow" className="mt-3">
-          {data.cashFlow?.length > 0 ? <CashFlowChart data={data.cashFlow} /> : <p className="text-xs text-muted-foreground text-center py-4">Sin datos</p>}
-        </TabsContent>
-      </Tabs>
-    </Card>
+    <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
+      
+      <div className="absolute top-0 left-[15%] right-[15%] h-[1px]" style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+      
+      <div className="p-4">
+        <h3 className="text-sm font-bold text-cyan-200 mb-3 flex items-center gap-2">
+          <DollarSign className="w-4 h-4 text-cyan-400" />
+          Estados Financieros
+        </h3>
+        <Tabs defaultValue="income" className="w-full">
+          <TabsList className="w-full bg-[hsl(210,40%,10%)] border border-cyan-800/20 rounded-lg">
+            <TabsTrigger value="income" className="flex-1 text-xs data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-md">Ingresos</TabsTrigger>
+            <TabsTrigger value="balance" className="flex-1 text-xs data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-md">Balance</TabsTrigger>
+            <TabsTrigger value="cashflow" className="flex-1 text-xs data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-md">Flujo</TabsTrigger>
+          </TabsList>
+          <TabsContent value="income" className="mt-3">
+            {data.income?.length > 0 ? <IncomeChart data={data.income} /> : <p className="text-xs text-slate-500 text-center py-4">Sin datos</p>}
+          </TabsContent>
+          <TabsContent value="balance" className="mt-3">
+            {data.balance?.length > 0 ? <BalanceChart data={data.balance} /> : <p className="text-xs text-slate-500 text-center py-4">Sin datos</p>}
+          </TabsContent>
+          <TabsContent value="cashflow" className="mt-3">
+            {data.cashFlow?.length > 0 ? <CashFlowChart data={data.cashFlow} /> : <p className="text-xs text-slate-500 text-center py-4">Sin datos</p>}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
   );
 }
