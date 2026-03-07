@@ -647,79 +647,90 @@ export function CandlestickChart({
 
       {/* Legend */}
       {!hideLegend && (
-      <div className="flex justify-between text-xs flex-wrap gap-2 px-3 py-2 rounded-b-lg" style={{ background: '#0b1729' }}>
-        <div className="flex items-center gap-4">
-          {showSupportResistance && (
-            <>
-              <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#00d4aa' }} />
-                <span style={{ color: '#00d4aa' }}>Resistencia 24h</span>
-                <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#00f0c0', background: 'rgba(0,212,170,0.15)' }}>{fmtPrice(resistance, jpy)}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#ff4976' }} />
-                <span style={{ color: '#ff4976' }}>Soporte 24h</span>
-                <span className="font-mono font-semibold px-1.5 py-0.5 rounded text-xs" style={{ color: '#ff6b8a', background: 'rgba(255,73,118,0.15)' }}>{fmtPrice(support, jpy)}</span>
-              </div>
-            </>
-          )}
-          {/* S/R Toggle Button — next to Soporte */}
-          <button
-            type="button"
-            onClick={() => setSrVisible(v => !v)}
-            className={cn(
-              'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
-              showSupportResistance
-                ? 'border-cyan-600/50 text-cyan-300'
-                : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+      <div className="flex flex-col gap-1.5 px-2 py-2 rounded-b-xl text-[10px] sm:text-xs" style={{ background: '#0b1729' }}>
+        {/* Row 1: S/R values + toggles */}
+        <div className="flex items-center justify-between gap-1 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            {showSupportResistance && (
+              <>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 sm:w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#00d4aa' }} />
+                  <span className="hidden sm:inline" style={{ color: '#00d4aa' }}>Resistencia</span>
+                  <span className="sm:hidden" style={{ color: '#00d4aa' }}>R</span>
+                  <span className="font-mono font-semibold px-1 py-0.5 rounded text-[10px]" style={{ color: '#00f0c0', background: 'rgba(0,212,170,0.15)' }}>{fmtPrice(resistance, jpy)}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 sm:w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#ff4976' }} />
+                  <span className="hidden sm:inline" style={{ color: '#ff4976' }}>Soporte</span>
+                  <span className="sm:hidden" style={{ color: '#ff4976' }}>S</span>
+                  <span className="font-mono font-semibold px-1 py-0.5 rounded text-[10px]" style={{ color: '#ff6b8a', background: 'rgba(255,73,118,0.15)' }}>{fmtPrice(support, jpy)}</span>
+                </div>
+              </>
             )}
-            style={{ background: showSupportResistance ? 'rgba(0,180,160,0.15)' : 'rgba(255,255,255,0.05)' }}
-          >
-            <span className="text-[11px]" style={{ color: '#00d4aa' }}>S</span>
-            <span className="text-muted-foreground/50">/</span>
-            <span className="text-[11px]" style={{ color: '#ff4976' }}>R</span>
-            <span className="ml-0.5 text-[9px] opacity-70">{showSupportResistance ? 'ON' : 'OFF'}</span>
-          </button>
-          {/* TP/SL Signal Toggle Button */}
-          {hasSignalLevels && (
+          </div>
+          {/* Toggle buttons */}
+          <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => setSignalLevelsVisible(v => !v)}
+              onClick={() => setSrVisible(v => !v)}
               className={cn(
-                'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all border active:scale-95',
-                signalLevelsVisible
-                  ? 'border-amber-600/50 text-amber-300'
+                'flex items-center gap-0.5 px-1.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-semibold transition-all border active:scale-[0.96]',
+                showSupportResistance
+                  ? 'border-cyan-600/50 text-cyan-300'
                   : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
               )}
-              style={{ background: signalLevelsVisible ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)' }}
+              style={{ background: showSupportResistance ? 'rgba(0,180,160,0.15)' : 'rgba(255,255,255,0.05)' }}
             >
-              <span className="text-[11px]" style={{ color: '#22c55e' }}>TP</span>
+              <span style={{ color: '#00d4aa' }}>S</span>
               <span className="text-muted-foreground/50">/</span>
-              <span className="text-[11px]" style={{ color: '#ef4444' }}>SL</span>
-              <span className="ml-0.5 text-[9px] opacity-70">{signalLevelsVisible ? 'ON' : 'OFF'}</span>
+              <span style={{ color: '#ff4976' }}>R</span>
+              <span className="ml-0.5 text-[8px] opacity-70">{showSupportResistance ? 'ON' : 'OFF'}</span>
             </button>
-          )}
-          {ema20Data && ema20Data.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-0.5 bg-blue-500" />
-              <span className="text-blue-400">EMA 20</span>
-            </div>
-          )}
-          {ema50Data && ema50Data.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-0.5 bg-amber-500" />
-              <span className="text-amber-400">EMA 50</span>
+            {hasSignalLevels && (
+              <button
+                type="button"
+                onClick={() => setSignalLevelsVisible(v => !v)}
+                className={cn(
+                  'flex items-center gap-0.5 px-1.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-semibold transition-all border active:scale-[0.96]',
+                  signalLevelsVisible
+                    ? 'border-amber-600/50 text-amber-300'
+                    : 'border-muted-foreground/20 text-muted-foreground hover:text-foreground'
+                )}
+                style={{ background: signalLevelsVisible ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)' }}
+              >
+                <span style={{ color: '#22c55e' }}>TP</span>
+                <span className="text-muted-foreground/50">/</span>
+                <span style={{ color: '#ef4444' }}>SL</span>
+                <span className="ml-0.5 text-[8px] opacity-70">{signalLevelsVisible ? 'ON' : 'OFF'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+        {/* Row 2: EMA indicators + realtime */}
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {ema20Data && ema20Data.length > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-3 sm:w-5 h-0.5 bg-blue-500 rounded-full" />
+                <span className="text-blue-400 text-[10px]">EMA 20</span>
+              </div>
+            )}
+            {ema50Data && ema50Data.length > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-3 sm:w-5 h-0.5 bg-amber-500 rounded-full" />
+                <span className="text-amber-400 text-[10px]">EMA 50</span>
+              </div>
+            )}
+          </div>
+          {realtimePrice && (
+            <div className="flex items-center gap-1">
+              <div className={cn('w-1.5 h-1.5 rounded-full', isRealtimeConnected ? 'bg-blue-500 animate-pulse' : 'bg-indigo-500')} />
+              <span className={cn('font-mono text-[10px]', isRealtimeConnected ? 'text-blue-400' : 'text-indigo-400')}>
+                {realtimePrice.toFixed(5)}
+              </span>
             </div>
           )}
         </div>
-        {realtimePrice && (
-          <div className="flex items-center gap-1">
-            <div className={cn('w-2 h-2 rounded-full', isRealtimeConnected ? 'bg-blue-500 animate-pulse' : 'bg-indigo-500')} />
-            <span className={isRealtimeConnected ? 'text-blue-400' : 'text-indigo-400'}>
-              Actual {realtimePrice.toFixed(5)}
-            </span>
-          </div>
-        )}
       </div>
       )}
     </div>
