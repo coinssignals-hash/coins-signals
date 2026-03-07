@@ -558,15 +558,7 @@
     }
   }
 
-  /* Optimize font rendering */
-  body {
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  body.large-text {
-    font-size: 17px;
-  }
+  /* Font size controlled by html.font-scale-* classes */
 
   /* Better touch targets - only for interactive elements not inside tight layouts */
   button:not(.tab-compact):not([data-radix-collection-item]),
