@@ -68,8 +68,25 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  const loadDefaults = useCallback(async (type: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('symbol-search', {
+        body: { query: 'popular', type, defaults: true },
+      });
+      if (!error && data?.data) {
+        setResults(data.data);
+      }
+    } catch { /* silent */ } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const searchSymbols = useCallback(async (q: string, type: string) => {
-    if (q.length < 2) { setResults([]); return; }
+    if (q.length < 2) {
+      await loadDefaults(type);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('symbol-search', {
@@ -78,12 +95,10 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
       if (!error && data?.data) {
         setResults(data.data);
       }
-    } catch {
-      // silent
-    } finally {
+    } catch { /* silent */ } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadDefaults]);
 
   const handleInputChange = (val: string) => {
     const upper = val.toUpperCase();
@@ -127,7 +142,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
           placeholder="Buscar símbolo: AAPL, EUR/USD, BTC..."
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => { if (results.length > 0 || query.length >= 2) setOpen(true); }}
+          onFocus={() => { setOpen(true); if (results.length === 0) loadDefaults(activeTab); }}
           className="w-full pl-9 pr-16 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all"
           style={{
             background: 'hsl(210, 100%, 8%)',
@@ -145,7 +160,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
       </div>
 
       {/* Dropdown */}
-      {open && (query.length >= 2) && (
+      {open && (
         <div
           className="absolute z-50 top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden shadow-2xl"
           style={{
