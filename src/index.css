@@ -147,11 +147,63 @@
     --secondary: 218 40% 8%;
   }
 
-  /* Font scale classes */
-  html.font-scale-85 { font-size: 13px; }
-  html.font-scale-100 { font-size: 15px; }
-  html.font-scale-115 { font-size: 17px; }
-  html.font-scale-130 { font-size: 19px; }
+  /* Font scale classes — applied instantly via class on <html> */
+  html.font-scale-85 { font-size: 13px !important; }
+  html.font-scale-100 { font-size: 15px !important; }
+  html.font-scale-115 { font-size: 16.5px !important; }
+  html.font-scale-130 { font-size: 18px !important; }
+
+  /* Mobile-responsive layout for larger font scales */
+  @media (max-width: 640px) {
+    html.font-scale-115,
+    html.font-scale-130 {
+      /* Grids adapt to single column when text is large */
+      --grid-cols-override: 1;
+    }
+
+    html.font-scale-115 .grid-cols-2,
+    html.font-scale-130 .grid-cols-2 {
+      grid-template-columns: 1fr;
+    }
+
+    html.font-scale-115 .grid-cols-3,
+    html.font-scale-130 .grid-cols-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    html.font-scale-115 .grid-cols-4,
+    html.font-scale-130 .grid-cols-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    html.font-scale-115 .grid-cols-6,
+    html.font-scale-130 .grid-cols-6 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Tighter padding on large font */
+    html.font-scale-130 main {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    /* Prevent text overflow */
+    html.font-scale-115 .truncate,
+    html.font-scale-130 .truncate {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Horizontal scroll areas allow wrapping */
+    html.font-scale-130 .overflow-x-auto {
+      flex-wrap: wrap;
+    }
+  }
 
   /* Reduced motion */
   html.reduce-motion *,
@@ -201,15 +253,14 @@
     line-height: 1.6;
   }
 
-  /* Larger font size mode */
+  /* Larger font size mode — stacks on top of font-scale */
   body.large-text {
-    font-size: 17px;
     line-height: 1.7;
   }
 
-  body.large-text h1 { font-size: 1.75rem; }
-  body.large-text h2 { font-size: 1.5rem; }
-  body.large-text h3 { font-size: 1.25rem; }
+  body.large-text h1 { font-size: 1.6rem; }
+  body.large-text h2 { font-size: 1.35rem; }
+  body.large-text h3 { font-size: 1.15rem; }
   body.large-text .text-xs { font-size: 0.8rem; }
   body.large-text .text-sm { font-size: 0.9rem; }
   body.large-text .text-\\[9px\\],
@@ -507,15 +558,7 @@
     }
   }
 
-  /* Optimize font rendering */
-  body {
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  body.large-text {
-    font-size: 17px;
-  }
+  /* Font size controlled by html.font-scale-* classes */
 
   /* Better touch targets - only for interactive elements not inside tight layouts */
   button:not(.tab-compact):not([data-radix-collection-item]),
