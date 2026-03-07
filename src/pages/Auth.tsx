@@ -23,6 +23,7 @@ type AuthMode = 'login' | 'register' | 'forgot' | 'reset' | 'verify-pending';
 export default function Auth() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +32,21 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  // Capture referral code from URL
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) {
+      setReferralCode(ref.toUpperCase());
+      localStorage.setItem('referral_code', ref.toUpperCase());
+      // Auto-switch to register mode when coming from referral link
+      setMode('register');
+    } else {
+      const stored = localStorage.getItem('referral_code');
+      if (stored) setReferralCode(stored);
+    }
+  }, [searchParams]);
 
   // Check if we're in password reset mode (user clicked reset link in email)
   useEffect(() => {
