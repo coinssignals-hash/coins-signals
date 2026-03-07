@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { format, startOfWeek, endOfWeek, subWeeks, addWeeks } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, CalendarIcon, CalendarRange } from 'lucide-react';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -29,7 +29,8 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
   const weekNumber = getWeekNumber(selectedWeek);
 
   return (
-    <SignalStyleCard className="p-3">
+    <Card className="bg-card border-border">
+      <CardContent className="p-3">
       <div className="flex items-center justify-between gap-2">
         {/* Week Navigation */}
         <div className="flex items-center gap-1">
@@ -122,6 +123,7 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
           </span>
         </div>
       )}
-    </SignalStyleCard>
+      </CardContent>
+    </Card>
   );
 }
