@@ -195,11 +195,6 @@ export default function Analysis() {
             <span className="text-orange-400">Reconectando... intento {reconnectAttempt}/5</span>
           </div>
             }
-        {data?.cached && !loading && !error
-
-
-
-            }
 
         {/* Currency Header */}
         <CurrencyHeader
