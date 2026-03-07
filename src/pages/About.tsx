@@ -8,6 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import aboutHero from '@/assets/about-hero.jpg';
+import isabellaAvatar from '@/assets/team/isabella-walker.jpg';
+import cristopherAvatar from '@/assets/team/cristopher-hayes.jpg';
+import edithAvatar from '@/assets/team/edith-sanchez.jpg';
+import andresAvatar from '@/assets/team/andres-lopez.jpg';
+import kenjiAvatar from '@/assets/team/kenji-tanaka.jpg';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
