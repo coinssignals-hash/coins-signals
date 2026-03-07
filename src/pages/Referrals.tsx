@@ -1,131 +1,304 @@
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Gift, Copy, Users, DollarSign, Share2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-
-const referralHistory = [
-  { name: 'Juan Pérez', date: '15/12/2024', bonus: '$15', status: 'Completado' },
-  { name: 'María García', date: '10/12/2024', bonus: '$25', status: 'Completado' },
-  { name: 'Carlos López', date: '05/12/2024', bonus: '$10', status: 'Pendiente' },
-];
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Gift, Copy, Users, DollarSign, Share2, ArrowLeft,
+  Trophy, Clock, CheckCircle2, CalendarPlus, Sparkles, RefreshCw,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import { useReferrals } from '@/hooks/useReferrals';
+import { useAuth } from '@/hooks/useAuth';
+import brandLogo from '@/assets/g174.svg';
 
 export default function Referrals() {
-  const referralLink = 'https://coins-signals.com/ref/philip-express';
+  const { isAuthenticated } = useAuth();
+  const { code, stats, loading, referralLink, refresh } = useReferrals();
 
   const copyLink = () => {
+    if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
-    toast({
-      title: 'Enlace copiado',
-      description: 'El enlace de referido ha sido copiado al portapapeles',
-    });
+    toast.success('Enlace copiado al portapapeles');
   };
+
+  const shareLink = async () => {
+    if (!referralLink) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Únete a EcoSignal AI',
+          text: '¡Regístrate con mi enlace y obtén beneficios exclusivos!',
+          url: referralLink,
+        });
+      } catch {
+        copyLink();
+      }
+    } else {
+      copyLink();
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <PageShell>
+        <Header />
+        <main className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+          <Gift className="w-16 h-16 text-primary/40 mb-4" />
+          <h2 className="text-lg font-bold text-foreground mb-2">Inicia sesión para referir amigos</h2>
+          <p className="text-sm text-muted-foreground mb-6 text-center">
+            Necesitas una cuenta para generar tu enlace de referido único.
+          </p>
+          <Link to="/auth">
+            <Button className="bg-primary text-primary-foreground">Iniciar Sesión</Button>
+          </Link>
+        </main>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>
       <Header />
-      
-      <main className="py-6 px-4">
-        <div className="mb-6">
-          <span className="text-xs text-muted-foreground">ID # 0572564</span>
-          <h1 className="text-xl font-bold text-foreground">Recomendar un Amigo</h1>
+
+      <main className="py-6 px-4 space-y-5">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link to="/settings">
+              <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
+            </Link>
+            <h1 className="text-xl font-bold text-foreground">Referidos</h1>
+          </div>
+          <Button variant="ghost" size="icon" onClick={refresh} className="h-8 w-8">
+            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+          </Button>
         </div>
 
-        <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 mb-6">
-          <CardContent className="p-6 text-center">
-            <Gift className="w-16 h-16 mx-auto text-accent mb-4" />
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              Gane Hasta <span className="text-accent">$25</span> en
+        {/* Hero Card */}
+        <Card className="relative overflow-hidden border-primary/30 shadow-xl shadow-primary/10">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-accent/10 to-transparent" />
+          <img
+            src={brandLogo} alt="" aria-hidden="true"
+            className="absolute -bottom-6 -right-6 w-36 h-36 opacity-[0.06] pointer-events-none select-none"
+          />
+          <CardContent className="relative p-6 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-accent/15 mx-auto mb-4 flex items-center justify-center">
+              <Gift className="w-8 h-8 text-accent" />
+            </div>
+            <h2 className="text-2xl font-extrabold text-foreground mb-1">
+              Gana Hasta <span className="text-accent">$25</span>
             </h2>
-            <p className="text-lg text-primary font-semibold">Invitar a un Amigo</p>
+            <p className="text-sm text-primary font-semibold mb-1">
+              + 7 días gratis de suscripción
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Por cada amigo que se suscriba a un plan
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border mb-6">
-          <CardHeader>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-20 rounded-xl" />
+            ))
+          ) : (
+            <>
+              <StatCard
+                icon={Users} label="Total Referidos"
+                value={stats?.total ?? 0} color="text-primary" bg="bg-primary/10"
+              />
+              <StatCard
+                icon={CheckCircle2} label="Completados"
+                value={stats?.completed ?? 0} color="text-green-400" bg="bg-green-400/10"
+              />
+              <StatCard
+                icon={DollarSign} label="Ganado"
+                value={`$${stats?.totalEarned ?? 0}`} color="text-accent" bg="bg-accent/10"
+              />
+              <StatCard
+                icon={CalendarPlus} label="Días Extra"
+                value={stats?.totalDays ?? 0} color="text-blue-400" bg="bg-blue-400/10"
+              />
+            </>
+          )}
+        </div>
+
+        {/* Referral Link */}
+        <Card className="bg-card border-border">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-primary flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              Tu Enlace de Referido
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {loading ? (
+              <Skeleton className="h-10 w-full" />
+            ) : (
+              <>
+                <div className="flex gap-2">
+                  <Input
+                    value={referralLink || 'Generando...'}
+                    readOnly
+                    className="bg-secondary border-border text-xs font-mono"
+                  />
+                  <Button onClick={copyLink} variant="outline" size="icon" disabled={!referralLink}>
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+                {code && (
+                  <p className="text-center text-xs text-muted-foreground">
+                    Tu código: <span className="font-bold text-foreground tracking-wider">{code}</span>
+                  </p>
+                )}
+                <Button
+                  onClick={shareLink}
+                  disabled={!referralLink}
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold gap-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Compartir Invitación
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* How It Works */}
+        <Card className="bg-card border-border">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm text-primary">Así Funciona:</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                <Share2 className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Comparte Tu Enlace</p>
-                <p className="text-xs text-muted-foreground">
-                  Ayuda y recomienda a cuantos amigos quieras ver aumentar sus ganancias y las tuyas.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                <Users className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Sus amigos se unen a Coins Signals</p>
-                <p className="text-xs text-muted-foreground">
-                  Al registrarse con tu enlace y elegir cualquier plan de suscripción.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                <DollarSign className="w-4 h-4 text-accent" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Recibe hasta $25 en efectivo</p>
-                <p className="text-xs text-muted-foreground">
-                  De inmediato. Recibe tu ganancia directamente a tu cuenta.
-                </p>
-              </div>
-            </div>
+            <Step
+              icon={Share2} iconBg="bg-primary/15" iconColor="text-primary"
+              title="Comparte Tu Enlace"
+              desc="Envía tu enlace único a tus amigos traders."
+              step={1}
+            />
+            <Step
+              icon={Users} iconBg="bg-primary/15" iconColor="text-primary"
+              title="Tus Amigos se Registran"
+              desc="Se unen usando tu enlace y eligen un plan de suscripción."
+              step={2}
+            />
+            <Step
+              icon={Trophy} iconBg="bg-accent/15" iconColor="text-accent"
+              title="Recibe Recompensas"
+              desc="Obtén $25 en efectivo + 7 días gratis de suscripción por cada referido completado."
+              step={3}
+            />
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border mb-6">
-          <CardHeader>
-            <CardTitle className="text-sm text-primary">Tu Enlace de Referido</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input 
-                value={referralLink} 
-                readOnly 
-                className="bg-secondary border-border text-xs"
-              />
-              <Button onClick={copyLink} variant="outline" size="icon">
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
-            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-              <Share2 className="w-4 h-4 mr-2" />
-              Enviar Invitación
-            </Button>
-          </CardContent>
-        </Card>
-
+        {/* Referral History */}
         <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-sm text-primary">Historial De Referidos</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-primary flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Historial de Referidos
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {referralHistory.map((referral, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-secondary">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{referral.name}</p>
-                  <p className="text-xs text-muted-foreground">{referral.date}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-primary">{referral.bonus}</p>
-                  <p className="text-xs text-muted-foreground">{referral.status}</p>
-                </div>
+          <CardContent>
+            {loading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 rounded-lg" />
+                ))}
               </div>
-            ))}
+            ) : !stats?.referrals?.length ? (
+              <div className="text-center py-8">
+                <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Aún no tienes referidos. ¡Comparte tu enlace para comenzar!
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {stats.referrals.map((r) => (
+                  <div
+                    key={r.id}
+                    className={cn(
+                      'flex items-center justify-between p-3 rounded-lg',
+                      r.status === 'completed' ? 'bg-green-500/5 border border-green-500/15' : 'bg-secondary'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        'w-8 h-8 rounded-full flex items-center justify-center',
+                        r.status === 'completed' ? 'bg-green-500/15' : 'bg-muted-foreground/10'
+                      )}>
+                        {r.status === 'completed'
+                          ? <CheckCircle2 className="w-4 h-4 text-green-400" />
+                          : <Clock className="w-4 h-4 text-muted-foreground" />
+                        }
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(r.created_at).toLocaleDateString('es-ES')}
+                        </p>
+                        <p className={cn(
+                          'text-xs font-medium',
+                          r.status === 'completed' ? 'text-green-400' : 'text-muted-foreground'
+                        )}>
+                          {r.status === 'completed' ? 'Completado' : 'Pendiente'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-primary">${r.reward_amount}</p>
+                      <p className="text-[10px] text-muted-foreground">+{r.reward_days} días</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>
     </PageShell>
+  );
+}
+
+function StatCard({ icon: Icon, label, value, color, bg }: {
+  icon: any; label: string; value: string | number; color: string; bg: string;
+}) {
+  return (
+    <Card className="bg-card border-border">
+      <CardContent className="p-4 flex items-center gap-3">
+        <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', bg)}>
+          <Icon className={cn('w-5 h-5', color)} />
+        </div>
+        <div>
+          <p className="text-lg font-bold text-foreground">{value}</p>
+          <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function Step({ icon: Icon, iconBg, iconColor, title, desc, step }: {
+  icon: any; iconBg: string; iconColor: string; title: string; desc: string; step: number;
+}) {
+  return (
+    <div className="flex gap-3">
+      <div className="flex flex-col items-center">
+        <div className={cn('w-8 h-8 rounded-full flex items-center justify-center', iconBg)}>
+          <Icon className={cn('w-4 h-4', iconColor)} />
+        </div>
+        {step < 3 && <div className="w-px h-full bg-border mt-1" />}
+      </div>
+      <div className="pb-4">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+    </div>
   );
 }
