@@ -7,8 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Camera, Loader2, Save, Check, Mail, MapPin, Clock, User, CalendarDays, Shield } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  ArrowLeft, Camera, Loader2, Save, Check, Mail, MapPin, Clock, User, CalendarDays, Shield,
+  Phone, CreditCard, Play, Home
+} from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -64,8 +70,21 @@ const timezones = [
   { value: 'Asia/Shanghai', label: 'Shanghái', offset: 'UTC+8' },
 ];
 
+const TIER_LABELS: Record<string, string> = {
+  basico: 'Básico',
+  plus: 'Plus',
+  premium: 'Premium Pro Trader',
+};
+
+const TRADING_MODES = [
+  { value: 'demo', label: 'Demo', desc: 'Cuenta de práctica' },
+  { value: 'live', label: 'Live', desc: 'Cuenta real' },
+  { value: 'paper', label: 'Paper Trading', desc: 'Simulación con datos reales' },
+];
+
 export default function PersonalInfo() {
   const { user, profile, loading, updateProfile } = useAuth();
+  const { tier, subscribed, subscriptionEnd, loading: subLoading } = useSubscription();
   const { toast } = useToast();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -75,6 +94,10 @@ export default function PersonalInfo() {
   const [country, setCountry] = useState('');
   const [timezone, setTimezone] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [tradingMode, setTradingMode] = useState('demo');
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -91,20 +114,33 @@ export default function PersonalInfo() {
       setCountry(profile.country || '');
       setTimezone(profile.timezone || 'America/New_York');
       setAvatarUrl(profile.avatar_url);
+      // New fields - read from raw profile data
+      const raw = profile as any;
+      if (raw.date_of_birth) setDateOfBirth(new Date(raw.date_of_birth));
+      setAddress(raw.address || '');
+      setPhone(raw.phone || '');
+      setTradingMode(raw.trading_mode || 'demo');
     }
   }, [profile]);
 
   // Track changes
   useEffect(() => {
     if (!profile) return;
+    const raw = profile as any;
+    const currentDob = dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : '';
+    const profileDob = raw.date_of_birth || '';
     const changed =
       firstName !== (profile.first_name || '') ||
       lastName !== (profile.last_name || '') ||
       country !== (profile.country || '') ||
-      timezone !== (profile.timezone || 'America/New_York');
+      timezone !== (profile.timezone || 'America/New_York') ||
+      currentDob !== profileDob ||
+      address !== (raw.address || '') ||
+      phone !== (raw.phone || '') ||
+      tradingMode !== (raw.trading_mode || 'demo');
     setHasChanges(changed);
     if (changed) setSaved(false);
-  }, [firstName, lastName, country, timezone, profile]);
+  }, [firstName, lastName, country, timezone, dateOfBirth, address, phone, tradingMode, profile]);
 
   const getInitials = () => {
     const first = firstName?.charAt(0) || '';
@@ -152,12 +188,17 @@ export default function PersonalInfo() {
     if (!hasChanges) return;
     setSaving(true);
     try {
-      const { error } = await updateProfile({
+      const updateData: any = {
         first_name: firstName.trim() || null,
         last_name: lastName.trim() || null,
         country: country || null,
         timezone: timezone || null,
-      });
+        date_of_birth: dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : null,
+        address: address.trim() || null,
+        phone: phone.trim() || null,
+        trading_mode: tradingMode,
+      };
+      const { error } = await updateProfile(updateData);
       if (error) throw error;
       setSaved(true);
       setHasChanges(false);
@@ -206,7 +247,6 @@ export default function PersonalInfo() {
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
 
               <div className="relative flex items-center gap-4 p-5">
-                {/* Avatar */}
                 <div className="relative group">
                   <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 blur-sm" />
                   <Avatar className="relative w-20 h-20 border-2 border-cyan-500/30 ring-2 ring-cyan-400/10">
@@ -225,7 +265,6 @@ export default function PersonalInfo() {
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h2 className="text-base font-bold text-white truncate">
                     {firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Sin nombre'}
@@ -249,7 +288,6 @@ export default function PersonalInfo() {
                 </div>
               </div>
 
-              {/* Status badges */}
               <div className="flex items-center gap-2 px-5 pb-4">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
                   <Shield className="w-2.5 h-2.5" /> Email verificado
@@ -262,14 +300,62 @@ export default function PersonalInfo() {
               </div>
             </div>
 
-            {/* ═══ Personal Data Form ═══ */}
+            {/* ═══ Section 1: Datos Personales ═══ */}
             <SectionCard title="Datos Personales" icon={User}>
               <div className="grid grid-cols-2 gap-3">
                 <FormField label="Nombre" value={firstName} onChange={setFirstName} placeholder="Tu nombre" />
                 <FormField label="Apellido" value={lastName} onChange={setLastName} placeholder="Tu apellido" />
               </div>
 
+              {/* Fecha de nacimiento */}
               <div className="space-y-1.5 mt-3">
+                <Label className="text-[11px] font-medium text-slate-400">Fecha de Nacimiento</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className={cn(
+                      "w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-left transition-colors",
+                      "bg-[hsl(210,30%,10%)] border border-cyan-800/20 hover:border-cyan-600/30",
+                      dateOfBirth ? "text-white" : "text-slate-600"
+                    )}>
+                      <CalendarDays className="w-3.5 h-3.5 text-slate-500" />
+                      {dateOfBirth ? format(dateOfBirth, "d 'de' MMMM, yyyy", { locale: es }) : 'Selecciona tu fecha'}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-[hsl(220,40%,10%)] border-cyan-800/30" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dateOfBirth}
+                      onSelect={setDateOfBirth}
+                      disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                      captionLayout="dropdown-buttons"
+                      fromYear={1940}
+                      toYear={new Date().getFullYear() - 13}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Dirección */}
+              <div className="space-y-1.5 mt-3">
+                <Label className="text-[11px] font-medium text-slate-400">Dirección</Label>
+                <div className="relative">
+                  <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                  <Input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Tu dirección"
+                    className="bg-[hsl(210,30%,10%)] border-cyan-800/20 text-white text-sm h-10 pl-9 placeholder:text-slate-600 focus:border-cyan-500/40 hover:border-cyan-700/30 transition-colors"
+                  />
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* ═══ Section 2: Información de Contacto ═══ */}
+            <SectionCard title="Información de Contacto" icon={Mail}>
+              {/* Correo electrónico (read-only) */}
+              <div className="space-y-1.5">
                 <Label className="text-[11px] font-medium text-slate-400">Correo Electrónico</Label>
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-[hsl(210,30%,10%)] border border-cyan-800/15">
                   <Mail className="w-3.5 h-3.5 text-slate-600" />
@@ -277,6 +363,91 @@ export default function PersonalInfo() {
                   <Check className="w-3.5 h-3.5 text-emerald-500 ml-auto flex-shrink-0" />
                 </div>
                 <p className="text-[10px] text-slate-600">El correo no puede ser modificado</p>
+              </div>
+
+              {/* Número de celular */}
+              <div className="space-y-1.5 mt-3">
+                <Label className="text-[11px] font-medium text-slate-400">Número de Celular</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                  <Input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+57 300 123 4567"
+                    type="tel"
+                    className="bg-[hsl(210,30%,10%)] border-cyan-800/20 text-white text-sm h-10 pl-9 placeholder:text-slate-600 focus:border-cyan-500/40 hover:border-cyan-700/30 transition-colors"
+                  />
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* ═══ Section 3: Información de Suscripción ═══ */}
+            <SectionCard title="Información de Suscripción" icon={CreditCard}>
+              {/* Tipo de suscripción */}
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-medium text-slate-400">Tipo de Suscripción</Label>
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-[hsl(210,30%,10%)] border border-cyan-800/15">
+                  <CreditCard className="w-3.5 h-3.5 text-slate-600" />
+                  <span className={cn(
+                    "text-sm font-medium",
+                    subscribed ? "text-cyan-300" : "text-slate-500"
+                  )}>
+                    {subLoading ? 'Cargando...' : subscribed && tier ? TIER_LABELS[tier] || tier : 'Sin suscripción'}
+                  </span>
+                  {subscribed && (
+                    <span className="ml-auto inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+                      Activa
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Fecha de inicio / vencimiento */}
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <div className="space-y-1.5">
+                  <Label className="text-[11px] font-medium text-slate-400">Miembro Desde</Label>
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-[hsl(210,30%,10%)] border border-cyan-800/15">
+                    <CalendarDays className="w-3.5 h-3.5 text-slate-600" />
+                    <span className="text-xs text-slate-400">
+                      {memberSince || '—'}
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[11px] font-medium text-slate-400">Vencimiento</Label>
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-[hsl(210,30%,10%)] border border-cyan-800/15">
+                    <Clock className="w-3.5 h-3.5 text-slate-600" />
+                    <span className="text-xs text-slate-400">
+                      {subscriptionEnd ? format(new Date(subscriptionEnd), "dd/MM/yyyy") : '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modo de operación */}
+              <div className="space-y-1.5 mt-3">
+                <Label className="text-[11px] font-medium text-slate-400">Modo de Operación</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {TRADING_MODES.map(mode => (
+                    <button
+                      key={mode.value}
+                      onClick={() => setTradingMode(mode.value)}
+                      className={cn(
+                        'rounded-xl border px-2 py-2.5 text-center transition-all',
+                        tradingMode === mode.value
+                          ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 shadow-[0_0_12px_hsl(187,72%,50%,0.15)]'
+                          : 'bg-[hsl(210,30%,10%)] text-slate-400 border-cyan-800/15 hover:border-cyan-700/30'
+                      )}
+                    >
+                      <Play className={cn(
+                        "w-3 h-3 mx-auto mb-1",
+                        tradingMode === mode.value ? "text-cyan-400" : "text-slate-600"
+                      )} />
+                      <span className="text-xs font-bold block">{mode.label}</span>
+                      <span className="text-[9px] text-slate-500">{mode.desc}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </SectionCard>
 
