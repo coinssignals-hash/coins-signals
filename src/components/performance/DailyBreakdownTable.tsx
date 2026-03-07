@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { Card } from '@/components/ui/card';
 
 export interface DailyData {
   day: string;
@@ -21,9 +21,9 @@ interface DailyBreakdownTableProps {
 
 export function DailyBreakdownTable({ data, weekTotal, expandedDay, onToggleDay }: DailyBreakdownTableProps) {
   return (
-    <SignalStyleCard className="overflow-hidden">
+    <Card className="bg-card border-border overflow-hidden">
       {/* Header */}
-      <div className="grid grid-cols-6 gap-1 px-3 py-2 border-b border-border/50">
+      <div className="grid grid-cols-6 gap-1 px-3 py-2 border-b border-border">
         <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Día</div>
         <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">Total</div>
         <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">TP</div>
@@ -38,7 +38,7 @@ export function DailyBreakdownTable({ data, weekTotal, expandedDay, onToggleDay 
           key={dayData.day}
           onClick={() => onToggleDay(dayData.day)}
           className={cn(
-            'w-full grid grid-cols-6 gap-1 px-3 py-2.5 border-b border-border/30 hover:bg-primary/5 transition-all duration-200',
+            'w-full grid grid-cols-6 gap-1 px-3 py-2.5 border-b border-border/30 hover:bg-secondary/30 transition-all duration-200',
             expandedDay === dayData.day && 'bg-primary/5 border-l-2 border-l-primary'
           )}
         >
@@ -60,7 +60,7 @@ export function DailyBreakdownTable({ data, weekTotal, expandedDay, onToggleDay 
       ))}
 
       {/* Week Total Row */}
-      <div className="grid grid-cols-6 gap-1 px-3 py-2.5" style={{ background: 'linear-gradient(90deg, hsla(var(--primary)/0.08), transparent)' }}>
+      <div className="grid grid-cols-6 gap-1 px-3 py-2.5 bg-primary/5">
         <div className="flex flex-col text-xs">
           <span className="text-amber-400 font-bold">S{weekTotal.day}</span>
           <span className="text-[9px] text-muted-foreground tabular-nums">{weekTotal.date}</span>
@@ -71,6 +71,6 @@ export function DailyBreakdownTable({ data, weekTotal, expandedDay, onToggleDay 
         <div className="text-center text-xs text-emerald-400 font-extrabold tabular-nums">+{weekTotal.pipsWins}</div>
         <div className="text-center text-xs text-rose-400 font-extrabold tabular-nums">-{weekTotal.pipsLoss}</div>
       </div>
-    </SignalStyleCard>
+    </Card>
   );
 }
