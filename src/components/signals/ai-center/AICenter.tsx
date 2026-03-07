@@ -2,8 +2,8 @@ import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import {
   Brain, BarChart3, Target, FileText, Layers, Search,
-  Play, Loader2, Sparkles, TrendingUp, AlertTriangle, Zap, ChevronDown
-} from 'lucide-react';
+  Play, Loader2, Sparkles, TrendingUp, AlertTriangle, Zap, ChevronDown } from
+'lucide-react';
 import { AIModelConfig, AIModelSettings } from './AIModelConfig';
 import { AIModuleCard } from './AIModuleCard';
 import { AIResultPanel } from './AIResultPanel';
@@ -20,10 +20,10 @@ interface Props {
 }
 
 const POPULAR_PAIRS = [
-  'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF',
-  'AUD/USD', 'NZD/USD', 'EUR/GBP', 'EUR/JPY',
-  'GBP/JPY', 'XAU/USD',
-];
+'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF',
+'AUD/USD', 'NZD/USD', 'EUR/GBP', 'EUR/JPY',
+'GBP/JPY', 'XAU/USD'];
+
 
 type ModuleStatus = 'idle' | 'running' | 'done' | 'error';
 
@@ -33,7 +33,7 @@ export function AICenter({ onClose }: Props) {
   const [modelSettings, setModelSettings] = useState<AIModelSettings>({
     model: 'google/gemini-2.5-flash',
     temperature: 0.3,
-    maxTokens: 4096,
+    maxTokens: 4096
   });
   const [moduleStatuses, setModuleStatuses] = useState<Record<string, ModuleStatus>>({});
   const [showConfig, setShowConfig] = useState(false);
@@ -50,14 +50,14 @@ export function AICenter({ onClose }: Props) {
 
   const computeAllIndicators = useCallback(() => {
     if (!forexData?.candles) return null;
-    const ohlcv: OHLCVCandle[] = forexData.candles.map(c => ({
+    const ohlcv: OHLCVCandle[] = forexData.candles.map((c) => ({
       time: c.date, open: c.open, high: c.high, low: c.low, close: c.close, volume: c.volume
     }));
     const indicators = computeIndicators(ohlcv, {
       ema20: true, ema50: true, ema200: true,
       sessionSydney: false, sessionTokyo: false, sessionLondon: false, sessionNewYork: false,
       kzLondonOpen: false, kzNewYorkOpen: false, kzLondonNYOverlap: false, kzAsianRange: false,
-      kzHours: { ldnOpen: [7,9], nyOpen: [12,14], ldnNyOverlap: [12,16], asianRange: [0,4] },
+      kzHours: { ldnOpen: [7, 9], nyOpen: [12, 14], ldnNyOverlap: [12, 16], asianRange: [0, 4] }
     });
     const patterns = detectCandlePatterns(ohlcv);
     return { ...indicators, patterns };
@@ -66,19 +66,19 @@ export function AICenter({ onClose }: Props) {
   // Precomputed chart data with S/R, patterns, EMAs
   const chartData = useMemo(() => {
     if (!forexData?.candles) return null;
-    const ohlcv: OHLCVCandle[] = forexData.candles.map(c => ({
+    const ohlcv: OHLCVCandle[] = forexData.candles.map((c) => ({
       time: c.date, open: c.open, high: c.high, low: c.low, close: c.close, volume: c.volume
     }));
     const ind = computeIndicators(ohlcv, {
       ema20: true, ema50: true, ema200: false,
       sessionSydney: false, sessionTokyo: false, sessionLondon: false, sessionNewYork: false,
       kzLondonOpen: false, kzNewYorkOpen: false, kzLondonNYOverlap: false, kzAsianRange: false,
-      kzHours: { ldnOpen: [7,9], nyOpen: [12,14], ldnNyOverlap: [12,16], asianRange: [0,4] },
+      kzHours: { ldnOpen: [7, 9], nyOpen: [12, 14], ldnNyOverlap: [12, 16], asianRange: [0, 4] }
     });
     const patterns = detectCandlePatterns(ohlcv);
     const recent = ohlcv.slice(-24);
-    const support = Math.min(...recent.map(c => c.low));
-    const resistance = Math.max(...recent.map(c => c.high));
+    const support = Math.min(...recent.map((c) => c.low));
+    const resistance = Math.max(...recent.map((c) => c.high));
     return { ohlcv, patterns, support, resistance, ema20: ind.ema20, ema50: ind.ema50 };
   }, [forexData]);
 
@@ -86,16 +86,16 @@ export function AICenter({ onClose }: Props) {
     if (!forexData?.candles) {
       await handleFetchData();
     }
-    setModuleStatuses(prev => ({ ...prev, [module]: 'running' }));
+    setModuleStatuses((prev) => ({ ...prev, [module]: 'running' }));
     const indicators = computeAllIndicators();
     const result = await runModule(module, {
       symbol: activeSymbol,
       candles: forexData?.candles || [],
       indicators,
       model: modelSettings.model,
-      temperature: modelSettings.temperature,
+      temperature: modelSettings.temperature
     });
-    setModuleStatuses(prev => ({
+    setModuleStatuses((prev) => ({
       ...prev,
       [module]: result ? 'done' : 'error'
     }));
@@ -108,24 +108,24 @@ export function AICenter({ onClose }: Props) {
     const indicators = computeAllIndicators();
     const modules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'synthesize-analysis'];
     for (const mod of modules) {
-      setModuleStatuses(prev => ({ ...prev, [mod]: 'running' }));
+      setModuleStatuses((prev) => ({ ...prev, [mod]: 'running' }));
     }
     const allResults = await runFullAnalysis(activeSymbol, forexData?.candles || [], indicators);
     const newStatuses: Record<string, ModuleStatus> = {};
-    modules.forEach(mod => {
+    modules.forEach((mod) => {
       newStatuses[mod] = allResults?.[mod] ? 'done' : 'error';
     });
-    setModuleStatuses(prev => ({ ...prev, ...newStatuses }));
+    setModuleStatuses((prev) => ({ ...prev, ...newStatuses }));
   }, [forexData, handleFetchData, computeAllIndicators, runFullAnalysis, activeSymbol]);
 
-  const AI_MODULES: { id: AIModule; title: string; desc: string; icon: typeof Brain; accent: string }[] = [
-    { id: 'analyze-patterns', title: 'Análisis de Patrones', desc: 'Detecta formaciones y patrones de velas con IA', icon: BarChart3, accent: 'cyan' },
-    { id: 'predict-signals', title: 'Predicción de Señales', desc: 'Genera señales de trading inteligentes', icon: Target, accent: 'purple' },
-    { id: 'generate-report', title: 'Reporte Profesional', desc: 'Informe técnico detallado del mercado', icon: FileText, accent: 'emerald' },
-    { id: 'synthesize-analysis', title: 'Síntesis Multi-Modelo', desc: 'Análisis combinado con múltiples perspectivas', icon: Layers, accent: 'amber' },
-  ];
+  const AI_MODULES: {id: AIModule;title: string;desc: string;icon: typeof Brain;accent: string;}[] = [
+  { id: 'analyze-patterns', title: 'Análisis de Patrones', desc: 'Detecta formaciones y patrones de velas con IA', icon: BarChart3, accent: 'cyan' },
+  { id: 'predict-signals', title: 'Predicción de Señales', desc: 'Genera señales de trading inteligentes', icon: Target, accent: 'purple' },
+  { id: 'generate-report', title: 'Reporte Profesional', desc: 'Informe técnico detallado del mercado', icon: FileText, accent: 'emerald' },
+  { id: 'synthesize-analysis', title: 'Síntesis Multi-Modelo', desc: 'Análisis combinado con múltiples perspectivas', icon: Layers, accent: 'amber' }];
 
-  const completedModules = Object.values(moduleStatuses).filter(s => s === 'done').length;
+
+  const completedModules = Object.values(moduleStatuses).filter((s) => s === 'done').length;
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -137,7 +137,7 @@ export function AICenter({ onClose }: Props) {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, hsl(270, 80%, 55%), hsl(200, 90%, 50%))' }}>
+                style={{ background: 'linear-gradient(135deg, hsl(270, 80%, 55%), hsl(200, 90%, 50%))' }}>
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[hsl(205,100%,7%)]" />
@@ -151,11 +151,11 @@ export function AICenter({ onClose }: Props) {
               onClick={() => setShowConfig(!showConfig)}
               className={cn(
                 "p-2.5 rounded-xl transition-all duration-200",
-                showConfig
-                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/30 shadow-[0_0_12px_-3px_rgba(168,85,247,0.3)]"
-                  : "bg-white/5 text-cyan-300/60 hover:text-cyan-200 hover:bg-white/10 border border-white/10"
-              )}
-            >
+                showConfig ?
+                "bg-purple-500/20 text-purple-300 border border-purple-500/30 shadow-[0_0_12px_-3px_rgba(168,85,247,0.3)]" :
+                "bg-white/5 text-cyan-300/60 hover:text-cyan-200 hover:bg-white/10 border border-white/10"
+              )}>
+              
               <Sparkles className="w-5 h-5" />
             </button>
           </div>
@@ -179,14 +179,14 @@ export function AICenter({ onClose }: Props) {
       </SignalStyleCard>
 
       {/* Model Config (collapsible) */}
-      {showConfig && (
-        <div className="rounded-xl border border-cyan-800/30 overflow-hidden"
-          style={{ background: 'radial-gradient(ellipse at top center, hsl(200,100%,12%) 0%, hsl(210,100%,6%) 100%)' }}>
+      {showConfig &&
+      <div className="rounded-xl border border-cyan-800/30 overflow-hidden"
+      style={{ background: 'radial-gradient(ellipse at top center, hsl(200,100%,12%) 0%, hsl(210,100%,6%) 100%)' }}>
           <div className="p-4">
             <AIModelConfig settings={modelSettings} onChange={setModelSettings} />
           </div>
         </div>
-      )}
+      }
 
       {/* Symbol Selection */}
       <div className="space-y-2.5">
@@ -201,9 +201,9 @@ export function AICenter({ onClose }: Props) {
               className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all"
               style={{
                 background: 'hsl(210, 100%, 8%)',
-                border: '1px solid hsl(200, 60%, 20%)',
-              }}
-            />
+                border: '1px solid hsl(200, 60%, 20%)'
+              }} />
+            
           </div>
           <button
             onClick={handleFetchData}
@@ -212,48 +212,48 @@ export function AICenter({ onClose }: Props) {
             style={{
               background: 'linear-gradient(135deg, hsl(200, 90%, 45%), hsl(190, 80%, 40%))',
               color: 'white',
-              boxShadow: '0 0 16px -4px hsla(200, 90%, 50%, 0.3)',
-            }}
-          >
+              boxShadow: '0 0 16px -4px hsla(200, 90%, 50%, 0.3)'
+            }}>
+            
             {forexLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
             Datos
           </button>
         </div>
 
         {/* Quick pair chips */}
-        <div className="flex flex-wrap gap-1.5">
-          {POPULAR_PAIRS.map((pair) => (
-            <button
-              key={pair}
-              onClick={() => { setSymbol(pair); setCustomSymbol(''); }}
-              className={cn(
-                "px-2.5 py-1.5 rounded-lg text-[11px] font-semibold tracking-wide transition-all duration-200 active:scale-95",
-                (activeSymbol === pair && !customSymbol)
-                  ? "text-white shadow-[0_0_12px_-3px_hsla(200,90%,50%,0.4)]"
-                  : "text-slate-400 hover:text-slate-200"
-              )}
-              style={{
-                background: (activeSymbol === pair && !customSymbol)
-                  ? 'linear-gradient(135deg, hsl(200, 90%, 35%), hsl(210, 80%, 25%))'
-                  : 'hsl(210, 60%, 10%)',
-                border: `1px solid ${(activeSymbol === pair && !customSymbol)
-                  ? 'hsl(200, 80%, 45%)'
-                  : 'hsl(210, 40%, 18%)'}`,
-              }}
-            >
-              {pair}
-            </button>
-          ))}
-        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       </div>
 
       {/* Data Status */}
-      {forexData && (
-        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl"
-          style={{
-            background: 'hsl(160, 60%, 8%)',
-            border: '1px solid hsl(160, 50%, 20%)',
-          }}>
+      {forexData &&
+      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl"
+      style={{
+        background: 'hsl(160, 60%, 8%)',
+        border: '1px solid hsl(160, 50%, 20%)'
+      }}>
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
           <span className="text-xs text-white font-semibold font-mono">{forexData.symbol}</span>
           <span className="text-[11px] text-slate-400">
@@ -263,30 +263,30 @@ export function AICenter({ onClose }: Props) {
             Último: {forexData.candles[forexData.candles.length - 1]?.close.toFixed(5)}
           </span>
         </div>
-      )}
-      {forexError && (
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-          style={{
-            background: 'hsl(0, 60%, 8%)',
-            border: '1px solid hsl(0, 50%, 25%)',
-          }}>
+      }
+      {forexError &&
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
+      style={{
+        background: 'hsl(0, 60%, 8%)',
+        border: '1px solid hsl(0, 50%, 25%)'
+      }}>
           <AlertTriangle className="w-4 h-4 text-red-400" />
           <span className="text-xs text-red-300">{forexError}</span>
         </div>
-      )}
+      }
 
       {/* Interactive Candlestick Chart */}
-      {chartData && (
-        <AIChartPanel
-          candles={chartData.ohlcv}
-          patterns={chartData.patterns}
-          support={chartData.support}
-          resistance={chartData.resistance}
-          ema20={chartData.ema20}
-          ema50={chartData.ema50}
-          symbol={activeSymbol}
-        />
-      )}
+      {chartData &&
+      <AIChartPanel
+        candles={chartData.ohlcv}
+        patterns={chartData.patterns}
+        support={chartData.support}
+        resistance={chartData.resistance}
+        ema20={chartData.ema20}
+        ema50={chartData.ema50}
+        symbol={activeSymbol} />
+
+      }
 
       {/* Run All Button */}
       <button
@@ -296,14 +296,14 @@ export function AICenter({ onClose }: Props) {
         style={{
           background: 'linear-gradient(135deg, hsl(270, 80%, 50%), hsl(200, 90%, 45%))',
           color: 'white',
-          boxShadow: '0 4px 20px -4px hsla(270, 80%, 50%, 0.35)',
-        }}
-      >
-        {aiLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <Play className="w-5 h-5" />
-        )}
+          boxShadow: '0 4px 20px -4px hsla(270, 80%, 50%, 0.35)'
+        }}>
+        
+        {aiLoading ?
+        <Loader2 className="w-5 h-5 animate-spin" /> :
+
+        <Play className="w-5 h-5" />
+        }
         Ejecutar Análisis Completo
       </button>
 
@@ -314,108 +314,108 @@ export function AICenter({ onClose }: Props) {
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Módulos de Análisis</h3>
         </div>
         <div className="grid gap-2">
-          {AI_MODULES.map((mod) => (
-            <AIModuleCard
-              key={mod.id}
-              title={mod.title}
-              description={mod.desc}
-              icon={mod.icon}
-              status={moduleStatuses[mod.id] || 'idle'}
-              onRun={() => handleRunModule(mod.id)}
-              disabled={!forexData || aiLoading}
-            />
-          ))}
+          {AI_MODULES.map((mod) =>
+          <AIModuleCard
+            key={mod.id}
+            title={mod.title}
+            description={mod.desc}
+            icon={mod.icon}
+            status={moduleStatuses[mod.id] || 'idle'}
+            onRun={() => handleRunModule(mod.id)}
+            disabled={!forexData || aiLoading} />
+
+          )}
         </div>
       </div>
 
       {/* Error */}
-      {aiError && (
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-          style={{
-            background: 'hsl(0, 60%, 8%)',
-            border: '1px solid hsl(0, 50%, 25%)',
-          }}>
+      {aiError &&
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
+      style={{
+        background: 'hsl(0, 60%, 8%)',
+        border: '1px solid hsl(0, 50%, 25%)'
+      }}>
           <AlertTriangle className="w-4 h-4 text-red-400" />
           <span className="text-xs text-red-300">{aiError}</span>
         </div>
-      )}
+      }
 
       {/* Results */}
-      {Object.keys(results).length > 0 && (
-        <div className="space-y-3">
+      {Object.keys(results).length > 0 &&
+      <div className="space-y-3">
           <div className="flex items-center gap-2 px-1">
             <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(160, 70%, 45%), hsl(200, 90%, 50%))' }} />
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Resultados</h3>
           </div>
           {Object.entries(results).map(([key, result]) => {
-            const mod = AI_MODULES.find(m => m.id === key);
-            return (
-              <AIResultPanel
-                key={key}
-                result={result}
-                title={mod?.title || key}
-              />
-            );
-          })}
+          const mod = AI_MODULES.find((m) => m.id === key);
+          return (
+            <AIResultPanel
+              key={key}
+              result={result}
+              title={mod?.title || key} />);
+
+
+        })}
         </div>
-      )}
+      }
 
       {/* Create Signal Button */}
-      {chartData && !showSignalCreator && (
-        <button
-          onClick={() => setShowSignalCreator(true)}
-          className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.98]"
-          style={{
-            background: 'linear-gradient(135deg, hsl(160, 70%, 40%), hsl(200, 90%, 45%))',
-            color: 'white',
-            boxShadow: '0 4px 20px -4px hsla(160, 70%, 45%, 0.35)',
-          }}
-        >
+      {chartData && !showSignalCreator &&
+      <button
+        onClick={() => setShowSignalCreator(true)}
+        className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.98]"
+        style={{
+          background: 'linear-gradient(135deg, hsl(160, 70%, 40%), hsl(200, 90%, 45%))',
+          color: 'white',
+          boxShadow: '0 4px 20px -4px hsla(160, 70%, 45%, 0.35)'
+        }}>
+        
           <Zap className="w-5 h-5" />
           Crear Señal desde Análisis IA
         </button>
-      )}
+      }
 
       {/* Signal Creator Form */}
-      {showSignalCreator && chartData && (
-        <AISignalCreator
-          draft={{
-            currencyPair: activeSymbol.replace('/', ''),
-            action: (() => {
-              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
-              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
-              return last && prev && last.close > prev.close ? 'BUY' : 'SELL';
-            })(),
-            entryPrice: chartData.ohlcv[chartData.ohlcv.length - 1]?.close || 0,
-            takeProfit: (() => {
-              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
-              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
-              const isBuy = last && prev && last.close > prev.close;
-              const entry = last?.close || 0;
-              const range = chartData.resistance - chartData.support;
-              return isBuy ? entry + range * 0.5 : entry - range * 0.5;
-            })(),
-            stopLoss: (() => {
-              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
-              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
-              const isBuy = last && prev && last.close > prev.close;
-              const entry = last?.close || 0;
-              const range = chartData.resistance - chartData.support;
-              return isBuy ? entry - range * 0.3 : entry + range * 0.3;
-            })(),
-            support: chartData.support,
-            resistance: chartData.resistance,
-            probability: 65,
-            trend: (() => {
-              const last = chartData.ohlcv[chartData.ohlcv.length - 1];
-              const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
-              return last && prev && last.close > prev.close ? 'bullish' : 'bearish';
-            })(),
-          }}
-          onCreated={() => { setShowSignalCreator(false); onClose(); }}
-          onCancel={() => setShowSignalCreator(false)}
-        />
-      )}
-    </div>
-  );
+      {showSignalCreator && chartData &&
+      <AISignalCreator
+        draft={{
+          currencyPair: activeSymbol.replace('/', ''),
+          action: (() => {
+            const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+            const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+            return last && prev && last.close > prev.close ? 'BUY' : 'SELL';
+          })(),
+          entryPrice: chartData.ohlcv[chartData.ohlcv.length - 1]?.close || 0,
+          takeProfit: (() => {
+            const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+            const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+            const isBuy = last && prev && last.close > prev.close;
+            const entry = last?.close || 0;
+            const range = chartData.resistance - chartData.support;
+            return isBuy ? entry + range * 0.5 : entry - range * 0.5;
+          })(),
+          stopLoss: (() => {
+            const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+            const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+            const isBuy = last && prev && last.close > prev.close;
+            const entry = last?.close || 0;
+            const range = chartData.resistance - chartData.support;
+            return isBuy ? entry - range * 0.3 : entry + range * 0.3;
+          })(),
+          support: chartData.support,
+          resistance: chartData.resistance,
+          probability: 65,
+          trend: (() => {
+            const last = chartData.ohlcv[chartData.ohlcv.length - 1];
+            const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
+            return last && prev && last.close > prev.close ? 'bullish' : 'bearish';
+          })()
+        }}
+        onCreated={() => {setShowSignalCreator(false);onClose();}}
+        onCancel={() => setShowSignalCreator(false)} />
+
+      }
+    </div>);
+
 }
