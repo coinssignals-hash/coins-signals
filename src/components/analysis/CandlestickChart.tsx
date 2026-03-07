@@ -619,24 +619,24 @@ export function CandlestickChart({
           <div
             className="absolute z-30 pointer-events-none transition-opacity duration-150"
             style={{
-              left: tooltip.x > (containerRef.current?.clientWidth ?? 0) * 0.7 ? tooltip.x - 160 : tooltip.x + 16,
-              top: Math.max(4, tooltip.y - 10),
+              left: tooltip.x > (containerRef.current?.clientWidth ?? 0) * 0.6 ? tooltip.x - 140 : tooltip.x + 12,
+              top: Math.max(8, Math.min(tooltip.y - 8, (containerRef.current?.clientHeight ?? 300) - 120)),
             }}
           >
             <div
-              className="rounded-lg px-3 py-2 text-xs font-mono shadow-xl backdrop-blur-sm"
-              style={{ background: 'rgba(5,13,26,0.93)', border: '1px solid rgba(100,116,139,0.25)' }}
+              className="rounded-xl px-3 py-2.5 shadow-2xl backdrop-blur-md"
+              style={{ background: 'rgba(3,10,22,0.95)', border: '1px solid rgba(6,182,212,0.15)', boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 12px rgba(6,182,212,0.08)' }}
             >
-              <div className="text-slate-400 mb-1.5 text-[10px] border-b border-white/5 pb-1">{fmtTimeLabel(tooltipCandle.time)}</div>
-              <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">
-                <span className="text-slate-500">O</span>
-                <span className="text-slate-200 text-right">{fmtPrice(tooltipCandle.open, jpy)}</span>
-                <span className="text-slate-500">H</span>
-                <span className="text-green-400 text-right">{fmtPrice(tooltipCandle.high, jpy)}</span>
-                <span className="text-slate-500">L</span>
-                <span className="text-red-400 text-right">{fmtPrice(tooltipCandle.low, jpy)}</span>
-                <span className="text-slate-500">C</span>
-                <span className={cn('text-right font-semibold', isUp ? 'text-green-400' : 'text-red-400')}>
+              <div className="text-cyan-400/70 mb-1.5 text-[10px] font-medium border-b border-cyan-900/20 pb-1.5 tracking-wide">{fmtTimeLabel(tooltipCandle.time)}</div>
+              <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                <span className="text-[10px] text-slate-500 font-medium">O</span>
+                <span className="text-[11px] text-slate-200 text-right font-mono tabular-nums">{fmtPrice(tooltipCandle.open, jpy)}</span>
+                <span className="text-[10px] text-slate-500 font-medium">H</span>
+                <span className="text-[11px] text-green-400 text-right font-mono tabular-nums font-semibold">{fmtPrice(tooltipCandle.high, jpy)}</span>
+                <span className="text-[10px] text-slate-500 font-medium">L</span>
+                <span className="text-[11px] text-red-400 text-right font-mono tabular-nums font-semibold">{fmtPrice(tooltipCandle.low, jpy)}</span>
+                <span className="text-[10px] text-slate-500 font-medium">C</span>
+                <span className={cn('text-[11px] text-right font-mono tabular-nums font-bold', isUp ? 'text-green-400' : 'text-red-400')}>
                   {fmtPrice(tooltipCandle.close, jpy)}
                 </span>
               </div>
