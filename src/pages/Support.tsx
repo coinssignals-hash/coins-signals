@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle, Send, Upload, MapPin, Phone, Mail,
@@ -17,7 +16,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 /* ─── FAQ data ─── */
 const faqCategories = [
@@ -55,7 +53,7 @@ const helpTopics = [
   { id: 'technical', label: 'Soporte Técnico', icon: HelpCircle },
 ];
 
-/* ─── Chat messages type ─── */
+/* ─── Chat ─── */
 interface ChatMessage {
   id: number;
   from: 'user' | 'bot';
@@ -75,170 +73,243 @@ function getNow() {
   return new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
 }
 
-/* ─── Main Component ─── */
+/* ─── Section selector ─── */
+type Section = 'main' | 'faq' | 'chat' | 'ticket';
+
 export default function Support() {
   const { user, profile } = useAuth();
-  const [activeTab, setActiveTab] = useState('help');
+  const [section, setSection] = useState<Section>('main');
 
   return (
     <PageShell>
       <Header />
-      <main className="py-4 px-3 space-y-4">
-        {/* Hero */}
-        <SignalStyleCard label="Centro de Soporte">
-          <div className="px-4 pb-4 pt-1">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                <Headphones className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-base font-bold text-foreground">Contacto y Soporte</h1>
-                <p className="text-[11px] text-muted-foreground">
-                  ID #{user?.id?.slice(0, 8) || '0572564'} · {profile?.first_name || 'Trader'}
-                </p>
-              </div>
-            </div>
-            {/* Status indicators */}
-            <div className="grid grid-cols-3 gap-2">
-              <StatusPill icon={CheckCircle2} label="Chat Activo" color="text-emerald-400" />
-              <StatusPill icon={Clock} label="< 2h Email" color="text-amber-400" />
-              <StatusPill icon={Globe} label="24/7" color="text-primary" />
-            </div>
-          </div>
-        </SignalStyleCard>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full bg-secondary/60 border border-border h-9 p-0.5">
-            <TabsTrigger value="help" className="text-xs flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-              <HelpCircle className="w-3.5 h-3.5 mr-1" /> Ayuda
-            </TabsTrigger>
-            <TabsTrigger value="chat" className="text-xs flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-              <MessageCircle className="w-3.5 h-3.5 mr-1" /> Chat
-            </TabsTrigger>
-            <TabsTrigger value="ticket" className="text-xs flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-              <Send className="w-3.5 h-3.5 mr-1" /> Ticket
-            </TabsTrigger>
-            <TabsTrigger value="contact" className="text-xs flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-              <Phone className="w-3.5 h-3.5 mr-1" /> Info
-            </TabsTrigger>
-          </TabsList>
+      <main className="py-6 px-4">
+        {/* Page header — always visible */}
+        <div className="mb-6">
+          <span className="text-xs text-muted-foreground">ID # {user?.id?.slice(0, 7) || '0572564'}</span>
+          <h1 className="text-xl font-bold text-foreground">Contacto y Soporte</h1>
+        </div>
 
-          <TabsContent value="help"><HelpTab /></TabsContent>
-          <TabsContent value="chat"><ChatTab userName={profile?.first_name || 'Trader'} /></TabsContent>
-          <TabsContent value="ticket"><TicketTab /></TabsContent>
-          <TabsContent value="contact"><ContactTab /></TabsContent>
-        </Tabs>
+        <AnimatePresence mode="wait">
+          {section === 'main' && <MainSection key="main" onNavigate={setSection} />}
+          {section === 'faq' && <FAQSection key="faq" onBack={() => setSection('main')} />}
+          {section === 'chat' && <ChatSection key="chat" onBack={() => setSection('main')} userName={profile?.first_name || 'Trader'} />}
+          {section === 'ticket' && <TicketSection key="ticket" onBack={() => setSection('main')} />}
+        </AnimatePresence>
       </main>
     </PageShell>
   );
 }
 
-/* ─── Status Pill ─── */
-function StatusPill({ icon: Icon, label, color }: { icon: any; label: string; color: string }) {
+/* ━━━━━━━━━━━━━━━━━━ MAIN ━━━━━━━━━━━━━━━━━━ */
+function MainSection({ onNavigate }: { onNavigate: (s: Section) => void }) {
   return (
-    <div className="flex items-center gap-1.5 bg-secondary/60 rounded-lg px-2 py-1.5 border border-border/50">
-      <Icon className={`w-3.5 h-3.5 ${color}`} />
-      <span className="text-[10px] text-muted-foreground font-medium">{label}</span>
-    </div>
+    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-6">
+      {/* Welcome */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary flex items-center gap-2">
+            <Headphones className="w-4 h-4" />
+            Bienvenido, ¿Cómo te Podemos Ayudar?
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Encuentra la mejor manera para resolver tus dudas.
+          </p>
+
+          {/* Status */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-[10px] text-muted-foreground">Chat Activo</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-[10px] text-muted-foreground">&lt; 2h Email</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
+              <Globe className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[10px] text-muted-foreground">24/7</span>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => onNavigate('chat')}>
+              <MessageCircle className="w-6 h-6 text-primary" />
+              <span className="text-xs">Chat En Vivo</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-4 flex-col gap-2"
+              onClick={() => window.open('https://wa.me/34600000000?text=Hola,%20necesito%20ayuda', '_blank')}
+            >
+              <Send className="w-6 h-6 text-primary" />
+              <span className="text-xs">Whatsapp</span>
+            </Button>
+          </div>
+
+          {/* Extra nav */}
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" className="h-auto py-3 flex-col gap-1.5" onClick={() => onNavigate('faq')}>
+              <HelpCircle className="w-5 h-5 text-primary" />
+              <span className="text-xs">Preguntas Frecuentes</span>
+            </Button>
+            <Button variant="outline" className="h-auto py-3 flex-col gap-1.5" onClick={() => onNavigate('ticket')}>
+              <Mail className="w-5 h-5 text-primary" />
+              <span className="text-xs">Enviar Ticket</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Contact info */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary">Canales de Comunicación</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <ContactRow icon={MessageCircle} title="Chat En Vivo" detail="Lun–Vie: 8:00 – 22:00 UTC" color="text-emerald-400" />
+          <ContactRow icon={Phone} title="WhatsApp Business" detail="+34 600 000 000" color="text-green-400" onClick={() => window.open('https://wa.me/34600000000', '_blank')} />
+          <ContactRow icon={Mail} title="Email" detail="soporte@ecosignal.ai" color="text-primary" onClick={() => window.open('mailto:soporte@ecosignal.ai', '_blank')} />
+        </CardContent>
+      </Card>
+
+      {/* Offices */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary">Ubicación y Teléfonos</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">Oficinas Internacionales</p>
+          <div className="grid gap-4">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary">
+              <MapPin className="w-5 h-5 text-primary mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-foreground">Malta</p>
+                <p className="text-xs text-muted-foreground">Marija Immakulata, Gzira 1326</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary">
+              <MapPin className="w-5 h-5 text-primary mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-foreground">Netherlands</p>
+                <p className="text-xs text-muted-foreground">Boomgaardstraat 12, Fijnaart 2544</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Legal */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary">Legal</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-2">
+            {['Términos de Uso', 'Política de Privacidad', 'Aviso de Riesgo', 'Política de Reembolso'].map(l => (
+              <button key={l} className="flex items-center gap-1.5 bg-secondary border border-border/50 rounded-lg px-3 py-2 hover:bg-secondary/80 transition-colors text-left w-full">
+                <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                <span className="text-[11px] text-foreground">{l}</span>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
-/* ━━━━━━━━━━━━━━━━━━ HELP TAB ━━━━━━━━━━━━━━━━━━ */
-function HelpTab() {
+function ContactRow({ icon: Icon, title, detail, color, onClick }: any) {
+  return (
+    <button onClick={onClick} className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-left">
+      <Icon className={`w-5 h-5 ${color}`} />
+      <div className="flex-1">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground">{detail}</p>
+      </div>
+      {onClick && <ArrowRight className="w-4 h-4 text-muted-foreground" />}
+    </button>
+  );
+}
+
+/* ━━━━━━━━━━━━━━━━━━ FAQ ━━━━━━━━━━━━━━━━━━ */
+function FAQSection({ onBack }: { onBack: () => void }) {
   const [searchQ, setSearchQ] = useState('');
   const [openIdx, setOpenIdx] = useState<string | null>(null);
 
   const filtered = faqCategories.map(cat => ({
     ...cat,
-    items: cat.items.filter(
-      i => !searchQ || i.q.toLowerCase().includes(searchQ.toLowerCase()) || i.a.toLowerCase().includes(searchQ.toLowerCase())
+    items: cat.items.filter(i =>
+      !searchQ || i.q.toLowerCase().includes(searchQ.toLowerCase()) || i.a.toLowerCase().includes(searchQ.toLowerCase())
     ),
   })).filter(cat => cat.items.length > 0);
 
   return (
-    <div className="space-y-3 mt-3">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar en preguntas frecuentes..."
-          value={searchQ}
-          onChange={e => setSearchQ(e.target.value)}
-          className="pl-9 bg-secondary/60 border-border text-sm h-9"
-        />
-      </div>
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+      <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">
+        ← Volver
+      </Button>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-2">
-        <QuickActionBtn icon={MessageCircle} label="Chat En Vivo" sub="Respuesta inmediata" onClick={() => {}} color="text-emerald-400" />
-        <QuickActionBtn
-          icon={Phone}
-          label="WhatsApp"
-          sub="Línea directa"
-          onClick={() => window.open('https://wa.me/34600000000?text=Hola,%20necesito%20ayuda', '_blank')}
-          color="text-green-400"
-        />
-      </div>
-
-      {/* FAQ */}
-      {filtered.map((cat) => (
-        <SignalStyleCard key={cat.label} label={cat.label}>
-          <div className="px-3 pb-3 space-y-1">
-            {cat.items.map((item, i) => {
-              const key = `${cat.label}-${i}`;
-              const isOpen = openIdx === key;
-              return (
-                <motion.div key={key} layout className="border-b border-border/30 last:border-0">
-                  <button
-                    onClick={() => setOpenIdx(isOpen ? null : key)}
-                    className="w-full flex items-start gap-2 py-2.5 text-left"
-                  >
-                    <HelpCircle className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
-                    <span className="text-xs text-foreground font-medium flex-1">{item.q}</span>
-                    {isOpen ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
-                  </button>
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-[11px] text-muted-foreground pb-3 pl-5 leading-relaxed">{item.a}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary flex items-center gap-2">
+            <HelpCircle className="w-4 h-4" /> Preguntas Frecuentes
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar en preguntas frecuentes..."
+              value={searchQ}
+              onChange={e => setSearchQ(e.target.value)}
+              className="pl-9 bg-secondary border-border"
+            />
           </div>
-        </SignalStyleCard>
-      ))}
-    </div>
+
+          {filtered.map(cat => (
+            <div key={cat.label}>
+              <div className="flex items-center gap-2 mb-2">
+                <cat.icon className="w-4 h-4 text-primary" />
+                <span className="text-xs font-semibold text-foreground">{cat.label}</span>
+              </div>
+              <div className="space-y-1">
+                {cat.items.map((item, i) => {
+                  const key = `${cat.label}-${i}`;
+                  const isOpen = openIdx === key;
+                  return (
+                    <div key={key} className="border-b border-border/30 last:border-0">
+                      <button onClick={() => setOpenIdx(isOpen ? null : key)} className="w-full flex items-center gap-2 py-2.5 text-left">
+                        <HelpCircle className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="text-xs text-foreground font-medium flex-1">{item.q}</span>
+                        {isOpen ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
+                      </button>
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                            <p className="text-[11px] text-muted-foreground pb-3 pl-5 leading-relaxed">{item.a}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
-function QuickActionBtn({ icon: Icon, label, sub, onClick, color }: any) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-2.5 bg-secondary/60 border border-border/50 rounded-xl px-3 py-3 hover:bg-secondary/80 transition-colors text-left"
-    >
-      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-        <Icon className={`w-4.5 h-4.5 ${color}`} />
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-foreground">{label}</p>
-        <p className="text-[10px] text-muted-foreground">{sub}</p>
-      </div>
-    </button>
-  );
-}
-
-/* ━━━━━━━━━━━━━━━━━━ CHAT TAB ━━━━━━━━━━━━━━━━━━ */
-function ChatTab({ userName }: { userName: string }) {
+/* ━━━━━━━━━━━━━━━━━━ CHAT ━━━━━━━━━━━━━━━━━━ */
+function ChatSection({ onBack, userName }: { onBack: () => void; userName: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 1, from: 'bot', text: `¡Hola ${userName}! 👋 Soy el asistente de EcoSignal AI. ¿En qué puedo ayudarte hoy?`, time: getNow() },
   ]);
@@ -265,16 +336,19 @@ function ChatTab({ userName }: { userName: string }) {
   };
 
   return (
-    <div className="mt-3">
-      <SignalStyleCard>
-        <div className="px-3 pt-3 pb-2">
-          {/* Chat header */}
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/30">
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+      <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">
+        ← Volver
+      </Button>
+
+      <Card className="bg-card border-border">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
               <Bot className="w-4 h-4 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-xs font-semibold text-foreground">EcoSignal AI Assistant</p>
+              <CardTitle className="text-sm text-foreground">EcoSignal AI Assistant</CardTitle>
               <div className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-[10px] text-emerald-400">En línea</span>
@@ -284,9 +358,10 @@ function ChatTab({ userName }: { userName: string }) {
               <Sparkles className="w-3 h-3 mr-0.5" /> AI
             </Badge>
           </div>
-
+        </CardHeader>
+        <CardContent className="space-y-3">
           {/* Messages */}
-          <div className="h-[320px] overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+          <div className="h-[340px] overflow-y-auto space-y-2 pr-1">
             {messages.map(msg => (
               <motion.div
                 key={msg.id}
@@ -296,17 +371,17 @@ function ChatTab({ userName }: { userName: string }) {
               >
                 <div className={`max-w-[80%] rounded-xl px-3 py-2 ${
                   msg.from === 'user'
-                    ? 'bg-primary/20 border border-primary/30 text-foreground'
-                    : 'bg-secondary/80 border border-border/50 text-foreground'
+                    ? 'bg-primary/20 border border-primary/30'
+                    : 'bg-secondary border border-border/50'
                 }`}>
-                  <p className="text-xs leading-relaxed">{msg.text}</p>
+                  <p className="text-xs text-foreground leading-relaxed">{msg.text}</p>
                   <p className="text-[9px] text-muted-foreground mt-1 text-right">{msg.time}</p>
                 </div>
               </motion.div>
             ))}
             {typing && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                <div className="bg-secondary/80 border border-border/50 rounded-xl px-4 py-2.5 flex gap-1">
+                <div className="bg-secondary border border-border/50 rounded-xl px-4 py-2.5 flex gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -317,26 +392,26 @@ function ChatTab({ userName }: { userName: string }) {
           </div>
 
           {/* Input */}
-          <div className="flex gap-2 mt-3 pt-2 border-t border-border/30">
+          <div className="flex gap-2 pt-2 border-t border-border/30">
             <Input
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMessage()}
               placeholder="Escribe un mensaje..."
-              className="flex-1 h-9 text-xs bg-secondary/60 border-border"
+              className="flex-1 bg-secondary border-border"
             />
-            <Button size="icon" className="h-9 w-9 shrink-0" onClick={sendMessage} disabled={!input.trim()}>
+            <Button size="icon" onClick={sendMessage} disabled={!input.trim()}>
               <Send className="w-4 h-4" />
             </Button>
           </div>
-        </div>
-      </SignalStyleCard>
-    </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
-/* ━━━━━━━━━━━━━━━━━━ TICKET TAB ━━━━━━━━━━━━━━━━━━ */
-function TicketTab() {
+/* ━━━━━━━━━━━━━━━━━━ TICKET ━━━━━━━━━━━━━━━━━━ */
+function TicketSection({ onBack }: { onBack: () => void }) {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
@@ -350,7 +425,6 @@ function TicketTab() {
       return;
     }
     setSending(true);
-    // Simulate sending
     await new Promise(r => setTimeout(r, 1500));
     setSending(false);
     toast({ title: '✅ Ticket enviado', description: 'Recibirás una respuesta en menos de 2 horas.' });
@@ -361,58 +435,74 @@ function TicketTab() {
   };
 
   return (
-    <div className="space-y-3 mt-3">
-      <SignalStyleCard label="Nueva Solicitud">
-        <div className="px-3 pb-3 space-y-3">
-          {/* Topic */}
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5 block">Asunto</label>
-            <div className="flex flex-wrap gap-1.5">
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+      <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">
+        ← Volver
+      </Button>
+
+      {/* Form */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary">Envíanos una Solicitud</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Envíanos un mensaje con todas tus dudas y te responderemos en el menor tiempo posible.
+          </p>
+
+          {/* Search help */}
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Buscar Ayuda</label>
+            <Input placeholder="Escribe tu consulta..." className="bg-secondary border-border" />
+          </div>
+
+          {/* Topics */}
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Asunto</label>
+            <div className="flex flex-wrap gap-2">
               {helpTopics.map(t => (
-                <button
+                <Button
                   key={t.id}
+                  variant={selectedTopic === t.id ? 'default' : 'outline'}
+                  size="sm"
                   onClick={() => setSelectedTopic(t.id)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
-                    selectedTopic === t.id
-                      ? 'bg-primary/20 border-primary/50 text-primary'
-                      : 'bg-secondary/40 border-border/50 text-muted-foreground hover:text-foreground'
-                  }`}
+                  className="text-xs gap-1"
                 >
                   <t.icon className="w-3 h-3" />
                   {t.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* Subject */}
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5 block">Título</label>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Título</label>
             <Input
               value={subject}
               onChange={e => setSubject(e.target.value)}
               placeholder="Resumen breve del problema..."
-              className="h-9 text-xs bg-secondary/60 border-border"
+              className="bg-secondary border-border"
             />
           </div>
 
           {/* Message */}
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5 block">Mensaje</label>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Mensaje</label>
             <Textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
-              placeholder="Describe tu problema o consulta en detalle..."
-              className="bg-secondary/60 border-border min-h-[100px] text-xs"
+              placeholder="Describe tu problema o consulta..."
+              className="bg-secondary border-border min-h-[100px]"
             />
           </div>
 
           {/* File */}
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5 block">Adjuntar Archivo</label>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Archivos Adjuntos (opcional)</label>
             <input ref={fileRef} type="file" className="hidden" accept="image/*,.pdf" onChange={e => setFile(e.target.files?.[0] || null)} />
             {file ? (
-              <div className="flex items-center gap-2 bg-secondary/60 border border-border/50 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 bg-secondary border border-border/50 rounded-md px-3 py-2">
                 <Paperclip className="w-3.5 h-3.5 text-primary" />
                 <span className="text-xs text-foreground flex-1 truncate">{file.name}</span>
                 <button onClick={() => setFile(null)}>
@@ -420,47 +510,52 @@ function TicketTab() {
                 </button>
               </div>
             ) : (
-              <Button variant="outline" size="sm" className="w-full text-xs h-9" onClick={() => fileRef.current?.click()}>
-                <Upload className="w-3.5 h-3.5 mr-1.5" /> Subir Captura o PDF
+              <Button variant="outline" className="w-full" onClick={() => fileRef.current?.click()}>
+                <Upload className="w-4 h-4 mr-2" />
+                Subir Archivo
               </Button>
             )}
           </div>
 
           {/* Submit */}
           <Button
-            className="w-full h-10 text-xs font-semibold"
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
             onClick={handleSubmit}
             disabled={sending || !selectedTopic || !message.trim()}
           >
             {sending ? (
               <span className="flex items-center gap-2">
-                <span className="w-3.5 h-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
                 Enviando...
               </span>
             ) : (
               <>
-                <Send className="w-3.5 h-3.5 mr-1.5" /> Enviar Ticket
+                <Send className="w-4 h-4 mr-2" />
+                Enviar
               </>
             )}
           </Button>
-        </div>
-      </SignalStyleCard>
+        </CardContent>
+      </Card>
 
-      {/* Recent Tickets (mock) */}
-      <SignalStyleCard label="Tickets Recientes">
-        <div className="px-3 pb-3 space-y-2">
+      {/* Recent Tickets */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-sm text-primary">Tickets Recientes</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
           <TicketRow id="TK-4821" topic="Señales" status="resolved" date="05 Mar" summary="Señal EUR/USD no se cerró automáticamente" />
           <TicketRow id="TK-4798" topic="Pagos" status="open" date="03 Mar" summary="Cobro duplicado en suscripción mensual" />
           <TicketRow id="TK-4756" topic="Cuenta" status="resolved" date="28 Feb" summary="Solicitud de verificación KYC" />
-        </div>
-      </SignalStyleCard>
-    </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
 function TicketRow({ id, topic, status, date, summary }: { id: string; topic: string; status: 'open' | 'resolved'; date: string; summary: string }) {
   return (
-    <div className="flex items-center gap-2.5 bg-secondary/40 border border-border/30 rounded-lg px-3 py-2.5">
+    <div className="flex items-center gap-2.5 p-3 rounded-lg bg-secondary">
       {status === 'resolved'
         ? <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
         : <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
@@ -468,108 +563,11 @@ function TicketRow({ id, topic, status, date, summary }: { id: string; topic: st
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] font-mono text-primary">{id}</span>
-          <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5 border-border/50">{topic}</Badge>
+          <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">{topic}</Badge>
         </div>
-        <p className="text-[11px] text-foreground truncate">{summary}</p>
+        <p className="text-xs text-foreground truncate">{summary}</p>
       </div>
       <span className="text-[10px] text-muted-foreground shrink-0">{date}</span>
     </div>
-  );
-}
-
-/* ━━━━━━━━━━━━━━━━━━ CONTACT TAB ━━━━━━━━━━━━━━━━━━ */
-function ContactTab() {
-  return (
-    <div className="space-y-3 mt-3">
-      {/* Contact Methods */}
-      <SignalStyleCard label="Canales de Comunicación">
-        <div className="px-3 pb-3 space-y-2">
-          <ContactMethodCard
-            icon={MessageCircle}
-            title="Chat En Vivo"
-            subtitle="Respuesta inmediata durante horario de mercado"
-            detail="Lun–Vie: 8:00 – 22:00 UTC"
-            color="text-emerald-400"
-          />
-          <ContactMethodCard
-            icon={Phone}
-            title="WhatsApp Business"
-            subtitle="Soporte prioritario para suscriptores Premium"
-            detail="+34 600 000 000"
-            color="text-green-400"
-            action={() => window.open('https://wa.me/34600000000', '_blank')}
-          />
-          <ContactMethodCard
-            icon={Mail}
-            title="Email"
-            subtitle="Respuesta en menos de 2 horas hábiles"
-            detail="soporte@ecosignal.ai"
-            color="text-primary"
-            action={() => window.open('mailto:soporte@ecosignal.ai', '_blank')}
-          />
-        </div>
-      </SignalStyleCard>
-
-      {/* Offices */}
-      <SignalStyleCard label="Oficinas Internacionales">
-        <div className="px-3 pb-3 space-y-2">
-          <OfficeCard country="🇲🇹 Malta" address="Marija Immakulata, Gzira 1326" timezone="CET (UTC+1)" />
-          <OfficeCard country="🇳🇱 Netherlands" address="Boomgaardstraat 12, Fijnaart 2544" timezone="CET (UTC+1)" />
-        </div>
-      </SignalStyleCard>
-
-      {/* Legal */}
-      <SignalStyleCard label="Legal">
-        <div className="px-3 pb-3">
-          <div className="grid grid-cols-2 gap-2">
-            <LegalLink label="Términos de Uso" />
-            <LegalLink label="Política de Privacidad" />
-            <LegalLink label="Aviso de Riesgo" />
-            <LegalLink label="Política de Reembolso" />
-          </div>
-        </div>
-      </SignalStyleCard>
-    </div>
-  );
-}
-
-function ContactMethodCard({ icon: Icon, title, subtitle, detail, color, action }: any) {
-  return (
-    <button
-      onClick={action}
-      className="w-full flex items-center gap-3 bg-secondary/40 border border-border/30 rounded-xl px-3 py-3 hover:bg-secondary/60 transition-colors text-left"
-    >
-      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-        <Icon className={`w-5 h-5 ${color}`} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-foreground">{title}</p>
-        <p className="text-[10px] text-muted-foreground">{subtitle}</p>
-        <p className="text-[10px] text-primary font-mono mt-0.5">{detail}</p>
-      </div>
-      <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
-    </button>
-  );
-}
-
-function OfficeCard({ country, address, timezone }: { country: string; address: string; timezone: string }) {
-  return (
-    <div className="flex items-start gap-3 bg-secondary/40 border border-border/30 rounded-xl px-3 py-3">
-      <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-      <div>
-        <p className="text-xs font-semibold text-foreground">{country}</p>
-        <p className="text-[10px] text-muted-foreground">{address}</p>
-        <p className="text-[10px] text-primary/70 font-mono mt-0.5">{timezone}</p>
-      </div>
-    </div>
-  );
-}
-
-function LegalLink({ label }: { label: string }) {
-  return (
-    <button className="flex items-center gap-1.5 bg-secondary/40 border border-border/30 rounded-lg px-3 py-2 hover:bg-secondary/60 transition-colors text-left w-full">
-      <ExternalLink className="w-3 h-3 text-muted-foreground" />
-      <span className="text-[10px] text-foreground">{label}</span>
-    </button>
   );
 }
