@@ -261,12 +261,36 @@ export default function Auth() {
 
         // Check if email confirmation is required
         if (data.user && !data.session) {
+          // Register referral if code exists
+          if (referralCode && data.user.id) {
+            try {
+              await supabase.functions.invoke('referrals', {
+                body: { action: 'register', referral_code: referralCode, referred_user_id: data.user.id },
+              });
+              localStorage.removeItem('referral_code');
+            } catch (refErr) {
+              console.error('Referral registration error:', refErr);
+            }
+          }
+
           setMode('verify-pending');
           toast({
             title: '¡Revisa tu email!',
             description: 'Te hemos enviado un enlace de verificación',
           });
         } else {
+          // Register referral for auto-confirmed signups
+          if (referralCode && data.user?.id) {
+            try {
+              await supabase.functions.invoke('referrals', {
+                body: { action: 'register', referral_code: referralCode, referred_user_id: data.user.id },
+              });
+              localStorage.removeItem('referral_code');
+            } catch (refErr) {
+              console.error('Referral registration error:', refErr);
+            }
+          }
+
           toast({
             title: '¡Cuenta creada!',
             description: 'Tu cuenta ha sido creada exitosamente',
