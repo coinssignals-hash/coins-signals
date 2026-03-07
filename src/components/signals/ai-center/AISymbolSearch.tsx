@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { Search, Loader2, X, TrendingUp, Coins, Building2, BarChart3, Globe } from 'lucide-react';
+import { Search, Loader2, X, TrendingUp, Coins, Building2, BarChart3, Globe, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
 
 interface SearchResult {
   symbol: string;
@@ -20,6 +21,7 @@ interface Props {
 
 const TYPE_TABS = [
   { key: 'all', label: 'Todos' },
+  { key: 'favorites', label: '⭐ Favoritos' },
   { key: 'forex', label: 'Forex' },
   { key: 'stock', label: 'Acciones' },
   { key: 'etf', label: 'ETFs' },
@@ -57,6 +59,8 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
+  const { favorites, isFavorite, addFavorite, removeFavorite } = useFavoriteSymbols();
+
   // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -69,6 +73,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
   }, []);
 
   const loadDefaults = useCallback(async (type: string) => {
+    if (type === 'favorites') return;
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('symbol-search', {
@@ -83,6 +88,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
   }, []);
 
   const searchSymbols = useCallback(async (q: string, type: string) => {
+    if (type === 'favorites') return;
     if (q.length < 2) {
       await loadDefaults(type);
       return;
@@ -105,17 +111,21 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     setQuery(upper);
     onChange(upper);
     setOpen(true);
+    if (activeTab === 'favorites') setActiveTab('all');
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      searchSymbols(upper, activeTab);
+      searchSymbols(upper, activeTab === 'favorites' ? 'all' : activeTab);
     }, 350);
   };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    if (tab === 'favorites') return; // favorites rendered from hook
     if (query.length >= 2) {
       searchSymbols(query, tab);
+    } else {
+      loadDefaults(tab);
     }
   };
 
@@ -132,6 +142,33 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
     setResults([]);
   };
 
+  const handleToggleFavorite = (e: React.MouseEvent, item: SearchResult) => {
+    e.stopPropagation();
+    if (isFavorite(item.symbol)) {
+      removeFavorite(item.symbol);
+    } else {
+      addFavorite(item.symbol, item.name, getTypeLabel(item.type));
+    }
+  };
+
+  const handleToggleFavoriteBySymbol = (e: React.MouseEvent, symbol: string) => {
+    e.stopPropagation();
+    removeFavorite(symbol);
+  };
+
+  // Determine what to show
+  const showFavorites = activeTab === 'favorites';
+  const favoriteResults: SearchResult[] = favorites.map(f => ({
+    symbol: f.symbol,
+    name: f.symbol_name || '',
+    exchange: '',
+    type: f.symbol_type?.toLowerCase() || 'forex',
+    country: '',
+    currency: '',
+  }));
+
+  const displayResults = showFavorites ? favoriteResults : results;
+
   return (
     <div ref={containerRef} className="relative flex-1">
       {/* Input */}
@@ -142,7 +179,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
           placeholder="Buscar símbolo: AAPL, EUR/USD, BTC..."
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => { setOpen(true); if (results.length === 0) loadDefaults(activeTab); }}
+          onFocus={() => { setOpen(true); if (results.length === 0 && activeTab !== 'favorites') loadDefaults(activeTab); }}
           className="w-full pl-9 pr-16 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/40 transition-all"
           style={{
             background: 'hsl(210, 100%, 8%)',
@@ -166,7 +203,7 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
           style={{
             background: 'hsl(210, 80%, 6%)',
             border: '1px solid hsl(200, 50%, 20%)',
-            maxHeight: '380px',
+            maxHeight: '420px',
           }}
         >
           {/* Type filter tabs */}
@@ -183,20 +220,61 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
                     : "text-slate-500 hover:text-slate-300"
                 )}
                 style={activeTab === tab.key ? {
-                  background: 'hsl(200, 80%, 15%)',
-                  border: '1px solid hsl(200, 60%, 30%)',
+                  background: tab.key === 'favorites' ? 'hsl(45, 70%, 15%)' : 'hsl(200, 80%, 15%)',
+                  border: `1px solid ${tab.key === 'favorites' ? 'hsl(45, 60%, 35%)' : 'hsl(200, 60%, 30%)'}`,
                 } : {
                   border: '1px solid transparent',
                 }}
               >
                 {tab.label}
+                {tab.key === 'favorites' && favorites.length > 0 && (
+                  <span
+                    className="ml-1 text-[8px] px-1 py-0.5 rounded-full font-bold"
+                    style={{ background: 'hsl(45, 80%, 20%)', color: 'hsl(45, 90%, 65%)' }}
+                  >
+                    {favorites.length}
+                  </span>
+                )}
               </button>
             ))}
           </div>
 
+          {/* Favorites quick-access row (when not on favorites tab and has favorites) */}
+          {activeTab !== 'favorites' && favorites.length > 0 && (
+            <div
+              className="flex items-center gap-1.5 px-3 py-2 overflow-x-auto scrollbar-none"
+              style={{ borderBottom: '1px solid hsl(210, 50%, 10%)' }}
+            >
+              <Star className="w-3 h-3 flex-shrink-0" style={{ color: 'hsl(45, 90%, 55%)' }} />
+              {favorites.slice(0, 8).map((fav) => (
+                <button
+                  key={fav.id}
+                  onClick={() => handleSelect(fav.symbol)}
+                  className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono text-white whitespace-nowrap transition-all hover:scale-105 active:scale-95"
+                  style={{
+                    background: 'hsl(45, 50%, 12%)',
+                    border: '1px solid hsl(45, 40%, 25%)',
+                  }}
+                >
+                  {fav.symbol}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Results */}
           <div className="overflow-y-auto" style={{ maxHeight: '310px' }}>
-            {results.length === 0 && !loading && (
+            {/* Favorites tab empty state */}
+            {showFavorites && favorites.length === 0 && (
+              <div className="py-8 text-center">
+                <Star className="w-6 h-6 mx-auto mb-2" style={{ color: 'hsl(45, 50%, 30%)' }} />
+                <p className="text-xs text-slate-500">No tienes favoritos aún</p>
+                <p className="text-[10px] text-slate-600 mt-1">Toca la ⭐ en cualquier símbolo para guardarlo</p>
+              </div>
+            )}
+
+            {/* Regular empty state */}
+            {!showFavorites && displayResults.length === 0 && !loading && (
               <div className="py-8 text-center">
                 <Search className="w-5 h-5 text-slate-600 mx-auto mb-2" />
                 <p className="text-xs text-slate-500">
@@ -205,16 +283,17 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
               </div>
             )}
 
-            {results.map((item, i) => {
+            {displayResults.map((item, i) => {
               const typeKey = item.type?.toLowerCase() || '';
               const config = TYPE_CONFIG[typeKey] || TYPE_CONFIG['forex'];
               const IconComp = config.icon;
+              const starred = isFavorite(item.symbol);
 
               return (
                 <button
                   key={`${item.symbol}-${item.exchange}-${i}`}
                   onClick={() => handleSelect(item.symbol)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 transition-colors hover:bg-white/5 text-left"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 transition-colors hover:bg-white/5 text-left group"
                   style={{ borderBottom: '1px solid hsl(210, 50%, 10%)' }}
                 >
                   {/* Type icon */}
@@ -239,11 +318,46 @@ export function AISymbolSearch({ value, onChange, onSelect }: Props) {
                     <p className="text-[11px] text-slate-500 truncate">{item.name}</p>
                   </div>
 
-                  {/* Exchange */}
-                  <div className="text-right flex-shrink-0">
-                    <div className="text-[10px] text-slate-400 font-mono">{item.exchange}</div>
-                    {item.country && (
-                      <div className="text-[9px] text-slate-600">{item.country}</div>
+                  {/* Star + Exchange */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {showFavorites ? (
+                      <button
+                        onClick={(e) => handleToggleFavoriteBySymbol(e, item.symbol)}
+                        className="p-1 rounded-md transition-all hover:scale-110 active:scale-90"
+                        style={{ background: 'hsl(45, 60%, 15%)', border: '1px solid hsl(45, 50%, 30%)' }}
+                        title="Eliminar de favoritos"
+                      >
+                        <Star className="w-3 h-3 fill-current" style={{ color: 'hsl(45, 90%, 55%)' }} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => handleToggleFavorite(e, item)}
+                        className={cn(
+                          "p-1 rounded-md transition-all opacity-0 group-hover:opacity-100",
+                          starred && "opacity-100"
+                        )}
+                        style={starred ? {
+                          background: 'hsl(45, 60%, 15%)',
+                          border: '1px solid hsl(45, 50%, 30%)',
+                        } : {
+                          background: 'hsl(210, 40%, 12%)',
+                          border: '1px solid hsl(210, 30%, 22%)',
+                        }}
+                        title={starred ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      >
+                        <Star
+                          className={cn("w-3 h-3", starred && "fill-current")}
+                          style={{ color: starred ? 'hsl(45, 90%, 55%)' : 'hsl(210, 20%, 40%)' }}
+                        />
+                      </button>
+                    )}
+                    {item.exchange && (
+                      <div className="text-right">
+                        <div className="text-[10px] text-slate-400 font-mono">{item.exchange}</div>
+                        {item.country && (
+                          <div className="text-[9px] text-slate-600">{item.country}</div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </button>
