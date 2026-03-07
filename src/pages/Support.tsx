@@ -190,6 +190,10 @@ function MainSection({ onNavigate }: { onNavigate: (s: Section) => void }) {
           <ContactRow icon={MessageCircle} title="Chat En Vivo" detail="Lun–Vie: 8:00 – 22:00 UTC" color="text-emerald-400" />
           <ContactRow icon={Phone} title="WhatsApp Business" detail="+34 600 000 000" color="text-green-400" onClick={() => window.open('https://wa.me/34600000000', '_blank')} />
           <ContactRow icon={Mail} title="Email" detail="soporte@ecosignal.ai" color="text-primary" onClick={() => window.open('mailto:soporte@ecosignal.ai', '_blank')} />
+          <ContactRow icon={Send} title="Telegram" detail="@ecosignal_ai" color="text-[hsl(200,80%,50%)]" onClick={() => window.open('https://t.me/ecosignal_ai', '_blank')} />
+          <ContactRow icon={MessageCircle} title="Facebook Messenger" detail="ecosignal.ai" color="text-[hsl(220,80%,55%)]" onClick={() => window.open('https://m.me/ecosignal.ai', '_blank')} />
+          <ContactRow icon={Globe} title="Instagram" detail="@ecosignal.ai" color="text-[hsl(340,75%,55%)]" onClick={() => window.open('https://instagram.com/ecosignal.ai', '_blank')} />
+          <ContactRow icon={Globe} title="TikTok" detail="@ecosignal.ai" color="text-foreground" onClick={() => window.open('https://tiktok.com/@ecosignal.ai', '_blank')} />
         </CardContent>
       </Card>
 
