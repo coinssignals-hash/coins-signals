@@ -21,18 +21,18 @@ import { LazySection } from '@/components/ui/lazy-section';
 import { Loader2 } from 'lucide-react';
 
 // Lazy load heavy below-the-fold components
-const MarketSentiment = lazy(() => import('@/components/analysis/MarketSentiment').then(m => ({ default: m.MarketSentiment })));
-const PricePrediction = lazy(() => import('@/components/analysis/PricePrediction').then(m => ({ default: m.PricePrediction })));
-const TechnicalLevels = lazy(() => import('@/components/analysis/TechnicalLevels').then(m => ({ default: m.TechnicalLevels })));
-const StrategicRecommendations = lazy(() => import('@/components/analysis/StrategicRecommendations').then(m => ({ default: m.StrategicRecommendations })));
-const MarketConclusions = lazy(() => import('@/components/analysis/MarketConclusions').then(m => ({ default: m.MarketConclusions })));
-const MonetaryPolicies = lazy(() => import('@/components/analysis/MonetaryPolicies').then(m => ({ default: m.MonetaryPolicies })));
-const MajorNews = lazy(() => import('@/components/analysis/MajorNews').then(m => ({ default: m.MajorNews })));
-const EconomicEvents = lazy(() => import('@/components/analysis/EconomicEvents').then(m => ({ default: m.EconomicEvents })));
-const RelevantNews = lazy(() => import('@/components/analysis/RelevantNews').then(m => ({ default: m.RelevantNews })));
-const RiskRewardCalculator = lazy(() => import('@/components/analysis/RiskRewardCalculator').then(m => ({ default: m.RiskRewardCalculator })));
-const HeroDashboard = lazy(() => import('@/components/analysis/HeroDashboard').then(m => ({ default: m.HeroDashboard })));
-const AlertsPanel = lazy(() => import('@/components/analysis/AlertsPanel').then(m => ({ default: m.AlertsPanel })));
+const MarketSentiment = lazy(() => import('@/components/analysis/MarketSentiment').then((m) => ({ default: m.MarketSentiment })));
+const PricePrediction = lazy(() => import('@/components/analysis/PricePrediction').then((m) => ({ default: m.PricePrediction })));
+const TechnicalLevels = lazy(() => import('@/components/analysis/TechnicalLevels').then((m) => ({ default: m.TechnicalLevels })));
+const StrategicRecommendations = lazy(() => import('@/components/analysis/StrategicRecommendations').then((m) => ({ default: m.StrategicRecommendations })));
+const MarketConclusions = lazy(() => import('@/components/analysis/MarketConclusions').then((m) => ({ default: m.MarketConclusions })));
+const MonetaryPolicies = lazy(() => import('@/components/analysis/MonetaryPolicies').then((m) => ({ default: m.MonetaryPolicies })));
+const MajorNews = lazy(() => import('@/components/analysis/MajorNews').then((m) => ({ default: m.MajorNews })));
+const EconomicEvents = lazy(() => import('@/components/analysis/EconomicEvents').then((m) => ({ default: m.EconomicEvents })));
+const RelevantNews = lazy(() => import('@/components/analysis/RelevantNews').then((m) => ({ default: m.RelevantNews })));
+const RiskRewardCalculator = lazy(() => import('@/components/analysis/RiskRewardCalculator').then((m) => ({ default: m.RiskRewardCalculator })));
+const HeroDashboard = lazy(() => import('@/components/analysis/HeroDashboard').then((m) => ({ default: m.HeroDashboard })));
+const AlertsPanel = lazy(() => import('@/components/analysis/AlertsPanel').then((m) => ({ default: m.AlertsPanel })));
 import { useAlertConfig } from '@/hooks/useAlertConfig';
 import { useMarketData } from '@/hooks/useMarketData';
 
@@ -113,7 +113,7 @@ export default function Analysis() {
   const ohlcvCandles = useMemo(() => {
     const candles = previousDayData?.candles;
     if (!candles || candles.length === 0) return [];
-    return candles.map(c => ({ ...c, volume: 0 }));
+    return candles.map((c) => ({ ...c, volume: 0 }));
   }, [previousDayData?.candles]);
 
   return (
@@ -137,8 +137,8 @@ export default function Analysis() {
             </SelectTrigger>
             <SelectContent className="bg-[#0a1628] border-cyan-900/30 rounded-xl shadow-2xl">
               {timeframes.map((tf) =>
-              <SelectItem key={tf.value} value={tf.value} className="text-xs font-medium">{tf.label}</SelectItem>
-              )}
+                  <SelectItem key={tf.value} value={tf.value} className="text-xs font-medium">{tf.label}</SelectItem>
+                  )}
             </SelectContent>
           </Select>
           
@@ -158,69 +158,69 @@ export default function Analysis() {
         {/* Hero Dashboard Summary */}
         <Suspense fallback={<SectionLoader />}>
         <HeroDashboard
-          currentPrice={marketStats.currentPrice}
-          change={marketStats.change}
-          changePercent={marketStats.changePercent}
-          high={marketStats.high}
-          low={marketStats.low}
-          symbol={selectedPair}
-          loading={loading}
-          isRealtimeConnected={isConnected}
-          onSelectPair={setSelectedPair}
-        />
+                currentPrice={marketStats.currentPrice}
+                change={marketStats.change}
+                changePercent={marketStats.changePercent}
+                high={marketStats.high}
+                low={marketStats.low}
+                symbol={selectedPair}
+                loading={loading}
+                isRealtimeConnected={isConnected}
+                onSelectPair={setSelectedPair} />
+              
         </Suspense>
 
         {/* Terminal Status Bar - NEW */}
         <TerminalStatusBar
-          symbol={selectedPair}
-          currentPrice={realtimeQuote?.price || marketStats.currentPrice}
-          high={marketStats.high}
-          low={marketStats.low}
-          isRealtimeConnected={isConnected} />
+              symbol={selectedPair}
+              currentPrice={realtimeQuote?.price || marketStats.currentPrice}
+              high={marketStats.high}
+              low={marketStats.low}
+              isRealtimeConnected={isConnected} />
 
 
         {/* Status Alerts */}
         {isRateLimited &&
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-xs">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-xs">
             <Clock className="h-4 w-4 text-yellow-500 shrink-0" />
             <span className="text-yellow-400">Límite de API — reintentando en 60s</span>
           </div>
-        }
+            }
         {error && !isRateLimited
 
-        }
+            }
         {isReconnecting &&
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-xs animate-pulse">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-xs animate-pulse">
             <WifiOff className="h-4 w-4 text-orange-500 shrink-0" />
             <span className="text-orange-400">Reconectando... intento {reconnectAttempt}/5</span>
           </div>
-        }
-        {data?.cached && !loading && !error &&
-        <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
-            <Zap className="h-3 w-3 text-cyan-500" /><span>Caché</span>
-          </div>
-        }
+            }
+        {data?.cached && !loading && !error
+
+
+
+            }
 
         {/* Currency Header */}
         <CurrencyHeader
-          symbol={selectedPair} currentPrice={marketStats.currentPrice}
-          change={marketStats.change} changePercent={marketStats.changePercent}
-          high={marketStats.high} low={marketStats.low} loading={loading}
-          realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+              symbol={selectedPair} currentPrice={marketStats.currentPrice}
+              change={marketStats.change} changePercent={marketStats.changePercent}
+              high={marketStats.high} low={marketStats.low} loading={loading}
+              realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
 
 
         {/* Quick Stats Grid - NEW */}
         <QuickStatsGrid
-          symbol={selectedPair}
-          currentPrice={marketStats.currentPrice}
-          change={marketStats.change}
-          changePercent={marketStats.changePercent}
-          high={marketStats.high}
-          low={marketStats.low}
-          resistance={previousDayData?.resistance || marketStats.resistance}
-          support={previousDayData?.support || marketStats.support}
-          pips={marketStats.pips}
-          realtimePrice={realtimeQuote?.price} />
+              symbol={selectedPair}
+              currentPrice={marketStats.currentPrice}
+              change={marketStats.change}
+              changePercent={marketStats.changePercent}
+              high={marketStats.high}
+              low={marketStats.low}
+              resistance={previousDayData?.resistance || marketStats.resistance}
+              support={previousDayData?.support || marketStats.support}
+              pips={marketStats.pips}
+              realtimePrice={realtimeQuote?.price} />
 
 
         {/* Terminal Panel Tabs */}
@@ -243,21 +243,21 @@ export default function Analysis() {
           {/* ═══════════════════ TÉCNICO ═══════════════════ */}
           <TabsContent value="tecnico" className="space-y-3 mt-0">
             <TechnicalIndicatorsTabs
-              candles={ohlcvCandles}
-              loading={previousDayLoading}
-              priceChart={
-                <CandlestickChart
-                  data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
-                  support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
-                  realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-                  previousDayDate={previousDayData?.date} alertState={alertState} />
-              }
-            />
+                  candles={ohlcvCandles}
+                  loading={previousDayLoading}
+                  priceChart={
+                  <CandlestickChart
+                    data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
+                    support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
+                    realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
+                    previousDayDate={previousDayData?.date} alertState={alertState} />
+                  } />
+                
             <LazySection minHeight="200px">
               <Suspense fallback={<SectionLoader />}>
               <div className="bg-[#0a1628] border border-cyan-900/30 rounded-xl overflow-hidden">
                 <TechnicalLevels symbol={selectedPair} currentPrice={marketStats.currentPrice}
-                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                      realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
               </div>
               </Suspense>
             </LazySection>
@@ -290,9 +290,9 @@ export default function Analysis() {
             <Suspense fallback={<SectionLoader />}>
             <div className="bg-[#0a1628] border border-purple-900/30 rounded-xl overflow-hidden">
               <MarketSentiment
-                symbol={selectedPair} highPrice={marketStats.high} lowPrice={marketStats.low}
-                dailyChange={marketStats.changePercent} pipsChange={marketStats.change}
-                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                      symbol={selectedPair} highPrice={marketStats.high} lowPrice={marketStats.low}
+                      dailyChange={marketStats.changePercent} pipsChange={marketStats.change}
+                      realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
             </div>
             </Suspense>
           </TabsContent>
@@ -301,25 +301,25 @@ export default function Analysis() {
           <TabsContent value="estrategia" className="space-y-3 mt-0">
             <Suspense fallback={<SectionLoader />}>
             <RiskRewardCalculator
-              currentPrice={realtimeQuote?.price || marketStats.currentPrice}
-              symbol={selectedPair}
-              resistance={previousDayData?.resistance || marketStats.resistance}
-              support={previousDayData?.support || marketStats.support} />
+                    currentPrice={realtimeQuote?.price || marketStats.currentPrice}
+                    symbol={selectedPair}
+                    resistance={previousDayData?.resistance || marketStats.resistance}
+                    support={previousDayData?.support || marketStats.support} />
 
             <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
               <PricePrediction symbol={selectedPair} currentPrice={marketStats.currentPrice}
-              realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                    realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
             </div>
             <LazySection minHeight="200px">
               <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
                 <StrategicRecommendations symbol={selectedPair} currentPrice={marketStats.currentPrice}
-                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                      realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
               </div>
             </LazySection>
             <LazySection minHeight="200px">
               <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl overflow-hidden">
                 <MarketConclusions symbol={selectedPair} currentPrice={marketStats.currentPrice}
-                realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
+                      realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected} />
               </div>
             </LazySection>
             </Suspense>
