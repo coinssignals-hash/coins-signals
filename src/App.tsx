@@ -95,7 +95,7 @@ function AnimatedRoutes() {
           <Route path="/link-broker" element={<LinkBroker />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/create-signal" element={<CreateSignal />} />
-          <Route path="/currency-impact" element={<CurrencyImpact />} />
+          
           <Route path="/ai-center" element={<AICenter />} />
           <Route path="/stocks" element={<Stocks />} />
           <Route path="*" element={<NotFound />} />
