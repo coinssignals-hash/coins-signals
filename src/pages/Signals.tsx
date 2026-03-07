@@ -78,8 +78,7 @@ export default function Signals() {
   const navigate = useNavigate();
   const { t, language } = useTranslation();
   const sortOptions = useSortOptions();
-  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
   const [dayTab, setDayTab] = useState<DayTab>('today');
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);

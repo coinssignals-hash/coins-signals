@@ -901,8 +901,7 @@ function QuickCurrencyFilter({
 
 const News = () => {
   const { t, language } = useTranslation();
-  const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt: ptBR, fr };
-  const dateLocale = DATE_LOCALES[language] ?? es;
+  const dateLocale = useDateLocale();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedCurrencies, setSelectedCurrencies] = useState<Currency[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
