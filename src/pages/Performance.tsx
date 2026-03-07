@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   ArrowLeft, 
@@ -146,38 +147,22 @@ export default function Performance() {
     <PageShell>
       <Header />
       
-      <main className="container py-4 max-w-2xl mx-auto space-y-4">
-        {/* Hero Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <SignalStyleCard className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Link to="/">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                    <ArrowLeft className="w-4 h-4 text-primary" />
-                  </div>
-                </Link>
-                <div>
-                  <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                    Rendimiento
-                  </h1>
-                  <p className="text-xs text-muted-foreground">Análisis de precisión semanal</p>
-                </div>
-              </div>
-              {isLoading && (
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs text-primary">Cargando...</span>
-                </div>
-              )}
+      <main className="py-6 px-4 space-y-5">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link to="/">
+              <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
+            </Link>
+            <h1 className="text-xl font-bold text-foreground">Rendimiento</h1>
+          </div>
+          {isLoading && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs text-primary">Cargando...</span>
             </div>
-          </SignalStyleCard>
-        </motion.div>
+          )}
+        </div>
 
         {/* Week Filter */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
@@ -197,16 +182,20 @@ export default function Performance() {
           className="grid grid-cols-4 gap-2"
         >
           {[
-            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400' },
-            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400' },
-            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400' },
-            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400' },
+            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
           ].map((stat, i) => (
-            <SignalStyleCard key={i} className="p-3 text-center">
-              <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} />
-              <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
-              <div className="text-[10px] text-muted-foreground">{stat.label}</div>
-            </SignalStyleCard>
+            <Card key={i} className="bg-card border-border">
+              <CardContent className="p-3 text-center">
+                <div className={`w-8 h-8 rounded-lg ${stat.bg} mx-auto mb-1.5 flex items-center justify-center`}>
+                  <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                </div>
+                <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
+                <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+              </CardContent>
+            </Card>
           ))}
         </motion.div>
 
@@ -261,10 +250,12 @@ export default function Performance() {
               onToggleDay={handleToggleDay}
             />
           ) : (
-            <SignalStyleCard className="p-8 text-center">
-              <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
-            </SignalStyleCard>
+            <Card className="bg-card border-border">
+              <CardContent className="p-8 text-center">
+                <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
+              </CardContent>
+            </Card>
           )}
         </motion.div>
 
