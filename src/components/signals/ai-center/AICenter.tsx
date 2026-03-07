@@ -213,7 +213,7 @@ export function AICenter({ onClose }: Props) {
                 key={tab.key}
                 onClick={() => setInstrumentCategory(tab.key)}
                 className={cn(
-                  "flex flex-col items-center gap-1 min-w-[52px] py-2 px-2 rounded-xl transition-all duration-200 active:scale-95",
+                  "relative flex flex-col items-center gap-1 min-w-[52px] py-2 px-2 rounded-xl transition-all duration-200 active:scale-95",
                   isActive
                     ? "text-white"
                     : "text-slate-500 hover:text-slate-300"
