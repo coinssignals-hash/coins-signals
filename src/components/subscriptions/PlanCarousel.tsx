@@ -91,31 +91,48 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
             >
               <Card
                 className={cn(
-                  'relative overflow-hidden border transition-all duration-300',
+                  'relative overflow-hidden transition-all duration-300',
+                  'bg-[hsl(225,45%,4%)] border',
                   isCurrentPlan
-                    ? 'border-accent shadow-2xl shadow-accent/20 ring-2 ring-accent/40'
-                    : isActive ? 'border-primary/60 shadow-2xl shadow-primary/15' : 'border-border/40 shadow-lg',
+                    ? 'border-accent shadow-[0_0_20px_hsl(var(--accent)/0.25)] ring-1 ring-accent/30'
+                    : isActive
+                      ? 'border-primary/50 shadow-[0_0_24px_hsl(var(--primary)/0.2)]'
+                      : 'border-border/30 shadow-lg',
                 )}
               >
+                {/* Animated glow border overlay */}
+                {isActive && (
+                  <div className={cn(
+                    'absolute -inset-px rounded-xl pointer-events-none',
+                    isCurrentPlan
+                      ? 'bg-gradient-to-b from-accent/25 via-transparent to-accent/10'
+                      : 'bg-gradient-to-b from-primary/20 via-transparent to-primary/8'
+                  )} />
+                )}
+
+                {/* Subtle grid pattern */}
+                <div
+                  className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                  style={{
+                    backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+                    backgroundSize: '24px 24px',
+                  }}
+                />
+
+                {/* Corner accent glow */}
+                <div className={cn(
+                  'absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl pointer-events-none',
+                  plan.id === 'basico' && 'bg-yellow-500/8',
+                  plan.id === 'plus' && 'bg-primary/10',
+                  plan.id === 'premium' && 'bg-blue-500/10',
+                )} />
+
                 {/* Current plan badge */}
                 {isCurrentPlan && (
                   <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center text-xs font-bold py-1 z-10 flex items-center justify-center gap-1">
                     <Crown className="w-3 h-3" />
                     Tu Plan Actual
                   </div>
-                )}
-
-                <div className={cn('absolute inset-0 bg-gradient-to-br opacity-40', plan.color)} />
-
-                <img
-                  src={brandLogo}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-32 opacity-[0.10] pointer-events-none select-none"
-                />
-
-                {isActive && !isCurrentPlan && (
-                  <div className="absolute -inset-px rounded-xl bg-gradient-to-b from-primary/20 via-transparent to-accent/10 pointer-events-none" />
                 )}
 
                 <CardContent className={cn('relative p-5', isCurrentPlan && 'pt-8')}>
