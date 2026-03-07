@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { SignalDetailView } from './SignalDetailView';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export interface SignalData {
   id: string;
@@ -25,123 +27,109 @@ interface SignalsListProps {
 }
 
 const flagMap: Record<string, string> = {
-  'EUR': '🇪🇺',
-  'USD': '🇺🇸',
-  'GBP': '🇬🇧',
-  'JPY': '🇯🇵',
-  'AUD': '🇦🇺',
-  'CAD': '🇨🇦',
-  'CHF': '🇨🇭',
-  'NZD': '🇳🇿',
+  'EUR': '🇪🇺', 'USD': '🇺🇸', 'GBP': '🇬🇧', 'JPY': '🇯🇵',
+  'AUD': '🇦🇺', 'CAD': '🇨🇦', 'CHF': '🇨🇭', 'NZD': '🇳🇿',
 };
 
 function getCurrencyFlags(pair: string) {
-  const currencies = pair.split(' ');
-  return currencies.map(c => flagMap[c] || '🏳️').join(' ');
+  return pair.split(' ').map(c => flagMap[c] || '🏳️').join(' ');
 }
 
 export function SignalsList({ signals }: SignalsListProps) {
   const [expandedSignal, setExpandedSignal] = useState<string | null>(null);
 
   return (
-    <div className="space-y-2 mb-4">
-      {signals.map((signal) => (
-        <div key={signal.id}>
-          <button
-            onClick={() => setExpandedSignal(expandedSignal === signal.id ? null : signal.id)}
+    <div className="space-y-2">
+      {signals.map((signal, i) => (
+        <motion.div 
+          key={signal.id}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.05 }}
+        >
+          <SignalStyleCard 
             className={cn(
-              'w-full bg-card border border-border rounded-lg p-3 transition-colors hover:bg-secondary/30',
-              expandedSignal === signal.id && 'bg-secondary/30 border-primary/50'
+              'p-3 cursor-pointer transition-all duration-200',
+              expandedSignal === signal.id && 'ring-1 ring-primary/30'
             )}
+            onClick={() => setExpandedSignal(expandedSignal === signal.id ? null : signal.id)}
           >
             <div className="flex items-center justify-between">
-              {/* Time & Flag */}
+              {/* Left: Flag + Pair */}
               <div className="flex items-center gap-2">
-                <div className="text-left">
-                  <div className="text-xs text-muted-foreground">{signal.time}</div>
-                  <div className="text-xs text-primary"># 18</div>
+                <div className="text-xl">{getCurrencyFlags(signal.currencyPair)}</div>
+                <div>
+                  <div className="text-xs font-bold text-foreground">{signal.currencyPair}</div>
+                  <div className={cn(
+                    'text-[10px] font-bold',
+                    signal.action === 'BUY' || signal.action === 'Comprar' ? 'text-emerald-400' : 'text-rose-400'
+                  )}>
+                    {signal.action}
+                  </div>
                 </div>
-                <div className="text-2xl">{getCurrencyFlags(signal.currencyPair)}</div>
               </div>
 
-              {/* Action & Currency */}
-              <div className="flex flex-col items-start">
-                <span className={cn(
-                  'text-sm font-bold',
-                  signal.action === 'Comprar' ? 'text-green-500' : 'text-red-500'
+              {/* Center: Pips */}
+              <div className="text-center">
+                <div className={cn(
+                  'text-sm font-bold tabular-nums',
+                  signal.pips >= 0 ? 'text-emerald-400' : 'text-rose-400'
                 )}>
-                  {signal.action}
-                </span>
-                <span className="text-xs text-foreground">{signal.currencyPair}</span>
+                  {signal.pips >= 0 ? '+' : ''}{signal.pips}p
+                </div>
+                <div className="text-[10px] text-muted-foreground">{signal.time}</div>
               </div>
 
-              {/* Pips */}
-              <div className="flex flex-col items-start">
-                <span className="text-xs text-muted-foreground">Porcentaje</span>
-                <span className={cn(
-                  'text-sm font-bold font-mono-numbers',
-                  signal.pips >= 0 ? 'text-green-500' : 'text-red-500'
-                )}>
-                  {signal.pips >= 0 ? '+' : ''}{signal.pips} Pips ({signal.percentage.toFixed(2)}%)
-                </span>
-              </div>
-
-              {/* Percentage Circle */}
+              {/* Right: Status */}
               <div className="flex items-center gap-2">
-                <div className="relative w-12 h-12">
-                  <svg className="w-12 h-12 transform -rotate-90">
+                {/* Mini gauge */}
+                <div className="relative w-10 h-10">
+                  <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="16" fill="none" stroke="hsl(var(--muted)/0.3)" strokeWidth="3" />
                     <circle
-                      cx="24"
-                      cy="24"
-                      r="20"
-                      fill="none"
-                      stroke="hsl(var(--muted))"
-                      strokeWidth="4"
-                    />
-                    <circle
-                      cx="24"
-                      cy="24"
-                      r="20"
-                      fill="none"
-                      stroke={signal.isSuccessful ? '#22c55e' : '#ef4444'}
-                      strokeWidth="4"
-                      strokeDasharray={`${(signal.percentage / 100) * 125.6} 125.6`}
+                      cx="20" cy="20" r="16" fill="none"
+                      stroke={signal.isSuccessful ? 'hsl(150, 60%, 50%)' : 'hsl(0, 60%, 50%)'}
+                      strokeWidth="3" strokeLinecap="round"
+                      strokeDasharray={`${(signal.percentage / 100) * 100.5} 100.5`}
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className={cn(
-                      'text-xs font-bold',
-                      signal.isSuccessful ? 'text-green-500' : 'text-red-500'
+                      'text-[9px] font-bold tabular-nums',
+                      signal.isSuccessful ? 'text-emerald-400' : 'text-rose-400'
                     )}>
                       {signal.percentage}%
                     </span>
                   </div>
                 </div>
 
-                {/* Status */}
-                <div className="flex flex-col items-center">
-                  <span className="text-[10px] text-muted-foreground">Porcentaje</span>
-                  <span className={cn(
-                    'text-[10px]',
-                    signal.isSuccessful ? 'text-green-500' : 'text-red-500'
-                  )}>
-                    {signal.isSuccessful ? 'Alcanzado' : 'Fallido'}
-                  </span>
-                  {signal.isSuccessful ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-red-500" />
-                  )}
-                </div>
+                {signal.isSuccessful ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-rose-400" />
+                )}
+
+                <ChevronDown className={cn(
+                  'w-3 h-3 text-muted-foreground transition-transform',
+                  expandedSignal === signal.id && 'rotate-180'
+                )} />
               </div>
             </div>
-          </button>
+          </SignalStyleCard>
 
-          {/* Expanded Signal Detail */}
-          {expandedSignal === signal.id && (
-            <SignalDetailView signal={signal} />
-          )}
-        </div>
+          <AnimatePresence>
+            {expandedSignal === signal.id && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <SignalDetailView signal={signal} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       ))}
     </div>
   );
