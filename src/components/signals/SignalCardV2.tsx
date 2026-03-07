@@ -27,7 +27,7 @@ import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
 import { TargetProgressBar } from "@/components/signals/TargetProgressBar";
 import { SignalChart } from "@/components/signals/SignalChart";
 import type { TradingSignal } from "@/hooks/useSignals";
-import bullBg from "@/assets/bull-card-bg.svg";
+import bullBg from "@/assets/brand-logo-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import brandLogo from "@/assets/g174.svg";
 
