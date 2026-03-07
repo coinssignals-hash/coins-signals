@@ -9,6 +9,7 @@ import { AIModuleCard } from './AIModuleCard';
 import { AIResultPanel } from './AIResultPanel';
 import { AIChartPanel } from './AIChartPanel';
 import { AISignalCreator } from './AISignalCreator';
+import { AISymbolSearch } from './AISymbolSearch';
 import { useForexData } from '@/hooks/useForexData';
 import { useAIAnalysis, AIModule } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
