@@ -105,6 +105,7 @@ function FlowComparison({ retail, institutional, detail }: {retail: number;insti
 }
 
 function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSignal: string;trendStrength: string;smaAlignment: string;};}) {
+  const { t } = useTranslation();
   const rsiColor = indicators.rsi > 70 ? "hsl(0, 70%, 55%)" : indicators.rsi < 30 ? "hsl(135, 70%, 50%)" : "hsl(45, 80%, 55%)";
   const macdColor = indicators.macdSignal === "bullish" ? "hsl(135, 70%, 50%)" : indicators.macdSignal === "bearish" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
 
