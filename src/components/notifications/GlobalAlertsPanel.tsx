@@ -56,12 +56,12 @@ function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: 
         {alert.is_triggered ? (
           <Badge variant="outline" className="text-[9px] border-green-500/30 text-green-500 gap-1">
             <CheckCircle2 className="w-3 h-3" />
-            Disparada
+            {t('ga_triggered')}
           </Badge>
         ) : (
           <Badge variant="outline" className="text-[9px] border-yellow-500/30 text-yellow-500 gap-1 animate-pulse">
             <Bell className="w-3 h-3" />
-            Activa
+            {t('ga_active')}
           </Badge>
         )}
         <Button
