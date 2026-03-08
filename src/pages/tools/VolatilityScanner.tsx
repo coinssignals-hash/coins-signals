@@ -160,7 +160,7 @@ export default function VolatilityScanner() {
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
           <Clock className="w-3 h-3" />
-          Actualizado: {lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+          {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
         <Card className="bg-card border-border">
