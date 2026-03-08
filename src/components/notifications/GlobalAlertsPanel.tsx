@@ -6,8 +6,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Bell, BellOff, TrendingUp, TrendingDown, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: string) => void }) {
   const isAbove = alert.direction === 'above';
