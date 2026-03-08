@@ -146,14 +146,22 @@ export default function Tools() {
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
-                            <ToolIcon className="w-5 h-5 text-primary" />
+                          <div className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center",
+                            isClickable ? "bg-primary/15" : "bg-secondary"
+                          )}>
+                            <ToolIcon className={cn("w-5 h-5", isClickable ? "text-primary" : "text-muted-foreground")} />
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
                               <p className="font-medium text-foreground">{tool.title}</p>
+                              {isClickable && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-semibold uppercase tracking-wider">
+                                  Activa
+                                </span>
+                              )}
                               {isComingSoon && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold uppercase tracking-wider">
+                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold uppercase tracking-wider">
                                   Próx.
                                 </span>
                               )}
@@ -162,7 +170,7 @@ export default function Tools() {
                           </div>
                         </div>
                         {isClickable ? (
-                          <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                          <ChevronRight className="w-5 h-5 text-primary shrink-0" />
                         ) : isComingSoon ? (
                           <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
                         ) : null}
