@@ -118,10 +118,10 @@ export default function VolatilityScanner() {
         <Card className="bg-card border-border">
           <CardContent className="p-0">
             <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Par</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('tp_pair')}</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-right w-14">ATR14</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-14">Vol%</span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-20">Tendencia</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-20">{t('tp_trend')}</span>
             </div>
 
             {filtered.map((item, i) => {
