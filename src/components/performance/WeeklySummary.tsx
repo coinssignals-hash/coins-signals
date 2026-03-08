@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { CheckCircle2, XCircle, TrendingUp, TrendingDown } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface WeeklySummaryProps {
   weekNumber: number;
@@ -21,11 +22,13 @@ export function WeeklySummary({
   pipsLost,
   successRate,
 }: WeeklySummaryProps) {
+  const { t } = useTranslation();
+
   return (
     <Card className="bg-card border-border">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-foreground">Resumen Semanal</h2>
+          <h2 className="text-sm font-bold text-foreground">{t('perf_weekly_summary')}</h2>
           <span className="text-xs text-primary font-medium px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
             S{weekNumber}
           </span>
@@ -41,11 +44,11 @@ export function WeeklySummary({
           >
             <div className="flex items-center gap-1.5 mb-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-[10px] text-emerald-400/80 uppercase tracking-wider">TP Hit</span>
+              <span className="text-[10px] text-emerald-400/80 uppercase tracking-wider">{t('perf_tp_hit')}</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-emerald-400 tabular-nums">{successfulSignals}</span>
-              <span className="text-[10px] text-muted-foreground">señales</span>
+              <span className="text-[10px] text-muted-foreground">{t('perf_signals_label')}</span>
             </div>
             <div className="flex items-center gap-1 mt-1">
               <TrendingUp className="w-3 h-3 text-emerald-400" />
@@ -62,11 +65,11 @@ export function WeeklySummary({
           >
             <div className="flex items-center gap-1.5 mb-1">
               <XCircle className="w-3.5 h-3.5 text-rose-400" />
-              <span className="text-[10px] text-rose-400/80 uppercase tracking-wider">SL Hit</span>
+              <span className="text-[10px] text-rose-400/80 uppercase tracking-wider">{t('perf_sl_hit')}</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-rose-400 tabular-nums">{lostSignals}</span>
-              <span className="text-[10px] text-muted-foreground">señales</span>
+              <span className="text-[10px] text-muted-foreground">{t('perf_signals_label')}</span>
             </div>
             <div className="flex items-center gap-1 mt-1">
               <TrendingDown className="w-3 h-3 text-rose-400" />
@@ -78,7 +81,7 @@ export function WeeklySummary({
         {/* Win Rate Bar */}
         <div className="mt-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-muted-foreground">Tasa de éxito</span>
+            <span className="text-[10px] text-muted-foreground">{t('perf_success_rate')}</span>
             <span className="text-xs font-bold text-foreground tabular-nums">{successRate}%</span>
           </div>
           <div className="h-2 rounded-full bg-secondary/60 overflow-hidden">

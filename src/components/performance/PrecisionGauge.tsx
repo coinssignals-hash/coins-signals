@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Target } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface PrecisionGaugeProps {
   successRate: number;
@@ -10,6 +11,7 @@ interface PrecisionGaugeProps {
 }
 
 export function PrecisionGauge({ successRate, totalSignals, successfulSignals, lostSignals }: PrecisionGaugeProps) {
+  const { t } = useTranslation();
   const circumference = 2 * Math.PI * 42;
   const strokeDashoffset = circumference - (successRate / 100) * circumference;
   const gaugeColor = successRate >= 70 ? 'hsl(var(--chart-2))' : successRate >= 50 ? 'hsl(45, 100%, 60%)' : 'hsl(var(--destructive))';
@@ -19,7 +21,7 @@ export function PrecisionGauge({ successRate, totalSignals, successfulSignals, l
       <CardContent className="p-4 flex flex-col items-center justify-center">
         <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
           <Target className="w-3 h-3" />
-          Precisión
+          {t('perf_precision')}
         </div>
         
         <div className="relative w-24 h-24">
@@ -53,7 +55,7 @@ export function PrecisionGauge({ successRate, totalSignals, successfulSignals, l
 
         <div className="flex items-center gap-3 mt-2 text-[10px]">
           <span className="text-emerald-400 tabular-nums">✓ {successfulSignals}</span>
-          <span className="text-muted-foreground">de</span>
+          <span className="text-muted-foreground">{t('perf_of')}</span>
           <span className="text-foreground tabular-nums font-bold">{totalSignals}</span>
           <span className="text-rose-400 tabular-nums">✗ {lostSignals}</span>
         </div>

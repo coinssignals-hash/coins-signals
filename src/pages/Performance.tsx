@@ -154,12 +154,12 @@ export default function Performance() {
             <Link to="/">
               <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
             </Link>
-            <h1 className="text-xl font-bold text-foreground">Rendimiento</h1>
+            <h1 className="text-xl font-bold text-foreground">{t('perf_title')}</h1>
           </div>
           {isLoading && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs text-primary">Cargando...</span>
+              <span className="text-xs text-primary">{t('common_loading')}</span>
             </div>
           )}
         </div>
@@ -182,10 +182,10 @@ export default function Performance() {
           className="grid grid-cols-4 gap-2"
         >
           {[
-            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
-            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
-            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+            { icon: Target, label: t('perf_signals'), value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+            { icon: TrendingUp, label: t('perf_net_pips'), value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: Zap, label: t('perf_avg_signal'), value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: ShieldCheck, label: t('perf_rr_ratio'), value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
           ].map((stat, i) => (
             <Card key={i} className="bg-card border-border">
               <CardContent className="p-3 text-center">
@@ -253,7 +253,7 @@ export default function Performance() {
             <Card className="bg-card border-border">
               <CardContent className="p-8 text-center">
                 <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
+                <p className="text-sm text-muted-foreground">{t('perf_no_signals_this_week')}</p>
               </CardContent>
             </Card>
           )}
@@ -282,7 +282,7 @@ export default function Performance() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <div className="flex items-center gap-2 mb-3">
             <Award className="w-4 h-4 text-amber-400" />
-            <h3 className="text-sm font-bold text-foreground">Pares Más Activos</h3>
+            <h3 className="text-sm font-bold text-foreground">{t('perf_most_active_pairs')}</h3>
           </div>
           {isLoadingPairs ? (
             <div className="grid grid-cols-1 gap-3">

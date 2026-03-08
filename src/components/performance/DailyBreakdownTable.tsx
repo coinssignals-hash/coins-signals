@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export interface DailyData {
   day: string;
@@ -20,12 +21,14 @@ interface DailyBreakdownTableProps {
 }
 
 export function DailyBreakdownTable({ data, weekTotal, expandedDay, onToggleDay }: DailyBreakdownTableProps) {
+  const { t } = useTranslation();
+
   return (
     <Card className="bg-card border-border overflow-hidden">
       {/* Header */}
       <div className="grid grid-cols-6 gap-1 px-3 py-2 border-b border-border">
-        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Día</div>
-        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">Total</div>
+        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('perf_day_col')}</div>
+        <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">{t('perf_total_col')}</div>
         <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">TP</div>
         <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">SL</div>
         <div className="text-[10px] text-muted-foreground text-center uppercase tracking-wider">+Pips</div>
