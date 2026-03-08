@@ -54,6 +54,7 @@ function getTypeLabel(type: string): string {
 }
 
 export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'all' }: Props) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
