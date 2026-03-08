@@ -179,7 +179,7 @@ export default function PatternScreener() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                El screener detecta patrones de velas japonesas y figuras chartistas en múltiples temporalidades. Las estrellas (★) indican la fiabilidad histórica del patrón. Confirma siempre con otros indicadores.
+                {t('tp_pattern_info')}
               </p>
             </div>
           </CardContent>
