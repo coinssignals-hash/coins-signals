@@ -128,11 +128,11 @@ export default function TradingJournal() {
     return { total, wins, losses, totalPips: totalPips.toFixed(1), winRate };
   }, [entries]);
 
-  async function handleAdd() {
+  async function handleSave() {
     if (!userId) return;
     setSaving(true);
 
-    const { error } = await supabase.from('trading_journal').insert({
+    const payload = {
       user_id: userId,
       trade_date: date,
       pair,
@@ -145,19 +145,27 @@ export default function TradingJournal() {
       result,
       pips: parseFloat(pips) || 0,
       notes: notes || null,
-    });
+    };
+
+    let error;
+    if (editingId) {
+      ({ error } = await supabase.from('trading_journal').update(payload).eq('id', editingId).eq('user_id', userId));
+    } else {
+      ({ error } = await supabase.from('trading_journal').insert(payload));
+    }
 
     setSaving(false);
 
     if (error) {
-      toast({ title: 'Error', description: 'No se pudo guardar la operación', variant: 'destructive' });
+      toast({ title: 'Error', description: editingId ? 'No se pudo actualizar' : 'No se pudo guardar la operación', variant: 'destructive' });
       console.error(error);
       return;
     }
 
-    toast({ title: '✅ Operación guardada' });
+    toast({ title: editingId ? '✅ Operación actualizada' : '✅ Operación guardada' });
     resetForm();
     setShowForm(false);
+    setEditingId(null);
     await fetchEntries(userId);
   }
 
