@@ -759,7 +759,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
                   <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">{t('signal_ai_analysis')}</span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{signal.notes}</p>
+                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                  {notesTranslating ? (
+                    <span className="flex items-center gap-1.5 text-slate-400">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      {t('signal_translating')}
+                    </span>
+                  ) : translatedNotes}
+                </p>
               </div>
           }
 
