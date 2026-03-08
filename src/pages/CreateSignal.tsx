@@ -773,7 +773,7 @@ export default function CreateSignal() {
                             disabled={loading}
                             className="flex-1 py-2 rounded-lg text-xs font-semibold bg-primary text-primary-foreground"
                           >
-                            {loading ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : 'Confirmar cierre'}
+                            {loading ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : t('cs_confirm_close')}
                           </button>
                         </div>
                       </div>
