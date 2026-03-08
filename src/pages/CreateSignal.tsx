@@ -649,7 +649,7 @@ export default function CreateSignal() {
                   onClick={() => resetForm()}
                   className="flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 bg-card border border-border/40 text-muted-foreground hover:bg-card/80"
                 >
-                  <X className="w-4 h-4" /> Cancelar
+                  <X className="w-4 h-4" /> {t('cs_cancel')}
                 </button>
                 <button
                   onClick={handleUpdateSignal}
