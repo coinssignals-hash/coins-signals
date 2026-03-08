@@ -227,7 +227,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2.5">
                 <Globe className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Por Divisa</span>
+                <span className="text-sm font-medium text-foreground">{t('ec_by_currency')}</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 <button
