@@ -438,10 +438,10 @@ export const analysisApi = {
     return fetchViaProxy<MarketConclusionsData>('conclusions', symbol, undefined, currentPrice, language);
   },
 
-  async getMonetaryPolicies(symbol: string): Promise<MonetaryPolicyData[]> {
+  async getMonetaryPolicies(symbol: string, language?: string): Promise<MonetaryPolicyData[]> {
     try {
       const { data, error } = await supabase.functions.invoke('monetary-policies', {
-        body: { symbol },
+        body: { symbol, language },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
