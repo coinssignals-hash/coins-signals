@@ -143,7 +143,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   
   const copyToClipboard = (value: number) => {
     navigator.clipboard.writeText(value.toString());
-    toast.success('Precio copiado');
+    toast.success(t('sig_price_copied'));
   };
 
   // Fetch analysis history
