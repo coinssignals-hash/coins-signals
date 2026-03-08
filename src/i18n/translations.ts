@@ -1491,6 +1491,10 @@ export type TranslationKeys = {
   stock_create: string;
   stock_triggered: string;
   stock_no_alerts: string;
+  pwa_install_title: string;
+  pwa_install_desc: string;
+  pwa_install_btn: string;
+  pwa_learn_more: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

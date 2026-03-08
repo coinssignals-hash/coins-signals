@@ -3,6 +3,7 @@ import { Download, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '@/assets/logo.svg';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -15,6 +16,7 @@ const DISMISS_DURATION = 3 * 24 * 60 * 60 * 1000; // 3 days
 export function PWAInstallBanner() {
   const [show, setShow] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Don't show if already installed as PWA
@@ -66,15 +68,15 @@ export function PWAInstallBanner() {
           <div className="bg-card border border-border rounded-xl p-3 shadow-lg shadow-background/50 flex items-center gap-3">
             <img src={logoImg} alt="" className="w-10 h-10 rounded-lg flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground">Instala Coins Signals</p>
-              <p className="text-[10px] text-muted-foreground">Acceso rápido y notificaciones</p>
+              <p className="text-xs font-semibold text-foreground">{t('pwa_install_title')}</p>
+              <p className="text-[10px] text-muted-foreground">{t('pwa_install_desc')}</p>
             </div>
             {deferredPrompt ? (
               <button
                 onClick={handleInstall}
                 className="flex-shrink-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
               >
-                Instalar
+                {t('pwa_install_btn')}
               </button>
             ) : (
               <Link
@@ -82,7 +84,7 @@ export function PWAInstallBanner() {
                 onClick={handleDismiss}
                 className="flex-shrink-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
               >
-                Ver más
+                {t('pwa_learn_more')}
               </Link>
             )}
             <button
