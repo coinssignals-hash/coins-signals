@@ -186,7 +186,7 @@ export default function Analysis() {
         {isRateLimited &&
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-xs">
             <Clock className="h-4 w-4 text-yellow-500 shrink-0" />
-            <span className="text-yellow-400">Límite de API — reintentando en 60s</span>
+            <span className="text-yellow-400">{t('analysis_api_limit')}</span>
           </div>
             }
         {error && !isRateLimited
