@@ -478,7 +478,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             onClick={() => setFullscreen(true)}
             className="absolute top-2 right-2 z-10 p-1.5 rounded-md transition-colors active:scale-95"
             style={{ background: 'rgba(6,14,28,0.8)', border: '1px solid rgba(100,116,139,0.3)' }}
-            title="Pantalla completa"
+            title={t('chart_fullscreen')}
           >
             <Maximize2 className="w-4 h-4 text-cyan-300/70" />
           </button>
