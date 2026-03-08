@@ -4,6 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
 
+export interface CurrencyStrength {
+  currency: string;
+  strength: number;
+  raw: number;
+}
+
 export interface PairAnalysis {
   pair: string;
   timeframes: Record<Timeframe, {
