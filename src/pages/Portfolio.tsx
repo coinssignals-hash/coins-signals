@@ -258,15 +258,15 @@ export default function Portfolio() {
               <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mx-auto mb-3">
                 <Wallet className="w-6 h-6 text-muted-foreground" />
               </div>
-              <h3 className="text-foreground font-medium mb-1 text-sm">No hay brokers conectados</h3>
-              <p className="text-muted-foreground text-xs mb-4">Conecta tu primer broker para ver tu portfolio</p>
-              <button
-                onClick={() => navigate('/link-broker')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full text-xs font-medium transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Vincular Broker
-              </button>
+               <h3 className="text-foreground font-medium mb-1 text-sm">{t('portfolio_no_brokers')}</h3>
+               <p className="text-muted-foreground text-xs mb-4">{t('portfolio_no_brokers_desc')}</p>
+               <button
+                 onClick={() => navigate('/link-broker')}
+                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full text-xs font-medium transition-colors"
+               >
+                 <Plus className="w-3.5 h-3.5" />
+                 {t('portfolio_link_broker')}
+               </button>
             </CardContent>
           </Card>
         )}
