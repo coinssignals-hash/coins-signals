@@ -263,10 +263,10 @@ export default function TradingJournal() {
         {/* Stats Overview */}
         <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'Trades', value: stats.total, icon: BarChart3, color: 'text-primary' },
-            { label: 'Ganadas', value: stats.wins, icon: TrendingUp, color: 'text-emerald-400' },
-            { label: 'Perdidas', value: stats.losses, icon: TrendingDown, color: 'text-rose-400' },
-            { label: 'Win Rate', value: `${stats.winRate}%`, icon: Target, color: 'text-amber-400' },
+            { label: t('journal_total_trades'), value: stats.total, icon: BarChart3, color: 'text-primary' },
+            { label: t('journal_wins'), value: stats.wins, icon: TrendingUp, color: 'text-emerald-400' },
+            { label: t('journal_losses'), value: stats.losses, icon: TrendingDown, color: 'text-rose-400' },
+            { label: t('journal_win_rate'), value: `${stats.winRate}%`, icon: Target, color: 'text-amber-400' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
               <CardContent className="p-3 text-center">
