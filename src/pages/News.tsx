@@ -24,6 +24,7 @@ type NewsListItem = RealNewsItem;
 
 // Mini historical chart component with real data and tooltips
 function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoading?: boolean;}) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div className="flex items-end gap-0.5 h-8">
@@ -31,7 +32,6 @@ function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoadi
         <div key={i} className="flex-1 h-full bg-muted/30 rounded-t-sm animate-pulse" />
         )}
       </div>);
-
   }
 
   const maxAbsValue = Math.max(...data.map((d) => Math.abs(d.impact)), 1);
@@ -67,7 +67,7 @@ function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoadi
                   {isPositive ? '+' : ''}{point.impact}%
                 </span>
                 <div className="flex items-center gap-1 text-muted-foreground">
-                  <span className="text-[10px]">Confianza:</span>
+                    <span className="text-[10px]">{t('news_confidence')}:</span>
                   <span className={cn(
                     'text-[10px] font-medium',
                     confidencePercent >= 80 ? 'text-green-400' :
@@ -124,6 +124,7 @@ function HistoricalImpactSection({
 
 
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
+  const { t } = useTranslation();
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   const avgImpact = data?.averageImpact ?? 0;
@@ -137,7 +138,7 @@ function HistoricalImpactSection({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-            Historical Impact
+            {t('news_historical_impact')}
           </span>
           <TrendIcon className={cn(
             'w-3 h-3',
@@ -148,7 +149,7 @@ function HistoricalImpactSection({
           'text-xs font-bold',
           isLoading ? 'text-muted-foreground' : isPositiveAvg ? 'text-green-400' : 'text-red-400'
         )}>
-          {isLoading ? '...' : `Promedio: ${isPositiveAvg ? '+' : ''}${avgImpact.toFixed(1)}%`}
+          {isLoading ? '...' : `${t('news_average')}: ${isPositiveAvg ? '+' : ''}${avgImpact.toFixed(1)}%`}
         </span>
       </div>
       <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
@@ -172,6 +173,7 @@ function FeaturedHistoricalChart({
   category,
   currencies
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
+  const { t } = useTranslation();
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   if (isLoading) return <div className="h-12 w-full animate-pulse rounded bg-slate-800/40" />;
@@ -191,7 +193,7 @@ function FeaturedHistoricalChart({
           </div>
         );
       })}
-      <span className="text-[9px] text-slate-500 ml-1">{data.monthlyData.length} meses</span>
+      <span className="text-[9px] text-slate-500 ml-1">{data.monthlyData.length} {t('news_months')}</span>
     </div>
   );
 }
@@ -290,6 +292,7 @@ function getMarketSession(publishedAt: string): {label: string;color: string;ico
 function VolatilityIndicator({ newsId, title, category, currencies
 
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
+  const { t } = useTranslation();
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   const volatility = useMemo(() => {
@@ -304,9 +307,9 @@ function VolatilityIndicator({ newsId, title, category, currencies
   }, [data]);
 
   const config = {
-    high: { color: 'hsl(0, 70%, 55%)', label: 'ALTA', glow: 'hsl(0, 70%, 55%)' },
-    medium: { color: 'hsl(35, 90%, 55%)', label: 'MEDIA', glow: 'hsl(35, 90%, 55%)' },
-    low: { color: 'hsl(160, 80%, 45%)', label: 'BAJA', glow: 'hsl(160, 80%, 45%)' }
+    high: { color: 'hsl(0, 70%, 55%)', label: t('news_volatility_high'), glow: 'hsl(0, 70%, 55%)' },
+    medium: { color: 'hsl(35, 90%, 55%)', label: t('news_volatility_medium'), glow: 'hsl(35, 90%, 55%)' },
+    low: { color: 'hsl(160, 80%, 45%)', label: t('news_volatility_low'), glow: 'hsl(160, 80%, 45%)' }
   }[volatility.level];
 
   if (isLoading) {
@@ -314,7 +317,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
       <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
       style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Volatilidad</span>
+          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_volatility')}</span>
           <Loader2 className="w-3 h-3 text-cyan-400/50 animate-spin" />
         </div>
         <div className="h-1 rounded-full bg-slate-800/80 animate-pulse" />
@@ -337,34 +340,34 @@ function VolatilityIndicator({ newsId, title, category, currencies
         <div className="px-3 py-2.5 rounded-lg text-xs bg-popover border border-border shadow-xl space-y-1.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: config.color }}>
-              Volatilidad {config.label}
+              {t('news_volatility')} {config.label}
             </span>
             <Activity className="w-3 h-3" style={{ color: config.color }} />
           </div>
           <div className="space-y-1 text-[10px]">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Impacto prom.</span>
+              <span className="text-muted-foreground">{t('news_avg_impact')}</span>
               <span className="font-mono font-bold text-foreground">{volatility.avg}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Spread</span>
+              <span className="text-muted-foreground">{t('news_spread')}</span>
               <span className="font-mono font-bold text-foreground">{volatility.spread}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Máx. impacto</span>
+              <span className="text-muted-foreground">{t('news_max_impact')}</span>
               <span className="font-mono font-bold text-foreground">{volatility.maxImpact}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Promedio hist.</span>
+              <span className="text-muted-foreground">{t('news_hist_avg')}</span>
               <span className={cn('font-mono font-bold', avgImpact >= 0 ? 'text-green-400' : 'text-red-400')}>
                 {avgImpact >= 0 ? '+' : ''}{avgImpact.toFixed(1)}%
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Tendencia</span>
+              <span className="text-muted-foreground">{t('news_trend')}</span>
               <span className={cn('font-bold capitalize',
               trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-yellow-400'
-              )}>{trend === 'bullish' ? 'Alcista' : trend === 'bearish' ? 'Bajista' : 'Neutral'}</span>
+              )}>{trend === 'bullish' ? t('news_sentiment_bullish') : trend === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral')}</span>
             </div>
           </div>
         </div>
@@ -381,7 +384,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
       <div className="flex items-center justify-between mb-1 relative">
         <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium flex items-center gap-1">
           <Activity className="w-2.5 h-2.5" style={{ color: config.color }} />
-          Volatilidad
+          {t('news_volatility')}
         </span>
         <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: config.color }}>
           {config.label}
@@ -404,7 +407,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
 // Modern news card component matching the signal card design
 function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;index: number;translateHook: ReturnType<typeof useNewsTranslation>;}) {
   const [expanded, setExpanded] = useState(false);
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const { translateText, clearTranslation, translations, translating } = translateHook;
   const isTranslated = !!translations[news.id];
   const isTranslating = !!translating[news.id];
@@ -425,7 +428,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
   }, [news.sentiment]);
 
   const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
-  const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
+  const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const SentimentIcon = news.sentiment === 'bullish' ? TrendingUp : news.sentiment === 'bearish' ? TrendingDown : Minus;
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
   const session = getMarketSession(news.published_at);
@@ -514,7 +517,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           </h3>
           {isTranslated &&
           <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
-              <Languages className="w-2.5 h-2.5" /> Traducido
+              <Languages className="w-2.5 h-2.5" /> {t('news_translated')}
             </span>
           }
         </Link>
@@ -574,7 +577,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           {impacts.map(({ currency, impact }) => <ImpactBadge key={currency} currency={currency} impact={impact} />)}
           {news.affected_currencies.length > 3 &&
           <span className="text-[10px] text-cyan-400/50 font-medium">
-              +{news.affected_currencies.length - 3} más
+              +{news.affected_currencies.length - 3} {t('news_n_more')}
             </span>
           }
         </div>
@@ -585,7 +588,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
           style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Relev.</span>
+              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_relevance')}</span>
               <span className="font-mono text-[10px] font-bold text-white">{relevancePercent}%</span>
             </div>
             <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden">
@@ -604,7 +607,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
           style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Sent.</span>
+              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_sentiment')}</span>
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
             </div>
             <div className="flex gap-0.5 h-1 rounded-full overflow-hidden">
@@ -626,7 +629,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       {/* Expandable toggle */}
       <button onClick={() => setExpanded(!expanded)}
       className="w-full flex items-center justify-center py-2 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10 active:bg-white/5">
-        <span className="text-[10px] uppercase tracking-wider mr-1.5 font-medium">{expanded ? 'Menos' : 'Más análisis'}</span>
+        <span className="text-[10px] uppercase tracking-wider mr-1.5 font-medium">{expanded ? t('news_less') : t('news_more_analysis')}</span>
         <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', expanded && 'rotate-180')} />
       </button>
 
@@ -637,11 +640,11 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
         style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
             <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
           style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">Análisis de Sentimiento</span>
+            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">{t('news_sentiment_analysis')}</span>
             <div className="space-y-1.5">
-              <NewsImpactBar label="Alcista" value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
-              <NewsImpactBar label="Bajista" value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
-              <NewsImpactBar label="Neutral" value={sentimentBreakdown.neu} color="hsl(45, 80%, 55%)" />
+              <NewsImpactBar label={t('news_sentiment_bullish')} value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
+              <NewsImpactBar label={t('news_sentiment_bearish')} value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
+              <NewsImpactBar label={t('news_sentiment_neutral')} value={sentimentBreakdown.neu} color="hsl(45, 80%, 55%)" />
             </div>
           </div>
           <HistoricalImpactSection newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
@@ -653,6 +656,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
 }
 // Featured news card for top story
 function FeaturedCard({ news }: {news: NewsListItem;}) {
+  const { t } = useTranslation();
   const impacts = useMemo(() => {
     return news.affected_currencies.slice(0, 3).map((currency) => ({
       currency, impact: (Math.random() - 0.5) * 40
@@ -660,7 +664,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
   }, [news.affected_currencies]);
 
   const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
-  const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
+  const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
   return (
@@ -758,6 +762,7 @@ const SOURCE_COLORS: Record<string, {bg: string;text: string;}> = {
 function QuickSourceFilter({
   selected, onChange, news
 }: {selected: string[];onChange: (sources: string[]) => void;news?: RealNewsItem[];}) {
+  const { t } = useTranslation();
   const sources = useMemo(() => {
     const counts: Record<string, number> = {};
     if (news) {
@@ -791,7 +796,7 @@ function QuickSourceFilter({
         )}>
           <Rss className="w-3.5 h-3.5 text-muted-foreground" />
           <span className="truncate max-w-[100px]">
-            {isAll ? 'Fuentes' : selected.length === 1 ? selected[0] : `${selected.length} fuentes`}
+            {isAll ? t('news_sources_label') : selected.length === 1 ? selected[0] : `${selected.length} ${t('news_n_sources')}`}
           </span>
           {!isAll &&
           <span className="min-w-[20px] h-5 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">
@@ -806,7 +811,7 @@ function QuickSourceFilter({
           checked={isAll}
           onCheckedChange={() => onChange([])}>
           <span className="flex items-center gap-2">
-            📡 Todas las fuentes
+            📡 {t('news_all_sources')}
             {totalSources > 0 && <span className="text-muted-foreground text-xs">({totalSources})</span>}
           </span>
         </DropdownMenuCheckboxItem>
@@ -1037,9 +1042,9 @@ const News = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
           {/* Sort modes */}
           {[
-              { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: 'Recientes' },
-              { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: 'Impacto' },
-              { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: 'Volatilidad' }].
+              { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: t('news_sort_recent') },
+              { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: t('news_sort_impact') },
+              { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: t('news_sort_volatility') }].
               map(({ key, icon, label }) =>
               <button
                 key={key}
@@ -1061,9 +1066,9 @@ const News = () => {
 
           {/* Sentiment toggles */}
           {[
-              { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: 'Alcista', activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
-              { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: 'Bajista', activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
-              { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: 'Neutral', activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' }].
+              { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: t('news_sentiment_bullish'), activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
+              { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: t('news_sentiment_bearish'), activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
+              { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: t('news_sentiment_neutral'), activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' }].
               map(({ key, icon, label, activeClass }) =>
               <button
                 key={key}
