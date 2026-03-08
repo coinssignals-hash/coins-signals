@@ -95,7 +95,7 @@ export function CacheStatsPanel() {
       console.error('Error clearing cache:', error);
       toast({
         title: 'Error',
-        description: 'No se pudo limpiar el cache',
+        description: t('cache_error_clean'),
         variant: 'destructive',
       });
     } finally {
