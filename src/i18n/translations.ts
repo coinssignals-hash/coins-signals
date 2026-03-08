@@ -221,6 +221,32 @@ export type TranslationKeys = {
   news_detail_live_impact: string;
   news_detail_relevance: string;
   news_detail_view_full_article: string;
+  news_detail_generating_image: string;
+  news_detail_not_found: string;
+  // NewsAISummaryInline
+  news_ai_trading_summary: string;
+  news_ai_analyzing_insights: string;
+  news_ai_unavailable_short: string;
+  // CurrencyImpactCharts
+  news_impact_heatmap: string;
+  news_impact_historical_by_currency: string;
+  news_impact_trend_bullish: string;
+  news_impact_trend_bearish: string;
+  news_impact_trend_neutral: string;
+  news_impact_data_points: string;
+  news_impact_generating_charts: string;
+  news_impact_tooltip_impact: string;
+  news_impact_tooltip_max: string;
+  news_impact_tooltip_min: string;
+  news_impact_legend_bearish: string;
+  news_impact_legend_neutral: string;
+  news_impact_legend_bullish: string;
+  news_impact_legend_confidence: string;
+  // HistoricalChart
+  news_historical_previous_months: string;
+  news_historical_short_term: string;
+  news_historical_affected_currencies: string;
+  news_historical_tooltip_impact: string;
   // Portfolio page
   portfolio_title: string;
   portfolio_subtitle: string;

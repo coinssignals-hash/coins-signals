@@ -82,6 +82,7 @@ function CompactSummary({ analysis }: { analysis: NewsAIAnalysis }) {
 }
 
 export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { data: analysis, isLoading, error } = useNewsAIAnalysis(expanded ? news : null);
 
@@ -100,7 +101,7 @@ export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
         )}
       >
         <Sparkles className="w-3 h-3 text-primary" />
-        <span className="text-[11px] font-medium text-primary">AI Trading Summary</span>
+        <span className="text-[11px] font-medium text-primary">{t('news_ai_trading_summary')}</span>
         <ChevronDown className="w-3 h-3 text-primary/60 ml-auto group-hover:translate-y-0.5 transition-transform" />
       </button>
     );
@@ -124,7 +125,7 @@ export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
         className="flex items-center gap-1.5 px-2.5 py-1.5 w-full hover:bg-primary/5 transition-colors"
       >
         <Sparkles className="w-3 h-3 text-primary" />
-        <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">AI Trading Summary</span>
+        <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">{t('news_ai_trading_summary')}</span>
         <ChevronUp className="w-3 h-3 text-primary/60 ml-auto" />
       </button>
 
@@ -133,10 +134,10 @@ export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
         {isLoading ? (
           <div className="flex items-center gap-2 py-3">
             <Loader2 className="w-4 h-4 text-primary animate-spin" />
-            <span className="text-xs text-muted-foreground">Analyzing for trading insights...</span>
+            <span className="text-xs text-muted-foreground">{t('news_ai_analyzing_insights')}</span>
           </div>
         ) : error ? (
-          <p className="text-xs text-muted-foreground py-2">AI analysis unavailable</p>
+          <p className="text-xs text-muted-foreground py-2">{t('news_ai_unavailable_short')}</p>
         ) : analysis ? (
           <CompactSummary analysis={analysis} />
         ) : null}

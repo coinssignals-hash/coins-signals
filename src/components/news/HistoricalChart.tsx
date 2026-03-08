@@ -1,6 +1,7 @@
 import { HistoricalAnalysis, HistoricalDataPoint } from '@/types/news';
 import { cn } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface HistoricalChartProps {
   analysis: HistoricalAnalysis;
@@ -8,18 +9,19 @@ interface HistoricalChartProps {
 }
 
 export function HistoricalChart({ analysis, className }: HistoricalChartProps) {
+  const { t } = useTranslation();
   return (
     <div className={cn('space-y-6', className)}>
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Impacto Meses Anteriores
+          {t('news_historical_previous_months')}
         </h3>
         <MonthlyChart data={analysis.monthly_data} />
       </div>
       
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">Impacto a Corto Plazo</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{t('news_historical_short_term')}</h4>
           <div className="grid grid-cols-3 gap-1">
             {analysis.monthly_data.slice(-3).map((point, i) => (
               <ImpactBlock 
@@ -32,7 +34,7 @@ export function HistoricalChart({ analysis, className }: HistoricalChartProps) {
         </div>
         
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">Monedas Afectadas</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{t('news_historical_affected_currencies')}</h4>
           <div className="flex gap-1">
             <span className="text-xl">🇺🇸</span>
             <span className="text-xl">🇪🇺</span>
@@ -72,7 +74,7 @@ function MonthlyChart({ data }: MonthlyChartProps) {
               fontSize: '12px',
             }}
             labelStyle={{ color: 'hsl(210 20% 95%)' }}
-            formatter={(value: number) => [`${value}%`, 'Impacto']}
+            formatter={(value: number) => [`${value}%`, 'Impact']}
           />
           <Bar dataKey="impact_score" radius={[2, 2, 0, 0]}>
             {data.map((entry, index) => (

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ResponsiveContainer, Tooltip, XAxis, YAxis, ComposedChart, Bar, Cell, Line, ReferenceLine } from 'recharts';
 import { Loader2, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { CURRENCIES, Currency, EconomicCategory } from '@/types/news';
 
 interface CurrencyBreakdown {
@@ -81,6 +82,7 @@ function CandlestickShape(props: any) {
 
 // Custom candlestick renderer using ComposedChart + custom Bar shape
 function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
+  const { t } = useTranslation();
   const candles = buildCandles(data);
   const allValues = candles.flatMap(c => [c.high, c.low]);
   const yMin = Math.min(...allValues) - 0.3;
@@ -110,9 +112,9 @@ function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
           }}
           labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: 2 }}
           formatter={(v: number, name: string) => {
-            if (name === 'close' || name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto'];
-            if (name === 'high') return [`${v.toFixed(2)}%`, 'Máximo'];
-            if (name === 'low') return [`${v.toFixed(2)}%`, 'Mínimo'];
+            if (name === 'close' || name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, t('news_impact_tooltip_impact')];
+            if (name === 'high') return [`${v.toFixed(2)}%`, t('news_impact_tooltip_max')];
+            if (name === 'low') return [`${v.toFixed(2)}%`, t('news_impact_tooltip_min')];
             return [v, name];
           }}
           cursor={{ fill: 'hsl(var(--muted) / 0.15)' }}
@@ -130,6 +132,7 @@ function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
 
 // Heatmap grid for per-currency monthly impact
 function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
+  const { t } = useTranslation();
   if (!currencies.length) return null;
 
   // Use labels from first currency (all share same months)
@@ -152,7 +155,7 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
     <div className="rounded-xl bg-card/80 border border-border/50 p-4 overflow-hidden">
       <div className="flex items-center gap-2 mb-3">
         <BarChart3 className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Heatmap de Impacto</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_impact_heatmap')}</h3>
       </div>
 
       <div className="overflow-x-auto -mx-1 pb-1">
@@ -207,23 +210,23 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
       <div className="flex items-center justify-center gap-4 mt-3">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'hsl(0, 70%, 50%)' }} />
-          <span className="text-[9px] text-muted-foreground">Bajista</span>
+          <span className="text-[9px] text-muted-foreground">{t('news_impact_legend_bearish')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm bg-muted" />
-          <span className="text-[9px] text-muted-foreground">Neutral</span>
+          <span className="text-[9px] text-muted-foreground">{t('news_impact_legend_neutral')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'hsl(142, 70%, 45%)' }} />
-          <span className="text-[9px] text-muted-foreground">Alcista</span>
+          <span className="text-[9px] text-muted-foreground">{t('news_impact_legend_bullish')}</span>
         </div>
         <div className="flex items-center gap-1 ml-2">
           <div className="flex gap-0.5">
             {[0.3, 0.5, 0.7, 1].map(o => (
               <div key={o} className="w-2 h-2 rounded-sm" style={{ backgroundColor: `hsl(var(--primary) / ${o})` }} />
             ))}
-          </div>
-          <span className="text-[9px] text-muted-foreground">Confianza</span>
+           </div>
+          <span className="text-[9px] text-muted-foreground">{t('news_impact_legend_confidence')}</span>
         </div>
       </div>
     </div>
@@ -231,6 +234,7 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
 }
 
 export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, error } = useQuery<ChartResponse>({
     queryKey: ['news-impact-charts', newsId],
     queryFn: async () => {
@@ -251,7 +255,7 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
     return (
       <div className="p-6 rounded-lg bg-card border border-border flex items-center justify-center gap-2 text-muted-foreground">
         <Loader2 className="w-4 h-4 animate-spin" />
-        <span className="text-sm">Generando gráficos de impacto...</span>
+        <span className="text-sm">{t('news_impact_generating_charts')}</span>
       </div>
     );
   }
@@ -268,7 +272,7 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
       <div className="flex items-center gap-2">
         <BarChart3 className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Impacto Histórico por Divisa
+          {t('news_impact_historical_by_currency')}
         </h2>
       </div>
 
@@ -285,11 +289,11 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
             </div>
             <div>
               <span className="text-sm font-semibold text-foreground block leading-tight">
-                {data.overall.trend === 'bullish' ? 'Tendencia Alcista' :
-                 data.overall.trend === 'bearish' ? 'Tendencia Bajista' : 'Tendencia Neutral'}
+                {data.overall.trend === 'bullish' ? t('news_impact_trend_bullish') :
+                 data.overall.trend === 'bearish' ? t('news_impact_trend_bearish') : t('news_impact_trend_neutral')}
               </span>
               <span className="text-[10px] text-muted-foreground">
-                {data.overall.totalPoints} puntos de datos
+                {data.overall.totalPoints} {t('news_impact_data_points')}
               </span>
             </div>
           </div>
