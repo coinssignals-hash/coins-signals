@@ -225,7 +225,7 @@ export default function Analysis() {
         <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-2 sm:space-y-3">
           <TabsList className="bg-[#060e1a]/95 backdrop-blur-md border border-cyan-900/20 w-full h-14 sm:h-12 p-1.5 gap-1 rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.4)]">
             <TabsTrigger value="tecnico" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-cyan-500/25 data-[state=active]:to-cyan-600/10 data-[state=active]:text-cyan-300 data-[state=active]:shadow-[0_0_16px_rgba(6,182,212,0.25),inset_0_1px_0_rgba(6,182,212,0.15)] data-[state=active]:border data-[state=active]:border-cyan-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
-              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Téc.</span>
+              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">{t('analysis_tab_technical')}</span>
             </TabsTrigger>
             <TabsTrigger value="fundamental" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-emerald-500/25 data-[state=active]:to-emerald-600/10 data-[state=active]:text-emerald-300 data-[state=active]:shadow-[0_0_16px_rgba(16,185,129,0.25),inset_0_1px_0_rgba(16,185,129,0.15)] data-[state=active]:border data-[state=active]:border-emerald-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
               <Landmark className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Fund.</span>
