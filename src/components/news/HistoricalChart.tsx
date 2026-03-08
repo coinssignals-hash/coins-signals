@@ -34,7 +34,7 @@ export function HistoricalChart({ analysis, className }: HistoricalChartProps) {
         </div>
         
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">Monedas Afectadas</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{t('news_historical_affected_currencies')}</h4>
           <div className="flex gap-1">
             <span className="text-xl">🇺🇸</span>
             <span className="text-xl">🇪🇺</span>
