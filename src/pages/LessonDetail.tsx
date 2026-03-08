@@ -426,7 +426,7 @@ export default function LessonDetail() {
             <div className="p-4 pb-2 border-b border-border/30">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <FileText className="w-4 h-4 text-rose-400" />
-                Recursos descargables
+                {t('lesson_resources')}
               </h3>
             </div>
             <div className="p-3 space-y-1.5">
