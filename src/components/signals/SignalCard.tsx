@@ -1046,8 +1046,8 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               ) : analysisHistory.length === 0 ? (
                 <div className="text-center py-6">
                   <History className="w-10 h-10 text-slate-700 mx-auto mb-2" />
-                  <p className="text-sm text-slate-500">No hay análisis guardados</p>
-                  <p className="text-xs text-slate-600 mt-1">Genera un análisis IA para comenzar</p>
+                  <p className="text-sm text-slate-500">{t('sig_no_history')}</p>
+                  <p className="text-xs text-slate-600 mt-1">{t('sig_no_history_hint')}</p>
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
