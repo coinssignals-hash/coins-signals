@@ -127,6 +127,10 @@ function AnimatedRoutes() {
           <Route path="/tools/risk-reward" element={<RiskRewardCalculator />} />
           <Route path="/tools/position-sizing" element={<PositionSizing />} />
           <Route path="/tools/swap-calculator" element={<SwapCalculator />} />
+          <Route path="/tools/compound-interest" element={<CompoundInterestCalculator />} />
+          <Route path="/tools/correlation-matrix" element={<CorrelationMatrix />} />
+          <Route path="/tools/volatility-scanner" element={<VolatilityScanner />} />
+          <Route path="/tools/pattern-screener" element={<PatternScreener />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
