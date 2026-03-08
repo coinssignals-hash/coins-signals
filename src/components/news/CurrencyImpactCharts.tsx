@@ -132,6 +132,7 @@ function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
 
 // Heatmap grid for per-currency monthly impact
 function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
+  const { t } = useTranslation();
   if (!currencies.length) return null;
 
   // Use labels from first currency (all share same months)
