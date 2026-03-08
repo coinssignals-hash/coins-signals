@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-
 import { Badge } from '@/components/ui/badge';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { categories } from '@/data/coursesData';
@@ -13,6 +12,7 @@ import {
   ChevronRight, Star, Zap, GraduationCap, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 // categories imported from @/data/coursesData
 
