@@ -404,7 +404,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                               deviation !== null && deviation > 0 ? "text-emerald-400" :
                               deviation !== null && deviation < 0 ? "text-rose-400" : "text-foreground"
                             )}>
-                              {event.actual !== null ? event.actual : 'Pendiente'}
+                              {event.actual !== null ? event.actual : t('ec_pending')}
                             </span>
                           </div>
                         </div>
