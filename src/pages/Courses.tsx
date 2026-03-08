@@ -92,10 +92,10 @@ export default function Courses() {
                   </motion.div>
                   <div>
                     <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
-                      Academia de Trading
+                      {t('courses_academy')}
                       <Sparkles className="w-4 h-4 text-amber-400" />
                     </h1>
-                    <p className="text-xs text-muted-foreground">Domina los mercados paso a paso</p>
+                    <p className="text-xs text-muted-foreground">{t('courses_subtitle')}</p>
                   </div>
                 </div>
                 <div className="text-right">
