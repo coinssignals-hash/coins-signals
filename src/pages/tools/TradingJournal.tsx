@@ -404,7 +404,7 @@ export default function TradingJournal() {
           variant={showForm ? 'secondary' : 'default'}
         >
           <Plus className="w-4 h-4 mr-2" />
-          {showForm ? 'Cancelar' : 'Registrar Operación'}
+          {showForm ? t('journal_cancel') : t('journal_new_trade')}
         </Button>
 
         {/* New Trade Form */}
