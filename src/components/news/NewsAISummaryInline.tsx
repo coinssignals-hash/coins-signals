@@ -136,7 +136,7 @@ export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
             <span className="text-xs text-muted-foreground">{t('news_ai_analyzing_insights')}</span>
           </div>
         ) : error ? (
-          <p className="text-xs text-muted-foreground py-2">AI analysis unavailable</p>
+          <p className="text-xs text-muted-foreground py-2">{t('news_ai_unavailable_short')}</p>
         ) : analysis ? (
           <CompactSummary analysis={analysis} />
         ) : null}
