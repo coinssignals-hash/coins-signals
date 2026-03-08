@@ -317,7 +317,7 @@ export default function TradingJournal() {
           const weekMap: Record<string, number> = {};
           sorted.forEach(e => {
             const p = parseFloat(e.pips) || 0;
-            const w = format(startOfWeek(parseISO(e.date), { weekStartsOn: 1 }), 'dd MMM', { locale: es });
+            const w = format(startOfWeek(parseISO(e.date), { weekStartsOn: 1 }), 'dd MMM', { locale: dateLocale });
             weekMap[w] = (weekMap[w] || 0) + (e.result === 'loss' ? -Math.abs(p) : p);
           });
           const weekData = Object.entries(weekMap).map(([week, pips]) => ({ week, pips: parseFloat(pips.toFixed(1)) }));
