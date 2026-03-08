@@ -93,7 +93,7 @@ export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) 
     } finally {
       setLoading(false);
     }
-  }, [signal, enabled]);
+  }, [signal, enabled, language]);
 
   useEffect(() => {
     if (enabled && signal) {
