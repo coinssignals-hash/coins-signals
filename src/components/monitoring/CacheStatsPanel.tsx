@@ -203,7 +203,7 @@ export function CacheStatsPanel() {
         {/* By Type Breakdown */}
         {stats && Object.keys(stats.byType).length > 0 && (
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Por Tipo de Análisis</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('cache_by_type')}</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(stats.byType).map(([type, count]) => (
                 <span
