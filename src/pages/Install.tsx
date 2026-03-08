@@ -95,10 +95,8 @@ export default function Install() {
             <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-[hsl(142_70%_45%/0.2)] flex items-center justify-center">
               <Check className="w-7 h-7 text-bullish" />
             </div>
-            <h3 className="text-lg font-bold text-bullish mb-1">¡App Instalada!</h3>
-            <p className="text-muted-foreground text-sm">
-              Ya tienes Coins Signals en tu dispositivo
-            </p>
+            <h3 className="text-lg font-bold text-bullish mb-1">{t('inst_installed')}</h3>
+            <p className="text-muted-foreground text-sm">{t('inst_installed_desc')}</p>
           </motion.div>
         ) : (
           <>
