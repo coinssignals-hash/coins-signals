@@ -33,7 +33,7 @@ export function AnalysisError({
     if (errorMessage.includes('network') || errorMessage.includes('fetch') || errorMessage.includes('failed to fetch')) {
       return {
         icon: WifiOff,
-        defaultMessage: 'Sin conexión. Verifica tu red e intenta de nuevo.',
+        defaultMessage: t('ae_network'),
         isNetwork: true,
       };
     }
