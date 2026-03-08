@@ -130,7 +130,7 @@ function HistoricalImpactSection({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-            Historical Impact
+            {t('news_historical_impact')}
           </span>
           <TrendIcon className={cn(
             'w-3 h-3',
