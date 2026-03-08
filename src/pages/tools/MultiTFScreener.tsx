@@ -173,10 +173,10 @@ export default function MultiTFScreener() {
         {/* Bias Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
           {([
-            { id: 'all', label: 'Todos' },
-            { id: 'bullish', label: '🟢 Alcista' },
-            { id: 'bearish', label: '🔴 Bajista' },
-            { id: 'neutral', label: '⚪ Neutral' },
+            { id: 'all', label: t('mtf_all') },
+            { id: 'bullish', label: t('mtf_bullish') },
+            { id: 'bearish', label: t('mtf_bearish') },
+            { id: 'neutral', label: t('mtf_neutral') },
           ] as const).map(f => (
             <button
               key={f.id}
