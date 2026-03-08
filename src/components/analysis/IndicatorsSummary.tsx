@@ -44,7 +44,7 @@ export function IndicatorsSummary({
     result.push({
       title: 'RSI (14)',
       value: currentRSI.toFixed(1),
-      subValue: rsiSignal === 'sell' ? 'Sobrecompra' : rsiSignal === 'buy' ? 'Sobreventa' : 'Neutral',
+      subValue: rsiSignal === 'sell' ? t('analysis_ind_overbought') : rsiSignal === 'buy' ? t('analysis_ind_oversold') : t('analysis_ind_neutral'),
       signal: rsiSignal,
       strength: rsiStrength,
       icon: Gauge,
