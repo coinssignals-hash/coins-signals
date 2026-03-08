@@ -111,7 +111,7 @@ export function AnalysisError({
             className="mt-2 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:text-green-300"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Reintentar
+            {t('ae_retry')}
           </Button>
         )}
         
