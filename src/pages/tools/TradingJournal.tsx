@@ -283,7 +283,7 @@ export default function TradingJournal() {
           <CardContent className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Pips Totales</span>
+              <span className="text-sm font-medium text-foreground">{t('journal_total_pips')}</span>
             </div>
             <span className={cn(
               'text-lg font-bold tabular-nums',
