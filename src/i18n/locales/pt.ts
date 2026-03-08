@@ -5,6 +5,8 @@ const pt: TranslationKeys = {
   nav_courses: 'Cursos', nav_brokers: 'Corretoras', nav_performance: 'Desempenho',
   nav_referrals: 'Indicações', nav_support: 'Suporte', nav_about: 'Sobre Nós',
   nav_settings: 'Configurações', nav_more: 'Mais', nav_saved_news: 'Notícias Salvas',
+  nav_stocks: 'Ações', nav_ai: 'IA', nav_ai_center: 'Centro IA', nav_tools: 'Ferramentas',
+  drawer_ai_center: 'Centro de Análise IA', drawer_stock_market: 'Mercado de Ações',
   drawer_welcome: 'Bem-vindo', drawer_login_sync: 'Faça login para sincronizar',
   drawer_login: 'Entrar', drawer_logout: 'Sair', drawer_session_closed: 'Sessão encerrada',
   drawer_session_closed_desc: 'Você saiu com sucesso', drawer_synced: 'Sincronizado',
