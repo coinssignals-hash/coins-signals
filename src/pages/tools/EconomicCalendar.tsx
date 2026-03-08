@@ -380,13 +380,13 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                         {/* Data Grid */}
                         <div className="grid grid-cols-3 gap-2">
                           <div className="bg-secondary rounded-lg p-2.5 text-center">
-                            <span className="text-[9px] text-muted-foreground block">Previo</span>
+                            <span className="text-[9px] text-muted-foreground block">{t('ec_previous')}</span>
                             <span className="text-sm font-mono font-bold text-foreground">
                               {event.previous !== null ? event.previous : '—'}
                             </span>
                           </div>
                           <div className="bg-secondary rounded-lg p-2.5 text-center">
-                            <span className="text-[9px] text-muted-foreground block">Estimado</span>
+                            <span className="text-[9px] text-muted-foreground block">{t('ec_estimated')}</span>
                             <span className="text-sm font-mono font-bold text-foreground">
                               {event.estimate !== null ? event.estimate : '—'}
                             </span>
