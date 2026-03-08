@@ -3,9 +3,10 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import {
   ArrowLeft, CalendarDays, AlertTriangle, TrendingUp, TrendingDown, Minus,
-  Loader2, RefreshCw, Globe, Sparkles, Clock, BarChart3, Zap, ChevronDown, ChevronUp
+  Loader2, RefreshCw, Globe, Sparkles, Clock, BarChart3, Zap, ChevronDown, ChevronUp, Bell
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useAlertConfig } from '@/hooks/useAlertConfig';
 
 interface EconomicEvent {
   date: string;
