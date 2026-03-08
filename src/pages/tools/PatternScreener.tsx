@@ -159,7 +159,7 @@ export default function PatternScreener() {
                       item.type === 'bullish' ? 'text-emerald-400' :
                       item.type === 'bearish' ? 'text-rose-400' : 'text-muted-foreground'
                     )}>
-                      {item.pattern}
+                      {t(item.pattern)}
                     </p>
                     <p className="text-[10px] text-amber-400 mt-0.5 tracking-wider">{reliabilityStars(item.reliability)}</p>
                   </div>
