@@ -112,9 +112,9 @@ function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
           }}
           labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600, marginBottom: 2 }}
           formatter={(v: number, name: string) => {
-            if (name === 'close' || name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, 'Impacto'];
-            if (name === 'high') return [`${v.toFixed(2)}%`, 'Máximo'];
-            if (name === 'low') return [`${v.toFixed(2)}%`, 'Mínimo'];
+            if (name === 'close' || name === 'impact') return [`${v > 0 ? '+' : ''}${v.toFixed(2)}%`, t('news_impact_tooltip_impact')];
+            if (name === 'high') return [`${v.toFixed(2)}%`, t('news_impact_tooltip_max')];
+            if (name === 'low') return [`${v.toFixed(2)}%`, t('news_impact_tooltip_min')];
             return [v, name];
           }}
           cursor={{ fill: 'hsl(var(--muted) / 0.15)' }}
