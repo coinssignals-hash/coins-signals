@@ -413,7 +413,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(160, 70%, 50%)' }} />
               <span className="text-[9px]" style={{ color: 'hsl(210, 20%, 35%)' }}>
-                {displayResults.length} resultados
+                {displayResults.length} {t('ai_center_results_count')}
               </span>
             </div>
             <span className="text-[9px] font-mono" style={{ color: 'hsl(210, 20%, 30%)' }}>
