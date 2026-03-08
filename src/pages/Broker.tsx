@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ArrowLeft, GitCompare } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { BottomNav } from '@/components/layout/BottomNav';
 import { BrokerCard, BrokerData } from '@/components/broker/BrokerCard';
 import { BrokerDetail } from '@/components/broker/BrokerDetail';
 import { BrokerSearch } from '@/components/broker/BrokerSearch';
@@ -12,9 +11,11 @@ import { brokersData } from '@/components/broker/brokersData';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export default function Broker() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
@@ -31,7 +32,6 @@ export default function Broker() {
     mercados: '',
   });
 
-  // Filter brokers based on search and category
   const filteredBrokers = brokersData.filter((broker) => {
     const matchesSearch = broker.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = !selectedCategory || 
@@ -44,12 +44,11 @@ export default function Broker() {
 
   const handleToggleCompare = (broker: BrokerData) => {
     const isSelected = brokersToCompare.some(b => b.id === broker.id);
-    
     if (isSelected) {
       setBrokersToCompare(brokersToCompare.filter(b => b.id !== broker.id));
     } else {
       if (brokersToCompare.length >= 4) {
-        toast.error('Máximo 4 brokers para comparar');
+        toast.error(t('broker_max_compare'));
         return;
       }
       setBrokersToCompare([...brokersToCompare, broker]);
@@ -65,13 +64,12 @@ export default function Broker() {
 
   const handleStartComparison = () => {
     if (brokersToCompare.length < 2) {
-      toast.error('Selecciona al menos 2 brokers para comparar');
+      toast.error(t('broker_min_compare'));
       return;
     }
     setShowComparison(true);
   };
 
-  // If a broker is selected, show the detail view
   if (selectedBroker) {
     return (
       <PageShell>
@@ -83,7 +81,6 @@ export default function Broker() {
     );
   }
 
-  // If showing comparison view
   if (showComparison && brokersToCompare.length >= 2) {
     return (
       <PageShell>
@@ -104,7 +101,6 @@ export default function Broker() {
       <Header />
       
       <main className="container py-6">
-        {/* Back button and title */}
         <button 
           onClick={() => navigate(-1)} 
           className="flex items-center gap-2 text-muted-foreground mb-4"
@@ -113,10 +109,8 @@ export default function Broker() {
         </button>
 
         <div className="text-center mb-6">
-          <h1 className="text-primary font-medium">Busca el Broker a tu medida</h1>
-          <p className="text-sm text-primary/80">
-            Aumenta y asegura tus ganancia escogioendo un broker a tu medidas
-          </p>
+          <h1 className="text-primary font-medium">{t('bk_search_title')}</h1>
+          <p className="text-sm text-primary/80">{t('bk_search_subtitle')}</p>
         </div>
 
         {/* Compare Mode Toggle */}
@@ -133,7 +127,7 @@ export default function Broker() {
             className="gap-2"
           >
             <GitCompare className="w-4 h-4" />
-            {compareMode ? 'Cancelar Comparación' : 'Comparar Brokers'}
+            {compareMode ? t('bk_compare_cancel') : t('bk_compare_brokers')}
           </Button>
           
           {compareMode && brokersToCompare.length > 0 && (
@@ -142,7 +136,7 @@ export default function Broker() {
               onClick={handleStartComparison}
               className="bg-primary hover:bg-primary/90"
             >
-              Comparar ({brokersToCompare.length})
+              {t('bk_compare_brokers')} ({brokersToCompare.length})
             </Button>
           )}
         </div>
@@ -150,16 +144,15 @@ export default function Broker() {
         {/* Compare Selection Info */}
         {compareMode && (
           <div className="bg-secondary/50 rounded-lg p-3 mb-4 text-sm text-muted-foreground">
-            <p>Selecciona de 2 a 4 brokers para comparar sus características lado a lado.</p>
+            <p>{t('bk_compare_instruction')}</p>
             {brokersToCompare.length > 0 && (
               <p className="text-primary mt-1">
-                Seleccionados: {brokersToCompare.map(b => b.name).join(', ')}
+                {t('bk_compare_selected')}: {brokersToCompare.map(b => b.name).join(', ')}
               </p>
             )}
           </div>
         )}
 
-        {/* Search and Categories */}
         <BrokerSearch
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -168,7 +161,6 @@ export default function Broker() {
           onAdvancedSearch={() => setShowAdvancedFilter(true)}
         />
 
-        {/* Advanced Filter Panel */}
         {showAdvancedFilter && (
           <div className="mt-4">
             <BrokerFilter
@@ -182,7 +174,6 @@ export default function Broker() {
           </div>
         )}
 
-        {/* Broker List */}
         <div className="space-y-4 mt-6">
           {filteredBrokers.map((broker) => (
             <BrokerCard
@@ -198,11 +189,10 @@ export default function Broker() {
 
         {filteredBrokers.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            <p>No se encontraron brokers con los criterios seleccionados</p>
+            <p>{t('bk_no_brokers_found')}</p>
           </div>
         )}
       </main>
-
     </PageShell>
   );
 }

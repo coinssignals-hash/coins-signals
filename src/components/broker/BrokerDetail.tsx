@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BrokerData } from './BrokerCard';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface BrokerDetailProps {
   broker: BrokerData;
@@ -10,11 +11,13 @@ interface BrokerDetailProps {
 }
 
 export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <Button variant="ghost" onClick={onBack} className="mb-2 -ml-2">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Volver
+        {t('bk_back')}
       </Button>
 
       {/* Header */}
@@ -33,7 +36,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
               {broker.name.substring(0, 2).toUpperCase()}
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {broker.description || `Información Básica: ${broker.name} es uno de los brokers más reconocidos en el mercado de Forex y CFDs, famoso por su entorno de trading profesional y amplia gama de instrumentos.`}
+              {broker.description || `${t('bk_basic_info')}: ${broker.name} ${t('bk_default_desc')}`}
             </p>
           </div>
         </CardContent>
@@ -44,23 +47,23 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-2">
             <div>
-              <span className="text-primary text-sm">Deposito</span>
+              <span className="text-primary text-sm">{t('bk_deposit')}</span>
               <p className="text-accent font-medium">{broker.depositoInicial}</p>
             </div>
             <div>
-              <span className="text-primary text-sm">Retiros</span>
-              <p className="text-muted-foreground text-sm">Sin Limites</p>
+              <span className="text-primary text-sm">{t('bk_withdrawals')}</span>
+              <p className="text-muted-foreground text-sm">{t('bk_no_limits')}</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-2">
             <div>
-              <span className="text-primary text-sm">Comision</span>
+              <span className="text-primary text-sm">{t('bk_commission')}</span>
               <p className="text-accent font-medium">{broker.comision}</p>
             </div>
             <div>
-              <span className="text-primary text-sm">Spreads</span>
+              <span className="text-primary text-sm">{t('bk_spreads')}</span>
               <p className="text-accent font-medium">{broker.spreads}</p>
             </div>
           </CardContent>
@@ -70,7 +73,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
       {/* Leverage */}
       <Card className="bg-card border-border">
         <CardContent className="p-4">
-          <span className="text-primary text-sm">Apalancamientos</span>
+          <span className="text-primary text-sm">{t('bk_leverages')}</span>
           <div className="flex gap-4 mt-1">
             {broker.apalancamiento.map((ap, idx) => (
               <span key={idx} className="text-muted-foreground text-sm">{ap}</span>
@@ -83,7 +86,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
       <div className="grid grid-cols-2 gap-4">
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-primary font-semibold mb-3">Pro</h3>
+            <h3 className="text-primary font-semibold mb-3">{t('bk_pro')}</h3>
             <ul className="space-y-2">
               {(broker.pros || [
                 '2800+ Traded Assets',
@@ -102,7 +105,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
         </Card>
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-destructive font-semibold mb-3">Cons</h3>
+            <h3 className="text-destructive font-semibold mb-3">{t('bk_cons')}</h3>
             <ul className="space-y-2">
               {(broker.cons || [
                 'Limited Educational Resources',
@@ -122,12 +125,12 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
       <Card className="bg-card border-border">
         <CardContent className="p-4">
           <div className="mb-2">
-            <span className="text-primary text-sm">Region Principal</span>
+            <span className="text-primary text-sm">{t('bk_main_region')}</span>
             <p className="text-muted-foreground text-sm">{broker.regionPrincipal || `${broker.central}, Australia`}</p>
           </div>
           <div>
-            <span className="text-primary text-sm">Paises de Operacion</span>
-            <p className="text-muted-foreground text-sm">{broker.paisesOperacion || 'Global, Todos los paises con restriccion en algunas juridiciones'}</p>
+            <span className="text-primary text-sm">{t('bk_operating_countries')}</span>
+            <p className="text-muted-foreground text-sm">{broker.paisesOperacion || t('bk_global_countries')}</p>
           </div>
         </CardContent>
       </Card>
@@ -136,7 +139,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
       <div className="grid grid-cols-2 gap-4">
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-primary font-semibold mb-3">Organismos de Regulacion</h3>
+            <h3 className="text-primary font-semibold mb-3">{t('bk_regulatory_bodies')}</h3>
             <ul className="space-y-1">
               {(broker.organismos || broker.regulaciones).map((org, idx) => (
                 <li key={idx} className="text-sm">
@@ -148,7 +151,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
         </Card>
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-primary font-semibold mb-3">Mercados</h3>
+            <h3 className="text-primary font-semibold mb-3">{t('bk_markets')}</h3>
             <ul className="space-y-1">
               {(broker.mercados || [
                 { name: 'INDICES', items: 'S&P 500, Nasdaq 100' },
@@ -171,7 +174,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
       <div className="grid grid-cols-2 gap-4">
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-primary font-semibold mb-3">Plataformas de Operacion</h3>
+            <h3 className="text-primary font-semibold mb-3">{t('bk_trading_platforms')}</h3>
             <ul className="space-y-2">
               {(broker.plataformasOperacion || [
                 { name: 'Plataforma propia', description: 'Plataforma en la Web' },
@@ -193,7 +196,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
         </Card>
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-primary font-semibold mb-3">Tipos de Cuentas</h3>
+            <h3 className="text-primary font-semibold mb-3">{t('bk_account_types')}</h3>
             <ul className="space-y-2">
               {(broker.tiposCuenta || [
                 { name: 'Cuenta Demo', description: 'Practica sin pérdidas' },
@@ -216,7 +219,7 @@ export function BrokerDetail({ broker, onBack }: BrokerDetailProps) {
       </div>
 
       <Button className="w-full bg-primary hover:bg-primary/90">
-        Abrir Cuenta con {broker.name}
+        {t('bk_open_account')} {broker.name}
       </Button>
     </div>
   );
