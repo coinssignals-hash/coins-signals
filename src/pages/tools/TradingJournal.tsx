@@ -16,7 +16,9 @@ import {
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
   Loader2, LogIn
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfWeek, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
 interface TradeEntry {
   id: string;
