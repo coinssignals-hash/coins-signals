@@ -163,7 +163,7 @@ export default function CorrelationMatrix() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Correlación +1 = se mueven juntos, -1 = se mueven opuestos, 0 = sin relación. Evita abrir posiciones en pares altamente correlacionados para diversificar riesgo.
+                {t('tp_correlation_info')}
               </p>
             </div>
           </CardContent>
