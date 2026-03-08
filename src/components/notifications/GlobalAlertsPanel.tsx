@@ -20,7 +20,7 @@ function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: 
 
   let timeLabel = '';
   try {
-    timeLabel = formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: es });
+    timeLabel = formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: dateLocale });
   } catch { /* empty */ }
 
   return (
