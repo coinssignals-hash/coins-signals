@@ -2039,6 +2039,61 @@ export type TranslationKeys = {
   ref_status_completed: string;
   ref_status_pending: string;
   ref_days_suffix: string;
+  // SignalCard expanded
+  sc_entry_price: string;
+  sc_session: string;
+  sc_buy: string;
+  sc_sell: string;
+  sc_price_position: string;
+  sc_realtime_movement: string;
+  sc_points: string;
+  sc_sentiment_analysis: string;
+  sc_bullish: string;
+  sc_bearish: string;
+  sc_ai_history: string;
+  sc_risk: string;
+  sc_risk_low: string;
+  sc_risk_medium: string;
+  sc_risk_high: string;
+  sc_confidence: string;
+  // BrokerFilter
+  bf_title: string;
+  bf_desc: string;
+  bf_country_label: string;
+  bf_location: string;
+  bf_trading_mode_label: string;
+  bf_currency: string;
+  bf_deposit_label: string;
+  bf_initial_deposit: string;
+  bf_method_label: string;
+  bf_method: string;
+  bf_operation_label: string;
+  bf_in_operation: string;
+  bf_markets_label: string;
+  bf_markets: string;
+  bf_stocks: string;
+  bf_indices: string;
+  bf_crypto: string;
+  bf_commodities: string;
+  bf_search_broker: string;
+  // DateTabs (news)
+  dt_yesterday: string;
+  dt_today: string;
+  dt_tomorrow: string;
+  // SymbolSearch / AISymbolSearch
+  ss_search_symbol: string;
+  ss_stock: string;
+  ss_index: string;
+  // SignalChart
+  chart_fullscreen: string;
+  chart_alt: string;
+  // PortfolioHistoryChart stats
+  ph_initial_equity: string;
+  ph_current_equity: string;
+  ph_maximum: string;
+  ph_avg_pnl: string;
+  // TradingJournal
+  tj_pair_distribution: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

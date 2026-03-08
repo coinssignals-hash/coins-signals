@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface BrokerFilterProps {
   filters: {
@@ -17,6 +18,7 @@ interface BrokerFilterProps {
 }
 
 export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: BrokerFilterProps) {
+  const { t } = useTranslation();
   const updateFilter = (key: keyof typeof filters, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
@@ -26,36 +28,36 @@ export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: Br
       <CardContent className="p-4 space-y-4">
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-2">
-            Seleciona Un Broker segun tu perfil de trader
+            {t('bf_title')}
           </h3>
           <p className="text-xs text-muted-foreground">
-            En muy pocos pasos podras descubrir los mejores Broker segun te forma de invertir, esto aumentara el exito de tus operaciones
+            {t('bf_desc')}
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Introduce el pais de donde vives</p>
+            <p className="text-xs text-muted-foreground">{t('bf_country_label')}</p>
             <Select value={filters.ubicacion} onValueChange={(v) => updateFilter('ubicacion', v)}>
               <SelectTrigger className="bg-secondary border-border">
-                <SelectValue placeholder="Ubicacion" />
+                <SelectValue placeholder={t('bf_location')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 <SelectItem value="espana">España</SelectItem>
                 <SelectItem value="mexico">México</SelectItem>
                 <SelectItem value="argentina">Argentina</SelectItem>
                 <SelectItem value="colombia">Colombia</SelectItem>
-                <SelectItem value="usa">Estados Unidos</SelectItem>
-                <SelectItem value="uk">Reino Unido</SelectItem>
+                <SelectItem value="usa">USA</SelectItem>
+                <SelectItem value="uk">UK</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Modo de Trader, (tiempo en el mercado)</p>
+            <p className="text-xs text-muted-foreground">{t('bf_trading_mode_label')}</p>
             <Select value={filters.moneda} onValueChange={(v) => updateFilter('moneda', v)}>
               <SelectTrigger className="bg-secondary border-border">
-                <SelectValue placeholder="Moneda" />
+                <SelectValue placeholder={t('bf_currency')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 <SelectItem value="eur">EUR</SelectItem>
@@ -68,10 +70,10 @@ export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: Br
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Con cuanto dinero piensa abrir tu cuenta</p>
+            <p className="text-xs text-muted-foreground">{t('bf_deposit_label')}</p>
             <Select value={filters.depositoInicial} onValueChange={(v) => updateFilter('depositoInicial', v)}>
               <SelectTrigger className="bg-secondary border-border">
-                <SelectValue placeholder="Deposito Inicial" />
+                <SelectValue placeholder={t('bf_initial_deposit')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 <SelectItem value="0-50">$0 - $50</SelectItem>
@@ -84,10 +86,10 @@ export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: Br
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">cual es la moneda de tu pais</p>
+            <p className="text-xs text-muted-foreground">{t('bf_method_label')}</p>
             <Select value={filters.metodo} onValueChange={(v) => updateFilter('metodo', v)}>
               <SelectTrigger className="bg-secondary border-border">
-                <SelectValue placeholder="Metodo" />
+                <SelectValue placeholder={t('bf_method')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 <SelectItem value="scalping">Scalping</SelectItem>
@@ -99,10 +101,10 @@ export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: Br
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Cuanto dinero piensas entrar al mercado</p>
+            <p className="text-xs text-muted-foreground">{t('bf_operation_label')}</p>
             <Select value={filters.enOperacion} onValueChange={(v) => updateFilter('enOperacion', v)}>
               <SelectTrigger className="bg-secondary border-border">
-                <SelectValue placeholder="En Operacion" />
+                <SelectValue placeholder={t('bf_in_operation')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 <SelectItem value="0-100">$0 - $100</SelectItem>
@@ -115,17 +117,17 @@ export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: Br
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Mercados en los que invertiras</p>
+            <p className="text-xs text-muted-foreground">{t('bf_markets_label')}</p>
             <Select value={filters.mercados} onValueChange={(v) => updateFilter('mercados', v)}>
               <SelectTrigger className="bg-secondary border-border">
-                <SelectValue placeholder="Mercados" />
+                <SelectValue placeholder={t('bf_markets')} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 <SelectItem value="forex">Forex</SelectItem>
-                <SelectItem value="acciones">Acciones</SelectItem>
-                <SelectItem value="indices">Indices</SelectItem>
-                <SelectItem value="crypto">Criptomonedas</SelectItem>
-                <SelectItem value="materias">Materias Primas</SelectItem>
+                <SelectItem value="acciones">{t('bf_stocks')}</SelectItem>
+                <SelectItem value="indices">{t('bf_indices')}</SelectItem>
+                <SelectItem value="crypto">{t('bf_crypto')}</SelectItem>
+                <SelectItem value="materias">{t('bf_commodities')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -138,7 +140,7 @@ export function BrokerFilter({ filters, onFiltersChange, onSearch, onClose }: Br
             onClose();
           }}
         >
-          Buscar Broker
+          {t('bf_search_broker')}
         </Button>
       </CardContent>
     </Card>

@@ -434,11 +434,11 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 "font-bold text-lg",
                 isBuy ? "text-emerald-400" : "text-rose-400"
               )}>
-                {signal.action === 'BUY' ? 'Comprar' : 'Vender'}
+                {signal.action === 'BUY' ? t('sc_buy') : t('sc_sell')}
               </div>
             </div>
             <div className="bg-slate-800/60 rounded-xl p-2.5 text-center border border-slate-700/50">
-              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">Sesión</div>
+              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">{t('sc_session')}</div>
               <div className="text-slate-300 text-xs font-medium leading-tight">
                 {sessions.split(' / ').map((s, i) => (
                   <div key={i}>{s}</div>
@@ -451,7 +451,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
       {/* Entry Price Row */}
       <div className="px-4 py-3 bg-gradient-to-r from-blue-900/90 to-blue-800/90 flex items-center justify-between border-y border-blue-500/30">
-        <span className="text-blue-100 font-medium">Precio De Entrada.</span>
+        <span className="text-blue-100 font-medium">{t('sc_entry_price')}</span>
         <div className="flex items-center gap-2">
           <span className="text-white font-bold text-xl">{signal.entryPrice}</span>
           <button 
@@ -560,7 +560,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/50">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Posición del Precio</span>
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">{t('sc_price_position')}</span>
                     {/* Live indicator */}
                     {hasLivePrice && isConnected ? (
                       <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
@@ -667,9 +667,9 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Activity className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Movimiento en Tiempo Real</span>
+                <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">{t('sc_realtime_movement')}</span>
               </div>
-              <span className="text-[10px] text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded">{priceHistory.length} puntos</span>
+              <span className="text-[10px] text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded">{priceHistory.length} {t('sc_points')}</span>
             </div>
             <PriceSparkline 
               prices={priceHistory} 
@@ -845,12 +845,12 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               return (
                 <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Análisis de Sentimiento</span>
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">{t('sc_sentiment_analysis')}</span>
                     <span className={cn(
                       "text-[10px] font-medium px-2 py-0.5 rounded-full border",
                       isBullish ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border-rose-500/30"
                     )}>
-                      {isBullish ? "Alcista" : "Bajista"}
+                      {isBullish ? t('sc_bullish') : t('sc_bearish')}
                     </span>
                   </div>
                   
@@ -1029,7 +1029,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <History className="w-5 h-5 text-slate-400" />
-                  <h3 className="font-semibold text-slate-200">Historial de Análisis IA</h3>
+                  <h3 className="font-semibold text-slate-200">{t('sc_ai_history')}</h3>
                 </div>
                 <button 
                   onClick={() => setShowHistory(false)}
@@ -1079,12 +1079,12 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                               item.risk_level === 'MEDIUM' && "bg-amber-500/15 text-amber-400 border-amber-500/30",
                               item.risk_level === 'HIGH' && "bg-rose-500/15 text-rose-400 border-rose-500/30"
                             )}>
-                              Riesgo: {item.risk_level === 'LOW' ? 'Bajo' : item.risk_level === 'MEDIUM' ? 'Medio' : 'Alto'}
+                              {t('sc_risk')}: {item.risk_level === 'LOW' ? t('sc_risk_low') : item.risk_level === 'MEDIUM' ? t('sc_risk_medium') : t('sc_risk_high')}
                             </span>
                           )}
                           {item.confidence_level && (
                             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-400 border border-violet-500/30">
-                              {item.confidence_level}% Confianza
+                              {item.confidence_level}% {t('sc_confidence')}
                             </span>
                           )}
                         </div>

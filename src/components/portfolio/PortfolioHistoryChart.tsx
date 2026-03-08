@@ -330,20 +330,20 @@ export function PortfolioHistoryChart() {
       <div className="px-4 pb-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatBox 
-            label="Equity Inicial" 
+            label={t('ph_initial_equity')} 
             value={formatCurrency(stats.startEquity)} 
           />
           <StatBox 
-            label="Equity Actual" 
+            label={t('ph_current_equity')} 
             value={formatCurrency(stats.endEquity)} 
           />
           <StatBox 
-            label="Máximo" 
+            label={t('ph_maximum')} 
             value={formatCurrency(stats.maxEquity)} 
             valueColor="text-emerald-400"
           />
           <StatBox 
-            label="PnL Promedio" 
+            label={t('ph_avg_pnl')} 
             value={formatCurrency(stats.avgPnl)} 
             valueColor={stats.avgPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}
           />

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Maximize2, X, TrendingUp, Clock, BarChart3, ChevronDown, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ZoomableChart } from './ZoomableChart';
@@ -382,6 +383,7 @@ function buildSignalChartSvg(
  *  SignalChart Component
  * ═══════════════════════════════════════════ */
 export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, signalLevels, className }: SignalChartProps) {
+  const { t } = useTranslation();
   const symbol = currencyPair.replace('/', '');
   const [activeInterval, setActiveInterval] = useState<ChartInterval>('15min');
   const { data: chartData, loading, error } = useForexChartData(symbol, activeInterval);
@@ -478,7 +480,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
             onClick={() => setFullscreen(true)}
             className="absolute top-2 right-2 z-10 p-1.5 rounded-md transition-colors active:scale-95"
             style={{ background: 'rgba(6,14,28,0.8)', border: '1px solid rgba(100,116,139,0.3)' }}
-            title="Pantalla completa"
+            title={t('chart_fullscreen')}
           >
             <Maximize2 className="w-4 h-4 text-cyan-300/70" />
           </button>
@@ -487,7 +489,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
           {inlineSvgUri && (
             <img
               src={inlineSvgUri}
-              alt={`Gráfico ${currencyPair} 15min`}
+              alt={t('chart_alt').replace('{pair}', currencyPair)}
               className="w-full h-auto block"
               draggable={false}
             />

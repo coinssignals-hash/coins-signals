@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SearchResult {
   symbol: string;
@@ -137,6 +138,7 @@ const CRYPTO_PAIRS: SearchResult[] = [
 const ALL_LOCAL_PAIRS = [...FOREX_PAIRS, ...CRYPTO_PAIRS];
 
 export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -285,7 +287,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="Buscar símbolo..."
+          placeholder={t('ss_search_symbol')}
           className="pl-9 pr-9 bg-slate-800/60 border-slate-700/50"
         />
         {query && (
