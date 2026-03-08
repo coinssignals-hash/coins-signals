@@ -138,6 +138,7 @@ const CRYPTO_PAIRS: SearchResult[] = [
 const ALL_LOCAL_PAIRS = [...FOREX_PAIRS, ...CRYPTO_PAIRS];
 
 export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
