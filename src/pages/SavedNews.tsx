@@ -77,15 +77,13 @@ const SavedNews = () => {
               <Newspaper className="w-10 h-10 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-foreground">No hay noticias guardadas</h2>
-              <p className="text-sm text-muted-foreground max-w-sm">
-                Las noticias que visites se guardarán automáticamente aquí para que puedas verlas más tarde.
-              </p>
+              <h2 className="text-lg font-semibold text-foreground">{t('saved_empty_title')}</h2>
+              <p className="text-sm text-muted-foreground max-w-sm">{t('saved_empty_desc')}</p>
             </div>
             <Link to="/news">
               <Button className="gap-2">
                 <Newspaper className="w-4 h-4" />
-                Ver noticias recientes
+                {t('saved_view_recent')}
               </Button>
             </Link>
           </div>
