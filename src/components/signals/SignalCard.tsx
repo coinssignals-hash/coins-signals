@@ -7,7 +7,6 @@ import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
-import { supabase } from '@/integrations/supabase/client';
 import signalCardBg from '@/assets/signal-card-bg.png';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import { PriceSparkline } from './PriceSparkline';
