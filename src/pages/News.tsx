@@ -640,11 +640,11 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
         style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
             <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
           style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">Análisis de Sentimiento</span>
+            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">{t('news_sentiment_analysis')}</span>
             <div className="space-y-1.5">
-              <NewsImpactBar label="Alcista" value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
-              <NewsImpactBar label="Bajista" value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
-              <NewsImpactBar label="Neutral" value={sentimentBreakdown.neu} color="hsl(45, 80%, 55%)" />
+              <NewsImpactBar label={t('news_sentiment_bullish')} value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
+              <NewsImpactBar label={t('news_sentiment_bearish')} value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
+              <NewsImpactBar label={t('news_sentiment_neutral')} value={sentimentBreakdown.neu} color="hsl(45, 80%, 55%)" />
             </div>
           </div>
           <HistoricalImpactSection newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
