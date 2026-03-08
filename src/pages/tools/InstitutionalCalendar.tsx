@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, CalendarDays, RefreshCw, TrendingUp, TrendingDown, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface InstitutionalEvent {
   id: string;
@@ -68,6 +69,7 @@ function generateEvents(): InstitutionalEvent[] {
 }
 
 export default function InstitutionalCalendar() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState(() => generateEvents());
   const [loading, setLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -91,7 +93,7 @@ export default function InstitutionalCalendar() {
             </Link>
             <div className="flex items-center gap-2">
               <CalendarDays className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Calendario Institucional</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tools_institutional_cal_title')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading}>
@@ -110,7 +112,7 @@ export default function InstitutionalCalendar() {
                 : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
             )}
           >
-            Todos
+            {t('tp_inst_cal_all')}
           </button>
           {CURRENCIES.map(c => (
             <button
@@ -143,7 +145,7 @@ export default function InstitutionalCalendar() {
                           'text-[8px] px-1.5 py-0.5 rounded-full font-bold',
                           evt.impact === 'high' ? 'bg-destructive/20 text-destructive' : 'bg-amber-500/20 text-amber-400'
                         )}>
-                          {evt.impact === 'high' ? 'ALTO' : 'MEDIO'}
+                          {evt.impact === 'high' ? t('tp_inst_cal_high') : t('tp_inst_cal_medium')}
                         </span>
                       </div>
                       <div className="text-left">
@@ -176,7 +178,7 @@ export default function InstitutionalCalendar() {
                     <div className="border-t border-border p-4 space-y-4">
                       {/* Historical Reactions Chart */}
                       <div>
-                        <p className="text-[10px] text-muted-foreground font-medium mb-2">Reacciones Históricas (pips)</p>
+                        <p className="text-[10px] text-muted-foreground font-medium mb-2">{t('tp_hist_reactions')}</p>
                         <div className="h-36">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={evt.historicalReactions}>
@@ -198,22 +200,22 @@ export default function InstitutionalCalendar() {
                       {/* Stats */}
                       <div className="grid grid-cols-3 gap-2">
                         <div className="text-center p-2 rounded-lg bg-secondary/50">
-                          <p className="text-[9px] text-muted-foreground">Reacción Promedio</p>
+                          <p className="text-[9px] text-muted-foreground">{t('tp_avg_reaction')}</p>
                           <p className="text-sm font-bold text-foreground tabular-nums">{evt.avgReaction} pips</p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-secondary/50">
-                          <p className="text-[9px] text-muted-foreground">Desviación</p>
+                          <p className="text-[9px] text-muted-foreground">{t('tp_deviation')}</p>
                           <p className={cn('text-sm font-bold tabular-nums', evt.deviation && Math.abs(evt.deviation) > 2 ? 'text-amber-400' : 'text-foreground')}>
                             {evt.deviation !== null ? `${evt.deviation}%` : '—'}
                           </p>
                         </div>
                         <div className="text-center p-2 rounded-lg bg-secondary/50">
-                          <p className="text-[9px] text-muted-foreground">Sorpresa</p>
+                          <p className="text-[9px] text-muted-foreground">{t('tp_surprise')}</p>
                           <div className="flex items-center justify-center gap-1 mt-0.5">
                             {evt.surpriseDirection === 'above' && <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />}
                             {evt.surpriseDirection === 'below' && <TrendingDown className="w-3.5 h-3.5 text-rose-400" />}
                             <span className="text-xs font-bold text-foreground">
-                              {evt.surpriseDirection === 'above' ? 'Superior' : evt.surpriseDirection === 'below' ? 'Inferior' : evt.surpriseDirection === 'inline' ? 'En línea' : '—'}
+                              {evt.surpriseDirection === 'above' ? t('tp_surprise_above') : evt.surpriseDirection === 'below' ? t('tp_surprise_below') : evt.surpriseDirection === 'inline' ? t('tp_surprise_inline') : '—'}
                             </span>
                           </div>
                         </div>
@@ -221,7 +223,7 @@ export default function InstitutionalCalendar() {
 
                       {/* Historical table */}
                       <div>
-                        <p className="text-[10px] text-muted-foreground font-medium mb-1">Historial de Desviaciones</p>
+                        <p className="text-[10px] text-muted-foreground font-medium mb-1">{t('tp_deviation_history')}</p>
                         {evt.historicalReactions.map((r, i) => (
                           <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/20 last:border-0 text-xs">
                             <span className="text-muted-foreground">{r.date}</span>
@@ -247,7 +249,7 @@ export default function InstitutionalCalendar() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                El calendario institucional incluye datos de consenso del mercado, historial de desviaciones y reacciones de precio post-publicación. Ideal para anticipar la volatilidad basándose en precedentes.
+                {t('tp_inst_cal_info')}
               </p>
             </div>
           </CardContent>

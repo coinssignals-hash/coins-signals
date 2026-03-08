@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Zap, RefreshCw, Info } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface OrderLevel {
   price: number;
@@ -35,12 +36,7 @@ function generateOrderBook(basePrice: number, isJpy: boolean): OrderLevel[] {
     const price = +(basePrice + i * step).toFixed(decimals);
     const bidVol = Math.floor(Math.random() * 500 + 50);
     const askVol = Math.floor(Math.random() * 500 + 50);
-    levels.push({
-      price,
-      bidVolume: bidVol,
-      askVolume: askVol,
-      delta: bidVol - askVol,
-    });
+    levels.push({ price, bidVolume: bidVol, askVolume: askVol, delta: bidVol - askVol });
   }
   return levels;
 }
@@ -65,6 +61,7 @@ function generateData(): InstitutionalData[] {
 }
 
 export default function OrderFlowAnalysis() {
+  const { t } = useTranslation();
   const [data, setData] = useState(() => generateData());
   const [loading, setLoading] = useState(false);
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
@@ -96,7 +93,7 @@ export default function OrderFlowAnalysis() {
             </Link>
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Flujo de Órdenes</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tp_order_flow')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading}>
@@ -125,7 +122,7 @@ export default function OrderFlowAnalysis() {
         {/* Institutional Positioning */}
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">Posicionamiento Institucional</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('tp_institutional_positioning')}</h3>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-emerald-500/30 rounded-l-lg h-8 flex items-center justify-end pr-2" style={{ width: `${selected.longPercent}%` }}>
                 <span className="text-xs font-bold text-emerald-400">{selected.longPercent}% Long</span>
@@ -136,12 +133,12 @@ export default function OrderFlowAnalysis() {
             </div>
             <div className="flex justify-between text-[10px]">
               <span className="text-muted-foreground">
-                Sesgo neto: <span className={cn('font-bold', selected.netPosition === 'long' ? 'text-emerald-400' : 'text-rose-400')}>
-                  {selected.netPosition === 'long' ? 'Alcista' : 'Bajista'}
+                {t('tp_net_bias')}: <span className={cn('font-bold', selected.netPosition === 'long' ? 'text-emerald-400' : 'text-rose-400')}>
+                  {selected.netPosition === 'long' ? t('tp_bullish_label') : t('tp_bearish_label')}
                 </span>
               </span>
               <span className={cn('font-bold tabular-nums', selected.change > 0 ? 'text-emerald-400' : 'text-rose-400')}>
-                {selected.change > 0 ? '+' : ''}{selected.change}% cambio
+                {selected.change > 0 ? '+' : ''}{selected.change}% {t('tp_change_label')}
               </span>
             </div>
           </CardContent>
@@ -150,7 +147,7 @@ export default function OrderFlowAnalysis() {
         {/* Volume Profile */}
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Perfil de Volumen (Bid vs Ask)</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_volume_profile')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={volumeChartData} layout="vertical" barGap={0}>
@@ -169,7 +166,7 @@ export default function OrderFlowAnalysis() {
         {/* Delta Table */}
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Delta por Nivel de Precio</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_delta_by_level')}</h3>
             <div className="space-y-0.5 max-h-60 overflow-y-auto">
               {selected.levels.map((l, i) => (
                 <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded text-xs">
@@ -195,7 +192,7 @@ export default function OrderFlowAnalysis() {
         {/* All Pairs Summary */}
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Resumen Multi-Par</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_multi_pair_summary')}</h3>
             {data.map(d => (
               <div key={d.pair} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
                 <span className="text-xs font-medium text-foreground">{d.pair}</span>
@@ -218,7 +215,7 @@ export default function OrderFlowAnalysis() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                El análisis de flujo de órdenes muestra el volumen institucional y el posicionamiento del mercado. El delta (Bid - Ask) indica presión compradora o vendedora en cada nivel de precio.
+                {t('tp_order_flow_info')}
               </p>
             </div>
           </CardContent>
