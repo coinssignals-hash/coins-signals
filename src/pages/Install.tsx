@@ -65,7 +65,7 @@ export default function Install() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-bold text-foreground">Instalar App</h1>
+          <h1 className="text-lg font-bold text-foreground">{t('inst_title')}</h1>
         </div>
       </header>
 
