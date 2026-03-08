@@ -850,7 +850,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                       "text-[10px] font-medium px-2 py-0.5 rounded-full border",
                       isBullish ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border-rose-500/30"
                     )}>
-                      {isBullish ? "Alcista" : "Bajista"}
+                      {isBullish ? t('sc_bullish') : t('sc_bearish')}
                     </span>
                   </div>
                   
