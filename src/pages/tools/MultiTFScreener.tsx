@@ -115,7 +115,52 @@ export default function MultiTFScreener() {
                 <WifiOff className="w-3 h-3" /> Offline
               </span>
             )}
-            <Button variant="ghost" size="icon" onClick={() => fetchData(true)} disabled={loading}>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Settings2 className="w-4 h-4 text-muted-foreground" />
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[8px] flex items-center justify-center font-bold">
+                    {selectedPairs.length}
+                  </span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle className="text-foreground">Personalizar pares</SheetTitle>
+                </SheetHeader>
+                <div className="space-y-4 mt-4">
+                  {Object.entries(PAIR_CATEGORIES).map(([category, pairs]) => (
+                    <div key={category}>
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">{category}</p>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {pairs.map(pair => {
+                          const active = selectedPairs.includes(pair);
+                          return (
+                            <button
+                              key={pair}
+                              onClick={() => togglePair(pair)}
+                              className={cn(
+                                'flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
+                                active
+                                  ? 'bg-primary/15 border-primary/30 text-foreground'
+                                  : 'bg-secondary/50 border-border text-muted-foreground'
+                              )}
+                            >
+                              <span>{pair}</span>
+                              {active && <Check className="w-3 h-3 text-primary" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  <Button className="w-full" onClick={applyAndClose}>
+                    Analizar {selectedPairs.length} pares
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Button variant="ghost" size="icon" onClick={() => fetchData(true, selectedPairs)} disabled={loading}>
               <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
             </Button>
           </div>
