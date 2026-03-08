@@ -103,7 +103,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
           <div className="text-red-400/70 text-[10px] font-mono">-${calc.potentialLoss.toFixed(2)}</div>
         </div>
         <div className={cn("border rounded-lg p-2 text-center", calc.ratio >= 2 ? "bg-green-500/10 border-green-500/20" : calc.ratio >= 1 ? "bg-yellow-500/10 border-yellow-500/20" : "bg-red-500/10 border-red-500/20")}>
-          <div className="text-[9px] text-gray-500 uppercase">Ratio R:R</div>
+          <div className="text-[9px] text-gray-500 uppercase">{t('analysis_rr_ratio')}</div>
           <div className={cn("font-bold text-lg tabular-nums", ratioColor)}>
             1:{calc.ratio.toFixed(2)}
           </div>
