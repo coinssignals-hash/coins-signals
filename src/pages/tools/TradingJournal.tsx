@@ -176,7 +176,7 @@ export default function TradingJournal() {
   async function handleDelete(id: string) {
     const { error } = await supabase.from('trading_journal').delete().eq('id', id);
     if (error) {
-      toast({ title: 'Error', description: 'No se pudo eliminar', variant: 'destructive' });
+      toast({ title: 'Error', description: t('journal_delete_error'), variant: 'destructive' });
       return;
     }
     setEntries(prev => prev.filter(e => e.id !== id));
