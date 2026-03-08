@@ -173,6 +173,7 @@ function FeaturedHistoricalChart({
   category,
   currencies
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
+  const { t } = useTranslation();
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   if (isLoading) return <div className="h-12 w-full animate-pulse rounded bg-slate-800/40" />;
