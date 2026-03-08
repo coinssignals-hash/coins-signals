@@ -81,6 +81,8 @@ interface AIAnalysisHistoryItem {
 }
 
 export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: SignalCardProps) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [expanded, setExpanded] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
