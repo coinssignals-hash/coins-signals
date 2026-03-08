@@ -657,7 +657,7 @@ export default function CreateSignal() {
                   className="flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/30"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  Guardar Cambios
+                  {t('cs_save_changes')}
                 </button>
               </div>
             ) : (
