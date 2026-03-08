@@ -516,6 +516,7 @@ const parseSpreads = (spreads: string): number => {
 
 export default function BrokerRating() {
   const { t } = useTranslation();
+  const categories = getCategoriesTranslated(t);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState('Principiante');
