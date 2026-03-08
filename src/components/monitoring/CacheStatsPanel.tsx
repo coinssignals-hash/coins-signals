@@ -239,7 +239,7 @@ export function CacheStatsPanel() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
-                      {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true, locale: es })}
+                      {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true, locale: dateLocale })}
                       {isExpired && (
                         <span className="text-red-400 font-medium">(expirado)</span>
                       )}
