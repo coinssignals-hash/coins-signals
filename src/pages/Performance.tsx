@@ -182,10 +182,10 @@ export default function Performance() {
           className="grid grid-cols-4 gap-2"
         >
           {[
-            { icon: Target, label: 'Señales', value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-            { icon: TrendingUp, label: 'Pips Neto', value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
-            { icon: Zap, label: 'Avg/Señal', value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
-            { icon: ShieldCheck, label: 'R:R Ratio', value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+            { icon: Target, label: t('perf_signals'), value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+            { icon: TrendingUp, label: t('perf_net_pips'), value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: Zap, label: t('perf_avg_signal'), value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+            { icon: ShieldCheck, label: t('perf_rr_ratio'), value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
           ].map((stat, i) => (
             <Card key={i} className="bg-card border-border">
               <CardContent className="p-3 text-center">
