@@ -175,6 +175,7 @@ const CURRENCY_REGIONS = {
 type SymbolTab = 'currencies' | 'forex' | 'crypto';
 
 export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
+  const { t } = useTranslation();
   const { favorites, toggleFavorite, isFavorite, loading } = useFavoriteCurrencies();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
