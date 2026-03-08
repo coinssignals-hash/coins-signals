@@ -317,7 +317,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
       <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
       style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Volatilidad</span>
+          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_volatility')}</span>
           <Loader2 className="w-3 h-3 text-cyan-400/50 animate-spin" />
         </div>
         <div className="h-1 rounded-full bg-slate-800/80 animate-pulse" />
