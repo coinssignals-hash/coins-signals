@@ -282,7 +282,7 @@ export default function Performance() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <div className="flex items-center gap-2 mb-3">
             <Award className="w-4 h-4 text-amber-400" />
-            <h3 className="text-sm font-bold text-foreground">Pares Más Activos</h3>
+            <h3 className="text-sm font-bold text-foreground">{t('perf_most_active_pairs')}</h3>
           </div>
           {isLoadingPairs ? (
             <div className="grid grid-cols-1 gap-3">
