@@ -292,6 +292,7 @@ function getMarketSession(publishedAt: string): {label: string;color: string;ico
 function VolatilityIndicator({ newsId, title, category, currencies
 
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
+  const { t } = useTranslation();
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   const volatility = useMemo(() => {
