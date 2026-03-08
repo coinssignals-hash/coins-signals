@@ -7,23 +7,20 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Scale, TrendingUp, TrendingDown, Target, ShieldAlert, Info } from 'lucide-react';
+import { ArrowLeft, Scale, Target, ShieldAlert, Info } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const PAIRS = [
-  { symbol: 'EUR/USD', pipSize: 0.0001 },
-  { symbol: 'GBP/USD', pipSize: 0.0001 },
-  { symbol: 'USD/JPY', pipSize: 0.01 },
-  { symbol: 'USD/CHF', pipSize: 0.0001 },
-  { symbol: 'AUD/USD', pipSize: 0.0001 },
-  { symbol: 'NZD/USD', pipSize: 0.0001 },
-  { symbol: 'USD/CAD', pipSize: 0.0001 },
-  { symbol: 'EUR/GBP', pipSize: 0.0001 },
-  { symbol: 'EUR/JPY', pipSize: 0.01 },
-  { symbol: 'GBP/JPY', pipSize: 0.01 },
+  { symbol: 'EUR/USD', pipSize: 0.0001 }, { symbol: 'GBP/USD', pipSize: 0.0001 },
+  { symbol: 'USD/JPY', pipSize: 0.01 }, { symbol: 'USD/CHF', pipSize: 0.0001 },
+  { symbol: 'AUD/USD', pipSize: 0.0001 }, { symbol: 'NZD/USD', pipSize: 0.0001 },
+  { symbol: 'USD/CAD', pipSize: 0.0001 }, { symbol: 'EUR/GBP', pipSize: 0.0001 },
+  { symbol: 'EUR/JPY', pipSize: 0.01 }, { symbol: 'GBP/JPY', pipSize: 0.01 },
   { symbol: 'XAU/USD', pipSize: 0.01 },
 ];
 
 export default function RiskRewardCalculator() {
+  const { t } = useTranslation();
   const [pair, setPair] = useState('EUR/USD');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
   const [entryPrice, setEntryPrice] = useState('');
@@ -38,83 +35,66 @@ export default function RiskRewardCalculator() {
     const tp = parseFloat(takeProfit);
     const balance = parseFloat(accountBalance);
     const riskPct = parseFloat(riskPercent);
-
     if (!entry || !sl || !tp || !balance || !riskPct) return null;
-
     const pairData = PAIRS.find(p => p.symbol === pair);
     if (!pairData) return null;
-
     const riskPips = Math.abs(entry - sl) / pairData.pipSize;
     const rewardPips = Math.abs(tp - entry) / pairData.pipSize;
     const ratio = riskPips > 0 ? rewardPips / riskPips : 0;
     const riskAmount = balance * (riskPct / 100);
     const potentialProfit = ratio * riskAmount;
-
     const isGoodRatio = ratio >= 2;
     const isAcceptable = ratio >= 1 && ratio < 2;
-
     return {
-      riskPips: riskPips.toFixed(1),
-      rewardPips: rewardPips.toFixed(1),
-      ratio: ratio.toFixed(2),
-      riskAmount: riskAmount.toFixed(2),
-      potentialProfit: potentialProfit.toFixed(2),
-      isGoodRatio,
-      isAcceptable,
-      verdict: isGoodRatio ? 'Excelente' : isAcceptable ? 'Aceptable' : 'No recomendado',
+      riskPips: riskPips.toFixed(1), rewardPips: rewardPips.toFixed(1),
+      ratio: ratio.toFixed(2), riskAmount: riskAmount.toFixed(2),
+      potentialProfit: potentialProfit.toFixed(2), isGoodRatio, isAcceptable,
+      verdict: isGoodRatio ? t('rr_excellent') : isAcceptable ? t('rr_acceptable') : t('rr_not_recommended'),
     };
-  }, [pair, direction, entryPrice, stopLoss, takeProfit, accountBalance, riskPercent]);
+  }, [pair, direction, entryPrice, stopLoss, takeProfit, accountBalance, riskPercent, t]);
 
   return (
     <PageShell>
       <Header />
       <main className="container py-6 space-y-5">
-        {/* Navigation */}
         <div className="flex items-center gap-3">
           <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
             <Scale className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">Riesgo / Recompensa</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('rr_title')}</h1>
           </div>
         </div>
 
-        {/* Parameters */}
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Parámetros de la Operación</h3>
-
+            <h3 className="text-sm font-semibold text-foreground">{t('rr_trade_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Par</Label>
+                <Label className="text-xs text-muted-foreground">{t('rr_pair')}</Label>
                 <Select value={pair} onValueChange={setPair}>
                   <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                   <SelectContent>{PAIRS.map(p => <SelectItem key={p.symbol} value={p.symbol}>{p.symbol}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Dirección</Label>
+                <Label className="text-xs text-muted-foreground">{t('tool_direction')}</Label>
                 <div className="flex gap-1">
                   {(['BUY', 'SELL'] as const).map(d => (
-                    <button
-                      key={d}
-                      onClick={() => setDirection(d)}
-                      className={cn(
-                        'flex-1 py-2 rounded-md text-xs font-semibold transition-colors',
+                    <button key={d} onClick={() => setDirection(d)}
+                      className={cn('flex-1 py-2 rounded-md text-xs font-semibold transition-colors',
                         direction === d
                           ? d === 'BUY' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                           : 'bg-secondary text-muted-foreground border border-border'
-                      )}
-                    >{d}</button>
+                      )}>{d}</button>
                   ))}
                 </div>
               </div>
             </div>
-
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Entrada</Label>
+                <Label className="text-xs text-muted-foreground">{t('tool_entry')}</Label>
                 <Input type="number" step="0.00001" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="1.08500" className="bg-secondary border-border text-foreground" />
               </div>
               <div className="space-y-1.5">
@@ -126,56 +106,40 @@ export default function RiskRewardCalculator() {
                 <Input type="number" step="0.00001" value={takeProfit} onChange={e => setTakeProfit(e.target.value)} placeholder="1.09100" className="bg-secondary border-border text-foreground" />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Balance ($)</Label>
+                <Label className="text-xs text-muted-foreground">{t('rr_balance')}</Label>
                 <Input type="number" value={accountBalance} onChange={e => setAccountBalance(e.target.value)} className="bg-secondary border-border text-foreground" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Riesgo (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tool_risk_pct')}</Label>
                 <Input type="number" step="0.5" value={riskPercent} onChange={e => setRiskPercent(e.target.value)} className="bg-secondary border-border text-foreground" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Results */}
         {result && (
           <>
-            {/* Ratio Card */}
-            <Card className={cn(
-              'border',
+            <Card className={cn('border',
               result.isGoodRatio ? 'bg-emerald-500/5 border-emerald-500/20' :
-              result.isAcceptable ? 'bg-amber-500/5 border-amber-500/20' :
-              'bg-rose-500/5 border-rose-500/20'
+              result.isAcceptable ? 'bg-amber-500/5 border-amber-500/20' : 'bg-rose-500/5 border-rose-500/20'
             )}>
               <CardContent className="p-4 text-center space-y-2">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Ratio R:R</p>
-                <p className={cn(
-                  'text-4xl font-bold tabular-nums',
-                  result.isGoodRatio ? 'text-emerald-400' :
-                  result.isAcceptable ? 'text-amber-400' : 'text-rose-400'
-                )}>
-                  1:{result.ratio}
-                </p>
-                <span className={cn(
-                  'inline-block text-[10px] px-2.5 py-1 rounded-full font-semibold',
-                  result.isGoodRatio ? 'bg-emerald-500/15 text-emerald-400' :
-                  result.isAcceptable ? 'bg-amber-500/15 text-amber-400' :
-                  'bg-rose-500/15 text-rose-400'
-                )}>
-                  {result.verdict}
-                </span>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('rr_ratio')}</p>
+                <p className={cn('text-4xl font-bold tabular-nums',
+                  result.isGoodRatio ? 'text-emerald-400' : result.isAcceptable ? 'text-amber-400' : 'text-rose-400'
+                )}>1:{result.ratio}</p>
+                <span className={cn('inline-block text-[10px] px-2.5 py-1 rounded-full font-semibold',
+                  result.isGoodRatio ? 'bg-emerald-500/15 text-emerald-400' : result.isAcceptable ? 'bg-amber-500/15 text-amber-400' : 'bg-rose-500/15 text-rose-400'
+                )}>{result.verdict}</span>
               </CardContent>
             </Card>
-
-            {/* Detail Cards */}
             <div className="grid grid-cols-2 gap-3">
               <Card className="bg-card border-border">
                 <CardContent className="p-3 text-center">
                   <ShieldAlert className="w-4 h-4 mx-auto mb-1 text-rose-400" />
-                  <p className="text-xs text-muted-foreground">Riesgo</p>
+                  <p className="text-xs text-muted-foreground">{t('rr_risk')}</p>
                   <p className="text-sm font-bold text-rose-400 tabular-nums">{result.riskPips} pips</p>
                   <p className="text-xs text-rose-400/70 tabular-nums">${result.riskAmount}</p>
                 </CardContent>
@@ -183,7 +147,7 @@ export default function RiskRewardCalculator() {
               <Card className="bg-card border-border">
                 <CardContent className="p-3 text-center">
                   <Target className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
-                  <p className="text-xs text-muted-foreground">Recompensa</p>
+                  <p className="text-xs text-muted-foreground">{t('rr_reward')}</p>
                   <p className="text-sm font-bold text-emerald-400 tabular-nums">{result.rewardPips} pips</p>
                   <p className="text-xs text-emerald-400/70 tabular-nums">${result.potentialProfit}</p>
                 </CardContent>
@@ -192,14 +156,11 @@ export default function RiskRewardCalculator() {
           </>
         )}
 
-        {/* Info */}
         <Card className="bg-card border-border">
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Se recomienda un ratio mínimo de 1:2 (por cada $1 arriesgado, esperar ganar $2). Ratios menores a 1:1 generalmente no son rentables a largo plazo.
-              </p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{t('rr_info_text')}</p>
             </div>
           </CardContent>
         </Card>
