@@ -424,18 +424,18 @@ export const analysisApi = {
     return fetchViaProxy<PreviousDayData>('previousDay', symbol, undefined, currentPrice);
   },
 
-  async getRecommendations(symbol: string, currentPrice: number): Promise<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }> {
+  async getRecommendations(symbol: string, currentPrice: number, language?: string): Promise<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }> {
     if (API_CONFIG.useMockData) {
       return generateMockRecommendations(symbol, currentPrice);
     }
-    return fetchViaProxy<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }>('recommendations', symbol, undefined, currentPrice);
+    return fetchViaProxy<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }>('recommendations', symbol, undefined, currentPrice, language);
   },
 
-  async getConclusions(symbol: string, currentPrice: number): Promise<MarketConclusionsData> {
+  async getConclusions(symbol: string, currentPrice: number, language?: string): Promise<MarketConclusionsData> {
     if (API_CONFIG.useMockData) {
       return generateMockConclusions(symbol, currentPrice);
     }
-    return fetchViaProxy<MarketConclusionsData>('conclusions', symbol, undefined, currentPrice);
+    return fetchViaProxy<MarketConclusionsData>('conclusions', symbol, undefined, currentPrice, language);
   },
 
   async getMonetaryPolicies(symbol: string): Promise<MonetaryPolicyData[]> {
