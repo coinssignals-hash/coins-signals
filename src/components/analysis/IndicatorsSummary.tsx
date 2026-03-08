@@ -84,7 +84,7 @@ export function IndicatorsSummary({
     const sma20 = smaData?.sma20?.[smaData.sma20.length - 1]?.sma;
     const sma50 = smaData?.sma50?.[smaData.sma50.length - 1]?.sma;
     let maSignal: 'buy' | 'sell' | 'neutral' = 'neutral';
-    let maLabel = 'Neutral';
+    let maLabel = t('analysis_ind_neutral');
     let maStrength = 30;
     let maDetail = '—';
 
