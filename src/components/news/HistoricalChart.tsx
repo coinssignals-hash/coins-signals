@@ -74,7 +74,7 @@ function MonthlyChart({ data }: MonthlyChartProps) {
               fontSize: '12px',
             }}
             labelStyle={{ color: 'hsl(210 20% 95%)' }}
-            formatter={(value: number) => [`${value}%`, 'Impacto']}
+            formatter={(value: number) => [`${value}%`, 'Impact']}
           />
           <Bar dataKey="impact_score" radius={[2, 2, 0, 0]}>
             {data.map((entry, index) => (
