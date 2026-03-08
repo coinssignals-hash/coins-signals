@@ -124,7 +124,7 @@ serve(async (req) => {
     }
 
     // Check cache first
-    const cacheKey = getCacheKey(endpoint, symbol, date);
+    const cacheKey = getCacheKey(endpoint, symbol, date, language);
     const cachedData = getFromCache(cacheKey);
     if (cachedData) {
       return new Response(
