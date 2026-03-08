@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Shield, Plus, Trash2, AlertTriangle, TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Account {
   id: string;
@@ -29,7 +30,6 @@ interface Position {
 }
 
 const COLORS = ['hsl(var(--primary))', 'hsl(142 71% 45%)', 'hsl(38 92% 50%)', 'hsl(0 84% 60%)'];
-
 const SAMPLE_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'XAU/USD', 'USD/CHF', 'AUD/USD'];
 
 function generateSamplePositions(): Position[] {
@@ -53,9 +53,10 @@ function generateSamplePositions(): Position[] {
 }
 
 export default function RiskManagerAdvanced() {
+  const { t } = useTranslation();
   const [accounts, setAccounts] = useState<Account[]>([
-    { id: '1', name: 'Cuenta Principal', balance: 25000, maxRiskPercent: 2, openPositions: generateSamplePositions() },
-    { id: '2', name: 'Cuenta Demo', balance: 50000, maxRiskPercent: 3, openPositions: generateSamplePositions() },
+    { id: '1', name: 'Main Account', balance: 25000, maxRiskPercent: 2, openPositions: generateSamplePositions() },
+    { id: '2', name: 'Demo Account', balance: 50000, maxRiskPercent: 3, openPositions: generateSamplePositions() },
   ]);
   const [dailyMaxLoss, setDailyMaxLoss] = useState(5);
   const [weeklyMaxLoss, setWeeklyMaxLoss] = useState(10);
@@ -63,32 +64,20 @@ export default function RiskManagerAdvanced() {
   const addAccount = () => {
     setAccounts(prev => [...prev, {
       id: Date.now().toString(),
-      name: `Cuenta ${prev.length + 1}`,
+      name: `${t('tp_account')} ${prev.length + 1}`,
       balance: 10000,
       maxRiskPercent: 2,
       openPositions: generateSamplePositions(),
     }]);
   };
 
-  const removeAccount = (id: string) => {
-    setAccounts(prev => prev.filter(a => a.id !== id));
-  };
+  const removeAccount = (id: string) => setAccounts(prev => prev.filter(a => a.id !== id));
 
   const updateAccount = (id: string, field: keyof Account, value: string | number) => {
     setAccounts(prev => prev.map(a => a.id === id ? { ...a, [field]: value } : a));
   };
 
-  // Global calculations
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
-  const totalExposure = accounts.reduce((s, a) => {
-    return s + a.openPositions.reduce((ps, p) => {
-      const pipDiff = Math.abs(p.currentPrice - p.entryPrice);
-      const pnl = p.direction === 'buy'
-        ? (p.currentPrice - p.entryPrice) * p.lots * 100000
-        : (p.entryPrice - p.currentPrice) * p.lots * 100000;
-      return ps + Math.abs(pnl);
-    }, 0);
-  }, 0);
   const totalRiskAtSL = accounts.reduce((s, a) => {
     return s + a.openPositions.reduce((ps, p) => {
       const risk = Math.abs(p.entryPrice - p.stopLoss) * p.lots * 100000;
@@ -105,12 +94,12 @@ export default function RiskManagerAdvanced() {
   const pieData = Object.entries(exposureByPair).map(([name, value]) => ({ name, value: +value.toFixed(0) }));
 
   const alerts: string[] = [];
-  if (riskPercent > dailyMaxLoss) alerts.push(`⚠️ Riesgo total (${riskPercent.toFixed(1)}%) excede el máximo diario (${dailyMaxLoss}%)`);
+  if (riskPercent > dailyMaxLoss) alerts.push(`⚠️ ${t('tp_risk_pct')} (${riskPercent.toFixed(1)}%) > ${t('tp_max_daily_loss')} (${dailyMaxLoss}%)`);
   accounts.forEach(a => {
     const accRisk = a.openPositions.reduce((s, p) => s + Math.abs(p.entryPrice - p.stopLoss) * p.lots * 100000, 0);
     const accRiskPct = a.balance > 0 ? (accRisk / a.balance) * 100 : 0;
     if (accRiskPct > a.maxRiskPercent * 2) {
-      alerts.push(`🔴 ${a.name}: riesgo ${accRiskPct.toFixed(1)}% excede ${a.maxRiskPercent * 2}%`);
+      alerts.push(`🔴 ${a.name}: ${t('tp_risk_pct')} ${accRiskPct.toFixed(1)}% > ${a.maxRiskPercent * 2}%`);
     }
   });
 
@@ -129,7 +118,7 @@ export default function RiskManagerAdvanced() {
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={addAccount} className="gap-1 text-xs">
-            <Plus className="w-3 h-3" /> Cuenta
+            <Plus className="w-3 h-3" /> {t('tp_account')}
           </Button>
         </div>
 
@@ -150,14 +139,14 @@ export default function RiskManagerAdvanced() {
         {/* Global Limits */}
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Límites Globales</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_global_limits')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Max Pérdida Diaria (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_max_daily_loss')}</Label>
                 <Input type="number" step="0.5" value={dailyMaxLoss} onChange={e => setDailyMaxLoss(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Max Pérdida Semanal (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_max_weekly_loss')}</Label>
                 <Input type="number" step="0.5" value={weeklyMaxLoss} onChange={e => setWeeklyMaxLoss(+e.target.value)} className="mt-1" />
               </div>
             </div>
@@ -167,9 +156,9 @@ export default function RiskManagerAdvanced() {
         {/* Overview Stats */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Balance Total', value: `$${totalBalance.toLocaleString()}`, color: 'text-foreground' },
-            { label: 'Riesgo en SL', value: `$${totalRiskAtSL.toFixed(0)}`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
-            { label: 'Riesgo %', value: `${riskPercent.toFixed(1)}%`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
+            { label: t('tp_total_balance'), value: `$${totalBalance.toLocaleString()}`, color: 'text-foreground' },
+            { label: t('tp_risk_at_sl'), value: `$${totalRiskAtSL.toFixed(0)}`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
+            { label: t('tp_risk_pct'), value: `${riskPercent.toFixed(1)}%`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
               <CardContent className="p-3 text-center">
@@ -184,7 +173,7 @@ export default function RiskManagerAdvanced() {
         {pieData.length > 0 && (
           <Card className="bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-2">Exposición por Par</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-2">{t('tp_exposure_by_pair')}</h3>
               <div className="h-40">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -209,28 +198,26 @@ export default function RiskManagerAdvanced() {
             <Card key={account.id} className="bg-card border-border">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={account.name}
-                      onChange={e => updateAccount(account.id, 'name', e.target.value)}
-                      className="h-7 text-sm font-semibold w-40 border-none p-0 bg-transparent"
-                    />
-                  </div>
+                  <Input
+                    value={account.name}
+                    onChange={e => updateAccount(account.id, 'name', e.target.value)}
+                    className="h-7 text-sm font-semibold w-40 border-none p-0 bg-transparent"
+                  />
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => removeAccount(account.id)}>
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <p className="text-[9px] text-muted-foreground">Balance</p>
+                    <p className="text-[9px] text-muted-foreground">{t('tp_balance')}</p>
                     <Input type="number" value={account.balance} onChange={e => updateAccount(account.id, 'balance', +e.target.value)} className="h-7 text-xs text-center mt-0.5" />
                   </div>
                   <div>
-                    <p className="text-[9px] text-muted-foreground">Max Riesgo %</p>
+                    <p className="text-[9px] text-muted-foreground">{t('tp_max_risk')}</p>
                     <Input type="number" step="0.5" value={account.maxRiskPercent} onChange={e => updateAccount(account.id, 'maxRiskPercent', +e.target.value)} className="h-7 text-xs text-center mt-0.5" />
                   </div>
                   <div>
-                    <p className="text-[9px] text-muted-foreground">Riesgo Actual</p>
+                    <p className="text-[9px] text-muted-foreground">{t('tp_current_risk')}</p>
                     <p className={cn('text-sm font-bold tabular-nums mt-1.5', accRiskPct > account.maxRiskPercent * 2 ? 'text-destructive' : 'text-emerald-400')}>
                       {accRiskPct.toFixed(1)}%
                     </p>
@@ -238,7 +225,7 @@ export default function RiskManagerAdvanced() {
                 </div>
                 {account.openPositions.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-[10px] text-muted-foreground font-medium">Posiciones Abiertas</p>
+                    <p className="text-[10px] text-muted-foreground font-medium">{t('tp_open_positions')}</p>
                     {account.openPositions.map(pos => {
                       const pnl = pos.direction === 'buy'
                         ? (pos.currentPrice - pos.entryPrice) * pos.lots * 100000
@@ -268,7 +255,7 @@ export default function RiskManagerAdvanced() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Gestiona la exposición de múltiples cuentas en un solo panel. Configura límites de riesgo diario/semanal y recibe alertas automáticas cuando se excedan.
+                {t('tp_risk_manager_info')}
               </p>
             </div>
           </CardContent>

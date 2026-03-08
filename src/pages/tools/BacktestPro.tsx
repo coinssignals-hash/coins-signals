@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Workflow, Play, Plus, Trash2, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Strategy {
   id: string;
@@ -84,6 +85,7 @@ function runBacktest(strategy: Strategy, capital: number, months: number): Backt
 }
 
 export default function BacktestPro() {
+  const { t } = useTranslation();
   const [capital, setCapital] = useState(10000);
   const [months, setMonths] = useState(12);
   const [strategies, setStrategies] = useState<Strategy[]>([
@@ -97,7 +99,7 @@ export default function BacktestPro() {
     if (strategies.length >= 4) return;
     setStrategies(prev => [...prev, {
       id: Date.now().toString(),
-      name: `Estrategia ${prev.length + 1}`,
+      name: `${t('tp_backtest_strategy')} ${prev.length + 1}`,
       winRate: 55,
       avgRR: 1.5,
       tradesPerMonth: 20,
@@ -148,7 +150,7 @@ export default function BacktestPro() {
           </div>
           {strategies.length < 4 && (
             <Button variant="outline" size="sm" onClick={addStrategy} className="gap-1 text-xs">
-              <Plus className="w-3 h-3" /> Estrategia
+              <Plus className="w-3 h-3" /> {t('tp_backtest_strategy')}
             </Button>
           )}
         </div>
@@ -158,11 +160,11 @@ export default function BacktestPro() {
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Capital Inicial ($)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_initial_capital')}</Label>
                 <Input type="number" value={capital} onChange={e => setCapital(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Período (meses)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_period_months')}</Label>
                 <Input type="number" value={months} onChange={e => setMonths(+e.target.value)} className="mt-1" />
               </div>
             </div>
@@ -187,7 +189,7 @@ export default function BacktestPro() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Win Rate (%)</Label>
+                  <Label className="text-[10px] text-muted-foreground">{t('tp_win_rate')}</Label>
                   <Input type="number" value={strat.winRate} onChange={e => updateStrategy(strat.id, 'winRate', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
@@ -195,11 +197,11 @@ export default function BacktestPro() {
                   <Input type="number" step="0.1" value={strat.avgRR} onChange={e => updateStrategy(strat.id, 'avgRR', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Trades/Mes</Label>
+                  <Label className="text-[10px] text-muted-foreground">{t('tp_trades_month')}</Label>
                   <Input type="number" value={strat.tradesPerMonth} onChange={e => updateStrategy(strat.id, 'tradesPerMonth', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Riesgo (%)</Label>
+                  <Label className="text-[10px] text-muted-foreground">{t('tp_risk_per_trade')}</Label>
                   <Input type="number" step="0.5" value={strat.riskPercent} onChange={e => updateStrategy(strat.id, 'riskPercent', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
               </div>
@@ -209,7 +211,7 @@ export default function BacktestPro() {
 
         <Button onClick={handleRun} disabled={running} className="w-full gap-2">
           <Play className="w-4 h-4" />
-          {running ? 'Ejecutando...' : 'Ejecutar Backtest Comparativo'}
+          {running ? t('tp_running') : t('tp_run_backtest')}
         </Button>
 
         {results && (
@@ -217,7 +219,7 @@ export default function BacktestPro() {
             {/* Equity Chart */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Curvas de Equity</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_equity_curves')}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
@@ -238,12 +240,12 @@ export default function BacktestPro() {
             {/* Comparison Table */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Comparativa</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_comparison')}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr>
-                        <th className="text-[9px] text-muted-foreground text-left pb-2">Métrica</th>
+                        <th className="text-[9px] text-muted-foreground text-left pb-2">{t('tp_metric')}</th>
                         {results.map(r => (
                           <th key={r.strategyId} className="text-[9px] text-center pb-2" style={{ color: r.color }}>{r.name}</th>
                         ))}
@@ -251,12 +253,12 @@ export default function BacktestPro() {
                     </thead>
                     <tbody className="text-xs">
                       {[
-                        { label: 'Retorno Total', key: 'totalReturn', fmt: (v: number) => `${v.toFixed(1)}%`, good: (v: number) => v > 0 },
-                        { label: 'Max Drawdown', key: 'maxDrawdown', fmt: (v: number) => `${v.toFixed(1)}%`, good: (v: number) => v < 20 },
-                        { label: 'Sharpe Ratio', key: 'sharpeRatio', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1 },
-                        { label: 'Profit Factor', key: 'profitFactor', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1.5 },
+                        { label: t('tp_total_return'), key: 'totalReturn', fmt: (v: number) => `${v.toFixed(1)}%`, good: (v: number) => v > 0 },
+                        { label: t('tp_max_drawdown'), key: 'maxDrawdown', fmt: (v: number) => `${v.toFixed(1)}%`, good: (v: number) => v < 20 },
+                        { label: t('tp_sharpe_ratio'), key: 'sharpeRatio', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1 },
+                        { label: t('tp_profit_factor'), key: 'profitFactor', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1.5 },
                         { label: 'Win Rate', key: 'winningTrades', fmt: (v: number, r: BacktestResult) => `${((r.winningTrades / r.totalTrades) * 100).toFixed(1)}%`, good: (v: number) => v > 50 },
-                        { label: 'Total Trades', key: 'totalTrades', fmt: (v: number) => v.toString(), good: () => true },
+                        { label: t('tp_total_trades'), key: 'totalTrades', fmt: (v: number) => v.toString(), good: () => true },
                       ].map(metric => (
                         <tr key={metric.label} className="border-t border-border/20">
                           <td className="py-2 text-muted-foreground">{metric.label}</td>
@@ -283,7 +285,7 @@ export default function BacktestPro() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Compara hasta 4 estrategias simultáneamente. El backtest simula operaciones basadas en tus parámetros y genera curvas de equity, métricas de riesgo y análisis comparativo.
+                {t('tp_backtest_info')}
               </p>
             </div>
           </CardContent>

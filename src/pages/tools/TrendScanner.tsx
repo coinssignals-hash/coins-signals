@@ -9,6 +9,7 @@ import {
   ArrowLeft, TrendingUp, TrendingDown, Minus, RefreshCw,
   Activity, BarChart3, Clock, Zap
 } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface PairTrend {
   pair: string;
@@ -44,6 +45,7 @@ function generateTrendData(): PairTrend[] {
 type FilterType = 'all' | 'bullish' | 'bearish' | 'neutral';
 
 export default function TrendScanner() {
+  const { t } = useTranslation();
   const [data, setData] = useState<PairTrend[]>(generateTrendData);
   const [filter, setFilter] = useState<FilterType>('all');
   const [loading, setLoading] = useState(false);
@@ -80,7 +82,7 @@ export default function TrendScanner() {
           </Link>
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">Escáner de Tendencias</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('tools_trend_scanner_title')}</h1>
           </div>
           <div className="ml-auto">
             <button
@@ -98,7 +100,7 @@ export default function TrendScanner() {
           <CardContent className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Pares escaneados</span>
+              <span className="text-sm font-medium text-foreground">{t('tp_pairs_scanned')}</span>
             </div>
             <span className="text-sm font-bold text-primary tabular-nums">{FOREX_PAIRS.length}</span>
           </CardContent>
@@ -107,9 +109,9 @@ export default function TrendScanner() {
         {/* Stats Summary — clickable filters */}
         <div className="grid grid-cols-3 gap-2">
           {([
-            { key: 'bullish' as FilterType, label: 'Alcistas', value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
-            { key: 'bearish' as FilterType, label: 'Bajistas', value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
-            { key: 'neutral' as FilterType, label: 'Neutrales', value: summary.neutral, icon: Minus, color: 'text-muted-foreground' },
+            { key: 'bullish' as FilterType, label: t('tp_trend_bullish'), value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
+            { key: 'bearish' as FilterType, label: t('tp_trend_bearish'), value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
+            { key: 'neutral' as FilterType, label: t('tp_trend_neutral'), value: summary.neutral, icon: Minus, color: 'text-muted-foreground' },
           ]).map(s => (
             <button key={s.key} onClick={() => setFilter(filter === s.key ? 'all' : s.key)}>
               <Card className={cn(
@@ -131,16 +133,16 @@ export default function TrendScanner() {
           <CardContent className="p-0">
             {/* Table Header */}
             <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Par</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('tp_pair')}</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-right w-14">24h</span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-14">Fuerza</span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-12">Vol</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-14">{t('tp_strength')}</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-12">{t('tp_vol')}</span>
             </div>
 
             {filtered.length === 0 ? (
               <div className="p-8 text-center">
                 <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-                <p className="text-sm text-muted-foreground">No hay resultados con este filtro</p>
+                <p className="text-sm text-muted-foreground">{t('tp_no_results_filter')}</p>
               </div>
             ) : filtered.map((item, i) => (
               <div
@@ -167,7 +169,7 @@ export default function TrendScanner() {
                       item.trend === 'bullish' ? 'text-emerald-400' :
                       item.trend === 'bearish' ? 'text-rose-400' : 'text-muted-foreground'
                     )}>
-                      {item.trend === 'bullish' ? 'Alcista' : item.trend === 'bearish' ? 'Bajista' : 'Neutral'}
+                      {item.trend === 'bullish' ? t('tp_trend_bullish') : item.trend === 'bearish' ? t('tp_trend_bearish') : t('tp_trend_neutral')}
                     </span>
                   </div>
                 </div>
@@ -201,7 +203,7 @@ export default function TrendScanner() {
                     item.volume === 'medium' ? 'bg-amber-500/15 text-amber-400' :
                     'bg-muted text-muted-foreground'
                   )}>
-                    {item.volume === 'high' ? 'Alto' : item.volume === 'medium' ? 'Medio' : 'Bajo'}
+                    {item.volume === 'high' ? t('tp_volume_high') : item.volume === 'medium' ? t('tp_volume_medium') : t('tp_volume_low')}
                   </span>
                 </div>
               </div>
@@ -212,7 +214,7 @@ export default function TrendScanner() {
         {/* Last update */}
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
           <Clock className="w-3 h-3" />
-          Actualizado: {lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+          {t('tp_updated')}: {lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
         </div>
 
         {/* Info */}
@@ -221,8 +223,7 @@ export default function TrendScanner() {
             <div className="flex items-start gap-2">
               <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                El escáner analiza la dirección general del mercado usando indicadores de momentum y precio.
-                Los datos se actualizan periódicamente. La fuerza indica la intensidad de la tendencia actual.
+                {t('tp_trend_info')}
               </p>
             </div>
           </CardContent>
