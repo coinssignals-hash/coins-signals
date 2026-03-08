@@ -99,7 +99,7 @@ export function AnalysisError({
         </div>
         
         <div className="space-y-1">
-          <h4 className="text-white font-semibold text-sm">{title}</h4>
+          <h4 className="text-white font-semibold text-sm">{title || t('ae_title')}</h4>
           <p className="text-gray-400 text-sm max-w-xs">{displayMessage}</p>
         </div>
         
