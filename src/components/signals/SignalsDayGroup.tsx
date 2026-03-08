@@ -1,9 +1,10 @@
 import { format, isToday, isTomorrow } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { StaggerList } from '@/components/layout/StaggerList';
 import { TodayActivesBadge } from '@/components/signals/today/TodaySignalsGroup';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 interface SignalsDayGroupProps {
   date: string;
@@ -13,15 +14,17 @@ interface SignalsDayGroupProps {
 }
 
 export function SignalsDayGroup({ date, count, activeCount = 0, children }: SignalsDayGroupProps) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const dateObj = new Date(date);
   const today = isToday(dateObj);
   const tomorrow = isTomorrow(dateObj);
 
   const label = today
-    ? 'Hoy'
+    ? t('signals_today')
     : tomorrow
-      ? 'Mañana'
-      : format(dateObj, "EEEE d 'de' MMMM", { locale: es });
+      ? t('signals_tomorrow')
+      : format(dateObj, "EEEE d MMMM", { locale: dateLocale });
 
   return (
     <section className="space-y-3">
@@ -51,7 +54,7 @@ export function SignalsDayGroup({ date, count, activeCount = 0, children }: Sign
               ? "bg-blue-500/20 text-blue-400"
               : "bg-slate-700/50 text-slate-500"
           )}>
-            {count} {count === 1 ? 'señal' : 'señales'}
+            {count} {count === 1 ? t('signals_signal_singular') : t('signals_signal_plural')}
           </span>
         </div>
       </div>

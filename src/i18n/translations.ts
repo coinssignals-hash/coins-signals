@@ -29,7 +29,13 @@ export type TranslationKeys = {
   nav_settings: string;
   nav_more: string;
   nav_saved_news: string;
+  nav_stocks: string;
+  nav_ai: string;
+  nav_ai_center: string;
+  nav_tools: string;
   // Drawer
+  drawer_ai_center: string;
+  drawer_stock_market: string;
   drawer_welcome: string;
   drawer_login_sync: string;
   drawer_login: string;
@@ -317,6 +323,55 @@ export type TranslationKeys = {
   common_close: string;
   common_save: string;
   common_cancel: string;
+  // Performance days
+  perf_monday: string;
+  perf_tuesday: string;
+  perf_wednesday: string;
+  perf_thursday: string;
+  perf_friday: string;
+  // SignalsDayGroup
+  signals_signal_singular: string;
+  signals_signal_plural: string;
+  // Trading Journal
+  journal_title: string;
+  journal_new_trade: string;
+  journal_save_trade: string;
+  journal_update_trade: string;
+  journal_cancel: string;
+  journal_login_required: string;
+  journal_login_desc: string;
+  journal_date: string;
+  journal_pair: string;
+  journal_action: string;
+  journal_entry_price: string;
+  journal_exit_price: string;
+  journal_lot_size: string;
+  journal_stop_loss: string;
+  journal_take_profit: string;
+  journal_result: string;
+  journal_pips: string;
+  journal_notes: string;
+  journal_win: string;
+  journal_loss: string;
+  journal_breakeven: string;
+  journal_total_trades: string;
+  journal_win_rate: string;
+  journal_total_pips: string;
+  journal_wins: string;
+  journal_losses: string;
+  journal_history: string;
+  journal_no_trades: string;
+  journal_saved: string;
+  journal_updated: string;
+  journal_save_error: string;
+  journal_update_error: string;
+  journal_delete_error: string;
+  // Tools page
+  tools_title: string;
+  tools_level_novice: string;
+  tools_level_intermediate: string;
+  tools_level_advanced: string;
+  tools_level_professional: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

@@ -17,9 +17,9 @@ export function BottomNav() {
   const navItems = [
     { icon: BarChart2, label: t('nav_analysis'), href: '/', badgeType: null },
     { icon: TrendingUp, label: t('nav_signals'), href: '/signals', badgeType: 'signals' },
-    { icon: Brain, label: 'IA', href: '/ai-center', badgeType: null },
+    { icon: Brain, label: t('nav_ai'), href: '/ai-center', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
-    { icon: CandlestickChart, label: 'Acciones', href: '/stocks', badgeType: null },
+    { icon: CandlestickChart, label: t('nav_stocks'), href: '/stocks', badgeType: null },
   ];
 
   useEffect(() => {

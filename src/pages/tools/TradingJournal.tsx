@@ -17,7 +17,8 @@ import {
   Loader2, LogIn, Pencil
 } from 'lucide-react';
 import { format, startOfWeek, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
 interface TradeEntry {
@@ -43,6 +44,8 @@ const PAIRS = [
 export default function TradingJournal() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -158,12 +161,12 @@ export default function TradingJournal() {
     setSaving(false);
 
     if (error) {
-      toast({ title: 'Error', description: editingId ? 'No se pudo actualizar' : 'No se pudo guardar la operación', variant: 'destructive' });
+      toast({ title: 'Error', description: editingId ? t('journal_update_error') : t('journal_save_error'), variant: 'destructive' });
       console.error(error);
       return;
     }
 
-    toast({ title: editingId ? '✅ Operación actualizada' : '✅ Operación guardada' });
+    toast({ title: editingId ? t('journal_updated') : t('journal_saved') });
     resetForm();
     setShowForm(false);
     setEditingId(null);
@@ -173,7 +176,7 @@ export default function TradingJournal() {
   async function handleDelete(id: string) {
     const { error } = await supabase.from('trading_journal').delete().eq('id', id);
     if (error) {
-      toast({ title: 'Error', description: 'No se pudo eliminar', variant: 'destructive' });
+      toast({ title: 'Error', description: t('journal_delete_error'), variant: 'destructive' });
       return;
     }
     setEntries(prev => prev.filter(e => e.id !== id));
@@ -224,16 +227,16 @@ export default function TradingJournal() {
             </Link>
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Diario de Trading</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
             </div>
           </div>
           <Card className="bg-card border-border">
             <CardContent className="p-8 text-center space-y-3">
               <LogIn className="w-10 h-10 text-primary mx-auto opacity-60" />
-              <p className="text-sm text-foreground font-medium">Inicia sesión para usar el Diario</p>
-              <p className="text-xs text-muted-foreground">Tus operaciones se guardarán en la nube y podrás acceder desde cualquier dispositivo.</p>
+              <p className="text-sm text-foreground font-medium">{t('journal_login_required')}</p>
+              <p className="text-xs text-muted-foreground">{t('journal_login_desc')}</p>
               <Button onClick={() => navigate('/auth')} className="mt-2">
-                <LogIn className="w-4 h-4 mr-2" /> Iniciar Sesión
+                <LogIn className="w-4 h-4 mr-2" /> {t('drawer_login')}
               </Button>
             </CardContent>
           </Card>
@@ -253,17 +256,17 @@ export default function TradingJournal() {
           </Link>
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">Diario de Trading</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
           </div>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'Trades', value: stats.total, icon: BarChart3, color: 'text-primary' },
-            { label: 'Ganadas', value: stats.wins, icon: TrendingUp, color: 'text-emerald-400' },
-            { label: 'Perdidas', value: stats.losses, icon: TrendingDown, color: 'text-rose-400' },
-            { label: 'Win Rate', value: `${stats.winRate}%`, icon: Target, color: 'text-amber-400' },
+            { label: t('journal_total_trades'), value: stats.total, icon: BarChart3, color: 'text-primary' },
+            { label: t('journal_wins'), value: stats.wins, icon: TrendingUp, color: 'text-emerald-400' },
+            { label: t('journal_losses'), value: stats.losses, icon: TrendingDown, color: 'text-rose-400' },
+            { label: t('journal_win_rate'), value: `${stats.winRate}%`, icon: Target, color: 'text-amber-400' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
               <CardContent className="p-3 text-center">
@@ -280,7 +283,7 @@ export default function TradingJournal() {
           <CardContent className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Pips Totales</span>
+              <span className="text-sm font-medium text-foreground">{t('journal_total_pips')}</span>
             </div>
             <span className={cn(
               'text-lg font-bold tabular-nums',
@@ -314,7 +317,7 @@ export default function TradingJournal() {
           const weekMap: Record<string, number> = {};
           sorted.forEach(e => {
             const p = parseFloat(e.pips) || 0;
-            const w = format(startOfWeek(parseISO(e.date), { weekStartsOn: 1 }), 'dd MMM', { locale: es });
+            const w = format(startOfWeek(parseISO(e.date), { weekStartsOn: 1 }), 'dd MMM', { locale: dateLocale });
             weekMap[w] = (weekMap[w] || 0) + (e.result === 'loss' ? -Math.abs(p) : p);
           });
           const weekData = Object.entries(weekMap).map(([week, pips]) => ({ week, pips: parseFloat(pips.toFixed(1)) }));
@@ -401,7 +404,7 @@ export default function TradingJournal() {
           variant={showForm ? 'secondary' : 'default'}
         >
           <Plus className="w-4 h-4 mr-2" />
-          {showForm ? 'Cancelar' : 'Registrar Operación'}
+          {showForm ? t('journal_cancel') : t('journal_new_trade')}
         </Button>
 
         {/* New Trade Form */}
@@ -410,16 +413,16 @@ export default function TradingJournal() {
             <CardContent className="p-4 space-y-4">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <FileText className="w-4 h-4 text-primary" />
-                Nueva Operación
+                {t('journal_new_trade')}
               </h3>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Fecha</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_date')}</Label>
                   <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="bg-secondary border-border text-foreground" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Par</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_pair')}</Label>
                   <Select value={pair} onValueChange={setPair}>
                     <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                     <SelectContent>{PAIRS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
@@ -429,7 +432,7 @@ export default function TradingJournal() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Dirección</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_action')}</Label>
                   <div className="flex gap-1">
                     {(['BUY', 'SELL'] as const).map(a => (
                       <button
@@ -446,18 +449,18 @@ export default function TradingJournal() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Lotes</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_lot_size')}</Label>
                   <Input type="number" step="0.01" value={lotSize} onChange={e => setLotSize(e.target.value)} className="bg-secondary border-border text-foreground" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Precio Entrada</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_entry_price')}</Label>
                   <Input type="number" step="0.00001" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="1.08500" className="bg-secondary border-border text-foreground" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Precio Salida</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_exit_price')}</Label>
                   <Input type="number" step="0.00001" value={exitPrice} onChange={e => setExitPrice(e.target.value)} placeholder="1.09000" className="bg-secondary border-border text-foreground" />
                 </div>
               </div>
@@ -475,13 +478,13 @@ export default function TradingJournal() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Resultado</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_result')}</Label>
                   <Select value={result} onValueChange={v => setResult(v as TradeEntry['result'])}>
                     <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="win">✅ Ganada</SelectItem>
-                      <SelectItem value="loss">❌ Perdida</SelectItem>
-                      <SelectItem value="breakeven">➖ Breakeven</SelectItem>
+                      <SelectItem value="win">✅ {t('journal_win')}</SelectItem>
+                      <SelectItem value="loss">❌ {t('journal_loss')}</SelectItem>
+                      <SelectItem value="breakeven">➖ {t('journal_breakeven')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -492,13 +495,13 @@ export default function TradingJournal() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Notas</Label>
-                <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="¿Qué aprendiste de esta operación?" className="bg-secondary border-border text-foreground min-h-[60px]" />
+                <Label className="text-xs text-muted-foreground">{t('journal_notes')}</Label>
+                <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="" className="bg-secondary border-border text-foreground min-h-[60px]" />
               </div>
 
               <Button onClick={handleSave} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
                 {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : editingId ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-                {editingId ? 'Actualizar Operación' : 'Guardar Operación'}
+                {editingId ? t('journal_update_trade') : t('journal_save_trade')}
               </Button>
             </CardContent>
           </Card>
@@ -508,14 +511,14 @@ export default function TradingJournal() {
         <div>
           <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
-            Historial de Operaciones
+            {t('journal_history')}
           </h3>
 
           {entries.length === 0 ? (
             <Card className="bg-card border-border">
               <CardContent className="p-8 text-center">
                 <BookOpen className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-                <p className="text-sm text-muted-foreground">No hay operaciones registradas</p>
+                <p className="text-sm text-muted-foreground">{t('journal_no_trades')}</p>
                 <p className="text-xs text-muted-foreground/60 mt-1">Comienza registrando tu primera operación</p>
               </CardContent>
             </Card>
