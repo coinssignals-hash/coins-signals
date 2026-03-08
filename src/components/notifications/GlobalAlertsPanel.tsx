@@ -140,7 +140,7 @@ export function GlobalAlertsPanel() {
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold flex items-center gap-1.5">
                   <Bell className="w-3 h-3 text-yellow-500" />
-                  Activas ({activeAlerts.length})
+                  {t('ga_active')} ({activeAlerts.length})
                 </p>
                 {Object.entries(groupedActive).map(([symbol, symbolAlerts]) => (
                   <div key={symbol} className="space-y-1.5">
