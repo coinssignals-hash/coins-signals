@@ -565,7 +565,7 @@ export default function CreateSignal() {
                     ) : (
                       <Sparkles className="w-3 h-3" />
                     )}
-                    {generatingNotes ? 'Generando...' : 'Generar con IA'}
+                    {generatingNotes ? t('cs_generating') : t('cs_generate_ai')}
                   </button>
                 </div>
                 <textarea
