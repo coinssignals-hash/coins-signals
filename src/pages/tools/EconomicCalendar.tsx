@@ -451,7 +451,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                           ) : (
                             <Sparkles className="w-3.5 h-3.5 text-primary" />
                           )}
-                          {aiInsights[i] ? 'Análisis IA Generado' : 'Analizar con IA'}
+                          {aiInsights[i] ? t('ec_ai_generated') : t('ec_analyze_ai')}
                         </Button>
 
                         {/* AI Insight */}
