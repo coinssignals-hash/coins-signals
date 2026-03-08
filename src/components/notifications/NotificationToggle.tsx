@@ -13,6 +13,7 @@ import {
 } from '@/utils/pushNotifications';
 
 export function NotificationToggle() {
+  const { t } = useTranslation();
   const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
