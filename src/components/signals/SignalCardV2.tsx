@@ -211,7 +211,7 @@ function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takePr
 }
 
 // --- Price Age Indicator ---
-function PriceAge({ timestamp }: {timestamp: number;}) {
+function PriceAge({ timestamp, agoLabel }: {timestamp: number; agoLabel: string;}) {
   const [age, setAge] = useState(0);
 
   useEffect(() => {
