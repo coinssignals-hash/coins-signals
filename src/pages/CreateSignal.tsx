@@ -536,7 +536,7 @@ export default function CreateSignal() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-blue-400 uppercase tracking-wider mb-1.5 block">Resistencia</label>
+                  <label className="text-xs text-blue-400 uppercase tracking-wider mb-1.5 block">{t('cs_resistance')}</label>
                   <input
                     type="number"
                     step="any"
