@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useUserRole } from '@/hooks/useUserRole';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
