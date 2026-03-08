@@ -143,7 +143,7 @@ export default function CorrelationMatrix() {
         {/* Top Correlations */}
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-foreground">Correlaciones Más Fuertes</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('tp_strongest_correlations')}</h3>
             {highlights.map((h, i) => (
               <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                 <span className="text-xs text-foreground">{h.a} ↔ {h.b}</span>
