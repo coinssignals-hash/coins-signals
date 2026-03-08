@@ -227,16 +227,16 @@ export default function TradingJournal() {
             </Link>
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Diario de Trading</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
             </div>
           </div>
           <Card className="bg-card border-border">
             <CardContent className="p-8 text-center space-y-3">
               <LogIn className="w-10 h-10 text-primary mx-auto opacity-60" />
-              <p className="text-sm text-foreground font-medium">Inicia sesión para usar el Diario</p>
-              <p className="text-xs text-muted-foreground">Tus operaciones se guardarán en la nube y podrás acceder desde cualquier dispositivo.</p>
+              <p className="text-sm text-foreground font-medium">{t('journal_login_required')}</p>
+              <p className="text-xs text-muted-foreground">{t('journal_login_desc')}</p>
               <Button onClick={() => navigate('/auth')} className="mt-2">
-                <LogIn className="w-4 h-4 mr-2" /> Iniciar Sesión
+                <LogIn className="w-4 h-4 mr-2" /> {t('drawer_login')}
               </Button>
             </CardContent>
           </Card>
