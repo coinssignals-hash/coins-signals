@@ -187,7 +187,7 @@ export default function CreateSignal() {
         .eq('id', signalId);
 
       if (error) throw error;
-      toast.success('Señal cerrada correctamente');
+      toast.success(t('cs_signal_closed'));
       setClosingSignalId(null);
       setClosePrice('');
       fetchActiveSignals();
