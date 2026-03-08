@@ -98,7 +98,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       {/* Results */}
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-center">
-          <div className="text-[9px] text-gray-500 uppercase">Riesgo</div>
+          <div className="text-[9px] text-gray-500 uppercase">{t('analysis_rr_risk')}</div>
           <div className="text-red-400 font-mono font-bold text-sm">{calc.riskPips.toFixed(2)}p</div>
           <div className="text-red-400/70 text-[10px] font-mono">-${calc.potentialLoss.toFixed(2)}</div>
         </div>
