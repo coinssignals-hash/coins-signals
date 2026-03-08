@@ -50,6 +50,10 @@ const TrendScanner = lazy(() => import("./pages/tools/TrendScanner"));
 const RiskRewardCalculator = lazy(() => import("./pages/tools/RiskRewardCalculator"));
 const PositionSizing = lazy(() => import("./pages/tools/PositionSizing"));
 const SwapCalculator = lazy(() => import("./pages/tools/SwapCalculator"));
+const CompoundInterestCalculator = lazy(() => import("./pages/tools/CompoundInterestCalculator"));
+const CorrelationMatrix = lazy(() => import("./pages/tools/CorrelationMatrix"));
+const VolatilityScanner = lazy(() => import("./pages/tools/VolatilityScanner"));
+const PatternScreener = lazy(() => import("./pages/tools/PatternScreener"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
