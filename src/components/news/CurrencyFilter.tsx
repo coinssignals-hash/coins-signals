@@ -496,15 +496,15 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
           {/* Footer */}
           <div className="px-3 py-2 border-t border-border bg-muted/30 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              {activeTab === 'currencies' && `${selected.length} divisa${selected.length !== 1 ? 's' : ''}`}
-              {activeTab === 'forex' && `${Object.values(FOREX_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} pares Forex`}
-              {activeTab === 'crypto' && `${Object.values(CRYPTO_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} criptos`}
+              {activeTab === 'currencies' && `${selected.length} ${t('cf_currencies').toLowerCase()}`}
+              {activeTab === 'forex' && `${Object.values(FOREX_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} ${t('cf_forex_pairs')}`}
+              {activeTab === 'crypto' && `${Object.values(CRYPTO_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} ${t('cf_cryptos')}`}
             </span>
             <button
               onClick={() => setIsOpen(false)}
               className="text-xs text-primary hover:text-primary/80 font-medium"
             >
-              Cerrar
+              {t('cf_close')}
             </button>
           </div>
         </div>
