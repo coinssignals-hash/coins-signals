@@ -59,8 +59,9 @@ function formatPrice(price: number): string {
 export function HeroDashboard({
   currentPrice, change, changePercent, high, low, symbol, loading, isRealtimeConnected, onSelectPair
 }: HeroDashboardProps) {
-  const session = useMemo(() => getActiveSession(), []);
-  const greeting = useMemo(() => getGreeting(), []);
+  const { t } = useTranslation();
+  const session = useMemo(() => getActiveSession(t), [t]);
+  const greeting = useMemo(() => getGreeting(t), [t]);
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
   const { quotes } = useMultiPairPrices();
