@@ -300,7 +300,7 @@ export default function PersonalInfo() {
                 <Select value={country} onValueChange={(v) => setCountry(v)}>
                   <SelectTrigger className="bg-[hsl(210,30%,10%)] border-cyan-800/20 text-white text-sm h-10 hover:border-cyan-600/30 transition-colors"><SelectValue placeholder={t('pi_select_country')} /></SelectTrigger>
                   <SelectContent className="bg-[hsl(220,40%,10%)] border-cyan-800/30 max-h-60">
-                    {countries.map((c) => (<SelectItem key={c.code} value={c.code} className="text-white hover:bg-cyan-500/10 focus:bg-cyan-500/10"><span className="flex items-center gap-2"><span>{c.flag}</span><span>{c.name}</span></span></SelectItem>))}
+                    {COUNTRY_CODES.map((code) => (<SelectItem key={code} value={code} className="text-white hover:bg-cyan-500/10 focus:bg-cyan-500/10"><span className="flex items-center gap-2"><span>{COUNTRY_FLAGS[code]}</span><span>{t(`country_${code}` as any)}</span></span></SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>
