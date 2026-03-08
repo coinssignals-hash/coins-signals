@@ -24,21 +24,21 @@ interface HeroDashboardProps {
   onSelectPair?: (pair: string) => void;
 }
 
-function getActiveSession(): {name: string;emoji: string;color: string;} {
+function getActiveSession(t: (k: string) => string): {name: string;emoji: string;color: string;} {
   const utcHour = new Date().getUTCHours();
-  if (utcHour >= 0 && utcHour < 7) return { name: 'Asia', emoji: '🌏', color: 'text-amber-400' };
-  if (utcHour >= 7 && utcHour < 12) return { name: 'Europa', emoji: '🌍', color: 'text-cyan-400' };
-  if (utcHour >= 12 && utcHour < 17) return { name: 'NY + EU', emoji: '🌎🌍', color: 'text-emerald-400' };
-  if (utcHour >= 17 && utcHour < 21) return { name: 'Nueva York', emoji: '🌎', color: 'text-blue-400' };
-  return { name: 'Asia (Pre)', emoji: '🌏', color: 'text-amber-400' };
+  if (utcHour >= 0 && utcHour < 7) return { name: t('analysis_session_asia'), emoji: '🌏', color: 'text-amber-400' };
+  if (utcHour >= 7 && utcHour < 12) return { name: t('analysis_session_europe'), emoji: '🌍', color: 'text-cyan-400' };
+  if (utcHour >= 12 && utcHour < 17) return { name: t('analysis_session_ny_eu'), emoji: '🌎🌍', color: 'text-emerald-400' };
+  if (utcHour >= 17 && utcHour < 21) return { name: t('analysis_session_new_york'), emoji: '🌎', color: 'text-blue-400' };
+  return { name: t('analysis_session_asia_pre'), emoji: '🌏', color: 'text-amber-400' };
 }
 
-function getGreeting(): string {
+function getGreeting(t: (k: string) => string): string {
   const hour = new Date().getHours();
-  if (hour < 6) return 'Buenas noches';
-  if (hour < 12) return 'Buenos días';
-  if (hour < 19) return 'Buenas tardes';
-  return 'Buenas noches';
+  if (hour < 6) return t('analysis_greeting_evening');
+  if (hour < 12) return t('analysis_greeting_morning');
+  if (hour < 19) return t('analysis_greeting_afternoon');
+  return t('analysis_greeting_evening');
 }
 
 const pairFlags: Record<string, string> = {
