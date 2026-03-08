@@ -303,7 +303,7 @@ export function MarketSentiment({
                 <div>
                   <div className="flex items-center gap-1.5 mb-2.5">
                     <Shield className="w-3.5 h-3.5 text-purple-400/60" />
-                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.15em] font-semibold">Señales Técnicas</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.15em] font-semibold">{t('analysis_sent_tech_signals')}</span>
                     <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent ml-2" />
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
