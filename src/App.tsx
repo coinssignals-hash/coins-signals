@@ -47,6 +47,9 @@ const LotCalculator = lazy(() => import("./pages/tools/LotCalculator"));
 const MarginCalculator = lazy(() => import("./pages/tools/MarginCalculator"));
 const TradingJournal = lazy(() => import("./pages/tools/TradingJournal"));
 const TrendScanner = lazy(() => import("./pages/tools/TrendScanner"));
+const RiskRewardCalculator = lazy(() => import("./pages/tools/RiskRewardCalculator"));
+const PositionSizing = lazy(() => import("./pages/tools/PositionSizing"));
+const SwapCalculator = lazy(() => import("./pages/tools/SwapCalculator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -117,6 +120,9 @@ function AnimatedRoutes() {
           <Route path="/tools/margin-calculator" element={<MarginCalculator />} />
           <Route path="/tools/trading-journal" element={<TradingJournal />} />
           <Route path="/tools/trend-scanner" element={<TrendScanner />} />
+          <Route path="/tools/risk-reward" element={<RiskRewardCalculator />} />
+          <Route path="/tools/position-sizing" element={<PositionSizing />} />
+          <Route path="/tools/swap-calculator" element={<SwapCalculator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

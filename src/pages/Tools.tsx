@@ -41,9 +41,9 @@ const TOOLS_BY_LEVEL: Record<TraderLevel, ToolItem[]> = {
     { id: 'trend-scanner', title: 'Escáner de Tendencias', description: 'Identifica la dirección general del mercado', icon: TrendingUp, category: 'screeners', status: 'available', route: '/tools/trend-scanner' },
   ],
   medio: [
-    { id: 'rr-calc', title: 'Calculadora Riesgo/Recompensa', description: 'Evalúa la relación riesgo-beneficio antes de operar', icon: Scale, category: 'calculadoras', status: 'available' },
-    { id: 'position-size', title: 'Position Sizing', description: 'Calcula el tamaño óptimo de posición con gestión de riesgo', icon: Target, category: 'calculadoras', status: 'available' },
-    { id: 'swap-calc', title: 'Calculadora de Swaps', description: 'Estima el costo de mantener posiciones overnight', icon: Clock, category: 'calculadoras', status: 'available' },
+    { id: 'rr-calc', title: 'Calculadora Riesgo/Recompensa', description: 'Evalúa la relación riesgo-beneficio antes de operar', icon: Scale, category: 'calculadoras', status: 'available', route: '/tools/risk-reward' },
+    { id: 'position-size', title: 'Position Sizing', description: 'Calcula el tamaño óptimo de posición con gestión de riesgo', icon: Target, category: 'calculadoras', status: 'available', route: '/tools/position-sizing' },
+    { id: 'swap-calc', title: 'Calculadora de Swaps', description: 'Estima el costo de mantener posiciones overnight', icon: Clock, category: 'calculadoras', status: 'available', route: '/tools/swap-calculator' },
     { id: 'eco-calendar-adv', title: 'Calendario con Impacto IA', description: 'Análisis de impacto potencial en pares específicos', icon: CalendarDays, category: 'calendario', status: 'available' },
     { id: 'rsi-screener', title: 'Screener RSI/MACD', description: 'Detecta sobrecompra/sobreventa en múltiples pares', icon: Activity, category: 'screeners', status: 'available', route: '/tools/rsi-macd-screener' },
     { id: 'trade-journal-stats', title: 'Diario con Estadísticas', description: 'Métricas de rendimiento: win rate, drawdown, profit factor', icon: BarChart3, category: 'diario', status: 'available' },
