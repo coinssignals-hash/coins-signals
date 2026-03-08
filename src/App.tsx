@@ -40,6 +40,9 @@ const AICenter = lazy(() => import("./pages/AICenter"));
 const Stocks = lazy(() => import("./pages/Stocks"));
 const MediaLibrary = lazy(() => import("./pages/MediaLibrary"));
 const Tools = lazy(() => import("./pages/Tools"));
+const PipCalculator = lazy(() => import("./pages/tools/PipCalculator"));
+const EconomicCalendar = lazy(() => import("./pages/tools/EconomicCalendar"));
+const RsiMacdScreener = lazy(() => import("./pages/tools/RsiMacdScreener"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
