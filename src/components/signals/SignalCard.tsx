@@ -264,10 +264,10 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
       // Save to history
       await saveAnalysisToHistory(data.analysis);
       
-      toast.success('Análisis completado y guardado');
+      toast.success(t('sig_analysis_complete'));
     } catch (error) {
       console.error('Error analyzing signal:', error);
-      toast.error('Error al analizar la señal');
+      toast.error(t('sig_analysis_error'));
       setShowAnalysis(false);
     } finally {
       setIsAnalyzing(false);
