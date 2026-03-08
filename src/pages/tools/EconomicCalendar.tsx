@@ -413,7 +413,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                         {deviation !== null && (
                           <div className="space-y-1">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-muted-foreground">Desviación vs Estimado</span>
+                              <span className="text-[10px] text-muted-foreground">{t('ec_deviation')}</span>
                               <div className="flex items-center gap-1">
                                 {deviation > 0 ? <TrendingUp className="w-3 h-3 text-emerald-400" /> :
                                  deviation < 0 ? <TrendingDown className="w-3 h-3 text-rose-400" /> :
