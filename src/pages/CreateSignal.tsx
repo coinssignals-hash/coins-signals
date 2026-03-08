@@ -637,7 +637,7 @@ export default function CreateSignal() {
                 >
                   {downloadingChart ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   <Image className="w-4 h-4" />
-                  Descargar gráfico 7 días (HD)
+                  {t('cs_download_chart')}
                 </button>
               </div>
             )}
