@@ -54,6 +54,12 @@ const CompoundInterestCalculator = lazy(() => import("./pages/tools/CompoundInte
 const CorrelationMatrix = lazy(() => import("./pages/tools/CorrelationMatrix"));
 const VolatilityScanner = lazy(() => import("./pages/tools/VolatilityScanner"));
 const PatternScreener = lazy(() => import("./pages/tools/PatternScreener"));
+const MonteCarloSimulation = lazy(() => import("./pages/tools/MonteCarloSimulation"));
+const RiskManagerAdvanced = lazy(() => import("./pages/tools/RiskManagerAdvanced"));
+const MultiTFScreener = lazy(() => import("./pages/tools/MultiTFScreener"));
+const OrderFlowAnalysis = lazy(() => import("./pages/tools/OrderFlowAnalysis"));
+const BacktestPro = lazy(() => import("./pages/tools/BacktestPro"));
+const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCalendar"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -131,6 +137,12 @@ function AnimatedRoutes() {
           <Route path="/tools/correlation-matrix" element={<CorrelationMatrix />} />
           <Route path="/tools/volatility-scanner" element={<VolatilityScanner />} />
           <Route path="/tools/pattern-screener" element={<PatternScreener />} />
+          <Route path="/tools/monte-carlo" element={<MonteCarloSimulation />} />
+          <Route path="/tools/risk-manager" element={<RiskManagerAdvanced />} />
+          <Route path="/tools/multi-tf-screener" element={<MultiTFScreener />} />
+          <Route path="/tools/order-flow" element={<OrderFlowAnalysis />} />
+          <Route path="/tools/backtest-pro" element={<BacktestPro />} />
+          <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

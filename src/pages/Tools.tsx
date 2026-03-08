@@ -57,12 +57,12 @@ const TOOLS_BY_LEVEL: Record<TraderLevel, ToolItem[]> = {
     { id: 'eco-calendar-pro', title: 'Calendario con Predicciones', description: 'Predicciones IA del impacto en precio pre/post evento', icon: CalendarDays, category: 'calendario', status: 'available' },
   ],
   profesional: [
-    { id: 'monte-carlo', title: 'Simulación Monte Carlo', description: 'Proyecciones probabilísticas de rendimiento de estrategia', icon: PieChart, category: 'calculadoras', status: 'coming_soon' },
-    { id: 'risk-manager', title: 'Risk Manager Avanzado', description: 'Control de exposición multi-cuenta con alertas automáticas', icon: Shield, category: 'calculadoras', status: 'coming_soon' },
-    { id: 'multi-tf-screener', title: 'Screener Multi-Timeframe', description: 'Confluencia de indicadores en múltiples temporalidades', icon: ScanSearch, category: 'screeners', status: 'available' },
-    { id: 'order-flow', title: 'Análisis de Flujo de Órdenes', description: 'Volumen institucional y posicionamiento del mercado', icon: Zap, category: 'screeners', status: 'coming_soon' },
-    { id: 'backtest-pro', title: 'Backtesting Multi-Estrategia', description: 'Backtesting avanzado con múltiples estrategias simultáneas', icon: Workflow, category: 'diario', status: 'coming_soon' },
-    { id: 'eco-calendar-inst', title: 'Calendario Institucional', description: 'Datos de consenso, histórico de desviaciones y reacciones', icon: CalendarDays, category: 'calendario', status: 'coming_soon' },
+    { id: 'monte-carlo', title: 'Simulación Monte Carlo', description: 'Proyecciones probabilísticas de rendimiento de estrategia', icon: PieChart, category: 'calculadoras', status: 'available', route: '/tools/monte-carlo' },
+    { id: 'risk-manager', title: 'Risk Manager Avanzado', description: 'Control de exposición multi-cuenta con alertas automáticas', icon: Shield, category: 'calculadoras', status: 'available', route: '/tools/risk-manager' },
+    { id: 'multi-tf-screener', title: 'Screener Multi-Timeframe', description: 'Confluencia de indicadores en múltiples temporalidades', icon: ScanSearch, category: 'screeners', status: 'available', route: '/tools/multi-tf-screener' },
+    { id: 'order-flow', title: 'Análisis de Flujo de Órdenes', description: 'Volumen institucional y posicionamiento del mercado', icon: Zap, category: 'screeners', status: 'available', route: '/tools/order-flow' },
+    { id: 'backtest-pro', title: 'Backtesting Multi-Estrategia', description: 'Backtesting avanzado con múltiples estrategias simultáneas', icon: Workflow, category: 'diario', status: 'available', route: '/tools/backtest-pro' },
+    { id: 'eco-calendar-inst', title: 'Calendario Institucional', description: 'Datos de consenso, histórico de desviaciones y reacciones', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/institutional-calendar' },
   ],
 };
 
