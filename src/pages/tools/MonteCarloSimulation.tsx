@@ -243,14 +243,14 @@ export default function MonteCarloSimulation() {
             {/* Stats */}
             <Card className="bg-card border-border">
               <CardContent className="p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">Estadísticas Clave</h3>
+                <h3 className="text-sm font-semibold text-foreground">{t('tp_key_stats')}</h3>
                 {[
-                  { label: 'Capital Mediano Final', value: `$${result.median.toLocaleString()}`, color: result.median > capital ? 'text-emerald-400' : 'text-rose-400' },
-                  { label: 'Mejor Escenario (P95)', value: `$${result.p95.toLocaleString()}`, color: 'text-emerald-400' },
-                  { label: 'Peor Escenario (P5)', value: `$${result.p5.toLocaleString()}`, color: 'text-rose-400' },
-                  { label: 'Max Drawdown (mediana)', value: `${(result.maxDrawdown * 100).toFixed(1)}%`, color: 'text-rose-400' },
-                  { label: 'Probabilidad de Ganancia', value: `${result.probProfit.toFixed(1)}%`, color: result.probProfit > 50 ? 'text-emerald-400' : 'text-rose-400' },
-                  { label: 'Probabilidad de Ruina (<10%)', value: `${result.probRuin.toFixed(1)}%`, color: result.probRuin < 5 ? 'text-emerald-400' : 'text-rose-400' },
+                  { label: t('tp_median_final'), value: `$${result.median.toLocaleString()}`, color: result.median > capital ? 'text-emerald-400' : 'text-rose-400' },
+                  { label: t('tp_best_scenario'), value: `$${result.p95.toLocaleString()}`, color: 'text-emerald-400' },
+                  { label: t('tp_worst_scenario'), value: `$${result.p5.toLocaleString()}`, color: 'text-rose-400' },
+                  { label: t('tp_max_drawdown'), value: `${(result.maxDrawdown * 100).toFixed(1)}%`, color: 'text-rose-400' },
+                  { label: t('tp_prob_profit'), value: `${result.probProfit.toFixed(1)}%`, color: result.probProfit > 50 ? 'text-emerald-400' : 'text-rose-400' },
+                  { label: t('tp_prob_ruin'), value: `${result.probRuin.toFixed(1)}%`, color: result.probRuin < 5 ? 'text-emerald-400' : 'text-rose-400' },
                 ].map(s => (
                   <div key={s.label} className="flex justify-between items-center py-1.5 border-b border-border/30 last:border-0">
                     <span className="text-xs text-muted-foreground">{s.label}</span>
