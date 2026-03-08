@@ -361,7 +361,7 @@ export default function LessonDetail() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-foreground flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" />
-              Progreso del módulo
+              {t('lesson_module_progress')}
             </span>
             <span className="text-sm font-bold text-primary tabular-nums">{completedCount}/{lesson.lessons.length}</span>
           </div>
