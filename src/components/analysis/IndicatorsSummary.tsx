@@ -100,7 +100,7 @@ export function IndicatorsSummary({
       else { maLabel = t('analysis_ind_mixed'); maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
     }
     result.push({
-      title: 'Medias Móviles',
+      title: t('analysis_ind_moving_averages'),
       value: maLabel,
       subValue: maDetail,
       signal: maSignal,
