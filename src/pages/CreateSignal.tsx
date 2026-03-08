@@ -432,7 +432,7 @@ export default function CreateSignal() {
                   }`}
                 >
                   <TrendingUp className="w-4 h-4" />
-                  COMPRAR (BUY)
+                  {t('cs_buy')}
                 </button>
                 <button
                   onClick={() => setAction('SELL')}
