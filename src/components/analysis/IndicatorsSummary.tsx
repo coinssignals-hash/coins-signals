@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Gauge, BarChart3, TrendingUp, TrendingDown, Activity, Minus, Zap } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface IndicatorsSummaryProps {
   pair: string;
