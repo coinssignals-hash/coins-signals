@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
-  Loader2, LogIn
+  Loader2, LogIn, Pencil
 } from 'lucide-react';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -45,6 +45,7 @@ export default function TradingJournal() {
   const navigate = useNavigate();
   const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -128,11 +129,11 @@ export default function TradingJournal() {
     return { total, wins, losses, totalPips: totalPips.toFixed(1), winRate };
   }, [entries]);
 
-  async function handleAdd() {
+  async function handleSave() {
     if (!userId) return;
     setSaving(true);
 
-    const { error } = await supabase.from('trading_journal').insert({
+    const payload = {
       user_id: userId,
       trade_date: date,
       pair,
@@ -145,19 +146,27 @@ export default function TradingJournal() {
       result,
       pips: parseFloat(pips) || 0,
       notes: notes || null,
-    });
+    };
+
+    let error;
+    if (editingId) {
+      ({ error } = await supabase.from('trading_journal').update(payload).eq('id', editingId).eq('user_id', userId));
+    } else {
+      ({ error } = await supabase.from('trading_journal').insert(payload));
+    }
 
     setSaving(false);
 
     if (error) {
-      toast({ title: 'Error', description: 'No se pudo guardar la operación', variant: 'destructive' });
+      toast({ title: 'Error', description: editingId ? 'No se pudo actualizar' : 'No se pudo guardar la operación', variant: 'destructive' });
       console.error(error);
       return;
     }
 
-    toast({ title: '✅ Operación guardada' });
+    toast({ title: editingId ? '✅ Operación actualizada' : '✅ Operación guardada' });
     resetForm();
     setShowForm(false);
+    setEditingId(null);
     await fetchEntries(userId);
   }
 
@@ -174,6 +183,23 @@ export default function TradingJournal() {
     setEntryPrice(''); setExitPrice(''); setStopLoss('');
     setTakeProfit(''); setPips(''); setNotes('');
     setResult('win'); setLotSize('0.1');
+    setEditingId(null);
+  }
+
+  function startEdit(entry: TradeEntry) {
+    setDate(entry.date);
+    setPair(entry.pair);
+    setAction(entry.action);
+    setEntryPrice(entry.entryPrice);
+    setExitPrice(entry.exitPrice);
+    setLotSize(entry.lotSize);
+    setStopLoss(entry.stopLoss);
+    setTakeProfit(entry.takeProfit);
+    setResult(entry.result);
+    setPips(entry.pips);
+    setNotes(entry.notes);
+    setEditingId(entry.id);
+    setShowForm(true);
   }
 
   if (loading) {
@@ -370,7 +396,7 @@ export default function TradingJournal() {
         })()}
 
         <Button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => { if (showForm) { resetForm(); } setShowForm(!showForm); }}
           className="w-full"
           variant={showForm ? 'secondary' : 'default'}
         >
@@ -470,9 +496,9 @@ export default function TradingJournal() {
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="¿Qué aprendiste de esta operación?" className="bg-secondary border-border text-foreground min-h-[60px]" />
               </div>
 
-              <Button onClick={handleAdd} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
-                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
-                Guardar Operación
+              <Button onClick={handleSave} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : editingId ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                {editingId ? 'Actualizar Operación' : 'Guardar Operación'}
               </Button>
             </CardContent>
           </Card>
@@ -523,9 +549,14 @@ export default function TradingJournal() {
                             entry.action === 'BUY' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
                           )}>{entry.action}</span>
                         </div>
-                        <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-rose-400 transition-colors">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button onClick={() => startEdit(entry)} className="text-muted-foreground hover:text-primary transition-colors">
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-rose-400 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-3 mt-1">
