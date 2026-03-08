@@ -156,7 +156,7 @@ export function CacheStatsPanel() {
               disabled={isLoading}
             >
               <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
-              Actualizar
+              {t('cache_refresh')}
             </Button>
             <Button
               variant="outline"
