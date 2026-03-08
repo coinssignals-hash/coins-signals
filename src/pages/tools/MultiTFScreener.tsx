@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff, Settings2, Check } from 'lucide-react';
-import { useMultiTFScreener, ALL_AVAILABLE_PAIRS, loadSavedPairs, savePairs, type PairAnalysis } from '@/hooks/useMultiTFScreener';
+import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff, Settings2, Check, BarChart3 } from 'lucide-react';
+import { useMultiTFScreener, ALL_AVAILABLE_PAIRS, loadSavedPairs, savePairs, type PairAnalysis, type CurrencyStrength } from '@/hooks/useMultiTFScreener';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
@@ -64,7 +64,7 @@ const PAIR_CATEGORIES: Record<string, string[]> = {
 };
 
 export default function MultiTFScreener() {
-  const { data, loading, error, fetchData } = useMultiTFScreener();
+  const { data, currencyStrength, loading, error, fetchData } = useMultiTFScreener();
   const [expandedPair, setExpandedPair] = useState<string | null>(null);
   const [filterBias, setFilterBias] = useState<Signal | 'all'>('all');
   const [selectedPairs, setSelectedPairs] = useState<string[]>(loadSavedPairs);
@@ -189,6 +189,39 @@ export default function MultiTFScreener() {
           ))}
         </div>
 
+        {/* Currency Strength Meter */}
+        {currencyStrength.length > 0 && (
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary" />
+                <p className="text-xs font-bold text-foreground">Currency Strength</p>
+              </div>
+              <div className="space-y-2">
+                {currencyStrength.map(cs => (
+                  <div key={cs.currency} className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-foreground w-8">{cs.currency}</span>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={cn(
+                          'h-full rounded-full transition-all duration-700',
+                          cs.strength >= 65 ? 'bg-emerald-400' : cs.strength <= 35 ? 'bg-rose-400' : 'bg-amber-400'
+                        )}
+                        style={{ width: `${cs.strength}%` }}
+                      />
+                    </div>
+                    <span className={cn(
+                      'text-[10px] font-bold tabular-nums w-8 text-right',
+                      cs.strength >= 65 ? 'text-emerald-400' : cs.strength <= 35 ? 'text-rose-400' : 'text-muted-foreground'
+                    )}>
+                      {cs.strength}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
         {/* Error */}
         {error && !loading && data.length === 0 && (
           <Card className="bg-card border-destructive/30">

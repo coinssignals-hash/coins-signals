@@ -214,9 +214,51 @@ serve(async (req) => {
       })
     );
 
-    console.log(`Multi-TF Screener: analyzed ${pairList.length} pairs`);
+    // ─── Currency Strength Meter ───
+    const strengthMap: Record<string, { score: number; count: number }> = {};
+    const addStrength = (ccy: string, val: number) => {
+      if (!strengthMap[ccy]) strengthMap[ccy] = { score: 0, count: 0 };
+      strengthMap[ccy].score += val;
+      strengthMap[ccy].count++;
+    };
 
-    return new Response(JSON.stringify({ data: results, timestamp: Date.now() }), {
+    for (const r of results) {
+      const [base, quote] = r.pair.split("/");
+      if (!base || !quote) continue;
+      // Use D1 timeframe as primary strength reference
+      const d1 = r.timeframes["D1"];
+      if (!d1) continue;
+
+      // Score based on trend, RSI, MACD, EMA, BB
+      let pairScore = 0;
+      if (d1.trend === "bullish") pairScore += 2; else if (d1.trend === "bearish") pairScore -= 2;
+      if (d1.rsi > 60) pairScore += 1; else if (d1.rsi < 40) pairScore -= 1;
+      if (d1.macd === "bullish") pairScore += 1; else if (d1.macd === "bearish") pairScore -= 1;
+      if (d1.ema === "bullish") pairScore += 1; else if (d1.ema === "bearish") pairScore -= 1;
+      if (d1.bb === "bullish") pairScore += 1; else if (d1.bb === "bearish") pairScore -= 1;
+
+      // Base currency is strong when pair is bullish
+      addStrength(base, pairScore);
+      addStrength(quote, -pairScore);
+    }
+
+    // Normalize to 0-100
+    const entries = Object.entries(strengthMap);
+    const rawScores = entries.map(([, v]) => v.count > 0 ? v.score / v.count : 0);
+    const minS = Math.min(...rawScores, -6);
+    const maxS = Math.max(...rawScores, 6);
+    const range = maxS - minS || 1;
+    const currencyStrength = entries
+      .map(([currency, v]) => {
+        const raw = v.count > 0 ? v.score / v.count : 0;
+        const normalized = Math.round(((raw - minS) / range) * 100);
+        return { currency, strength: normalized, raw: +raw.toFixed(2) };
+      })
+      .sort((a, b) => b.strength - a.strength);
+
+    console.log(`Multi-TF Screener: analyzed ${pairList.length} pairs, ${currencyStrength.length} currencies`);
+
+    return new Response(JSON.stringify({ data: results, currencyStrength, timestamp: Date.now() }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

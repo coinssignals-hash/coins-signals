@@ -4,6 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
 
+export interface CurrencyStrength {
+  currency: string;
+  strength: number;
+  raw: number;
+}
+
 export interface PairAnalysis {
   pair: string;
   timeframes: Record<Timeframe, {
@@ -20,7 +26,7 @@ export interface PairAnalysis {
 const memCache: { data: PairAnalysis[]; ts: number } | null = null;
 const CACHE_TTL = 5 * 60_000; // 5 min
 
-let cachedResult: { data: PairAnalysis[]; ts: number; key: string } | null = null;
+let cachedResult: { data: PairAnalysis[]; ts: number; key: string; strength: CurrencyStrength[] } | null = null;
 
 export const DEFAULT_PAIRS = [
   "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CHF",
@@ -54,6 +60,7 @@ export function savePairs(pairs: string[]) {
 
 export function useMultiTFScreener() {
   const [data, setData] = useState<PairAnalysis[]>([]);
+  const [currencyStrength, setCurrencyStrength] = useState<CurrencyStrength[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fetchingRef = useRef(false);
@@ -64,6 +71,7 @@ export function useMultiTFScreener() {
     const pairsKey = (pairs || loadSavedPairs()).join(',');
     if (!bypassCache && cachedResult && Date.now() - cachedResult.ts < CACHE_TTL && cachedResult.key === pairsKey) {
       setData(cachedResult.data);
+      setCurrencyStrength(cachedResult.strength);
       return;
     }
 
@@ -80,8 +88,10 @@ export function useMultiTFScreener() {
       if (result?.error) throw new Error(result.error);
 
       const items = (result?.data || []) as PairAnalysis[];
-      cachedResult = { data: items, ts: Date.now(), key: pairsKey };
+      const strength = (result?.currencyStrength || []) as CurrencyStrength[];
+      cachedResult = { data: items, ts: Date.now(), key: pairsKey, strength };
       setData(items);
+      setCurrencyStrength(strength);
     } catch (err) {
       console.error('[useMultiTFScreener] Error:', err);
       setError(err instanceof Error ? err.message : 'Error fetching screener data');
@@ -91,5 +101,5 @@ export function useMultiTFScreener() {
     }
   }, []);
 
-  return { data, loading, error, fetchData };
+  return { data, currencyStrength, loading, error, fetchData };
 }
