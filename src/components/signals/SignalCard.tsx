@@ -434,7 +434,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 "font-bold text-lg",
                 isBuy ? "text-emerald-400" : "text-rose-400"
               )}>
-                {signal.action === 'BUY' ? 'Comprar' : 'Vender'}
+                {signal.action === 'BUY' ? t('sc_buy') : t('sc_sell')}
               </div>
             </div>
             <div className="bg-slate-800/60 rounded-xl p-2.5 text-center border border-slate-700/50">
