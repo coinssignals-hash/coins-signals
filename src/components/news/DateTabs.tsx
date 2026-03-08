@@ -27,9 +27,9 @@ export function DateTabs({
   const days = [
     { date: subDays(new Date(), 3), label: format(subDays(new Date(), 3), 'EEE d', { locale: dateLocale }) },
     { date: subDays(new Date(), 2), label: format(subDays(new Date(), 2), 'EEE d', { locale: dateLocale }) },
-    { date: subDays(new Date(), 1), label: language === 'es' ? 'Ayer' : 'Yesterday' },
-    { date: new Date(), label: language === 'es' ? 'Hoy' : 'Today' },
-    { date: addDays(new Date(), 1), label: language === 'es' ? 'Mañana' : 'Tomorrow' },
+    { date: subDays(new Date(), 1), label: t('dt_yesterday') },
+    { date: new Date(), label: t('dt_today') },
+    { date: addDays(new Date(), 1), label: t('dt_tomorrow') },
   ];
   
   const isSelected = (date: Date) => {
