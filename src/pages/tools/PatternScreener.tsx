@@ -92,10 +92,10 @@ export default function PatternScreener() {
         {/* Summary */}
         <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'Total', value: summary.total, icon: Eye, color: 'text-primary' },
-            { label: 'Alcistas', value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
-            { label: 'Bajistas', value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
-            { label: 'Neutros', value: summary.neutral, icon: CandlestickChart, color: 'text-muted-foreground' },
+            { label: t('tp_pattern_total'), value: summary.total, icon: Eye, color: 'text-primary' },
+            { label: t('tp_pattern_bullish'), value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
+            { label: t('tp_pattern_bearish'), value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
+            { label: t('tp_pattern_neutral'), value: summary.neutral, icon: CandlestickChart, color: 'text-muted-foreground' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
               <CardContent className="p-3 text-center">
