@@ -122,7 +122,7 @@ export default function CorrelationMatrix() {
         {/* Legend */}
         <Card className="bg-card border-border">
           <CardContent className="p-3">
-            <p className="text-[10px] text-muted-foreground mb-2 font-medium">Escala de Correlación</p>
+            <p className="text-[10px] text-muted-foreground mb-2 font-medium">{t('tp_correlation_scale')}</p>
             <div className="flex gap-1 items-center">
               {[
                 { label: '-1.0', cls: 'bg-rose-500/70' },
