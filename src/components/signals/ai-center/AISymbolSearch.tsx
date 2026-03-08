@@ -362,7 +362,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                           background: 'linear-gradient(135deg, hsl(45, 60%, 15%), hsl(45, 40%, 10%))',
                           border: '1px solid hsl(45, 50%, 28%)',
                         }}
-                        title="Eliminar de favoritos"
+                        title={t('ai_center_remove_fav')}
                       >
                         <Star className="w-3 h-3 fill-current" style={{ color: 'hsl(45, 90%, 55%)' }} />
                       </button>
