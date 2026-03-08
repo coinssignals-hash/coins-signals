@@ -67,7 +67,7 @@ const SavedNews = () => {
 
         {/* Info banner */}
         <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-sm text-muted-foreground">
-          <p>Las noticias que visitas se guardan automáticamente durante 7 días, permitiéndote verlas aunque ya no estén en el feed.</p>
+          <p>{t('saved_info')}</p>
         </div>
 
         {/* News list */}
