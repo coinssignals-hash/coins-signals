@@ -17,9 +17,9 @@ interface PatternResult {
   detected: string; // time ago
 }
 
-const PATTERNS_BULLISH = ['Martillo', 'Estrella de la Mañana', 'Envolvente Alcista', 'Triple Suelo', 'Harami Alcista', 'Piercing Line'];
-const PATTERNS_BEARISH = ['Estrella Fugaz', 'Estrella Vespertina', 'Envolvente Bajista', 'Doble Techo', 'Harami Bajista', 'Nube Oscura'];
-const PATTERNS_NEUTRAL = ['Doji', 'Spinning Top', 'Triángulo Simétrico', 'Rectángulo'];
+const PATTERN_KEYS_BULLISH = ['pat_hammer', 'pat_morning_star', 'pat_bullish_engulfing', 'pat_triple_bottom', 'pat_bullish_harami', 'pat_piercing_line'];
+const PATTERN_KEYS_BEARISH = ['pat_shooting_star', 'pat_evening_star', 'pat_bearish_engulfing', 'pat_double_top', 'pat_bearish_harami', 'pat_dark_cloud'];
+const PATTERN_KEYS_NEUTRAL = ['pat_doji', 'pat_spinning_top', 'pat_symmetrical_triangle', 'pat_rectangle'];
 const PAIRS = ['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','NZD/USD','USD/CAD','EUR/GBP','EUR/JPY','GBP/JPY','XAU/USD'];
 const TIMEFRAMES = ['M15', 'H1', 'H4', 'D1'];
 const TIMES_AGO = ['2m', '5m', '12m', '23m', '45m', '1h', '2h', '3h'];

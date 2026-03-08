@@ -1991,6 +1991,23 @@ export type TranslationKeys = {
   mtf_bullish_label: string;
   mtf_bearish_label: string;
   mtf_neutral_label: string;
+  // PatternScreener patterns
+  pat_hammer: string;
+  pat_morning_star: string;
+  pat_bullish_engulfing: string;
+  pat_triple_bottom: string;
+  pat_bullish_harami: string;
+  pat_piercing_line: string;
+  pat_shooting_star: string;
+  pat_evening_star: string;
+  pat_bearish_engulfing: string;
+  pat_double_top: string;
+  pat_bearish_harami: string;
+  pat_dark_cloud: string;
+  pat_doji: string;
+  pat_spinning_top: string;
+  pat_symmetrical_triangle: string;
+  pat_rectangle: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime
