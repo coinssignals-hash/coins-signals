@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const POPULAR_PAIRS = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'NZD/USD', 'USD/CAD',
