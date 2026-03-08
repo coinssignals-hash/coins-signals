@@ -322,6 +322,7 @@ export default function Portfolio() {
 
 /* ── Position Row (Tools-style list item) ─────────────────────────────────── */
 function PositionRow({ position, isLast }: { position: Position & { broker: string }; isLast: boolean }) {
+  const { t } = useTranslation();
   const isPnlPositive = position.unrealized_pnl >= 0;
   const isBuy = position.side === 'long';
 
@@ -376,27 +377,27 @@ function PositionRow({ position, isLast }: { position: Position & { broker: stri
 
       {/* Row 2: Details grid */}
       <div className={cn("grid gap-2 mt-2", position.swap != null ? "grid-cols-3" : "grid-cols-5")}>
-        <DetailItem label="Valor" value={formatCurrency(position.market_value)} />
-        <DetailItem label="Lote" value={position.quantity.toString()} />
-        <DetailItem label="Entrada" value={`$${position.average_entry_price.toFixed(position.average_entry_price < 10 ? 4 : 2)}`} />
+        <DetailItem label={t('portfolio_value')} value={formatCurrency(position.market_value)} />
+        <DetailItem label={t('portfolio_lot')} value={position.quantity.toString()} />
+        <DetailItem label={t('portfolio_entry')} value={`$${position.average_entry_price.toFixed(position.average_entry_price < 10 ? 4 : 2)}`} />
         <DetailItem
-          label="Actual"
+          label={t('portfolio_current')}
           value={`$${position.current_price.toFixed(position.current_price < 10 ? 4 : 2)}`}
           valueColor="text-foreground"
         />
         <DetailItem
-          label={position.commission != null ? 'Comisión' : 'Spread'}
+          label={position.commission != null ? t('portfolio_commission') : t('portfolio_spread')}
           value={position.commission != null
             ? `$${position.commission.toFixed(2)}`
             : position.spread != null
-              ? `${position.spread} pips`
+              ? `${position.spread} ${t('portfolio_pips')}`
               : '—'
           }
           valueColor="text-amber-400"
         />
         {position.swap != null && (
           <DetailItem
-            label="Swap"
+            label={t('portfolio_swap')}
             value={`${position.swap >= 0 ? '+' : ''}$${position.swap.toFixed(2)}`}
             valueColor={position.swap >= 0 ? 'text-primary' : 'text-amber-400'}
           />
