@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, PieChart, Play, RotateCcw, TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SimResult {
   paths: number[][];
