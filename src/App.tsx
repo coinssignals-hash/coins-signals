@@ -115,6 +115,8 @@ function AnimatedRoutes() {
           <Route path="/tools/rsi-macd-screener" element={<RsiMacdScreener />} />
           <Route path="/tools/lot-calculator" element={<LotCalculator />} />
           <Route path="/tools/margin-calculator" element={<MarginCalculator />} />
+          <Route path="/tools/trading-journal" element={<TradingJournal />} />
+          <Route path="/tools/trend-scanner" element={<TrendScanner />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
