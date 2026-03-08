@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Bell, Activity, Shield, Volume2, CandlestickChart, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
