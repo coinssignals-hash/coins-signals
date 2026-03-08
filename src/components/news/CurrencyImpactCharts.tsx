@@ -255,7 +255,7 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
     return (
       <div className="p-6 rounded-lg bg-card border border-border flex items-center justify-center gap-2 text-muted-foreground">
         <Loader2 className="w-4 h-4 animate-spin" />
-        <span className="text-sm">Generando gráficos de impacto...</span>
+        <span className="text-sm">{t('news_impact_generating_charts')}</span>
       </div>
     );
   }
