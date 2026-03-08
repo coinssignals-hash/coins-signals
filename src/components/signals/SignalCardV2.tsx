@@ -122,7 +122,7 @@ interface PriceRowFullProps {
   copyLabel?: string;
 }
 
-function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullProps) {
+function PriceRowFull({ label, pips, percent, price, isPositive, copyLabel }: PriceRowFullProps) {
   const isTP = label.startsWith('TakeProfit');
   const isSL = label.startsWith('Stop');
   // TP siempre verde, SL siempre rojo
