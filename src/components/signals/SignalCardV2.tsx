@@ -810,7 +810,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 {aiStrategy?.duration.value ?? "Intradía"}</p>
                         <p className="leading-relaxed">{aiStrategy?.duration.explanation ?? "Operaciones que se abren y cierran dentro del mismo día de trading, reduciendo riesgo de gaps nocturnos."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          Análisis para {currencyPair}
+                          {t('signal_analysis_for')} {currencyPair}
                         </div>
                       </PopoverContent>
                     </Popover>
