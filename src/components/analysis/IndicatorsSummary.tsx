@@ -93,11 +93,11 @@ export function IndicatorsSummary({
       const belowBoth = currentPrice < sma20 && currentPrice < sma50;
       const golden = sma20 > sma50;
 
-      if (aboveBoth && golden) { maSignal = 'buy'; maLabel = 'Alcista'; maStrength = 80; maDetail = 'Golden Cross'; }
-      else if (belowBoth && !golden) { maSignal = 'sell'; maLabel = 'Bajista'; maStrength = 80; maDetail = 'Death Cross'; }
-      else if (aboveBoth) { maSignal = 'buy'; maLabel = 'Por encima'; maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
-      else if (belowBoth) { maSignal = 'sell'; maLabel = 'Por debajo'; maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
-      else { maLabel = 'Mixto'; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      if (aboveBoth && golden) { maSignal = 'buy'; maLabel = 'Golden Cross'; maStrength = 80; maDetail = 'Golden Cross'; }
+      else if (belowBoth && !golden) { maSignal = 'sell'; maLabel = 'Death Cross'; maStrength = 80; maDetail = 'Death Cross'; }
+      else if (aboveBoth) { maSignal = 'buy'; maLabel = t('analysis_ind_above'); maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      else if (belowBoth) { maSignal = 'sell'; maLabel = t('analysis_ind_below'); maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      else { maLabel = t('analysis_ind_mixed'); maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
     }
     result.push({
       title: 'Medias Móviles',
