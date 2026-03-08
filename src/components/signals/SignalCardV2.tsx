@@ -119,6 +119,7 @@ interface PriceRowFullProps {
   percent: string;
   price: string;
   isPositive: boolean;
+  copyLabel?: string;
 }
 
 function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullProps) {
