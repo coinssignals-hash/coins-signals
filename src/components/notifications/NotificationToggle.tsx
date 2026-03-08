@@ -36,44 +36,39 @@ export function NotificationToggle() {
 
   const handleToggle = async () => {
     if (!isSupported) {
-      toast.error('Las notificaciones push no están soportadas en este navegador');
+      toast.error(t('nt_not_supported'));
       return;
     }
-
     setIsLoading(true);
-
     try {
       if (isSubscribed) {
         await unsubscribeFromPush();
         setIsSubscribed(false);
-        toast.success('Notificaciones desactivadas');
+        toast.success(t('nt_disabled'));
       } else {
         const permission = await requestNotificationPermission();
-
         if (permission !== 'granted') {
-          toast.error('Debes permitir las notificaciones para recibirlas');
+          toast.error(t('nt_permission_required'));
           setIsLoading(false);
           return;
         }
-
         const registration = await registerServiceWorker();
         if (!registration) {
-          toast.error('Error al registrar el service worker');
+          toast.error(t('nt_sw_error'));
           setIsLoading(false);
           return;
         }
-
         const subscription = await subscribeToPush(registration);
         if (subscription) {
           setIsSubscribed(true);
-          toast.success('¡Notificaciones activadas! Recibirás alertas de nuevas señales');
+          toast.success(t('nt_enabled'));
         } else {
-          toast.error('Error al activar las notificaciones');
+          toast.error(t('nt_enable_error'));
         }
       }
     } catch (error) {
       console.error('Error toggling notifications:', error);
-      toast.error('Error al cambiar el estado de las notificaciones');
+      toast.error(t('nt_toggle_error'));
     } finally {
       setIsLoading(false);
     }
