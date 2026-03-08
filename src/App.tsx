@@ -43,6 +43,8 @@ const Tools = lazy(() => import("./pages/Tools"));
 const PipCalculator = lazy(() => import("./pages/tools/PipCalculator"));
 const EconomicCalendar = lazy(() => import("./pages/tools/EconomicCalendar"));
 const RsiMacdScreener = lazy(() => import("./pages/tools/RsiMacdScreener"));
+const LotCalculator = lazy(() => import("./pages/tools/LotCalculator"));
+const MarginCalculator = lazy(() => import("./pages/tools/MarginCalculator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
