@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useUserRole } from '@/hooks/useUserRole';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +11,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet
+  Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,6 +35,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const { t } = useTranslation();
+  const { isAdmin } = useUserRole();
 
   const menuItems = [
     { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
@@ -176,6 +178,23 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
               </Link>
             );
           })}
+
+
+          {isAdmin && (
+            <Link
+              to="/admin"
+              onClick={() => onOpenChange(false)}
+              className={cn(
+                'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all mt-2',
+                location.pathname === '/admin'
+                  ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                  : 'text-accent hover:bg-accent/10 border border-accent/30'
+              )}
+            >
+              <ShieldAlert className="w-5 h-5" />
+              Panel Admin
+            </Link>
+          )}
 
           <Separator className="my-3 bg-border" />
 
