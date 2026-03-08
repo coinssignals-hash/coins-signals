@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Database, RefreshCw, Trash2, Clock, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { format, formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface CacheStats {
   total: number;
