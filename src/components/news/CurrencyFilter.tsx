@@ -256,7 +256,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
             'bg-background border border-border shadow-sm hover:bg-accent',
             isFav && 'opacity-100'
           )}
-          title={isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+          title={isFav ? t('cf_remove_fav') : t('cf_add_fav')}
         >
           <Star className={cn('w-3 h-3', isFav ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground')} />
         </button>
