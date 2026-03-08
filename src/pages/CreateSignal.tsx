@@ -789,7 +789,7 @@ export default function CreateSignal() {
                           onClick={() => setClosingSignalId(signal.id)}
                           className="flex-1 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20"
                         >
-                          <XCircle className="w-3 h-3" /> Cerrar
+                          <XCircle className="w-3 h-3" /> {t('cs_close')}
                         </button>
                       </div>
                     )}
