@@ -144,7 +144,7 @@ export default function Subscriptions() {
             <p className="text-xs text-amber-300/80">
               {t('trial_full_access')}{' '}
               <span className="font-bold text-amber-200">
-                {t('trial_days_left').replace('{count}', String(trialDaysLeft)).replace('{unit}', trialDaysLeft === 1 ? 'día' : 'días')}
+                {t('trial_days_left').replace('{count}', String(trialDaysLeft)).replace('{unit}', trialDaysLeft === 1 ? t('sub_trial_day') : t('sub_trial_days'))}
               </span>
             </p>
             <p className="text-[10px] text-muted-foreground mt-1">{t('trial_subscribe_before')}</p>
