@@ -154,7 +154,7 @@ export default function Performance() {
             <Link to="/">
               <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
             </Link>
-            <h1 className="text-xl font-bold text-foreground">Rendimiento</h1>
+            <h1 className="text-xl font-bold text-foreground">{t('perf_title')}</h1>
           </div>
           {isLoading && (
             <div className="flex items-center gap-2">
