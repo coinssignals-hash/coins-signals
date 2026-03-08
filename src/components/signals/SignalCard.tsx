@@ -669,7 +669,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 <Activity className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">{t('sc_realtime_movement')}</span>
               </div>
-              <span className="text-[10px] text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded">{priceHistory.length} puntos</span>
+              <span className="text-[10px] text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded">{priceHistory.length} {t('sc_points')}</span>
             </div>
             <PriceSparkline 
               prices={priceHistory} 
