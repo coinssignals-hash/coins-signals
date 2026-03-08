@@ -9,6 +9,7 @@ import { PlanCarousel } from '@/components/subscriptions/PlanCarousel';
 import { useSubscription } from '@/hooks/useSubscription';
 import { SUBSCRIPTION_TIERS } from '@/config/subscriptionTiers';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const plans = [
   {
@@ -88,18 +89,19 @@ const plans = [
 ];
 
 export default function Subscriptions() {
+  const { t } = useTranslation();
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
   const [searchParams] = useSearchParams();
   const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription, onTrial, trialDaysLeft } = useSubscription();
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      toast.success('¡Suscripción activada exitosamente!');
+      toast.success(t('sub_success'));
       checkSubscription();
     } else if (searchParams.get('canceled') === 'true') {
-      toast.info('Proceso de suscripción cancelado');
+      toast.info(t('sub_canceled'));
     }
-  }, [searchParams, checkSubscription]);
+  }, [searchParams, checkSubscription, t]);
 
   const handleSubscribe = async (planId: string) => {
     try {
@@ -116,21 +118,15 @@ export default function Subscriptions() {
   return (
     <PageShell>
       <Header />
-      
       <main className="py-6">
         <div className="flex items-center justify-between mb-6 px-4">
           <div className="flex items-center gap-4">
-            <Link to="/">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
+            <Link to="/"><Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button></Link>
           </div>
           <div className="flex items-center gap-2">
             {subscribed && (
               <Button variant="outline" size="sm" onClick={openPortal} className="text-xs gap-1.5 border-primary/40 text-primary">
-                <Settings2 className="w-3.5 h-3.5" />
-                Gestionar
+                <Settings2 className="w-3.5 h-3.5" />{t('sub_manage')}
               </Button>
             )}
             <Button variant="ghost" size="icon" onClick={checkSubscription} className="h-8 w-8">
@@ -139,95 +135,71 @@ export default function Subscriptions() {
           </div>
         </div>
 
-        {/* Trial banner */}
         {onTrial && (
           <div className="mx-4 mb-4 p-4 rounded-xl bg-gradient-to-r from-amber-500/15 to-orange-500/10 border border-amber-500/30 text-center space-y-1">
-            <p className="text-sm font-bold text-amber-400">
-              🎉 ¡Prueba gratuita activa!
-            </p>
+            <p className="text-sm font-bold text-amber-400">{t('trial_active')}</p>
             <p className="text-xs text-amber-300/80">
-              Tienes acceso completo a todas las funciones Premium por{' '}
-              <span className="font-bold text-amber-200">{trialDaysLeft} {trialDaysLeft === 1 ? 'día' : 'días'}</span> más.
+              {t('trial_full_access')}{' '}
+              <span className="font-bold text-amber-200">
+                {t('trial_days_left').replace('{count}', String(trialDaysLeft)).replace('{unit}', trialDaysLeft === 1 ? 'día' : 'días')}
+              </span>
             </p>
-            <p className="text-[10px] text-muted-foreground mt-1">
-              Suscríbete antes de que termine para no perder el acceso.
-            </p>
+            <p className="text-[10px] text-muted-foreground mt-1">{t('trial_subscribe_before')}</p>
           </div>
         )}
 
-        {/* Active plan banner */}
         {subscribed && !onTrial && tier && (
           <div className="mx-4 mb-4 p-3 rounded-lg bg-primary/10 border border-primary/30 text-center">
             <p className="text-sm text-primary font-medium">
-              Plan activo: <span className="font-bold capitalize">{tier}</span>
+              {t('sub_active_plan')}: <span className="font-bold capitalize">{tier}</span>
               {subscriptionEnd && (
                 <span className="text-muted-foreground ml-2">
-                  · Renueva el {new Date(subscriptionEnd).toLocaleDateString('es-ES')}
+                  · {t('sub_renews_on')} {new Date(subscriptionEnd).toLocaleDateString('es-ES')}
                 </span>
               )}
             </p>
           </div>
         )}
 
-        {/* Hero Section */}
         <div className="text-center mb-6 px-4">
-          <h1 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-            Mejora tus resultados con señales
-          </h1>
-          <p className="text-lg text-primary font-semibold mb-1">
-            Profesionales con conexión directa a tus Brokers
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Elige entre planes diseñados para cada tipo de trader
-          </p>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground mb-2">{t('sub_title')}</h1>
+          <p className="text-lg text-primary font-semibold mb-1">{t('sub_subtitle')}</p>
+          <p className="text-sm text-muted-foreground">{t('sub_choose_plan')}</p>
         </div>
 
-        {/* Billing Toggle */}
         <div className="flex justify-center mb-6 px-4">
           <div className="inline-flex rounded-lg bg-secondary p-1">
             <button
               onClick={() => setBillingPeriod('weekly')}
               className={cn(
                 'px-4 py-2 rounded-md text-sm font-medium transition-colors',
-                billingPeriod === 'weekly'
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                billingPeriod === 'weekly' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              Semanal
+              {t('sub_weekly')}
             </button>
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={cn(
                 'px-4 py-2 rounded-md text-sm font-medium transition-colors',
-                billingPeriod === 'monthly'
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                billingPeriod === 'monthly' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              Mensual
+              {t('sub_monthly')}
             </button>
           </div>
         </div>
 
-        {/* Pricing Carousel */}
-        <PlanCarousel
-          plans={plans}
-          billingPeriod={billingPeriod}
-          activeTier={tier}
-          onSubscribe={handleSubscribe}
-        />
+        <PlanCarousel plans={plans} billingPeriod={billingPeriod} activeTier={tier} onSubscribe={handleSubscribe} />
 
-        {/* Footer Info */}
         <div className="text-center space-y-4 mt-8 px-4">
           <p className="text-sm text-muted-foreground">
-            Sin contratos a largo plazo.{' '}
-            <span className="text-foreground font-medium">Cancela cuando lo desee</span>
+            {t('sub_no_contracts')}{' '}
+            <span className="text-foreground font-medium">{t('sub_cancel_anytime')}</span>
           </p>
-          
           <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <Shield className="w-4 h-4 text-primary" />
-            <span>Tus datos de pago están cifrados y son seguros</span>
+            <span>{t('sub_secure_payment')}</span>
           </div>
         </div>
       </main>

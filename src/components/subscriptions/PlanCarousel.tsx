@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, ChevronLeft, ChevronRight, Star, Crown, Loader2, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Plan {
   id: string;
@@ -28,6 +29,7 @@ interface PlanCarouselProps {
 }
 
 export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: PlanCarouselProps) {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(1);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
@@ -46,11 +48,7 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
   const handleSubscribe = async (planId: string) => {
     if (!onSubscribe) return;
     setLoadingPlan(planId);
-    try {
-      await onSubscribe(planId);
-    } finally {
-      setLoadingPlan(null);
-    }
+    try { await onSubscribe(planId); } finally { setLoadingPlan(null); }
   };
 
   return (
@@ -74,11 +72,7 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
             <motion.div
               key={plan.id}
               className="absolute cursor-pointer"
-              style={{
-                width: 'min(85vw, 320px)',
-                zIndex: isActive ? 30 : 20 - absOffset,
-                transformOrigin: 'top center',
-              }}
+              style={{ width: 'min(85vw, 320px)', zIndex: isActive ? 30 : 20 - absOffset, transformOrigin: 'top center' }}
               animate={{
                 x: isActive ? 0 : isLeft ? `-${absOffset * 28}px` : `${absOffset * 28}px`,
                 scale: isActive ? 1 : 0.88 - absOffset * 0.04,
@@ -89,37 +83,24 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
               transition={{ type: 'spring', stiffness: 320, damping: 32, mass: 0.8 }}
               onClick={() => goTo(index)}
             >
-              <Card
-                className={cn(
-                  'relative overflow-hidden transition-all duration-300',
-                  'bg-[hsl(225,45%,4%)] border',
-                  isCurrentPlan
-                    ? 'border-accent shadow-[0_0_20px_hsl(var(--accent)/0.25)] ring-1 ring-accent/30'
-                    : isActive
-                      ? 'border-primary/50 shadow-[0_0_24px_hsl(var(--primary)/0.2)]'
-                      : 'border-border/30 shadow-lg',
-                )}
-              >
-                {/* Animated glow border overlay */}
+              <Card className={cn(
+                'relative overflow-hidden transition-all duration-300',
+                'bg-[hsl(225,45%,4%)] border',
+                isCurrentPlan ? 'border-accent shadow-[0_0_20px_hsl(var(--accent)/0.25)] ring-1 ring-accent/30'
+                  : isActive ? 'border-primary/50 shadow-[0_0_24px_hsl(var(--primary)/0.2)]'
+                  : 'border-border/30 shadow-lg',
+              )}>
                 {isActive && (
                   <div className={cn(
                     'absolute -inset-px rounded-xl pointer-events-none',
-                    isCurrentPlan
-                      ? 'bg-gradient-to-b from-accent/25 via-transparent to-accent/10'
+                    isCurrentPlan ? 'bg-gradient-to-b from-accent/25 via-transparent to-accent/10'
                       : 'bg-gradient-to-b from-primary/20 via-transparent to-primary/8'
                   )} />
                 )}
-
-                {/* Subtle grid pattern */}
-                <div
-                  className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                  style={{
-                    backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
-                    backgroundSize: '24px 24px',
-                  }}
-                />
-
-                {/* Corner accent glow */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+                  backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+                  backgroundSize: '24px 24px',
+                }} />
                 <div className={cn(
                   'absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl pointer-events-none',
                   plan.id === 'basico' && 'bg-yellow-500/8',
@@ -127,11 +108,9 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                   plan.id === 'premium' && 'bg-blue-500/10',
                 )} />
 
-                {/* Current plan badge */}
                 {isCurrentPlan && (
                   <div className="absolute top-0 left-0 right-0 bg-accent text-accent-foreground text-center text-xs font-bold py-1 z-10 flex items-center justify-center gap-1">
-                    <Crown className="w-3 h-3" />
-                    Tu Plan Actual
+                    <Crown className="w-3 h-3" />{t('sub_current_plan')}
                   </div>
                 )}
 
@@ -143,13 +122,11 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                       plan.id === 'plus' && 'bg-primary/15 text-primary border-primary/30',
                       plan.id === 'premium' && 'bg-blue-500/15 text-blue-400 border-blue-500/30',
                     )}>
-                      <Zap className="w-3 h-3 mr-1" />
-                      {plan.name}
+                      <Zap className="w-3 h-3 mr-1" />{plan.name}
                     </Badge>
                     {plan.featured && (
                       <div className="flex items-center gap-1 text-accent text-xs font-medium">
-                        <Star className="w-3.5 h-3.5 fill-accent" />
-                        Popular
+                        <Star className="w-3.5 h-3.5 fill-accent" />{t('sub_popular')}
                       </div>
                     )}
                   </div>
@@ -167,7 +144,7 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                       ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceWeekly}
                     </span>
                     <span className="text-sm text-muted-foreground font-medium">
-                      /{billingPeriod === 'monthly' ? 'mes' : 'sem'}
+                      /{billingPeriod === 'monthly' ? t('sub_per_month') : t('sub_per_week')}
                     </span>
                   </div>
 
@@ -202,8 +179,7 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                   <div className="space-y-2">
                     {isCurrentPlan ? (
                       <Button disabled className="w-full font-semibold bg-accent/15 text-accent border border-accent/25">
-                        <Crown className="w-4 h-4 mr-1.5" />
-                        Plan Activo
+                        <Crown className="w-4 h-4 mr-1.5" />{t('sub_active_btn')}
                       </Button>
                     ) : (
                       <Button
@@ -216,16 +192,13 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
                           plan.id === 'premium' && 'bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 border border-blue-500/30',
                         )}
                       >
-                        {loadingPlan === plan.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
-                        ) : null}
-                        Suscribirme
+                        {loadingPlan === plan.id && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}
+                        {t('sub_subscribe')}
                       </Button>
                     )}
-
                     {plan.featured && !isCurrentPlan && (
                       <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary/10 text-xs shadow-[0_0_8px_hsl(var(--primary)/0.1)]">
-                        7 Días Gratis
+                        {t('sub_free_trial')}
                       </Button>
                     )}
                   </div>
@@ -237,34 +210,15 @@ export function PlanCarousel({ plans, billingPeriod, activeTier, onSubscribe }: 
       </motion.div>
 
       <div className="flex items-center gap-6 mt-4">
-        <button
-          onClick={() => goTo(activeIndex - 1)}
-          disabled={activeIndex === 0}
-          className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center text-foreground disabled:opacity-30 hover:bg-secondary transition-colors"
-        >
+        <button onClick={() => goTo(activeIndex - 1)} disabled={activeIndex === 0} className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center text-foreground disabled:opacity-30 hover:bg-secondary transition-colors">
           <ChevronLeft className="w-4 h-4" />
         </button>
-
         <div className="flex gap-2">
           {plans.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goTo(index)}
-              className={cn(
-                'h-2 rounded-full transition-all duration-300',
-                index === activeIndex
-                  ? 'bg-primary w-7'
-                  : 'bg-muted-foreground/25 w-2 hover:bg-muted-foreground/40'
-              )}
-            />
+            <button key={index} onClick={() => goTo(index)} className={cn('h-2 rounded-full transition-all duration-300', index === activeIndex ? 'bg-primary w-7' : 'bg-muted-foreground/25 w-2 hover:bg-muted-foreground/40')} />
           ))}
         </div>
-
-        <button
-          onClick={() => goTo(activeIndex + 1)}
-          disabled={activeIndex === plans.length - 1}
-          className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center text-foreground disabled:opacity-30 hover:bg-secondary transition-colors"
-        >
+        <button onClick={() => goTo(activeIndex + 1)} disabled={activeIndex === plans.length - 1} className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center text-foreground disabled:opacity-30 hover:bg-secondary transition-colors">
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
