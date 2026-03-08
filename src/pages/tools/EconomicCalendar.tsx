@@ -205,10 +205,10 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         {!isLoading && events.length > 0 && (
           <div className="grid grid-cols-4 gap-2">
             {[
-              { label: 'Total', value: stats.total, icon: CalendarDays, color: 'text-primary' },
-              { label: 'Alto', value: stats.high, icon: Zap, color: 'text-rose-400' },
-              { label: 'Medio', value: stats.medium, icon: AlertTriangle, color: 'text-amber-400' },
-              { label: 'Publicados', value: stats.withActual, icon: BarChart3, color: 'text-emerald-400' },
+              { label: t('ec_total'), value: stats.total, icon: CalendarDays, color: 'text-primary' },
+              { label: t('ec_high'), value: stats.high, icon: Zap, color: 'text-rose-400' },
+              { label: t('ec_medium'), value: stats.medium, icon: AlertTriangle, color: 'text-amber-400' },
+              { label: t('ec_published'), value: stats.withActual, icon: BarChart3, color: 'text-emerald-400' },
             ].map(s => (
               <Card key={s.label} className="bg-card border-border">
                 <CardContent className="p-3 text-center">
