@@ -299,7 +299,7 @@ export default function CreateSignal() {
 
   const handleGenerateNotes = async () => {
     if (!isValid) {
-      toast.error('Completa los campos de precio antes de generar notas');
+      toast.error(t('cs_fill_prices'));
       return;
     }
     setGeneratingNotes(true);
