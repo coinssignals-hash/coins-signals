@@ -102,6 +102,7 @@ function AnimatedRoutes() {
           
           <Route path="/ai-center" element={<SubscriptionGate requiredTier="plus" featureName="Centro de IA"><AICenter /></SubscriptionGate>} />
           <Route path="/stocks" element={<SubscriptionGate requiredTier="plus" featureName="Análisis de Acciones"><Stocks /></SubscriptionGate>} />
+          <Route path="/tools" element={<Tools />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

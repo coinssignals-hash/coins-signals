@@ -57,9 +57,11 @@ export function Header() {
               <Search className="w-4 h-4" />
             </Button>
             <NotificationToggle />
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
-              <BarChart3 className="w-4 h-4" />
-            </Button>
+            <Link to="/tools">
+              <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
+                <BarChart3 className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
 
