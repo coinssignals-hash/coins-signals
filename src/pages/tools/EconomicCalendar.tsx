@@ -508,7 +508,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             <CardContent className="p-3 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Los eventos de alto impacto pueden causar volatilidad significativa. Opera con precaución durante estos periodos.
+                {t('ec_volatility_warning')}
               </p>
             </CardContent>
           </Card>
