@@ -195,7 +195,7 @@ export default function Analysis() {
         {isReconnecting &&
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-xs animate-pulse">
             <WifiOff className="h-4 w-4 text-orange-500 shrink-0" />
-            <span className="text-orange-400">Reconectando... intento {reconnectAttempt}/5</span>
+            <span className="text-orange-400">{t('analysis_reconnecting')} {t('analysis_reconnecting_attempt')} {reconnectAttempt}/5</span>
           </div>
             }
 
