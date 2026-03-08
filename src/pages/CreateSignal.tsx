@@ -451,7 +451,7 @@ export default function CreateSignal() {
             {/* Price inputs */}
             <div className="space-y-4 mb-5">
               <div>
-                <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">Precio de Entrada</label>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t('cs_entry_price')}</label>
                 <input
                   type="number"
                   step="any"
