@@ -109,12 +109,13 @@ function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
 
 /* ─── Sentiment Distribution Bar ─── */
 function SentimentDistBar({ bullish, neutral, bearish }: { bullish: number; neutral: number; bearish: number }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2.5">
       {[
-        { label: 'Alcista', value: bullish, color: '#22c55e', icon: TrendingUp },
-        { label: 'Neutral', value: neutral, color: '#f59e0b', icon: Minus },
-        { label: 'Bajista', value: bearish, color: '#ef4444', icon: TrendingDown },
+        { label: t('analysis_ind_bullish'), value: bullish, color: '#22c55e', icon: TrendingUp },
+        { label: t('analysis_ind_neutral'), value: neutral, color: '#f59e0b', icon: Minus },
+        { label: t('analysis_ind_bearish'), value: bearish, color: '#ef4444', icon: TrendingDown },
       ].map((item) => (
         <div key={item.label} className="group">
           <div className="flex items-center justify-between mb-1">
