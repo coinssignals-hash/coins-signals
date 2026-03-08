@@ -161,12 +161,12 @@ export default function TradingJournal() {
     setSaving(false);
 
     if (error) {
-      toast({ title: 'Error', description: editingId ? 'No se pudo actualizar' : 'No se pudo guardar la operación', variant: 'destructive' });
+      toast({ title: 'Error', description: editingId ? t('journal_update_error') : t('journal_save_error'), variant: 'destructive' });
       console.error(error);
       return;
     }
 
-    toast({ title: editingId ? '✅ Operación actualizada' : '✅ Operación guardada' });
+    toast({ title: editingId ? t('journal_updated') : t('journal_saved') });
     resetForm();
     setShowForm(false);
     setEditingId(null);
