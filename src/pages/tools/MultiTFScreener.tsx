@@ -285,8 +285,8 @@ export default function MultiTFScreener() {
                         <thead>
                           <tr>
                             <th className="text-[9px] text-muted-foreground text-left pb-2 w-16">TF</th>
-                            {INDICATORS.map(ind => (
-                              <th key={ind} className="text-[9px] text-muted-foreground text-center pb-2">{ind}</th>
+                            {INDICATORS_KEYS.map(ind => (
+                              <th key={ind} className="text-[9px] text-muted-foreground text-center pb-2">{ind === 'mtf_trend' ? t('mtf_trend') : ind}</th>
                             ))}
                           </tr>
                         </thead>
