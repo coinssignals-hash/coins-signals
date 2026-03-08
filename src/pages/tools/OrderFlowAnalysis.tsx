@@ -105,14 +105,16 @@ export default function OrderFlowAnalysis() {
         </div>
 
         {/* Pair Selector */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="grid grid-cols-3 gap-2">
           {PAIRS.map(p => (
             <button
               key={p}
               onClick={() => setSelectedPair(p)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all',
-                selectedPair === p ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                'px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all border',
+                selectedPair === p
+                  ? 'bg-primary/15 border-primary text-primary shadow-sm shadow-primary/10'
+                  : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
               )}
             >
               {p}
