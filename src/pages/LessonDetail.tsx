@@ -256,11 +256,11 @@ export default function LessonDetail() {
               </div>
               <div className="text-center space-y-1">
                 <h3 className="text-base font-semibold text-foreground">{lesson.title}</h3>
-                <p className="text-xs text-muted-foreground">Material de lectura</p>
+                <p className="text-xs text-muted-foreground">{t('lesson_reading_material')}</p>
               </div>
               <Button variant="outline" size="sm" className="gap-2 text-xs border-rose-500/30 text-rose-400 hover:bg-rose-500/10">
                 <Download className="w-3.5 h-3.5" />
-                Descargar PDF
+                {t('lesson_download_pdf')}
               </Button>
             </div>
           </div>
