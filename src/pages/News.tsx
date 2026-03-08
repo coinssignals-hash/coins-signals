@@ -24,15 +24,8 @@ type NewsListItem = RealNewsItem;
 
 // Mini historical chart component with real data and tooltips
 function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoading?: boolean;}) {
+  const { t } = useTranslation();
   if (isLoading) {
-    return (
-      <div className="flex items-end gap-0.5 h-8">
-        {[1, 2, 3, 4, 5, 6].map((i) =>
-        <div key={i} className="flex-1 h-full bg-muted/30 rounded-t-sm animate-pulse" />
-        )}
-      </div>);
-
-  }
 
   const maxAbsValue = Math.max(...data.map((d) => Math.abs(d.impact)), 1);
 
