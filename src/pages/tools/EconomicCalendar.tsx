@@ -490,8 +490,8 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                   <Bell className={cn("w-4 h-4", config.enableCalendarAlerts ? "text-primary" : "text-muted-foreground")} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Alertas de Alto Impacto</p>
-                  <p className="text-[10px] text-muted-foreground">Notificación push 15 min antes</p>
+                  <p className="text-sm font-medium text-foreground">{t('ec_high_alerts')}</p>
+                  <p className="text-[10px] text-muted-foreground">{t('ec_push_before')}</p>
                 </div>
               </div>
               <Switch
