@@ -374,7 +374,7 @@ export default function CreateSignal() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold">
-            {editingSignal ? 'Editar Señal' : 'Panel Admin Señales'}
+            {editingSignal ? t('cs_edit_signal') : t('cs_admin_panel')}
           </h1>
         </div>
 
