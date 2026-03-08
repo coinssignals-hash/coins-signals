@@ -22,6 +22,7 @@ import { MarketSentimentDashboard } from "@/components/signals/MarketSentimentDa
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
+import { useTranslatedNotes } from "@/hooks/useTranslatedNotes";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
 import { TargetProgressBar } from "@/components/signals/TargetProgressBar";
