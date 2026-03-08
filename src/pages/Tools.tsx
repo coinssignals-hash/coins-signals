@@ -81,6 +81,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export default function Tools() {
+  const navigate = useNavigate();
   const [activeLevel, setActiveLevel] = useState<TraderLevel>('novato');
   const tools = TOOLS_BY_LEVEL[activeLevel];
 
