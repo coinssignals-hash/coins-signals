@@ -17,7 +17,8 @@ import {
   Loader2, LogIn, Pencil
 } from 'lucide-react';
 import { format, startOfWeek, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
 interface TradeEntry {
