@@ -165,7 +165,7 @@ function SignalChip({ name, signal, t }: { name: string; signal: string; t: (k: 
       </div>
       <div className="flex flex-col leading-none">
         <span className="text-[9px] text-gray-500 uppercase tracking-wider font-medium">{name}</span>
-        <span className={cn("text-[11px] font-bold", c.text)}>{c.label}</span>
+        <span className={cn("text-[11px] font-bold", c.text)}>{t(c.labelKey)}</span>
       </div>
     </motion.div>
   );
