@@ -38,6 +38,7 @@ const fadeUp = {
 
 export default function Courses() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('inicio');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const { isLessonCompleted, progress } = useCourseProgress();
