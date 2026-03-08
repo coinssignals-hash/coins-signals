@@ -11,7 +11,6 @@ import {
 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { useNavigate } from 'react-router-dom';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { TerminalStatusBar } from '@/components/analysis/TerminalStatusBar';
