@@ -109,9 +109,9 @@ export function PortfolioHistoryChart() {
     return (
       <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 text-center">
         <Calendar className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-        <h3 className="text-white font-medium mb-1">Sin datos históricos</h3>
+        <h3 className="text-white font-medium mb-1">{t('ph_no_history')}</h3>
         <p className="text-slate-400 text-sm">
-          Los snapshots se generan automáticamente al sincronizar tus brokers
+          {t('ph_no_history_desc')}
         </p>
       </div>
     );
