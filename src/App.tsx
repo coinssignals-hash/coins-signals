@@ -60,6 +60,7 @@ const MultiTFScreener = lazy(() => import("./pages/tools/MultiTFScreener"));
 const OrderFlowAnalysis = lazy(() => import("./pages/tools/OrderFlowAnalysis"));
 const BacktestPro = lazy(() => import("./pages/tools/BacktestPro"));
 const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCalendar"));
+const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
