@@ -49,6 +49,7 @@ function generatePatterns(): PatternResult[] {
 type FilterType = 'all' | 'bullish' | 'bearish' | 'neutral';
 
 export default function PatternScreener() {
+  const { t } = useTranslation();
   const [patterns, setPatterns] = useState<PatternResult[]>(generatePatterns);
   const [filter, setFilter] = useState<FilterType>('all');
   const [loading, setLoading] = useState(false);
