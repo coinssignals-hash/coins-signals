@@ -365,7 +365,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
               )}
             </div>
           ) : (
-            <span className="text-sm text-muted-foreground">Buscar divisas, Forex o Crypto...</span>
+            <span className="text-sm text-muted-foreground">{t('cf_search_placeholder')}</span>
           )}
         </div>
         <div className="flex items-center gap-2">
