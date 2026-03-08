@@ -82,7 +82,7 @@ export default function Portfolio() {
             </button>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Trading</span>
+                <span className="text-xs text-muted-foreground">{t('portfolio_trading')}</span>
               </div>
               <h1 className="text-xl font-bold text-foreground">{t('portfolio_title')}</h1>
             </div>
@@ -142,13 +142,13 @@ export default function Portfolio() {
                     <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center">
                       <Wallet className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Equity Total</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t('portfolio_equity')}</span>
                   </div>
                   <p className="text-2xl font-bold text-foreground tabular-nums">{formatCurrency(summary.total_equity)}</p>
                   <div className="flex items-center gap-3 text-xs">
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <BarChart3 className="w-3 h-3" />
-                      <span>En posiciones:</span>
+                      <span>{t('portfolio_in_positions')}</span>
                       <span className="text-foreground font-medium">{formatCurrency(totalInPositions)}</span>
                     </div>
                   </div>
@@ -186,20 +186,20 @@ export default function Portfolio() {
                 </>
               ) : (
                 <>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Posiciones</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t('portfolio_positions')}</span>
                   <p className="text-2xl font-bold text-foreground">{positionStats.total}</p>
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         <ArrowUpRight className="w-3 h-3 text-emerald-400" />
-                        <span className="text-[10px] text-emerald-400">Compra</span>
+                        <span className="text-[10px] text-emerald-400">{t('portfolio_buy')}</span>
                       </div>
                       <span className="text-xs font-semibold text-emerald-400">{positionStats.buys}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         <ArrowDownRight className="w-3 h-3 text-red-400" />
-                        <span className="text-[10px] text-red-400">Venta</span>
+                        <span className="text-[10px] text-red-400">{t('portfolio_sell')}</span>
                       </div>
                       <span className="text-xs font-semibold text-red-400">{positionStats.sells}</span>
                     </div>
@@ -217,7 +217,7 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.08 }}
           >
-            <h2 className="text-sm font-semibold text-primary mb-3">Historial</h2>
+            <h2 className="text-sm font-semibold text-primary mb-3">{t('portfolio_history')}</h2>
             <Card className="bg-card border-border">
               <CardContent className="p-3">
                 <PortfolioHistoryChart />
@@ -234,20 +234,20 @@ export default function Portfolio() {
             transition={{ duration: 0.25, delay: 0.16 }}
             className="grid grid-cols-2 gap-3"
           >
-            <DistributionCard
-              title="Por Broker"
-              items={accounts.filter(a => !a.error && a.equity > 0).map(a => ({
-                label: a.broker_name.replace(/\s*\(Demo\)\s*/i, ''),
-                value: a.equity,
-              }))}
-            />
-            <DistributionCard
-              title="Por Activo"
-              items={allPositions.filter(p => p.market_value > 0).map(p => ({
-                label: p.symbol,
-                value: Math.abs(p.market_value),
-              }))}
-            />
+             <DistributionCard
+               title={t('portfolio_by_broker')}
+               items={accounts.filter(a => !a.error && a.equity > 0).map(a => ({
+                 label: a.broker_name.replace(/\s*\(Demo\)\s*/i, ''),
+                 value: a.equity,
+               }))}
+             />
+             <DistributionCard
+               title={t('portfolio_by_asset')}
+               items={allPositions.filter(p => p.market_value > 0).map(p => ({
+                 label: p.symbol,
+                 value: Math.abs(p.market_value),
+               }))}
+             />
           </motion.div>
         )}
 
@@ -258,15 +258,15 @@ export default function Portfolio() {
               <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mx-auto mb-3">
                 <Wallet className="w-6 h-6 text-muted-foreground" />
               </div>
-              <h3 className="text-foreground font-medium mb-1 text-sm">No hay brokers conectados</h3>
-              <p className="text-muted-foreground text-xs mb-4">Conecta tu primer broker para ver tu portfolio</p>
-              <button
-                onClick={() => navigate('/link-broker')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full text-xs font-medium transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Vincular Broker
-              </button>
+               <h3 className="text-foreground font-medium mb-1 text-sm">{t('portfolio_no_brokers')}</h3>
+               <p className="text-muted-foreground text-xs mb-4">{t('portfolio_no_brokers_desc')}</p>
+               <button
+                 onClick={() => navigate('/link-broker')}
+                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full text-xs font-medium transition-colors"
+               >
+                 <Plus className="w-3.5 h-3.5" />
+                 {t('portfolio_link_broker')}
+               </button>
             </CardContent>
           </Card>
         )}
@@ -278,10 +278,10 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.24 }}
           >
-            <h2 className="text-sm font-semibold text-primary mb-3">
-              Posiciones Abiertas
-              <span className="text-muted-foreground font-normal ml-2 text-[10px]">{allPositions.length} activas</span>
-            </h2>
+             <h2 className="text-sm font-semibold text-primary mb-3">
+               {t('portfolio_open_positions')}
+               <span className="text-muted-foreground font-normal ml-2 text-[10px]">{allPositions.length} {t('portfolio_active')}</span>
+             </h2>
             <Card className="bg-card border-border">
               <CardContent className="p-0">
                 {allPositions.map((pos, i) => (
@@ -322,6 +322,7 @@ export default function Portfolio() {
 
 /* ── Position Row (Tools-style list item) ─────────────────────────────────── */
 function PositionRow({ position, isLast }: { position: Position & { broker: string }; isLast: boolean }) {
+  const { t } = useTranslation();
   const isPnlPositive = position.unrealized_pnl >= 0;
   const isBuy = position.side === 'long';
 
@@ -376,27 +377,27 @@ function PositionRow({ position, isLast }: { position: Position & { broker: stri
 
       {/* Row 2: Details grid */}
       <div className={cn("grid gap-2 mt-2", position.swap != null ? "grid-cols-3" : "grid-cols-5")}>
-        <DetailItem label="Valor" value={formatCurrency(position.market_value)} />
-        <DetailItem label="Lote" value={position.quantity.toString()} />
-        <DetailItem label="Entrada" value={`$${position.average_entry_price.toFixed(position.average_entry_price < 10 ? 4 : 2)}`} />
+        <DetailItem label={t('portfolio_value')} value={formatCurrency(position.market_value)} />
+        <DetailItem label={t('portfolio_lot')} value={position.quantity.toString()} />
+        <DetailItem label={t('portfolio_entry')} value={`$${position.average_entry_price.toFixed(position.average_entry_price < 10 ? 4 : 2)}`} />
         <DetailItem
-          label="Actual"
+          label={t('portfolio_current')}
           value={`$${position.current_price.toFixed(position.current_price < 10 ? 4 : 2)}`}
           valueColor="text-foreground"
         />
         <DetailItem
-          label={position.commission != null ? 'Comisión' : 'Spread'}
+          label={position.commission != null ? t('portfolio_commission') : t('portfolio_spread')}
           value={position.commission != null
             ? `$${position.commission.toFixed(2)}`
             : position.spread != null
-              ? `${position.spread} pips`
+              ? `${position.spread} ${t('portfolio_pips')}`
               : '—'
           }
           valueColor="text-amber-400"
         />
         {position.swap != null && (
           <DetailItem
-            label="Swap"
+            label={t('portfolio_swap')}
             value={`${position.swap >= 0 ? '+' : ''}$${position.swap.toFixed(2)}`}
             valueColor={position.swap >= 0 ? 'text-primary' : 'text-amber-400'}
           />
