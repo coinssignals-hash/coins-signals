@@ -9,12 +9,13 @@ import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info
 import { useMultiTFScreener, ALL_AVAILABLE_PAIRS, loadSavedPairs, savePairs, type PairAnalysis, type CurrencyStrength } from '@/hooks/useMultiTFScreener';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
 
 const TIMEFRAMES: Timeframe[] = ['M5', 'M15', 'H1', 'H4', 'D1', 'W1'];
-const INDICATORS = ['Tendencia', 'RSI', 'MACD', 'EMA', 'Bollinger'];
+const INDICATORS_KEYS = ['mtf_trend', 'RSI', 'MACD', 'EMA', 'Bollinger'];
 
 const SignalIcon = ({ signal, size = 'sm' }: { signal: Signal; size?: 'sm' | 'md' }) => {
   const cls = size === 'md' ? 'w-4 h-4' : 'w-3 h-3';
@@ -57,13 +58,14 @@ const PairCardSkeleton = () => (
   </Card>
 );
 
-const PAIR_CATEGORIES: Record<string, string[]> = {
-  'Majors': ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'USD/CAD'],
-  'Crosses': ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CHF/JPY', 'EUR/AUD', 'GBP/AUD', 'EUR/CAD', 'GBP/CAD', 'AUD/CAD', 'AUD/NZD', 'EUR/NZD', 'GBP/NZD'],
-  'Metales': ['XAU/USD', 'XAG/USD'],
+const PAIR_CATEGORIES_KEYS: Record<string, { key: string; pairs: string[] }> = {
+  'Majors': { key: 'Majors', pairs: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'USD/CAD'] },
+  'Crosses': { key: 'Crosses', pairs: ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CHF/JPY', 'EUR/AUD', 'GBP/AUD', 'EUR/CAD', 'GBP/CAD', 'AUD/CAD', 'AUD/NZD', 'EUR/NZD', 'GBP/NZD'] },
+  'mtf_metals': { key: 'mtf_metals', pairs: ['XAU/USD', 'XAG/USD'] },
 };
 
 export default function MultiTFScreener() {
+  const { t } = useTranslation();
   const { data, currencyStrength, loading, error, fetchData } = useMultiTFScreener();
   const [expandedPair, setExpandedPair] = useState<string | null>(null);
   const [filterBias, setFilterBias] = useState<Signal | 'all'>('all');
@@ -128,12 +130,12 @@ export default function MultiTFScreener() {
               </SheetTrigger>
               <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle className="text-foreground">Personalizar pares</SheetTitle>
+                  <SheetTitle className="text-foreground">{t('mtf_customize_pairs')}</SheetTitle>
                 </SheetHeader>
                 <div className="space-y-4 mt-4">
-                  {Object.entries(PAIR_CATEGORIES).map(([category, pairs]) => (
-                    <div key={category}>
-                      <p className="text-xs font-semibold text-muted-foreground mb-2">{category}</p>
+                  {Object.entries(PAIR_CATEGORIES_KEYS).map(([key, { key: catKey, pairs }]) => (
+                    <div key={key}>
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">{catKey === 'mtf_metals' ? t('mtf_metals') : catKey}</p>
                       <div className="grid grid-cols-3 gap-1.5">
                         {pairs.map(pair => {
                           const active = selectedPairs.includes(pair);
@@ -157,7 +159,7 @@ export default function MultiTFScreener() {
                     </div>
                   ))}
                   <Button className="w-full" onClick={applyAndClose}>
-                    Analizar {selectedPairs.length} pares
+                    {t('mtf_analyze_pairs').replace('{count}', String(selectedPairs.length))}
                   </Button>
                 </div>
               </SheetContent>
@@ -171,10 +173,10 @@ export default function MultiTFScreener() {
         {/* Bias Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
           {([
-            { id: 'all', label: 'Todos' },
-            { id: 'bullish', label: '🟢 Alcista' },
-            { id: 'bearish', label: '🔴 Bajista' },
-            { id: 'neutral', label: '⚪ Neutral' },
+            { id: 'all', label: t('mtf_all') },
+            { id: 'bullish', label: t('mtf_bullish') },
+            { id: 'bearish', label: t('mtf_bearish') },
+            { id: 'neutral', label: t('mtf_neutral') },
           ] as const).map(f => (
             <button
               key={f.id}
@@ -226,9 +228,9 @@ export default function MultiTFScreener() {
         {error && !loading && data.length === 0 && (
           <Card className="bg-card border-destructive/30">
             <CardContent className="p-4 text-center space-y-2">
-              <p className="text-sm text-destructive">Error al obtener datos del mercado</p>
+              <p className="text-sm text-destructive">{t('mtf_error')}</p>
               <p className="text-xs text-muted-foreground">{error}</p>
-              <Button size="sm" variant="outline" onClick={() => fetchData(true)}>Reintentar</Button>
+              <Button size="sm" variant="outline" onClick={() => fetchData(true)}>{t('mtf_retry')}</Button>
             </CardContent>
           </Card>
         )}
@@ -254,7 +256,7 @@ export default function MultiTFScreener() {
                     <div className="text-left">
                       <p className="text-sm font-bold text-foreground">{pair.pair}</p>
                       <p className="text-[10px] text-muted-foreground capitalize">
-                        {pair.overallBias === 'bullish' ? 'Alcista' : pair.overallBias === 'bearish' ? 'Bajista' : 'Neutral'}
+                        {pair.overallBias === 'bullish' ? t('mtf_bullish_label') : pair.overallBias === 'bearish' ? t('mtf_bearish_label') : t('mtf_neutral_label')}
                       </p>
                     </div>
                   </div>
@@ -271,7 +273,7 @@ export default function MultiTFScreener() {
                       )}>
                         {pair.confluence}%
                       </p>
-                      <p className="text-[9px] text-muted-foreground">Confluencia</p>
+                      <p className="text-[9px] text-muted-foreground">{t('mtf_confluence')}</p>
                     </div>
                   </div>
                 </button>
@@ -283,8 +285,8 @@ export default function MultiTFScreener() {
                         <thead>
                           <tr>
                             <th className="text-[9px] text-muted-foreground text-left pb-2 w-16">TF</th>
-                            {INDICATORS.map(ind => (
-                              <th key={ind} className="text-[9px] text-muted-foreground text-center pb-2">{ind}</th>
+                            {INDICATORS_KEYS.map(ind => (
+                              <th key={ind} className="text-[9px] text-muted-foreground text-center pb-2">{ind === 'mtf_trend' ? t('mtf_trend') : ind}</th>
                             ))}
                           </tr>
                         </thead>
@@ -312,9 +314,9 @@ export default function MultiTFScreener() {
                       </table>
                     </div>
                     <div className="flex gap-3 mt-3 text-[9px] text-muted-foreground">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Alcista</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" /> Bajista</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-muted-foreground/40" /> Neutral</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> {t('mtf_bullish_label')}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" /> {t('mtf_bearish_label')}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-muted-foreground/40" /> {t('mtf_neutral_label')}</span>
                     </div>
                   </div>
                 )}
@@ -328,7 +330,7 @@ export default function MultiTFScreener() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Datos en tiempo real de Yahoo Finance. Analiza la confluencia de indicadores técnicos (RSI, MACD, EMA, Bollinger) en 6 temporalidades. Caché de 5 minutos.
+                {t('mtf_info')}
               </p>
             </div>
           </CardContent>

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { SignalCardCompact } from '@/components/signals/SignalCardCompact';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const POPULAR_PAIRS = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'NZD/USD', 'USD/CAD',
@@ -40,6 +41,7 @@ interface Signal {
 export default function CreateSignal() {
   const navigate = useNavigate();
   const { isAdmin, loading: roleLoading } = useUserRole();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('create');
 
   // Create form state
@@ -159,10 +161,10 @@ export default function CreateSignal() {
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
 
-      toast.success(`Señal ${action} ${currencyPair} creada`);
+      toast.success(t('cs_signal_created').replace('{action}', action).replace('{pair}', currencyPair));
       resetForm();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al crear señal');
+      toast.error(err instanceof Error ? err.message : t('cs_error_create'));
     } finally {
       setLoading(false);
     }
@@ -170,7 +172,7 @@ export default function CreateSignal() {
 
   const handleCloseSignal = async (signalId: string) => {
     if (!closePrice) {
-      toast.error('Ingresa el precio de cierre');
+      toast.error(t('cs_enter_close'));
       return;
     }
     setLoading(true);
@@ -185,12 +187,12 @@ export default function CreateSignal() {
         .eq('id', signalId);
 
       if (error) throw error;
-      toast.success('Señal cerrada correctamente');
+      toast.success(t('cs_signal_closed'));
       setClosingSignalId(null);
       setClosePrice('');
       fetchActiveSignals();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al cerrar señal');
+      toast.error(err instanceof Error ? err.message : t('cs_error_close'));
     } finally {
       setLoading(false);
     }
@@ -220,12 +222,12 @@ export default function CreateSignal() {
         .eq('id', editingSignal.id);
 
       if (error) throw error;
-      toast.success('Señal actualizada');
+      toast.success(t('cs_signal_updated'));
       resetForm();
       setActiveTab('manage');
       fetchActiveSignals();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al actualizar');
+      toast.error(err instanceof Error ? err.message : t('cs_error_update'));
     } finally {
       setLoading(false);
     }
@@ -286,10 +288,10 @@ export default function CreateSignal() {
       });
 
       URL.revokeObjectURL(url);
-      toast.success('Gráfico descargado en HD');
+      toast.success(t('cs_chart_downloaded'));
     } catch (err) {
       console.error('Chart download error:', err);
-      toast.error('Error al descargar el gráfico');
+      toast.error(t('cs_chart_error'));
     } finally {
       setDownloadingChart(false);
     }
@@ -297,7 +299,7 @@ export default function CreateSignal() {
 
   const handleGenerateNotes = async () => {
     if (!isValid) {
-      toast.error('Completa los campos de precio antes de generar notas');
+      toast.error(t('cs_fill_prices'));
       return;
     }
     setGeneratingNotes(true);
@@ -324,10 +326,10 @@ export default function CreateSignal() {
       if (data?.error) throw new Error(data.error);
       if (data?.notes) {
         setNotes(data.notes);
-        toast.success('Notas generadas con IA');
+        toast.success(t('cs_notes_generated'));
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al generar notas');
+      toast.error(err instanceof Error ? err.message : t('cs_error_notes'));
     } finally {
       setGeneratingNotes(false);
     }
@@ -348,15 +350,15 @@ export default function CreateSignal() {
       <PageShell showBottomNav={false}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center gap-4">
           <ShieldAlert className="w-16 h-16 text-destructive/60" />
-          <h2 className="text-xl font-bold text-foreground">Acceso Restringido</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('cs_restricted')}</h2>
           <p className="text-muted-foreground text-sm max-w-xs">
-            Solo los administradores pueden crear señales de trading.
+            {t('cs_restricted_desc')}
           </p>
           <button
             onClick={() => navigate('/signals')}
             className="mt-4 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition-all"
           >
-            Volver a Señales
+            {t('cs_back_signals')}
           </button>
         </div>
       </PageShell>
@@ -372,7 +374,7 @@ export default function CreateSignal() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl font-bold">
-            {editingSignal ? 'Editar Señal' : 'Panel Admin Señales'}
+            {editingSignal ? t('cs_edit_signal') : t('cs_admin_panel')}
           </h1>
         </div>
 
@@ -380,18 +382,18 @@ export default function CreateSignal() {
           <TabsList className="w-full mb-6 bg-card/60">
             <TabsTrigger value="create" className="flex-1 gap-2">
               <Send className="w-4 h-4" />
-              {editingSignal ? 'Editando' : 'Crear'}
+              {editingSignal ? t('cs_editing') : t('cs_create')}
             </TabsTrigger>
             <TabsTrigger value="manage" className="flex-1 gap-2">
               <List className="w-4 h-4" />
-              Gestionar
+              {t('cs_manage')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="create">
             {/* Quick pair selector */}
             <div className="mb-5">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Par / Activo</label>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">{t('cs_pair_asset')}</label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {POPULAR_PAIRS.map((pair) => (
                   <button
@@ -411,7 +413,7 @@ export default function CreateSignal() {
                 type="text"
                 value={currencyPair}
                 onChange={(e) => setCurrencyPair(e.target.value.toUpperCase())}
-                placeholder="O escribe el par..."
+                placeholder={t('cs_type_pair')}
                 disabled={!!editingSignal}
                 className="w-full bg-card/60 border border-border/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
               />
@@ -419,7 +421,7 @@ export default function CreateSignal() {
 
             {/* BUY / SELL selector */}
             <div className="mb-5">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Acción</label>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">{t('cs_action')}</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setAction('BUY')}
@@ -430,7 +432,7 @@ export default function CreateSignal() {
                   }`}
                 >
                   <TrendingUp className="w-4 h-4" />
-                  COMPRAR (BUY)
+                  {t('cs_buy')}
                 </button>
                 <button
                   onClick={() => setAction('SELL')}
@@ -441,7 +443,7 @@ export default function CreateSignal() {
                   }`}
                 >
                   <TrendingDown className="w-4 h-4" />
-                  VENDER (SELL)
+                  {t('cs_sell')}
                 </button>
               </div>
             </div>
@@ -449,7 +451,7 @@ export default function CreateSignal() {
             {/* Price inputs */}
             <div className="space-y-4 mb-5">
               <div>
-                <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">Precio de Entrada</label>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t('cs_entry_price')}</label>
                 <input
                   type="number"
                   step="any"
@@ -494,7 +496,7 @@ export default function CreateSignal() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-green-400/70 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" /> TP 2 <span className="text-muted-foreground">(opc.)</span>
+                    <TrendingUp className="w-3 h-3" /> TP 2 <span className="text-muted-foreground">({t('cs_optional')})</span>
                   </label>
                   <input
                     type="number"
@@ -507,7 +509,7 @@ export default function CreateSignal() {
                 </div>
                 <div>
                   <label className="text-xs text-green-400/70 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" /> TP 3 <span className="text-muted-foreground">(opc.)</span>
+                    <TrendingUp className="w-3 h-3" /> TP 3 <span className="text-muted-foreground">({t('cs_optional')})</span>
                   </label>
                   <input
                     type="number"
@@ -523,7 +525,7 @@ export default function CreateSignal() {
               {/* Support & Resistance */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-amber-400 uppercase tracking-wider mb-1.5 block">Soporte</label>
+                  <label className="text-xs text-amber-400 uppercase tracking-wider mb-1.5 block">{t('cs_support')}</label>
                   <input
                     type="number"
                     step="any"
@@ -534,7 +536,7 @@ export default function CreateSignal() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-blue-400 uppercase tracking-wider mb-1.5 block">Resistencia</label>
+                  <label className="text-xs text-blue-400 uppercase tracking-wider mb-1.5 block">{t('cs_resistance')}</label>
                   <input
                     type="number"
                     step="any"
@@ -550,7 +552,7 @@ export default function CreateSignal() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> Notas / Análisis
+                    <FileText className="w-3 h-3" /> {t('cs_notes_analysis')}
                   </label>
                   <button
                     type="button"
@@ -563,13 +565,13 @@ export default function CreateSignal() {
                     ) : (
                       <Sparkles className="w-3 h-3" />
                     )}
-                    {generatingNotes ? 'Generando...' : 'Generar con IA'}
+                    {generatingNotes ? t('cs_generating') : t('cs_generate_ai')}
                   </button>
                 </div>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Justificación del trade, confluencias técnicas, contexto fundamental..."
+                  placeholder={t('cs_notes_placeholder')}
                   rows={3}
                   maxLength={500}
                   className="w-full bg-card/60 border border-border/40 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -586,12 +588,12 @@ export default function CreateSignal() {
                   className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all bg-card/80 border border-border/40 hover:bg-card text-foreground"
                 >
                   {showCardPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  {showCardPreview ? 'Ocultar vista previa' : 'Vista previa de tarjeta'}
+                  {showCardPreview ? t('cs_hide_preview') : t('cs_show_preview')}
                 </button>
 
                 {showCardPreview && (
                   <div className="space-y-3">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest text-center">Así se verá la señal</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest text-center">{t('cs_preview_label')}</p>
                     <SignalCardCompact
                       signal={{
                         id: 'preview',
@@ -608,7 +610,7 @@ export default function CreateSignal() {
                     />
                     <div className="bg-card/60 border border-border/30 rounded-xl p-3 grid grid-cols-3 gap-2 text-center text-xs">
                       <div>
-                        <p className="text-muted-foreground">Probabilidad</p>
+                        <p className="text-muted-foreground">{t('cs_probability')}</p>
                         <p className="text-primary font-bold text-sm">{calculateProbability()}%</p>
                       </div>
                       <div>
@@ -616,7 +618,7 @@ export default function CreateSignal() {
                         <p className="text-foreground font-bold text-sm">1:{(Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(1)}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Tendencia</p>
+                        <p className="text-muted-foreground">{t('cs_trend')}</p>
                         <p className={`font-bold text-sm ${isBuy ? 'text-emerald-400' : 'text-rose-400'}`}>{trend}</p>
                       </div>
                     </div>
@@ -635,7 +637,7 @@ export default function CreateSignal() {
                 >
                   {downloadingChart ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   <Image className="w-4 h-4" />
-                  Descargar gráfico 7 días (HD)
+                  {t('cs_download_chart')}
                 </button>
               </div>
             )}
@@ -647,7 +649,7 @@ export default function CreateSignal() {
                   onClick={() => resetForm()}
                   className="flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 bg-card border border-border/40 text-muted-foreground hover:bg-card/80"
                 >
-                  <X className="w-4 h-4" /> Cancelar
+                  <X className="w-4 h-4" /> {t('cs_cancel')}
                 </button>
                 <button
                   onClick={handleUpdateSignal}
@@ -655,7 +657,7 @@ export default function CreateSignal() {
                   className="flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/30"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  Guardar Cambios
+                  {t('cs_save_changes')}
                 </button>
               </div>
             ) : (
@@ -665,7 +667,7 @@ export default function CreateSignal() {
                 className="w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all disabled:opacity-40 bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/30"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                Crear Señal
+                {t('cs_create_signal')}
               </button>
             )}
           </TabsContent>
@@ -673,13 +675,13 @@ export default function CreateSignal() {
           <TabsContent value="manage">
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground">Señales activas</p>
+                <p className="text-sm text-muted-foreground">{t('cs_active_signals')}</p>
                 <button
                   onClick={fetchActiveSignals}
                   disabled={loadingSignals}
                   className="text-xs text-primary hover:underline"
                 >
-                  {loadingSignals ? 'Cargando...' : 'Refrescar'}
+                  {loadingSignals ? t('cs_loading') : t('cs_refresh')}
                 </button>
               </div>
 
@@ -689,7 +691,7 @@ export default function CreateSignal() {
                 </div>
               ) : activeSignals.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground text-sm">
-                  No hay señales activas
+                  {t('cs_no_active')}
                 </div>
               ) : (
                 activeSignals.map((signal) => (
@@ -732,7 +734,7 @@ export default function CreateSignal() {
                     {closingSignalId === signal.id ? (
                       <div className="space-y-3 pt-2 border-t border-border/30">
                         <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">Precio de cierre</label>
+                          <label className="text-xs text-muted-foreground mb-1 block">{t('cs_close_price')}</label>
                           <input
                             type="number"
                             step="any"
@@ -764,14 +766,14 @@ export default function CreateSignal() {
                             onClick={() => { setClosingSignalId(null); setClosePrice(''); }}
                             className="flex-1 py-2 rounded-lg text-xs font-semibold bg-card text-muted-foreground border border-border/40"
                           >
-                            Cancelar
+                            {t('cs_cancel')}
                           </button>
                           <button
                             onClick={() => handleCloseSignal(signal.id)}
                             disabled={loading}
                             className="flex-1 py-2 rounded-lg text-xs font-semibold bg-primary text-primary-foreground"
                           >
-                            {loading ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : 'Confirmar cierre'}
+                            {loading ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : t('cs_confirm_close')}
                           </button>
                         </div>
                       </div>
@@ -781,13 +783,13 @@ export default function CreateSignal() {
                           onClick={() => startEditSignal(signal)}
                           className="flex-1 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 bg-card/80 border border-border/40 hover:bg-card text-foreground"
                         >
-                          <Save className="w-3 h-3" /> Editar
+                          <Save className="w-3 h-3" /> {t('cs_edit')}
                         </button>
                         <button
                           onClick={() => setClosingSignalId(signal.id)}
                           className="flex-1 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20"
                         >
-                          <XCircle className="w-3 h-3" /> Cerrar
+                          <XCircle className="w-3 h-3" /> {t('cs_close')}
                         </button>
                       </div>
                     )}
