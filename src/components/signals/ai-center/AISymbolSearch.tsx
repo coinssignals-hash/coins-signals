@@ -43,13 +43,13 @@ const TYPE_CONFIG: Record<string, { icon: typeof TrendingUp; color: string; bg: 
   'index': { icon: Globe, color: 'hsl(350, 70%, 55%)', bg: 'hsl(350, 50%, 12%)' },
 };
 
-function getTypeLabel(type: string): string {
-  const t = type?.toLowerCase() || '';
-  if (t === 'forex' || t === 'currency') return 'Forex';
-  if (t === 'cryptocurrency' || t === 'digital currency') return 'Crypto';
-  if (t === 'common stock' || t === 'equity') return 'Acción';
-  if (t === 'etf') return 'ETF';
-  if (t === 'index') return 'Índice';
+function getTypeLabel(type: string, t: (k: string) => string): string {
+  const tp = type?.toLowerCase() || '';
+  if (tp === 'forex' || tp === 'currency') return 'Forex';
+  if (tp === 'cryptocurrency' || tp === 'digital currency') return 'Crypto';
+  if (tp === 'common stock' || tp === 'equity') return t('ss_stock');
+  if (tp === 'etf') return 'ETF';
+  if (tp === 'index') return t('ss_index');
   return type || '—';
 }
 
