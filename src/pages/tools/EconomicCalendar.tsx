@@ -61,6 +61,7 @@ export default function EconomicCalendar() {
   const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [aiInsights, setAiInsights] = useState<Record<number, string>>({});
+  const { config, updateConfig, loaded: alertConfigLoaded } = useAlertConfig();
 
   const targetDate = useMemo(() => {
     const d = new Date();
