@@ -375,7 +375,7 @@ const generateMockEconomicEvents = (symbol: string): EconomicEvent[] => {
 // Analysis API Service
 export const analysisApi = {
   // Get full analysis for a symbol
-  async getFullAnalysis(symbol: string, currentPrice: number = 1.05): Promise<FullAnalysisData> {
+  async getFullAnalysis(symbol: string, currentPrice: number = 1.05, language?: string): Promise<FullAnalysisData> {
     if (API_CONFIG.useMockData) {
       return {
         symbol,
@@ -392,29 +392,29 @@ export const analysisApi = {
         economicEvents: generateMockEconomicEvents(symbol),
       };
     }
-    return fetchViaProxy<FullAnalysisData>('fullAnalysis', symbol, undefined, currentPrice);
+    return fetchViaProxy<FullAnalysisData>('fullAnalysis', symbol, undefined, currentPrice, language);
   },
 
   // Individual endpoints
-  async getSentiment(symbol: string): Promise<MarketSentimentData> {
+  async getSentiment(symbol: string, language?: string): Promise<MarketSentimentData> {
     if (API_CONFIG.useMockData) {
       return generateMockSentiment(symbol);
     }
-    return fetchViaProxy<MarketSentimentData>('sentiment', symbol);
+    return fetchViaProxy<MarketSentimentData>('sentiment', symbol, undefined, undefined, language);
   },
 
-  async getPrediction(symbol: string, currentPrice: number): Promise<PricePredictionData> {
+  async getPrediction(symbol: string, currentPrice: number, language?: string): Promise<PricePredictionData> {
     if (API_CONFIG.useMockData) {
       return generateMockPrediction(symbol, currentPrice);
     }
-    return fetchViaProxy<PricePredictionData>('prediction', symbol, undefined, currentPrice);
+    return fetchViaProxy<PricePredictionData>('prediction', symbol, undefined, currentPrice, language);
   },
 
-  async getTechnicalLevels(symbol: string, currentPrice: number): Promise<TechnicalLevelsData> {
+  async getTechnicalLevels(symbol: string, currentPrice: number, language?: string): Promise<TechnicalLevelsData> {
     if (API_CONFIG.useMockData) {
       return generateMockTechnicalLevels(symbol, currentPrice);
     }
-    return fetchViaProxy<TechnicalLevelsData>('technicalLevels', symbol, undefined, currentPrice);
+    return fetchViaProxy<TechnicalLevelsData>('technicalLevels', symbol, undefined, currentPrice, language);
   },
 
   async getPreviousDay(symbol: string, currentPrice: number): Promise<PreviousDayData> {
