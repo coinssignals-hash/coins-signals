@@ -914,9 +914,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <PopoverContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                       <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ {aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</p>
                       <p className="leading-relaxed mb-2">{aiStrategy?.confirmationCandle.explanation ?? "Vela con mecha larga y cuerpo pequeño que indica rechazo del precio en una zona clave."}</p>
-                      <img src={pinbarPattern} alt="Patrón de velas" className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
+                      <img src={pinbarPattern} alt={t('signal_candle_pattern')} className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
                       <div className="text-[10px] text-cyan-300/50 text-center">
-                        Buscar confluencia con niveles S/R y volumen
+                        {t('signal_sr_confluence')}
                       </div>
                     </PopoverContent>
                   </Popover>
