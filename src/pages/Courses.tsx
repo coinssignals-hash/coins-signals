@@ -95,7 +95,7 @@ export default function Courses() {
                       {t('courses_academy')}
                       <Sparkles className="w-4 h-4 text-amber-400" />
                     </h1>
-                    <p className="text-xs text-muted-foreground">{t('courses_subtitle')}</p>
+                    <p className="text-xs text-muted-foreground">{t('courses_master')}</p>
                   </div>
                 </div>
                 <div className="text-right">
