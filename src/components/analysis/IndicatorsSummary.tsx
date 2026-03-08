@@ -118,9 +118,9 @@ export function IndicatorsSummary({
     const overallSignal: 'buy' | 'sell' | 'neutral' = buyPts > sellPts + 1.5 ? 'buy' : sellPts > buyPts + 1.5 ? 'sell' : 'neutral';
     const overallStrength = total > 0 ? Math.round((Math.max(buyPts, sellPts) / total) * 100) : 50;
     result.push({
-      title: 'Señal General',
-      value: overallSignal === 'buy' ? 'COMPRA' : overallSignal === 'sell' ? 'VENTA' : 'NEUTRAL',
-      subValue: `Fuerza: ${overallStrength}%`,
+      title: t('analysis_ind_overall_signal'),
+      value: overallSignal === 'buy' ? t('analysis_ind_buy') : overallSignal === 'sell' ? t('analysis_ind_sell') : t('analysis_ind_neutral'),
+      subValue: `${t('analysis_ind_strength')}: ${overallStrength}%`,
       signal: overallSignal,
       strength: overallStrength,
       icon: overallSignal === 'buy' ? TrendingUp : overallSignal === 'sell' ? TrendingDown : Minus,

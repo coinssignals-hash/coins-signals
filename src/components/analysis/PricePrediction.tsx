@@ -109,7 +109,7 @@ export function PricePrediction({ symbol, currentPrice, realtimePrice }: PricePr
         </div>
 
         <div className="flex items-center gap-2 text-xs text-gray-400">
-          <span>Timeframe: {data.timeframe}</span>
+          <span>{t('analysis_pp_timeframe')}: {data.timeframe}</span>
           <span>•</span>
           <span>{t('analysis_last_update')}: {format(new Date(), 'HH:mm')}</span>
         </div>

@@ -138,7 +138,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       {calc.ratio < 1 && (
         <div className="flex items-center gap-1.5 text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-1.5">
           <AlertTriangle className="w-3 h-3 shrink-0" />
-          <span>Ratio desfavorable. Considera ajustar SL/TP para un ratio mínimo de 1:2.</span>
+          <span>{t('analysis_rr_warning')}</span>
         </div>
       )}
     </div>

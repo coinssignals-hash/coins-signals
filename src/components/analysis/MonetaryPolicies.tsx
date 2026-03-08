@@ -94,7 +94,7 @@ export function MonetaryPolicies({ symbol }: MonetaryPoliciesProps) {
                     <div className="pt-2 border-t border-border/30 space-y-1.5">
                       <div className="flex items-center gap-1.5">
                         <Newspaper className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Noticias recientes</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('analysis_mp_recent_news')}</span>
                       </div>
                       {policy.recentHeadlines.map((headline, i) => (
                         <div key={i} className="text-xs">

@@ -320,7 +320,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       {/* Footer info */}
       <div className="mt-2 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
         <p className="text-[10px] text-muted-foreground leading-relaxed">
-          Las alertas se envían como notificaciones push y dentro de la app.
+          {t('analysis_alert_footer')}
         </p>
       </div>
     </div>
