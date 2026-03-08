@@ -12,6 +12,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 const WIDGET_EXPANDED_KEY = 'portfolio-widget-expanded';
 
 export function PortfolioWidget() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const { summary, loading, error, isLive, accounts, getAllPositions } = usePortfolio();
   const { stats: historyStats, snapshots } = usePortfolioHistory('1W');
