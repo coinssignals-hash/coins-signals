@@ -456,7 +456,7 @@ export default function TradingJournal() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Precio Entrada</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_entry_price')}</Label>
                   <Input type="number" step="0.00001" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="1.08500" className="bg-secondary border-border text-foreground" />
                 </div>
                 <div className="space-y-1.5">
