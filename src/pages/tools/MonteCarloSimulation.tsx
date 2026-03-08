@@ -157,40 +157,40 @@ export default function MonteCarloSimulation() {
         {/* Parameters */}
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Parámetros de Estrategia</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('tp_monte_carlo_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Capital Inicial ($)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_initial_capital')}</Label>
                 <Input type="number" value={capital} onChange={e => setCapital(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Win Rate (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_win_rate')}</Label>
                 <Input type="number" value={winRate} onChange={e => setWinRate(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Ratio Ganancia (R)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_gain_ratio')}</Label>
                 <Input type="number" step="0.1" value={avgWin} onChange={e => setAvgWin(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Ratio Pérdida (R)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_loss_ratio')}</Label>
                 <Input type="number" step="0.1" value={avgLoss} onChange={e => setAvgLoss(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Trades/Mes</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_trades_month')}</Label>
                 <Input type="number" value={tradesPerMonth} onChange={e => setTradesPerMonth(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Meses</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_months')}</Label>
                 <Input type="number" value={months} onChange={e => setMonths(+e.target.value)} className="mt-1" />
               </div>
               <div className="col-span-2">
-                <Label className="text-xs text-muted-foreground">Riesgo por Trade (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_risk_per_trade')}</Label>
                 <Input type="number" step="0.5" value={riskPerTrade} onChange={e => setRiskPerTrade(+e.target.value)} className="mt-1" />
               </div>
             </div>
             <Button onClick={handleRun} disabled={running} className="w-full gap-2">
               <Play className="w-4 h-4" />
-              {running ? 'Simulando...' : `Ejecutar ${simulations} Simulaciones`}
+              {running ? t('tp_simulating') : t('tp_run_simulations').replace('{count}', String(simulations))}
             </Button>
           </CardContent>
         </Card>
