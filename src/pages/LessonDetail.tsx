@@ -15,6 +15,7 @@ import {
   Download, MessageCircle, ThumbsUp, Play, BookOpen, Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Lesson { id: string; title: string; duration: string; }
 
