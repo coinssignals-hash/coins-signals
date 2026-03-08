@@ -73,6 +73,7 @@ function SourceBar({
 }
 
 function FlowComparison({ retail, institutional, detail }: {retail: number;institutional: number;detail: string;}) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
