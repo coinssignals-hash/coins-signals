@@ -34,8 +34,8 @@ const LEVELS: { id: TraderLevel; label: string; icon: typeof GraduationCap }[] =
 const TOOLS_BY_LEVEL: Record<TraderLevel, ToolItem[]> = {
   novato: [
     { id: 'pip-calc', title: 'Calculadora de Pips', description: 'Calcula el valor de pips para cualquier par de divisas', icon: DollarSign, category: 'calculadoras', status: 'available', route: '/tools/pip-calculator' },
-    { id: 'lot-calc', title: 'Calculadora de Lotes', description: 'Determina el tamaño de lote ideal según tu capital', icon: Calculator, category: 'calculadoras', status: 'available' },
-    { id: 'margin-calc', title: 'Calculadora de Margen', description: 'Calcula el margen requerido para abrir posiciones', icon: Percent, category: 'calculadoras', status: 'available' },
+    { id: 'lot-calc', title: 'Calculadora de Lotes', description: 'Determina el tamaño de lote ideal según tu capital', icon: Calculator, category: 'calculadoras', status: 'available', route: '/tools/lot-calculator' },
+    { id: 'margin-calc', title: 'Calculadora de Margen', description: 'Calcula el margen requerido para abrir posiciones', icon: Percent, category: 'calculadoras', status: 'available', route: '/tools/margin-calculator' },
     { id: 'eco-calendar-basic', title: 'Calendario Económico', description: 'Eventos de alto impacto con alertas básicas', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/economic-calendar' },
     { id: 'trade-journal-basic', title: 'Diario de Trading Básico', description: 'Registra tus operaciones con notas simples', icon: BookOpen, category: 'diario', status: 'available' },
     { id: 'trend-scanner', title: 'Escáner de Tendencias', description: 'Identifica la dirección general del mercado', icon: TrendingUp, category: 'screeners', status: 'available' },

@@ -43,6 +43,8 @@ const Tools = lazy(() => import("./pages/Tools"));
 const PipCalculator = lazy(() => import("./pages/tools/PipCalculator"));
 const EconomicCalendar = lazy(() => import("./pages/tools/EconomicCalendar"));
 const RsiMacdScreener = lazy(() => import("./pages/tools/RsiMacdScreener"));
+const LotCalculator = lazy(() => import("./pages/tools/LotCalculator"));
+const MarginCalculator = lazy(() => import("./pages/tools/MarginCalculator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -109,6 +111,8 @@ function AnimatedRoutes() {
           <Route path="/tools/pip-calculator" element={<PipCalculator />} />
           <Route path="/tools/economic-calendar" element={<EconomicCalendar />} />
           <Route path="/tools/rsi-macd-screener" element={<RsiMacdScreener />} />
+          <Route path="/tools/lot-calculator" element={<LotCalculator />} />
+          <Route path="/tools/margin-calculator" element={<MarginCalculator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
