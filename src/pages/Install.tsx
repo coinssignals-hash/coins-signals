@@ -117,14 +117,14 @@ export default function Install() {
             {platform === 'ios' && (
               <InstructionCard
                 emoji="🍎"
-                title="Instrucciones para iPhone"
+                title={t('inst_ios_title')}
                 accentClass="bg-muted"
                 steps={[
-                  { icon: <Share className="w-4 h-4" />, title: 'Toca el botón Compartir', desc: 'En la barra inferior de Safari, toca el ícono de compartir (cuadrado con flecha)' },
-                  { icon: <Plus className="w-4 h-4" />, title: '"Añadir a pantalla de inicio"', desc: 'Desliza hacia abajo en el menú y busca la opción con el ícono +' },
-                  { icon: <Download className="w-4 h-4" />, title: 'Confirma tocando "Añadir"', desc: 'El ícono aparecerá en tu pantalla de inicio' },
+                  { icon: <Share className="w-4 h-4" />, title: t('inst_ios_step1'), desc: t('inst_ios_step1_desc') },
+                  { icon: <Plus className="w-4 h-4" />, title: t('inst_ios_step2'), desc: t('inst_ios_step2_desc') },
+                  { icon: <Download className="w-4 h-4" />, title: t('inst_ios_step3'), desc: t('inst_ios_step3_desc') },
                 ]}
-                note="Asegúrate de estar usando Safari. Chrome y otros navegadores no permiten instalar apps en iOS."
+                note={t('inst_ios_note')}
               />
             )}
 
