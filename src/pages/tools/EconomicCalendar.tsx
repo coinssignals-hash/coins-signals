@@ -299,7 +299,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           <Card className="bg-card border-border">
             <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              <p className="text-xs text-muted-foreground">Cargando eventos económicos...</p>
+              <p className="text-xs text-muted-foreground">{t('ec_loading')}</p>
             </CardContent>
           </Card>
         ) : filtered.length === 0 ? (
