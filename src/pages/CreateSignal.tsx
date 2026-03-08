@@ -161,7 +161,7 @@ export default function CreateSignal() {
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
 
-      toast.success(`Señal ${action} ${currencyPair} creada`);
+      toast.success(t('cs_signal_created').replace('{action}', action).replace('{pair}', currencyPair));
       resetForm();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Error al crear señal');
