@@ -37,7 +37,7 @@ const SavedNews = () => {
             </Link>
             <div className="flex items-center gap-2">
               <Archive className="w-5 h-5 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">Noticias Guardadas</h1>
+              <h1 className="text-xl font-bold text-foreground">{t('saved_title')}</h1>
             </div>
           </div>
           
