@@ -21,6 +21,7 @@ interface ToolItem {
   category: 'calculadoras' | 'calendario' | 'screeners' | 'diario';
   status: 'available' | 'coming_soon';
   accent: string;
+  route?: string;
 }
 
 const LEVELS: { id: TraderLevel; label: string; icon: typeof GraduationCap; color: string }[] = [
