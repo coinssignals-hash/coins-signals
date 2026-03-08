@@ -65,6 +65,7 @@ const PAIR_CATEGORIES_KEYS: Record<string, { key: string; pairs: string[] }> = {
 };
 
 export default function MultiTFScreener() {
+  const { t } = useTranslation();
   const { data, currencyStrength, loading, error, fetchData } = useMultiTFScreener();
   const [expandedPair, setExpandedPair] = useState<string | null>(null);
   const [filterBias, setFilterBias] = useState<Signal | 'all'>('all');
