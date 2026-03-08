@@ -61,6 +61,7 @@ function estimateSpread(symbol: string): { spread: number; unit: string } {
 }
 
 export function TerminalStatusBar({ symbol, currentPrice, high, low, isRealtimeConnected }: TerminalStatusBarProps) {
+  const { t } = useTranslation();
   const sessions = useMemo(() => getActiveMarketSessions(), []);
   const activeSessions = sessions.filter(s => s.isActive);
   const { spread, unit } = useMemo(() => estimateSpread(symbol), [symbol]);
