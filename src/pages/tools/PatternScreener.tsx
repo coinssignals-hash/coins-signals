@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, CandlestickChart, RefreshCw, TrendingUp, TrendingDown, Info, Clock, Zap, Eye } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface PatternResult {
   pair: string;
