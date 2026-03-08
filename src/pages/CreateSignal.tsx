@@ -509,7 +509,7 @@ export default function CreateSignal() {
                 </div>
                 <div>
                   <label className="text-xs text-green-400/70 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" /> TP 3 <span className="text-muted-foreground">(opc.)</span>
+                    <TrendingUp className="w-3 h-3" /> TP 3 <span className="text-muted-foreground">({t('cs_optional')})</span>
                   </label>
                   <input
                     type="number"
