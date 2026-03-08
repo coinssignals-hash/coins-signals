@@ -691,7 +691,7 @@ export default function CreateSignal() {
                 </div>
               ) : activeSignals.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground text-sm">
-                  No hay señales activas
+                  {t('cs_no_active')}
                 </div>
               ) : (
                 activeSignals.map((signal) => (
