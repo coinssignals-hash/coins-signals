@@ -511,7 +511,7 @@ export default function TradingJournal() {
         <div>
           <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
-            Historial de Operaciones
+            {t('journal_history')}
           </h3>
 
           {entries.length === 0 ? (
