@@ -90,7 +90,7 @@ const SavedNews = () => {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              {cachedNews.length} {cachedNews.length === 1 ? 'noticia guardada' : 'noticias guardadas'}
+              {cachedNews.length} {cachedNews.length === 1 ? t('saved_count_one') : t('saved_count_many')}
             </p>
             
             <div className="space-y-3">
