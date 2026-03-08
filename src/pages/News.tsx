@@ -517,7 +517,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           </h3>
           {isTranslated &&
           <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
-              <Languages className="w-2.5 h-2.5" /> Traducido
+              <Languages className="w-2.5 h-2.5" /> {t('news_translated')}
             </span>
           }
         </Link>
