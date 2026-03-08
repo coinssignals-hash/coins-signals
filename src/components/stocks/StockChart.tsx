@@ -3,13 +3,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AreaChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart, Bar, Cell, BarChart } from 'recharts';
 import type { HistoricalPrice } from '@/hooks/useStockData';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const PERIODS = [
-  { value: '1w', label: '1S' },
+  { value: '1w', label: '1W' },
   { value: '1m', label: '1M' },
   { value: '3m', label: '3M' },
-  { value: '1y', label: '1A' },
-  { value: '5y', label: '5A' },
+  { value: '1y', label: '1Y' },
+  { value: '5y', label: '5Y' },
 ] as const;
 
 const OVERLAYS = [
@@ -54,6 +55,7 @@ interface StockChartProps {
 }
 
 export function StockChart({ data, loading, symbol, period, onPeriodChange }: StockChartProps) {
+  const { t } = useTranslation();
   const [activeOverlays, setActiveOverlays] = useState<Set<string>>(new Set());
 
   const toggleOverlay = (key: string) => {
@@ -97,7 +99,7 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
     return (
       <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4"
         style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
-        <p className="text-sm text-slate-500 text-center py-8">Sin datos históricos disponibles</p>
+        <p className="text-sm text-slate-500 text-center py-8">{t('stock_no_historical')}</p>
       </div>
     );
   }
@@ -115,7 +117,7 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
 
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-cyan-200">Histórico</h3>
+          <h3 className="text-sm font-semibold text-cyan-200">{t('stock_historical')}</h3>
           <div className="flex items-center gap-1">
             {PERIODS.map(p => (
               <button
@@ -134,7 +136,6 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
           </div>
         </div>
 
-        {/* Overlay toggles */}
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           {OVERLAYS.map(o => (
             <button
@@ -170,59 +171,27 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
                 <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => v?.slice(5)}
-              interval={tickInterval as any}
-            />
-            <YAxis
-              tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }}
-              tickLine={false}
-              axisLine={false}
-              domain={['auto', 'auto']}
-              tickFormatter={(v) => `$${v}`}
-            />
+            <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false}
+              tickFormatter={(v) => v?.slice(5)} interval={tickInterval as any} />
+            <YAxis tick={{ fontSize: 10, fill: 'hsl(210, 30%, 40%)' }} tickLine={false} axisLine={false}
+              domain={['auto', 'auto']} tickFormatter={(v) => `$${v}`} />
             <Tooltip
-              contentStyle={{
-                backgroundColor: 'hsl(220, 40%, 8%)',
-                border: '1px solid hsl(200, 60%, 25%)',
-                borderRadius: '8px',
-                fontSize: '11px',
-                color: 'white',
-              }}
+              contentStyle={{ backgroundColor: 'hsl(220, 40%, 8%)', border: '1px solid hsl(200, 60%, 25%)', borderRadius: '8px', fontSize: '11px', color: 'white' }}
               labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
               formatter={(value: number | null, name: string) => {
                 if (value == null) return ['-', name];
-                const labels: Record<string, string> = { price: 'Precio', sma20: 'SMA 20', sma50: 'SMA 50', ema12: 'EMA 12', ema26: 'EMA 26' };
+                const labels: Record<string, string> = { price: t('stock_price'), sma20: 'SMA 20', sma50: 'SMA 50', ema12: 'EMA 12', ema26: 'EMA 26' };
                 return [`$${value.toFixed(2)}`, labels[name] || name];
               }}
             />
-            <Area
-              type="monotone"
-              dataKey="price"
-              stroke={lineColor}
-              strokeWidth={2}
-              fill={`url(#${gradientId})`}
-            />
+            <Area type="monotone" dataKey="price" stroke={lineColor} strokeWidth={2} fill={`url(#${gradientId})`} />
             {OVERLAYS.map(o => activeOverlays.has(o.key) && (
-              <Line
-                key={o.key}
-                type="monotone"
-                dataKey={o.key}
-                stroke={o.color}
-                strokeWidth={1.5}
-                dot={false}
-                connectNulls={false}
-                strokeDasharray={o.key.startsWith('ema') ? '4 2' : undefined}
-              />
+              <Line key={o.key} type="monotone" dataKey={o.key} stroke={o.color} strokeWidth={1.5} dot={false}
+                connectNulls={false} strokeDasharray={o.key.startsWith('ema') ? '4 2' : undefined} />
             ))}
           </ComposedChart>
         </ResponsiveContainer>
 
-        {/* Volume chart */}
         <div className="mt-1 border-t border-cyan-800/15 pt-1">
           <div className="text-[10px] text-slate-500 mb-0.5 pl-1">Vol</div>
           <ResponsiveContainer width="100%" height={50}>
@@ -230,18 +199,12 @@ export function StockChart({ data, loading, symbol, period, onPeriodChange }: St
               <XAxis dataKey="date" hide />
               <YAxis hide domain={[0, 'auto']} />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: 'hsl(220, 40%, 8%)',
-                  border: '1px solid hsl(200, 60%, 25%)',
-                  borderRadius: '8px',
-                  fontSize: '11px',
-                  color: 'white',
-                }}
+                contentStyle={{ backgroundColor: 'hsl(220, 40%, 8%)', border: '1px solid hsl(200, 60%, 25%)', borderRadius: '8px', fontSize: '11px', color: 'white' }}
                 labelStyle={{ color: 'hsl(200, 40%, 60%)' }}
                 formatter={(value: number) => {
-                  if (value >= 1e6) return [`${(value / 1e6).toFixed(1)}M`, 'Volumen'];
-                  if (value >= 1e3) return [`${(value / 1e3).toFixed(1)}K`, 'Volumen'];
-                  return [value.toFixed(0), 'Volumen'];
+                  if (value >= 1e6) return [`${(value / 1e6).toFixed(1)}M`, t('stock_volume')];
+                  if (value >= 1e3) return [`${(value / 1e3).toFixed(1)}K`, t('stock_volume')];
+                  return [value.toFixed(0), t('stock_volume')];
                 }}
               />
               <Bar dataKey="volume" radius={[1, 1, 0, 0]}>

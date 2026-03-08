@@ -24,6 +24,7 @@ import { StockPriceAlerts } from '@/components/stocks/StockPriceAlerts';
 import { useStockAlertMonitor } from '@/hooks/useStockPriceAlerts';
 import brandLogo from '@/assets/g174.svg';
 import { MarketIndicesTicker } from '@/components/stocks/MarketIndicesTicker';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const POPULAR_STOCKS = [
   { symbol: 'AAPL', name: 'Apple' },
@@ -37,6 +38,7 @@ const POPULAR_STOCKS = [
 ];
 
 function Stocks() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState('');
   const [compareMode, setCompareMode] = useState(false);
@@ -82,10 +84,10 @@ function Stocks() {
               <div className="flex-1">
                 <h1 className="text-xl font-bold text-white flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-cyan-400" />
-                  {selectedSymbol ? selectedSymbol : 'Mercado de Acciones'}
+                  {selectedSymbol ? selectedSymbol : t('stock_market_title')}
                 </h1>
                 <p className="text-xs text-cyan-300/50">
-                  {selectedSymbol ? 'Cotización y análisis profesional' : 'Busca y analiza acciones globales'}
+                  {selectedSymbol ? t('stock_quote_analysis') : t('stock_search_global')}
                 </p>
               </div>
               {selectedSymbol && (
@@ -108,7 +110,7 @@ function Stocks() {
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar acción (ej. AAPL, TSLA, MSFT)..."
+                  placeholder={t('stock_search_placeholder')}
                   className="pl-10 bg-[hsl(210,40%,10%)] border-cyan-800/30 text-white placeholder:text-slate-500 focus:border-cyan-500/50 transition-colors"
                 />
                 {debouncedQuery.length >= 2 && (
@@ -132,7 +134,7 @@ function Stocks() {
                         </button>
                       ))
                     ) : (
-                      <p className="p-4 text-sm text-slate-500 text-center">Sin resultados</p>
+                      <p className="p-4 text-sm text-slate-500 text-center">{t('stock_no_results')}</p>
                     )}
                   </div>
                 )}
@@ -153,7 +155,7 @@ function Stocks() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-cyan-800/30 bg-[hsl(210,40%,10%)] hover:border-cyan-500/40 hover:bg-[hsl(210,40%,12%)] transition-all active:scale-[0.98]"
               >
                 <ArrowUpDown className="w-4 h-4 text-cyan-400" />
-                <span className="text-sm font-medium text-cyan-200">Comparar acciones</span>
+                <span className="text-sm font-medium text-cyan-200">{t('stock_compare')}</span>
               </button>
 
               {/* Favorites section */}
@@ -161,7 +163,7 @@ function Stocks() {
                 <>
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 fill-[hsl(45,90%,55%)] text-[hsl(45,90%,55%)]" />
-                    <h2 className="text-xs font-semibold text-cyan-300/60 uppercase tracking-wider">Mis Favoritas</h2>
+                    <h2 className="text-xs font-semibold text-cyan-300/60 uppercase tracking-wider">{t('stock_my_favorites')}</h2>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     {stockFavorites.map((fav) => (
@@ -179,7 +181,7 @@ function Stocks() {
 
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-cyan-400/60" />
-                <h2 className="text-xs font-semibold text-cyan-300/60 uppercase tracking-wider">Acciones populares</h2>
+                <h2 className="text-xs font-semibold text-cyan-300/60 uppercase tracking-wider">{t('stock_popular')}</h2>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {POPULAR_STOCKS.map((stock) => (
@@ -283,6 +285,7 @@ function PopularStockCard({ symbol, name, onSelect }: { symbol: string; name: st
 }
 
 function StockDetail({ symbol }: { symbol: string }) {
+  const { t } = useTranslation();
   const { data: profile, isLoading: profileLoading } = useStockProfile(symbol);
   const { data: quote, isLoading: quoteLoading } = useStockQuote(symbol);
   const { data: financials, isLoading: financialsLoading } = useStockFinancials(symbol);
@@ -307,16 +310,16 @@ function StockDetail({ symbol }: { symbol: string }) {
       <Tabs defaultValue="technicals" className="w-full">
         <TabsList className="w-full bg-[hsl(210,40%,10%)] border border-cyan-800/20 rounded-xl">
           <TabsTrigger value="technicals" className="flex-1 text-[11px] gap-1 data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-lg">
-            <Activity className="w-3.5 h-3.5" /> Técnico
+            <Activity className="w-3.5 h-3.5" /> {t('stock_tab_technical')}
           </TabsTrigger>
           <TabsTrigger value="sentiment" className="flex-1 text-[11px] gap-1 data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-lg">
-            <Brain className="w-3.5 h-3.5" /> Sentimiento
+            <Brain className="w-3.5 h-3.5" /> {t('stock_tab_sentiment')}
           </TabsTrigger>
           <TabsTrigger value="financials" className="flex-1 text-[11px] gap-1 data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-lg">
-            <DollarSign className="w-3.5 h-3.5" /> Finanzas
+            <DollarSign className="w-3.5 h-3.5" /> {t('stock_tab_financials')}
           </TabsTrigger>
           <TabsTrigger value="news" className="flex-1 text-[11px] gap-1 data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-300 text-slate-500 rounded-lg">
-            <Newspaper className="w-3.5 h-3.5" /> Noticias
+            <Newspaper className="w-3.5 h-3.5" /> {t('stock_tab_news')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="technicals" className="mt-3">

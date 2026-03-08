@@ -7,6 +7,7 @@ import { Bell, BellOff, Trash2, TrendingUp, TrendingDown, Plus } from 'lucide-re
 import { useStockPriceAlerts } from '@/hooks/useStockPriceAlerts';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface StockPriceAlertsProps {
   symbol: string;
@@ -15,6 +16,7 @@ interface StockPriceAlertsProps {
 }
 
 export function StockPriceAlerts({ symbol, symbolName, currentPrice }: StockPriceAlertsProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { alerts, isLoading, createAlert, deleteAlert } = useStockPriceAlerts(symbol);
   const [targetPrice, setTargetPrice] = useState('');
@@ -39,76 +41,46 @@ export function StockPriceAlerts({ symbol, symbolName, currentPrice }: StockPric
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Alertas de precio</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('stock_price_alerts')}</h3>
           {activeAlerts.length > 0 && (
             <Badge variant="secondary" className="text-[10px]">{activeAlerts.length}</Badge>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 px-2 text-xs"
-          onClick={() => setShowForm(!showForm)}
-        >
+        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => setShowForm(!showForm)}>
           <Plus className="w-3.5 h-3.5 mr-1" />
-          Nueva
+          {t('stock_new_alert')}
         </Button>
       </div>
 
-      {/* Create form */}
       {showForm && (
         <div className="space-y-2 p-2 rounded-lg bg-secondary/50 border border-border">
           {currentPrice && (
             <p className="text-[11px] text-muted-foreground">
-              Precio actual: <span className="font-mono font-semibold text-foreground">${currentPrice.toFixed(2)}</span>
+              {t('stock_current_price')}: <span className="font-mono font-semibold text-foreground">${currentPrice.toFixed(2)}</span>
             </p>
           )}
           <div className="flex gap-2">
-            <button
-              onClick={() => setDirection('above')}
-              className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors border',
-                direction === 'above'
-                  ? 'bg-[hsl(var(--bullish))]/15 border-[hsl(var(--bullish))]/40 text-[hsl(var(--bullish))]'
-                  : 'bg-secondary border-border text-muted-foreground'
-              )}
-            >
-              <TrendingUp className="w-3.5 h-3.5" /> Sube a
+            <button onClick={() => setDirection('above')}
+              className={cn('flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors border',
+                direction === 'above' ? 'bg-[hsl(var(--bullish))]/15 border-[hsl(var(--bullish))]/40 text-[hsl(var(--bullish))]' : 'bg-secondary border-border text-muted-foreground')}>
+              <TrendingUp className="w-3.5 h-3.5" /> {t('stock_goes_above')}
             </button>
-            <button
-              onClick={() => setDirection('below')}
-              className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors border',
-                direction === 'below'
-                  ? 'bg-[hsl(var(--bearish))]/15 border-[hsl(var(--bearish))]/40 text-[hsl(var(--bearish))]'
-                  : 'bg-secondary border-border text-muted-foreground'
-              )}
-            >
-              <TrendingDown className="w-3.5 h-3.5" /> Baja a
+            <button onClick={() => setDirection('below')}
+              className={cn('flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors border',
+                direction === 'below' ? 'bg-[hsl(var(--bearish))]/15 border-[hsl(var(--bearish))]/40 text-[hsl(var(--bearish))]' : 'bg-secondary border-border text-muted-foreground')}>
+              <TrendingDown className="w-3.5 h-3.5" /> {t('stock_goes_below')}
             </button>
           </div>
           <div className="flex gap-2">
-            <Input
-              type="number"
-              step="0.01"
-              value={targetPrice}
-              onChange={(e) => setTargetPrice(e.target.value)}
-              placeholder="Precio objetivo..."
-              className="flex-1 h-8 text-sm bg-card"
-            />
-            <Button
-              size="sm"
-              className="h-8 px-3"
-              onClick={handleCreate}
-              disabled={createAlert.isPending || !targetPrice}
-            >
-              {createAlert.isPending ? '...' : 'Crear'}
+            <Input type="number" step="0.01" value={targetPrice} onChange={(e) => setTargetPrice(e.target.value)}
+              placeholder={t('stock_target_price')} className="flex-1 h-8 text-sm bg-card" />
+            <Button size="sm" className="h-8 px-3" onClick={handleCreate} disabled={createAlert.isPending || !targetPrice}>
+              {createAlert.isPending ? '...' : t('stock_create')}
             </Button>
           </div>
         </div>
       )}
 
-      {/* Active alerts */}
       {activeAlerts.length > 0 && (
         <div className="space-y-1.5">
           {activeAlerts.map((alert) => (
@@ -120,14 +92,11 @@ export function StockPriceAlerts({ symbol, symbolName, currentPrice }: StockPric
                   <TrendingDown className="w-3.5 h-3.5 text-[hsl(var(--bearish))]" />
                 )}
                 <span className="text-xs text-muted-foreground">
-                  {alert.direction === 'above' ? 'Sube a' : 'Baja a'}
+                  {alert.direction === 'above' ? t('stock_goes_above') : t('stock_goes_below')}
                 </span>
                 <span className="text-sm font-mono font-semibold text-foreground">${alert.target_price}</span>
               </div>
-              <button
-                onClick={() => deleteAlert.mutate(alert.id)}
-                className="p-1 rounded hover:bg-destructive/10 transition-colors"
-              >
+              <button onClick={() => deleteAlert.mutate(alert.id)} className="p-1 rounded hover:bg-destructive/10 transition-colors">
                 <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
               </button>
             </div>
@@ -135,10 +104,9 @@ export function StockPriceAlerts({ symbol, symbolName, currentPrice }: StockPric
         </div>
       )}
 
-      {/* Triggered alerts */}
       {triggeredAlerts.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Activadas</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('stock_triggered')}</p>
           {triggeredAlerts.slice(0, 3).map((alert) => (
             <div key={alert.id} className="flex items-center justify-between py-1.5 px-2 rounded-md bg-secondary/20 opacity-60">
               <div className="flex items-center gap-2">
@@ -147,10 +115,7 @@ export function StockPriceAlerts({ symbol, symbolName, currentPrice }: StockPric
                   {alert.direction === 'above' ? '↑' : '↓'} ${alert.target_price}
                 </span>
               </div>
-              <button
-                onClick={() => deleteAlert.mutate(alert.id)}
-                className="p-1 rounded hover:bg-destructive/10 transition-colors"
-              >
+              <button onClick={() => deleteAlert.mutate(alert.id)} className="p-1 rounded hover:bg-destructive/10 transition-colors">
                 <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
             </div>
@@ -160,7 +125,7 @@ export function StockPriceAlerts({ symbol, symbolName, currentPrice }: StockPric
 
       {alerts.length === 0 && !showForm && (
         <p className="text-xs text-muted-foreground text-center py-2">
-          Sin alertas configuradas para {symbol}
+          {t('stock_no_alerts')} {symbol}
         </p>
       )}
     </Card>
