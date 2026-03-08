@@ -52,7 +52,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { endpoint, symbol, date, currentPrice } = body;
+    const { endpoint, symbol, date, currentPrice, language } = body;
 
     if (!endpoint || !symbol) {
       console.error('Missing required parameters: endpoint or symbol');
