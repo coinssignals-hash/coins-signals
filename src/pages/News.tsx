@@ -67,7 +67,7 @@ function MiniHistoricalChart({ data, isLoading }: {data: MonthlyImpact[];isLoadi
                   {isPositive ? '+' : ''}{point.impact}%
                 </span>
                 <div className="flex items-center gap-1 text-muted-foreground">
-                  <span className="text-[10px]">Confianza:</span>
+                    <span className="text-[10px]">Confianza:</span>
                   <span className={cn(
                     'text-[10px] font-medium',
                     confidencePercent >= 80 ? 'text-green-400' :
