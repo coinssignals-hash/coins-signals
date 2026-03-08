@@ -66,6 +66,7 @@ function formatSymbolForPolygon(symbol: string): string {
 
 export default function Analysis() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
