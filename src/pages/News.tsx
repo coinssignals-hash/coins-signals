@@ -588,7 +588,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
           style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">Relev.</span>
+              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_relevance')}</span>
               <span className="font-mono text-[10px] font-bold text-white">{relevancePercent}%</span>
             </div>
             <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden">
