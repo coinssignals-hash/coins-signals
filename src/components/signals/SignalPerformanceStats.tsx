@@ -88,7 +88,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
       >
         <BarChart3 className="w-4 h-4 text-cyan-400" />
         <span className="text-xs font-bold text-cyan-200 uppercase tracking-wider text-left">
-          Rendimiento de Señales
+          {t('signal_perf_title')}
         </span>
         {activesBadge}
         <span className="ml-auto" />
