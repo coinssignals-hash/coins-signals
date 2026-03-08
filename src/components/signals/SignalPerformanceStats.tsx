@@ -197,7 +197,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                 >
                   <div className="flex items-center gap-1.5">
                     <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-                    <span className="text-[10px] text-rose-300/70 font-medium">SL Hit</span>
+                    <span className="text-[10px] text-rose-300/70 font-medium">{t('signal_sl_hit')}</span>
                     <span className="ml-auto text-sm font-bold text-rose-400">{stats.slCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
