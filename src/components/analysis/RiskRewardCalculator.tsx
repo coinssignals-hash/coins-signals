@@ -37,7 +37,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
   }, [entry, stopLoss, takeProfit, lotSize]);
 
   const ratioColor = calc.ratio >= 2 ? 'text-green-400' : calc.ratio >= 1 ? 'text-yellow-400' : 'text-red-400';
-  const ratioLabel = calc.ratio >= 3 ? 'Excelente' : calc.ratio >= 2 ? 'Bueno' : calc.ratio >= 1 ? 'Aceptable' : 'Desfavorable';
+  const ratioLabel = calc.ratio >= 3 ? t('analysis_rr_excellent') : calc.ratio >= 2 ? t('analysis_rr_good') : calc.ratio >= 1 ? t('analysis_rr_acceptable') : t('analysis_rr_unfavorable');
 
   return (
     <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl p-4 space-y-4">
