@@ -10,7 +10,7 @@ interface Props {
   loading: boolean;
 }
 
-function NewsArticle({ article, dateLocale }: { article: any; dateLocale: Locale }) {
+function NewsArticle({ article, dateLocale }: { article: any; dateLocale: any }) {
   let timeAgo = '';
   try {
     timeAgo = formatDistanceToNow(parseISO(article.publishedAt), { addSuffix: true, locale: dateLocale });
