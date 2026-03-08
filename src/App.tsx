@@ -50,6 +50,10 @@ const TrendScanner = lazy(() => import("./pages/tools/TrendScanner"));
 const RiskRewardCalculator = lazy(() => import("./pages/tools/RiskRewardCalculator"));
 const PositionSizing = lazy(() => import("./pages/tools/PositionSizing"));
 const SwapCalculator = lazy(() => import("./pages/tools/SwapCalculator"));
+const CompoundInterestCalculator = lazy(() => import("./pages/tools/CompoundInterestCalculator"));
+const CorrelationMatrix = lazy(() => import("./pages/tools/CorrelationMatrix"));
+const VolatilityScanner = lazy(() => import("./pages/tools/VolatilityScanner"));
+const PatternScreener = lazy(() => import("./pages/tools/PatternScreener"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -123,6 +127,10 @@ function AnimatedRoutes() {
           <Route path="/tools/risk-reward" element={<RiskRewardCalculator />} />
           <Route path="/tools/position-sizing" element={<PositionSizing />} />
           <Route path="/tools/swap-calculator" element={<SwapCalculator />} />
+          <Route path="/tools/compound-interest" element={<CompoundInterestCalculator />} />
+          <Route path="/tools/correlation-matrix" element={<CorrelationMatrix />} />
+          <Route path="/tools/volatility-scanner" element={<VolatilityScanner />} />
+          <Route path="/tools/pattern-screener" element={<PatternScreener />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
