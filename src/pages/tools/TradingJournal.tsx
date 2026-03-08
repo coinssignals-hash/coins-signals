@@ -478,13 +478,13 @@ export default function TradingJournal() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Resultado</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_result')}</Label>
                   <Select value={result} onValueChange={v => setResult(v as TradeEntry['result'])}>
                     <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="win">✅ Ganada</SelectItem>
-                      <SelectItem value="loss">❌ Perdida</SelectItem>
-                      <SelectItem value="breakeven">➖ Breakeven</SelectItem>
+                      <SelectItem value="win">✅ {t('journal_win')}</SelectItem>
+                      <SelectItem value="loss">❌ {t('journal_loss')}</SelectItem>
+                      <SelectItem value="breakeven">➖ {t('journal_breakeven')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
