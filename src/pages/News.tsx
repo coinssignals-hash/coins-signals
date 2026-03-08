@@ -307,9 +307,9 @@ function VolatilityIndicator({ newsId, title, category, currencies
   }, [data]);
 
   const config = {
-    high: { color: 'hsl(0, 70%, 55%)', label: 'ALTA', glow: 'hsl(0, 70%, 55%)' },
-    medium: { color: 'hsl(35, 90%, 55%)', label: 'MEDIA', glow: 'hsl(35, 90%, 55%)' },
-    low: { color: 'hsl(160, 80%, 45%)', label: 'BAJA', glow: 'hsl(160, 80%, 45%)' }
+    high: { color: 'hsl(0, 70%, 55%)', label: t('news_volatility_high'), glow: 'hsl(0, 70%, 55%)' },
+    medium: { color: 'hsl(35, 90%, 55%)', label: t('news_volatility_medium'), glow: 'hsl(35, 90%, 55%)' },
+    low: { color: 'hsl(160, 80%, 45%)', label: t('news_volatility_low'), glow: 'hsl(160, 80%, 45%)' }
   }[volatility.level];
 
   if (isLoading) {
