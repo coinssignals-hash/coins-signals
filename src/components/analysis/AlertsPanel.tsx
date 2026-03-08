@@ -208,6 +208,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         onCheckedChange={(v) => handleChange('enableSupportResistance', v)}
       >
         <div className="space-y-2">
+          <div className="flex justify-between text-xs">
             <span className="text-muted-foreground">{t('analysis_alert_proximity')}</span>
             <span className="font-mono text-amber-400">{localConfig.srProximityPercent}%</span>
           </div>
