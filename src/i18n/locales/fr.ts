@@ -1704,6 +1704,22 @@ const fr: TranslationKeys = {
   mtf_bullish_label: 'Haussier',
   mtf_bearish_label: 'Baissier',
   mtf_neutral_label: 'Neutre',
+  pat_hammer: 'Marteau',
+  pat_morning_star: 'Étoile du Matin',
+  pat_bullish_engulfing: 'Englobante Haussière',
+  pat_triple_bottom: 'Triple Creux',
+  pat_bullish_harami: 'Harami Haussier',
+  pat_piercing_line: 'Ligne Perçante',
+  pat_shooting_star: 'Étoile Filante',
+  pat_evening_star: 'Étoile du Soir',
+  pat_bearish_engulfing: 'Englobante Baissière',
+  pat_double_top: 'Double Sommet',
+  pat_bearish_harami: 'Harami Baissier',
+  pat_dark_cloud: 'Nuage Noir',
+  pat_doji: 'Doji',
+  pat_spinning_top: 'Spinning Top',
+  pat_symmetrical_triangle: 'Triangle Symétrique',
+  pat_rectangle: 'Rectangle',
 };
 
 export default fr;

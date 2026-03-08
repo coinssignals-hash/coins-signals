@@ -1894,6 +1894,22 @@ const es: TranslationKeys = {
   mtf_bullish_label: 'Alcista',
   mtf_bearish_label: 'Bajista',
   mtf_neutral_label: 'Neutral',
+  pat_hammer: 'Martillo',
+  pat_morning_star: 'Estrella de la Mañana',
+  pat_bullish_engulfing: 'Envolvente Alcista',
+  pat_triple_bottom: 'Triple Suelo',
+  pat_bullish_harami: 'Harami Alcista',
+  pat_piercing_line: 'Piercing Line',
+  pat_shooting_star: 'Estrella Fugaz',
+  pat_evening_star: 'Estrella Vespertina',
+  pat_bearish_engulfing: 'Envolvente Bajista',
+  pat_double_top: 'Doble Techo',
+  pat_bearish_harami: 'Harami Bajista',
+  pat_dark_cloud: 'Nube Oscura',
+  pat_doji: 'Doji',
+  pat_spinning_top: 'Spinning Top',
+  pat_symmetrical_triangle: 'Triángulo Simétrico',
+  pat_rectangle: 'Rectángulo',
 };
 
 export default es;

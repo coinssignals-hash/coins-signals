@@ -17,9 +17,9 @@ interface PatternResult {
   detected: string; // time ago
 }
 
-const PATTERNS_BULLISH = ['Martillo', 'Estrella de la Mañana', 'Envolvente Alcista', 'Triple Suelo', 'Harami Alcista', 'Piercing Line'];
-const PATTERNS_BEARISH = ['Estrella Fugaz', 'Estrella Vespertina', 'Envolvente Bajista', 'Doble Techo', 'Harami Bajista', 'Nube Oscura'];
-const PATTERNS_NEUTRAL = ['Doji', 'Spinning Top', 'Triángulo Simétrico', 'Rectángulo'];
+const PATTERN_KEYS_BULLISH = ['pat_hammer', 'pat_morning_star', 'pat_bullish_engulfing', 'pat_triple_bottom', 'pat_bullish_harami', 'pat_piercing_line'];
+const PATTERN_KEYS_BEARISH = ['pat_shooting_star', 'pat_evening_star', 'pat_bearish_engulfing', 'pat_double_top', 'pat_bearish_harami', 'pat_dark_cloud'];
+const PATTERN_KEYS_NEUTRAL = ['pat_doji', 'pat_spinning_top', 'pat_symmetrical_triangle', 'pat_rectangle'];
 const PAIRS = ['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','NZD/USD','USD/CAD','EUR/GBP','EUR/JPY','GBP/JPY','XAU/USD'];
 const TIMEFRAMES = ['M15', 'H1', 'H4', 'D1'];
 const TIMES_AGO = ['2m', '5m', '12m', '23m', '45m', '1h', '2h', '3h'];
@@ -30,9 +30,9 @@ function generatePatterns(): PatternResult[] {
   for (let i = 0; i < count; i++) {
     const typeRoll = Math.random();
     let type: PatternResult['type'], pattern: string;
-    if (typeRoll < 0.4) { type = 'bullish'; pattern = PATTERNS_BULLISH[Math.floor(Math.random() * PATTERNS_BULLISH.length)]; }
-    else if (typeRoll < 0.8) { type = 'bearish'; pattern = PATTERNS_BEARISH[Math.floor(Math.random() * PATTERNS_BEARISH.length)]; }
-    else { type = 'neutral'; pattern = PATTERNS_NEUTRAL[Math.floor(Math.random() * PATTERNS_NEUTRAL.length)]; }
+    if (typeRoll < 0.4) { type = 'bullish'; pattern = PATTERN_KEYS_BULLISH[Math.floor(Math.random() * PATTERN_KEYS_BULLISH.length)]; }
+    else if (typeRoll < 0.8) { type = 'bearish'; pattern = PATTERN_KEYS_BEARISH[Math.floor(Math.random() * PATTERN_KEYS_BEARISH.length)]; }
+    else { type = 'neutral'; pattern = PATTERN_KEYS_NEUTRAL[Math.floor(Math.random() * PATTERN_KEYS_NEUTRAL.length)]; }
 
     results.push({
       pair: PAIRS[Math.floor(Math.random() * PAIRS.length)],
@@ -159,7 +159,7 @@ export default function PatternScreener() {
                       item.type === 'bullish' ? 'text-emerald-400' :
                       item.type === 'bearish' ? 'text-rose-400' : 'text-muted-foreground'
                     )}>
-                      {item.pattern}
+                      {t(item.pattern)}
                     </p>
                     <p className="text-[10px] text-amber-400 mt-0.5 tracking-wider">{reliabilityStars(item.reliability)}</p>
                   </div>

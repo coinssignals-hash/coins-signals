@@ -1894,6 +1894,22 @@ const en: TranslationKeys = {
   mtf_bullish_label: 'Bullish',
   mtf_bearish_label: 'Bearish',
   mtf_neutral_label: 'Neutral',
+  pat_hammer: 'Hammer',
+  pat_morning_star: 'Morning Star',
+  pat_bullish_engulfing: 'Bullish Engulfing',
+  pat_triple_bottom: 'Triple Bottom',
+  pat_bullish_harami: 'Bullish Harami',
+  pat_piercing_line: 'Piercing Line',
+  pat_shooting_star: 'Shooting Star',
+  pat_evening_star: 'Evening Star',
+  pat_bearish_engulfing: 'Bearish Engulfing',
+  pat_double_top: 'Double Top',
+  pat_bearish_harami: 'Bearish Harami',
+  pat_dark_cloud: 'Dark Cloud Cover',
+  pat_doji: 'Doji',
+  pat_spinning_top: 'Spinning Top',
+  pat_symmetrical_triangle: 'Symmetrical Triangle',
+  pat_rectangle: 'Rectangle',
 };
 
 export default en;
