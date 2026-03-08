@@ -1798,6 +1798,16 @@ const fr: TranslationKeys = {
   ph_maximum: 'Maximum',
   ph_avg_pnl: 'PnL Moyen',
   tj_pair_distribution: 'Distribution par Paire',
+  country_AR: 'Argentine', country_BO: 'Bolivie', country_BR: 'Brésil', country_CL: 'Chili',
+  country_CO: 'Colombie', country_CR: 'Costa Rica', country_CU: 'Cuba', country_DO: 'Rép. Dominicaine',
+  country_EC: 'Équateur', country_SV: 'El Salvador', country_GT: 'Guatemala', country_HN: 'Honduras',
+  country_MX: 'Mexique', country_NI: 'Nicaragua', country_PA: 'Panama', country_PY: 'Paraguay',
+  country_PE: 'Pérou', country_PR: 'Porto Rico', country_ES: 'Espagne', country_US: 'États-Unis',
+  country_UY: 'Uruguay', country_VE: 'Venezuela', country_GB: 'Royaume-Uni', country_FR: 'France',
+  country_DE: 'Allemagne', country_IT: 'Italie', country_PT: 'Portugal',
+  tz_new_york: 'New York (EST)', tz_mexico_city: 'Mexico', tz_london: 'Londres',
+  tz_paris: 'Paris', tz_berlin: 'Berlin', tz_tokyo: 'Tokyo', tz_shanghai: 'Shanghai',
+  tz_los_angeles: 'Los Angeles (PST)',
 };
 
 export default fr;

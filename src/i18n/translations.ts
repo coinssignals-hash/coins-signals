@@ -2094,6 +2094,17 @@ export type TranslationKeys = {
   ph_avg_pnl: string;
   // TradingJournal
   tj_pair_distribution: string;
+  // PersonalInfo countries
+  country_AR: string; country_BO: string; country_BR: string; country_CL: string;
+  country_CO: string; country_CR: string; country_CU: string; country_DO: string;
+  country_EC: string; country_SV: string; country_GT: string; country_HN: string;
+  country_MX: string; country_NI: string; country_PA: string; country_PY: string;
+  country_PE: string; country_PR: string; country_ES: string; country_US: string;
+  country_UY: string; country_VE: string; country_GB: string; country_FR: string;
+  country_DE: string; country_IT: string; country_PT: string;
+  // PersonalInfo timezones
+  tz_new_york: string; tz_mexico_city: string; tz_london: string; tz_paris: string;
+  tz_berlin: string; tz_tokyo: string; tz_shanghai: string; tz_los_angeles: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

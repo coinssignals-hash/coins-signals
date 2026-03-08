@@ -1793,6 +1793,16 @@ const pt: TranslationKeys = {
   ph_maximum: 'Máximo',
   ph_avg_pnl: 'PnL Médio',
   tj_pair_distribution: 'Distribuição por Par',
+  country_AR: 'Argentina', country_BO: 'Bolívia', country_BR: 'Brasil', country_CL: 'Chile',
+  country_CO: 'Colômbia', country_CR: 'Costa Rica', country_CU: 'Cuba', country_DO: 'Rep. Dominicana',
+  country_EC: 'Equador', country_SV: 'El Salvador', country_GT: 'Guatemala', country_HN: 'Honduras',
+  country_MX: 'México', country_NI: 'Nicarágua', country_PA: 'Panamá', country_PY: 'Paraguai',
+  country_PE: 'Peru', country_PR: 'Porto Rico', country_ES: 'Espanha', country_US: 'Estados Unidos',
+  country_UY: 'Uruguai', country_VE: 'Venezuela', country_GB: 'Reino Unido', country_FR: 'França',
+  country_DE: 'Alemanha', country_IT: 'Itália', country_PT: 'Portugal',
+  tz_new_york: 'Nova York (EST)', tz_mexico_city: 'Cidade do México', tz_london: 'Londres',
+  tz_paris: 'Paris', tz_berlin: 'Berlim', tz_tokyo: 'Tóquio', tz_shanghai: 'Xangai',
+  tz_los_angeles: 'Los Angeles (PST)',
 };
 
 export default pt;
