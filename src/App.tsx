@@ -137,6 +137,12 @@ function AnimatedRoutes() {
           <Route path="/tools/correlation-matrix" element={<CorrelationMatrix />} />
           <Route path="/tools/volatility-scanner" element={<VolatilityScanner />} />
           <Route path="/tools/pattern-screener" element={<PatternScreener />} />
+          <Route path="/tools/monte-carlo" element={<MonteCarloSimulation />} />
+          <Route path="/tools/risk-manager" element={<RiskManagerAdvanced />} />
+          <Route path="/tools/multi-tf-screener" element={<MultiTFScreener />} />
+          <Route path="/tools/order-flow" element={<OrderFlowAnalysis />} />
+          <Route path="/tools/backtest-pro" element={<BacktestPro />} />
+          <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
