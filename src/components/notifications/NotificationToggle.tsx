@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Bell, BellOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 import {
   isPushSupported,
   registerServiceWorker,
