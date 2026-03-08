@@ -2008,6 +2008,37 @@ export type TranslationKeys = {
   pat_spinning_top: string;
   pat_symmetrical_triangle: string;
   pat_rectangle: string;
+  // Referrals page
+  ref_title: string;
+  ref_login_title: string;
+  ref_login_desc: string;
+  ref_login_btn: string;
+  ref_earn_up_to: string;
+  ref_free_days: string;
+  ref_per_friend: string;
+  ref_total_referrals: string;
+  ref_completed: string;
+  ref_earned: string;
+  ref_extra_days: string;
+  ref_your_link: string;
+  ref_generating: string;
+  ref_your_code: string;
+  ref_share_invitation: string;
+  ref_link_copied: string;
+  ref_join_title: string;
+  ref_join_text: string;
+  ref_how_it_works: string;
+  ref_step1_title: string;
+  ref_step1_desc: string;
+  ref_step2_title: string;
+  ref_step2_desc: string;
+  ref_step3_title: string;
+  ref_step3_desc: string;
+  ref_history: string;
+  ref_no_referrals: string;
+  ref_status_completed: string;
+  ref_status_pending: string;
+  ref_days_suffix: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime
