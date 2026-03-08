@@ -22,16 +22,47 @@ const CACHE_TTL = 5 * 60_000; // 5 min
 
 let cachedResult: { data: PairAnalysis[]; ts: number } | null = null;
 
+export const DEFAULT_PAIRS = [
+  "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CHF",
+  "NZD/USD", "USD/CAD", "EUR/GBP", "XAU/USD",
+];
+
+export const ALL_AVAILABLE_PAIRS = [
+  "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CHF",
+  "NZD/USD", "USD/CAD", "EUR/GBP", "EUR/JPY", "GBP/JPY",
+  "AUD/JPY", "CHF/JPY", "EUR/AUD", "GBP/AUD", "EUR/CAD",
+  "GBP/CAD", "AUD/CAD", "AUD/NZD", "EUR/NZD", "GBP/NZD",
+  "XAU/USD", "XAG/USD",
+];
+
+const STORAGE_KEY = 'mtf-screener-pairs';
+
+export function loadSavedPairs(): string[] {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved) as string[];
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return DEFAULT_PAIRS;
+}
+
+export function savePairs(pairs: string[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(pairs));
+}
+
 export function useMultiTFScreener() {
   const [data, setData] = useState<PairAnalysis[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fetchingRef = useRef(false);
 
-  const fetchData = useCallback(async (bypassCache = false) => {
+  const fetchData = useCallback(async (bypassCache = false, pairs?: string[]) => {
     if (fetchingRef.current) return;
 
-    if (!bypassCache && cachedResult && Date.now() - cachedResult.ts < CACHE_TTL) {
+    const pairsKey = (pairs || loadSavedPairs()).join(',');
+    if (!bypassCache && cachedResult && Date.now() - cachedResult.ts < CACHE_TTL && cachedResult.key === pairsKey) {
       setData(cachedResult.data);
       return;
     }
@@ -42,15 +73,15 @@ export function useMultiTFScreener() {
 
     try {
       const { data: result, error: fnError } = await supabase.functions.invoke('multi-tf-screener', {
-        body: {},
+        body: { pairs: pairs || loadSavedPairs() },
       });
 
       if (fnError) throw fnError;
       if (result?.error) throw new Error(result.error);
 
-      const pairs = (result?.data || []) as PairAnalysis[];
-      cachedResult = { data: pairs, ts: Date.now() };
-      setData(pairs);
+      const items = (result?.data || []) as PairAnalysis[];
+      cachedResult = { data: items, ts: Date.now(), key: pairsKey };
+      setData(items);
     } catch (err) {
       console.error('[useMultiTFScreener] Error:', err);
       setError(err instanceof Error ? err.message : 'Error fetching screener data');
