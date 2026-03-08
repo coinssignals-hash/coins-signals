@@ -21,7 +21,7 @@ export function HistoricalChart({ analysis, className }: HistoricalChartProps) {
       
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">Impacto a Corto Plazo</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{t('news_historical_short_term')}</h4>
           <div className="grid grid-cols-3 gap-1">
             {analysis.monthly_data.slice(-3).map((point, i) => (
               <ImpactBlock 
