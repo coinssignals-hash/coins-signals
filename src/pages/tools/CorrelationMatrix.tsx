@@ -37,6 +37,7 @@ function corrColor(val: number): string {
 }
 
 export default function CorrelationMatrix() {
+  const { t } = useTranslation();
   const [matrix, setMatrix] = useState(() => generateMatrix(PAIRS));
   const [loading, setLoading] = useState(false);
 
