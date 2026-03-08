@@ -361,7 +361,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 </span>
               ))}
               {selected.length > 3 && (
-                <span className="text-sm text-muted-foreground">+{selected.length - 3} más</span>
+                <span className="text-sm text-muted-foreground">+{selected.length - 3} {t('cf_more')}</span>
               )}
             </div>
           ) : (
