@@ -326,7 +326,7 @@ export default function CreateSignal() {
       if (data?.error) throw new Error(data.error);
       if (data?.notes) {
         setNotes(data.notes);
-        toast.success('Notas generadas con IA');
+        toast.success(t('cs_notes_generated'));
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Error al generar notas');
