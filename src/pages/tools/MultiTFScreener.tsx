@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff, Settings2, Check } from 'lucide-react';
+import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff, Settings2, Check, BarChart3 } from 'lucide-react';
 import { useMultiTFScreener, ALL_AVAILABLE_PAIRS, loadSavedPairs, savePairs, type PairAnalysis, type CurrencyStrength } from '@/hooks/useMultiTFScreener';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
