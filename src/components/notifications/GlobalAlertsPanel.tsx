@@ -11,9 +11,11 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
 
 function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: string) => void }) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const isAbove = alert.direction === 'above';
   const Icon = isAbove ? TrendingUp : TrendingDown;
-  const dirLabel = isAbove ? 'Por encima' : 'Por debajo';
+  const dirLabel = isAbove ? t('ga_above') : t('ga_below');
   const dirColor = isAbove ? 'text-green-500' : 'text-red-500';
 
   let timeLabel = '';
