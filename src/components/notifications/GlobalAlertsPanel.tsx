@@ -121,7 +121,7 @@ export function GlobalAlertsPanel() {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm text-primary flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" />
-          Alertas de Precio ({activeAlerts.length} activas)
+          {t('ga_price_alerts')} ({activeAlerts.length} {t('ga_active')})
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
