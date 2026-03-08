@@ -375,6 +375,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     currentPrice: priceDiff.hasData ? priceDiff.currentPrice : null
   });
 
+  // Translate AI analysis notes to current language
+  const { translated: translatedNotes, loading: notesTranslating } = useTranslatedNotes(signal?.notes);
 
 
   // Circle fill uses absolute percent distance (capped at 100 for arc)
