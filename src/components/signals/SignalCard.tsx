@@ -560,7 +560,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/50">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Posición del Precio</span>
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">{t('sc_price_position')}</span>
                     {/* Live indicator */}
                     {hasLivePrice && isConnected ? (
                       <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
