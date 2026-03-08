@@ -795,7 +795,7 @@ function QuickSourceFilter({
         )}>
           <Rss className="w-3.5 h-3.5 text-muted-foreground" />
           <span className="truncate max-w-[100px]">
-            {isAll ? 'Fuentes' : selected.length === 1 ? selected[0] : `${selected.length} fuentes`}
+            {isAll ? t('news_sources_label') : selected.length === 1 ? selected[0] : `${selected.length} ${t('news_n_sources')}`}
           </span>
           {!isAll &&
           <span className="min-w-[20px] h-5 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">
