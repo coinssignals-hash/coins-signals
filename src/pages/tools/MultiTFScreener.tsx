@@ -9,6 +9,7 @@ import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info
 import { useMultiTFScreener, ALL_AVAILABLE_PAIRS, loadSavedPairs, savePairs, type PairAnalysis, type CurrencyStrength } from '@/hooks/useMultiTFScreener';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
