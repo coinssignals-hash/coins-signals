@@ -213,9 +213,9 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
           {/* Vote distribution */}
           <div className="flex items-center gap-3 mt-1.5">
             {[
-              { label: 'Compra', count: buyCount, color: 'hsl(135, 70%, 50%)' },
-              { label: 'Neutral', count: neutralCount, color: 'hsl(45, 80%, 55%)' },
-              { label: 'Venta', count: sellCount, color: 'hsl(0, 70%, 55%)' },
+              { label: t('signal_confluence_buy'), count: buyCount, color: 'hsl(135, 70%, 50%)' },
+              { label: t('signal_confluence_neutral'), count: neutralCount, color: 'hsl(45, 80%, 55%)' },
+              { label: t('signal_confluence_sell'), count: sellCount, color: 'hsl(0, 70%, 55%)' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1">
                 <div
