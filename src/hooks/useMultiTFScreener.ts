@@ -26,7 +26,7 @@ export interface PairAnalysis {
 const memCache: { data: PairAnalysis[]; ts: number } | null = null;
 const CACHE_TTL = 5 * 60_000; // 5 min
 
-let cachedResult: { data: PairAnalysis[]; ts: number; key: string } | null = null;
+let cachedResult: { data: PairAnalysis[]; ts: number; key: string; strength: CurrencyStrength[] } | null = null;
 
 export const DEFAULT_PAIRS = [
   "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CHF",
