@@ -29,7 +29,13 @@ export type TranslationKeys = {
   nav_settings: string;
   nav_more: string;
   nav_saved_news: string;
+  nav_stocks: string;
+  nav_ai: string;
+  nav_ai_center: string;
+  nav_tools: string;
   // Drawer
+  drawer_ai_center: string;
+  drawer_stock_market: string;
   drawer_welcome: string;
   drawer_login_sync: string;
   drawer_login: string;
