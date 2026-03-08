@@ -109,11 +109,11 @@ export function CacheStatsPanel() {
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      sentiment: 'Sentimiento',
-      prediction: 'Predicción',
-      conclusions: 'Conclusiones',
-      recommendations: 'Recomendaciones',
-      technical_levels: 'Niveles Técnicos',
+      sentiment: t('cache_type_sentiment'),
+      prediction: t('cache_type_prediction'),
+      conclusions: t('cache_type_conclusions'),
+      recommendations: t('cache_type_recommendations'),
+      technical_levels: t('cache_type_technical'),
     };
     return labels[type] || type;
   };
