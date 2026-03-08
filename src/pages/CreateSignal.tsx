@@ -382,11 +382,11 @@ export default function CreateSignal() {
           <TabsList className="w-full mb-6 bg-card/60">
             <TabsTrigger value="create" className="flex-1 gap-2">
               <Send className="w-4 h-4" />
-              {editingSignal ? 'Editando' : 'Crear'}
+              {editingSignal ? t('cs_editing') : t('cs_create')}
             </TabsTrigger>
             <TabsTrigger value="manage" className="flex-1 gap-2">
               <List className="w-4 h-4" />
-              Gestionar
+              {t('cs_manage')}
             </TabsTrigger>
           </TabsList>
 
