@@ -102,10 +102,10 @@ export default function VolatilityScanner() {
         {/* Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
           {([
-            { id: 'all' as FilterLevel, label: 'Todos' },
-            { id: 'high' as FilterLevel, label: '🔴 Alta' },
-            { id: 'medium' as FilterLevel, label: '🟡 Media' },
-            { id: 'low' as FilterLevel, label: '🟢 Baja' },
+            { id: 'all' as FilterLevel, label: t('tp_all') },
+            { id: 'high' as FilterLevel, label: `🔴 ${t('tp_volatility_high')}` },
+            { id: 'medium' as FilterLevel, label: `🟡 ${t('tp_volatility_medium')}` },
+            { id: 'low' as FilterLevel, label: `🟢 ${t('tp_volatility_low')}` },
           ]).map(f => (
             <button key={f.id} onClick={() => setFilter(f.id)} className={cn(
               'flex-1 py-2 rounded-md text-xs font-medium transition-all',
