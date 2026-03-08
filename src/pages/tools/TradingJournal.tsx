@@ -495,8 +495,8 @@ export default function TradingJournal() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Notas</Label>
-                <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="¿Qué aprendiste de esta operación?" className="bg-secondary border-border text-foreground min-h-[60px]" />
+                <Label className="text-xs text-muted-foreground">{t('journal_notes')}</Label>
+                <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="" className="bg-secondary border-border text-foreground min-h-[60px]" />
               </div>
 
               <Button onClick={handleSave} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
