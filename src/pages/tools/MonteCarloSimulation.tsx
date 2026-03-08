@@ -150,7 +150,7 @@ export default function MonteCarloSimulation() {
           </Link>
           <div className="flex items-center gap-2">
             <PieChart className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">Simulación Monte Carlo</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('tools_monte_carlo_title')}</h1>
           </div>
         </div>
 
