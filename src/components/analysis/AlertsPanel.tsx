@@ -289,7 +289,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
           </div>
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Sobreventa</span>
+              <span className="text-muted-foreground">{t('analysis_alert_oversold')}</span>
               <span className="font-mono text-emerald-400">{localConfig.rsiOversold}</span>
             </div>
             <Slider value={[localConfig.rsiOversold]} onValueChange={([v]) => handleChange('rsiOversold', v)} min={10} max={40} step={5} />
