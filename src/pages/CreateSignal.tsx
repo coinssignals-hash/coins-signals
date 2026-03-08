@@ -192,7 +192,7 @@ export default function CreateSignal() {
       setClosePrice('');
       fetchActiveSignals();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al cerrar señal');
+      toast.error(err instanceof Error ? err.message : t('cs_error_close'));
     } finally {
       setLoading(false);
     }
