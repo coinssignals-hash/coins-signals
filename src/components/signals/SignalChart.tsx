@@ -487,7 +487,7 @@ export function SignalChart({ currencyPair, support: propSupport, resistance: pr
           {inlineSvgUri && (
             <img
               src={inlineSvgUri}
-              alt={`Gráfico ${currencyPair} 15min`}
+              alt={t('chart_alt').replace('{pair}', currencyPair)}
               className="w-full h-auto block"
               draggable={false}
             />

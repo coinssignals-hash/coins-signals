@@ -353,7 +353,7 @@ export default function TradingJournal() {
                 {/* Pair Distribution */}
                 <Card className="bg-card border-border">
                   <CardContent className="p-4 space-y-2">
-                    <h3 className="text-[11px] font-semibold text-foreground">Distribución por Par</h3>
+                    <h3 className="text-[11px] font-semibold text-foreground">{t('tj_pair_distribution')}</h3>
                     <div className="h-32">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>

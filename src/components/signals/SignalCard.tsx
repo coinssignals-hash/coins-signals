@@ -1084,7 +1084,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                           )}
                           {item.confidence_level && (
                             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-400 border border-violet-500/30">
-                              {item.confidence_level}% Confianza
+                              {item.confidence_level}% {t('sc_confidence')}
                             </span>
                           )}
                         </div>

@@ -285,7 +285,7 @@ export function SymbolSearch({ value, onChange, className }: SymbolSearchProps) 
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="Buscar símbolo..."
+          placeholder={t('ss_search_symbol')}
           className="pl-9 pr-9 bg-slate-800/60 border-slate-700/50"
         />
         {query && (

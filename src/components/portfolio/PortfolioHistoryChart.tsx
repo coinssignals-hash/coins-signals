@@ -343,7 +343,7 @@ export function PortfolioHistoryChart() {
             valueColor="text-emerald-400"
           />
           <StatBox 
-            label="PnL Promedio" 
+            label={t('ph_avg_pnl')} 
             value={formatCurrency(stats.avgPnl)} 
             valueColor={stats.avgPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}
           />

@@ -20,7 +20,7 @@ export function DateTabs({
   isRefreshing = false,
   className 
 }: DateTabsProps) {
-  const { language } = useTranslation();
+  const { language, t } = useTranslation();
   const dateLocale = useDateLocale();
   
   // Generate days: yesterday, today, tomorrow + 4 more days back
