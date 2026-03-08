@@ -95,6 +95,7 @@ export default function Subscriptions() {
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
   const [searchParams] = useSearchParams();
   const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription, onTrial, trialDaysLeft } = useSubscription();
+  const plans = getPlans(t);
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
