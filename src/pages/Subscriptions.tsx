@@ -113,7 +113,7 @@ export default function Subscriptions() {
       const priceId = billingPeriod === 'monthly' ? tierConfig.monthly_price_id : tierConfig.weekly_price_id;
       await startCheckout(priceId);
     } catch (err) {
-      toast.error('Error al iniciar el checkout');
+      toast.error(t('sub_checkout_error'));
       console.error(err);
     }
   };
