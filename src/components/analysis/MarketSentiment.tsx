@@ -246,7 +246,7 @@ export function MarketSentiment({
             boxShadow: `0 0 16px ${trend.color}15` }}
         >
           <TrendIcon className="w-3.5 h-3.5" />
-          {trend.label}
+          {t(trend.labelKey)}
         </div>
         <Eye className={cn("w-4 h-4 transition-colors", expanded ? "text-gray-400" : "text-gray-600")} />
       </div>
