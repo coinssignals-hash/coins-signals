@@ -93,8 +93,8 @@ export function PortfolioWidget() {
                   <AlertCircle className="w-5 h-5 text-amber-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Sin brokers conectados</p>
-                  <p className="text-xs text-gray-400">Toca para vincular</p>
+                  <p className="text-sm font-medium text-white">{t('pw_no_brokers')}</p>
+                  <p className="text-xs text-gray-400">{t('pw_tap_to_link')}</p>
                 </div>
               </div>
               <ArrowRight className="w-5 h-5 text-green-500 group-hover:translate-x-1 transition-transform" />
