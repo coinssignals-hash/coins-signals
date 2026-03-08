@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useUserRole } from '@/hooks/useUserRole';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,7 +34,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const { t } = useTranslation();
-  const { isAdmin } = useUserRole();
+  
 
   const menuItems = [
     { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
@@ -180,21 +179,6 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
           })}
 
 
-          {isAdmin && (
-            <Link
-              to="/admin"
-              onClick={() => onOpenChange(false)}
-              className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all mt-2',
-                location.pathname === '/admin'
-                  ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                  : 'text-accent hover:bg-accent/10 border border-accent/30'
-              )}
-            >
-              <ShieldAlert className="w-5 h-5" />
-              Panel Admin
-            </Link>
-          )}
 
           <Separator className="my-3 bg-border" />
 
