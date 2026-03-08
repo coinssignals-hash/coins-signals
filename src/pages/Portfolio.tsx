@@ -234,20 +234,20 @@ export default function Portfolio() {
             transition={{ duration: 0.25, delay: 0.16 }}
             className="grid grid-cols-2 gap-3"
           >
-            <DistributionCard
-              title="Por Broker"
-              items={accounts.filter(a => !a.error && a.equity > 0).map(a => ({
-                label: a.broker_name.replace(/\s*\(Demo\)\s*/i, ''),
-                value: a.equity,
-              }))}
-            />
-            <DistributionCard
-              title="Por Activo"
-              items={allPositions.filter(p => p.market_value > 0).map(p => ({
-                label: p.symbol,
-                value: Math.abs(p.market_value),
-              }))}
-            />
+             <DistributionCard
+               title={t('portfolio_by_broker')}
+               items={accounts.filter(a => !a.error && a.equity > 0).map(a => ({
+                 label: a.broker_name.replace(/\s*\(Demo\)\s*/i, ''),
+                 value: a.equity,
+               }))}
+             />
+             <DistributionCard
+               title={t('portfolio_by_asset')}
+               items={allPositions.filter(p => p.market_value > 0).map(p => ({
+                 label: p.symbol,
+                 value: Math.abs(p.market_value),
+               }))}
+             />
           </motion.div>
         )}
 
