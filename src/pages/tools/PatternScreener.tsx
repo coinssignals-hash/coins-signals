@@ -110,10 +110,10 @@ export default function PatternScreener() {
         {/* Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
           {([
-            { id: 'all' as FilterType, label: 'Todos' },
-            { id: 'bullish' as FilterType, label: '🟢 Alcista' },
-            { id: 'bearish' as FilterType, label: '🔴 Bajista' },
-            { id: 'neutral' as FilterType, label: '⚪ Neutral' },
+            { id: 'all' as FilterType, label: t('tp_all') },
+            { id: 'bullish' as FilterType, label: `🟢 ${t('tp_trend_bullish')}` },
+            { id: 'bearish' as FilterType, label: `🔴 ${t('tp_trend_bearish')}` },
+            { id: 'neutral' as FilterType, label: `⚪ ${t('tp_trend_neutral')}` },
           ]).map(f => (
             <button key={f.id} onClick={() => setFilter(f.id)} className={cn(
               'flex-1 py-2 rounded-md text-xs font-medium transition-all',
