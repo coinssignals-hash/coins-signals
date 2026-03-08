@@ -845,7 +845,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               return (
                 <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Análisis de Sentimiento</span>
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">{t('sc_sentiment_analysis')}</span>
                     <span className={cn(
                       "text-[10px] font-medium px-2 py-0.5 rounded-full border",
                       isBullish ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-rose-500/15 text-rose-400 border-rose-500/30"
