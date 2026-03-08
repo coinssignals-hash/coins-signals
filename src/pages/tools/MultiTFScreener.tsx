@@ -15,7 +15,7 @@ type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
 
 const TIMEFRAMES: Timeframe[] = ['M5', 'M15', 'H1', 'H4', 'D1', 'W1'];
-const INDICATORS = ['Tendencia', 'RSI', 'MACD', 'EMA', 'Bollinger'];
+const INDICATORS_KEYS = ['mtf_trend', 'RSI', 'MACD', 'EMA', 'Bollinger'];
 
 const SignalIcon = ({ signal, size = 'sm' }: { signal: Signal; size?: 'sm' | 'md' }) => {
   const cls = size === 'md' ? 'w-4 h-4' : 'w-3 h-3';
