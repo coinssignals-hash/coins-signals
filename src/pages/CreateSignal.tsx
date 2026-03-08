@@ -291,7 +291,7 @@ export default function CreateSignal() {
       toast.success(t('cs_chart_downloaded'));
     } catch (err) {
       console.error('Chart download error:', err);
-      toast.error('Error al descargar el gráfico');
+      toast.error(t('cs_chart_error'));
     } finally {
       setDownloadingChart(false);
     }
