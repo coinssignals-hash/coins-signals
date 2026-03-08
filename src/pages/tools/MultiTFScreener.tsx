@@ -330,7 +330,7 @@ export default function MultiTFScreener() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Datos en tiempo real de Yahoo Finance. Analiza la confluencia de indicadores técnicos (RSI, MACD, EMA, Bollinger) en 6 temporalidades. Caché de 5 minutos.
+                {t('mtf_info')}
               </p>
             </div>
           </CardContent>
