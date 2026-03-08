@@ -227,7 +227,7 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
                 <span className="text-[9px]" style={{ color: item.color }}>{item.label}</span>
               </div>
             ))}
-            <span className="text-[9px] text-slate-600 ml-auto">{votes.length} indicadores</span>
+            <span className="text-[9px] text-slate-600 ml-auto">{votes.length} {t('signal_confluence_indicators')}</span>
           </div>
         </div>
       </div>

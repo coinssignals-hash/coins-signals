@@ -1,18 +1,20 @@
 import { SignalCardV2 } from '@/components/signals/SignalCardV2';
 import { StaggerList } from '@/components/layout/StaggerList';
 import type { TradingSignal } from '@/hooks/useSignals';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TodaySignalsGroupProps {
   signals: TradingSignal[];
 }
 
 export function TodaySignalsGroup({ signals }: TodaySignalsGroupProps) {
+  const { t } = useTranslation();
   const activeCount = signals.filter(s => s.status === 'active' || s.status === 'pending').length;
 
   if (signals.length === 0) {
     return (
       <section>
-        <p className="text-muted-foreground text-center py-6 text-sm">No hay señales para hoy</p>
+        <p className="text-muted-foreground text-center py-6 text-sm">{t('signal_no_today')}</p>
       </section>
     );
   }
@@ -30,6 +32,7 @@ export function TodaySignalsGroup({ signals }: TodaySignalsGroupProps) {
 
 /** Compact badge to embed inside the performance stats header */
 export function TodayActivesBadge({ count }: { count: number }) {
+  const { t } = useTranslation();
   if (count <= 0) return null;
   return (
     <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20">
@@ -38,7 +41,7 @@ export function TodayActivesBadge({ count }: { count: number }) {
         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
       </span>
       <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wide">
-        {count} activa{count !== 1 ? 's' : ''}
+        {count} {t('signal_active_count')}{count !== 1 ? 's' : ''}
       </span>
     </div>
   );

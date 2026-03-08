@@ -286,7 +286,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
 
             {stats.completed === 0 && (
               <p className="text-[10px] text-cyan-300/40 text-center italic">
-                Aún no hay señales cerradas. Las estadísticas se actualizarán cuando el precio alcance TP o SL.
+                {t('signal_no_closed')}
               </p>
             )}
           </div>
