@@ -16,6 +16,7 @@ const DISMISS_DURATION = 3 * 24 * 60 * 60 * 1000; // 3 days
 export function PWAInstallBanner() {
   const [show, setShow] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Don't show if already installed as PWA
