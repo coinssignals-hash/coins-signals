@@ -810,7 +810,7 @@ function QuickSourceFilter({
           checked={isAll}
           onCheckedChange={() => onChange([])}>
           <span className="flex items-center gap-2">
-            📡 Todas las fuentes
+            📡 {t('news_all_sources')}
             {totalSources > 0 && <span className="text-muted-foreground text-xs">({totalSources})</span>}
           </span>
         </DropdownMenuCheckboxItem>
