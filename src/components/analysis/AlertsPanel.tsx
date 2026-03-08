@@ -311,8 +311,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<TrendingDown className="w-4 h-4 text-purple-400" />}
         iconColor="bg-purple-500/15"
-        label="Cruces Precio/SMA"
-        description="Golden Cross, Death Cross"
+        label={t('analysis_alert_sma_cross')}
+        description={t('analysis_alert_sma_desc')}
         checked={localConfig.enableSMACross}
         onCheckedChange={(v) => handleChange('enableSMACross', v)}
       />
