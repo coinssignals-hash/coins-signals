@@ -30,18 +30,7 @@ interface EconomicEvent {
   changePercentage: number | null;
 }
 
-const IMPACT_CONFIG: Record<string, { color: string; label: string; bg: string; icon: typeof Zap }> = {
-  High: { color: 'text-rose-400', label: 'Alto', bg: 'bg-rose-500/15 border-rose-500/30', icon: Zap },
-  Medium: { color: 'text-amber-400', label: 'Medio', bg: 'bg-amber-500/15 border-amber-500/30', icon: AlertTriangle },
-  Low: { color: 'text-emerald-400', label: 'Bajo', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: Minus },
-};
-
-const DAY_OFFSETS = [
-  { label: 'Ayer', offset: -1 },
-  { label: 'Hoy', offset: 0 },
-  { label: 'Mañana', offset: 1 },
-  { label: '+2 días', offset: 2 },
-];
+// IMPACT_CONFIG and DAY_OFFSETS are now inside the component to support i18n
 
 const COUNTRY_FLAGS: Record<string, string> = {
   US: '🇺🇸', EU: '🇪🇺', GB: '🇬🇧', JP: '🇯🇵', CH: '🇨🇭', AU: '🇦🇺',
