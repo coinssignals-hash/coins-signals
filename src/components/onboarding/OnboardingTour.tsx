@@ -142,68 +142,43 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
 
           {/* Text */}
           <div className="text-center mb-8">
-            <h2 className="text-xl font-bold text-white mb-3">{step.title}</h2>
-            <p className="text-slate-400 text-sm leading-relaxed">{step.description}</p>
+            <h2 className="text-xl font-bold text-white mb-3">{t(step.titleKey)}</h2>
+            <p className="text-slate-400 text-sm leading-relaxed">{t(step.descKey)}</p>
           </div>
 
-          {/* Go to page button (for steps with routes) */}
           {step.route && !isFirstStep && (
             <Button
               onClick={handleGoToRoute}
               variant="outline"
               className="w-full mb-4 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
             >
-              Ir a {step.title}
+              {t('onb_go_to')} {t(step.titleKey)}
             </Button>
           )}
 
-          {/* Navigation buttons */}
           <div className="flex items-center gap-3">
             {!isFirstStep && (
-              <Button
-                onClick={handlePrev}
-                variant="ghost"
-                className="flex-1 text-slate-400 hover:text-white"
-              >
+              <Button onClick={handlePrev} variant="ghost" className="flex-1 text-slate-400 hover:text-white">
                 <ChevronLeft className="w-4 h-4 mr-1" />
-                Anterior
+                {t('onb_prev')}
               </Button>
             )}
-            
             <Button
               onClick={handleNext}
-              className={cn(
-                "flex-1 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white",
-                isFirstStep && "flex-[2]"
-              )}
+              className={cn("flex-1 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white", isFirstStep && "flex-[2]")}
             >
-              {isLastStep ? (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  ¡Comenzar!
-                </>
-              ) : (
-                <>
-                  Siguiente
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </>
-              )}
+              {isLastStep ? (<><Sparkles className="w-4 h-4 mr-2" />{t('onb_start')}</>) : (<>{t('onb_next')}<ChevronRight className="w-4 h-4 ml-1" /></>)}
             </Button>
           </div>
 
-          {/* Skip link */}
-          <button
-            onClick={handleSkip}
-            className="w-full mt-4 text-slate-500 text-xs hover:text-slate-400 transition-colors"
-          >
-            Saltar tour
+          <button onClick={handleSkip} className="w-full mt-4 text-slate-500 text-xs hover:text-slate-400 transition-colors">
+            {t('onb_skip')}
           </button>
         </div>
 
-        {/* Step counter */}
         <div className="bg-slate-800/50 py-3 text-center border-t border-slate-700/50">
           <span className="text-slate-500 text-xs">
-            Paso {currentStep + 1} de {tourSteps.length}
+            {currentStep + 1} {t('onb_step_of')} {tourSteps.length}
           </span>
         </div>
       </div>
