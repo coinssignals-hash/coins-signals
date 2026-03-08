@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Calculator, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface RiskRewardCalculatorProps {
   currentPrice: number;
@@ -10,6 +11,7 @@ interface RiskRewardCalculatorProps {
 }
 
 export function RiskRewardCalculator({ currentPrice, symbol, resistance, support }: RiskRewardCalculatorProps) {
+  const { t } = useTranslation();
   const [direction, setDirection] = useState<'long' | 'short'>('long');
   const [entry, setEntry] = useState(currentPrice.toFixed(5));
   const [stopLoss, setStopLoss] = useState((support || currentPrice * 0.995).toFixed(5));
@@ -35,14 +37,14 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
   }, [entry, stopLoss, takeProfit, lotSize]);
 
   const ratioColor = calc.ratio >= 2 ? 'text-green-400' : calc.ratio >= 1 ? 'text-yellow-400' : 'text-red-400';
-  const ratioLabel = calc.ratio >= 3 ? 'Excelente' : calc.ratio >= 2 ? 'Bueno' : calc.ratio >= 1 ? 'Aceptable' : 'Desfavorable';
+  const ratioLabel = calc.ratio >= 3 ? t('analysis_rr_excellent') : calc.ratio >= 2 ? t('analysis_rr_good') : calc.ratio >= 1 ? t('analysis_rr_acceptable') : t('analysis_rr_unfavorable');
 
   return (
     <div className="bg-[#0a1628] border border-amber-900/30 rounded-xl p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Calculator className="w-4 h-4 text-amber-400" />
-          <h3 className="text-white font-semibold text-sm">Calculadora R:R</h3>
+          <h3 className="text-white font-semibold text-sm">{t('analysis_rr_calculator')}</h3>
         </div>
         <div className="flex gap-1">
           <button
@@ -73,10 +75,10 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       {/* Input Fields */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[
-          { label: 'Entrada', value: entry, onChange: setEntry, color: 'border-cyan-500/30' },
+          { label: t('analysis_rr_entry'), value: entry, onChange: setEntry, color: 'border-cyan-500/30' },
           { label: 'Stop Loss', value: stopLoss, onChange: setStopLoss, color: 'border-red-500/30' },
           { label: 'Take Profit', value: takeProfit, onChange: setTakeProfit, color: 'border-green-500/30' },
-          { label: 'Lotes', value: lotSize, onChange: setLotSize, color: 'border-amber-500/30' },
+          { label: t('analysis_rr_lots'), value: lotSize, onChange: setLotSize, color: 'border-amber-500/30' },
         ].map(field => (
           <div key={field.label}>
             <label className="text-[9px] text-gray-500 uppercase tracking-wider">{field.label}</label>
@@ -96,19 +98,19 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       {/* Results */}
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-center">
-          <div className="text-[9px] text-gray-500 uppercase">Riesgo</div>
+          <div className="text-[9px] text-gray-500 uppercase">{t('analysis_rr_risk')}</div>
           <div className="text-red-400 font-mono font-bold text-sm">{calc.riskPips.toFixed(2)}p</div>
           <div className="text-red-400/70 text-[10px] font-mono">-${calc.potentialLoss.toFixed(2)}</div>
         </div>
         <div className={cn("border rounded-lg p-2 text-center", calc.ratio >= 2 ? "bg-green-500/10 border-green-500/20" : calc.ratio >= 1 ? "bg-yellow-500/10 border-yellow-500/20" : "bg-red-500/10 border-red-500/20")}>
-          <div className="text-[9px] text-gray-500 uppercase">Ratio R:R</div>
+          <div className="text-[9px] text-gray-500 uppercase">{t('analysis_rr_ratio')}</div>
           <div className={cn("font-bold text-lg tabular-nums", ratioColor)}>
             1:{calc.ratio.toFixed(2)}
           </div>
           <div className={cn("text-[10px] font-medium", ratioColor)}>{ratioLabel}</div>
         </div>
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-2 text-center">
-          <div className="text-[9px] text-gray-500 uppercase">Beneficio</div>
+          <div className="text-[9px] text-gray-500 uppercase">{t('analysis_rr_profit')}</div>
           <div className="text-green-400 font-mono font-bold text-sm">{calc.rewardPips.toFixed(2)}p</div>
           <div className="text-green-400/70 text-[10px] font-mono">+${calc.potentialProfit.toFixed(2)}</div>
         </div>
@@ -118,7 +120,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       <div className="space-y-1">
         <div className="flex justify-between text-[9px] text-gray-500">
           <span>SL: {stopLoss}</span>
-          <span>Entrada: {entry}</span>
+          <span>{t('analysis_rr_entry')}: {entry}</span>
           <span>TP: {takeProfit}</span>
         </div>
         <div className="h-2 bg-gray-800 rounded-full overflow-hidden flex">
@@ -136,7 +138,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       {calc.ratio < 1 && (
         <div className="flex items-center gap-1.5 text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-1.5">
           <AlertTriangle className="w-3 h-3 shrink-0" />
-          <span>Ratio desfavorable. Considera ajustar SL/TP para un ratio mínimo de 1:2.</span>
+          <span>{t('analysis_rr_warning')}</span>
         </div>
       )}
     </div>

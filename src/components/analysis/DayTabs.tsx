@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { ChevronDown, Calendar, Brain, RefreshCw } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 interface DayTabsProps {
   selectedDay: Date;
@@ -13,12 +14,14 @@ interface DayTabsProps {
 }
 
 export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoading }: DayTabsProps) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [open, setOpen] = useState(false);
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
   const days = Array.from({ length: 5 }, (_, i) => addDays(weekStart, i));
 
-  const selectedLabel = format(selectedDay, "EEE dd MMM", { locale: es });
+  const selectedLabel = format(selectedDay, "EEE dd MMM", { locale: dateLocale });
 
   return (
     <div className="relative flex items-center justify-between w-full bg-gradient-to-r from-slate-900/90 via-slate-800/70 to-slate-900/90 border-y border-cyan-900/20 py-1.5 px-3">
@@ -54,7 +57,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
             onClick={onRefresh}
             disabled={isLoading}
             className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(6,182,212,0.2)] disabled:opacity-50"
-            title="Refrescar">
+            title={t('analysis_refresh')}>
             <RefreshCw className={cn('w-4 h-4 text-cyan-400', isLoading && 'animate-spin')} />
           </button>
         )}
@@ -65,7 +68,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
           {days.map((day) => {
             const isSelected = format(day, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd');
             const isToday = format(day, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd');
-            const dayName = format(day, 'EEEE', { locale: es });
+            const dayName = format(day, 'EEEE', { locale: dateLocale });
             const dayNumber = format(day, 'dd');
             return (
               <button
@@ -77,7 +80,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
                 )}>
                 <span className="w-7 text-center font-bold">{dayNumber}</span>
                 <span className="capitalize">{dayName}</span>
-                {isToday && <span className="ml-auto text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded">Hoy</span>}
+                {isToday && <span className="ml-auto text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded">{t('analysis_today')}</span>}
               </button>
             );
           })}

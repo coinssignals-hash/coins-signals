@@ -17,7 +17,7 @@ interface MarketSentimentProps {
 }
 
 /* ─── Professional Radial Gauge ─── */
-function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
+function ProGauge({ value, size = 160, t }: { value: number; size?: number; t: (k: string) => string }) {
   const r = (size - 24) / 2;
   const cx = size / 2;
   const cy = size / 2 + 8;
@@ -37,7 +37,7 @@ function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
   };
 
   const needle = ptc(valA, r - 14);
-  const label = value >= 65 ? 'ALCISTA' : value >= 45 ? 'NEUTRAL' : 'BAJISTA';
+  const label = value >= 65 ? t('analysis_sent_bullish_label') : value >= 45 ? t('analysis_sent_neutral_label') : t('analysis_sent_bearish_label');
   const color = value >= 65 ? '#22c55e' : value >= 45 ? '#f59e0b' : '#ef4444';
 
   // Tick marks
@@ -108,12 +108,13 @@ function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
 
 /* ─── Sentiment Distribution Bar ─── */
 function SentimentDistBar({ bullish, neutral, bearish }: { bullish: number; neutral: number; bearish: number }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2.5">
       {[
-        { label: 'Alcista', value: bullish, color: '#22c55e', icon: TrendingUp },
-        { label: 'Neutral', value: neutral, color: '#f59e0b', icon: Minus },
-        { label: 'Bajista', value: bearish, color: '#ef4444', icon: TrendingDown },
+        { label: t('analysis_ind_bullish'), value: bullish, color: '#22c55e', icon: TrendingUp },
+        { label: t('analysis_ind_neutral'), value: neutral, color: '#f59e0b', icon: Minus },
+        { label: t('analysis_ind_bearish'), value: bearish, color: '#ef4444', icon: TrendingDown },
       ].map((item) => (
         <div key={item.label} className="group">
           <div className="flex items-center justify-between mb-1">
@@ -145,9 +146,9 @@ function SentimentDistBar({ bullish, neutral, bearish }: { bullish: number; neut
 /* ─── Technical Signal Chip ─── */
 function SignalChip({ name, signal, t }: { name: string; signal: string; t: (k: string) => string }) {
   const cfg = {
-    buy: { bg: 'bg-green-500/8', border: 'border-green-500/20', text: 'text-green-400', glow: 'shadow-[0_0_8px_rgba(34,197,94,0.15)]', icon: TrendingUp, label: 'COMPRA' },
-    sell: { bg: 'bg-red-500/8', border: 'border-red-500/20', text: 'text-red-400', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.15)]', icon: TrendingDown, label: 'VENTA' },
-    neutral: { bg: 'bg-white/[0.03]', border: 'border-white/[0.08]', text: 'text-gray-400', glow: '', icon: Minus, label: 'NEUTRAL' },
+    buy: { bg: 'bg-green-500/8', border: 'border-green-500/20', text: 'text-green-400', glow: 'shadow-[0_0_8px_rgba(34,197,94,0.15)]', icon: TrendingUp, labelKey: 'analysis_sent_buy' },
+    sell: { bg: 'bg-red-500/8', border: 'border-red-500/20', text: 'text-red-400', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.15)]', icon: TrendingDown, labelKey: 'analysis_sent_sell' },
+    neutral: { bg: 'bg-white/[0.03]', border: 'border-white/[0.08]', text: 'text-gray-400', glow: '', icon: Minus, labelKey: 'analysis_sent_neutral' },
   };
   const c = cfg[signal as keyof typeof cfg] || cfg.neutral;
   const Icon = c.icon;
@@ -163,7 +164,7 @@ function SignalChip({ name, signal, t }: { name: string; signal: string; t: (k: 
       </div>
       <div className="flex flex-col leading-none">
         <span className="text-[9px] text-gray-500 uppercase tracking-wider font-medium">{name}</span>
-        <span className={cn("text-[11px] font-bold", c.text)}>{c.label}</span>
+        <span className={cn("text-[11px] font-bold", c.text)}>{t(c.labelKey)}</span>
       </div>
     </motion.div>
   );
@@ -200,9 +201,9 @@ export function MarketSentiment({
     bearish >= neutral && bearish >= bullish ? 'bearish' : 'neutral');
 
   const trendCfg = {
-    bullish: { icon: TrendingUp, label: 'ALCISTA', color: '#22c55e' },
-    bearish: { icon: TrendingDown, label: 'BAJISTA', color: '#ef4444' },
-    neutral: { icon: Minus, label: 'NEUTRAL', color: '#f59e0b' },
+    bullish: { icon: TrendingUp, labelKey: 'analysis_sent_bullish_label', color: '#22c55e' },
+    bearish: { icon: TrendingDown, labelKey: 'analysis_sent_bearish_label', color: '#ef4444' },
+    neutral: { icon: Minus, labelKey: 'analysis_sent_neutral_label', color: '#f59e0b' },
   };
   const trend = trendCfg[currentTrend as keyof typeof trendCfg] || trendCfg.neutral;
   const TrendIcon = trend.icon;
@@ -244,7 +245,7 @@ export function MarketSentiment({
             boxShadow: `0 0 16px ${trend.color}15` }}
         >
           <TrendIcon className="w-3.5 h-3.5" />
-          {trend.label}
+          {t(trend.labelKey)}
         </div>
         <Eye className={cn("w-4 h-4 transition-colors", expanded ? "text-gray-400" : "text-gray-600")} />
       </div>
@@ -262,7 +263,7 @@ export function MarketSentiment({
               {/* Gauge + Distribution */}
               <div className="grid grid-cols-12 gap-4 items-start">
                 <div className="col-span-5 flex justify-center">
-                  <ProGauge value={gaugeValue} size={150} />
+                  <ProGauge value={gaugeValue} size={150} t={t} />
                 </div>
                 <div className="col-span-7 space-y-3">
                   <SentimentDistBar bullish={bullish} neutral={neutral} bearish={bearish} />
@@ -280,16 +281,16 @@ export function MarketSentiment({
 
               {/* Price Stats Row */}
               <div className="grid grid-cols-4 gap-2">
-                <MetricCard label="Máximo" value={highPrice.toFixed(4)} color="text-green-400" icon={TrendingUp} />
-                <MetricCard label="Mínimo" value={lowPrice.toFixed(4)} color="text-red-400" icon={TrendingDown} />
+                <MetricCard label={t('analysis_sent_maximum')} value={highPrice.toFixed(4)} color="text-green-400" icon={TrendingUp} />
+                <MetricCard label={t('analysis_sent_minimum')} value={lowPrice.toFixed(4)} color="text-red-400" icon={TrendingDown} />
                 <MetricCard
-                  label="Cambio"
+                  label={t('analysis_sent_change')}
                   value={`${dailyChange >= 0 ? '+' : ''}${dailyChange.toFixed(2)}%`}
                   color={dailyChange >= 0 ? 'text-green-400' : 'text-red-400'}
                   icon={Zap}
                 />
                 <MetricCard
-                  label="Pips"
+                  label={t('analysis_sent_pips')}
                   value={`${pipsChange >= 0 ? '+' : ''}${(pipsChange * 10000).toFixed(0)}`}
                   color={pipsChange >= 0 ? 'text-green-400' : 'text-red-400'}
                   icon={BarChart3}
@@ -301,7 +302,7 @@ export function MarketSentiment({
                 <div>
                   <div className="flex items-center gap-1.5 mb-2.5">
                     <Shield className="w-3.5 h-3.5 text-purple-400/60" />
-                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.15em] font-semibold">Señales Técnicas</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-[0.15em] font-semibold">{t('analysis_sent_tech_signals')}</span>
                     <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent ml-2" />
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">

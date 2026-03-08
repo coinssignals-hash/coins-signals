@@ -27,7 +27,7 @@ export function MonetaryPolicies({ symbol }: MonetaryPoliciesProps) {
           <h3 className="text-foreground font-semibold text-sm">{t('analysis_monetary_policies')}</h3>
           {totalSources > 0 && (
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-              <Database className="w-3 h-3 mr-0.5" />{totalSources} fuentes
+              <Database className="w-3 h-3 mr-0.5" />{totalSources} {t('analysis_mp_sources')}
             </Badge>
           )}
         </div>
@@ -94,7 +94,7 @@ export function MonetaryPolicies({ symbol }: MonetaryPoliciesProps) {
                     <div className="pt-2 border-t border-border/30 space-y-1.5">
                       <div className="flex items-center gap-1.5">
                         <Newspaper className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Noticias recientes</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('analysis_mp_recent_news')}</span>
                       </div>
                       {policy.recentHeadlines.map((headline, i) => (
                         <div key={i} className="text-xs">

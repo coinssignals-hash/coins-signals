@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Bell, Activity, Shield, Volume2, CandlestickChart, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
@@ -155,6 +156,7 @@ function PatternTypeRow({
 }
 
 export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
+  const { t } = useTranslation();
   const [localConfig, setLocalConfig] = useState(config);
 
   const handleChange = (key: keyof AlertConfig, value: boolean | number | AlertConfig['patternAlertTypes']) => {
@@ -185,14 +187,14 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       {/* Header badge */}
       <div className="flex items-center gap-2 px-1">
         <Bell className="h-4 w-4 text-primary" />
-        <span className="text-sm font-semibold text-foreground">Alertas</span>
+        <span className="text-sm font-semibold text-foreground">{t('analysis_alerts')}</span>
         <span className={cn(
           'text-[10px] font-mono px-1.5 py-0.5 rounded-full',
           activeCount > 0
             ? 'bg-primary/15 text-primary'
             : 'bg-muted text-muted-foreground'
         )}>
-          {activeCount} activas
+          {activeCount} {t('analysis_alert_active')}
         </span>
       </div>
 
@@ -200,14 +202,13 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<Shield className="w-4 h-4 text-emerald-400" />}
         iconColor="bg-emerald-500/15"
-        label="Soporte / Resistencia"
-        description="Alertar cerca del S/R del día anterior"
+        label={t('analysis_alert_sr')}
+        description={t('analysis_alert_sr_desc')}
         checked={localConfig.enableSupportResistance}
         onCheckedChange={(v) => handleChange('enableSupportResistance', v)}
       >
         <div className="space-y-2">
-          <div className="flex justify-between text-xs">
-            <span className="text-muted-foreground">Proximidad</span>
+            <span className="text-muted-foreground">{t('analysis_alert_proximity')}</span>
             <span className="font-mono text-amber-400">{localConfig.srProximityPercent}%</span>
           </div>
           <Slider
@@ -220,7 +221,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Volume2 className="h-3.5 w-3.5 text-blue-400" />
-            <Label className="text-xs">Sonido</Label>
+            <Label className="text-xs">{t('analysis_alert_sound')}</Label>
           </div>
           <Switch
             checked={localConfig.srEnableSound}
@@ -234,23 +235,23 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<CandlestickChart className="w-4 h-4 text-amber-400" />}
         iconColor="bg-amber-500/15"
-        label="Patrones de Velas"
-        description="Hammer, Engulfing, Doji y más"
+        label={t('analysis_alert_candle_patterns')}
+        description={t('analysis_alert_candle_desc')}
         checked={localConfig.enablePatternAlerts}
         onCheckedChange={(v) => handleChange('enablePatternAlerts', v)}
       >
         <div className="space-y-1.5">
-          <PatternTypeRow emoji="↑" emojiColor="text-emerald-400" label="Alcistas" hint="Hammer, Engulfing"
+          <PatternTypeRow emoji="↑" emojiColor="text-emerald-400" label={t('analysis_alert_bullish')} hint="Hammer, Engulfing"
             checked={localConfig.patternAlertTypes.bullish}
             onCheckedChange={(v) => handlePatternTypeChange('bullish', v)}
             onTestSound={() => testPatternSound('bullish')}
           />
-          <PatternTypeRow emoji="↓" emojiColor="text-red-400" label="Bajistas" hint="Bear Engulfing"
+          <PatternTypeRow emoji="↓" emojiColor="text-red-400" label={t('analysis_alert_bearish')} hint="Bear Engulfing"
             checked={localConfig.patternAlertTypes.bearish}
             onCheckedChange={(v) => handlePatternTypeChange('bearish', v)}
             onTestSound={() => testPatternSound('bearish')}
           />
-          <PatternTypeRow emoji="→" emojiColor="text-amber-400" label="Neutrales" hint="Doji"
+          <PatternTypeRow emoji="→" emojiColor="text-amber-400" label={t('analysis_alert_neutral')} hint="Doji"
             checked={localConfig.patternAlertTypes.neutral}
             onCheckedChange={(v) => handlePatternTypeChange('neutral', v)}
             onTestSound={() => testPatternSound('neutral')}
@@ -259,7 +260,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         <div className="flex items-center justify-between pt-1 border-t border-border/20">
           <div className="flex items-center gap-2">
             <Volume2 className="h-3.5 w-3.5 text-blue-400" />
-            <Label className="text-xs">Sonido global</Label>
+            <Label className="text-xs">{t('analysis_alert_global_sound')}</Label>
           </div>
           <Switch
             checked={localConfig.patternEnableSound}
@@ -273,22 +274,22 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<Activity className="w-4 h-4 text-yellow-400" />}
         iconColor="bg-yellow-500/15"
-        label="Alertas RSI"
-        description="Sobrecompra y sobreventa"
+        label={t('analysis_alert_rsi')}
+        description={t('analysis_alert_rsi_desc')}
         checked={localConfig.enableRSI}
         onCheckedChange={(v) => handleChange('enableRSI', v)}
       >
         <div className="space-y-3">
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Sobrecompra</span>
+              <span className="text-muted-foreground">{t('analysis_alert_overbought')}</span>
               <span className="font-mono text-red-400">{localConfig.rsiOverbought}</span>
             </div>
             <Slider value={[localConfig.rsiOverbought]} onValueChange={([v]) => handleChange('rsiOverbought', v)} min={60} max={90} step={5} />
           </div>
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Sobreventa</span>
+              <span className="text-muted-foreground">{t('analysis_alert_oversold')}</span>
               <span className="font-mono text-emerald-400">{localConfig.rsiOversold}</span>
             </div>
             <Slider value={[localConfig.rsiOversold]} onValueChange={([v]) => handleChange('rsiOversold', v)} min={10} max={40} step={5} />
@@ -300,8 +301,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<TrendingUp className="w-4 h-4 text-blue-400" />}
         iconColor="bg-blue-500/15"
-        label="Cruces MACD"
-        description="Cruce de línea de señal"
+        label={t('analysis_alert_macd')}
+        description={t('analysis_alert_macd_desc')}
         checked={localConfig.enableMACD}
         onCheckedChange={(v) => handleChange('enableMACD', v)}
       />
@@ -310,8 +311,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<TrendingDown className="w-4 h-4 text-purple-400" />}
         iconColor="bg-purple-500/15"
-        label="Cruces Precio/SMA"
-        description="Golden Cross, Death Cross"
+        label={t('analysis_alert_sma_cross')}
+        description={t('analysis_alert_sma_desc')}
         checked={localConfig.enableSMACross}
         onCheckedChange={(v) => handleChange('enableSMACross', v)}
       />
@@ -319,7 +320,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       {/* Footer info */}
       <div className="mt-2 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
         <p className="text-[10px] text-muted-foreground leading-relaxed">
-          Las alertas se envían como notificaciones push y dentro de la app.
+          {t('analysis_alert_footer')}
         </p>
       </div>
     </div>

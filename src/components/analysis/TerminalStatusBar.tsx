@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Globe, Clock, Activity, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TerminalStatusBarProps {
   symbol: string;
@@ -60,6 +61,7 @@ function estimateSpread(symbol: string): { spread: number; unit: string } {
 }
 
 export function TerminalStatusBar({ symbol, currentPrice, high, low, isRealtimeConnected }: TerminalStatusBarProps) {
+  const { t } = useTranslation();
   const sessions = useMemo(() => getActiveMarketSessions(), []);
   const activeSessions = sessions.filter(s => s.isActive);
   const { spread, unit } = useMemo(() => estimateSpread(symbol), [symbol]);
@@ -79,7 +81,7 @@ export function TerminalStatusBar({ symbol, currentPrice, high, low, isRealtimeC
               <span className="hidden sm:inline">{s.name}</span>
             </span>
           )) : (
-            <span className="text-[9px] text-gray-500">Off</span>
+            <span className="text-[9px] text-gray-500">{t('analysis_ts_off')}</span>
           )}
         </div>
       </div>

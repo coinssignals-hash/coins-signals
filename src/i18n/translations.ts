@@ -886,6 +886,125 @@ export type TranslationKeys = {
   auth_error_unexpected: string;
   auth_email_resent: string;
   auth_email_resent_desc: string;
+  // Analysis page - tabs & status
+  analysis_tab_technical: string;
+  analysis_tab_fundamental: string;
+  analysis_tab_sentiment: string;
+  analysis_tab_strategy: string;
+  analysis_alerts: string;
+  analysis_api_limit: string;
+  analysis_reconnecting: string;
+  analysis_reconnecting_attempt: string;
+  // Analysis - HeroDashboard
+  analysis_session_asia: string;
+  analysis_session_europe: string;
+  analysis_session_ny_eu: string;
+  analysis_session_new_york: string;
+  analysis_session_asia_pre: string;
+  analysis_greeting_morning: string;
+  analysis_greeting_afternoon: string;
+  analysis_greeting_evening: string;
+  analysis_live: string;
+  analysis_offline: string;
+  analysis_volatility: string;
+  analysis_daily_range: string;
+  analysis_momentum: string;
+  // Analysis - QuickStatsGrid
+  analysis_qs_change: string;
+  analysis_qs_high_low: string;
+  analysis_qs_resistance: string;
+  analysis_qs_support: string;
+  analysis_qs_daily_range: string;
+  analysis_qs_bias: string;
+  analysis_qs_vol_high: string;
+  analysis_qs_vol_medium: string;
+  analysis_qs_vol_low: string;
+  analysis_qs_pos: string;
+  // Analysis - DayTabs
+  analysis_today: string;
+  analysis_refresh: string;
+  // Analysis - TerminalStatusBar
+  analysis_ts_off: string;
+  // Analysis - MarketSentiment
+  analysis_sent_bullish_label: string;
+  analysis_sent_bearish_label: string;
+  analysis_sent_neutral_label: string;
+  analysis_sent_maximum: string;
+  analysis_sent_minimum: string;
+  analysis_sent_change: string;
+  analysis_sent_pips: string;
+  analysis_sent_tech_signals: string;
+  analysis_sent_buy: string;
+  analysis_sent_sell: string;
+  analysis_sent_neutral: string;
+  // Analysis - IndicatorsSummary
+  analysis_ind_overbought: string;
+  analysis_ind_oversold: string;
+  analysis_ind_neutral: string;
+  analysis_ind_cross_up: string;
+  analysis_ind_cross_down: string;
+  analysis_ind_bullish: string;
+  analysis_ind_bearish: string;
+  analysis_ind_moving_averages: string;
+  analysis_ind_overall_signal: string;
+  analysis_ind_buy: string;
+  analysis_ind_sell: string;
+  analysis_ind_above: string;
+  analysis_ind_below: string;
+  analysis_ind_mixed: string;
+  analysis_ind_strength: string;
+  // Analysis - TechnicalIndicatorsTabs
+  analysis_ti_price: string;
+  analysis_ti_stoch: string;
+  analysis_ti_averages: string;
+  analysis_ti_inside_bands: string;
+  analysis_ti_upper_band: string;
+  analysis_ti_lower_band: string;
+  analysis_ti_width: string;
+  analysis_ti_no_trend: string;
+  analysis_ti_bullish_trend: string;
+  analysis_ti_bearish_trend: string;
+  analysis_ti_weak: string;
+  analysis_ti_strong_trend: string;
+  analysis_ti_histogram: string;
+  // Analysis - RiskRewardCalculator
+  analysis_rr_calculator: string;
+  analysis_rr_entry: string;
+  analysis_rr_lots: string;
+  analysis_rr_risk: string;
+  analysis_rr_ratio: string;
+  analysis_rr_profit: string;
+  analysis_rr_excellent: string;
+  analysis_rr_good: string;
+  analysis_rr_acceptable: string;
+  analysis_rr_unfavorable: string;
+  analysis_rr_warning: string;
+  // Analysis - AlertsPanel
+  analysis_alert_active: string;
+  analysis_alert_sr: string;
+  analysis_alert_sr_desc: string;
+  analysis_alert_proximity: string;
+  analysis_alert_sound: string;
+  analysis_alert_candle_patterns: string;
+  analysis_alert_candle_desc: string;
+  analysis_alert_bullish: string;
+  analysis_alert_bearish: string;
+  analysis_alert_neutral: string;
+  analysis_alert_global_sound: string;
+  analysis_alert_rsi: string;
+  analysis_alert_rsi_desc: string;
+  analysis_alert_overbought: string;
+  analysis_alert_oversold: string;
+  analysis_alert_macd: string;
+  analysis_alert_macd_desc: string;
+  analysis_alert_sma_cross: string;
+  analysis_alert_sma_desc: string;
+  analysis_alert_footer: string;
+  // Analysis - MonetaryPolicies
+  analysis_mp_sources: string;
+  analysis_mp_recent_news: string;
+  // Analysis - PricePrediction
+  analysis_pp_timeframe: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

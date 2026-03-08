@@ -10,6 +10,7 @@ import {
   LineChart, Landmark, Brain, Target } from
 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { TerminalStatusBar } from '@/components/analysis/TerminalStatusBar';
@@ -64,6 +65,7 @@ function formatSymbolForPolygon(symbol: string): string {
 
 export default function Analysis() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1h');
   const [selectedDay, setSelectedDay] = useState(new Date());
@@ -149,7 +151,7 @@ export default function Analysis() {
               </Button>
             </SheetTrigger>
             <SheetContent className="w-[85vw] max-w-[380px] bg-[#0a1628] border-cyan-900/40">
-              <SheetHeader><SheetTitle className="text-white">Alertas</SheetTitle></SheetHeader>
+              <SheetHeader><SheetTitle className="text-white">{t('analysis_alerts')}</SheetTitle></SheetHeader>
               <div className="mt-4"><Suspense fallback={<SectionLoader />}><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></Suspense></div>
             </SheetContent>
           </Sheet>
@@ -183,7 +185,7 @@ export default function Analysis() {
         {isRateLimited &&
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-xs">
             <Clock className="h-4 w-4 text-yellow-500 shrink-0" />
-            <span className="text-yellow-400">Límite de API — reintentando en 60s</span>
+            <span className="text-yellow-400">{t('analysis_api_limit')}</span>
           </div>
             }
         {error && !isRateLimited
@@ -192,7 +194,7 @@ export default function Analysis() {
         {isReconnecting &&
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30 text-xs animate-pulse">
             <WifiOff className="h-4 w-4 text-orange-500 shrink-0" />
-            <span className="text-orange-400">Reconectando... intento {reconnectAttempt}/5</span>
+            <span className="text-orange-400">{t('analysis_reconnecting')} {t('analysis_reconnecting_attempt')} {reconnectAttempt}/5</span>
           </div>
             }
 
@@ -222,16 +224,16 @@ export default function Analysis() {
         <Tabs value={activePanel} onValueChange={setActivePanel} className="space-y-2 sm:space-y-3">
           <TabsList className="bg-[#060e1a]/95 backdrop-blur-md border border-cyan-900/20 w-full h-14 sm:h-12 p-1.5 gap-1 rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.4)]">
             <TabsTrigger value="tecnico" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-cyan-500/25 data-[state=active]:to-cyan-600/10 data-[state=active]:text-cyan-300 data-[state=active]:shadow-[0_0_16px_rgba(6,182,212,0.25),inset_0_1px_0_rgba(6,182,212,0.15)] data-[state=active]:border data-[state=active]:border-cyan-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
-              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Téc.</span>
+              <LineChart className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">{t('analysis_tab_technical')}</span>
             </TabsTrigger>
             <TabsTrigger value="fundamental" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-emerald-500/25 data-[state=active]:to-emerald-600/10 data-[state=active]:text-emerald-300 data-[state=active]:shadow-[0_0_16px_rgba(16,185,129,0.25),inset_0_1px_0_rgba(16,185,129,0.15)] data-[state=active]:border data-[state=active]:border-emerald-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
-              <Landmark className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Fund.</span>
+              <Landmark className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">{t('analysis_tab_fundamental')}</span>
             </TabsTrigger>
             <TabsTrigger value="sentimiento" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-purple-500/25 data-[state=active]:to-purple-600/10 data-[state=active]:text-purple-300 data-[state=active]:shadow-[0_0_16px_rgba(168,85,247,0.25),inset_0_1px_0_rgba(168,85,247,0.15)] data-[state=active]:border data-[state=active]:border-purple-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
-              <Brain className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Sent.</span>
+              <Brain className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">{t('analysis_tab_sentiment')}</span>
             </TabsTrigger>
             <TabsTrigger value="estrategia" className="flex-1 flex-col sm:flex-row text-[10px] sm:text-xs gap-0.5 sm:gap-1.5 data-[state=active]:bg-gradient-to-b data-[state=active]:from-amber-500/25 data-[state=active]:to-amber-600/10 data-[state=active]:text-amber-300 data-[state=active]:shadow-[0_0_16px_rgba(245,158,11,0.25),inset_0_1px_0_rgba(245,158,11,0.15)] data-[state=active]:border data-[state=active]:border-amber-500/20 text-slate-500 rounded-xl transition-all duration-200 active:scale-[0.96] py-1.5 sm:py-2 font-medium">
-              <Target className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">Estr.</span>
+              <Target className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> <span className="leading-none">{t('analysis_tab_strategy')}</span>
             </TabsTrigger>
           </TabsList>
 

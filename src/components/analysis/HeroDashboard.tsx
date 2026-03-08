@@ -4,6 +4,7 @@ import { useMultiPairPrices, MultiPairQuote } from '@/hooks/useMultiPairPrices';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import bullBg from '@/assets/brand-logo-bg.svg';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const CURRENCY_FLAGS: Record<string, string> = {
   USD: "us", EUR: "eu", GBP: "gb", JPY: "jp", AUD: "au", CAD: "ca",
@@ -23,21 +24,21 @@ interface HeroDashboardProps {
   onSelectPair?: (pair: string) => void;
 }
 
-function getActiveSession(): {name: string;emoji: string;color: string;} {
+function getActiveSession(t: (k: string) => string): {name: string;emoji: string;color: string;} {
   const utcHour = new Date().getUTCHours();
-  if (utcHour >= 0 && utcHour < 7) return { name: 'Asia', emoji: '🌏', color: 'text-amber-400' };
-  if (utcHour >= 7 && utcHour < 12) return { name: 'Europa', emoji: '🌍', color: 'text-cyan-400' };
-  if (utcHour >= 12 && utcHour < 17) return { name: 'NY + EU', emoji: '🌎🌍', color: 'text-emerald-400' };
-  if (utcHour >= 17 && utcHour < 21) return { name: 'Nueva York', emoji: '🌎', color: 'text-blue-400' };
-  return { name: 'Asia (Pre)', emoji: '🌏', color: 'text-amber-400' };
+  if (utcHour >= 0 && utcHour < 7) return { name: t('analysis_session_asia'), emoji: '🌏', color: 'text-amber-400' };
+  if (utcHour >= 7 && utcHour < 12) return { name: t('analysis_session_europe'), emoji: '🌍', color: 'text-cyan-400' };
+  if (utcHour >= 12 && utcHour < 17) return { name: t('analysis_session_ny_eu'), emoji: '🌎🌍', color: 'text-emerald-400' };
+  if (utcHour >= 17 && utcHour < 21) return { name: t('analysis_session_new_york'), emoji: '🌎', color: 'text-blue-400' };
+  return { name: t('analysis_session_asia_pre'), emoji: '🌏', color: 'text-amber-400' };
 }
 
-function getGreeting(): string {
+function getGreeting(t: (k: string) => string): string {
   const hour = new Date().getHours();
-  if (hour < 6) return 'Buenas noches';
-  if (hour < 12) return 'Buenos días';
-  if (hour < 19) return 'Buenas tardes';
-  return 'Buenas noches';
+  if (hour < 6) return t('analysis_greeting_evening');
+  if (hour < 12) return t('analysis_greeting_morning');
+  if (hour < 19) return t('analysis_greeting_afternoon');
+  return t('analysis_greeting_evening');
 }
 
 const pairFlags: Record<string, string> = {
@@ -58,8 +59,9 @@ function formatPrice(price: number): string {
 export function HeroDashboard({
   currentPrice, change, changePercent, high, low, symbol, loading, isRealtimeConnected, onSelectPair
 }: HeroDashboardProps) {
-  const session = useMemo(() => getActiveSession(), []);
-  const greeting = useMemo(() => getGreeting(), []);
+  const { t } = useTranslation();
+  const session = useMemo(() => getActiveSession(t), [t]);
+  const greeting = useMemo(() => getGreeting(t), [t]);
   const isPositive = change >= 0;
   const [base, quote] = symbol.split('/');
   const { quotes } = useMultiPairPrices();
@@ -128,11 +130,11 @@ export function HeroDashboard({
                 {isRealtimeConnected ?
                 <span className="flex items-center gap-1 text-[9px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Live
+                    {t('analysis_live')}
                   </span> :
                 <span className="flex items-center gap-1 text-[9px] text-gray-500 bg-gray-500/10 border border-gray-500/20 px-1.5 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
-                    Offline
+                    {t('analysis_offline')}
                   </span>
                 }
               </div>
@@ -193,22 +195,22 @@ export function HeroDashboard({
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
           <QuickStatCard
             icon={<Activity className="w-3.5 h-3.5 text-cyan-400" />}
-            label="Volatilidad"
+            label={t('analysis_volatility')}
             value={`${(Math.abs(changePercent) * 2.5).toFixed(1)}%`}
             trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'} />
         </motion.div>
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
           <QuickStatCard
             icon={<BarChart2 className="w-3.5 h-3.5 text-blue-400" />}
-            label="Rango Diario"
+            label={t('analysis_daily_range')}
             value={`${((high - low) * (currentPrice < 10 ? 10000 : 100)).toFixed(0)} pips`}
             trend="neutral" />
         </motion.div>
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
           <QuickStatCard
             icon={<Zap className="w-3.5 h-3.5 text-amber-400" />}
-            label="Momentum"
-            value={isPositive ? 'Alcista' : 'Bajista'}
+            label={t('analysis_momentum')}
+            value={isPositive ? t('analysis_ind_bullish') : t('analysis_ind_bearish')}
             trend={isPositive ? 'bullish' : 'bearish'} />
         </motion.div>
       </motion.div>

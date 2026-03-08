@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Gauge, BarChart3, TrendingUp, TrendingDown, Activity, Minus, Zap } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface IndicatorsSummaryProps {
   pair: string;
@@ -28,6 +29,7 @@ interface CardData {
 export function IndicatorsSummary({
   pair, timeframe, priceData, smaData, rsiData, macdData, loading,
 }: IndicatorsSummaryProps) {
+  const { t } = useTranslation();
 
   const cards = useMemo((): CardData[] => {
     const result: CardData[] = [];
@@ -42,7 +44,7 @@ export function IndicatorsSummary({
     result.push({
       title: 'RSI (14)',
       value: currentRSI.toFixed(1),
-      subValue: rsiSignal === 'sell' ? 'Sobrecompra' : rsiSignal === 'buy' ? 'Sobreventa' : 'Neutral',
+      subValue: rsiSignal === 'sell' ? t('analysis_ind_overbought') : rsiSignal === 'buy' ? t('analysis_ind_oversold') : t('analysis_ind_neutral'),
       signal: rsiSignal,
       strength: rsiStrength,
       icon: Gauge,
@@ -61,10 +63,10 @@ export function IndicatorsSummary({
       const isBullishCross = prevMACD.macd <= prevMACD.signal && latestMACD.macd > latestMACD.signal;
       const isBearishCross = prevMACD.macd >= prevMACD.signal && latestMACD.macd < latestMACD.signal;
 
-      if (isBullishCross) { macdSignal = 'buy'; macdLabel = 'Cruce ↑'; macdStrength = 85; crossLabel = '⚡'; }
-      else if (isBearishCross) { macdSignal = 'sell'; macdLabel = 'Cruce ↓'; macdStrength = 85; crossLabel = '⚡'; }
-      else if (latestMACD.macd > latestMACD.signal) { macdSignal = 'buy'; macdLabel = 'Alcista'; macdStrength = 55; }
-      else { macdSignal = 'sell'; macdLabel = 'Bajista'; macdStrength = 55; }
+      if (isBullishCross) { macdSignal = 'buy'; macdLabel = t('analysis_ind_cross_up'); macdStrength = 85; crossLabel = '⚡'; }
+      else if (isBearishCross) { macdSignal = 'sell'; macdLabel = t('analysis_ind_cross_down'); macdStrength = 85; crossLabel = '⚡'; }
+      else if (latestMACD.macd > latestMACD.signal) { macdSignal = 'buy'; macdLabel = t('analysis_ind_bullish'); macdStrength = 55; }
+      else { macdSignal = 'sell'; macdLabel = t('analysis_ind_bearish'); macdStrength = 55; }
     }
     const histValues = macdData?.map(m => m.histogram ?? (m.macd - m.signal)) || [];
     result.push({
@@ -82,7 +84,7 @@ export function IndicatorsSummary({
     const sma20 = smaData?.sma20?.[smaData.sma20.length - 1]?.sma;
     const sma50 = smaData?.sma50?.[smaData.sma50.length - 1]?.sma;
     let maSignal: 'buy' | 'sell' | 'neutral' = 'neutral';
-    let maLabel = 'Neutral';
+    let maLabel = t('analysis_ind_neutral');
     let maStrength = 30;
     let maDetail = '—';
 
@@ -91,14 +93,14 @@ export function IndicatorsSummary({
       const belowBoth = currentPrice < sma20 && currentPrice < sma50;
       const golden = sma20 > sma50;
 
-      if (aboveBoth && golden) { maSignal = 'buy'; maLabel = 'Alcista'; maStrength = 80; maDetail = 'Golden Cross'; }
-      else if (belowBoth && !golden) { maSignal = 'sell'; maLabel = 'Bajista'; maStrength = 80; maDetail = 'Death Cross'; }
-      else if (aboveBoth) { maSignal = 'buy'; maLabel = 'Por encima'; maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
-      else if (belowBoth) { maSignal = 'sell'; maLabel = 'Por debajo'; maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
-      else { maLabel = 'Mixto'; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      if (aboveBoth && golden) { maSignal = 'buy'; maLabel = 'Golden Cross'; maStrength = 80; maDetail = 'Golden Cross'; }
+      else if (belowBoth && !golden) { maSignal = 'sell'; maLabel = 'Death Cross'; maStrength = 80; maDetail = 'Death Cross'; }
+      else if (aboveBoth) { maSignal = 'buy'; maLabel = t('analysis_ind_above'); maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      else if (belowBoth) { maSignal = 'sell'; maLabel = t('analysis_ind_below'); maStrength = 55; maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
+      else { maLabel = t('analysis_ind_mixed'); maDetail = `SMA20: ${formatPrice(sma20, pair)}`; }
     }
     result.push({
-      title: 'Medias Móviles',
+      title: t('analysis_ind_moving_averages'),
       value: maLabel,
       subValue: maDetail,
       signal: maSignal,
@@ -116,9 +118,9 @@ export function IndicatorsSummary({
     const overallSignal: 'buy' | 'sell' | 'neutral' = buyPts > sellPts + 1.5 ? 'buy' : sellPts > buyPts + 1.5 ? 'sell' : 'neutral';
     const overallStrength = total > 0 ? Math.round((Math.max(buyPts, sellPts) / total) * 100) : 50;
     result.push({
-      title: 'Señal General',
-      value: overallSignal === 'buy' ? 'COMPRA' : overallSignal === 'sell' ? 'VENTA' : 'NEUTRAL',
-      subValue: `Fuerza: ${overallStrength}%`,
+      title: t('analysis_ind_overall_signal'),
+      value: overallSignal === 'buy' ? t('analysis_ind_buy') : overallSignal === 'sell' ? t('analysis_ind_sell') : t('analysis_ind_neutral'),
+      subValue: `${t('analysis_ind_strength')}: ${overallStrength}%`,
       signal: overallSignal,
       strength: overallStrength,
       icon: overallSignal === 'buy' ? TrendingUp : overallSignal === 'sell' ? TrendingDown : Minus,
