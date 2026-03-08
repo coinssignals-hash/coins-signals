@@ -168,6 +168,7 @@ export type TranslationKeys = {
   signal_sentiment_strength_medium: string;
   signal_sentiment_strength_low: string;
   signal_ai_analysis: string;
+  signal_translating: string;
   signal_analysis_for: string;
   signal_market_structure: string;
   signal_sr_confluence: string;
