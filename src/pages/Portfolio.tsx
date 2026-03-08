@@ -142,7 +142,7 @@ export default function Portfolio() {
                     <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center">
                       <Wallet className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Equity Total</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t('portfolio_equity')}</span>
                   </div>
                   <p className="text-2xl font-bold text-foreground tabular-nums">{formatCurrency(summary.total_equity)}</p>
                   <div className="flex items-center gap-3 text-xs">
