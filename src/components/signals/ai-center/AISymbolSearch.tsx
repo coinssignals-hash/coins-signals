@@ -347,7 +347,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                           border: `1px solid ${config.color}20`,
                         }}
                       >
-                        {getTypeLabel(item.type)}
+                        {getTypeLabel(item.type, t)}
                       </span>
                     </div>
                     <p className="text-[10px] text-slate-500 truncate mt-0.5">{item.name}</p>
