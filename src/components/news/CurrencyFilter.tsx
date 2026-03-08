@@ -6,6 +6,7 @@ import { Star, Loader2, ChevronDown, Search, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface CurrencyFilterProps {
   selected: Currency[];
