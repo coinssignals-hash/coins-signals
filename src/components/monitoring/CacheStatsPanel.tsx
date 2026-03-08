@@ -86,8 +86,8 @@ export function CacheStatsPanel() {
       if (error) throw error;
       
       toast({
-        title: 'Cache limpiado',
-        description: `Se eliminaron ${data.deleted} entradas expiradas`,
+        title: t('cache_cleaned'),
+        description: t('cache_cleaned_desc').replace('{count}', String(data.deleted)),
       });
       
       await fetchStats();
