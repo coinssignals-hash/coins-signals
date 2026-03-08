@@ -20,12 +20,13 @@ async function fetchViaProxy<T>(
   endpoint: string, 
   symbol: string, 
   date?: string,
-  currentPrice?: number
+  currentPrice?: number,
+  language?: string
 ): Promise<T> {
-  console.log(`Fetching via proxy: ${endpoint} for ${symbol}`);
+  console.log(`Fetching via proxy: ${endpoint} for ${symbol} (lang: ${language || 'default'})`);
   
   const { data, error } = await supabase.functions.invoke('analysis-proxy', {
-    body: { endpoint, symbol, date, currentPrice },
+    body: { endpoint, symbol, date, currentPrice, language },
   });
 
   if (error) {
