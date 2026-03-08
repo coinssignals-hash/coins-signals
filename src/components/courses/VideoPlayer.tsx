@@ -22,6 +22,7 @@ interface VideoPlayerProps {
 }
 
 export function VideoPlayer({ src, poster, title, onEnded }: VideoPlayerProps) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
