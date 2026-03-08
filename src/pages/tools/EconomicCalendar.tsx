@@ -57,12 +57,27 @@ function getFlag(currency: string): string {
 }
 
 export default function EconomicCalendar() {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [dayOffset, setDayOffset] = useState(0);
   const [impactFilter, setImpactFilter] = useState<string | null>(null);
   const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [aiInsights, setAiInsights] = useState<Record<number, string>>({});
   const { config, updateConfig, loaded: alertConfigLoaded } = useAlertConfig();
+
+  const DAY_OFFSETS = useMemo(() => [
+    { label: t('ec_yesterday'), offset: -1 },
+    { label: t('ec_today'), offset: 0 },
+    { label: t('ec_tomorrow'), offset: 1 },
+    { label: t('ec_plus2'), offset: 2 },
+  ], [t]);
+
+  const IMPACT_CONFIG_LOCAL: Record<string, { color: string; label: string; bg: string; icon: typeof Zap }> = useMemo(() => ({
+    High: { color: 'text-rose-400', label: t('ec_high'), bg: 'bg-rose-500/15 border-rose-500/30', icon: Zap },
+    Medium: { color: 'text-amber-400', label: t('ec_medium'), bg: 'bg-amber-500/15 border-amber-500/30', icon: AlertTriangle },
+    Low: { color: 'text-emerald-400', label: 'Low', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: Minus },
+  }), [t]);
 
   const targetDate = useMemo(() => {
     const d = new Date();
