@@ -82,7 +82,7 @@ export default function Portfolio() {
             </button>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Trading</span>
+                <span className="text-xs text-muted-foreground">{t('portfolio_trading')}</span>
               </div>
               <h1 className="text-xl font-bold text-foreground">{t('portfolio_title')}</h1>
             </div>
