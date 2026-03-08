@@ -393,7 +393,7 @@ export default function CreateSignal() {
           <TabsContent value="create">
             {/* Quick pair selector */}
             <div className="mb-5">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Par / Activo</label>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">{t('cs_pair_asset')}</label>
               <div className="flex flex-wrap gap-2 mb-3">
                 {POPULAR_PAIRS.map((pair) => (
                   <button
