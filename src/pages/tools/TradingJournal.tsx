@@ -182,6 +182,23 @@ export default function TradingJournal() {
     setEntryPrice(''); setExitPrice(''); setStopLoss('');
     setTakeProfit(''); setPips(''); setNotes('');
     setResult('win'); setLotSize('0.1');
+    setEditingId(null);
+  }
+
+  function startEdit(entry: TradeEntry) {
+    setDate(entry.date);
+    setPair(entry.pair);
+    setAction(entry.action);
+    setEntryPrice(entry.entryPrice);
+    setExitPrice(entry.exitPrice);
+    setLotSize(entry.lotSize);
+    setStopLoss(entry.stopLoss);
+    setTakeProfit(entry.takeProfit);
+    setResult(entry.result);
+    setPips(entry.pips);
+    setNotes(entry.notes);
+    setEditingId(entry.id);
+    setShowForm(true);
   }
 
   if (loading) {
