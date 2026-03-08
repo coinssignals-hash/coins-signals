@@ -58,10 +58,10 @@ const PairCardSkeleton = () => (
   </Card>
 );
 
-const PAIR_CATEGORIES: Record<string, string[]> = {
-  'Majors': ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'USD/CAD'],
-  'Crosses': ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CHF/JPY', 'EUR/AUD', 'GBP/AUD', 'EUR/CAD', 'GBP/CAD', 'AUD/CAD', 'AUD/NZD', 'EUR/NZD', 'GBP/NZD'],
-  'Metales': ['XAU/USD', 'XAG/USD'],
+const PAIR_CATEGORIES_KEYS: Record<string, { key: string; pairs: string[] }> = {
+  'Majors': { key: 'Majors', pairs: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'USD/CAD'] },
+  'Crosses': { key: 'Crosses', pairs: ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CHF/JPY', 'EUR/AUD', 'GBP/AUD', 'EUR/CAD', 'GBP/CAD', 'AUD/CAD', 'AUD/NZD', 'EUR/NZD', 'GBP/NZD'] },
+  'mtf_metals': { key: 'mtf_metals', pairs: ['XAU/USD', 'XAG/USD'] },
 };
 
 export default function MultiTFScreener() {
