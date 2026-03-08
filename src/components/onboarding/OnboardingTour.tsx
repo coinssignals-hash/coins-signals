@@ -33,6 +33,7 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const hasSeenTour = localStorage.getItem('onboarding_completed');
