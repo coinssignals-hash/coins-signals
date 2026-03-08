@@ -311,7 +311,7 @@ export default function LessonDetail() {
             {/* Meta */}
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{lesson.duration}</span>
-              <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" />Lección {currentIndex + 1} de {lesson.lessons.length}</span>
+              <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" />{t('lesson_lesson_of').replace('{current}', String(currentIndex + 1)).replace('{total}', String(lesson.lessons.length))}</span>
             </div>
 
             {/* Actions */}
