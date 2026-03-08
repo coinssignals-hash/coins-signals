@@ -459,6 +459,33 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           </Card>
         )}
 
+        {/* Push Notification Toggle */}
+        <Card className={cn(
+          "border transition-colors",
+          config.enableCalendarAlerts ? "bg-primary/5 border-primary/30" : "bg-card border-border"
+        )}>
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className={cn(
+                  "w-8 h-8 rounded-lg flex items-center justify-center",
+                  config.enableCalendarAlerts ? "bg-primary/15" : "bg-secondary"
+                )}>
+                  <Bell className={cn("w-4 h-4", config.enableCalendarAlerts ? "text-primary" : "text-muted-foreground")} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Alertas de Alto Impacto</p>
+                  <p className="text-[10px] text-muted-foreground">Notificación push 15 min antes</p>
+                </div>
+              </div>
+              <Switch
+                checked={config.enableCalendarAlerts}
+                onCheckedChange={(checked) => updateConfig({ ...config, enableCalendarAlerts: checked })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Warning */}
         {!isLoading && events.length > 0 && (
           <Card className="bg-card border-border">
