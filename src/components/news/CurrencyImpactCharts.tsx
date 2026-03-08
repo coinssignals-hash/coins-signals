@@ -155,7 +155,7 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
     <div className="rounded-xl bg-card/80 border border-border/50 p-4 overflow-hidden">
       <div className="flex items-center gap-2 mb-3">
         <BarChart3 className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Heatmap de Impacto</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('news_impact_heatmap')}</h3>
       </div>
 
       <div className="overflow-x-auto -mx-1 pb-1">
