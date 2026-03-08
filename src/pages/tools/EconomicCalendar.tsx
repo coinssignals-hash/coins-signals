@@ -314,7 +314,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           <Card className="bg-card border-border">
             <CardContent className="p-0">
               {filtered.map((event, i) => {
-                const impact = IMPACT_CONFIG[event.impact] || IMPACT_CONFIG.Low;
+                const impact = IMPACT_CONFIG_LOCAL[event.impact] || IMPACT_CONFIG_LOCAL.Low;
                 const time = event.date?.includes('T')
                   ? format(new Date(event.date), 'HH:mm')
                   : '--:--';
