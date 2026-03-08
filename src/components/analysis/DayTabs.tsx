@@ -68,7 +68,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
           {days.map((day) => {
             const isSelected = format(day, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd');
             const isToday = format(day, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd');
-            const dayName = format(day, 'EEEE', { locale: es });
+            const dayName = format(day, 'EEEE', { locale: dateLocale });
             const dayNumber = format(day, 'dd');
             return (
               <button
