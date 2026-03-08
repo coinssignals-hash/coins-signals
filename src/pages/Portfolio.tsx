@@ -217,7 +217,7 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.08 }}
           >
-            <h2 className="text-sm font-semibold text-primary mb-3">Historial</h2>
+            <h2 className="text-sm font-semibold text-primary mb-3">{t('portfolio_history')}</h2>
             <Card className="bg-card border-border">
               <CardContent className="p-3">
                 <PortfolioHistoryChart />
