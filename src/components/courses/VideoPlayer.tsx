@@ -158,8 +158,8 @@ export function VideoPlayer({ src, poster, title, onEnded }: VideoPlayerProps) {
           <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4 animate-pulse">
             <Play className="w-10 h-10 text-primary ml-1" />
           </div>
-          <p className="text-foreground font-medium">{title || 'Video de demostración'}</p>
-          <p className="text-sm text-muted-foreground mt-1">Contenido disponible próximamente</p>
+          <p className="text-foreground font-medium">{title || t('vp_demo_title')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('vp_coming_soon')}</p>
         </div>
       ) : (
         <video

@@ -4,7 +4,9 @@ import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2,
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 import { supabase } from '@/integrations/supabase/client';
 import signalCardBg from '@/assets/signal-card-bg.png';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';

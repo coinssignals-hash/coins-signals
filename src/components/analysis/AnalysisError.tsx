@@ -118,7 +118,7 @@ export function AnalysisError({
         {error && import.meta.env.DEV && (
           <details className="mt-2 text-left w-full">
             <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
-              Detalles técnicos
+              {t('ae_technical')}
             </summary>
             <pre className="mt-2 p-2 bg-black/50 rounded text-xs text-gray-500 overflow-auto max-h-20">
               {error.message}
