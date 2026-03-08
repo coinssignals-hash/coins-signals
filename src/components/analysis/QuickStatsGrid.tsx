@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown, ArrowUpDown, BarChart3, Target, Shield } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface QuickStatsGridProps {
   symbol?: string;
