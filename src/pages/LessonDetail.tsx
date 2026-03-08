@@ -326,13 +326,13 @@ export default function LessonDetail() {
                 )}
               >
                 <CheckCircle className="w-3.5 h-3.5" />
-                {isCompleted ? 'Completada' : 'Marcar completada'}
+                {isCompleted ? t('lesson_completed') : t('lesson_mark_completed')}
               </Button>
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground">
-                <ThumbsUp className="w-3.5 h-3.5" />Útil
+                <ThumbsUp className="w-3.5 h-3.5" />{t('lesson_useful')}
               </Button>
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground">
-                <MessageCircle className="w-3.5 h-3.5" />Preguntar
+                <MessageCircle className="w-3.5 h-3.5" />{t('lesson_ask')}
               </Button>
             </div>
           </div>
