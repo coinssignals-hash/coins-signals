@@ -83,9 +83,7 @@ export default function Install() {
             </div>
           </div>
           <h2 className="text-xl font-bold text-foreground mb-1">Coins Signals</h2>
-          <p className="text-muted-foreground text-sm">
-            Instala la app para una experiencia nativa
-          </p>
+          <p className="text-muted-foreground text-sm">{t('inst_native_experience')}</p>
         </motion.div>
 
         {isInstalled ? (
