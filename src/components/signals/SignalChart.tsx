@@ -383,6 +383,7 @@ function buildSignalChartSvg(
  *  SignalChart Component
  * ═══════════════════════════════════════════ */
 export function SignalChart({ currencyPair, support: propSupport, resistance: propResistance, signalLevels, className }: SignalChartProps) {
+  const { t } = useTranslation();
   const symbol = currencyPair.replace('/', '');
   const [activeInterval, setActiveInterval] = useState<ChartInterval>('15min');
   const { data: chartData, loading, error } = useForexChartData(symbol, activeInterval);

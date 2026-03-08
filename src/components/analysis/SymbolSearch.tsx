@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SearchResult {
   symbol: string;
