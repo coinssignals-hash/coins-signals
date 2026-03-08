@@ -753,7 +753,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
                 <div className="flex items-center gap-1.5 mb-2">
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">Análisis AI</span>
+                  <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">{t('signal_ai_analysis')}</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{signal.notes}</p>
               </div>
