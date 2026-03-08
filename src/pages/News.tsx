@@ -656,6 +656,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
 }
 // Featured news card for top story
 function FeaturedCard({ news }: {news: NewsListItem;}) {
+  const { t } = useTranslation();
   const impacts = useMemo(() => {
     return news.affected_currencies.slice(0, 3).map((currency) => ({
       currency, impact: (Math.random() - 0.5) * 40
@@ -663,7 +664,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
   }, [news.affected_currencies]);
 
   const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
-  const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
+  const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
   return (
