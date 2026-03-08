@@ -783,7 +783,7 @@ export default function CreateSignal() {
                           onClick={() => startEditSignal(signal)}
                           className="flex-1 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 bg-card/80 border border-border/40 hover:bg-card text-foreground"
                         >
-                          <Save className="w-3 h-3" /> Editar
+                          <Save className="w-3 h-3" /> {t('cs_edit')}
                         </button>
                         <button
                           onClick={() => setClosingSignalId(signal.id)}
