@@ -80,6 +80,7 @@ const pt: TranslationKeys = {
   signal_sentiment_strength_medium: 'Média',
   signal_sentiment_strength_low: 'Baixa',
   signal_ai_analysis: 'Análise IA',
+  signal_translating: 'Traduzindo...',
   signal_analysis_for: 'Análise para',
   signal_market_structure: 'Confluência com estrutura de mercado',
   signal_sr_confluence: 'Buscar confluência com níveis S/R e volume',

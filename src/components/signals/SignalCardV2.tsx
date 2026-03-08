@@ -22,6 +22,7 @@ import { MarketSentimentDashboard } from "@/components/signals/MarketSentimentDa
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useCurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { useSignalAutoClose } from "@/hooks/useSignalAutoClose";
+import { useTranslatedNotes } from "@/hooks/useTranslatedNotes";
 import type { CurrencyImpactAI } from "@/hooks/useCurrencyImpactAI";
 import { ConfluenceScore } from "@/components/signals/ConfluenceScore";
 import { TargetProgressBar } from "@/components/signals/TargetProgressBar";
@@ -374,6 +375,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
     currentPrice: priceDiff.hasData ? priceDiff.currentPrice : null
   });
 
+  // Translate AI analysis notes to current language
+  const { translated: translatedNotes, loading: notesTranslating } = useTranslatedNotes(signal?.notes);
 
 
   // Circle fill uses absolute percent distance (capped at 100 for arc)
@@ -756,7 +759,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
                   <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">{t('signal_ai_analysis')}</span>
                 </div>
-                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{signal.notes}</p>
+                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                  {notesTranslating ? (
+                    <span className="flex items-center gap-1.5 text-slate-400">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      {t('signal_translating')}
+                    </span>
+                  ) : translatedNotes}
+                </p>
               </div>
           }
 
