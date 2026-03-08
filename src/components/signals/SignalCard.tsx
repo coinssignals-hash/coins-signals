@@ -221,10 +221,10 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
       if (error) throw error;
       setAnalysisHistory(prev => prev.filter(a => a.id !== analysisId));
-      toast.success('Análisis eliminado');
+      toast.success(t('sig_analysis_deleted'));
     } catch (error) {
       console.error('Error deleting analysis:', error);
-      toast.error('Error al eliminar análisis');
+      toast.error(t('sig_analysis_delete_error'));
     }
   };
 
