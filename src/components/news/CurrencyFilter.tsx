@@ -467,7 +467,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 ))}
                 {filteredForexPairs.length === 0 && (
                   <div className="text-center py-4 text-sm text-muted-foreground">
-                    No se encontraron pares Forex para "{searchQuery}"
+                    {t('cf_no_forex')} "{searchQuery}"
                   </div>
                 )}
               </div>
