@@ -888,6 +888,60 @@ export type Database = {
           },
         ]
       }
+      trading_journal: {
+        Row: {
+          action: string
+          created_at: string
+          entry_price: number
+          exit_price: number
+          id: string
+          lot_size: number
+          notes: string | null
+          pair: string
+          pips: number
+          result: string
+          stop_loss: number | null
+          take_profit: number | null
+          trade_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          entry_price: number
+          exit_price: number
+          id?: string
+          lot_size?: number
+          notes?: string | null
+          pair: string
+          pips?: number
+          result?: string
+          stop_loss?: number | null
+          take_profit?: number | null
+          trade_date?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entry_price?: number
+          exit_price?: number
+          id?: string
+          lot_size?: number
+          notes?: string | null
+          pair?: string
+          pips?: number
+          result?: string
+          stop_loss?: number | null
+          take_profit?: number | null
+          trade_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       trading_signals: {
         Row: {
           action: string
