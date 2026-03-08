@@ -100,10 +100,15 @@ export default function InstitutionalCalendar() {
         </div>
 
         {/* Currency Filter */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => setFilterCurrency('all')}
-            className={cn('px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap', filterCurrency === 'all' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground')}
+            className={cn(
+              'px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all border',
+              filterCurrency === 'all'
+                ? 'bg-primary/15 border-primary text-primary shadow-sm shadow-primary/10'
+                : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
+            )}
           >
             Todos
           </button>
@@ -111,7 +116,12 @@ export default function InstitutionalCalendar() {
             <button
               key={c}
               onClick={() => setFilterCurrency(c)}
-              className={cn('px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap', filterCurrency === c ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground')}
+              className={cn(
+                'px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all border',
+                filterCurrency === c
+                  ? 'bg-primary/15 border-primary text-primary shadow-sm shadow-primary/10'
+                  : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
+              )}
             >
               {c}
             </button>
