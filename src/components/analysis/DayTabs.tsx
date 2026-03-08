@@ -57,7 +57,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
             onClick={onRefresh}
             disabled={isLoading}
             className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(6,182,212,0.2)] disabled:opacity-50"
-            title="Refrescar">
+            title={t('analysis_refresh')}>
             <RefreshCw className={cn('w-4 h-4 text-cyan-400', isLoading && 'animate-spin')} />
           </button>
         )}
