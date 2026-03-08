@@ -51,15 +51,13 @@ const SavedNews = () => {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>¿Limpiar todas las noticias guardadas?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta acción eliminará todas las noticias guardadas en el caché local. No podrás ver noticias antiguas que ya no estén en el feed.
-                  </AlertDialogDescription>
+                  <AlertDialogTitle>{t('saved_confirm_title')}</AlertDialogTitle>
+                  <AlertDialogDescription>{t('saved_confirm_desc')}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel>{t('common_cancel') || 'Cancelar'}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleClearCache} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Limpiar todo
+                    {t('saved_clear_all')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
