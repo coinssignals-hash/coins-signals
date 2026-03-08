@@ -13,8 +13,9 @@ import { cn } from '@/lib/utils';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays, subDays } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useAlertConfig } from '@/hooks/useAlertConfig';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 interface EconomicEvent {
   date: string;
