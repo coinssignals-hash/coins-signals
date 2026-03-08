@@ -124,6 +124,7 @@ function HistoricalImpactSection({
 
 
 }: {newsId: string;title: string;category: EconomicCategory;currencies: Currency[];}) {
+  const { t } = useTranslation();
   const { data, isLoading } = useNewsHistoricalImpactCached(newsId, title, category, currencies);
 
   const avgImpact = data?.averageImpact ?? 0;
