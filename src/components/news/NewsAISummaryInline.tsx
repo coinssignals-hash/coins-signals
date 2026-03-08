@@ -133,7 +133,7 @@ export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
         {isLoading ? (
           <div className="flex items-center gap-2 py-3">
             <Loader2 className="w-4 h-4 text-primary animate-spin" />
-            <span className="text-xs text-muted-foreground">Analyzing for trading insights...</span>
+            <span className="text-xs text-muted-foreground">{t('news_ai_analyzing_insights')}</span>
           </div>
         ) : error ? (
           <p className="text-xs text-muted-foreground py-2">AI analysis unavailable</p>
