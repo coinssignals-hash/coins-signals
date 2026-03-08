@@ -205,7 +205,7 @@ export function PortfolioWidget() {
           <>
             {/* Desktop - always visible */}
             <div className="hidden sm:block mt-3 pt-3 border-t border-green-900/30 space-y-1.5">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Top Posiciones</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">{t('pw_top_positions')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {topPositions.map((pos, idx) => {
                   const isPositive = pos.unrealized_pnl >= 0;
