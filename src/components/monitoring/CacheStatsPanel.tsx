@@ -134,7 +134,7 @@ export function CacheStatsPanel() {
       <Card className="bg-card border-border">
         <CardContent className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-primary animate-spin" />
-          <span className="ml-2 text-muted-foreground">Cargando estadísticas...</span>
+          <span className="ml-2 text-muted-foreground">{t('cache_loading')}</span>
         </CardContent>
       </Card>
     );
