@@ -282,7 +282,6 @@ export default function Portfolio() {
                {t('portfolio_open_positions')}
                <span className="text-muted-foreground font-normal ml-2 text-[10px]">{allPositions.length} {t('portfolio_active')}</span>
              </h2>
-            </h2>
             <Card className="bg-card border-border">
               <CardContent className="p-0">
                 {allPositions.map((pos, i) => (
