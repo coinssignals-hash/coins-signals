@@ -1060,7 +1060,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                         <div className="flex items-center gap-2 flex-wrap">
                           <div className="flex items-center gap-1 text-[10px] text-slate-500">
                             <Clock className="w-3 h-3" />
-                            {format(new Date(item.created_at), "dd MMM yyyy HH:mm", { locale: es })}
+                            {format(new Date(item.created_at), "dd MMM yyyy HH:mm", { locale: dateLocale })}
                           </div>
                           {item.recommendation && (
                             <span className={cn(
