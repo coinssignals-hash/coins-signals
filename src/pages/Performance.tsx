@@ -253,7 +253,7 @@ export default function Performance() {
             <Card className="bg-card border-border">
               <CardContent className="p-8 text-center">
                 <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Sin señales esta semana</p>
+                <p className="text-sm text-muted-foreground">{t('perf_no_signals_this_week')}</p>
               </CardContent>
             </Card>
           )}
