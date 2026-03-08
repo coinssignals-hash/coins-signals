@@ -255,11 +255,11 @@ export function CacheStatsPanel() {
         {stats?.newestEntry && (
           <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t border-border">
             <span>
-              Más reciente: {format(new Date(stats.newestEntry), 'dd/MM/yyyy HH:mm', { locale: es })}
+              {t('cache_newest')}: {format(new Date(stats.newestEntry), 'dd/MM/yyyy HH:mm', { locale: dateLocale })}
             </span>
             {stats.oldestEntry && (
               <span>
-                Más antiguo: {format(new Date(stats.oldestEntry), 'dd/MM/yyyy HH:mm', { locale: es })}
+                {t('cache_oldest')}: {format(new Date(stats.oldestEntry), 'dd/MM/yyyy HH:mm', { locale: dateLocale })}
               </span>
             )}
           </div>
