@@ -496,9 +496,9 @@ export default function TradingJournal() {
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="¿Qué aprendiste de esta operación?" className="bg-secondary border-border text-foreground min-h-[60px]" />
               </div>
 
-              <Button onClick={handleAdd} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
-                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
-                Guardar Operación
+              <Button onClick={handleSave} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : editingId ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                {editingId ? 'Actualizar Operación' : 'Guardar Operación'}
               </Button>
             </CardContent>
           </Card>
