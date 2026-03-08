@@ -136,9 +136,9 @@ export default function Courses() {
               {/* Quick Stats */}
               <div className="relative grid grid-cols-3 gap-3">
                 {[
-                  { icon: BookOpen, label: 'Cursos', value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
-                  { icon: Trophy, label: 'Completadas', value: stats.completed, color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5' },
-                  { icon: Star, label: 'Módulos', value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5' },
+                  { icon: BookOpen, label: t('courses_courses'), value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
+                  { icon: Trophy, label: t('courses_completed'), value: stats.completed, color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5' },
+                  { icon: Star, label: t('courses_modules'), value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5' },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
