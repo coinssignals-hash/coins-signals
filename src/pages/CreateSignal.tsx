@@ -525,7 +525,7 @@ export default function CreateSignal() {
               {/* Support & Resistance */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-amber-400 uppercase tracking-wider mb-1.5 block">Soporte</label>
+                  <label className="text-xs text-amber-400 uppercase tracking-wider mb-1.5 block">{t('cs_support')}</label>
                   <input
                     type="number"
                     step="any"
