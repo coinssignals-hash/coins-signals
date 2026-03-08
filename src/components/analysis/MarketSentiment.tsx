@@ -202,9 +202,9 @@ export function MarketSentiment({
     bearish >= neutral && bearish >= bullish ? 'bearish' : 'neutral');
 
   const trendCfg = {
-    bullish: { icon: TrendingUp, label: 'ALCISTA', color: '#22c55e' },
-    bearish: { icon: TrendingDown, label: 'BAJISTA', color: '#ef4444' },
-    neutral: { icon: Minus, label: 'NEUTRAL', color: '#f59e0b' },
+    bullish: { icon: TrendingUp, labelKey: 'analysis_sent_bullish_label', color: '#22c55e' },
+    bearish: { icon: TrendingDown, labelKey: 'analysis_sent_bearish_label', color: '#ef4444' },
+    neutral: { icon: Minus, labelKey: 'analysis_sent_neutral_label', color: '#f59e0b' },
   };
   const trend = trendCfg[currentTrend as keyof typeof trendCfg] || trendCfg.neutral;
   const TrendIcon = trend.icon;
