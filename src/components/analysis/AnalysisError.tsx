@@ -49,7 +49,7 @@ export function AnalysisError({
     if (errorMessage.includes('404')) {
       return {
         icon: AlertTriangle,
-        defaultMessage: 'Los datos solicitados no están disponibles.',
+        defaultMessage: t('ae_not_found'),
         isNetwork: false,
       };
     }
