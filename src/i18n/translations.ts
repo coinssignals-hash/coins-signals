@@ -1663,6 +1663,20 @@ export type TranslationKeys = {
   lb_send_orders: string;
   lb_trade_history: string;
   lb_open_trades: string;
+  lb_select_first: string;
+  lb_complete_api: string;
+  lb_login_required: string;
+  lb_connection_success: string;
+  lb_connection_error: string;
+  lb_delete_confirm: string;
+  lb_introduce_api_key: string;
+  lb_introduce_api_secret: string;
+  lb_loading: string;
+  lb_refresh: string;
+  bk_compare_selected: string;
+  bk_basic_info: string;
+  bk_default_desc: string;
+  bk_global_countries: string;
   // Onboarding
   onb_welcome: string;
   onb_welcome_desc: string;
