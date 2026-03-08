@@ -282,16 +282,16 @@ export function MarketSentiment({
 
               {/* Price Stats Row */}
               <div className="grid grid-cols-4 gap-2">
-                <MetricCard label="Máximo" value={highPrice.toFixed(4)} color="text-green-400" icon={TrendingUp} />
-                <MetricCard label="Mínimo" value={lowPrice.toFixed(4)} color="text-red-400" icon={TrendingDown} />
+                <MetricCard label={t('analysis_sent_maximum')} value={highPrice.toFixed(4)} color="text-green-400" icon={TrendingUp} />
+                <MetricCard label={t('analysis_sent_minimum')} value={lowPrice.toFixed(4)} color="text-red-400" icon={TrendingDown} />
                 <MetricCard
-                  label="Cambio"
+                  label={t('analysis_sent_change')}
                   value={`${dailyChange >= 0 ? '+' : ''}${dailyChange.toFixed(2)}%`}
                   color={dailyChange >= 0 ? 'text-green-400' : 'text-red-400'}
                   icon={Zap}
                 />
                 <MetricCard
-                  label="Pips"
+                  label={t('analysis_sent_pips')}
                   value={`${pipsChange >= 0 ? '+' : ''}${(pipsChange * 10000).toFixed(0)}`}
                   color={pipsChange >= 0 ? 'text-green-400' : 'text-red-400'}
                   icon={BarChart3}
