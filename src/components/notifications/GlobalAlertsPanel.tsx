@@ -157,7 +157,7 @@ export function GlobalAlertsPanel() {
               <div className="space-y-2 mt-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold flex items-center gap-1.5">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />
-                  Disparadas recientemente
+                  {t('ga_recently_triggered')}
                 </p>
                 {triggeredAlerts.map(alert => (
                   <AlertRow key={alert.id} alert={alert} onDelete={(id) => deleteAlert.mutate(id)} />

@@ -85,7 +85,7 @@ export function NotificationToggle() {
       onClick={handleToggle}
       disabled={isLoading}
       className="relative"
-      title={isSubscribed ? 'Desactivar notificaciones' : 'Activar notificaciones'}
+      title={isSubscribed ? t('nt_disable_title') : t('nt_enable_title')}
     >
       {isLoading ? (
         <Loader2 className="w-5 h-5 animate-spin text-blue-400" />

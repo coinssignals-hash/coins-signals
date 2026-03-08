@@ -82,6 +82,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 export function PortfolioHistoryChart() {
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState<TimeRange>('1W');
   const [chartType, setChartType] = useState<'equity' | 'pnl' | 'combined'>('equity');
   const { snapshots, stats, loading, error, refetch } = usePortfolioHistory(timeRange);

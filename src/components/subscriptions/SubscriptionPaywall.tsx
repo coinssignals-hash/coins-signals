@@ -68,10 +68,10 @@ export function SubscriptionPaywall({ featureName, reason, currentTier, required
 
             <div className="bg-secondary/50 rounded-lg p-4 mb-6 text-left space-y-2.5">
               {[
-                'Señales ilimitadas con IA',
-                'Análisis técnico avanzado',
-                'Centro de Inteligencia Artificial',
-                'Conexión multi-broker',
+                t('pw_feat_signals'),
+                t('pw_feat_technical'),
+                t('pw_feat_ai'),
+                t('pw_feat_broker'),
               ].map((feat, i) => (
                 <div key={i} className="flex items-center gap-2.5 text-xs">
                   <Sparkles className="w-3.5 h-3.5 text-accent flex-shrink-0" />
