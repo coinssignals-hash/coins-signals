@@ -208,6 +208,26 @@ export type TranslationKeys = {
   portfolio_demo_tooltip: string;
   portfolio_no_positions: string;
   portfolio_connect_broker: string;
+  portfolio_trading: string;
+  portfolio_in_positions: string;
+  portfolio_buy: string;
+  portfolio_sell: string;
+  portfolio_history: string;
+  portfolio_open_positions: string;
+  portfolio_active: string;
+  portfolio_no_brokers: string;
+  portfolio_no_brokers_desc: string;
+  portfolio_link_broker: string;
+  portfolio_by_broker: string;
+  portfolio_by_asset: string;
+  portfolio_value: string;
+  portfolio_lot: string;
+  portfolio_entry: string;
+  portfolio_current: string;
+  portfolio_commission: string;
+  portfolio_spread: string;
+  portfolio_pips: string;
+  portfolio_swap: string;
   // Performance page
   perf_loading: string;
   perf_no_signals_week: string;
