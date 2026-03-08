@@ -53,9 +53,11 @@ export function Header() {
 
           {/* Right: compact icons */}
           <div className="flex items-center gap-0">
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
-              <Search className="w-4 h-4" />
-            </Button>
+            <Link to="/tools/trading-journal">
+              <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
+                <BookOpen className="w-4 h-4" />
+              </Button>
+            </Link>
             <NotificationToggle />
             <Link to="/tools">
               <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
