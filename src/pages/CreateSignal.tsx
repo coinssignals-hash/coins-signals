@@ -734,7 +734,7 @@ export default function CreateSignal() {
                     {closingSignalId === signal.id ? (
                       <div className="space-y-3 pt-2 border-t border-border/30">
                         <div>
-                          <label className="text-xs text-muted-foreground mb-1 block">Precio de cierre</label>
+                          <label className="text-xs text-muted-foreground mb-1 block">{t('cs_close_price')}</label>
                           <input
                             type="number"
                             step="any"
