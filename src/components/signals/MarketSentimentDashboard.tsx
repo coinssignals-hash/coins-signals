@@ -112,7 +112,7 @@ function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSigna
       {[
       { label: "RSI", value: indicators.rsi.toString(), color: rsiColor },
       { label: "MACD", value: indicators.macdSignal === "bullish" ? "↑" : indicators.macdSignal === "bearish" ? "↓" : "→", color: macdColor },
-      { label: "Fuerza", value: indicators.trendStrength === "strong" ? "Alta" : indicators.trendStrength === "moderate" ? "Media" : "Baja", color: indicators.trendStrength === "strong" ? "hsl(135, 70%, 50%)" : "hsl(45, 80%, 55%)" },
+      { label: t('signal_sentiment_strength'), value: indicators.trendStrength === "strong" ? t('signal_sentiment_strength_high') : indicators.trendStrength === "moderate" ? t('signal_sentiment_strength_medium') : t('signal_sentiment_strength_low'), color: indicators.trendStrength === "strong" ? "hsl(135, 70%, 50%)" : "hsl(45, 80%, 55%)" },
       { label: "SMA", value: indicators.smaAlignment === "bullish" ? "↑" : indicators.smaAlignment === "bearish" ? "↓" : "↔", color: indicators.smaAlignment === "bullish" ? "hsl(135, 70%, 50%)" : indicators.smaAlignment === "bearish" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)" }].
       map((ind) =>
       <div
