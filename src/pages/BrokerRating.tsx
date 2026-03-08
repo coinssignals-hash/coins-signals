@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const categories = [
   { icon: TrendingUp, label: 'Forex', sublabel: 'Divisas' },
@@ -501,7 +502,6 @@ const brokers = [
 ];
 
 type Broker = typeof brokers[0];
-
 type SortOption = 'rating' | 'deposit' | 'spreads';
 
 const parseDeposit = (deposit: string): number => {
@@ -515,6 +515,7 @@ const parseSpreads = (spreads: string): number => {
 };
 
 export default function BrokerRating() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState('Principiante');
@@ -525,7 +526,6 @@ export default function BrokerRating() {
   const [showComparePanel, setShowComparePanel] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption | ''>('');
   
-  // Advanced filters
   const [location, setLocation] = useState('');
   const [currency, setCurrency] = useState('');
   const [depositRange, setDepositRange] = useState('');
@@ -538,7 +538,7 @@ export default function BrokerRating() {
       setBrokersToCompare(prev => prev.filter(b => b.id !== broker.id));
     } else {
       if (brokersToCompare.length >= 4) {
-        toast.error('Máximo 4 brokers para comparar');
+        toast.error(t('broker_max_compare'));
         return;
       }
       setBrokersToCompare(prev => [...prev, broker]);
@@ -551,7 +551,7 @@ export default function BrokerRating() {
 
   const handleCompare = () => {
     if (brokersToCompare.length < 2) {
-      toast.error('Selecciona al menos 2 brokers para comparar');
+      toast.error(t('broker_min_compare'));
       return;
     }
     setShowComparePanel(true);
@@ -568,65 +568,51 @@ export default function BrokerRating() {
     })
     .sort((a, b) => {
       if (!sortBy) return 0;
-      
       switch (sortBy) {
-        case 'rating':
-          return b.rating - a.rating;
-        case 'deposit':
-          return parseDeposit(a.depositMin) - parseDeposit(b.depositMin);
-        case 'spreads':
-          return parseSpreads(a.spreads) - parseSpreads(b.spreads);
-        default:
-          return 0;
+        case 'rating': return b.rating - a.rating;
+        case 'deposit': return parseDeposit(a.depositMin) - parseDeposit(b.depositMin);
+        case 'spreads': return parseSpreads(a.spreads) - parseSpreads(b.spreads);
+        default: return 0;
       }
     });
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`w-3 h-3 ${
-              star <= Math.floor(rating)
-                ? 'fill-amber-400 text-amber-400'
-                : star - 0.5 <= rating
-                ? 'fill-amber-400/50 text-amber-400'
-                : 'text-muted-foreground'
-            }`}
-          />
-        ))}
-        <span className="text-xs text-foreground ml-1">{rating}</span>
-      </div>
-    );
-  };
+  const renderStars = (rating: number) => (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`w-3 h-3 ${
+            star <= Math.floor(rating) ? 'fill-amber-400 text-amber-400'
+            : star - 0.5 <= rating ? 'fill-amber-400/50 text-amber-400'
+            : 'text-muted-foreground'
+          }`}
+        />
+      ))}
+      <span className="text-xs text-foreground ml-1">{rating}</span>
+    </div>
+  );
 
   return (
     <PageShell>
       <Header />
-      
       <main className="py-4 px-4">
-        {/* Back button and title */}
         <div className="flex items-center gap-3 mb-4">
           <Link to="/" className="p-2 hover:bg-secondary rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div>
-            <h1 className="text-lg font-bold text-primary">Busca el Broker a tu medida</h1>
-            <p className="text-xs text-muted-foreground">
-              Aumenta y asegura tus ganancias escogiendo un broker a tu medida
-            </p>
+            <h1 className="text-lg font-bold text-primary">{t('broker_title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('broker_subtitle')}</p>
           </div>
         </div>
 
-        {/* Search section */}
         <Card className="mb-4">
           <CardContent className="p-4">
-            <h2 className="text-base font-semibold text-foreground mb-3">Buscar Broker</h2>
+            <h2 className="text-base font-semibold text-foreground mb-3">{t('broker_search')}</h2>
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar tu Brokers"
+                placeholder={t('broker_search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-secondary border-border"
@@ -636,20 +622,17 @@ export default function BrokerRating() {
             <div className="flex items-start gap-4 mb-4">
               <Select value={selectedLevel} onValueChange={setSelectedLevel}>
                 <SelectTrigger className="w-40 bg-secondary">
-                  <SelectValue placeholder="Nivel" />
+                  <SelectValue placeholder={t('broker_level')} />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border">
-                  <SelectItem value="Principiante">Principiante</SelectItem>
-                  <SelectItem value="Intermedio">Intermedio</SelectItem>
-                  <SelectItem value="Avanzado">Avanzado</SelectItem>
+                  <SelectItem value="Principiante">{t('broker_beginner')}</SelectItem>
+                  <SelectItem value="Intermedio">{t('broker_intermediate')}</SelectItem>
+                  <SelectItem value="Avanzado">{t('broker_advanced')}</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground flex-1">
-                Existe un Broker a tu medida. Saca las mejores ganancias según tu manera de operar, tiempo en el mercado, comisión o spreads.
-              </p>
+              <p className="text-xs text-muted-foreground flex-1">{t('broker_tip')}</p>
             </div>
 
-            {/* Categories */}
             <div className="flex justify-between gap-2 overflow-x-auto pb-2">
               {categories.map((cat) => {
                 const Icon = cat.icon;
@@ -674,37 +657,27 @@ export default function BrokerRating() {
           </CardContent>
         </Card>
 
-        {/* Advanced filters toggle */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
           className="w-full mb-4 justify-between"
         >
-          <span>Filtros avanzados</span>
+          <span>{t('broker_advanced_filters')}</span>
           {showAdvancedFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </Button>
 
-        {/* Advanced filters panel */}
         {showAdvancedFilters && (
           <Card className="mb-4">
             <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-2">
-                Selecciona Un Broker según tu perfil de trader
-              </h3>
-              <p className="text-xs text-muted-foreground mb-4">
-                En muy pocos pasos podrás descubrir los mejores Broker según te forma de invertir, esto aumentará el éxito de tus operaciones
-              </p>
+              <h3 className="text-sm font-semibold text-foreground mb-2">{t('broker_filter_title')}</h3>
+              <p className="text-xs text-muted-foreground mb-4">{t('broker_filter_desc')}</p>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Introduce el país de donde vives
-                  </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_country')}</label>
                   <Select value={location} onValueChange={setLocation}>
-                    <SelectTrigger className="bg-secondary">
-                      <SelectValue placeholder="Ubicación" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
                     <SelectContent className="bg-card border-border">
                       <SelectItem value="europa">Europa</SelectItem>
                       <SelectItem value="latam">LATAM</SelectItem>
@@ -713,15 +686,10 @@ export default function BrokerRating() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Modo de Trader (tiempo en el mercado)
-                  </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_trader_mode')}</label>
                   <Select value={currency} onValueChange={setCurrency}>
-                    <SelectTrigger className="bg-secondary">
-                      <SelectValue placeholder="Moneda" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
                     <SelectContent className="bg-card border-border">
                       <SelectItem value="usd">USD</SelectItem>
                       <SelectItem value="eur">EUR</SelectItem>
@@ -729,15 +697,10 @@ export default function BrokerRating() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Con cuánto dinero piensa abrir tu cuenta
-                  </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_deposit_amount')}</label>
                   <Select value={depositRange} onValueChange={setDepositRange}>
-                    <SelectTrigger className="bg-secondary">
-                      <SelectValue placeholder="Depósito Inicial" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
                     <SelectContent className="bg-card border-border">
                       <SelectItem value="0-100">$0 - $100</SelectItem>
                       <SelectItem value="100-500">$100 - $500</SelectItem>
@@ -746,15 +709,10 @@ export default function BrokerRating() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Cuál es la moneda de tu país
-                  </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_country_currency')}</label>
                   <Select value={method} onValueChange={setMethod}>
-                    <SelectTrigger className="bg-secondary">
-                      <SelectValue placeholder="Método" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
                     <SelectContent className="bg-card border-border">
                       <SelectItem value="transferencia">Transferencia</SelectItem>
                       <SelectItem value="tarjeta">Tarjeta</SelectItem>
@@ -762,15 +720,10 @@ export default function BrokerRating() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Cuánto dinero piensas entrar al mercado
-                  </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_market_entry')}</label>
                   <Select value={operation} onValueChange={setOperation}>
-                    <SelectTrigger className="bg-secondary">
-                      <SelectValue placeholder="En Operación" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
                     <SelectContent className="bg-card border-border">
                       <SelectItem value="scalping">Scalping</SelectItem>
                       <SelectItem value="day">Day Trading</SelectItem>
@@ -778,84 +731,68 @@ export default function BrokerRating() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">
-                    Mercados en los que invertirás
-                  </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_preferred_market')}</label>
                   <Select value={markets} onValueChange={setMarkets}>
-                    <SelectTrigger className="bg-secondary">
-                      <SelectValue placeholder="Mercados" />
-                    </SelectTrigger>
+                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
                     <SelectContent className="bg-card border-border">
                       <SelectItem value="forex">Forex</SelectItem>
                       <SelectItem value="acciones">Acciones</SelectItem>
                       <SelectItem value="crypto">Crypto</SelectItem>
-                      <SelectItem value="todos">Todos</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-
-              <Button className="w-full mt-4 bg-primary hover:bg-primary/90">
-                Buscar Broker
-              </Button>
+              <Button className="w-full mt-4 bg-primary hover:bg-primary/90">{t('broker_search_btn')}</Button>
             </CardContent>
           </Card>
         )}
 
-        {/* Results header with sort and compare toggle */}
         <div className="flex items-center justify-between mb-4 gap-2">
           <p className="text-xs text-muted-foreground flex-1">
-            Estos son los {filteredBrokers.length} Brokers Más Populares Para {selectedLevel}s en el mercado de {selectedCategory || 'Forex'}
+            {t('broker_popular_results')
+              .replace('{count}', String(filteredBrokers.length))
+              .replace('{level}', selectedLevel)
+              .replace('{market}', selectedCategory || 'Forex')}
           </p>
           <div className="flex items-center gap-2">
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption | '')}>
               <SelectTrigger className="w-[140px] bg-secondary text-xs h-8">
                 <ArrowUpDown className="w-3 h-3 mr-1" />
-                <SelectValue placeholder="Ordenar por" />
+                <SelectValue placeholder={t('broker_sort_placeholder')} />
               </SelectTrigger>
               <SelectContent className="bg-card border-border">
-                <SelectItem value="rating">Mayor Rating</SelectItem>
-                <SelectItem value="deposit">Menor Depósito</SelectItem>
-                <SelectItem value="spreads">Menor Spreads</SelectItem>
+                <SelectItem value="rating">{t('broker_sort_rating')}</SelectItem>
+                <SelectItem value="deposit">{t('broker_sort_deposit')}</SelectItem>
+                <SelectItem value="spreads">{t('broker_sort_spreads')}</SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant={compareMode ? "default" : "outline"}
               size="sm"
-              onClick={() => {
-                setCompareMode(!compareMode);
-                if (compareMode) {
-                  setBrokersToCompare([]);
-                }
-              }}
+              onClick={() => { setCompareMode(!compareMode); if (compareMode) setBrokersToCompare([]); }}
               className="text-xs"
             >
               <GitCompare className="w-4 h-4 mr-1" />
-              {compareMode ? 'Cancelar' : 'Comparar'}
+              {compareMode ? t('broker_cancel') : t('broker_compare')}
             </Button>
           </div>
         </div>
 
-        {/* Compare selection bar */}
         {compareMode && (
           <Card className="mb-4 border-primary/50">
             <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-foreground">
-                    {brokersToCompare.length} broker{brokersToCompare.length !== 1 ? 's' : ''} seleccionado{brokersToCompare.length !== 1 ? 's' : ''}
+                    {t('broker_selected').replace('{count}', String(brokersToCompare.length))}
                   </span>
                   {brokersToCompare.length > 0 && (
                     <div className="flex gap-1">
                       {brokersToCompare.map(b => (
                         <Badge key={b.id} variant="secondary" className="text-xs">
                           {b.name}
-                          <button 
-                            onClick={() => removeBrokerFromCompare(b.id)}
-                            className="ml-1 hover:text-destructive"
-                          >
+                          <button onClick={() => removeBrokerFromCompare(b.id)} className="ml-1 hover:text-destructive">
                             <X className="w-3 h-3" />
                           </button>
                         </Badge>
@@ -863,108 +800,77 @@ export default function BrokerRating() {
                     </div>
                   )}
                 </div>
-                <Button
-                  size="sm"
-                  onClick={handleCompare}
-                  disabled={brokersToCompare.length < 2}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  Comparar ({brokersToCompare.length})
+                <Button size="sm" onClick={handleCompare} disabled={brokersToCompare.length < 2} className="bg-primary hover:bg-primary/90">
+                  {t('broker_compare')} ({brokersToCompare.length})
                 </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Broker cards */}
         <div className="space-y-4">
           {filteredBrokers.map((broker) => {
             const isSelectedForCompare = brokersToCompare.some(b => b.id === broker.id);
             return (
-              <Card 
-                key={broker.id} 
-                className={`overflow-hidden transition-all ${isSelectedForCompare ? 'ring-2 ring-primary' : ''}`}
-              >
+              <Card key={broker.id} className={`overflow-hidden transition-all ${isSelectedForCompare ? 'ring-2 ring-primary' : ''}`}>
                 <CardContent className="p-4">
                   <div className="flex gap-4">
-                    {/* Checkbox for compare mode */}
                     {compareMode && (
                       <div className="flex items-start pt-1">
-                        <Checkbox
-                          checked={isSelectedForCompare}
-                          onCheckedChange={() => toggleBrokerCompare(broker)}
-                          className="border-primary data-[state=checked]:bg-primary"
-                        />
+                        <Checkbox checked={isSelectedForCompare} onCheckedChange={() => toggleBrokerCompare(broker)} className="border-primary data-[state=checked]:bg-primary" />
                       </div>
                     )}
-                    
-                    {/* Logo */}
                     <div className="flex flex-col items-center">
                       <div className="w-20 h-20 bg-secondary rounded-lg flex items-center justify-center mb-2">
                         <span className="text-2xl font-bold text-foreground">{broker.logo}</span>
                       </div>
-                      <p className="text-xs text-foreground">Central: <span className="text-primary">{broker.central}</span></p>
+                      <p className="text-xs text-foreground">{t('broker_headquarters')}: <span className="text-primary">{broker.central}</span></p>
                       <p className="text-xs text-primary">{broker.regions}</p>
                     </div>
-
-                    {/* Info */}
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-lg font-bold text-foreground">{broker.name}</h3>
-                        <Badge variant="outline" className="text-primary border-primary text-xs">
-                          {broker.level}
-                        </Badge>
+                        <Badge variant="outline" className="text-primary border-primary text-xs">{broker.level}</Badge>
                       </div>
-
                       <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-2">
                         <div>
-                          <span className="text-primary">Depósito inicial</span>
+                          <span className="text-primary">{t('broker_initial_deposit')}</span>
                           <p className="text-amber-400">{broker.depositMin}</p>
                         </div>
                         <div>
-                          <span className="text-primary">Comisión</span> / <span className="text-primary">Spreads</span>
+                          <span className="text-primary">{t('broker_commission')}</span> / <span className="text-primary">{t('broker_spreads')}</span>
                           <p><span className="text-amber-400">{broker.commission}</span> <span className="text-primary ml-2">{broker.spreads}</span></p>
                         </div>
                         <div>
-                          <span className="text-primary">Plataforma</span>
+                          <span className="text-primary">{t('broker_platform')}</span>
                           <p className="text-foreground">{broker.platform.join(', ')}</p>
                         </div>
                         <div>
-                          <span className="text-primary">Apalancamiento</span>
+                          <span className="text-primary">{t('broker_leverage')}</span>
                           <p className="text-foreground">{broker.leverage.scb} (SCB)<br />{broker.leverage.fca} (FCA)</p>
                         </div>
                         <div>
-                          <span className="text-primary">Regulaciones</span>
+                          <span className="text-primary">{t('broker_regulations')}</span>
                           <p className="text-foreground">{broker.regulations.join(', ')}</p>
                         </div>
                         <div>
-                          <span className="text-primary">Instrumentos</span>
+                          <span className="text-primary">{t('broker_instruments')}</span>
                           <p className="text-foreground">{broker.instruments.join(', ')}</p>
                         </div>
                       </div>
-
                       <div className="flex items-center justify-between mt-3">
                         <div>
                           {renderStars(broker.rating)}
-                          <span className="text-xs text-muted-foreground ml-2">Comentarios</span>
+                          <span className="text-xs text-muted-foreground ml-2">{t('broker_comments')}</span>
                         </div>
                         <div className="flex gap-2">
                           {compareMode && (
-                            <Button
-                              size="sm"
-                              variant={isSelectedForCompare ? "secondary" : "outline"}
-                              className="text-xs"
-                              onClick={() => toggleBrokerCompare(broker)}
-                            >
-                              {isSelectedForCompare ? 'Quitar' : 'Añadir'}
+                            <Button size="sm" variant={isSelectedForCompare ? "secondary" : "outline"} className="text-xs" onClick={() => toggleBrokerCompare(broker)}>
+                              {isSelectedForCompare ? t('broker_remove') : t('broker_add')}
                             </Button>
                           )}
-                          <Button 
-                            size="sm" 
-                            className="bg-primary hover:bg-primary/90 text-xs"
-                            onClick={() => setSelectedBroker(broker)}
-                          >
-                            Ver Detalles
+                          <Button size="sm" className="bg-primary hover:bg-primary/90 text-xs" onClick={() => setSelectedBroker(broker)}>
+                            {t('broker_view_details')}
                           </Button>
                         </div>
                       </div>
@@ -983,19 +889,14 @@ export default function BrokerRating() {
           <ScrollArea className="max-h-[90vh]">
             <div className="p-6">
               <DialogHeader className="mb-4">
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-xl font-bold text-foreground">
-                    Comparar Brokers ({brokersToCompare.length})
-                  </DialogTitle>
-                </div>
+                <DialogTitle className="text-xl font-bold text-foreground">
+                  {t('broker_compare_title')} ({brokersToCompare.length})
+                </DialogTitle>
               </DialogHeader>
-
-              {/* Comparison Table */}
               <div className="min-w-max">
-                {/* Broker Headers */}
                 <div className="flex border-b border-border">
                   <div className="w-32 shrink-0 p-3 bg-secondary/50">
-                    <span className="text-sm font-medium text-muted-foreground">Característica</span>
+                    <span className="text-sm font-medium text-muted-foreground">{t('broker_feature')}</span>
                   </div>
                   {brokersToCompare.map((broker) => (
                     <div key={broker.id} className="w-48 shrink-0 p-3 bg-card border-l border-border">
@@ -1004,36 +905,28 @@ export default function BrokerRating() {
                           <h3 className="font-bold text-foreground">{broker.name}</h3>
                           <span className="text-xs text-primary">{broker.level}</span>
                         </div>
-                        <button
-                          onClick={() => removeBrokerFromCompare(broker.id)}
-                          className="text-muted-foreground hover:text-destructive transition-colors"
-                        >
+                        <button onClick={() => removeBrokerFromCompare(broker.id)} className="text-muted-foreground hover:text-destructive transition-colors">
                           <X className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
-
-                {/* Comparison Rows */}
                 {[
-                  { label: 'Nivel', render: (b: Broker) => b.level },
-                  { label: 'Depósito Inicial', render: (b: Broker) => b.depositMin },
-                  { label: 'Comisión', render: (b: Broker) => b.commission },
-                  { label: 'Spreads', render: (b: Broker) => b.spreads },
-                  { label: 'Plataformas', render: (b: Broker) => b.platform.join(', ') },
-                  { label: 'Apalancamiento', render: (b: Broker) => `${b.leverage.scb} / ${b.leverage.fca}` },
-                  { label: 'Regulaciones', render: (b: Broker) => b.regulations.join(', ') },
-                  { label: 'Instrumentos', render: (b: Broker) => b.instruments.join(', ') },
-                  { label: 'Central', render: (b: Broker) => b.central },
-                  { label: 'Cobertura', render: (b: Broker) => b.regions },
+                  { label: t('broker_level'), render: (b: Broker) => b.level },
+                  { label: t('broker_initial_deposit'), render: (b: Broker) => b.depositMin },
+                  { label: t('broker_commission'), render: (b: Broker) => b.commission },
+                  { label: t('broker_spreads'), render: (b: Broker) => b.spreads },
+                  { label: t('broker_platform'), render: (b: Broker) => b.platform.join(', ') },
+                  { label: t('broker_leverage'), render: (b: Broker) => `${b.leverage.scb} / ${b.leverage.fca}` },
+                  { label: t('broker_regulations'), render: (b: Broker) => b.regulations.join(', ') },
+                  { label: t('broker_instruments'), render: (b: Broker) => b.instruments.join(', ') },
+                  { label: t('broker_headquarters'), render: (b: Broker) => b.central },
+                  { label: t('broker_coverage'), render: (b: Broker) => b.regions },
                   { label: 'Rating', render: (b: Broker) => (
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`w-3 h-3 ${star <= Math.floor(b.rating) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'}`}
-                        />
+                        <Star key={star} className={`w-3 h-3 ${star <= Math.floor(b.rating) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'}`} />
                       ))}
                       <span className="ml-1">{b.rating}</span>
                     </div>
@@ -1050,12 +943,8 @@ export default function BrokerRating() {
                     ))}
                   </div>
                 ))}
-
-                {/* Pros */}
                 <div className="flex border-b border-border bg-secondary/20">
-                  <div className="w-32 shrink-0 p-3">
-                    <span className="text-sm font-medium text-primary">Pros</span>
-                  </div>
+                  <div className="w-32 shrink-0 p-3"><span className="text-sm font-medium text-primary">{t('broker_pro')}</span></div>
                   {brokersToCompare.map((broker) => (
                     <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
                       <ul className="space-y-1">
@@ -1069,12 +958,8 @@ export default function BrokerRating() {
                     </div>
                   ))}
                 </div>
-
-                {/* Cons */}
                 <div className="flex border-b border-border">
-                  <div className="w-32 shrink-0 p-3">
-                    <span className="text-sm font-medium text-destructive">Cons</span>
-                  </div>
+                  <div className="w-32 shrink-0 p-3"><span className="text-sm font-medium text-destructive">{t('broker_cons')}</span></div>
                   {brokersToCompare.map((broker) => (
                     <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
                       <ul className="space-y-1">
@@ -1088,15 +973,11 @@ export default function BrokerRating() {
                     </div>
                   ))}
                 </div>
-
-                {/* Action Buttons */}
                 <div className="flex">
                   <div className="w-32 shrink-0 p-3"></div>
                   {brokersToCompare.map((broker) => (
                     <div key={broker.id} className="w-48 shrink-0 p-3 border-l border-border">
-                      <Button size="sm" className="w-full bg-primary hover:bg-primary/90">
-                        Abrir Cuenta
-                      </Button>
+                      <Button size="sm" className="w-full bg-primary hover:bg-primary/90">{t('broker_open_account')}</Button>
                     </div>
                   ))}
                 </div>
@@ -1115,68 +996,57 @@ export default function BrokerRating() {
               <div className="p-6">
                 <DialogHeader className="mb-4">
                   <div className="flex justify-between items-start">
-                    <DialogTitle className="text-2xl font-bold text-foreground">
-                      {selectedBroker.name}
-                    </DialogTitle>
-                    <Badge variant="outline" className="text-primary border-primary">
-                      {selectedBroker.level}
-                    </Badge>
+                    <DialogTitle className="text-2xl font-bold text-foreground">{selectedBroker.name}</DialogTitle>
+                    <Badge variant="outline" className="text-primary border-primary">{selectedBroker.level}</Badge>
                   </div>
                 </DialogHeader>
-
-                {/* Header section */}
                 <div className="flex gap-4 mb-6">
                   <div className="w-32 h-32 bg-secondary rounded-lg flex items-center justify-center">
                     <span className="text-4xl font-bold text-foreground">{selectedBroker.logo}</span>
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      <span className="text-primary font-semibold">Información Básica:</span> {selectedBroker.description}
+                      <span className="text-primary font-semibold">{t('broker_basic_info')}:</span> {selectedBroker.description}
                     </p>
                   </div>
                 </div>
-
-                {/* Basic info cards */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <Card>
                     <CardContent className="p-3">
                       <div className="flex justify-between mb-1">
-                        <span className="text-primary text-sm">Depósito</span>
-                        <span className="text-primary text-sm">Comisión</span>
+                        <span className="text-primary text-sm">{t('broker_deposit')}</span>
+                        <span className="text-primary text-sm">{t('broker_commission')}</span>
                       </div>
                       <div className="flex justify-between mb-2">
                         <span className="text-foreground text-sm">{selectedBroker.depositMin}</span>
                         <span className="text-amber-400 text-sm">{selectedBroker.commission} $</span>
                       </div>
                       <div className="flex justify-between mb-1">
-                        <span className="text-primary text-sm">Retiros</span>
-                        <span className="text-primary text-sm">Spreads</span>
+                        <span className="text-primary text-sm">{t('broker_withdrawals')}</span>
+                        <span className="text-primary text-sm">{t('broker_spreads')}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-foreground text-sm">Sin Límites</span>
+                        <span className="text-foreground text-sm">{t('broker_no_limits')}</span>
                         <span className="text-primary text-sm">{selectedBroker.spreads}</span>
                       </div>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-3">
-                      <span className="text-primary text-sm block mb-2">Apalancamientos</span>
+                      <span className="text-primary text-sm block mb-2">{t('broker_leverages')}</span>
                       <p className="text-foreground text-sm">{selectedBroker.leverage.scb} (SCB)</p>
                       <p className="text-foreground text-sm">{selectedBroker.leverage.fca} (FCA)</p>
                     </CardContent>
                   </Card>
                 </div>
-
-                {/* Pros and Cons */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <Card>
                     <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">Pro</h4>
+                      <h4 className="text-primary font-semibold mb-2">{t('broker_pro')}</h4>
                       <ul className="space-y-1">
                         {selectedBroker.pros.map((pro, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-foreground">
-                            <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                            {pro}
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />{pro}
                           </li>
                         ))}
                       </ul>
@@ -1184,30 +1054,27 @@ export default function BrokerRating() {
                   </Card>
                   <Card>
                     <CardContent className="p-3">
-                      <h4 className="text-red-400 font-semibold mb-2">Cons</h4>
+                      <h4 className="text-red-400 font-semibold mb-2">{t('broker_cons')}</h4>
                       <ul className="space-y-1">
                         {selectedBroker.cons.map((con, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-foreground">
-                            <X className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                            {con}
+                            <X className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />{con}
                           </li>
                         ))}
                       </ul>
                       <div className="mt-4">
-                        <h4 className="text-primary font-semibold mb-1">Región Principal</h4>
+                        <h4 className="text-primary font-semibold mb-1">{t('broker_main_region')}</h4>
                         <p className="text-xs text-foreground">{selectedBroker.mainRegion}</p>
-                        <h4 className="text-primary font-semibold mt-2 mb-1">Países de Operación</h4>
+                        <h4 className="text-primary font-semibold mt-2 mb-1">{t('broker_operating_countries')}</h4>
                         <p className="text-xs text-foreground">{selectedBroker.operatingCountries}</p>
                       </div>
                     </CardContent>
                   </Card>
                 </div>
-
-                {/* Regulations and Instruments */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <Card>
                     <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">Organismos de Regulación</h4>
+                      <h4 className="text-primary font-semibold mb-2">{t('broker_regulatory_bodies')}</h4>
                       <ul className="space-y-1">
                         {selectedBroker.allRegulations.map((reg, i) => (
                           <li key={i}>
@@ -1220,7 +1087,7 @@ export default function BrokerRating() {
                   </Card>
                   <Card>
                     <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">Instrumentos Disponibles</h4>
+                      <h4 className="text-primary font-semibold mb-2">{t('broker_available_instruments')}</h4>
                       <ul className="space-y-1">
                         {selectedBroker.instrumentTypes.map((inst, i) => (
                           <li key={i}>
@@ -1232,12 +1099,10 @@ export default function BrokerRating() {
                     </CardContent>
                   </Card>
                 </div>
-
-                {/* Platforms and Account Types */}
                 <div className="grid grid-cols-2 gap-3">
                   <Card>
                     <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">Plataformas de Operación</h4>
+                      <h4 className="text-primary font-semibold mb-2">{t('broker_trading_platforms')}</h4>
                       <ul className="space-y-1">
                         {selectedBroker.platforms.map((plat, i) => (
                           <li key={i} className="flex items-start gap-2">
@@ -1253,7 +1118,7 @@ export default function BrokerRating() {
                   </Card>
                   <Card>
                     <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">Tipos de Cuentas</h4>
+                      <h4 className="text-primary font-semibold mb-2">{t('broker_account_types')}</h4>
                       <ul className="space-y-1">
                         {selectedBroker.accountTypes.map((acc, i) => (
                           <li key={i} className="flex items-start gap-2">
@@ -1268,16 +1133,12 @@ export default function BrokerRating() {
                     </CardContent>
                   </Card>
                 </div>
-
-                <Button className="w-full mt-6 bg-primary hover:bg-primary/90">
-                  Abrir Cuenta
-                </Button>
+                <Button className="w-full mt-6 bg-primary hover:bg-primary/90">{t('broker_open_account')}</Button>
               </div>
             )}
           </ScrollArea>
         </DialogContent>
       </Dialog>
-
     </PageShell>
   );
 }
