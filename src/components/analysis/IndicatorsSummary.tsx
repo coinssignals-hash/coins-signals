@@ -29,6 +29,7 @@ interface CardData {
 export function IndicatorsSummary({
   pair, timeframe, priceData, smaData, rsiData, macdData, loading,
 }: IndicatorsSummaryProps) {
+  const { t } = useTranslation();
 
   const cards = useMemo((): CardData[] => {
     const result: CardData[] = [];
