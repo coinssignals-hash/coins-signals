@@ -300,7 +300,7 @@ export default function LessonDetail() {
                 lesson.mediaType === 'podcast' ? 'border-purple-500/30 text-purple-400 bg-purple-500/10' :
                 'border-rose-500/30 text-rose-400 bg-rose-500/10'
               )}>
-                {lesson.mediaType === 'video' ? '🎬 Video' : lesson.mediaType === 'podcast' ? '🎧 Podcast' : '📄 Lectura'}
+                {lesson.mediaType === 'video' ? '🎬 Video' : lesson.mediaType === 'podcast' ? '🎧 Podcast' : `📄 ${t('lesson_reading')}`}
               </Badge>
             </div>
 
