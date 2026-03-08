@@ -168,7 +168,7 @@ export default function VolatilityScanner() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                ATR14 mide el rango promedio de las últimas 14 velas. Volatilidad alta = más oportunidad pero más riesgo. La tendencia de volatilidad indica si el mercado se está calmando o activando.
+                {t('tp_volatility_info')}
               </p>
             </div>
           </CardContent>
