@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Calculator, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface RiskRewardCalculatorProps {
   currentPrice: number;
