@@ -1029,7 +1029,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <History className="w-5 h-5 text-slate-400" />
-                  <h3 className="font-semibold text-slate-200">Historial de Análisis IA</h3>
+                  <h3 className="font-semibold text-slate-200">{t('sc_ai_history')}</h3>
                 </div>
                 <button 
                   onClick={() => setShowHistory(false)}
