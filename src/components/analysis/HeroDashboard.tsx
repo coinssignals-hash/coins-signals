@@ -209,8 +209,8 @@ export function HeroDashboard({
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
           <QuickStatCard
             icon={<Zap className="w-3.5 h-3.5 text-amber-400" />}
-            label="Momentum"
-            value={isPositive ? 'Alcista' : 'Bajista'}
+            label={t('analysis_momentum')}
+            value={isPositive ? t('analysis_ind_bullish') : t('analysis_ind_bearish')}
             trend={isPositive ? 'bullish' : 'bearish'} />
         </motion.div>
       </motion.div>

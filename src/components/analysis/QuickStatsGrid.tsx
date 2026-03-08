@@ -27,17 +27,19 @@ export function QuickStatsGrid({
   pips,
   realtimePrice,
 }: QuickStatsGridProps) {
+  const { t } = useTranslation();
   const displayPrice = realtimePrice ?? currentPrice;
   const isPositive = change >= 0;
   const range = high - low;
   const rangePips = Math.round(range * 10000);
   const midpoint = (high + low) / 2;
-  const bias = displayPrice > midpoint ? 'Alcista' : displayPrice < midpoint ? 'Bajista' : 'Neutral';
-  const biasColor = bias === 'Alcista' ? 'text-green-400' : bias === 'Bajista' ? 'text-red-400' : 'text-gray-400';
+  const biasKey = displayPrice > midpoint ? 'analysis_ind_bullish' : displayPrice < midpoint ? 'analysis_ind_bearish' : 'analysis_ind_neutral';
+  const bias = t(biasKey);
+  const biasColor = biasKey === 'analysis_ind_bullish' ? 'text-green-400' : biasKey === 'analysis_ind_bearish' ? 'text-red-400' : 'text-gray-400';
 
   const stats = [
     {
-      label: 'Cambio',
+      label: t('analysis_qs_change'),
       value: `${isPositive ? '+' : ''}${changePercent.toFixed(3)}%`,
       subValue: `${isPositive ? '+' : ''}${(pips).toFixed(2)}p`,
       icon: isPositive ? TrendingUp : TrendingDown,
@@ -45,7 +47,7 @@ export function QuickStatsGrid({
       bgColor: isPositive ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20',
     },
     {
-      label: 'High / Low',
+      label: t('analysis_qs_high_low'),
       value: formatPrice(high, symbol),
       subValue: formatPrice(low, symbol),
       icon: ArrowUpDown,
@@ -54,7 +56,7 @@ export function QuickStatsGrid({
       dualLine: true,
     },
     {
-      label: 'Resistencia',
+      label: t('analysis_qs_resistance'),
       value: formatPrice(resistance, symbol),
       subValue: `${((resistance - displayPrice) * 10000).toFixed(2)}p`,
       icon: Target,
@@ -62,7 +64,7 @@ export function QuickStatsGrid({
       bgColor: 'bg-red-500/10 border-red-500/20',
     },
     {
-      label: 'Soporte',
+      label: t('analysis_qs_support'),
       value: formatPrice(support, symbol),
       subValue: `${((displayPrice - support) * 10000).toFixed(2)}p`,
       icon: Shield,
@@ -70,20 +72,20 @@ export function QuickStatsGrid({
       bgColor: 'bg-green-500/10 border-green-500/20',
     },
     {
-      label: 'Rango diario',
+      label: t('analysis_qs_daily_range'),
       value: `${rangePips}p`,
-      subValue: `Vol ${rangePips > 80 ? 'Alto' : rangePips > 40 ? 'Medio' : 'Bajo'}`,
+      subValue: `Vol ${rangePips > 80 ? t('analysis_qs_vol_high') : rangePips > 40 ? t('analysis_qs_vol_medium') : t('analysis_qs_vol_low')}`,
       icon: BarChart3,
       color: 'text-amber-400',
       bgColor: 'bg-amber-500/10 border-amber-500/20',
     },
     {
-      label: 'Sesgo',
+      label: t('analysis_qs_bias'),
       value: bias,
-      subValue: `Pos: ${((displayPrice - low) / (range || 1) * 100).toFixed(1)}%`,
+      subValue: `${t('analysis_qs_pos')}: ${((displayPrice - low) / (range || 1) * 100).toFixed(1)}%`,
       icon: isPositive ? TrendingUp : TrendingDown,
       color: biasColor,
-      bgColor: bias === 'Alcista' ? 'bg-green-500/10 border-green-500/20' : bias === 'Bajista' ? 'bg-red-500/10 border-red-500/20' : 'bg-gray-500/10 border-gray-500/20',
+      bgColor: biasKey === 'analysis_ind_bullish' ? 'bg-green-500/10 border-green-500/20' : biasKey === 'analysis_ind_bearish' ? 'bg-red-500/10 border-red-500/20' : 'bg-gray-500/10 border-gray-500/20',
     },
   ];
 

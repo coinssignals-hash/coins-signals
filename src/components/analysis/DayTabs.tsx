@@ -80,7 +80,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
                 )}>
                 <span className="w-7 text-center font-bold">{dayNumber}</span>
                 <span className="capitalize">{dayName}</span>
-                {isToday && <span className="ml-auto text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded">Hoy</span>}
+                {isToday && <span className="ml-auto text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded">{t('analysis_today')}</span>}
               </button>
             );
           })}

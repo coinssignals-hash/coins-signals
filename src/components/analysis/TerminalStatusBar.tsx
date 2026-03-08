@@ -81,7 +81,7 @@ export function TerminalStatusBar({ symbol, currentPrice, high, low, isRealtimeC
               <span className="hidden sm:inline">{s.name}</span>
             </span>
           )) : (
-            <span className="text-[9px] text-gray-500">Off</span>
+            <span className="text-[9px] text-gray-500">{t('analysis_ts_off')}</span>
           )}
         </div>
       </div>
