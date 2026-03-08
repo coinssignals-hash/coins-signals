@@ -675,7 +675,7 @@ export default function CreateSignal() {
           <TabsContent value="manage">
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground">Señales activas</p>
+                <p className="text-sm text-muted-foreground">{t('cs_active_signals')}</p>
                 <button
                   onClick={fetchActiveSignals}
                   disabled={loadingSignals}
