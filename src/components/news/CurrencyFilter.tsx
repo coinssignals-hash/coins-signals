@@ -448,7 +448,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 ))}
                 {filteredFavorites.length === 0 && nonFavoriteCurrencies.length === 0 && (
                   <div className="text-center py-4 text-sm text-muted-foreground">
-                    No se encontraron divisas para "{searchQuery}"
+                    {t('cf_no_currencies')} "{searchQuery}"
                   </div>
                 )}
               </div>
