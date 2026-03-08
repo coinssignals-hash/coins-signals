@@ -378,7 +378,7 @@ export default function LessonDetail() {
         {/* Lesson List */}
         <div className="rounded-xl border border-border/40 bg-card/60 overflow-hidden">
           <div className="p-4 pb-2 border-b border-border/30">
-            <h3 className="text-sm font-semibold text-foreground">Lecciones del módulo</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('lesson_module_lessons')}</h3>
           </div>
           <div className="p-3 space-y-1.5">
             {lesson.lessons.map((item, idx) => {
