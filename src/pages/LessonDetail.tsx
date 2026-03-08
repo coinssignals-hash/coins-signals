@@ -218,7 +218,7 @@ export default function LessonDetail() {
   const handleMediaEnded = () => {
     if (!isCompleted) {
       toggleLessonComplete(lesson.id, lesson.moduleId);
-      toast({ title: '¡Lección completada!', description: lesson.mediaType === 'podcast' ? '¡Podcast terminado! Buen trabajo.' : 'El video ha terminado. ¡Buen trabajo!' });
+      toast({ title: t('lesson_completed_toast'), description: lesson.mediaType === 'podcast' ? t('lesson_podcast_ended') : t('lesson_video_ended') });
     }
   };
 
