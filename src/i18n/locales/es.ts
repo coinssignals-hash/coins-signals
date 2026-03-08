@@ -20,6 +20,7 @@ const es: TranslationKeys = {
   nav_tools: 'Herramientas',
   drawer_ai_center: 'Centro de Análisis IA',
   drawer_stock_market: 'Mercado de Acciones',
+  drawer_welcome: 'Bienvenido',
   drawer_login_sync: 'Inicia sesión para sincronizar',
   drawer_login: 'Iniciar Sesión',
   drawer_logout: 'Cerrar Sesión',
