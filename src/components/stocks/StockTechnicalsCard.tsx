@@ -2,6 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   data: any;
@@ -24,25 +25,14 @@ function IndicatorGauge({ label, value, min, max, zones }: {
       </div>
       <div className="relative h-2 rounded-full bg-[hsl(210,40%,12%)] overflow-hidden">
         {zones.map((z, i) => (
-          <div
-            key={i}
-            className="absolute top-0 h-full opacity-30"
-            style={{
-              left: `${((z.from - min) / (max - min)) * 100}%`,
-              width: `${((z.to - z.from) / (max - min)) * 100}%`,
-              backgroundColor: z.color,
-            }}
-          />
+          <div key={i} className="absolute top-0 h-full opacity-30"
+            style={{ left: `${((z.from - min) / (max - min)) * 100}%`, width: `${((z.to - z.from) / (max - min)) * 100}%`, backgroundColor: z.color }} />
         ))}
-        <div
-          className="absolute top-0 h-full rounded-full transition-all duration-500"
-          style={{ width: `${pct}%`, backgroundColor: activeZone?.color || 'hsl(200, 80%, 50%)' }}
-        />
+        <div className="absolute top-0 h-full rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, backgroundColor: activeZone?.color || 'hsl(200, 80%, 50%)' }} />
       </div>
       {activeZone && (
-        <p className="text-[10px] font-medium mt-1" style={{ color: activeZone.color }}>
-          {activeZone.label}
-        </p>
+        <p className="text-[10px] font-medium mt-1" style={{ color: activeZone.color }}>{activeZone.label}</p>
       )}
     </div>
   );
@@ -67,12 +57,12 @@ function MiniChart({ data, dataKey, color, label }: { data: any[]; dataKey: stri
   );
 }
 
-function SignalSummary({ rsiValue, sma20, sma50, price }: { rsiValue: number; sma20: number; sma50: number; price: number }) {
+function SignalSummary({ rsiValue, sma20, sma50, price, t }: { rsiValue: number; sma20: number; sma50: number; price: number; t: (k: any) => string }) {
   const signals: { label: string; signal: 'buy' | 'sell' | 'neutral'; reason: string }[] = [];
 
-  if (rsiValue < 30) signals.push({ label: 'RSI', signal: 'buy', reason: 'Sobreventa' });
-  else if (rsiValue > 70) signals.push({ label: 'RSI', signal: 'sell', reason: 'Sobrecompra' });
-  else signals.push({ label: 'RSI', signal: 'neutral', reason: 'Neutral' });
+  if (rsiValue < 30) signals.push({ label: 'RSI', signal: 'buy', reason: t('stock_oversold') });
+  else if (rsiValue > 70) signals.push({ label: 'RSI', signal: 'sell', reason: t('stock_overbought') });
+  else signals.push({ label: 'RSI', signal: 'neutral', reason: t('stock_neutral') });
 
   if (sma20 && sma50) {
     if (sma20 > sma50) signals.push({ label: 'SMA Cross', signal: 'buy', reason: 'SMA20 > SMA50' });
@@ -80,8 +70,8 @@ function SignalSummary({ rsiValue, sma20, sma50, price }: { rsiValue: number; sm
   }
 
   if (price && sma20) {
-    if (price > sma20) signals.push({ label: 'Precio/SMA20', signal: 'buy', reason: 'Sobre SMA20' });
-    else signals.push({ label: 'Precio/SMA20', signal: 'sell', reason: 'Bajo SMA20' });
+    if (price > sma20) signals.push({ label: 'Price/SMA20', signal: 'buy', reason: t('stock_above_sma') });
+    else signals.push({ label: 'Price/SMA20', signal: 'sell', reason: t('stock_below_sma') });
   }
 
   const buyCount = signals.filter(s => s.signal === 'buy').length;
@@ -89,19 +79,19 @@ function SignalSummary({ rsiValue, sma20, sma50, price }: { rsiValue: number; sm
 
   return (
     <div className="bg-[hsl(210,50%,10%)]/60 border border-cyan-800/20 rounded-lg p-3">
-      <p className="text-[10px] text-cyan-300/40 uppercase tracking-wider font-medium mb-2">Resumen de Señales</p>
+      <p className="text-[10px] text-cyan-300/40 uppercase tracking-wider font-medium mb-2">{t('stock_signal_summary')}</p>
       <div className="flex items-center gap-3 mb-2">
         <div className="flex items-center gap-1 text-[hsl(142,70%,45%)]">
           <TrendingUp className="w-3.5 h-3.5" />
-          <span className="text-xs font-bold">{buyCount} Compra</span>
+          <span className="text-xs font-bold">{buyCount} {t('stock_buy')}</span>
         </div>
         <div className="flex items-center gap-1 text-[hsl(0,70%,55%)]">
           <TrendingDown className="w-3.5 h-3.5" />
-          <span className="text-xs font-bold">{sellCount} Venta</span>
+          <span className="text-xs font-bold">{sellCount} {t('stock_sell')}</span>
         </div>
         <div className="flex items-center gap-1 text-slate-400">
           <Minus className="w-3.5 h-3.5" />
-          <span className="text-xs font-bold">{signals.length - buyCount - sellCount} Neutral</span>
+          <span className="text-xs font-bold">{signals.length - buyCount - sellCount} {t('stock_neutral')}</span>
         </div>
       </div>
       <div className="space-y-1">
@@ -119,6 +109,8 @@ function SignalSummary({ rsiValue, sma20, sma50, price }: { rsiValue: number; sm
 }
 
 export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4 space-y-3"
@@ -135,7 +127,7 @@ export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
     return (
       <div className="relative rounded-xl border border-cyan-800/30 overflow-hidden p-4"
         style={{ background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 12%) 0%, hsl(205, 100%, 6%) 70%, hsl(210, 100%, 4%) 100%)' }}>
-        <p className="text-sm text-slate-500 text-center py-4">Indicadores técnicos no disponibles</p>
+        <p className="text-sm text-slate-500 text-center py-4">{t('stock_technicals_unavailable')}</p>
       </div>
     );
   }
@@ -145,9 +137,9 @@ export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
   const latestSMA50 = parseFloat(data.sma50?.[0]?.SMA || '0');
 
   const rsiZones = [
-    { from: 0, to: 30, color: 'hsl(142, 70%, 45%)', label: 'Sobreventa (Compra)' },
-    { from: 30, to: 70, color: 'hsl(45, 80%, 50%)', label: 'Neutral' },
-    { from: 70, to: 100, color: 'hsl(0, 70%, 50%)', label: 'Sobrecompra (Venta)' },
+    { from: 0, to: 30, color: 'hsl(142, 70%, 45%)', label: t('stock_oversold_buy') },
+    { from: 30, to: 70, color: 'hsl(45, 80%, 50%)', label: t('stock_neutral') },
+    { from: 70, to: 100, color: 'hsl(0, 70%, 50%)', label: t('stock_overbought_sell') },
   ];
 
   return (
@@ -159,7 +151,7 @@ export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
       <div className="p-4 space-y-3">
         <h3 className="text-sm font-bold text-cyan-200 flex items-center gap-2">
           <Activity className="w-4 h-4 text-cyan-400" />
-          Indicadores Técnicos
+          {t('stock_technical_indicators')}
         </h3>
 
         <IndicatorGauge label="RSI (14)" value={latestRSI} min={0} max={100} zones={rsiZones} />
@@ -171,7 +163,6 @@ export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
           <MiniChart data={data.ema12} dataKey="EMA" color="hsl(160, 70%, 50%)" label="EMA (12)" />
         </div>
 
-        {/* MACD */}
         {data.macd?.length > 0 && (
           <div className="bg-[hsl(210,50%,10%)]/80 border border-cyan-800/15 rounded-lg p-3">
             <p className="text-[10px] text-cyan-300/40 uppercase tracking-wider font-medium mb-2">MACD</p>
@@ -185,7 +176,7 @@ export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
                 <p className="text-xs font-mono font-semibold text-white">{parseFloat(data.macd[0]?.MACD_Signal || '0').toFixed(3)}</p>
               </div>
               <div className="text-center">
-                <p className="text-[9px] text-cyan-300/40">Histograma</p>
+                <p className="text-[9px] text-cyan-300/40">{t('stock_histogram')}</p>
                 <p className={cn("text-xs font-mono font-semibold",
                   parseFloat(data.macd[0]?.MACD_Hist || '0') >= 0 ? 'text-[hsl(142,70%,45%)]' : 'text-[hsl(0,70%,55%)]'
                 )}>{parseFloat(data.macd[0]?.MACD_Hist || '0').toFixed(3)}</p>
@@ -194,7 +185,7 @@ export function StockTechnicalsCard({ data, loading, currentPrice }: Props) {
           </div>
         )}
 
-        <SignalSummary rsiValue={latestRSI} sma20={latestSMA20} sma50={latestSMA50} price={currentPrice || 0} />
+        <SignalSummary rsiValue={latestRSI} sma20={latestSMA20} sma50={latestSMA50} price={currentPrice || 0} t={t} />
       </div>
     </div>
   );
