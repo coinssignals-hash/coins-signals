@@ -577,7 +577,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           {impacts.map(({ currency, impact }) => <ImpactBadge key={currency} currency={currency} impact={impact} />)}
           {news.affected_currencies.length > 3 &&
           <span className="text-[10px] text-cyan-400/50 font-medium">
-              +{news.affected_currencies.length - 3} más
+              +{news.affected_currencies.length - 3} {t('news_n_more')}
             </span>
           }
         </div>
