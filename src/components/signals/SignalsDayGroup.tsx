@@ -54,7 +54,7 @@ export function SignalsDayGroup({ date, count, activeCount = 0, children }: Sign
               ? "bg-blue-500/20 text-blue-400"
               : "bg-slate-700/50 text-slate-500"
           )}>
-            {count} {count === 1 ? 'señal' : 'señales'}
+            {count} {count === 1 ? t('signals_signal_singular') : t('signals_signal_plural')}
           </span>
         </div>
       </div>
