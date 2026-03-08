@@ -460,7 +460,7 @@ export default function TradingJournal() {
                   <Input type="number" step="0.00001" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="1.08500" className="bg-secondary border-border text-foreground" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Precio Salida</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_exit_price')}</Label>
                   <Input type="number" step="0.00001" value={exitPrice} onChange={e => setExitPrice(e.target.value)} placeholder="1.09000" className="bg-secondary border-border text-foreground" />
                 </div>
               </div>
