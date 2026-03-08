@@ -221,7 +221,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Volume2 className="h-3.5 w-3.5 text-blue-400" />
-            <Label className="text-xs">Sonido</Label>
+            <Label className="text-xs">{t('analysis_alert_sound')}</Label>
           </div>
           <Switch
             checked={localConfig.srEnableSound}
