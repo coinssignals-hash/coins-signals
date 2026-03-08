@@ -44,6 +44,8 @@ const PAIRS = [
 export default function TradingJournal() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
