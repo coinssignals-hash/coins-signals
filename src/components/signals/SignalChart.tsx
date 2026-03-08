@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Maximize2, X, TrendingUp, Clock, BarChart3, ChevronDown, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { useForexChartData, type ChartInterval } from '@/hooks/useForexChartData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ZoomableChart } from './ZoomableChart';
