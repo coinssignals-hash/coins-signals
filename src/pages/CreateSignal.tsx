@@ -172,7 +172,7 @@ export default function CreateSignal() {
 
   const handleCloseSignal = async (signalId: string) => {
     if (!closePrice) {
-      toast.error('Ingresa el precio de cierre');
+      toast.error(t('cs_enter_close'));
       return;
     }
     setLoading(true);
