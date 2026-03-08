@@ -766,7 +766,7 @@ export default function CreateSignal() {
                             onClick={() => { setClosingSignalId(null); setClosePrice(''); }}
                             className="flex-1 py-2 rounded-lg text-xs font-semibold bg-card text-muted-foreground border border-border/40"
                           >
-                            Cancelar
+                            {t('cs_cancel')}
                           </button>
                           <button
                             onClick={() => handleCloseSignal(signal.id)}
