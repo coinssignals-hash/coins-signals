@@ -3,6 +3,7 @@ import { useTechnicalLevels } from '@/hooks/useAnalysisData';
 import { AnalysisError } from './AnalysisError';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { formatPrice } from '@/lib/utils';
+import { useMemo } from 'react';
 
 interface TechnicalLevelsProps {
   symbol: string;
@@ -11,10 +12,50 @@ interface TechnicalLevelsProps {
   isRealtimeConnected?: boolean;
 }
 
+// Map of Spanish backend descriptions to i18n keys
+const DESCRIPTION_MAP: Record<string, string> = {
+  'resistencia inmediata': 'analysis_tl_immediate_resistance',
+  'soporte inmediato': 'analysis_tl_immediate_support',
+  'máximo semanal': 'analysis_tl_weekly_high',
+  'mínimo semanal': 'analysis_tl_weekly_low',
+  'máximo diario': 'analysis_tl_daily_high',
+  'mínimo diario': 'analysis_tl_daily_low',
+  'máximo mensual': 'analysis_tl_monthly_high',
+  'mínimo mensual': 'analysis_tl_monthly_low',
+  'resistencia fuerte': 'analysis_tl_strong_resistance',
+  'soporte fuerte': 'analysis_tl_strong_support',
+  'resistencia clave': 'analysis_tl_key_resistance',
+  'soporte clave': 'analysis_tl_key_support',
+  'nivel psicológico': 'analysis_tl_psychological_level',
+  'cierre anterior': 'analysis_tl_previous_close',
+  'zona clave': 'analysis_tl_key_zone',
+};
+
+function translateDescription(desc: string | undefined, t: (key: string) => string): string | undefined {
+  if (!desc) return undefined;
+  const key = DESCRIPTION_MAP[desc.toLowerCase()];
+  return key ? t(key) : desc;
+}
+
 export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: TechnicalLevelsProps) {
   const { t } = useTranslation();
   const effectivePrice = realtimePrice || currentPrice;
   const { data, isLoading, error } = useTechnicalLevels(symbol, effectivePrice);
+
+  const translatedData = useMemo(() => {
+    if (!data) return null;
+    return {
+      ...data,
+      resistances: data.resistances.map(r => ({
+        ...r,
+        description: translateDescription(r.description, t),
+      })),
+      supports: data.supports.map(s => ({
+        ...s,
+        description: translateDescription(s.description, t),
+      })),
+    };
+  }, [data, t]);
 
   if (isLoading) {
     return (
@@ -27,7 +68,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
     );
   }
 
-  if (error || !data) {
+  if (error || !translatedData) {
     return (
       <AnalysisError 
         title={t('analysis_technical_levels')}
@@ -62,13 +103,13 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
       <div className="space-y-4 text-sm">
         <div className="flex items-center justify-between p-3 bg-slate-800/60 rounded-lg">
           <span className="text-gray-400">{t('analysis_pivot_point')}</span>
-          <span className="text-white font-mono font-bold">{formatPrice(data.pivot, symbol)}</span>
+          <span className="text-white font-mono font-bold">{formatPrice(translatedData.pivot, symbol)}</span>
         </div>
 
         <div>
           <h4 className="text-gray-400 mb-2">{t('analysis_key_resistances')}:</h4>
           <div className="space-y-2">
-            {data.resistances.map((level, index) => (
+            {translatedData.resistances.map((level, index) => (
               <div key={index} className="flex items-start gap-2 p-2 bg-slate-800/60 rounded">
                 <span className="text-red-400 font-mono font-bold shrink-0">{formatPrice(level.level, symbol)}</span>
                 <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
@@ -85,7 +126,7 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
         <div>
           <h4 className="text-gray-400 mb-2">{t('analysis_key_supports')}:</h4>
           <div className="space-y-2">
-            {data.supports.map((level, index) => (
+            {translatedData.supports.map((level, index) => (
               <div key={index} className="flex items-start gap-2 p-2 bg-slate-800/60 rounded">
                 <span className="text-green-400 font-mono font-bold shrink-0">{formatPrice(level.level, symbol)}</span>
                 <span className={`px-2 py-0.5 text-xs rounded border ${getStrengthBadge(level.strength)}`}>
@@ -99,11 +140,11 @@ export function TechnicalLevels({ symbol, currentPrice, realtimePrice }: Technic
           </div>
         </div>
 
-        {data.fibonacci && data.fibonacci.length > 0 && (
+        {translatedData.fibonacci && translatedData.fibonacci.length > 0 && (
           <div>
             <h4 className="text-gray-400 mb-2">{t('analysis_fibonacci_levels')}:</h4>
             <div className="grid grid-cols-3 gap-2">
-              {data.fibonacci.map((fib, index) => (
+              {translatedData.fibonacci.map((fib, index) => (
                 <div key={index} className="text-center p-2 bg-slate-800/60 rounded">
                   <p className="text-blue-400 text-xs">{fib.level}</p>
                   <p className="text-white font-mono text-xs">{formatPrice(fib.price, symbol)}</p>

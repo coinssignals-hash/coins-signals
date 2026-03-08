@@ -979,6 +979,22 @@ export type TranslationKeys = {
   analysis_ti_mixed: string;
   analysis_ti_price_label: string;
   analysis_ti_bands_label: string;
+  // Technical Levels descriptions
+  analysis_tl_immediate_resistance: string;
+  analysis_tl_immediate_support: string;
+  analysis_tl_weekly_high: string;
+  analysis_tl_weekly_low: string;
+  analysis_tl_daily_high: string;
+  analysis_tl_daily_low: string;
+  analysis_tl_monthly_high: string;
+  analysis_tl_monthly_low: string;
+  analysis_tl_strong_resistance: string;
+  analysis_tl_strong_support: string;
+  analysis_tl_key_resistance: string;
+  analysis_tl_key_support: string;
+  analysis_tl_psychological_level: string;
+  analysis_tl_previous_close: string;
+  analysis_tl_key_zone: string;
   // Analysis - RiskRewardCalculator
   analysis_rr_calculator: string;
   analysis_rr_entry: string;
