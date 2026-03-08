@@ -22,53 +22,36 @@ import { format } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-const countries = [
-  { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
-  { code: 'BO', name: 'Bolivia', flag: '🇧🇴' },
-  { code: 'BR', name: 'Brasil', flag: '🇧🇷' },
-  { code: 'CL', name: 'Chile', flag: '🇨🇱' },
-  { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
-  { code: 'CR', name: 'Costa Rica', flag: '🇨🇷' },
-  { code: 'CU', name: 'Cuba', flag: '🇨🇺' },
-  { code: 'DO', name: 'Rep. Dominicana', flag: '🇩🇴' },
-  { code: 'EC', name: 'Ecuador', flag: '🇪🇨' },
-  { code: 'SV', name: 'El Salvador', flag: '🇸🇻' },
-  { code: 'GT', name: 'Guatemala', flag: '🇬🇹' },
-  { code: 'HN', name: 'Honduras', flag: '🇭🇳' },
-  { code: 'MX', name: 'México', flag: '🇲🇽' },
-  { code: 'NI', name: 'Nicaragua', flag: '🇳🇮' },
-  { code: 'PA', name: 'Panamá', flag: '🇵🇦' },
-  { code: 'PY', name: 'Paraguay', flag: '🇵🇾' },
-  { code: 'PE', name: 'Perú', flag: '🇵🇪' },
-  { code: 'PR', name: 'Puerto Rico', flag: '🇵🇷' },
-  { code: 'ES', name: 'España', flag: '🇪🇸' },
-  { code: 'US', name: 'Estados Unidos', flag: '🇺🇸' },
-  { code: 'UY', name: 'Uruguay', flag: '🇺🇾' },
-  { code: 'VE', name: 'Venezuela', flag: '🇻🇪' },
-  { code: 'GB', name: 'Reino Unido', flag: '🇬🇧' },
-  { code: 'FR', name: 'Francia', flag: '🇫🇷' },
-  { code: 'DE', name: 'Alemania', flag: '🇩🇪' },
-  { code: 'IT', name: 'Italia', flag: '🇮🇹' },
-  { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+const COUNTRY_CODES = [
+  'AR', 'BO', 'BR', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'SV',
+  'GT', 'HN', 'MX', 'NI', 'PA', 'PY', 'PE', 'PR', 'ES', 'US',
+  'UY', 'VE', 'GB', 'FR', 'DE', 'IT', 'PT',
 ];
 
-const timezones = [
-  { value: 'America/New_York', label: 'Nueva York (EST)', offset: 'UTC-5' },
-  { value: 'America/Chicago', label: 'Chicago (CST)', offset: 'UTC-6' },
-  { value: 'America/Denver', label: 'Denver (MST)', offset: 'UTC-7' },
-  { value: 'America/Los_Angeles', label: 'Los Ángeles (PST)', offset: 'UTC-8' },
-  { value: 'America/Mexico_City', label: 'Ciudad de México', offset: 'UTC-6' },
-  { value: 'America/Bogota', label: 'Bogotá', offset: 'UTC-5' },
-  { value: 'America/Lima', label: 'Lima', offset: 'UTC-5' },
-  { value: 'America/Santiago', label: 'Santiago', offset: 'UTC-4' },
-  { value: 'America/Argentina/Buenos_Aires', label: 'Buenos Aires', offset: 'UTC-3' },
-  { value: 'America/Sao_Paulo', label: 'São Paulo', offset: 'UTC-3' },
-  { value: 'Europe/Madrid', label: 'Madrid', offset: 'UTC+1' },
-  { value: 'Europe/London', label: 'Londres', offset: 'UTC+0' },
-  { value: 'Europe/Paris', label: 'París', offset: 'UTC+1' },
-  { value: 'Europe/Berlin', label: 'Berlín', offset: 'UTC+1' },
-  { value: 'Asia/Tokyo', label: 'Tokio', offset: 'UTC+9' },
-  { value: 'Asia/Shanghai', label: 'Shanghái', offset: 'UTC+8' },
+const COUNTRY_FLAGS: Record<string, string> = {
+  AR: '🇦🇷', BO: '🇧🇴', BR: '🇧🇷', CL: '🇨🇱', CO: '🇨🇴', CR: '🇨🇷', CU: '🇨🇺', DO: '🇩🇴',
+  EC: '🇪🇨', SV: '🇸🇻', GT: '🇬🇹', HN: '🇭🇳', MX: '🇲🇽', NI: '🇳🇮', PA: '🇵🇦', PY: '🇵🇾',
+  PE: '🇵🇪', PR: '🇵🇷', ES: '🇪🇸', US: '🇺🇸', UY: '🇺🇾', VE: '🇻🇪', GB: '🇬🇧', FR: '🇫🇷',
+  DE: '🇩🇪', IT: '🇮🇹', PT: '🇵🇹',
+};
+
+const TIMEZONE_ENTRIES = [
+  { value: 'America/New_York', key: 'tz_new_york', offset: 'UTC-5' },
+  { value: 'America/Chicago', key: null, label: 'Chicago (CST)', offset: 'UTC-6' },
+  { value: 'America/Denver', key: null, label: 'Denver (MST)', offset: 'UTC-7' },
+  { value: 'America/Los_Angeles', key: 'tz_los_angeles', offset: 'UTC-8' },
+  { value: 'America/Mexico_City', key: 'tz_mexico_city', offset: 'UTC-6' },
+  { value: 'America/Bogota', key: null, label: 'Bogotá', offset: 'UTC-5' },
+  { value: 'America/Lima', key: null, label: 'Lima', offset: 'UTC-5' },
+  { value: 'America/Santiago', key: null, label: 'Santiago', offset: 'UTC-4' },
+  { value: 'America/Argentina/Buenos_Aires', key: null, label: 'Buenos Aires', offset: 'UTC-3' },
+  { value: 'America/Sao_Paulo', key: null, label: 'São Paulo', offset: 'UTC-3' },
+  { value: 'Europe/Madrid', key: null, label: 'Madrid', offset: 'UTC+1' },
+  { value: 'Europe/London', key: 'tz_london', offset: 'UTC+0' },
+  { value: 'Europe/Paris', key: 'tz_paris', offset: 'UTC+1' },
+  { value: 'Europe/Berlin', key: 'tz_berlin', offset: 'UTC+1' },
+  { value: 'Asia/Tokyo', key: 'tz_tokyo', offset: 'UTC+9' },
+  { value: 'Asia/Shanghai', key: 'tz_shanghai', offset: 'UTC+8' },
 ];
 
 export default function PersonalInfo() {
