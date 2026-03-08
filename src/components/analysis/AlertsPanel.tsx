@@ -260,7 +260,7 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         <div className="flex items-center justify-between pt-1 border-t border-border/20">
           <div className="flex items-center gap-2">
             <Volume2 className="h-3.5 w-3.5 text-blue-400" />
-            <Label className="text-xs">Sonido global</Label>
+            <Label className="text-xs">{t('analysis_alert_global_sound')}</Label>
           </div>
           <Switch
             checked={localConfig.patternEnableSound}
