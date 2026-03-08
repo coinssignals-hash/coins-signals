@@ -451,7 +451,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
       {/* Entry Price Row */}
       <div className="px-4 py-3 bg-gradient-to-r from-blue-900/90 to-blue-800/90 flex items-center justify-between border-y border-blue-500/30">
-        <span className="text-blue-100 font-medium">Precio De Entrada.</span>
+        <span className="text-blue-100 font-medium">{t('sc_entry_price')}</span>
         <div className="flex items-center gap-2">
           <span className="text-white font-bold text-xl">{signal.entryPrice}</span>
           <button 
