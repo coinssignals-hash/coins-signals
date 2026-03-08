@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import logoImg from '@/assets/g174-2.svg';
 import { cn } from '@/lib/utils';
 import {
-  TrendingUp, Newspaper, Menu, Search, Bell,
+  TrendingUp, Newspaper, Menu, BookOpen, Bell,
   BarChart3, Wallet, BarChart2 } from
 'lucide-react';
 import { Button } from '@/components/ui/button';
