@@ -393,7 +393,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SymbolTab)} className="w-full">
             <TabsList className="w-full grid grid-cols-3 rounded-none border-b border-border bg-muted/30">
-              <TabsTrigger value="currencies" className="text-xs">💱 Divisas</TabsTrigger>
+              <TabsTrigger value="currencies" className="text-xs">💱 {t('cf_currencies')}</TabsTrigger>
               <TabsTrigger value="forex" className="text-xs">📊 Forex</TabsTrigger>
               <TabsTrigger value="crypto" className="text-xs">₿ Crypto</TabsTrigger>
             </TabsList>
