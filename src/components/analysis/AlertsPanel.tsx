@@ -235,8 +235,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<CandlestickChart className="w-4 h-4 text-amber-400" />}
         iconColor="bg-amber-500/15"
-        label="Patrones de Velas"
-        description="Hammer, Engulfing, Doji y más"
+        label={t('analysis_alert_candle_patterns')}
+        description={t('analysis_alert_candle_desc')}
         checked={localConfig.enablePatternAlerts}
         onCheckedChange={(v) => handleChange('enablePatternAlerts', v)}
       >
