@@ -82,10 +82,10 @@ export default function MediaLibrary() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">
-                {isVideo ? 'Biblioteca de Videos' : 'Biblioteca de Podcasts'}
+                {isVideo ? t('media_videos') : t('media_podcasts')}
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {totalCount} {isVideo ? 'videos' : 'episodios'} • {completedCount} completados
+                {totalCount} {isVideo ? 'videos' : t('media_episodes')} • {completedCount} {t('media_completed')}
               </p>
             </div>
           </div>
