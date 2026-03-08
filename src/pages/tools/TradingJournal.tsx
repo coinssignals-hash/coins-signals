@@ -16,7 +16,9 @@ import {
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
   Loader2, LogIn
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfWeek, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
 interface TradeEntry {
   id: string;
@@ -263,7 +265,110 @@ export default function TradingJournal() {
           </CardContent>
         </Card>
 
-        {/* Add Button */}
+        {/* Performance Charts */}
+        {entries.length >= 2 && (() => {
+          // Equity curve: cumulative pips over time (sorted by date asc)
+          const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+          let cumPips = 0;
+          const equityData = sorted.map(e => {
+            const p = parseFloat(e.pips) || 0;
+            cumPips += e.result === 'loss' ? -Math.abs(p) : p;
+            return { date: e.date, pips: parseFloat(cumPips.toFixed(1)) };
+          });
+
+          // Pair distribution
+          const pairMap: Record<string, number> = {};
+          entries.forEach(e => { pairMap[e.pair] = (pairMap[e.pair] || 0) + 1; });
+          const pairData = Object.entries(pairMap)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value);
+          const pieColors = ['hsl(var(--primary))', '#34d399', '#f59e0b', '#f87171', '#a78bfa', '#38bdf8', '#fb923c', '#e879f9'];
+
+          // Weekly pips
+          const weekMap: Record<string, number> = {};
+          sorted.forEach(e => {
+            const p = parseFloat(e.pips) || 0;
+            const w = format(startOfWeek(parseISO(e.date), { weekStartsOn: 1 }), 'dd MMM', { locale: es });
+            weekMap[w] = (weekMap[w] || 0) + (e.result === 'loss' ? -Math.abs(p) : p);
+          });
+          const weekData = Object.entries(weekMap).map(([week, pips]) => ({ week, pips: parseFloat(pips.toFixed(1)) }));
+
+          return (
+            <div className="space-y-4">
+              {/* Equity Curve */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-primary" /> Curva de Equity (Pips)
+                  </h3>
+                  <div className="h-44">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={equityData}>
+                        <defs>
+                          <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                        <YAxis tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={35} />
+                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11, color: 'hsl(var(--foreground))' }} />
+                        <Area type="monotone" dataKey="pips" stroke="hsl(var(--primary))" fill="url(#eqGrad)" strokeWidth={2} dot={false} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Pair Distribution */}
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4 space-y-2">
+                    <h3 className="text-[11px] font-semibold text-foreground">Distribución por Par</h3>
+                    <div className="h-32">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={pairData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={25} outerRadius={48} paddingAngle={2} strokeWidth={0}>
+                            {pairData.map((_, i) => <Cell key={i} fill={pieColors[i % pieColors.length]} />)}
+                          </Pie>
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 10, color: 'hsl(var(--foreground))' }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                      {pairData.slice(0, 4).map((p, i) => (
+                        <span key={p.name} className="text-[9px] text-muted-foreground flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: pieColors[i % pieColors.length] }} />
+                          {p.name}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Weekly Pips */}
+                <Card className="bg-card border-border">
+                  <CardContent className="p-4 space-y-2">
+                    <h3 className="text-[11px] font-semibold text-foreground">Pips/Semana</h3>
+                    <div className="h-32">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={weekData}>
+                          <XAxis dataKey="week" tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                          <YAxis tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={28} />
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 10, color: 'hsl(var(--foreground))' }} />
+                          <Bar dataKey="pips" radius={[3, 3, 0, 0]}>
+                            {weekData.map((d, i) => <Cell key={i} fill={d.pips >= 0 ? '#34d399' : '#f87171'} />)}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          );
+        })()}
+
         <Button
           onClick={() => setShowForm(!showForm)}
           className="w-full"
