@@ -121,11 +121,11 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
 
   // Traffic light colors
   const lightConfig = {
-    strong_buy:  { color: 'hsl(135, 70%, 50%)', glow: 'hsl(135, 70%, 50%)', label: 'Compra Fuerte', icon: TrendingUp },
-    buy:         { color: 'hsl(135, 60%, 45%)', glow: 'hsl(135, 60%, 45%)', label: 'Compra', icon: TrendingUp },
-    neutral:     { color: 'hsl(45, 80%, 55%)',  glow: 'hsl(45, 80%, 55%)',  label: 'Neutral', icon: Minus },
-    sell:        { color: 'hsl(0, 70%, 55%)',   glow: 'hsl(0, 70%, 55%)',   label: 'Venta', icon: TrendingDown },
-    strong_sell: { color: 'hsl(0, 80%, 50%)',   glow: 'hsl(0, 80%, 50%)',   label: 'Venta Fuerte', icon: TrendingDown },
+    strong_buy:  { color: 'hsl(135, 70%, 50%)', glow: 'hsl(135, 70%, 50%)', label: t('signal_confluence_strong_buy'), icon: TrendingUp },
+    buy:         { color: 'hsl(135, 60%, 45%)', glow: 'hsl(135, 60%, 45%)', label: t('signal_confluence_buy'), icon: TrendingUp },
+    neutral:     { color: 'hsl(45, 80%, 55%)',  glow: 'hsl(45, 80%, 55%)',  label: t('signal_confluence_neutral'), icon: Minus },
+    sell:        { color: 'hsl(0, 70%, 55%)',   glow: 'hsl(0, 70%, 55%)',   label: t('signal_confluence_sell'), icon: TrendingDown },
+    strong_sell: { color: 'hsl(0, 80%, 50%)',   glow: 'hsl(0, 80%, 50%)',   label: t('signal_confluence_strong_sell'), icon: TrendingDown },
   };
 
   const cfg = lightConfig[level];
