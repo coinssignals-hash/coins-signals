@@ -380,7 +380,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                           background: 'hsl(210, 30%, 10%)',
                           border: '1px solid hsl(210, 25%, 18%)',
                         }}
-                        title={starred ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                        title={starred ? t('ai_center_remove_fav') : t('ai_center_add_fav')}
                       >
                         <Star
                           className={cn("w-3 h-3 transition-all", starred && "fill-current")}
