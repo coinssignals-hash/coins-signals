@@ -57,7 +57,7 @@ export function AnalysisError({
     if (errorMessage.includes('timeout')) {
       return {
         icon: WifiOff,
-        defaultMessage: 'La solicitud tardó demasiado. Intenta de nuevo.',
+        defaultMessage: t('ae_timeout'),
         isNetwork: true,
       };
     }
