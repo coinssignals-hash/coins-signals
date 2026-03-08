@@ -200,12 +200,12 @@ export default function MonteCarloSimulation() {
             {/* Equity Projection Chart */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Proyección de Capital</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_capital_projection')}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} label={{ value: 'Mes', position: 'bottom', fontSize: 10 }} />
+                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} label={{ value: t('tp_month_label'), position: 'bottom', fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                       <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
                       <Area type="monotone" dataKey="p5" stackId="1" fill="hsl(var(--destructive) / 0.1)" stroke="none" />
@@ -217,7 +217,7 @@ export default function MonteCarloSimulation() {
                   </ResponsiveContainer>
                 </div>
                 <div className="flex justify-center gap-4 mt-2 text-[9px] text-muted-foreground">
-                  <span>━ Mediana</span>
+                  <span>━ {t('tp_median')}</span>
                   <span className="text-primary/60">■ P25-P75</span>
                   <span className="text-primary/30">■ P5-P95</span>
                 </div>
