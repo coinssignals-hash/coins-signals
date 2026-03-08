@@ -156,6 +156,7 @@ function PatternTypeRow({
 }
 
 export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
+  const { t } = useTranslation();
   const [localConfig, setLocalConfig] = useState(config);
 
   const handleChange = (key: keyof AlertConfig, value: boolean | number | AlertConfig['patternAlertTypes']) => {
