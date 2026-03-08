@@ -146,12 +146,12 @@ export default function Install() {
             {platform === 'desktop' && !deferredPrompt && (
               <InstructionCard
                 emoji="💻"
-                title="Instrucciones para Escritorio"
+                title={t('inst_desktop_title')}
                 accentClass="bg-muted"
                 steps={[
-                  { icon: <Download className="w-4 h-4" />, title: 'Busca el ícono de instalación', desc: 'En la barra de direcciones de Chrome, busca el ícono de monitor con flecha' },
-                  { icon: <Plus className="w-4 h-4" />, title: 'Haz clic en "Instalar"', desc: 'Se abrirá un diálogo para confirmar la instalación' },
-                  { icon: <Smartphone className="w-4 h-4" />, title: 'Confirma y disfruta', desc: 'La app se abrirá en su propia ventana' },
+                  { icon: <Download className="w-4 h-4" />, title: t('inst_desktop_step1'), desc: t('inst_desktop_step1_desc') },
+                  { icon: <Plus className="w-4 h-4" />, title: t('inst_desktop_step2'), desc: t('inst_desktop_step2_desc') },
+                  { icon: <Smartphone className="w-4 h-4" />, title: t('inst_desktop_step3'), desc: t('inst_desktop_step3_desc') },
                 ]}
               />
             )}
