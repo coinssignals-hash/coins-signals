@@ -231,7 +231,7 @@ function PriceAge({ timestamp, agoLabel }: {timestamp: number; agoLabel: string;
     <Popover>
       <PopoverTrigger asChild>
         <span className={cn("text-[8px] font-mono tabular-nums cursor-pointer active:scale-95 transition-transform", color)}>
-          ⏱ {label} {t('signal_ago')}
+          ⏱ {label} {agoLabel}
         </span>
       </PopoverTrigger>
       <PopoverContent side="bottom" className="w-auto text-[10px] font-mono bg-[hsl(225,25%,10%)] border-cyan-500/20 text-cyan-100 p-2 shadow-xl shadow-black/40">
