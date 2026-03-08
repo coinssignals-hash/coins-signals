@@ -331,7 +331,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin text-primary" />
-          <span>Sincronizando favoritos...</span>
+          <span>{t('cf_syncing')}</span>
         </div>
         <Skeleton className="h-10 w-full rounded-lg" />
       </div>
