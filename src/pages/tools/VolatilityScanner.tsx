@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Gauge, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Clock, Zap } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface VolatilityData {
   pair: string;
