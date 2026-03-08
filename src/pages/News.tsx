@@ -340,7 +340,8 @@ function VolatilityIndicator({ newsId, title, category, currencies
         <div className="px-3 py-2.5 rounded-lg text-xs bg-popover border border-border shadow-xl space-y-1.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: config.color }}>
-              Volatilidad {config.label}
+              {t('news_volatility')} {config.label}
+            </span>
             </span>
             <Activity className="w-3 h-3" style={{ color: config.color }} />
           </div>
