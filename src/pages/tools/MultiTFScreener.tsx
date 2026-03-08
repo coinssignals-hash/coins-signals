@@ -159,7 +159,7 @@ export default function MultiTFScreener() {
                     </div>
                   ))}
                   <Button className="w-full" onClick={applyAndClose}>
-                    Analizar {selectedPairs.length} pares
+                    {t('mtf_analyze_pairs').replace('{count}', String(selectedPairs.length))}
                   </Button>
                 </div>
               </SheetContent>
