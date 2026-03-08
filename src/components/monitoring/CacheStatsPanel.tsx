@@ -220,7 +220,7 @@ export function CacheStatsPanel() {
         {/* Recent Entries */}
         {entries.length > 0 && (
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Entradas Recientes</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('cache_recent')}</p>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {entries.slice(0, 10).map((entry) => {
                 const isExpired = new Date(entry.expires_at) < new Date();
