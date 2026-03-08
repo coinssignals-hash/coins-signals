@@ -72,6 +72,8 @@ export default function MultiTFScreener() {
 
   useEffect(() => {
     fetchData(false, selectedPairs);
+    const interval = setInterval(() => fetchData(true, selectedPairs), 5 * 60_000);
+    return () => clearInterval(interval);
   }, [fetchData, selectedPairs]);
 
   const togglePair = useCallback((pair: string) => {
