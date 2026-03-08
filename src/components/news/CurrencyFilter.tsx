@@ -486,7 +486,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 ))}
                 {filteredCryptoPairs.length === 0 && (
                   <div className="text-center py-4 text-sm text-muted-foreground">
-                    No se encontraron criptomonedas para "{searchQuery}"
+                    {t('cf_no_crypto')} "{searchQuery}"
                   </div>
                 )}
               </div>
