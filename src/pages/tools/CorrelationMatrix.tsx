@@ -72,7 +72,7 @@ export default function CorrelationMatrix() {
             </Link>
             <div className="flex items-center gap-2">
               <Layers className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Matriz de Correlación</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tools_corr_matrix_title')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
