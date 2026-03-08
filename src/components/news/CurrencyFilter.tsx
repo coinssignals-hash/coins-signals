@@ -405,9 +405,9 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 <Input
                   type="text"
                   placeholder={
-                    activeTab === 'currencies' ? 'Buscar divisa...' :
-                    activeTab === 'forex' ? 'Buscar par Forex...' :
-                    'Buscar criptomoneda...'
+                    activeTab === 'currencies' ? t('cf_search_currency') :
+                    activeTab === 'forex' ? t('cf_search_forex') :
+                    t('cf_search_crypto')
                   }
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
