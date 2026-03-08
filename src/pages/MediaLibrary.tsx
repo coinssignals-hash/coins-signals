@@ -10,6 +10,7 @@ import {
   ArrowLeft, Video, Headphones, Play, Clock, CheckCircle, ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const difficultyColor = (d: string) => {
   if (d === 'Principiante') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
@@ -21,6 +22,7 @@ export default function MediaLibrary() {
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
   const { isLessonCompleted } = useCourseProgress();
+  const { t } = useTranslation();
 
   const isVideo = type === 'videos';
   const mediaType = isVideo ? 'video' : 'podcast';
@@ -50,7 +52,7 @@ export default function MediaLibrary() {
         {/* Back */}
         <Link to="/courses" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Volver a Cursos
+          {t('media_back')}
         </Link>
 
         {/* Hero */}
@@ -80,10 +82,10 @@ export default function MediaLibrary() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">
-                {isVideo ? 'Biblioteca de Videos' : 'Biblioteca de Podcasts'}
+                {isVideo ? t('media_videos') : t('media_podcasts')}
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {totalCount} {isVideo ? 'videos' : 'episodios'} • {completedCount} completados
+                {totalCount} {isVideo ? 'videos' : t('media_episodes')} • {completedCount} {t('media_completed')}
               </p>
             </div>
           </div>

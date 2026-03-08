@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-
 import { Badge } from '@/components/ui/badge';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { categories } from '@/data/coursesData';
@@ -13,6 +12,7 @@ import {
   ChevronRight, Star, Zap, GraduationCap, Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 // categories imported from @/data/coursesData
 
@@ -38,6 +38,7 @@ const fadeUp = {
 
 export default function Courses() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('inicio');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const { isLessonCompleted, progress } = useCourseProgress();
@@ -69,7 +70,7 @@ export default function Courses() {
         {/* Back */}
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Volver
+          {t('courses_back')}
         </Link>
 
         {/* Hero Card — enhanced */}
@@ -91,10 +92,10 @@ export default function Courses() {
                   </motion.div>
                   <div>
                     <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
-                      Academia de Trading
+                      {t('courses_academy')}
                       <Sparkles className="w-4 h-4 text-amber-400" />
                     </h1>
-                    <p className="text-xs text-muted-foreground">Domina los mercados paso a paso</p>
+                    <p className="text-xs text-muted-foreground">{t('courses_master')}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -107,17 +108,17 @@ export default function Courses() {
                   >
                     {stats.percentage}%
                   </motion.span>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Progreso</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('courses_progress')}</p>
                 </div>
               </div>
 
               {/* Progress Bar */}
               <div className="relative space-y-1.5">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{stats.completed} de {stats.total} lecciones</span>
+                  <span>{stats.completed} {t('courses_lessons_of')} {stats.total} {t('courses_lessons')}</span>
                   <span className="flex items-center gap-1 text-primary">
                     <Flame className="w-3 h-3" />
-                    {stats.completed > 0 ? 'En progreso' : 'Comienza ahora'}
+                    {stats.completed > 0 ? t('courses_in_progress') : t('courses_start_now')}
                   </span>
                 </div>
                 <div className="h-2.5 rounded-full bg-secondary/60 overflow-hidden border border-border/20">
@@ -135,9 +136,9 @@ export default function Courses() {
               {/* Quick Stats */}
               <div className="relative grid grid-cols-3 gap-3">
                 {[
-                  { icon: BookOpen, label: 'Cursos', value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
-                  { icon: Trophy, label: 'Completadas', value: stats.completed, color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5' },
-                  { icon: Star, label: 'Módulos', value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5' },
+                  { icon: BookOpen, label: t('courses_courses'), value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
+                  { icon: Trophy, label: t('courses_completed'), value: stats.completed, color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5' },
+                  { icon: Star, label: t('courses_modules'), value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5' },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
@@ -244,7 +245,7 @@ export default function Courses() {
                         <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', difficultyColor(module.difficulty))}>
                           {module.difficulty}
                         </span>
-                        <span className="text-[11px] text-muted-foreground">{module.lessons.length} lecciones</span>
+                        <span className="text-[11px] text-muted-foreground">{module.lessons.length} {t('courses_lessons')}</span>
                         {completedCount > 0 && (
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary">
                             {completedCount}/{module.lessons.length}
@@ -378,10 +379,10 @@ export default function Courses() {
               <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center border border-blue-500/20">
                 <Video className="w-5 h-5 text-blue-400" />
               </div>
-              <p className="text-sm font-bold text-foreground mt-2">Videos</p>
-              <p className="text-[11px] text-muted-foreground">{allByType.video} videos disponibles</p>
+              <p className="text-sm font-bold text-foreground mt-2">{t('courses_videos')}</p>
+              <p className="text-[11px] text-muted-foreground">{allByType.video} {t('courses_videos_available')}</p>
               <div className="flex items-center gap-1 text-[10px] text-blue-400 mt-1.5 font-medium">
-                <ChevronRight className="w-3 h-3" /> Ver todos
+                <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
               </div>
             </div>
           </motion.div>
@@ -397,10 +398,10 @@ export default function Courses() {
               <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center border border-purple-500/20">
                 <Headphones className="w-5 h-5 text-purple-400" />
               </div>
-              <p className="text-sm font-bold text-foreground mt-2">Podcasts</p>
-              <p className="text-[11px] text-muted-foreground">{allByType.podcast} episodios</p>
+              <p className="text-sm font-bold text-foreground mt-2">{t('courses_podcasts')}</p>
+              <p className="text-[11px] text-muted-foreground">{allByType.podcast} {t('courses_episodes')}</p>
               <div className="flex items-center gap-1 text-[10px] text-purple-400 mt-1.5 font-medium">
-                <ChevronRight className="w-3 h-3" /> Ver todos
+                <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
               </div>
             </div>
           </motion.div>

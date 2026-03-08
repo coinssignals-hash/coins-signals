@@ -6,28 +6,22 @@ import { Archive, Clock, Trash2, ArrowLeft, Newspaper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const SavedNews = () => {
   const { getAllCachedNews, clearCache } = useNewsCache();
   const [refreshKey, setRefreshKey] = useState(0);
-  
+  const { t } = useTranslation();
   const cachedNews = getAllCachedNews();
 
   const handleClearCache = () => {
     clearCache();
     setRefreshKey(prev => prev + 1);
-    toast.success('Caché de noticias limpiado');
+    toast.success(t('saved_clear'));
   };
 
   return (
@@ -43,7 +37,7 @@ const SavedNews = () => {
             </Link>
             <div className="flex items-center gap-2">
               <Archive className="w-5 h-5 text-primary" />
-              <h1 className="text-xl font-bold text-foreground">Noticias Guardadas</h1>
+              <h1 className="text-xl font-bold text-foreground">{t('saved_title')}</h1>
             </div>
           </div>
           
@@ -52,20 +46,18 @@ const SavedNews = () => {
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                   <Trash2 className="w-4 h-4 mr-1" />
-                  Limpiar
+                  {t('saved_clear')}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>¿Limpiar todas las noticias guardadas?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta acción eliminará todas las noticias guardadas en el caché local. No podrás ver noticias antiguas que ya no estén en el feed.
-                  </AlertDialogDescription>
+                  <AlertDialogTitle>{t('saved_confirm_title')}</AlertDialogTitle>
+                  <AlertDialogDescription>{t('saved_confirm_desc')}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel>{t('common_cancel') || 'Cancelar'}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleClearCache} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Limpiar todo
+                    {t('saved_clear_all')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -75,7 +67,7 @@ const SavedNews = () => {
 
         {/* Info banner */}
         <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-sm text-muted-foreground">
-          <p>Las noticias que visitas se guardan automáticamente durante 7 días, permitiéndote verlas aunque ya no estén en el feed.</p>
+          <p>{t('saved_info')}</p>
         </div>
 
         {/* News list */}
@@ -85,22 +77,20 @@ const SavedNews = () => {
               <Newspaper className="w-10 h-10 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-foreground">No hay noticias guardadas</h2>
-              <p className="text-sm text-muted-foreground max-w-sm">
-                Las noticias que visites se guardarán automáticamente aquí para que puedas verlas más tarde.
-              </p>
+              <h2 className="text-lg font-semibold text-foreground">{t('saved_empty_title')}</h2>
+              <p className="text-sm text-muted-foreground max-w-sm">{t('saved_empty_desc')}</p>
             </div>
             <Link to="/news">
               <Button className="gap-2">
                 <Newspaper className="w-4 h-4" />
-                Ver noticias recientes
+                {t('saved_view_recent')}
               </Button>
             </Link>
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              {cachedNews.length} {cachedNews.length === 1 ? 'noticia guardada' : 'noticias guardadas'}
+              {cachedNews.length} {cachedNews.length === 1 ? t('saved_count_one') : t('saved_count_many')}
             </p>
             
             <div className="space-y-3">

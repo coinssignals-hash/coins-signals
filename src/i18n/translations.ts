@@ -1759,6 +1759,11 @@ export type TranslationKeys = {
   courses_completed: string;
   courses_modules: string;
   courses_lessons: string;
+  courses_videos: string;
+  courses_podcasts: string;
+  courses_episodes: string;
+  courses_videos_available: string;
+  courses_view_all: string;
   // MediaLibrary
   media_back: string;
   media_videos: string;

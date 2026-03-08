@@ -3,65 +3,24 @@ import { X, ChevronRight, ChevronLeft, Sparkles, TrendingUp, Bell, Wallet, Gradu
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TourStep {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
   icon: React.ElementType;
   route?: string;
-  highlight?: string;
 }
 
 const tourSteps: TourStep[] = [
-  {
-    id: 'welcome',
-    title: '¡Bienvenido a TradeSignals!',
-    description: 'Te guiaremos por las principales funciones de la aplicación para que empieces a operar como un profesional.',
-    icon: Sparkles,
-  },
-  {
-    id: 'signals',
-    title: 'Señales de Trading',
-    description: 'Recibe señales de compra/venta en tiempo real con niveles de entrada, take profit y stop loss calculados por IA.',
-    icon: TrendingUp,
-    route: '/signals',
-  },
-  {
-    id: 'analysis',
-    title: 'Análisis Técnico',
-    description: 'Accede a análisis detallados con indicadores RSI, MACD, Bollinger y más para cualquier par de divisas.',
-    icon: TrendingUp,
-    route: '/',
-  },
-  {
-    id: 'news',
-    title: 'Noticias Económicas',
-    description: 'Mantente informado con noticias de alto impacto y análisis de IA sobre cómo afectarán al mercado.',
-    icon: Newspaper,
-    route: '/news',
-  },
-  {
-    id: 'broker',
-    title: 'Conecta tu Broker',
-    description: 'Vincula hasta 5 cuentas de broker para ver tu portfolio unificado y recibir alertas automáticas.',
-    icon: Wallet,
-    route: '/link-broker',
-  },
-  {
-    id: 'notifications',
-    title: 'Notificaciones Inteligentes',
-    description: 'Configura alertas push, WhatsApp y sonido para no perderte ninguna oportunidad de trading.',
-    icon: Bell,
-    route: '/settings/notifications',
-  },
-  {
-    id: 'courses',
-    title: 'Academia de Trading',
-    description: 'Aprende trading con nuestros cursos en video, desde básico hasta estrategias avanzadas.',
-    icon: GraduationCap,
-    route: '/courses',
-  },
+  { id: 'welcome', titleKey: 'onb_welcome', descKey: 'onb_welcome_desc', icon: Sparkles },
+  { id: 'signals', titleKey: 'onb_signals_title', descKey: 'onb_signals_desc', icon: TrendingUp, route: '/signals' },
+  { id: 'analysis', titleKey: 'onb_analysis_title', descKey: 'onb_analysis_desc', icon: TrendingUp, route: '/' },
+  { id: 'news', titleKey: 'onb_news_title', descKey: 'onb_news_desc', icon: Newspaper, route: '/news' },
+  { id: 'broker', titleKey: 'onb_broker_title', descKey: 'onb_broker_desc', icon: Wallet, route: '/link-broker' },
+  { id: 'notifications', titleKey: 'onb_notif_title', descKey: 'onb_notif_desc', icon: Bell, route: '/settings/notifications' },
+  { id: 'courses', titleKey: 'onb_courses_title', descKey: 'onb_courses_desc', icon: GraduationCap, route: '/courses' },
 ];
 
 interface OnboardingTourProps {
@@ -74,6 +33,7 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const hasSeenTour = localStorage.getItem('onboarding_completed');
@@ -182,68 +142,43 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
 
           {/* Text */}
           <div className="text-center mb-8">
-            <h2 className="text-xl font-bold text-white mb-3">{step.title}</h2>
-            <p className="text-slate-400 text-sm leading-relaxed">{step.description}</p>
+            <h2 className="text-xl font-bold text-white mb-3">{t(step.titleKey)}</h2>
+            <p className="text-slate-400 text-sm leading-relaxed">{t(step.descKey)}</p>
           </div>
 
-          {/* Go to page button (for steps with routes) */}
           {step.route && !isFirstStep && (
             <Button
               onClick={handleGoToRoute}
               variant="outline"
               className="w-full mb-4 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
             >
-              Ir a {step.title}
+              {t('onb_go_to')} {t(step.titleKey)}
             </Button>
           )}
 
-          {/* Navigation buttons */}
           <div className="flex items-center gap-3">
             {!isFirstStep && (
-              <Button
-                onClick={handlePrev}
-                variant="ghost"
-                className="flex-1 text-slate-400 hover:text-white"
-              >
+              <Button onClick={handlePrev} variant="ghost" className="flex-1 text-slate-400 hover:text-white">
                 <ChevronLeft className="w-4 h-4 mr-1" />
-                Anterior
+                {t('onb_prev')}
               </Button>
             )}
-            
             <Button
               onClick={handleNext}
-              className={cn(
-                "flex-1 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white",
-                isFirstStep && "flex-[2]"
-              )}
+              className={cn("flex-1 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white", isFirstStep && "flex-[2]")}
             >
-              {isLastStep ? (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  ¡Comenzar!
-                </>
-              ) : (
-                <>
-                  Siguiente
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </>
-              )}
+              {isLastStep ? (<><Sparkles className="w-4 h-4 mr-2" />{t('onb_start')}</>) : (<>{t('onb_next')}<ChevronRight className="w-4 h-4 ml-1" /></>)}
             </Button>
           </div>
 
-          {/* Skip link */}
-          <button
-            onClick={handleSkip}
-            className="w-full mt-4 text-slate-500 text-xs hover:text-slate-400 transition-colors"
-          >
-            Saltar tour
+          <button onClick={handleSkip} className="w-full mt-4 text-slate-500 text-xs hover:text-slate-400 transition-colors">
+            {t('onb_skip')}
           </button>
         </div>
 
-        {/* Step counter */}
         <div className="bg-slate-800/50 py-3 text-center border-t border-slate-700/50">
           <span className="text-slate-500 text-xs">
-            Paso {currentStep + 1} de {tourSteps.length}
+            {currentStep + 1} {t('onb_step_of')} {tourSteps.length}
           </span>
         </div>
       </div>

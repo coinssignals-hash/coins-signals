@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PageShell } from '@/components/layout/PageShell';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -17,6 +18,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function Install() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop'>('desktop');
@@ -63,7 +65,7 @@ export default function Install() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-bold text-foreground">Instalar App</h1>
+          <h1 className="text-lg font-bold text-foreground">{t('inst_title')}</h1>
         </div>
       </header>
 
@@ -81,9 +83,7 @@ export default function Install() {
             </div>
           </div>
           <h2 className="text-xl font-bold text-foreground mb-1">Coins Signals</h2>
-          <p className="text-muted-foreground text-sm">
-            Instala la app para una experiencia nativa
-          </p>
+          <p className="text-muted-foreground text-sm">{t('inst_native_experience')}</p>
         </motion.div>
 
         {isInstalled ? (
@@ -95,10 +95,8 @@ export default function Install() {
             <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-[hsl(142_70%_45%/0.2)] flex items-center justify-center">
               <Check className="w-7 h-7 text-bullish" />
             </div>
-            <h3 className="text-lg font-bold text-bullish mb-1">¡App Instalada!</h3>
-            <p className="text-muted-foreground text-sm">
-              Ya tienes Coins Signals en tu dispositivo
-            </p>
+            <h3 className="text-lg font-bold text-bullish mb-1">{t('inst_installed')}</h3>
+            <p className="text-muted-foreground text-sm">{t('inst_installed_desc')}</p>
           </motion.div>
         ) : (
           <>
@@ -110,7 +108,7 @@ export default function Install() {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-5 text-base rounded-xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-transform"
                 >
                   <Download className="w-5 h-5 mr-2" />
-                  Instalar Ahora
+                  {t('inst_install_now')}
                 </Button>
               </motion.div>
             )}
@@ -119,14 +117,14 @@ export default function Install() {
             {platform === 'ios' && (
               <InstructionCard
                 emoji="🍎"
-                title="Instrucciones para iPhone"
+                title={t('inst_ios_title')}
                 accentClass="bg-muted"
                 steps={[
-                  { icon: <Share className="w-4 h-4" />, title: 'Toca el botón Compartir', desc: 'En la barra inferior de Safari, toca el ícono de compartir (cuadrado con flecha)' },
-                  { icon: <Plus className="w-4 h-4" />, title: '"Añadir a pantalla de inicio"', desc: 'Desliza hacia abajo en el menú y busca la opción con el ícono +' },
-                  { icon: <Download className="w-4 h-4" />, title: 'Confirma tocando "Añadir"', desc: 'El ícono aparecerá en tu pantalla de inicio' },
+                  { icon: <Share className="w-4 h-4" />, title: t('inst_ios_step1'), desc: t('inst_ios_step1_desc') },
+                  { icon: <Plus className="w-4 h-4" />, title: t('inst_ios_step2'), desc: t('inst_ios_step2_desc') },
+                  { icon: <Download className="w-4 h-4" />, title: t('inst_ios_step3'), desc: t('inst_ios_step3_desc') },
                 ]}
-                note="Asegúrate de estar usando Safari. Chrome y otros navegadores no permiten instalar apps en iOS."
+                note={t('inst_ios_note')}
               />
             )}
 
@@ -134,12 +132,12 @@ export default function Install() {
             {platform === 'android' && !deferredPrompt && (
               <InstructionCard
                 emoji="🤖"
-                title="Instrucciones para Android"
+                title={t('inst_android_title')}
                 accentClass="bg-[hsl(142_70%_45%/0.1)]"
                 steps={[
-                  { icon: <MoreVertical className="w-4 h-4" />, title: 'Abre el menú del navegador', desc: 'Toca los tres puntos en la esquina superior derecha de Chrome' },
-                  { icon: <Download className="w-4 h-4" />, title: '"Instalar aplicación"', desc: 'O "Añadir a pantalla de inicio" según tu versión de Chrome' },
-                  { icon: <Smartphone className="w-4 h-4" />, title: 'Confirma la instalación', desc: 'La app aparecerá en tu lista de aplicaciones' },
+                  { icon: <MoreVertical className="w-4 h-4" />, title: t('inst_android_step1'), desc: t('inst_android_step1_desc') },
+                  { icon: <Download className="w-4 h-4" />, title: t('inst_android_step2'), desc: t('inst_android_step2_desc') },
+                  { icon: <Smartphone className="w-4 h-4" />, title: t('inst_android_step3'), desc: t('inst_android_step3_desc') },
                 ]}
               />
             )}
@@ -148,12 +146,12 @@ export default function Install() {
             {platform === 'desktop' && !deferredPrompt && (
               <InstructionCard
                 emoji="💻"
-                title="Instrucciones para Escritorio"
+                title={t('inst_desktop_title')}
                 accentClass="bg-muted"
                 steps={[
-                  { icon: <Download className="w-4 h-4" />, title: 'Busca el ícono de instalación', desc: 'En la barra de direcciones de Chrome, busca el ícono de monitor con flecha' },
-                  { icon: <Plus className="w-4 h-4" />, title: 'Haz clic en "Instalar"', desc: 'Se abrirá un diálogo para confirmar la instalación' },
-                  { icon: <Smartphone className="w-4 h-4" />, title: 'Confirma y disfruta', desc: 'La app se abrirá en su propia ventana' },
+                  { icon: <Download className="w-4 h-4" />, title: t('inst_desktop_step1'), desc: t('inst_desktop_step1_desc') },
+                  { icon: <Plus className="w-4 h-4" />, title: t('inst_desktop_step2'), desc: t('inst_desktop_step2_desc') },
+                  { icon: <Smartphone className="w-4 h-4" />, title: t('inst_desktop_step3'), desc: t('inst_desktop_step3_desc') },
                 ]}
               />
             )}
@@ -165,12 +163,12 @@ export default function Install() {
               transition={{ delay: 0.2 }}
               className="bg-card border border-border rounded-xl p-4"
             >
-              <h3 className="text-base font-bold text-foreground mb-3 text-center">¿Por qué instalar?</h3>
+              <h3 className="text-base font-bold text-foreground mb-3 text-center">{t('inst_why_install')}</h3>
               <div className="grid grid-cols-2 gap-2.5">
-                <BenefitCard icon={<BellRing className="w-5 h-5 text-primary" />} title="Notificaciones" desc="Alertas instantáneas" />
-                <BenefitCard icon={<Zap className="w-5 h-5 text-accent" />} title="Más rápido" desc="Carga 2x más rápido" />
-                <BenefitCard icon={<WifiOff className="w-5 h-5 text-muted-foreground" />} title="Sin conexión" desc="Funciona offline" />
-                <BenefitCard icon={<Target className="w-5 h-5 text-bullish" />} title="Acceso directo" desc="Desde tu pantalla" />
+                <BenefitCard icon={<BellRing className="w-5 h-5 text-primary" />} title={t('inst_notifications')} desc={t('inst_instant_alerts')} />
+                <BenefitCard icon={<Zap className="w-5 h-5 text-accent" />} title={t('inst_faster')} desc={t('inst_2x_faster')} />
+                <BenefitCard icon={<WifiOff className="w-5 h-5 text-muted-foreground" />} title={t('inst_offline')} desc={t('inst_works_offline')} />
+                <BenefitCard icon={<Target className="w-5 h-5 text-bullish" />} title={t('inst_shortcut')} desc={t('inst_from_screen')} />
               </div>
             </motion.div>
           </>
