@@ -6,6 +6,7 @@ import { Star, Loader2, ChevronDown, Search, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface CurrencyFilterProps {
   selected: Currency[];
@@ -174,6 +175,7 @@ const CURRENCY_REGIONS = {
 type SymbolTab = 'currencies' | 'forex' | 'crypto';
 
 export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
+  const { t } = useTranslation();
   const { favorites, toggleFavorite, isFavorite, loading } = useFavoriteCurrencies();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -254,7 +256,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
             'bg-background border border-border shadow-sm hover:bg-accent',
             isFav && 'opacity-100'
           )}
-          title={isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+          title={isFav ? t('cf_remove_fav') : t('cf_add_fav')}
         >
           <Star className={cn('w-3 h-3', isFav ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground')} />
         </button>
@@ -329,7 +331,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin text-primary" />
-          <span>Sincronizando favoritos...</span>
+          <span>{t('cf_syncing')}</span>
         </div>
         <Skeleton className="h-10 w-full rounded-lg" />
       </div>
@@ -359,11 +361,11 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 </span>
               ))}
               {selected.length > 3 && (
-                <span className="text-sm text-muted-foreground">+{selected.length - 3} más</span>
+                <span className="text-sm text-muted-foreground">+{selected.length - 3} {t('cf_more')}</span>
               )}
             </div>
           ) : (
-            <span className="text-sm text-muted-foreground">Buscar divisas, Forex o Crypto...</span>
+            <span className="text-sm text-muted-foreground">{t('cf_search_placeholder')}</span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -391,7 +393,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SymbolTab)} className="w-full">
             <TabsList className="w-full grid grid-cols-3 rounded-none border-b border-border bg-muted/30">
-              <TabsTrigger value="currencies" className="text-xs">💱 Divisas</TabsTrigger>
+              <TabsTrigger value="currencies" className="text-xs">💱 {t('cf_currencies')}</TabsTrigger>
               <TabsTrigger value="forex" className="text-xs">📊 Forex</TabsTrigger>
               <TabsTrigger value="crypto" className="text-xs">₿ Crypto</TabsTrigger>
             </TabsList>
@@ -403,9 +405,9 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 <Input
                   type="text"
                   placeholder={
-                    activeTab === 'currencies' ? 'Buscar divisa...' :
-                    activeTab === 'forex' ? 'Buscar par Forex...' :
-                    'Buscar criptomoneda...'
+                    activeTab === 'currencies' ? t('cf_search_currency') :
+                    activeTab === 'forex' ? t('cf_search_forex') :
+                    t('cf_search_crypto')
                   }
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -429,7 +431,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                   <div className="space-y-2">
                     <div className="flex items-center gap-1.5 text-xs text-yellow-500">
                       <Star className="w-3 h-3 fill-yellow-500" />
-                      <span className="font-medium">Favoritas</span>
+                      <span className="font-medium">{t('cf_favorites')}</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {filteredFavorites.map(currency => renderCurrencyButton(currency, true))}
@@ -446,7 +448,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 ))}
                 {filteredFavorites.length === 0 && nonFavoriteCurrencies.length === 0 && (
                   <div className="text-center py-4 text-sm text-muted-foreground">
-                    No se encontraron divisas para "{searchQuery}"
+                    {t('cf_no_currencies')} "{searchQuery}"
                   </div>
                 )}
               </div>
@@ -465,7 +467,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 ))}
                 {filteredForexPairs.length === 0 && (
                   <div className="text-center py-4 text-sm text-muted-foreground">
-                    No se encontraron pares Forex para "{searchQuery}"
+                    {t('cf_no_forex')} "{searchQuery}"
                   </div>
                 )}
               </div>
@@ -484,7 +486,7 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
                 ))}
                 {filteredCryptoPairs.length === 0 && (
                   <div className="text-center py-4 text-sm text-muted-foreground">
-                    No se encontraron criptomonedas para "{searchQuery}"
+                    {t('cf_no_crypto')} "{searchQuery}"
                   </div>
                 )}
               </div>
@@ -494,15 +496,15 @@ export function CurrencyFilter({ selected, onChange }: CurrencyFilterProps) {
           {/* Footer */}
           <div className="px-3 py-2 border-t border-border bg-muted/30 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              {activeTab === 'currencies' && `${selected.length} divisa${selected.length !== 1 ? 's' : ''}`}
-              {activeTab === 'forex' && `${Object.values(FOREX_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} pares Forex`}
-              {activeTab === 'crypto' && `${Object.values(CRYPTO_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} criptos`}
+              {activeTab === 'currencies' && `${selected.length} ${t('cf_currencies').toLowerCase()}`}
+              {activeTab === 'forex' && `${Object.values(FOREX_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} ${t('cf_forex_pairs')}`}
+              {activeTab === 'crypto' && `${Object.values(CRYPTO_PAIRS).reduce((a, c) => a + c.pairs.length, 0)} ${t('cf_cryptos')}`}
             </span>
             <button
               onClick={() => setIsOpen(false)}
               className="text-xs text-primary hover:text-primary/80 font-medium"
             >
-              Cerrar
+              {t('cf_close')}
             </button>
           </div>
         </div>

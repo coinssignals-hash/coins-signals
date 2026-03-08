@@ -15,6 +15,7 @@ import {
   Download, MessageCircle, ThumbsUp, Play, BookOpen, Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Lesson { id: string; title: string; duration: string; }
 
@@ -184,6 +185,7 @@ const allLessons: Record<string, LessonData> = {
 export default function LessonDetail() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const lesson = allLessons[lessonId || '2.1'] || allLessons['2.1'];
 
   const {
@@ -209,14 +211,14 @@ export default function LessonDetail() {
   const handleToggleComplete = () => {
     toggleLessonComplete(lesson.id, lesson.moduleId);
     if (!isCompleted) {
-      toast({ title: '¡Lección completada!', description: `Has completado "${lesson.title}"` });
+      toast({ title: t('lesson_completed_toast'), description: `${t('lesson_completed_toast_desc')} "${lesson.title}"` });
     }
   };
 
   const handleMediaEnded = () => {
     if (!isCompleted) {
       toggleLessonComplete(lesson.id, lesson.moduleId);
-      toast({ title: '¡Lección completada!', description: lesson.mediaType === 'podcast' ? '¡Podcast terminado! Buen trabajo.' : 'El video ha terminado. ¡Buen trabajo!' });
+      toast({ title: t('lesson_completed_toast'), description: lesson.mediaType === 'podcast' ? t('lesson_podcast_ended') : t('lesson_video_ended') });
     }
   };
 
@@ -254,11 +256,11 @@ export default function LessonDetail() {
               </div>
               <div className="text-center space-y-1">
                 <h3 className="text-base font-semibold text-foreground">{lesson.title}</h3>
-                <p className="text-xs text-muted-foreground">Material de lectura</p>
+                <p className="text-xs text-muted-foreground">{t('lesson_reading_material')}</p>
               </div>
               <Button variant="outline" size="sm" className="gap-2 text-xs border-rose-500/30 text-rose-400 hover:bg-rose-500/10">
                 <Download className="w-3.5 h-3.5" />
-                Descargar PDF
+                {t('lesson_download_pdf')}
               </Button>
             </div>
           </div>
@@ -274,7 +276,7 @@ export default function LessonDetail() {
         {/* Back */}
         <Link to="/courses" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          Volver a cursos
+          {t('lesson_back')}
         </Link>
 
         {/* Media Player */}
@@ -298,7 +300,7 @@ export default function LessonDetail() {
                 lesson.mediaType === 'podcast' ? 'border-purple-500/30 text-purple-400 bg-purple-500/10' :
                 'border-rose-500/30 text-rose-400 bg-rose-500/10'
               )}>
-                {lesson.mediaType === 'video' ? '🎬 Video' : lesson.mediaType === 'podcast' ? '🎧 Podcast' : '📄 Lectura'}
+                {lesson.mediaType === 'video' ? '🎬 Video' : lesson.mediaType === 'podcast' ? '🎧 Podcast' : `📄 ${t('lesson_reading')}`}
               </Badge>
             </div>
 
@@ -309,7 +311,7 @@ export default function LessonDetail() {
             {/* Meta */}
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{lesson.duration}</span>
-              <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" />Lección {currentIndex + 1} de {lesson.lessons.length}</span>
+              <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" />{t('lesson_lesson_of').replace('{current}', String(currentIndex + 1)).replace('{total}', String(lesson.lessons.length))}</span>
             </div>
 
             {/* Actions */}
@@ -324,13 +326,13 @@ export default function LessonDetail() {
                 )}
               >
                 <CheckCircle className="w-3.5 h-3.5" />
-                {isCompleted ? 'Completada' : 'Marcar completada'}
+                {isCompleted ? t('lesson_completed') : t('lesson_mark_completed')}
               </Button>
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground">
-                <ThumbsUp className="w-3.5 h-3.5" />Útil
+                <ThumbsUp className="w-3.5 h-3.5" />{t('lesson_useful')}
               </Button>
               <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground">
-                <MessageCircle className="w-3.5 h-3.5" />Preguntar
+                <MessageCircle className="w-3.5 h-3.5" />{t('lesson_ask')}
               </Button>
             </div>
           </div>
@@ -339,7 +341,7 @@ export default function LessonDetail() {
         {/* Navigation */}
         <div className="flex items-center justify-between rounded-xl border border-border/40 bg-card/60 p-3">
           <Button variant="ghost" size="sm" disabled={!hasPrev} onClick={goPrev} className="gap-1 text-xs">
-            <ChevronLeft className="w-4 h-4" />Anterior
+            <ChevronLeft className="w-4 h-4" />{t('lesson_prev')}
           </Button>
           <div className="flex items-center gap-1">
             {lesson.lessons.map((_, i) => (
@@ -350,7 +352,7 @@ export default function LessonDetail() {
             ))}
           </div>
           <Button variant="ghost" size="sm" disabled={!hasNext} onClick={goNext} className="gap-1 text-xs">
-            Siguiente<ChevronRight className="w-4 h-4" />
+            {t('lesson_next')}<ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
@@ -359,7 +361,7 @@ export default function LessonDetail() {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-foreground flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" />
-              Progreso del módulo
+              {t('lesson_module_progress')}
             </span>
             <span className="text-sm font-bold text-primary tabular-nums">{completedCount}/{lesson.lessons.length}</span>
           </div>
@@ -376,7 +378,7 @@ export default function LessonDetail() {
         {/* Lesson List */}
         <div className="rounded-xl border border-border/40 bg-card/60 overflow-hidden">
           <div className="p-4 pb-2 border-b border-border/30">
-            <h3 className="text-sm font-semibold text-foreground">Lecciones del módulo</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('lesson_module_lessons')}</h3>
           </div>
           <div className="p-3 space-y-1.5">
             {lesson.lessons.map((item, idx) => {
@@ -424,7 +426,7 @@ export default function LessonDetail() {
             <div className="p-4 pb-2 border-b border-border/30">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <FileText className="w-4 h-4 text-rose-400" />
-                Recursos descargables
+                {t('lesson_resources')}
               </h3>
             </div>
             <div className="p-3 space-y-1.5">

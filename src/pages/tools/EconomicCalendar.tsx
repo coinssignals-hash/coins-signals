@@ -13,8 +13,9 @@ import { cn } from '@/lib/utils';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays, subDays } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useAlertConfig } from '@/hooks/useAlertConfig';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 interface EconomicEvent {
   date: string;
@@ -29,18 +30,7 @@ interface EconomicEvent {
   changePercentage: number | null;
 }
 
-const IMPACT_CONFIG: Record<string, { color: string; label: string; bg: string; icon: typeof Zap }> = {
-  High: { color: 'text-rose-400', label: 'Alto', bg: 'bg-rose-500/15 border-rose-500/30', icon: Zap },
-  Medium: { color: 'text-amber-400', label: 'Medio', bg: 'bg-amber-500/15 border-amber-500/30', icon: AlertTriangle },
-  Low: { color: 'text-emerald-400', label: 'Bajo', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: Minus },
-};
-
-const DAY_OFFSETS = [
-  { label: 'Ayer', offset: -1 },
-  { label: 'Hoy', offset: 0 },
-  { label: 'Mañana', offset: 1 },
-  { label: '+2 días', offset: 2 },
-];
+// IMPACT_CONFIG and DAY_OFFSETS are now inside the component to support i18n
 
 const COUNTRY_FLAGS: Record<string, string> = {
   US: '🇺🇸', EU: '🇪🇺', GB: '🇬🇧', JP: '🇯🇵', CH: '🇨🇭', AU: '🇦🇺',
@@ -56,12 +46,27 @@ function getFlag(currency: string): string {
 }
 
 export default function EconomicCalendar() {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [dayOffset, setDayOffset] = useState(0);
   const [impactFilter, setImpactFilter] = useState<string | null>(null);
   const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [aiInsights, setAiInsights] = useState<Record<number, string>>({});
   const { config, updateConfig, loaded: alertConfigLoaded } = useAlertConfig();
+
+  const DAY_OFFSETS = useMemo(() => [
+    { label: t('ec_yesterday'), offset: -1 },
+    { label: t('ec_today'), offset: 0 },
+    { label: t('ec_tomorrow'), offset: 1 },
+    { label: t('ec_plus2'), offset: 2 },
+  ], [t]);
+
+  const IMPACT_CONFIG_LOCAL: Record<string, { color: string; label: string; bg: string; icon: typeof Zap }> = useMemo(() => ({
+    High: { color: 'text-rose-400', label: t('ec_high'), bg: 'bg-rose-500/15 border-rose-500/30', icon: Zap },
+    Medium: { color: 'text-amber-400', label: t('ec_medium'), bg: 'bg-amber-500/15 border-amber-500/30', icon: AlertTriangle },
+    Low: { color: 'text-emerald-400', label: 'Low', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: Minus },
+  }), [t]);
 
   const targetDate = useMemo(() => {
     const d = new Date();
@@ -148,8 +153,8 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           <div className="flex items-center gap-2">
             <CalendarDays className="w-5 h-5 text-primary" />
             <div>
-              <h1 className="text-lg font-bold text-foreground">Calendario con Impacto IA</h1>
-              <p className="text-[10px] text-muted-foreground">{format(targetDate, "EEEE, d 'de' MMMM yyyy", { locale: es })}</p>
+              <h1 className="text-lg font-bold text-foreground">{t('ec_title')}</h1>
+              <p className="text-[10px] text-muted-foreground">{format(targetDate, 'PPPP', { locale: dateLocale })}</p>
             </div>
           </div>
           <div className="ml-auto">
@@ -189,10 +194,10 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         {!isLoading && events.length > 0 && (
           <div className="grid grid-cols-4 gap-2">
             {[
-              { label: 'Total', value: stats.total, icon: CalendarDays, color: 'text-primary' },
-              { label: 'Alto', value: stats.high, icon: Zap, color: 'text-rose-400' },
-              { label: 'Medio', value: stats.medium, icon: AlertTriangle, color: 'text-amber-400' },
-              { label: 'Publicados', value: stats.withActual, icon: BarChart3, color: 'text-emerald-400' },
+              { label: t('ec_total'), value: stats.total, icon: CalendarDays, color: 'text-primary' },
+              { label: t('ec_high'), value: stats.high, icon: Zap, color: 'text-rose-400' },
+              { label: t('ec_medium'), value: stats.medium, icon: AlertTriangle, color: 'text-amber-400' },
+              { label: t('ec_published'), value: stats.withActual, icon: BarChart3, color: 'text-emerald-400' },
             ].map(s => (
               <Card key={s.label} className="bg-card border-border">
                 <CardContent className="p-3 text-center">
@@ -211,7 +216,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2.5">
                 <Globe className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Por Divisa</span>
+                <span className="text-sm font-medium text-foreground">{t('ec_by_currency')}</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 <button
@@ -221,7 +226,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                     !currencyFilter ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
                   )}
                 >
-                  Todas
+                  {t('ec_all')}
                 </button>
                 {currencies.map(([cur, count]) => (
                   <button
@@ -248,7 +253,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         <Card className="bg-card border-border">
           <CardContent className="p-3 flex items-center gap-2 flex-wrap">
             <Zap className="w-4 h-4 text-primary shrink-0" />
-            <span className="text-xs font-medium text-muted-foreground shrink-0">Impacto:</span>
+            <span className="text-xs font-medium text-muted-foreground shrink-0">{t('ec_impact')}:</span>
             <button
               onClick={() => setImpactFilter(null)}
               className={cn(
@@ -256,9 +261,9 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                 !impactFilter ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
               )}
             >
-              Todos
+              {t('ec_all_impacts')}
             </button>
-            {Object.entries(IMPACT_CONFIG).map(([key, conf]) => {
+            {Object.entries(IMPACT_CONFIG_LOCAL).map(([key, conf]) => {
               const count = events.filter(e => e.impact === key).length;
               return (
                 <button
@@ -283,22 +288,22 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           <Card className="bg-card border-border">
             <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              <p className="text-xs text-muted-foreground">Cargando eventos económicos...</p>
+              <p className="text-xs text-muted-foreground">{t('ec_loading')}</p>
             </CardContent>
           </Card>
         ) : filtered.length === 0 ? (
           <Card className="bg-card border-border">
             <CardContent className="p-8 text-center">
               <CalendarDays className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-              <p className="text-sm text-muted-foreground">No hay eventos para esta fecha</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Prueba seleccionando otro día o quitando filtros</p>
+              <p className="text-sm text-muted-foreground">{t('ec_no_events')}</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">{t('ec_no_events_hint')}</p>
             </CardContent>
           </Card>
         ) : (
           <Card className="bg-card border-border">
             <CardContent className="p-0">
               {filtered.map((event, i) => {
-                const impact = IMPACT_CONFIG[event.impact] || IMPACT_CONFIG.Low;
+                const impact = IMPACT_CONFIG_LOCAL[event.impact] || IMPACT_CONFIG_LOCAL.Low;
                 const time = event.date?.includes('T')
                   ? format(new Date(event.date), 'HH:mm')
                   : '--:--';
@@ -364,13 +369,13 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                         {/* Data Grid */}
                         <div className="grid grid-cols-3 gap-2">
                           <div className="bg-secondary rounded-lg p-2.5 text-center">
-                            <span className="text-[9px] text-muted-foreground block">Previo</span>
+                            <span className="text-[9px] text-muted-foreground block">{t('ec_previous')}</span>
                             <span className="text-sm font-mono font-bold text-foreground">
                               {event.previous !== null ? event.previous : '—'}
                             </span>
                           </div>
                           <div className="bg-secondary rounded-lg p-2.5 text-center">
-                            <span className="text-[9px] text-muted-foreground block">Estimado</span>
+                            <span className="text-[9px] text-muted-foreground block">{t('ec_estimated')}</span>
                             <span className="text-sm font-mono font-bold text-foreground">
                               {event.estimate !== null ? event.estimate : '—'}
                             </span>
@@ -381,14 +386,14 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                               ? deviation !== null && deviation > 0 ? "bg-emerald-500/10" : deviation !== null && deviation < 0 ? "bg-rose-500/10" : "bg-secondary"
                               : "bg-secondary"
                           )}>
-                            <span className="text-[9px] text-muted-foreground block">Actual</span>
+                            <span className="text-[9px] text-muted-foreground block">{t('ec_actual')}</span>
                             <span className={cn(
                               "text-sm font-mono font-bold",
                               event.actual === null ? "text-muted-foreground" :
                               deviation !== null && deviation > 0 ? "text-emerald-400" :
                               deviation !== null && deviation < 0 ? "text-rose-400" : "text-foreground"
                             )}>
-                              {event.actual !== null ? event.actual : 'Pendiente'}
+                              {event.actual !== null ? event.actual : t('ec_pending')}
                             </span>
                           </div>
                         </div>
@@ -397,7 +402,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                         {deviation !== null && (
                           <div className="space-y-1">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-muted-foreground">Desviación vs Estimado</span>
+                              <span className="text-[10px] text-muted-foreground">{t('ec_deviation')}</span>
                               <div className="flex items-center gap-1">
                                 {deviation > 0 ? <TrendingUp className="w-3 h-3 text-emerald-400" /> :
                                  deviation < 0 ? <TrendingDown className="w-3 h-3 text-rose-400" /> :
@@ -435,7 +440,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                           ) : (
                             <Sparkles className="w-3.5 h-3.5 text-primary" />
                           )}
-                          {aiInsights[i] ? 'Análisis IA Generado' : 'Analizar con IA'}
+                          {aiInsights[i] ? t('ec_ai_generated') : t('ec_analyze_ai')}
                         </Button>
 
                         {/* AI Insight */}
@@ -443,7 +448,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
                             <div className="flex items-center gap-1.5 mb-1.5">
                               <Sparkles className="w-3.5 h-3.5 text-primary" />
-                              <span className="text-[10px] font-semibold text-primary">Análisis IA</span>
+                              <span className="text-[10px] font-semibold text-primary">{t('ec_ai_label')}</span>
                             </div>
                             <p className="text-[11px] text-foreground leading-relaxed whitespace-pre-line">
                               {aiInsights[i]}
@@ -474,8 +479,8 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                   <Bell className={cn("w-4 h-4", config.enableCalendarAlerts ? "text-primary" : "text-muted-foreground")} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Alertas de Alto Impacto</p>
-                  <p className="text-[10px] text-muted-foreground">Notificación push 15 min antes</p>
+                  <p className="text-sm font-medium text-foreground">{t('ec_high_alerts')}</p>
+                  <p className="text-[10px] text-muted-foreground">{t('ec_push_before')}</p>
                 </div>
               </div>
               <Switch
@@ -492,7 +497,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             <CardContent className="p-3 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Los eventos de alto impacto pueden causar volatilidad significativa. Opera con precaución durante estos periodos.
+                {t('ec_volatility_warning')}
               </p>
             </CardContent>
           </Card>

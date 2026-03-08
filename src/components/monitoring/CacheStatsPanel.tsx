@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Database, RefreshCw, Trash2, Clock, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { format, formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { useDateLocale } from '@/hooks/useDateLocale';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface CacheStats {
   total: number;
@@ -25,6 +26,8 @@ interface CacheEntry {
 }
 
 export function CacheStatsPanel() {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [stats, setStats] = useState<CacheStats | null>(null);
   const [entries, setEntries] = useState<CacheEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,7 +70,7 @@ export function CacheStatsPanel() {
       console.error('Error fetching cache stats:', error);
       toast({
         title: 'Error',
-        description: 'No se pudieron cargar las estadísticas del cache',
+        description: t('cache_error_load'),
         variant: 'destructive',
       });
     } finally {
@@ -83,8 +86,8 @@ export function CacheStatsPanel() {
       if (error) throw error;
       
       toast({
-        title: 'Cache limpiado',
-        description: `Se eliminaron ${data.deleted} entradas expiradas`,
+        title: t('cache_cleaned'),
+        description: t('cache_cleaned_desc').replace('{count}', String(data.deleted)),
       });
       
       await fetchStats();
@@ -92,7 +95,7 @@ export function CacheStatsPanel() {
       console.error('Error clearing cache:', error);
       toast({
         title: 'Error',
-        description: 'No se pudo limpiar el cache',
+        description: t('cache_error_clean'),
         variant: 'destructive',
       });
     } finally {
@@ -106,11 +109,11 @@ export function CacheStatsPanel() {
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      sentiment: 'Sentimiento',
-      prediction: 'Predicción',
-      conclusions: 'Conclusiones',
-      recommendations: 'Recomendaciones',
-      technical_levels: 'Niveles Técnicos',
+      sentiment: t('cache_type_sentiment'),
+      prediction: t('cache_type_prediction'),
+      conclusions: t('cache_type_conclusions'),
+      recommendations: t('cache_type_recommendations'),
+      technical_levels: t('cache_type_technical'),
     };
     return labels[type] || type;
   };
@@ -131,7 +134,7 @@ export function CacheStatsPanel() {
       <Card className="bg-card border-border">
         <CardContent className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-primary animate-spin" />
-          <span className="ml-2 text-muted-foreground">Cargando estadísticas...</span>
+          <span className="ml-2 text-muted-foreground">{t('cache_loading')}</span>
         </CardContent>
       </Card>
     );
@@ -143,7 +146,7 @@ export function CacheStatsPanel() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Database className="w-5 h-5 text-primary" />
-            Cache de Análisis IA
+            {t('cache_title')}
           </CardTitle>
           <div className="flex gap-2">
             <Button
@@ -153,7 +156,7 @@ export function CacheStatsPanel() {
               disabled={isLoading}
             >
               <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
-              Actualizar
+              {t('cache_refresh')}
             </Button>
             <Button
               variant="outline"
@@ -167,40 +170,40 @@ export function CacheStatsPanel() {
               ) : (
                 <Trash2 className="w-4 h-4 mr-1" />
               )}
-              Limpiar Expirados
+              {t('cache_clear_expired')}
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Total Entradas</p>
-            <p className="text-2xl font-bold text-foreground">{stats?.total || 0}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_total')}</p>
+              <p className="text-2xl font-bold text-foreground">{stats?.total || 0}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_active')}</p>
+              <p className="text-2xl font-bold text-green-400">
+                {(stats?.total || 0) - (stats?.expired || 0)}
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_expired')}</p>
+              <p className="text-2xl font-bold text-red-400">{stats?.expired || 0}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_types')}</p>
+              <p className="text-2xl font-bold text-foreground">
+                {Object.keys(stats?.byType || {}).length}
+              </p>
+            </div>
           </div>
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Activas</p>
-            <p className="text-2xl font-bold text-green-400">
-              {(stats?.total || 0) - (stats?.expired || 0)}
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Expiradas</p>
-            <p className="text-2xl font-bold text-red-400">{stats?.expired || 0}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Tipos</p>
-            <p className="text-2xl font-bold text-foreground">
-              {Object.keys(stats?.byType || {}).length}
-            </p>
-          </div>
-        </div>
 
         {/* By Type Breakdown */}
         {stats && Object.keys(stats.byType).length > 0 && (
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Por Tipo de Análisis</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('cache_by_type')}</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(stats.byType).map(([type, count]) => (
                 <span
@@ -217,7 +220,7 @@ export function CacheStatsPanel() {
         {/* Recent Entries */}
         {entries.length > 0 && (
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Entradas Recientes</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('cache_recent')}</p>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {entries.slice(0, 10).map((entry) => {
                 const isExpired = new Date(entry.expires_at) < new Date();
@@ -236,7 +239,7 @@ export function CacheStatsPanel() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
-                      {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true, locale: es })}
+                      {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true, locale: dateLocale })}
                       {isExpired && (
                         <span className="text-red-400 font-medium">(expirado)</span>
                       )}
@@ -252,11 +255,11 @@ export function CacheStatsPanel() {
         {stats?.newestEntry && (
           <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t border-border">
             <span>
-              Más reciente: {format(new Date(stats.newestEntry), 'dd/MM/yyyy HH:mm', { locale: es })}
+              {t('cache_newest')}: {format(new Date(stats.newestEntry), 'dd/MM/yyyy HH:mm', { locale: dateLocale })}
             </span>
             {stats.oldestEntry && (
               <span>
-                Más antiguo: {format(new Date(stats.oldestEntry), 'dd/MM/yyyy HH:mm', { locale: es })}
+                {t('cache_oldest')}: {format(new Date(stats.oldestEntry), 'dd/MM/yyyy HH:mm', { locale: dateLocale })}
               </span>
             )}
           </div>
@@ -266,8 +269,8 @@ export function CacheStatsPanel() {
         {stats?.total === 0 && (
           <div className="text-center py-6 text-muted-foreground">
             <Database className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>No hay entradas en el cache</p>
-            <p className="text-xs">Los análisis IA se guardarán aquí automáticamente</p>
+            <p>{t('cache_empty')}</p>
+            <p className="text-xs">{t('cache_auto_save')}</p>
           </div>
         )}
       </CardContent>
