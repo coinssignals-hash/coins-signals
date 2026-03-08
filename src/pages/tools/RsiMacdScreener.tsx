@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
-import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Header } from '@/components/layout/Header';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const SCAN_PAIRS = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'NZD/USD',
@@ -46,11 +46,11 @@ function getMacdSignal(hist: number): Signal {
 }
 
 const SIGNAL_CONFIG: Record<Signal, { label: string; color: string; bg: string }> = {
-  overbought: { label: 'Sobrecompra', color: 'text-red-400', bg: 'bg-red-500/15 border-red-500/30' },
+  overbought: { label: 'Sobrecompra', color: 'text-rose-400', bg: 'bg-rose-500/15 border-rose-500/30' },
   oversold: { label: 'Sobreventa', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/30' },
   bullish: { label: 'Alcista', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/30' },
-  bearish: { label: 'Bajista', color: 'text-red-400', bg: 'bg-red-500/15 border-red-500/30' },
-  neutral: { label: 'Neutral', color: 'text-muted-foreground', bg: 'bg-muted/30 border-border/30' },
+  bearish: { label: 'Bajista', color: 'text-rose-400', bg: 'bg-rose-500/15 border-rose-500/30' },
+  neutral: { label: 'Neutral', color: 'text-muted-foreground', bg: 'bg-muted/30 border-border' },
 };
 
 async function fetchPairData(symbol: string, interval: string): Promise<PairResult> {
@@ -103,7 +103,6 @@ export default function RsiMacdScreener() {
   const { data: results = [], isLoading, refetch, isFetching } = useQuery<PairResult[]>({
     queryKey: ['rsi-macd-screener', interval],
     queryFn: async () => {
-      // Fetch in batches of 3 to avoid rate limits
       const batchSize = 3;
       const allResults: PairResult[] = [];
       for (let i = 0; i < SCAN_PAIRS.length; i += batchSize) {
@@ -132,126 +131,163 @@ export default function RsiMacdScreener() {
 
   return (
     <PageShell>
-      <div className="px-4 py-4 pb-24 space-y-4">
-        {/* Header */}
+      <Header />
+      <main className="container py-6 space-y-5">
+        {/* Navigation */}
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-9 h-9 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-            <Activity className="w-5 h-5 text-cyan-400" />
-          </div>
-          <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
             <h1 className="text-lg font-bold text-foreground">Screener RSI/MACD</h1>
-            <p className="text-xs text-muted-foreground">{SCAN_PAIRS.length} pares escaneados</p>
           </div>
-          <button onClick={() => refetch()} className="w-8 h-8 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center">
-            <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", isFetching && "animate-spin")} />
-          </button>
-        </div>
-
-        {/* Interval selector */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">Temporalidad:</span>
-          <div className="flex gap-1.5">
-            {INTERVALS.map(iv => (
-              <button
-                key={iv.value}
-                onClick={() => setInterval(iv.value)}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border",
-                  interval === iv.value
-                    ? "bg-primary/15 border-primary/40 text-foreground"
-                    : "bg-card/60 border-border/50 text-muted-foreground"
-                )}
-              >
-                {iv.label}
-              </button>
-            ))}
+          <div className="ml-auto">
+            <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent transition-colors"
+            >
+              <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isFetching && "animate-spin")} />
+            </button>
           </div>
         </div>
 
-        {/* Stats summary */}
+        {/* Interval Selector */}
+        <Card className="bg-card border-border">
+          <CardContent className="p-3 flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground">Temporalidad</span>
+            <div className="flex gap-1.5">
+              {INTERVALS.map(iv => (
+                <button
+                  key={iv.value}
+                  onClick={() => setInterval(iv.value)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors",
+                    interval === iv.value
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {iv.label}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats Summary */}
         {!isLoading && results.length > 0 && (
           <div className="grid grid-cols-4 gap-2">
             {([
-              { key: 'overbought', label: 'Sobrecompra', count: stats.overbought, color: 'text-red-400' },
-              { key: 'oversold', label: 'Sobreventa', count: stats.oversold, color: 'text-emerald-400' },
-              { key: 'bullish', label: 'MACD+', count: stats.bullish, color: 'text-emerald-400' },
-              { key: 'bearish', label: 'MACD-', count: stats.bearish, color: 'text-red-400' },
-            ] as const).map(s => (
+              { key: 'overbought' as const, label: 'Sobrecompra', count: stats.overbought, icon: TrendingDown, color: 'text-rose-400' },
+              { key: 'oversold' as const, label: 'Sobreventa', count: stats.oversold, icon: TrendingUp, color: 'text-emerald-400' },
+              { key: 'bullish' as const, label: 'MACD+', count: stats.bullish, icon: TrendingUp, color: 'text-emerald-400' },
+              { key: 'bearish' as const, label: 'MACD−', count: stats.bearish, icon: TrendingDown, color: 'text-rose-400' },
+            ]).map(s => (
               <button
                 key={s.key}
                 onClick={() => setFilter(filter === s.key ? 'all' : s.key)}
-                className={cn(
-                  "p-2 rounded-xl border text-center transition-all",
-                  filter === s.key ? "bg-primary/10 border-primary/40" : "bg-card/60 border-border/50"
-                )}
               >
-                <span className={cn("text-lg font-bold font-mono block", s.color)}>{s.count}</span>
-                <span className="text-[9px] text-muted-foreground">{s.label}</span>
+                <Card className={cn(
+                  "border transition-colors",
+                  filter === s.key ? "bg-primary/10 border-primary/40" : "bg-card border-border"
+                )}>
+                  <CardContent className="p-3 text-center">
+                    <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
+                    <p className={cn('text-lg font-bold tabular-nums', s.color)}>{s.count}</p>
+                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                  </CardContent>
+                </Card>
               </button>
             ))}
           </div>
         )}
 
+        {/* Scan Info */}
+        <Card className="bg-card border-border">
+          <CardContent className="p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Pares escaneados</span>
+            </div>
+            <span className="text-sm font-bold text-primary tabular-nums">{SCAN_PAIRS.length}</span>
+          </CardContent>
+        </Card>
+
         {/* Results */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-2">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            <p className="text-xs text-muted-foreground">Escaneando {SCAN_PAIRS.length} pares...</p>
-          </div>
+          <Card className="bg-card border-border">
+            <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              <p className="text-xs text-muted-foreground">Escaneando {SCAN_PAIRS.length} pares...</p>
+            </CardContent>
+          </Card>
+        ) : filtered.length === 0 ? (
+          <Card className="bg-card border-border">
+            <CardContent className="p-8 text-center">
+              <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
+              <p className="text-sm text-muted-foreground">No hay resultados con este filtro</p>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="space-y-2">
-            {filtered.map(r => {
-              const rsiConf = SIGNAL_CONFIG[r.rsiSignal];
-              const macdConf = SIGNAL_CONFIG[r.macdTrend];
-              return (
-                <SignalStyleCard key={r.symbol} className="p-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 shrink-0">
-                      <span className="text-sm font-bold text-foreground">{r.symbol.replace('/', '')}</span>
+          <Card className="bg-card border-border">
+            <CardContent className="p-0">
+              {filtered.map((r, i) => {
+                const rsiConf = SIGNAL_CONFIG[r.rsiSignal];
+                const macdConf = SIGNAL_CONFIG[r.macdTrend];
+                return (
+                  <div
+                    key={r.symbol}
+                    className={cn(
+                      'p-3 flex items-center gap-3',
+                      i !== filtered.length - 1 && 'border-b border-border'
+                    )}
+                  >
+                    {/* Symbol */}
+                    <div className={cn(
+                      'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+                      r.macdTrend === 'bullish' ? 'bg-emerald-500/15' :
+                      r.macdTrend === 'bearish' ? 'bg-rose-500/15' : 'bg-muted'
+                    )}>
+                      {r.macdTrend === 'bullish' ? <TrendingUp className="w-4 h-4 text-emerald-400" /> :
+                       r.macdTrend === 'bearish' ? <TrendingDown className="w-4 h-4 text-rose-400" /> :
+                       <Minus className="w-4 h-4 text-muted-foreground" />}
                     </div>
-                    <div className="flex-1 grid grid-cols-2 gap-2">
-                      {/* RSI */}
-                      <div>
-                        <span className="text-[9px] text-muted-foreground block">RSI (14)</span>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className={cn("text-sm font-mono font-bold", rsiConf.color)}>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-foreground">{r.symbol}</span>
+                        <span className={cn("text-[10px] px-2 py-0.5 rounded-full border font-semibold", rsiConf.bg, rsiConf.color)}>
+                          {rsiConf.label}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4 mt-1">
+                        <div>
+                          <span className="text-[10px] text-muted-foreground">RSI </span>
+                          <span className={cn("text-xs font-bold tabular-nums", rsiConf.color)}>
                             {r.rsi !== null ? r.rsi.toFixed(1) : '—'}
                           </span>
-                          <span className={cn("text-[8px] px-1.5 py-0.5 rounded-full border font-semibold", rsiConf.bg)}>
-                            {rsiConf.label}
-                          </span>
                         </div>
-                      </div>
-                      {/* MACD */}
-                      <div>
-                        <span className="text-[9px] text-muted-foreground block">MACD Hist</span>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className={cn("text-sm font-mono font-bold", macdConf.color)}>
+                        <div>
+                          <span className="text-[10px] text-muted-foreground">MACD </span>
+                          <span className={cn("text-xs font-bold tabular-nums", macdConf.color)}>
                             {r.macdHist !== null ? r.macdHist.toFixed(5) : '—'}
                           </span>
-                          {r.macdTrend === 'bullish' ? (
-                            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                          ) : r.macdTrend === 'bearish' ? (
-                            <TrendingDown className="w-3.5 h-3.5 text-red-400" />
-                          ) : (
-                            <Minus className="w-3.5 h-3.5 text-muted-foreground" />
-                          )}
                         </div>
                       </div>
                     </div>
+
+                    {r.error && (
+                      <span className="text-[9px] text-rose-400/70">Error</span>
+                    )}
                   </div>
-                  {r.error && (
-                    <p className="text-[10px] text-red-400/70 mt-1">{r.error}</p>
-                  )}
-                </SignalStyleCard>
-              );
-            })}
-          </div>
+                );
+              })}
+            </CardContent>
+          </Card>
         )}
-      </div>
+      </main>
     </PageShell>
   );
 }
