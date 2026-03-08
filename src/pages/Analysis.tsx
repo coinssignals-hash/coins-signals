@@ -152,7 +152,7 @@ export default function Analysis() {
               </Button>
             </SheetTrigger>
             <SheetContent className="w-[85vw] max-w-[380px] bg-[#0a1628] border-cyan-900/40">
-              <SheetHeader><SheetTitle className="text-white">Alertas</SheetTitle></SheetHeader>
+              <SheetHeader><SheetTitle className="text-white">{t('analysis_alerts')}</SheetTitle></SheetHeader>
               <div className="mt-4"><Suspense fallback={<SectionLoader />}><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></Suspense></div>
             </SheetContent>
           </Sheet>
