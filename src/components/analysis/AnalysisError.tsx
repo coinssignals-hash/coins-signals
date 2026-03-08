@@ -23,7 +23,7 @@ export function AnalysisError({
     if (!error) {
       return {
         icon: AlertTriangle,
-        defaultMessage: 'No se pudieron cargar los datos. Intenta de nuevo.',
+        defaultMessage: t('ae_default'),
         isNetwork: false,
       };
     }
