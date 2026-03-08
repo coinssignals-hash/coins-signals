@@ -185,6 +185,7 @@ const allLessons: Record<string, LessonData> = {
 export default function LessonDetail() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const lesson = allLessons[lessonId || '2.1'] || allLessons['2.1'];
 
   const {
@@ -210,7 +211,7 @@ export default function LessonDetail() {
   const handleToggleComplete = () => {
     toggleLessonComplete(lesson.id, lesson.moduleId);
     if (!isCompleted) {
-      toast({ title: '¡Lección completada!', description: `Has completado "${lesson.title}"` });
+      toast({ title: t('lesson_completed_toast'), description: `${t('lesson_completed_toast_desc')} "${lesson.title}"` });
     }
   };
 
