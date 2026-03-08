@@ -835,7 +835,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 {aiStrategy?.approach.value ?? "Smart Money"}</p>
                         <p className="leading-relaxed">{aiStrategy?.approach.explanation ?? "Estrategia basada en seguir el flujo de capital institucional, identificando zonas de liquidez y bloques de órdenes."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          Confluencia con estructura de mercado
+                          {t('signal_market_structure')}
                         </div>
                       </PopoverContent>
                     </Popover>
