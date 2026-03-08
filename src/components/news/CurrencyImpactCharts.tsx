@@ -82,6 +82,7 @@ function CandlestickShape(props: any) {
 
 // Custom candlestick renderer using ComposedChart + custom Bar shape
 function CandlestickTimeline({ data }: { data: ChartResponse['timeline'] }) {
+  const { t } = useTranslation();
   const candles = buildCandles(data);
   const allValues = candles.flatMap(c => [c.high, c.low]);
   const yMin = Math.min(...allValues) - 0.3;
