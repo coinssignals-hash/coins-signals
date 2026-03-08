@@ -1079,7 +1079,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                               item.risk_level === 'MEDIUM' && "bg-amber-500/15 text-amber-400 border-amber-500/30",
                               item.risk_level === 'HIGH' && "bg-rose-500/15 text-rose-400 border-rose-500/30"
                             )}>
-                              Riesgo: {item.risk_level === 'LOW' ? 'Bajo' : item.risk_level === 'MEDIUM' ? 'Medio' : 'Alto'}
+                              {t('sc_risk')}: {item.risk_level === 'LOW' ? t('sc_risk_low') : item.risk_level === 'MEDIUM' ? t('sc_risk_medium') : t('sc_risk_high')}
                             </span>
                           )}
                           {item.confidence_level && (
