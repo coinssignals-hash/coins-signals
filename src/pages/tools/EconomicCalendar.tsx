@@ -397,7 +397,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                               ? deviation !== null && deviation > 0 ? "bg-emerald-500/10" : deviation !== null && deviation < 0 ? "bg-rose-500/10" : "bg-secondary"
                               : "bg-secondary"
                           )}>
-                            <span className="text-[9px] text-muted-foreground block">Actual</span>
+                            <span className="text-[9px] text-muted-foreground block">{t('ec_actual')}</span>
                             <span className={cn(
                               "text-sm font-mono font-bold",
                               event.actual === null ? "text-muted-foreground" :
