@@ -1988,6 +1988,16 @@ const es: TranslationKeys = {
   ph_maximum: 'Máximo',
   ph_avg_pnl: 'PnL Promedio',
   tj_pair_distribution: 'Distribución por Par',
+  country_AR: 'Argentina', country_BO: 'Bolivia', country_BR: 'Brasil', country_CL: 'Chile',
+  country_CO: 'Colombia', country_CR: 'Costa Rica', country_CU: 'Cuba', country_DO: 'Rep. Dominicana',
+  country_EC: 'Ecuador', country_SV: 'El Salvador', country_GT: 'Guatemala', country_HN: 'Honduras',
+  country_MX: 'México', country_NI: 'Nicaragua', country_PA: 'Panamá', country_PY: 'Paraguay',
+  country_PE: 'Perú', country_PR: 'Puerto Rico', country_ES: 'España', country_US: 'Estados Unidos',
+  country_UY: 'Uruguay', country_VE: 'Venezuela', country_GB: 'Reino Unido', country_FR: 'Francia',
+  country_DE: 'Alemania', country_IT: 'Italia', country_PT: 'Portugal',
+  tz_new_york: 'Nueva York (EST)', tz_mexico_city: 'Ciudad de México', tz_london: 'Londres',
+  tz_paris: 'París', tz_berlin: 'Berlín', tz_tokyo: 'Tokio', tz_shanghai: 'Shanghái',
+  tz_los_angeles: 'Los Ángeles (PST)',
 };
 
 export default es;
