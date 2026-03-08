@@ -91,7 +91,7 @@ function FlowComparison({ retail, institutional, detail }: {retail: number;insti
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] text-cyan-300/60">Institucional</span>
+             <span className="text-[11px] text-cyan-300/60">{t('signal_sentiment_institutional')}</span>
             <span className="text-xs font-bold text-blue-400">{institutional}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
