@@ -273,7 +273,7 @@ export default function MultiTFScreener() {
                       )}>
                         {pair.confluence}%
                       </p>
-                      <p className="text-[9px] text-muted-foreground">Confluencia</p>
+                      <p className="text-[9px] text-muted-foreground">{t('mtf_confluence')}</p>
                     </div>
                   </div>
                 </button>
