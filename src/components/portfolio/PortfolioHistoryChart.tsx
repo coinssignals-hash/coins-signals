@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from '@/i18n/LanguageContext';
+import {
   AreaChart, 
   Area, 
   XAxis, 
@@ -17,6 +17,7 @@ import { TrendingUp, TrendingDown, Activity, Calendar, RefreshCw } from 'lucide-
 import { usePortfolioHistory, TimeRange, AggregatedSnapshot } from '@/hooks/usePortfolioHistory';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const TIME_RANGES: { value: TimeRange; label: string }[] = [
   { value: '1D', label: '1D' },
