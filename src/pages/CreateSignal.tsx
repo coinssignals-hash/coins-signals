@@ -329,7 +329,7 @@ export default function CreateSignal() {
         toast.success(t('cs_notes_generated'));
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al generar notas');
+      toast.error(err instanceof Error ? err.message : t('cs_error_notes'));
     } finally {
       setGeneratingNotes(false);
     }
