@@ -192,7 +192,7 @@ export default function Portfolio() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         <ArrowUpRight className="w-3 h-3 text-emerald-400" />
-                        <span className="text-[10px] text-emerald-400">Compra</span>
+                        <span className="text-[10px] text-emerald-400">{t('portfolio_buy')}</span>
                       </div>
                       <span className="text-xs font-semibold text-emerald-400">{positionStats.buys}</span>
                     </div>
