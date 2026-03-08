@@ -70,7 +70,7 @@ export function CacheStatsPanel() {
       console.error('Error fetching cache stats:', error);
       toast({
         title: 'Error',
-        description: 'No se pudieron cargar las estadísticas del cache',
+        description: t('cache_error_load'),
         variant: 'destructive',
       });
     } finally {
