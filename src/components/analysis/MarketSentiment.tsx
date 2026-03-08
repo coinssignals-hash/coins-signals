@@ -263,7 +263,7 @@ export function MarketSentiment({
               {/* Gauge + Distribution */}
               <div className="grid grid-cols-12 gap-4 items-start">
                 <div className="col-span-5 flex justify-center">
-                  <ProGauge value={gaugeValue} size={150} />
+                  <ProGauge value={gaugeValue} size={150} t={t} />
                 </div>
                 <div className="col-span-7 space-y-3">
                   <SentimentDistBar bullish={bullish} neutral={neutral} bearish={bearish} />
