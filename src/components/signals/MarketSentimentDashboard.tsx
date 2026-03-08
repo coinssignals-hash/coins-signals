@@ -76,8 +76,8 @@ function FlowComparison({ retail, institutional, detail }: {retail: number;insti
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Users className="w-4 h-4 text-purple-400" />
-        <span className="text-xs font-semibold text-cyan-200">Flujo de Capital</span>
+      <Users className="w-4 h-4 text-purple-400" />
+        <span className="text-xs font-semibold text-cyan-200">{t('signal_sentiment_capital_flow')}</span>
       </div>
       <div className="flex gap-3">
         <div className="flex-1">
