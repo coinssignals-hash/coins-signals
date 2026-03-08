@@ -128,9 +128,9 @@ export function GlobalAlertsPanel() {
         {alerts.length === 0 ? (
           <div className="text-center py-6">
             <BellOff className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">No tienes alertas de precio configuradas</p>
+            <p className="text-sm text-muted-foreground">{t('ga_no_alerts')}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Ve a la sección de Acciones para crear alertas en tus activos favoritos.
+              {t('ga_no_alerts_hint')}
             </p>
           </div>
         ) : (
