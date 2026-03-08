@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Search, Loader2, X, TrendingUp, Coins, Building2, BarChart3, Globe, Star, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SearchResult {
   symbol: string;
@@ -20,14 +21,15 @@ interface Props {
   activeCategory?: string;
 }
 
+// Note: labels here are fallback; AICenter uses t() for tab labels via INSTRUMENT_TABS
 export const INSTRUMENT_TABS = [
-  { key: 'all', label: 'Todos', icon: Sparkles, color: 'hsl(200, 90%, 55%)' },
-  { key: 'favorites', label: 'Favoritos', icon: Star, color: 'hsl(45, 90%, 55%)' },
-  { key: 'forex', label: 'Forex', icon: TrendingUp, color: 'hsl(200, 90%, 55%)' },
-  { key: 'stock', label: 'Acciones', icon: Building2, color: 'hsl(160, 70%, 50%)' },
-  { key: 'etf', label: 'ETFs', icon: BarChart3, color: 'hsl(270, 70%, 60%)' },
-  { key: 'crypto', label: 'Crypto', icon: Coins, color: 'hsl(45, 90%, 55%)' },
-  { key: 'index', label: 'Índices', icon: Globe, color: 'hsl(350, 70%, 55%)' },
+  { key: 'all', label: 'all', icon: Sparkles, color: 'hsl(200, 90%, 55%)', i18nKey: 'ai_center_all' },
+  { key: 'favorites', label: 'favorites', icon: Star, color: 'hsl(45, 90%, 55%)', i18nKey: 'ai_center_favorites' },
+  { key: 'forex', label: 'Forex', icon: TrendingUp, color: 'hsl(200, 90%, 55%)', i18nKey: '' },
+  { key: 'stock', label: 'stocks', icon: Building2, color: 'hsl(160, 70%, 50%)', i18nKey: 'ai_center_stocks' },
+  { key: 'etf', label: 'ETFs', icon: BarChart3, color: 'hsl(270, 70%, 60%)', i18nKey: '' },
+  { key: 'crypto', label: 'Crypto', icon: Coins, color: 'hsl(45, 90%, 55%)', i18nKey: '' },
+  { key: 'index', label: 'indices', icon: Globe, color: 'hsl(350, 70%, 55%)', i18nKey: 'ai_center_indices' },
 ] as const;
 
 const TYPE_CONFIG: Record<string, { icon: typeof TrendingUp; color: string; bg: string }> = {
@@ -52,6 +54,7 @@ function getTypeLabel(type: string): string {
 }
 
 export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'all' }: Props) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -187,7 +190,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
             style={{ color: 'hsl(200, 60%, 40%)' }} />
           <input
             type="text"
-            placeholder="Buscar: AAPL, EUR/USD, BTC..."
+            placeholder={t('ai_center_search_placeholder')}
             value={query}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => { setOpen(true); if (results.length === 0 && !showFavorites) loadDefaults(activeCategory); }}
@@ -274,8 +277,8 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                 >
                   <Star className="w-5 h-5" style={{ color: 'hsl(45, 50%, 35%)' }} />
                 </div>
-                <p className="text-[12px] text-slate-400 font-medium">No tienes favoritos aún</p>
-                <p className="text-[10px] text-slate-600 mt-1">Toca ⭐ en cualquier símbolo para guardarlo</p>
+                <p className="text-[12px] text-slate-400 font-medium">{t('ai_center_no_favorites')}</p>
+                <p className="text-[10px] text-slate-600 mt-1">{t('ai_center_tap_star')}</p>
               </div>
             )}
 
@@ -291,7 +294,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                   <Search className="w-5 h-5" style={{ color: 'hsl(210, 40%, 35%)' }} />
                 </div>
                 <p className="text-[12px] text-slate-400 font-medium">
-                  {query.length < 2 ? 'Escribe al menos 2 caracteres' : 'Sin resultados'}
+                  {query.length < 2 ? t('ai_center_min_chars') : t('ai_center_no_results')}
                 </p>
               </div>
             )}
@@ -359,7 +362,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                           background: 'linear-gradient(135deg, hsl(45, 60%, 15%), hsl(45, 40%, 10%))',
                           border: '1px solid hsl(45, 50%, 28%)',
                         }}
-                        title="Eliminar de favoritos"
+                        title={t('ai_center_remove_fav')}
                       >
                         <Star className="w-3 h-3 fill-current" style={{ color: 'hsl(45, 90%, 55%)' }} />
                       </button>
@@ -377,7 +380,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                           background: 'hsl(210, 30%, 10%)',
                           border: '1px solid hsl(210, 25%, 18%)',
                         }}
-                        title={starred ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                        title={starred ? t('ai_center_remove_fav') : t('ai_center_add_fav')}
                       >
                         <Star
                           className={cn("w-3 h-3 transition-all", starred && "fill-current")}
@@ -410,7 +413,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(160, 70%, 50%)' }} />
               <span className="text-[9px]" style={{ color: 'hsl(210, 20%, 35%)' }}>
-                {displayResults.length} resultados
+                {displayResults.length} {t('ai_center_results_count')}
               </span>
             </div>
             <span className="text-[9px] font-mono" style={{ color: 'hsl(210, 20%, 30%)' }}>

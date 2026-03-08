@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Loader2, Play, CheckCircle2, AlertCircle, RotateCcw, LucideIcon } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   title: string;
@@ -11,41 +12,6 @@ interface Props {
   accentColor?: string;
 }
 
-const STATUS_STYLES = {
-  idle: {
-    border: 'hsl(210, 50%, 18%)',
-    bg: 'hsl(210, 80%, 6%)',
-    glow: 'none',
-    dotColor: 'hsl(210, 30%, 40%)',
-    label: 'Pendiente',
-    labelColor: 'hsl(210, 30%, 50%)',
-  },
-  running: {
-    border: 'hsl(200, 80%, 35%)',
-    bg: 'hsl(200, 80%, 6%)',
-    glow: '0 0 20px -6px hsla(200, 90%, 50%, 0.3)',
-    dotColor: 'hsl(200, 90%, 55%)',
-    label: 'Analizando...',
-    labelColor: 'hsl(200, 80%, 60%)',
-  },
-  done: {
-    border: 'hsl(160, 60%, 25%)',
-    bg: 'hsl(160, 60%, 5%)',
-    glow: '0 0 20px -6px hsla(160, 70%, 45%, 0.25)',
-    dotColor: 'hsl(160, 70%, 50%)',
-    label: 'Completado',
-    labelColor: 'hsl(160, 60%, 55%)',
-  },
-  error: {
-    border: 'hsl(0, 60%, 28%)',
-    bg: 'hsl(0, 60%, 6%)',
-    glow: '0 0 20px -6px hsla(0, 70%, 50%, 0.25)',
-    dotColor: 'hsl(0, 70%, 55%)',
-    label: 'Error',
-    labelColor: 'hsl(0, 60%, 60%)',
-  },
-} as const;
-
 const ACCENT_GRADIENTS: Record<string, string> = {
   primary: 'linear-gradient(135deg, hsl(200, 90%, 45%), hsl(210, 80%, 55%))',
   purple: 'linear-gradient(135deg, hsl(270, 80%, 50%), hsl(280, 70%, 60%))',
@@ -55,6 +21,43 @@ const ACCENT_GRADIENTS: Record<string, string> = {
 };
 
 export function AIModuleCard({ title, description, icon: Icon, status, onRun, disabled, accentColor = 'primary' }: Props) {
+  const { t } = useTranslation();
+
+  const STATUS_STYLES = {
+    idle: {
+      border: 'hsl(210, 50%, 18%)',
+      bg: 'hsl(210, 80%, 6%)',
+      glow: 'none',
+      dotColor: 'hsl(210, 30%, 40%)',
+      label: t('ai_center_status_pending'),
+      labelColor: 'hsl(210, 30%, 50%)',
+    },
+    running: {
+      border: 'hsl(200, 80%, 35%)',
+      bg: 'hsl(200, 80%, 6%)',
+      glow: '0 0 20px -6px hsla(200, 90%, 50%, 0.3)',
+      dotColor: 'hsl(200, 90%, 55%)',
+      label: t('ai_center_status_analyzing'),
+      labelColor: 'hsl(200, 80%, 60%)',
+    },
+    done: {
+      border: 'hsl(160, 60%, 25%)',
+      bg: 'hsl(160, 60%, 5%)',
+      glow: '0 0 20px -6px hsla(160, 70%, 45%, 0.25)',
+      dotColor: 'hsl(160, 70%, 50%)',
+      label: t('ai_center_status_completed'),
+      labelColor: 'hsl(160, 60%, 55%)',
+    },
+    error: {
+      border: 'hsl(0, 60%, 28%)',
+      bg: 'hsl(0, 60%, 6%)',
+      glow: '0 0 20px -6px hsla(0, 70%, 50%, 0.25)',
+      dotColor: 'hsl(0, 70%, 55%)',
+      label: t('ai_center_status_error'),
+      labelColor: 'hsl(0, 60%, 60%)',
+    },
+  } as const;
+
   const s = STATUS_STYLES[status];
   const gradient = ACCENT_GRADIENTS[accentColor] || ACCENT_GRADIENTS.primary;
 
@@ -121,7 +124,7 @@ export function AIModuleCard({ title, description, icon: Icon, status, onRun, di
                          'hsla(210, 50%, 20%, 0.5)',
             border: `1px solid ${status === 'idle' ? 'hsl(210, 40%, 25%)' : `${s.dotColor}40`}`,
           }}
-          title={status === 'error' ? 'Reintentar' : status === 'done' ? 'Ejecutar de nuevo' : 'Ejecutar módulo'}
+          title={status === 'error' ? t('ai_center_retry') : status === 'done' ? t('ai_center_run_again') : t('ai_center_run_module')}
         >
           {status === 'running' ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: s.dotColor }} />

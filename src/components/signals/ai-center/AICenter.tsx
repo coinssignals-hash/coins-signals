@@ -16,6 +16,7 @@ import { useAIAnalysis, AIModule } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
 import { detectCandlePatterns } from '@/lib/candle-patterns';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   onClose: () => void;
@@ -30,6 +31,7 @@ const POPULAR_PAIRS = [
 type ModuleStatus = 'idle' | 'running' | 'done' | 'error';
 
 export function AICenter({ onClose }: Props) {
+  const { t } = useTranslation();
   const [symbol, setSymbol] = useState('EUR/USD');
   const [customSymbol, setCustomSymbol] = useState('');
   const [modelSettings, setModelSettings] = useState<AIModelSettings>({
@@ -124,10 +126,10 @@ export function AICenter({ onClose }: Props) {
   }, [forexData, handleFetchData, computeAllIndicators, runFullAnalysis, activeSymbol]);
 
   const AI_MODULES: {id: AIModule;title: string;desc: string;icon: typeof Brain;accent: string;}[] = [
-  { id: 'analyze-patterns', title: 'Análisis de Patrones', desc: 'Detecta formaciones y patrones de velas con IA', icon: BarChart3, accent: 'cyan' },
-  { id: 'predict-signals', title: 'Predicción de Señales', desc: 'Genera señales de trading inteligentes', icon: Target, accent: 'purple' },
-  { id: 'generate-report', title: 'Reporte Profesional', desc: 'Informe técnico detallado del mercado', icon: FileText, accent: 'emerald' },
-  { id: 'synthesize-analysis', title: 'Síntesis Multi-Modelo', desc: 'Análisis combinado con múltiples perspectivas', icon: Layers, accent: 'amber' }];
+  { id: 'analyze-patterns', title: t('ai_center_pattern_analysis'), desc: t('ai_center_pattern_desc'), icon: BarChart3, accent: 'cyan' },
+  { id: 'predict-signals', title: t('ai_center_signal_prediction'), desc: t('ai_center_signal_pred_desc'), icon: Target, accent: 'purple' },
+  { id: 'generate-report', title: t('ai_center_pro_report'), desc: t('ai_center_pro_report_desc'), icon: FileText, accent: 'emerald' },
+  { id: 'synthesize-analysis', title: t('ai_center_multi_synthesis'), desc: t('ai_center_multi_synth_desc'), icon: Layers, accent: 'amber' }];
 
 
   const completedModules = Object.values(moduleStatuses).filter((s) => s === 'done').length;
@@ -148,8 +150,8 @@ export function AICenter({ onClose }: Props) {
                 <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[hsl(205,100%,7%)]" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-white tracking-tight">Central AI</h1>
-                <p className="text-[11px] text-cyan-300/60">Análisis multi-modelo · Gemini</p>
+                <h1 className="text-lg font-bold text-white tracking-tight">{t('ai_center_title')}</h1>
+                <p className="text-[11px] text-cyan-300/60">{t('ai_center_subtitle')}</p>
               </div>
             </div>
             <button
@@ -168,15 +170,15 @@ export function AICenter({ onClose }: Props) {
           {/* Stats row */}
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center py-2 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">Par</div>
+              <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">{t('ai_center_pair')}</div>
               <div className="text-sm font-bold text-white font-mono">{activeSymbol}</div>
             </div>
             <div className="text-center py-2 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">Velas</div>
+              <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">{t('ai_center_candles')}</div>
               <div className="text-sm font-bold text-white font-mono">{forexData?.candles.length || '—'}</div>
             </div>
             <div className="text-center py-2 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">Módulos</div>
+              <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">{t('ai_center_modules')}</div>
               <div className="text-sm font-bold text-white font-mono">{completedModules}/4</div>
             </div>
           </div>
@@ -277,7 +279,7 @@ export function AICenter({ onClose }: Props) {
               boxShadow: '0 0 16px -4px hsla(200, 90%, 50%, 0.3)'
             }}>
             {forexLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
-            Datos
+            {t('ai_center_fetch_data')}
           </button>
         </div>
       </div>
@@ -292,10 +294,10 @@ export function AICenter({ onClose }: Props) {
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
           <span className="text-xs text-white font-semibold font-mono">{forexData.symbol}</span>
           <span className="text-[11px] text-slate-400">
-            {forexData.candles.length} velas cargadas
+            {forexData.candles.length} {t('ai_center_candles_loaded')}
           </span>
           <span className="text-[11px] text-cyan-300/60 ml-auto font-mono">
-            Último: {forexData.candles[forexData.candles.length - 1]?.close.toFixed(5)}
+            {t('ai_center_last')}: {forexData.candles[forexData.candles.length - 1]?.close.toFixed(5)}
           </span>
         </div>
       }
@@ -339,14 +341,14 @@ export function AICenter({ onClose }: Props) {
 
         <Play className="w-5 h-5" />
         }
-        Ejecutar Análisis Completo
+        {t('ai_center_run_full')}
       </button>
 
       {/* AI Modules */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 px-1">
           <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(270, 80%, 55%))' }} />
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Módulos de Análisis</h3>
+          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">{t('ai_center_modules_title')}</h3>
         </div>
         <div className="grid gap-2">
           {AI_MODULES.map((mod) =>
@@ -380,7 +382,7 @@ export function AICenter({ onClose }: Props) {
       <div className="space-y-3">
           <div className="flex items-center gap-2 px-1">
             <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(160, 70%, 45%), hsl(200, 90%, 50%))' }} />
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Resultados</h3>
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">{t('ai_center_results_title')}</h3>
           </div>
           {Object.entries(results).map(([key, result]) => {
           const mod = AI_MODULES.find((m) => m.id === key);
@@ -407,7 +409,7 @@ export function AICenter({ onClose }: Props) {
         }}>
         
           <Zap className="w-5 h-5" />
-          Crear Señal desde Análisis IA
+          {t('ai_center_create_signal')}
         </button>
       }
 

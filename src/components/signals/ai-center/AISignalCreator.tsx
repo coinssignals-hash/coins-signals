@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Loader2, Zap, TrendingUp, TrendingDown, Check, X, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SignalDraft {
   currencyPair: string;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
+  const { t } = useTranslation();
   const [signal, setSignal] = useState<SignalDraft>(draft);
   const [creating, setCreating] = useState(false);
 
@@ -38,8 +40,6 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
   const handleCreate = async () => {
     setCreating(true);
     try {
-      // Use the same edge function as manual signal creation
-      // This handles: insert + HD chart generation + storage upload + push notification
       const { data, error } = await supabase.functions.invoke('insert-signal-admin', {
         body: {
           currency_pair: signal.currencyPair,
@@ -59,15 +59,15 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
       if (data?.error) throw new Error(data.error);
 
       toast({
-        title: '✅ Señal creada con gráfico HD',
+        title: `✅ ${t('ai_center_signal_created')}`,
         description: `${signal.action} ${signal.currencyPair} @ ${signal.entryPrice}`,
       });
       onCreated();
     } catch (err) {
       console.error('Error creating signal:', err);
       toast({
-        title: 'Error',
-        description: err instanceof Error ? err.message : 'No se pudo crear la señal',
+        title: t('ai_center_status_error'),
+        description: err instanceof Error ? err.message : t('ai_center_signal_error'),
         variant: 'destructive',
       });
     } finally {
@@ -85,7 +85,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
           <Zap className="w-4 h-4 text-accent" />
-          Crear Señal desde IA
+          {t('ai_center_create_signal_ia')}
         </h4>
         <button onClick={onCancel} className="p-1 rounded hover:bg-secondary text-muted-foreground">
           <X className="w-4 h-4" />
@@ -122,7 +122,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
 
       {/* Currency Pair */}
       <div className="space-y-1">
-        <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Par</label>
+        <label className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('ai_center_pair')}</label>
         <input
           type="text"
           value={signal.currencyPair}
@@ -168,7 +168,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
       {/* Probability slider */}
       <div className="space-y-1">
         <label className="text-[10px] text-muted-foreground uppercase tracking-wider flex items-center justify-between">
-          <span>Probabilidad</span>
+          <span>{t('ai_center_probability')}</span>
           <span className="text-foreground font-mono text-xs">{signal.probability}%</span>
         </label>
         <input
@@ -203,7 +203,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
       {(pips <= 0 || slPips <= 0) && (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent/5 border border-accent/20">
           <AlertTriangle className="w-4 h-4 text-accent" />
-          <span className="text-[10px] text-accent">Verifica que TP y SL sean coherentes con la acción {signal.action}</span>
+          <span className="text-[10px] text-accent">{t('ai_center_verify_tp_sl')} {signal.action}</span>
         </div>
       )}
 
@@ -218,12 +218,12 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
         ) : (
           <Check className="w-5 h-5" />
         )}
-        {creating ? 'Creando señal + gráfico HD...' : 'Crear Señal de Trading'}
+        {creating ? t('ai_center_creating_signal') : t('ai_center_create_trading_signal')}
       </button>
 
       {/* Info */}
       <p className="text-[10px] text-muted-foreground text-center">
-        Se generará automáticamente un gráfico HD de 7 días y se enviará notificación push
+        {t('ai_center_auto_chart_info')}
       </p>
     </div>
   );

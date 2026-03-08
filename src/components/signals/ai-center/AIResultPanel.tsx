@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AIAnalysisResult } from '@/hooks/useAIAnalysis';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   result: AIAnalysisResult;
@@ -121,6 +122,7 @@ function getHeadingIcon(text: string) {
 let numberedCounter = 0;
 
 export function AIResultPanel({ result, title }: Props) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const rawContent = typeof result.data === 'string'
@@ -171,7 +173,7 @@ export function AIResultPanel({ result, title }: Props) {
           <div className="flex-1 text-left min-w-0">
             <span className="text-[13px] font-bold text-white block truncate">{title}</span>
             <span className="text-[10px] text-slate-500">
-              {blocks.length} secciones · {new Date(result.timestamp).toLocaleTimeString()}
+              {blocks.length} {t('ai_center_sections')} · {new Date(result.timestamp).toLocaleTimeString()}
             </span>
           </div>
           <ChevronDown className="w-4 h-4 text-slate-500 transition-transform duration-300 group-data-[state=open]:rotate-180" />
@@ -190,7 +192,7 @@ export function AIResultPanel({ result, title }: Props) {
                 background: 'hsl(210, 50%, 10%)',
                 border: '1px solid hsl(210, 40%, 20%)',
               }}
-              title="Copiar contenido"
+              title={t('ai_center_copy_content')}
             >
               {copied
                 ? <Check className="w-3.5 h-3.5" style={{ color: 'hsl(160, 70%, 55%)' }} />
@@ -349,7 +351,7 @@ export function AIResultPanel({ result, title }: Props) {
             >
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(160, 70%, 50%)' }} />
-                <span className="text-[10px] text-slate-600">Generado por IA · Gemini</span>
+                <span className="text-[10px] text-slate-600">{t('ai_center_generated_by')}</span>
               </div>
               <span className="text-[10px] font-mono text-slate-600">
                 {rawContent.length.toLocaleString()} chars
