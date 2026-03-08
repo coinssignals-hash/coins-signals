@@ -428,7 +428,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
   }, [news.sentiment]);
 
   const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
-  const sentimentLabel = news.sentiment === 'bullish' ? 'Alcista' : news.sentiment === 'bearish' ? 'Bajista' : 'Neutral';
+  const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const SentimentIcon = news.sentiment === 'bullish' ? TrendingUp : news.sentiment === 'bearish' ? TrendingDown : Minus;
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
   const session = getMarketSession(news.published_at);
