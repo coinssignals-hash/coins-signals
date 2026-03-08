@@ -27,8 +27,8 @@ serve(async (req) => {
     const fifteenMinMs = 15 * 60 * 1000;
     const twentyMinMs = 20 * 60 * 1000;
 
-    // Fetch today's economic events from FMP
-    const fmpUrl = `https://financialmodelingprep.com/api/v3/economic_calendar?from=${today}&to=${today}&apikey=${FMP_API_KEY}`;
+    // Fetch today's economic events from FMP (stable API)
+    const fmpUrl = `https://financialmodelingprep.com/stable/economic-calendar?from=${today}&to=${today}&apikey=${FMP_API_KEY}`;
     const fmpRes = await fetch(fmpUrl);
     if (!fmpRes.ok) {
       console.error('FMP fetch failed:', fmpRes.status);
