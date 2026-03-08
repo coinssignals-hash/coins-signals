@@ -459,7 +459,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
                             <div className="flex items-center gap-1.5 mb-1.5">
                               <Sparkles className="w-3.5 h-3.5 text-primary" />
-                              <span className="text-[10px] font-semibold text-primary">Análisis IA</span>
+                              <span className="text-[10px] font-semibold text-primary">{t('ec_ai_label')}</span>
                             </div>
                             <p className="text-[11px] text-foreground leading-relaxed whitespace-pre-line">
                               {aiInsights[i]}
