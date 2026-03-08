@@ -100,7 +100,7 @@ export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
         )}
       >
         <Sparkles className="w-3 h-3 text-primary" />
-        <span className="text-[11px] font-medium text-primary">AI Trading Summary</span>
+        <span className="text-[11px] font-medium text-primary">{t('news_ai_trading_summary')}</span>
         <ChevronDown className="w-3 h-3 text-primary/60 ml-auto group-hover:translate-y-0.5 transition-transform" />
       </button>
     );
