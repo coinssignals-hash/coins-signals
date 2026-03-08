@@ -421,7 +421,7 @@ export default function CreateSignal() {
 
             {/* BUY / SELL selector */}
             <div className="mb-5">
-              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Acción</label>
+              <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">{t('cs_action')}</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setAction('BUY')}
