@@ -5,63 +5,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react';
+import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff } from 'lucide-react';
+import { useMultiTFScreener, type PairAnalysis } from '@/hooks/useMultiTFScreener';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
 
-interface PairAnalysis {
-  pair: string;
-  timeframes: Record<Timeframe, {
-    trend: Signal;
-    rsi: number;
-    macd: Signal;
-    ema: Signal;
-    bb: Signal;
-  }>;
-  confluence: number;
-  overallBias: Signal;
-}
-
-const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'USD/CAD', 'EUR/GBP', 'XAU/USD'];
 const TIMEFRAMES: Timeframe[] = ['M5', 'M15', 'H1', 'H4', 'D1', 'W1'];
 const INDICATORS = ['Tendencia', 'RSI', 'MACD', 'EMA', 'Bollinger'];
-
-function randomSignal(): Signal {
-  const r = Math.random();
-  return r < 0.35 ? 'bullish' : r < 0.7 ? 'bearish' : 'neutral';
-}
-
-function generateAnalysis(): PairAnalysis[] {
-  return PAIRS.map(pair => {
-    const timeframes: PairAnalysis['timeframes'] = {} as any;
-    let bullCount = 0;
-    let bearCount = 0;
-
-    TIMEFRAMES.forEach(tf => {
-      const trend = randomSignal();
-      const macd = randomSignal();
-      const ema = randomSignal();
-      const bb = randomSignal();
-      const rsi = Math.floor(Math.random() * 80) + 10;
-
-      [trend, macd, ema, bb].forEach(s => {
-        if (s === 'bullish') bullCount++;
-        if (s === 'bearish') bearCount++;
-      });
-      if (rsi < 30) bullCount++;
-      else if (rsi > 70) bearCount++;
-
-      timeframes[tf] = { trend, rsi, macd, ema, bb };
-    });
-
-    const total = TIMEFRAMES.length * 5;
-    const confluence = Math.round(Math.max(bullCount, bearCount) / total * 100);
-    const overallBias: Signal = bullCount > bearCount + 3 ? 'bullish' : bearCount > bullCount + 3 ? 'bearish' : 'neutral';
-
-    return { pair, timeframes, confluence, overallBias };
-  });
-}
 
 const SignalIcon = ({ signal, size = 'sm' }: { signal: Signal; size?: 'sm' | 'md' }) => {
   const cls = size === 'md' ? 'w-4 h-4' : 'w-3 h-3';
@@ -79,19 +31,39 @@ const SignalDot = ({ signal }: { signal: Signal }) => (
   )} />
 );
 
+const PairCardSkeleton = () => (
+  <Card className="bg-card border-border">
+    <CardContent className="p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Skeleton className="w-4 h-4 rounded" />
+          <div>
+            <Skeleton className="h-4 w-16 mb-1" />
+            <Skeleton className="h-2.5 w-10" />
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1">
+            {TIMEFRAMES.map(tf => <Skeleton key={tf} className="w-2.5 h-2.5 rounded-full" />)}
+          </div>
+          <div className="text-right">
+            <Skeleton className="h-4 w-10 mb-1" />
+            <Skeleton className="h-2 w-14" />
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export default function MultiTFScreener() {
-  const [data, setData] = useState<PairAnalysis[]>(() => generateAnalysis());
-  const [loading, setLoading] = useState(false);
+  const { data, loading, error, fetchData } = useMultiTFScreener();
   const [expandedPair, setExpandedPair] = useState<string | null>(null);
   const [filterBias, setFilterBias] = useState<Signal | 'all'>('all');
 
-  const refresh = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setData(generateAnalysis());
-      setLoading(false);
-    }, 800);
-  };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const filtered = filterBias === 'all' ? data : data.filter(d => d.overallBias === filterBias);
 
@@ -109,9 +81,21 @@ export default function MultiTFScreener() {
               <h1 className="text-lg font-bold text-foreground">Multi-Timeframe</h1>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={refresh} disabled={loading}>
-            <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
-          </Button>
+          <div className="flex items-center gap-2">
+            {data.length > 0 && (
+              <span className="flex items-center gap-1 text-[9px] text-emerald-400">
+                <Wifi className="w-3 h-3" /> Live
+              </span>
+            )}
+            {error && (
+              <span className="flex items-center gap-1 text-[9px] text-amber-400">
+                <WifiOff className="w-3 h-3" /> Offline
+              </span>
+            )}
+            <Button variant="ghost" size="icon" onClick={() => fetchData(true)} disabled={loading}>
+              <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
+            </Button>
+          </div>
         </div>
 
         {/* Bias Filter */}
@@ -135,12 +119,29 @@ export default function MultiTFScreener() {
           ))}
         </div>
 
+        {/* Error */}
+        {error && !loading && data.length === 0 && (
+          <Card className="bg-card border-destructive/30">
+            <CardContent className="p-4 text-center space-y-2">
+              <p className="text-sm text-destructive">Error al obtener datos del mercado</p>
+              <p className="text-xs text-muted-foreground">{error}</p>
+              <Button size="sm" variant="outline" onClick={() => fetchData(true)}>Reintentar</Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Loading skeletons */}
+        {loading && data.length === 0 && (
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => <PairCardSkeleton key={i} />)}
+          </div>
+        )}
+
         {/* Pair Cards */}
         <div className="space-y-2">
           {filtered.map(pair => (
             <Card key={pair.pair} className="bg-card border-border">
               <CardContent className="p-0">
-                {/* Summary Row */}
                 <button
                   className="w-full flex items-center justify-between p-4"
                   onClick={() => setExpandedPair(expandedPair === pair.pair ? null : pair.pair)}
@@ -149,14 +150,15 @@ export default function MultiTFScreener() {
                     <SignalIcon signal={pair.overallBias} size="md" />
                     <div className="text-left">
                       <p className="text-sm font-bold text-foreground">{pair.pair}</p>
-                      <p className="text-[10px] text-muted-foreground capitalize">{pair.overallBias === 'bullish' ? 'Alcista' : pair.overallBias === 'bearish' ? 'Bajista' : 'Neutral'}</p>
+                      <p className="text-[10px] text-muted-foreground capitalize">
+                        {pair.overallBias === 'bullish' ? 'Alcista' : pair.overallBias === 'bearish' ? 'Bajista' : 'Neutral'}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    {/* Mini TF dots */}
                     <div className="flex gap-1">
                       {TIMEFRAMES.map(tf => (
-                        <SignalDot key={tf} signal={pair.timeframes[tf].trend} />
+                        <SignalDot key={tf} signal={pair.timeframes[tf]?.trend || 'neutral'} />
                       ))}
                     </div>
                     <div className="text-right">
@@ -171,7 +173,6 @@ export default function MultiTFScreener() {
                   </div>
                 </button>
 
-                {/* Expanded Detail */}
                 {expandedPair === pair.pair && (
                   <div className="border-t border-border px-4 pb-4">
                     <div className="overflow-x-auto">
@@ -187,6 +188,7 @@ export default function MultiTFScreener() {
                         <tbody>
                           {TIMEFRAMES.map(tf => {
                             const d = pair.timeframes[tf];
+                            if (!d) return null;
                             const rsiSignal: Signal = d.rsi < 30 ? 'bullish' : d.rsi > 70 ? 'bearish' : 'neutral';
                             return (
                               <tr key={tf} className="border-t border-border/20">
@@ -206,7 +208,6 @@ export default function MultiTFScreener() {
                         </tbody>
                       </table>
                     </div>
-                    {/* Legend */}
                     <div className="flex gap-3 mt-3 text-[9px] text-muted-foreground">
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Alcista</span>
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" /> Bajista</span>
@@ -224,7 +225,7 @@ export default function MultiTFScreener() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Analiza la confluencia de indicadores técnicos en 6 temporalidades (M5 a W1). Una confluencia alta indica que múltiples marcos de tiempo confirman la misma dirección.
+                Datos en tiempo real de Yahoo Finance. Analiza la confluencia de indicadores técnicos (RSI, MACD, EMA, Bollinger) en 6 temporalidades. Caché de 5 minutos.
               </p>
             </div>
           </CardContent>
