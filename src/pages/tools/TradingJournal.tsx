@@ -396,7 +396,7 @@ export default function TradingJournal() {
         })()}
 
         <Button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => { if (showForm) { resetForm(); } setShowForm(!showForm); }}
           className="w-full"
           variant={showForm ? 'secondary' : 'default'}
         >
