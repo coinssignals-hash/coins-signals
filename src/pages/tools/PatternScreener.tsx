@@ -30,9 +30,9 @@ function generatePatterns(): PatternResult[] {
   for (let i = 0; i < count; i++) {
     const typeRoll = Math.random();
     let type: PatternResult['type'], pattern: string;
-    if (typeRoll < 0.4) { type = 'bullish'; pattern = PATTERNS_BULLISH[Math.floor(Math.random() * PATTERNS_BULLISH.length)]; }
-    else if (typeRoll < 0.8) { type = 'bearish'; pattern = PATTERNS_BEARISH[Math.floor(Math.random() * PATTERNS_BEARISH.length)]; }
-    else { type = 'neutral'; pattern = PATTERNS_NEUTRAL[Math.floor(Math.random() * PATTERNS_NEUTRAL.length)]; }
+    if (typeRoll < 0.4) { type = 'bullish'; pattern = PATTERN_KEYS_BULLISH[Math.floor(Math.random() * PATTERN_KEYS_BULLISH.length)]; }
+    else if (typeRoll < 0.8) { type = 'bearish'; pattern = PATTERN_KEYS_BEARISH[Math.floor(Math.random() * PATTERN_KEYS_BEARISH.length)]; }
+    else { type = 'neutral'; pattern = PATTERN_KEYS_NEUTRAL[Math.floor(Math.random() * PATTERN_KEYS_NEUTRAL.length)]; }
 
     results.push({
       pair: PAIRS[Math.floor(Math.random() * PAIRS.length)],
