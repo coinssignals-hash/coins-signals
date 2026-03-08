@@ -237,7 +237,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                     !currencyFilter ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
                   )}
                 >
-                  Todas
+                  {t('ec_all')}
                 </button>
                 {currencies.map(([cur, count]) => (
                   <button
