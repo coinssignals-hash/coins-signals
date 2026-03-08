@@ -164,7 +164,7 @@ export default function CreateSignal() {
       toast.success(t('cs_signal_created').replace('{action}', action).replace('{pair}', currencyPair));
       resetForm();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al crear señal');
+      toast.error(err instanceof Error ? err.message : t('cs_error_create'));
     } finally {
       setLoading(false);
     }
