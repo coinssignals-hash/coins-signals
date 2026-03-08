@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SignalMarketData } from '@/hooks/useSignalMarketData';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface ConfluenceScoreProps {
   data: SignalMarketData;
