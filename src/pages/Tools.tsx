@@ -209,9 +209,10 @@ export default function Tools() {
                   })}
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           ))}
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </main>
     </PageShell>
   );
