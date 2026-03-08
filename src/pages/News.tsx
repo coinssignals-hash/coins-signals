@@ -407,7 +407,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
 // Modern news card component matching the signal card design
 function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;index: number;translateHook: ReturnType<typeof useNewsTranslation>;}) {
   const [expanded, setExpanded] = useState(false);
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const { translateText, clearTranslation, translations, translating } = translateHook;
   const isTranslated = !!translations[news.id];
   const isTranslating = !!translating[news.id];
