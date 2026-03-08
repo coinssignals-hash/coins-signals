@@ -120,6 +120,9 @@ function AnimatedRoutes() {
           <Route path="/tools/margin-calculator" element={<MarginCalculator />} />
           <Route path="/tools/trading-journal" element={<TradingJournal />} />
           <Route path="/tools/trend-scanner" element={<TrendScanner />} />
+          <Route path="/tools/risk-reward" element={<RiskRewardCalculator />} />
+          <Route path="/tools/position-sizing" element={<PositionSizing />} />
+          <Route path="/tools/swap-calculator" element={<SwapCalculator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
