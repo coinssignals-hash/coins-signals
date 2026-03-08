@@ -282,8 +282,8 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   }, [showHistory]);
 
   const isBuy = signal.action === 'BUY';
-  const formattedDate = format(new Date(signal.datetime), "EEEE dd 'de' MMMM yyyy HH:mm", { locale: es });
-  const formattedDateShort = format(new Date(signal.datetime), "EEE dd MMM yyyy HH:mm", { locale: es });
+  const formattedDate = format(new Date(signal.datetime), "EEEE dd MMMM yyyy HH:mm", { locale: dateLocale });
+  const formattedDateShort = format(new Date(signal.datetime), "EEE dd MMM yyyy HH:mm", { locale: dateLocale });
   
   const [base, quote] = signal.currencyPair.split('/');
 
