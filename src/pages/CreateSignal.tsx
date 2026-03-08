@@ -681,7 +681,7 @@ export default function CreateSignal() {
                   disabled={loadingSignals}
                   className="text-xs text-primary hover:underline"
                 >
-                  {loadingSignals ? 'Cargando...' : 'Refrescar'}
+                  {loadingSignals ? t('cs_loading') : t('cs_refresh')}
                 </button>
               </div>
 
