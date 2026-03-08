@@ -264,9 +264,9 @@ export default function MonteCarloSimulation() {
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    La simulación Monte Carlo genera múltiples escenarios aleatorios basados en tus parámetros de trading para proyectar resultados probabilísticos. Úsala para evaluar la robustez de tu estrategia antes de arriesgar capital real.
-                  </p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                {t('tp_monte_carlo_info')}
+              </p>
                 </div>
               </CardContent>
             </Card>
