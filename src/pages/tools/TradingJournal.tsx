@@ -449,7 +449,7 @@ export default function TradingJournal() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Lotes</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_lot_size')}</Label>
                   <Input type="number" step="0.01" value={lotSize} onChange={e => setLotSize(e.target.value)} className="bg-secondary border-border text-foreground" />
                 </div>
               </div>
