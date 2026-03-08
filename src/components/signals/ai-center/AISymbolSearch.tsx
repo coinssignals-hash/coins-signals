@@ -21,14 +21,15 @@ interface Props {
   activeCategory?: string;
 }
 
+// Note: labels here are fallback; AICenter uses t() for tab labels via INSTRUMENT_TABS
 export const INSTRUMENT_TABS = [
-  { key: 'all', label: 'Todos', icon: Sparkles, color: 'hsl(200, 90%, 55%)' },
-  { key: 'favorites', label: 'Favoritos', icon: Star, color: 'hsl(45, 90%, 55%)' },
-  { key: 'forex', label: 'Forex', icon: TrendingUp, color: 'hsl(200, 90%, 55%)' },
-  { key: 'stock', label: 'Acciones', icon: Building2, color: 'hsl(160, 70%, 50%)' },
-  { key: 'etf', label: 'ETFs', icon: BarChart3, color: 'hsl(270, 70%, 60%)' },
-  { key: 'crypto', label: 'Crypto', icon: Coins, color: 'hsl(45, 90%, 55%)' },
-  { key: 'index', label: 'Índices', icon: Globe, color: 'hsl(350, 70%, 55%)' },
+  { key: 'all', label: 'all', icon: Sparkles, color: 'hsl(200, 90%, 55%)', i18nKey: 'ai_center_all' },
+  { key: 'favorites', label: 'favorites', icon: Star, color: 'hsl(45, 90%, 55%)', i18nKey: 'ai_center_favorites' },
+  { key: 'forex', label: 'Forex', icon: TrendingUp, color: 'hsl(200, 90%, 55%)', i18nKey: '' },
+  { key: 'stock', label: 'stocks', icon: Building2, color: 'hsl(160, 70%, 50%)', i18nKey: 'ai_center_stocks' },
+  { key: 'etf', label: 'ETFs', icon: BarChart3, color: 'hsl(270, 70%, 60%)', i18nKey: '' },
+  { key: 'crypto', label: 'Crypto', icon: Coins, color: 'hsl(45, 90%, 55%)', i18nKey: '' },
+  { key: 'index', label: 'indices', icon: Globe, color: 'hsl(350, 70%, 55%)', i18nKey: 'ai_center_indices' },
 ] as const;
 
 const TYPE_CONFIG: Record<string, { icon: typeof TrendingUp; color: string; bg: string }> = {
