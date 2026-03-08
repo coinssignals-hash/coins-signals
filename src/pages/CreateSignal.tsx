@@ -552,7 +552,7 @@ export default function CreateSignal() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> Notas / Análisis
+                    <FileText className="w-3 h-3" /> {t('cs_notes_analysis')}
                   </label>
                   <button
                     type="button"
