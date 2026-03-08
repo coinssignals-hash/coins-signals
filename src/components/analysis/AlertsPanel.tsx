@@ -241,17 +241,17 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
         onCheckedChange={(v) => handleChange('enablePatternAlerts', v)}
       >
         <div className="space-y-1.5">
-          <PatternTypeRow emoji="↑" emojiColor="text-emerald-400" label="Alcistas" hint="Hammer, Engulfing"
+          <PatternTypeRow emoji="↑" emojiColor="text-emerald-400" label={t('analysis_alert_bullish')} hint="Hammer, Engulfing"
             checked={localConfig.patternAlertTypes.bullish}
             onCheckedChange={(v) => handlePatternTypeChange('bullish', v)}
             onTestSound={() => testPatternSound('bullish')}
           />
-          <PatternTypeRow emoji="↓" emojiColor="text-red-400" label="Bajistas" hint="Bear Engulfing"
+          <PatternTypeRow emoji="↓" emojiColor="text-red-400" label={t('analysis_alert_bearish')} hint="Bear Engulfing"
             checked={localConfig.patternAlertTypes.bearish}
             onCheckedChange={(v) => handlePatternTypeChange('bearish', v)}
             onTestSound={() => testPatternSound('bearish')}
           />
-          <PatternTypeRow emoji="→" emojiColor="text-amber-400" label="Neutrales" hint="Doji"
+          <PatternTypeRow emoji="→" emojiColor="text-amber-400" label={t('analysis_alert_neutral')} hint="Doji"
             checked={localConfig.patternAlertTypes.neutral}
             onCheckedChange={(v) => handlePatternTypeChange('neutral', v)}
             onTestSound={() => testPatternSound('neutral')}
