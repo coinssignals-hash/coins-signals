@@ -147,9 +147,9 @@ function SentimentDistBar({ bullish, neutral, bearish }: { bullish: number; neut
 /* ─── Technical Signal Chip ─── */
 function SignalChip({ name, signal, t }: { name: string; signal: string; t: (k: string) => string }) {
   const cfg = {
-    buy: { bg: 'bg-green-500/8', border: 'border-green-500/20', text: 'text-green-400', glow: 'shadow-[0_0_8px_rgba(34,197,94,0.15)]', icon: TrendingUp, label: 'COMPRA' },
-    sell: { bg: 'bg-red-500/8', border: 'border-red-500/20', text: 'text-red-400', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.15)]', icon: TrendingDown, label: 'VENTA' },
-    neutral: { bg: 'bg-white/[0.03]', border: 'border-white/[0.08]', text: 'text-gray-400', glow: '', icon: Minus, label: 'NEUTRAL' },
+    buy: { bg: 'bg-green-500/8', border: 'border-green-500/20', text: 'text-green-400', glow: 'shadow-[0_0_8px_rgba(34,197,94,0.15)]', icon: TrendingUp, labelKey: 'analysis_sent_buy' },
+    sell: { bg: 'bg-red-500/8', border: 'border-red-500/20', text: 'text-red-400', glow: 'shadow-[0_0_8px_rgba(239,68,68,0.15)]', icon: TrendingDown, labelKey: 'analysis_sent_sell' },
+    neutral: { bg: 'bg-white/[0.03]', border: 'border-white/[0.08]', text: 'text-gray-400', glow: '', icon: Minus, labelKey: 'analysis_sent_neutral' },
   };
   const c = cfg[signal as keyof typeof cfg] || cfg.neutral;
   const Icon = c.icon;
