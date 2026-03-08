@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import {
 interface PairTrend {
   pair: string;
   trend: 'bullish' | 'bearish' | 'neutral';
-  strength: number; // 0-100
+  strength: number;
   change24h: number;
   volume: 'high' | 'medium' | 'low';
 }
@@ -69,80 +69,60 @@ export default function TrendScanner() {
     neutral: data.filter(d => d.trend === 'neutral').length,
   }), [data]);
 
-  const trendIcon = (trend: PairTrend['trend']) => {
-    if (trend === 'bullish') return <TrendingUp className="w-4 h-4 text-emerald-400" />;
-    if (trend === 'bearish') return <TrendingDown className="w-4 h-4 text-rose-400" />;
-    return <Minus className="w-4 h-4 text-muted-foreground" />;
-  };
-
-  const volumeBadge = (vol: PairTrend['volume']) => {
-    const styles = {
-      high: 'bg-emerald-500/15 text-emerald-400',
-      medium: 'bg-amber-500/15 text-amber-400',
-      low: 'bg-muted text-muted-foreground',
-    };
-    return (
-      <span className={cn('text-[9px] px-1.5 py-0.5 rounded font-medium uppercase', styles[vol])}>
-        {vol === 'high' ? 'Alto' : vol === 'medium' ? 'Medio' : 'Bajo'}
-      </span>
-    );
-  };
-
   return (
     <PageShell>
       <Header />
       <main className="container py-6 space-y-5">
         {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Escáner de Tendencias</h1>
-            </div>
+        <div className="flex items-center gap-3">
+          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+          </Link>
+          <div className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
+            <h1 className="text-lg font-bold text-foreground">Escáner de Tendencias</h1>
           </div>
-          <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
-            <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
-          </Button>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: 'Alcistas', value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
-            { label: 'Bajistas', value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
-            { label: 'Neutrales', value: summary.neutral, icon: Minus, color: 'text-muted-foreground' },
-          ].map(s => (
-            <Card key={s.label} className="bg-card border-border">
-              <CardContent className="p-3 text-center">
-                <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
-                <p className={cn('text-xl font-bold', s.color)}>{s.value}</p>
-                <p className="text-[10px] text-muted-foreground">{s.label}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
-          {([
-            { id: 'all' as FilterType, label: 'Todos' },
-            { id: 'bullish' as FilterType, label: '🟢 Alcista' },
-            { id: 'bearish' as FilterType, label: '🔴 Bajista' },
-            { id: 'neutral' as FilterType, label: '⚪ Neutral' },
-          ]).map(f => (
+          <div className="ml-auto">
             <button
-              key={f.id}
-              onClick={() => setFilter(f.id)}
-              className={cn(
-                'flex-1 py-2 rounded-md text-xs font-medium transition-all',
-                filter === f.id
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >{f.label}</button>
+              onClick={refresh}
+              disabled={loading}
+              className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent transition-colors"
+            >
+              <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
+            </button>
+          </div>
+        </div>
+
+        {/* Scan Info */}
+        <Card className="bg-card border-border">
+          <CardContent className="p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Pares escaneados</span>
+            </div>
+            <span className="text-sm font-bold text-primary tabular-nums">{FOREX_PAIRS.length}</span>
+          </CardContent>
+        </Card>
+
+        {/* Stats Summary — clickable filters */}
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { key: 'bullish' as FilterType, label: 'Alcistas', value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
+            { key: 'bearish' as FilterType, label: 'Bajistas', value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
+            { key: 'neutral' as FilterType, label: 'Neutrales', value: summary.neutral, icon: Minus, color: 'text-muted-foreground' },
+          ]).map(s => (
+            <button key={s.key} onClick={() => setFilter(filter === s.key ? 'all' : s.key)}>
+              <Card className={cn(
+                'border transition-colors',
+                filter === s.key ? 'bg-primary/10 border-primary/40' : 'bg-card border-border'
+              )}>
+                <CardContent className="p-3 text-center">
+                  <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
+                  <p className={cn('text-xl font-bold tabular-nums', s.color)}>{s.value}</p>
+                  <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                </CardContent>
+              </Card>
+            </button>
           ))}
         </div>
 
@@ -157,7 +137,12 @@ export default function TrendScanner() {
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-12">Vol</span>
             </div>
 
-            {filtered.map((item, i) => (
+            {filtered.length === 0 ? (
+              <div className="p-8 text-center">
+                <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
+                <p className="text-sm text-muted-foreground">No hay resultados con este filtro</p>
+              </div>
+            ) : filtered.map((item, i) => (
               <div
                 key={item.pair}
                 className={cn(
@@ -167,11 +152,13 @@ export default function TrendScanner() {
               >
                 <div className="flex items-center gap-2.5">
                   <div className={cn(
-                    'w-8 h-8 rounded-lg flex items-center justify-center',
+                    'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
                     item.trend === 'bullish' ? 'bg-emerald-500/15' :
                     item.trend === 'bearish' ? 'bg-rose-500/15' : 'bg-muted'
                   )}>
-                    {trendIcon(item.trend)}
+                    {item.trend === 'bullish' ? <TrendingUp className="w-4 h-4 text-emerald-400" /> :
+                     item.trend === 'bearish' ? <TrendingDown className="w-4 h-4 text-rose-400" /> :
+                     <Minus className="w-4 h-4 text-muted-foreground" />}
                   </div>
                   <div>
                     <span className="text-sm font-semibold text-foreground">{item.pair}</span>
@@ -193,7 +180,6 @@ export default function TrendScanner() {
                   {item.change24h > 0 ? '+' : ''}{item.change24h}%
                 </span>
 
-                {/* Strength bar */}
                 <div className="w-14 flex flex-col items-center gap-0.5">
                   <span className="text-[10px] font-bold text-foreground tabular-nums">{item.strength}%</span>
                   <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
@@ -209,7 +195,14 @@ export default function TrendScanner() {
                 </div>
 
                 <div className="w-12 flex justify-center">
-                  {volumeBadge(item.volume)}
+                  <span className={cn(
+                    'text-[9px] px-1.5 py-0.5 rounded font-medium uppercase',
+                    item.volume === 'high' ? 'bg-emerald-500/15 text-emerald-400' :
+                    item.volume === 'medium' ? 'bg-amber-500/15 text-amber-400' :
+                    'bg-muted text-muted-foreground'
+                  )}>
+                    {item.volume === 'high' ? 'Alto' : item.volume === 'medium' ? 'Medio' : 'Bajo'}
+                  </span>
                 </div>
               </div>
             ))}
