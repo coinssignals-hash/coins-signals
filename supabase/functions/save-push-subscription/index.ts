@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 interface SubscriptionPayload {
@@ -60,6 +60,15 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Extract user_id from JWT if present
+    let userId: string | null = null;
+    const authHeader = req.headers.get('authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7);
+      const { data: { user } } = await supabase.auth.getUser(token);
+      if (user) userId = user.id;
+    }
+
     const userAgent = req.headers.get('user-agent') || '';
 
     // Upsert subscription (update if endpoint exists, insert if not)
@@ -70,6 +79,7 @@ serve(async (req) => {
         p256dh: payload.subscription.keys.p256dh,
         auth: payload.subscription.keys.auth,
         user_agent: userAgent,
+        ...(userId && { user_id: userId }),
       }, {
         onConflict: 'endpoint',
       })
@@ -84,7 +94,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Subscription saved:', data.id);
+    console.log('Subscription saved:', data.id, 'user:', userId);
 
     return new Response(
       JSON.stringify({ success: true, id: data.id }),

@@ -3,9 +3,10 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import {
   ArrowLeft, CalendarDays, AlertTriangle, TrendingUp, TrendingDown, Minus,
-  Loader2, RefreshCw, Globe, Sparkles, Clock, BarChart3, Zap, ChevronDown, ChevronUp
+  Loader2, RefreshCw, Globe, Sparkles, Clock, BarChart3, Zap, ChevronDown, ChevronUp, Bell
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useAlertConfig } from '@/hooks/useAlertConfig';
 
 interface EconomicEvent {
   date: string;
@@ -59,6 +61,7 @@ export default function EconomicCalendar() {
   const [currencyFilter, setCurrencyFilter] = useState<string | null>(null);
   const [expandedEvent, setExpandedEvent] = useState<number | null>(null);
   const [aiInsights, setAiInsights] = useState<Record<number, string>>({});
+  const { config, updateConfig, loaded: alertConfigLoaded } = useAlertConfig();
 
   const targetDate = useMemo(() => {
     const d = new Date();
@@ -455,6 +458,33 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             </CardContent>
           </Card>
         )}
+
+        {/* Push Notification Toggle */}
+        <Card className={cn(
+          "border transition-colors",
+          config.enableCalendarAlerts ? "bg-primary/5 border-primary/30" : "bg-card border-border"
+        )}>
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className={cn(
+                  "w-8 h-8 rounded-lg flex items-center justify-center",
+                  config.enableCalendarAlerts ? "bg-primary/15" : "bg-secondary"
+                )}>
+                  <Bell className={cn("w-4 h-4", config.enableCalendarAlerts ? "text-primary" : "text-muted-foreground")} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Alertas de Alto Impacto</p>
+                  <p className="text-[10px] text-muted-foreground">Notificación push 15 min antes</p>
+                </div>
+              </div>
+              <Switch
+                checked={config.enableCalendarAlerts}
+                onCheckedChange={(checked) => updateConfig({ ...config, enableCalendarAlerts: checked })}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Warning */}
         {!isLoading && events.length > 0 && (
