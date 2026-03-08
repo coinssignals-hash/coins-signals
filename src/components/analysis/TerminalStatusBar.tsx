@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Globe, Clock, Activity, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TerminalStatusBarProps {
   symbol: string;
