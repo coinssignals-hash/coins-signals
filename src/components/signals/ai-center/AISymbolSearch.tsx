@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Search, Loader2, X, TrendingUp, Coins, Building2, BarChart3, Globe, Star, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SearchResult {
   symbol: string;
