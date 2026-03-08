@@ -163,12 +163,12 @@ export default function Install() {
               transition={{ delay: 0.2 }}
               className="bg-card border border-border rounded-xl p-4"
             >
-              <h3 className="text-base font-bold text-foreground mb-3 text-center">¿Por qué instalar?</h3>
+              <h3 className="text-base font-bold text-foreground mb-3 text-center">{t('inst_why_install')}</h3>
               <div className="grid grid-cols-2 gap-2.5">
-                <BenefitCard icon={<BellRing className="w-5 h-5 text-primary" />} title="Notificaciones" desc="Alertas instantáneas" />
-                <BenefitCard icon={<Zap className="w-5 h-5 text-accent" />} title="Más rápido" desc="Carga 2x más rápido" />
-                <BenefitCard icon={<WifiOff className="w-5 h-5 text-muted-foreground" />} title="Sin conexión" desc="Funciona offline" />
-                <BenefitCard icon={<Target className="w-5 h-5 text-bullish" />} title="Acceso directo" desc="Desde tu pantalla" />
+                <BenefitCard icon={<BellRing className="w-5 h-5 text-primary" />} title={t('inst_notifications')} desc={t('inst_instant_alerts')} />
+                <BenefitCard icon={<Zap className="w-5 h-5 text-accent" />} title={t('inst_faster')} desc={t('inst_2x_faster')} />
+                <BenefitCard icon={<WifiOff className="w-5 h-5 text-muted-foreground" />} title={t('inst_offline')} desc={t('inst_works_offline')} />
+                <BenefitCard icon={<Target className="w-5 h-5 text-bullish" />} title={t('inst_shortcut')} desc={t('inst_from_screen')} />
               </div>
             </motion.div>
           </>
