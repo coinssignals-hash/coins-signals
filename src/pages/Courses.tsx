@@ -245,7 +245,7 @@ export default function Courses() {
                         <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', difficultyColor(module.difficulty))}>
                           {module.difficulty}
                         </span>
-                        <span className="text-[11px] text-muted-foreground">{module.lessons.length} lecciones</span>
+                        <span className="text-[11px] text-muted-foreground">{module.lessons.length} {t('courses_lessons')}</span>
                         {completedCount > 0 && (
                           <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary">
                             {completedCount}/{module.lessons.length}
