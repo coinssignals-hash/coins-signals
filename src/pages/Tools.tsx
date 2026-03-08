@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 import {
   Calculator, CalendarDays, ScanSearch, BookOpen,
   TrendingUp, Target, DollarSign, Percent, BarChart3,
