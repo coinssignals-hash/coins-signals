@@ -618,7 +618,7 @@ export default function CreateSignal() {
                         <p className="text-foreground font-bold text-sm">1:{(Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(1)}</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Tendencia</p>
+                        <p className="text-muted-foreground">{t('cs_trend')}</p>
                         <p className={`font-bold text-sm ${isBuy ? 'text-emerald-400' : 'text-rose-400'}`}>{trend}</p>
                       </div>
                     </div>
