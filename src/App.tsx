@@ -111,6 +111,8 @@ function AnimatedRoutes() {
           <Route path="/tools/pip-calculator" element={<PipCalculator />} />
           <Route path="/tools/economic-calendar" element={<EconomicCalendar />} />
           <Route path="/tools/rsi-macd-screener" element={<RsiMacdScreener />} />
+          <Route path="/tools/lot-calculator" element={<LotCalculator />} />
+          <Route path="/tools/margin-calculator" element={<MarginCalculator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
