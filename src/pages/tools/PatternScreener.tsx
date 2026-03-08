@@ -81,7 +81,7 @@ export default function PatternScreener() {
             </Link>
             <div className="flex items-center gap-2">
               <CandlestickChart className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Screener de Patrones</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tools_pattern_screener_title')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
