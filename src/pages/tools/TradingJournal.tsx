@@ -501,7 +501,7 @@ export default function TradingJournal() {
 
               <Button onClick={handleSave} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
                 {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : editingId ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-                {editingId ? 'Actualizar Operación' : 'Guardar Operación'}
+                {editingId ? t('journal_update_trade') : t('journal_save_trade')}
               </Button>
             </CardContent>
           </Card>
