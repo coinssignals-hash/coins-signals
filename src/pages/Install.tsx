@@ -108,7 +108,7 @@ export default function Install() {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-5 text-base rounded-xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-transform"
                 >
                   <Download className="w-5 h-5 mr-2" />
-                  Instalar Ahora
+                  {t('inst_install_now')}
                 </Button>
               </motion.div>
             )}
