@@ -571,7 +571,7 @@ export default function CreateSignal() {
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Justificación del trade, confluencias técnicas, contexto fundamental..."
+                  placeholder={t('cs_notes_placeholder')}
                   rows={3}
                   maxLength={500}
                   className="w-full bg-card/60 border border-border/40 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
