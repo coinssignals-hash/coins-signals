@@ -762,6 +762,7 @@ const SOURCE_COLORS: Record<string, {bg: string;text: string;}> = {
 function QuickSourceFilter({
   selected, onChange, news
 }: {selected: string[];onChange: (sources: string[]) => void;news?: RealNewsItem[];}) {
+  const { t } = useTranslation();
   const sources = useMemo(() => {
     const counts: Record<string, number> = {};
     if (news) {
