@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { 
+import {
   AreaChart, 
   Area, 
   XAxis, 
@@ -17,6 +17,7 @@ import { TrendingUp, TrendingDown, Activity, Calendar, RefreshCw } from 'lucide-
 import { usePortfolioHistory, TimeRange, AggregatedSnapshot } from '@/hooks/usePortfolioHistory';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const TIME_RANGES: { value: TimeRange; label: string }[] = [
   { value: '1D', label: '1D' },
@@ -81,6 +82,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 };
 
 export function PortfolioHistoryChart() {
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState<TimeRange>('1W');
   const [chartType, setChartType] = useState<'equity' | 'pnl' | 'combined'>('equity');
   const { snapshots, stats, loading, error, refetch } = usePortfolioHistory(timeRange);
@@ -108,9 +110,9 @@ export function PortfolioHistoryChart() {
     return (
       <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 text-center">
         <Calendar className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-        <h3 className="text-white font-medium mb-1">Sin datos históricos</h3>
+        <h3 className="text-white font-medium mb-1">{t('ph_no_history')}</h3>
         <p className="text-slate-400 text-sm">
-          Los snapshots se generan automáticamente al sincronizar tus brokers
+          {t('ph_no_history_desc')}
         </p>
       </div>
     );
@@ -124,7 +126,7 @@ export function PortfolioHistoryChart() {
           <div>
             <h3 className="text-white font-semibold flex items-center gap-2">
               <Activity className="w-5 h-5 text-cyan-400" />
-              Evolución del Portfolio
+              {t('ph_evolution')}
             </h3>
             <div className="flex items-center gap-3 mt-1">
               <span className="text-slate-400 text-sm">

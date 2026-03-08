@@ -1,5 +1,6 @@
 import { AlertTriangle, RefreshCw, WifiOff, Server } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface AnalysisErrorProps {
   title?: string;
@@ -10,18 +11,19 @@ interface AnalysisErrorProps {
 }
 
 export function AnalysisError({ 
-  title = 'Error al cargar datos',
+  title,
   message,
   error,
   onRetry,
   compact = false
 }: AnalysisErrorProps) {
+  const { t } = useTranslation();
   // Determine error type for better messaging
   const getErrorDetails = () => {
     if (!error) {
       return {
         icon: AlertTriangle,
-        defaultMessage: 'No se pudieron cargar los datos. Intenta de nuevo.',
+        defaultMessage: t('ae_default'),
         isNetwork: false,
       };
     }
@@ -31,7 +33,7 @@ export function AnalysisError({
     if (errorMessage.includes('network') || errorMessage.includes('fetch') || errorMessage.includes('failed to fetch')) {
       return {
         icon: WifiOff,
-        defaultMessage: 'Sin conexión. Verifica tu red e intenta de nuevo.',
+        defaultMessage: t('ae_network'),
         isNetwork: true,
       };
     }
@@ -39,7 +41,7 @@ export function AnalysisError({
     if (errorMessage.includes('500') || errorMessage.includes('server')) {
       return {
         icon: Server,
-        defaultMessage: 'El servidor no está disponible. Intenta más tarde.',
+        defaultMessage: t('ae_server'),
         isNetwork: false,
       };
     }
@@ -47,7 +49,7 @@ export function AnalysisError({
     if (errorMessage.includes('404')) {
       return {
         icon: AlertTriangle,
-        defaultMessage: 'Los datos solicitados no están disponibles.',
+        defaultMessage: t('ae_not_found'),
         isNetwork: false,
       };
     }
@@ -55,14 +57,14 @@ export function AnalysisError({
     if (errorMessage.includes('timeout')) {
       return {
         icon: WifiOff,
-        defaultMessage: 'La solicitud tardó demasiado. Intenta de nuevo.',
+        defaultMessage: t('ae_timeout'),
         isNetwork: true,
       };
     }
 
     return {
       icon: AlertTriangle,
-      defaultMessage: 'Ocurrió un error inesperado.',
+      defaultMessage: t('ae_unexpected'),
       isNetwork: false,
     };
   };
@@ -97,7 +99,7 @@ export function AnalysisError({
         </div>
         
         <div className="space-y-1">
-          <h4 className="text-white font-semibold text-sm">{title}</h4>
+          <h4 className="text-white font-semibold text-sm">{title || t('ae_title')}</h4>
           <p className="text-gray-400 text-sm max-w-xs">{displayMessage}</p>
         </div>
         
@@ -109,14 +111,14 @@ export function AnalysisError({
             className="mt-2 border-green-500/30 text-green-400 hover:bg-green-500/20 hover:text-green-300"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Reintentar
+            {t('ae_retry')}
           </Button>
         )}
         
         {error && import.meta.env.DEV && (
           <details className="mt-2 text-left w-full">
             <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
-              Detalles técnicos
+              {t('ae_technical')}
             </summary>
             <pre className="mt-2 p-2 bg-black/50 rounded text-xs text-gray-500 overflow-auto max-h-20">
               {error.message}

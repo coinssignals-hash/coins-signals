@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Bell, BellOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/LanguageContext';
 import {
   isPushSupported,
   registerServiceWorker,
@@ -12,6 +13,7 @@ import {
 } from '@/utils/pushNotifications';
 
 export function NotificationToggle() {
+  const { t } = useTranslation();
   const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,44 +36,39 @@ export function NotificationToggle() {
 
   const handleToggle = async () => {
     if (!isSupported) {
-      toast.error('Las notificaciones push no están soportadas en este navegador');
+      toast.error(t('nt_not_supported'));
       return;
     }
-
     setIsLoading(true);
-
     try {
       if (isSubscribed) {
         await unsubscribeFromPush();
         setIsSubscribed(false);
-        toast.success('Notificaciones desactivadas');
+        toast.success(t('nt_disabled'));
       } else {
         const permission = await requestNotificationPermission();
-
         if (permission !== 'granted') {
-          toast.error('Debes permitir las notificaciones para recibirlas');
+          toast.error(t('nt_permission_required'));
           setIsLoading(false);
           return;
         }
-
         const registration = await registerServiceWorker();
         if (!registration) {
-          toast.error('Error al registrar el service worker');
+          toast.error(t('nt_sw_error'));
           setIsLoading(false);
           return;
         }
-
         const subscription = await subscribeToPush(registration);
         if (subscription) {
           setIsSubscribed(true);
-          toast.success('¡Notificaciones activadas! Recibirás alertas de nuevas señales');
+          toast.success(t('nt_enabled'));
         } else {
-          toast.error('Error al activar las notificaciones');
+          toast.error(t('nt_enable_error'));
         }
       }
     } catch (error) {
       console.error('Error toggling notifications:', error);
-      toast.error('Error al cambiar el estado de las notificaciones');
+      toast.error(t('nt_toggle_error'));
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +85,7 @@ export function NotificationToggle() {
       onClick={handleToggle}
       disabled={isLoading}
       className="relative"
-      title={isSubscribed ? 'Desactivar notificaciones' : 'Activar notificaciones'}
+      title={isSubscribed ? t('nt_disable_title') : t('nt_enable_title')}
     >
       {isLoading ? (
         <Loader2 className="w-5 h-5 animate-spin text-blue-400" />

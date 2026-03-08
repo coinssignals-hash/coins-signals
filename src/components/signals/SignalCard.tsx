@@ -4,8 +4,9 @@ import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2,
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 import signalCardBg from '@/assets/signal-card-bg.png';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import { PriceSparkline } from './PriceSparkline';
@@ -80,6 +81,8 @@ interface AIAnalysisHistoryItem {
 }
 
 export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: SignalCardProps) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [expanded, setExpanded] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
@@ -140,7 +143,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   
   const copyToClipboard = (value: number) => {
     navigator.clipboard.writeText(value.toString());
-    toast.success('Precio copiado');
+    toast.success(t('sig_price_copied'));
   };
 
   // Fetch analysis history
@@ -218,10 +221,10 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
 
       if (error) throw error;
       setAnalysisHistory(prev => prev.filter(a => a.id !== analysisId));
-      toast.success('Análisis eliminado');
+      toast.success(t('sig_analysis_deleted'));
     } catch (error) {
       console.error('Error deleting analysis:', error);
-      toast.error('Error al eliminar análisis');
+      toast.error(t('sig_analysis_delete_error'));
     }
   };
 
@@ -261,10 +264,10 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
       // Save to history
       await saveAnalysisToHistory(data.analysis);
       
-      toast.success('Análisis completado y guardado');
+      toast.success(t('sig_analysis_complete'));
     } catch (error) {
       console.error('Error analyzing signal:', error);
-      toast.error('Error al analizar la señal');
+      toast.error(t('sig_analysis_error'));
       setShowAnalysis(false);
     } finally {
       setIsAnalyzing(false);
@@ -279,8 +282,8 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
   }, [showHistory]);
 
   const isBuy = signal.action === 'BUY';
-  const formattedDate = format(new Date(signal.datetime), "EEEE dd 'de' MMMM yyyy HH:mm", { locale: es });
-  const formattedDateShort = format(new Date(signal.datetime), "EEE dd MMM yyyy HH:mm", { locale: es });
+  const formattedDate = format(new Date(signal.datetime), "EEEE dd MMMM yyyy HH:mm", { locale: dateLocale });
+  const formattedDateShort = format(new Date(signal.datetime), "EEE dd MMM yyyy HH:mm", { locale: dateLocale });
   
   const [base, quote] = signal.currencyPair.split('/');
 
@@ -1043,8 +1046,8 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               ) : analysisHistory.length === 0 ? (
                 <div className="text-center py-6">
                   <History className="w-10 h-10 text-slate-700 mx-auto mb-2" />
-                  <p className="text-sm text-slate-500">No hay análisis guardados</p>
-                  <p className="text-xs text-slate-600 mt-1">Genera un análisis IA para comenzar</p>
+                  <p className="text-sm text-slate-500">{t('sig_no_history')}</p>
+                  <p className="text-xs text-slate-600 mt-1">{t('sig_no_history_hint')}</p>
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
@@ -1057,7 +1060,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                         <div className="flex items-center gap-2 flex-wrap">
                           <div className="flex items-center gap-1 text-[10px] text-slate-500">
                             <Clock className="w-3 h-3" />
-                            {format(new Date(item.created_at), "dd MMM yyyy HH:mm", { locale: es })}
+                            {format(new Date(item.created_at), "dd MMM yyyy HH:mm", { locale: dateLocale })}
                           </div>
                           {item.recommendation && (
                             <span className={cn(

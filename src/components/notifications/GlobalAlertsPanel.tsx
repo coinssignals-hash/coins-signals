@@ -6,18 +6,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Bell, BellOff, TrendingUp, TrendingDown, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: string) => void }) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const isAbove = alert.direction === 'above';
   const Icon = isAbove ? TrendingUp : TrendingDown;
-  const dirLabel = isAbove ? 'Por encima' : 'Por debajo';
+  const dirLabel = isAbove ? t('ga_above') : t('ga_below');
   const dirColor = isAbove ? 'text-green-500' : 'text-red-500';
 
   let timeLabel = '';
   try {
-    timeLabel = formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: es });
+    timeLabel = formatDistanceToNow(new Date(alert.created_at), { addSuffix: true, locale: dateLocale });
   } catch { /* empty */ }
 
   return (
@@ -53,12 +56,12 @@ function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: 
         {alert.is_triggered ? (
           <Badge variant="outline" className="text-[9px] border-green-500/30 text-green-500 gap-1">
             <CheckCircle2 className="w-3 h-3" />
-            Disparada
+            {t('ga_triggered')}
           </Badge>
         ) : (
           <Badge variant="outline" className="text-[9px] border-yellow-500/30 text-yellow-500 gap-1 animate-pulse">
             <Bell className="w-3 h-3" />
-            Activa
+            {t('ga_active')}
           </Badge>
         )}
         <Button
@@ -75,6 +78,7 @@ function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: 
 }
 
 export function GlobalAlertsPanel() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { alerts, isLoading, deleteAlert } = useStockPriceAlerts();
 
@@ -83,7 +87,7 @@ export function GlobalAlertsPanel() {
       <Card className="bg-card border-border">
         <CardContent className="py-6 text-center">
           <BellOff className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Inicia sesión para ver tus alertas de precio</p>
+          <p className="text-sm text-muted-foreground">{t('ga_login_required')}</p>
         </CardContent>
       </Card>
     );
@@ -117,16 +121,16 @@ export function GlobalAlertsPanel() {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm text-primary flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" />
-          Alertas de Precio ({activeAlerts.length} activas)
+          {t('ga_price_alerts')} ({activeAlerts.length} {t('ga_active')})
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {alerts.length === 0 ? (
           <div className="text-center py-6">
             <BellOff className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">No tienes alertas de precio configuradas</p>
+            <p className="text-sm text-muted-foreground">{t('ga_no_alerts')}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Ve a la sección de Acciones para crear alertas en tus activos favoritos.
+              {t('ga_no_alerts_hint')}
             </p>
           </div>
         ) : (
@@ -136,7 +140,7 @@ export function GlobalAlertsPanel() {
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold flex items-center gap-1.5">
                   <Bell className="w-3 h-3 text-yellow-500" />
-                  Activas ({activeAlerts.length})
+                  {t('ga_active')} ({activeAlerts.length})
                 </p>
                 {Object.entries(groupedActive).map(([symbol, symbolAlerts]) => (
                   <div key={symbol} className="space-y-1.5">
@@ -153,7 +157,7 @@ export function GlobalAlertsPanel() {
               <div className="space-y-2 mt-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold flex items-center gap-1.5">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />
-                  Disparadas recientemente
+                  {t('ga_recently_triggered')}
                 </p>
                 {triggeredAlerts.map(alert => (
                   <AlertRow key={alert.id} alert={alert} onDelete={(id) => deleteAlert.mutate(id)} />

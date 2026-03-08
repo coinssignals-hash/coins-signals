@@ -541,7 +541,7 @@ export function CandlestickChart({
           />
         ) : (
           <div className="h-52 rounded-lg flex items-center justify-center" style={{ background: '#050d1a' }}>
-            <span className="text-sm" style={{ color: '#64748b' }}>Sin datos disponibles</span>
+            <span className="text-sm" style={{ color: '#64748b' }}>Sin datos</span>
           </div>
         )}
 

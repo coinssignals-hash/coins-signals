@@ -7,10 +7,12 @@ import { usePortfolio } from '@/hooks/usePortfolio';
 import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { EquitySparkline } from './EquitySparkline';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const WIDGET_EXPANDED_KEY = 'portfolio-widget-expanded';
 
 export function PortfolioWidget() {
+  const { t } = useTranslation();
   const { session } = useAuth();
   const { summary, loading, error, isLive, accounts, getAllPositions } = usePortfolio();
   const { stats: historyStats, snapshots } = usePortfolioHistory('1W');
@@ -50,8 +52,8 @@ export function PortfolioWidget() {
                   <Wallet className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Conecta tu Broker</p>
-                  <p className="text-xs text-gray-400">Sincroniza tu portfolio</p>
+                  <p className="text-sm font-medium text-white">{t('pw_connect_broker')}</p>
+                  <p className="text-xs text-gray-400">{t('pw_sync_portfolio')}</p>
                 </div>
               </div>
               <ArrowRight className="w-5 h-5 text-green-500 group-hover:translate-x-1 transition-transform" />
@@ -91,8 +93,8 @@ export function PortfolioWidget() {
                   <AlertCircle className="w-5 h-5 text-amber-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Sin brokers conectados</p>
-                  <p className="text-xs text-gray-400">Toca para vincular</p>
+                  <p className="text-sm font-medium text-white">{t('pw_no_brokers')}</p>
+                  <p className="text-xs text-gray-400">{t('pw_tap_to_link')}</p>
                 </div>
               </div>
               <ArrowRight className="w-5 h-5 text-green-500 group-hover:translate-x-1 transition-transform" />
@@ -203,7 +205,7 @@ export function PortfolioWidget() {
           <>
             {/* Desktop - always visible */}
             <div className="hidden sm:block mt-3 pt-3 border-t border-green-900/30 space-y-1.5">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Top Posiciones</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">{t('pw_top_positions')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {topPositions.map((pos, idx) => {
                   const isPositive = pos.unrealized_pnl >= 0;
@@ -230,7 +232,7 @@ export function PortfolioWidget() {
                 onClick={handleToggleExpand}
                 className="w-full flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
               >
-                <span>Top Posiciones ({topPositions.length})</span>
+                <span>{t('pw_top_positions')} ({topPositions.length})</span>
                 <ChevronDown 
                   className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
                 />
@@ -265,8 +267,8 @@ export function PortfolioWidget() {
         <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
           <span>
             {summary.total_positions > 0 
-              ? `${summary.total_positions} posición${summary.total_positions !== 1 ? 'es' : ''}`
-              : 'Sin posiciones'}
+              ? t('pw_positions_count').replace('{count}', String(summary.total_positions))
+              : t('pw_no_positions')}
           </span>
           
           {hasHistoryData && (
