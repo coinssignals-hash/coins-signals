@@ -64,7 +64,7 @@ export function AnalysisError({
 
     return {
       icon: AlertTriangle,
-      defaultMessage: 'Ocurrió un error inesperado.',
+      defaultMessage: t('ae_unexpected'),
       isNetwork: false,
     };
   };
