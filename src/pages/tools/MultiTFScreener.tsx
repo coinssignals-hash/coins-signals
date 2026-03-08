@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff } from 'lucide-react';
-import { useMultiTFScreener, type PairAnalysis } from '@/hooks/useMultiTFScreener';
+import { ArrowLeft, ScanSearch, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Wifi, WifiOff, Settings2, Check } from 'lucide-react';
+import { useMultiTFScreener, ALL_AVAILABLE_PAIRS, loadSavedPairs, savePairs, type PairAnalysis } from '@/hooks/useMultiTFScreener';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 type Signal = 'bullish' | 'bearish' | 'neutral';
 type Timeframe = 'M5' | 'M15' | 'H1' | 'H4' | 'D1' | 'W1';
@@ -56,14 +57,36 @@ const PairCardSkeleton = () => (
   </Card>
 );
 
+const PAIR_CATEGORIES: Record<string, string[]> = {
+  'Majors': ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'USD/CAD'],
+  'Crosses': ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CHF/JPY', 'EUR/AUD', 'GBP/AUD', 'EUR/CAD', 'GBP/CAD', 'AUD/CAD', 'AUD/NZD', 'EUR/NZD', 'GBP/NZD'],
+  'Metales': ['XAU/USD', 'XAG/USD'],
+};
+
 export default function MultiTFScreener() {
   const { data, loading, error, fetchData } = useMultiTFScreener();
   const [expandedPair, setExpandedPair] = useState<string | null>(null);
   const [filterBias, setFilterBias] = useState<Signal | 'all'>('all');
+  const [selectedPairs, setSelectedPairs] = useState<string[]>(loadSavedPairs);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData(false, selectedPairs);
+  }, [fetchData, selectedPairs]);
+
+  const togglePair = useCallback((pair: string) => {
+    setSelectedPairs(prev => {
+      const next = prev.includes(pair) ? prev.filter(p => p !== pair) : [...prev, pair];
+      if (next.length === 0) return prev; // at least 1
+      savePairs(next);
+      return next;
+    });
+  }, []);
+
+  const applyAndClose = useCallback(() => {
+    setSheetOpen(false);
+    fetchData(true, selectedPairs);
+  }, [fetchData, selectedPairs]);
 
   const filtered = filterBias === 'all' ? data : data.filter(d => d.overallBias === filterBias);
 
@@ -92,7 +115,52 @@ export default function MultiTFScreener() {
                 <WifiOff className="w-3 h-3" /> Offline
               </span>
             )}
-            <Button variant="ghost" size="icon" onClick={() => fetchData(true)} disabled={loading}>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Settings2 className="w-4 h-4 text-muted-foreground" />
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[8px] flex items-center justify-center font-bold">
+                    {selectedPairs.length}
+                  </span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle className="text-foreground">Personalizar pares</SheetTitle>
+                </SheetHeader>
+                <div className="space-y-4 mt-4">
+                  {Object.entries(PAIR_CATEGORIES).map(([category, pairs]) => (
+                    <div key={category}>
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">{category}</p>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {pairs.map(pair => {
+                          const active = selectedPairs.includes(pair);
+                          return (
+                            <button
+                              key={pair}
+                              onClick={() => togglePair(pair)}
+                              className={cn(
+                                'flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
+                                active
+                                  ? 'bg-primary/15 border-primary/30 text-foreground'
+                                  : 'bg-secondary/50 border-border text-muted-foreground'
+                              )}
+                            >
+                              <span>{pair}</span>
+                              {active && <Check className="w-3 h-3 text-primary" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  <Button className="w-full" onClick={applyAndClose}>
+                    Analizar {selectedPairs.length} pares
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Button variant="ghost" size="icon" onClick={() => fetchData(true, selectedPairs)} disabled={loading}>
               <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
             </Button>
           </div>
