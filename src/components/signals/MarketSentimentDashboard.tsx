@@ -138,7 +138,7 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
           border: "1px solid hsla(200, 60%, 35%, 0.3)"
         }}>
         <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
-        <span className="text-xs text-cyan-300/60 uppercase tracking-wider">Analizando sentimiento del mercado...</span>
+        <span className="text-xs text-cyan-300/60 uppercase tracking-wider">{t('signal_sentiment_analyzing')}</span>
       </div>);
   }
 
