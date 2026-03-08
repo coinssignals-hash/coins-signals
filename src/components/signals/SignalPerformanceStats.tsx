@@ -160,7 +160,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                   <span className={cn("font-mono text-sm font-extrabold", winRateColor)}>
                     {stats.winRate.toFixed(0)}%
                   </span>
-                  <span className="text-[8px] text-cyan-300/50">Win Rate</span>
+                  <span className="text-[8px] text-cyan-300/50">{t('signal_win_rate')}</span>
                 </div>
               </div>
 
