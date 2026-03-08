@@ -330,7 +330,7 @@ export function PortfolioHistoryChart() {
       <div className="px-4 pb-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatBox 
-            label="Equity Inicial" 
+            label={t('ph_initial_equity')} 
             value={formatCurrency(stats.startEquity)} 
           />
           <StatBox 
