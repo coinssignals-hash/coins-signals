@@ -117,11 +117,11 @@ Actual: ${event.actual ?? 'Pendiente'}
 
 Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados, 3) Sesgo direccional probable. Sé conciso y directo.`;
 
-      const { data, error } = await supabase.functions.invoke('ai-analysis', {
-        body: { prompt, model: 'gemini-2.5-flash' },
+      const { data, error } = await supabase.functions.invoke('economic-ai', {
+        body: { prompt },
       });
       if (error) throw error;
-      return { idx: eventIdx, text: data?.analysis || data?.text || 'Sin análisis disponible' };
+      return { idx: eventIdx, text: data?.text || 'Sin análisis disponible' };
     },
     onSuccess: (result) => {
       setAiInsights(prev => ({ ...prev, [result.idx]: result.text }));
