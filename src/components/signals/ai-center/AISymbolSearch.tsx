@@ -190,7 +190,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
             style={{ color: 'hsl(200, 60%, 40%)' }} />
           <input
             type="text"
-            placeholder="Buscar: AAPL, EUR/USD, BTC..."
+            placeholder={t('ai_center_search_placeholder')}
             value={query}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => { setOpen(true); if (results.length === 0 && !showFavorites) loadDefaults(activeCategory); }}
