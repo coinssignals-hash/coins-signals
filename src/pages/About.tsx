@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/i18n/LanguageContext';
 import aboutHero from '@/assets/about-hero.jpg';
 import isabellaAvatar from '@/assets/team/isabella-walker.jpg';
 import cristopherAvatar from '@/assets/team/cristopher-hayes.jpg';
@@ -19,108 +20,95 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.4 } }),
 };
 
-const stats = [
-  { icon: Briefcase, value: '6+', label: 'Años de Experiencia', desc: 'Soluciones avanzadas en análisis financiero y señales inteligentes.' },
-  { icon: UserCheck, value: '93%', label: 'Clientes Recurrentes', desc: 'Base sólida de usuarios que confían continuamente en nuestros servicios.' },
-  { icon: Globe, value: '400+', label: 'Clientes en 48 países', desc: 'Presencia activa en mercados de América, Europa, Asia y más.' },
-  { icon: Server, value: '40+', label: 'Dominios Operativos', desc: 'Infraestructura digital robusta y en crecimiento constante.' },
-  { icon: Building2, value: '1.6K+', label: 'Proyectos Integrados', desc: 'Implementados con éxito, adaptados a diversas necesidades.' },
-  { icon: Users, value: '3K+', label: 'Profesionales en TI', desc: 'Red global de expertos respaldando desarrollo y soporte.' },
-];
-
-const values = [
-  { icon: Target, title: 'Precisión', desc: 'Cada señal pasa por múltiples capas de validación antes de publicarse.' },
-  { icon: Shield, title: 'Seguridad', desc: 'Protección de datos y gestión de riesgos como prioridad absoluta.' },
-  { icon: TrendingUp, title: 'Innovación', desc: 'IA y algoritmos en constante evolución para anticipar el mercado.' },
-  { icon: Award, title: 'Transparencia', desc: 'Historial verificable de rendimiento y métricas en tiempo real.' },
-];
-
-const teamMembers = [
-  { name: 'Isabella Walker', role: 'Atención al Cliente', desc: 'Resolución de solicitudes, gestión de quejas y experiencias positivas. Comunicación clara, empatía y manejo de alta presión.', year: 2023, avatar: isabellaAvatar },
-  { name: 'Cristopher Hayes', role: 'Mercado Internacional', desc: 'Identificación de oportunidades comerciales, negociación con clientes extranjeros y análisis de tendencias globales.', year: 2021, avatar: cristopherAvatar },
-  { name: 'Edith Sanchez', role: 'Marketing Digital', desc: 'Estrategias de marca, campañas digitales y optimización de posicionamiento en mercados competitivos.', year: 2022, avatar: edithAvatar },
-  { name: 'Andres Lopez', role: 'Contador Senior', desc: 'Gestión contable, análisis financiero y cumplimiento tributario. Elaboración de estados financieros.', year: 2021, avatar: andresAvatar },
-  { name: 'Kenji Tanaka', role: 'Ingeniero de Software', desc: 'Diseño, desarrollo y optimización de aplicaciones escalables. Backend y frontend con frameworks modernos.', year: 2023, avatar: kenjiAvatar },
-];
-
-const milestones = [
-  { year: '2019', event: 'Fundación en Kinderdijk, Países Bajos' },
-  { year: '2020', event: 'Lanzamiento de la app con 50 usuarios beta' },
-  { year: '2021', event: 'Expansión a 15 países, algoritmos de IA v2' },
-  { year: '2022', event: 'Integración multi-broker y 1.000+ usuarios' },
-  { year: '2023', event: 'Lanzamiento de portfolio y análisis en tiempo real' },
-  { year: '2024', event: '400+ clientes activos en 48 países' },
-];
-
 const offices = [
   { flag: '🇲🇹', country: 'Malta', address: 'Marija Immakulata', city: 'Gzira 1326', email: 'valleta-coins@signal.com', phone: '+356-7950124' },
   { flag: '🇳🇱', country: 'Netherlands', address: 'Boomgaardstraat 12', city: 'Fijnaart 2544', email: 'hollad-coins@signal.com', phone: '+31 06 85006065' },
 ];
 
 export default function About() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { icon: Briefcase, value: '6+', label: t('about_stat_experience'), desc: t('about_stat_experience_desc') },
+    { icon: UserCheck, value: '93%', label: t('about_stat_recurring'), desc: t('about_stat_recurring_desc') },
+    { icon: Globe, value: '400+', label: t('about_stat_clients'), desc: t('about_stat_clients_desc') },
+    { icon: Server, value: '40+', label: t('about_stat_domains'), desc: t('about_stat_domains_desc') },
+    { icon: Building2, value: '1.6K+', label: t('about_stat_projects'), desc: t('about_stat_projects_desc') },
+    { icon: Users, value: '3K+', label: t('about_stat_professionals'), desc: t('about_stat_professionals_desc') },
+  ];
+
+  const values = [
+    { icon: Target, title: t('about_val_precision'), desc: t('about_val_precision_desc') },
+    { icon: Shield, title: t('about_val_security'), desc: t('about_val_security_desc') },
+    { icon: TrendingUp, title: t('about_val_innovation'), desc: t('about_val_innovation_desc') },
+    { icon: Award, title: t('about_val_transparency'), desc: t('about_val_transparency_desc') },
+  ];
+
+  const teamMembers = [
+    { name: 'Isabella Walker', role: t('about_role_support'), desc: t('about_role_support_desc'), year: 2023, avatar: isabellaAvatar },
+    { name: 'Cristopher Hayes', role: t('about_role_intl'), desc: t('about_role_intl_desc'), year: 2021, avatar: cristopherAvatar },
+    { name: 'Edith Sanchez', role: t('about_role_marketing'), desc: t('about_role_marketing_desc'), year: 2022, avatar: edithAvatar },
+    { name: 'Andres Lopez', role: t('about_role_accountant'), desc: t('about_role_accountant_desc'), year: 2021, avatar: andresAvatar },
+    { name: 'Kenji Tanaka', role: t('about_role_engineer'), desc: t('about_role_engineer_desc'), year: 2023, avatar: kenjiAvatar },
+  ];
+
+  const milestones = [
+    { year: '2019', event: t('about_milestone_2019') },
+    { year: '2020', event: t('about_milestone_2020') },
+    { year: '2021', event: t('about_milestone_2021') },
+    { year: '2022', event: t('about_milestone_2022') },
+    { year: '2023', event: t('about_milestone_2023') },
+    { year: '2024', event: t('about_milestone_2024') },
+  ];
+
   return (
     <PageShell>
       <Header />
-
       <main className="py-4 px-4">
-        {/* Back + title */}
         <div className="flex items-center gap-3 mb-6">
           <Link to="/" className="p-2 hover:bg-secondary rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Sobre Nosotros</h1>
-            <p className="text-xs text-muted-foreground">La historia detrás de COINS SIGNALS</p>
+            <h1 className="text-xl font-bold text-foreground">{t('about_title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('about_subtitle')}</p>
           </div>
         </div>
 
-        {/* Hero */}
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
           <Card className="mb-6 overflow-hidden bg-card border-border">
             <div className="relative">
-              <img src={aboutHero} alt="Kinderdijk, Países Bajos" className="w-full h-48 md:h-64 object-cover" />
+              <img src={aboutHero} alt="Kinderdijk" className="w-full h-48 md:h-64 object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <Badge variant="outline" className="text-[10px] border-primary/40 text-primary mb-2">
-                  <Zap className="w-3 h-3 mr-1" /> Fundada en 2019
+                  <Zap className="w-3 h-3 mr-1" /> {t('about_founded')}
                 </Badge>
-                <h2 className="text-lg font-bold text-foreground leading-tight">
-                  De Kinderdijk al Mundo
-                </h2>
-                <p className="text-xs text-muted-foreground mt-1">Tres amigos, una visión: democratizar el trading inteligente</p>
+                <h2 className="text-lg font-bold text-foreground leading-tight">{t('about_hero_title')}</h2>
+                <p className="text-xs text-muted-foreground mt-1">{t('about_hero_subtitle')}</p>
               </div>
             </div>
           </Card>
         </motion.div>
 
-        {/* Origin story */}
         <Card className="mb-6 bg-card border-border">
           <CardHeader>
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" /> Nuestro Origen
+              <BarChart3 className="w-4 h-4" /> {t('about_origin_title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-            <p>
-              Hace más de cinco años, en la tranquila localidad de <span className="text-foreground font-medium">Kinderdijk</span>, famosa por sus icónicos molinos de viento, tres amigos de la universidad — <span className="text-primary font-semibold">Lois, Edith y Kenji</span> — compartían una visión clara: el mercado de inversiones era un laberinto lleno de información poco fiable.
-            </p>
-            <p>
-              Lois, analista financiero, había visto inversores pequeños perder capital por decisiones impulsivas. Kenji, ingeniero de software, creía que la tecnología podía aportar transparencia. Edith, con su experiencia en marketing, entendía la necesidad de simplificar mensajes complejos.
-            </p>
-            <p>
-              Fue durante una tarde de lluvia, con el zumbido de los molinos de fondo, que decidieron crear <span className="text-primary font-semibold">COINS SIGNALS</span> — no otra plataforma de "consejos" rápidos, sino una herramienta robusta donde los inversores pudieran acceder a señales cuidadosamente analizadas con énfasis en gestión de riesgos.
-            </p>
-            <p>
-              Hoy, COINS SIGNALS se ha consolidado como una aplicación de referencia que empodera a inversores en más de 48 países, ayudándolos a navegar el mercado con confianza y conocimiento.
-            </p>
+            <p dangerouslySetInnerHTML={{ __html: t('about_origin_p1') }} />
+            <p dangerouslySetInnerHTML={{ __html: t('about_origin_p2') }} />
+            <p dangerouslySetInnerHTML={{ __html: t('about_origin_p3') }} />
+            <p dangerouslySetInnerHTML={{ __html: t('about_origin_p4') }} />
           </CardContent>
         </Card>
 
-        {/* Values */}
         <Card className="mb-6 bg-card border-border">
           <CardHeader>
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Shield className="w-4 h-4" /> Nuestros Valores
+              <Shield className="w-4 h-4" /> {t('about_values_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -138,9 +126,8 @@ export default function About() {
           </CardContent>
         </Card>
 
-        {/* Stats */}
         <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-primary" /> Datos Destacados
+          <TrendingUp className="w-4 h-4 text-primary" /> {t('about_stats_title')}
         </h2>
         <div className="grid grid-cols-2 gap-3 mb-6">
           {stats.map((s, i) => (
@@ -161,11 +148,10 @@ export default function About() {
           ))}
         </div>
 
-        {/* Timeline */}
         <Card className="mb-6 bg-card border-border">
           <CardHeader>
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Zap className="w-4 h-4" /> Nuestra Trayectoria
+              <Zap className="w-4 h-4" /> {t('about_timeline_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -183,9 +169,8 @@ export default function About() {
           </CardContent>
         </Card>
 
-        {/* Team */}
         <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-          <Users className="w-4 h-4 text-primary" /> Nuestro Equipo
+          <Users className="w-4 h-4 text-primary" /> {t('about_team_title')}
         </h2>
         <div className="space-y-3 mb-6">
           {teamMembers.map((m, i) => (
@@ -202,9 +187,7 @@ export default function About() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-sm font-bold text-foreground">{m.name}</h3>
-                        <Badge variant="outline" className="text-[8px] px-1.5 py-0 h-4 border-primary/30 text-primary shrink-0">
-                          {m.year}
-                        </Badge>
+                        <Badge variant="outline" className="text-[8px] px-1.5 py-0 h-4 border-primary/30 text-primary shrink-0">{m.year}</Badge>
                       </div>
                       <p className="text-[11px] font-medium text-primary mb-1">{m.role}</p>
                       <p className="text-[10px] text-muted-foreground leading-relaxed">{m.desc}</p>
@@ -216,9 +199,8 @@ export default function About() {
           ))}
         </div>
 
-        {/* Offices */}
         <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" /> Oficinas Internacionales
+          <MapPin className="w-4 h-4 text-primary" /> {t('about_offices_title')}
         </h2>
         <div className="grid grid-cols-1 gap-3 mb-6">
           {offices.map((o) => (
@@ -249,20 +231,19 @@ export default function About() {
           ))}
         </div>
 
-        {/* CTA */}
         <Card className="bg-card border-border mb-4">
           <CardContent className="p-4 text-center">
-            <p className="text-sm text-foreground font-medium mb-1">¿Listo para empezar?</p>
-            <p className="text-xs text-muted-foreground mb-3">Únete a más de 400 traders que confían en nosotros</p>
+            <p className="text-sm text-foreground font-medium mb-1">{t('about_cta_title')}</p>
+            <p className="text-xs text-muted-foreground mb-3">{t('about_cta_subtitle')}</p>
             <div className="flex gap-2 justify-center">
               <Link to="/signals">
                 <Button size="sm" className="text-xs gap-1">
-                  <BarChart3 className="w-3.5 h-3.5" /> Ver Señales <ChevronRight className="w-3 h-3" />
+                  <BarChart3 className="w-3.5 h-3.5" /> {t('about_cta_signals')} <ChevronRight className="w-3 h-3" />
                 </Button>
               </Link>
               <Link to="/support">
                 <Button variant="outline" size="sm" className="text-xs gap-1">
-                  <Mail className="w-3.5 h-3.5" /> Contacto
+                  <Mail className="w-3.5 h-3.5" /> {t('about_cta_contact')}
                 </Button>
               </Link>
             </div>
