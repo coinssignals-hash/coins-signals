@@ -115,7 +115,7 @@ export default function PersonalInfo() {
     return user?.email?.charAt(0).toUpperCase() || 'U';
   };
 
-  const selectedCountry = countries.find(c => c.code === country);
+  const selectedCountry = country ? { code: country, flag: COUNTRY_FLAGS[country] || '', name: t(`country_${country}` as any) } : undefined;
   const memberSince = user?.created_at ? format(new Date(user.created_at), "d MMMM, yyyy", { locale: dateLocale }) : null;
 
   const handleAvatarClick = () => fileInputRef.current?.click();
