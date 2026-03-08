@@ -256,7 +256,7 @@ export default function TradingJournal() {
           </Link>
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">Diario de Trading</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
           </div>
         </div>
 
