@@ -309,7 +309,7 @@ export default function PersonalInfo() {
                 <Select value={timezone} onValueChange={(v) => setTimezone(v)}>
                   <SelectTrigger className="bg-[hsl(210,30%,10%)] border-cyan-800/20 text-white text-sm h-10 hover:border-cyan-600/30 transition-colors"><SelectValue placeholder={t('pi_select_tz')} /></SelectTrigger>
                   <SelectContent className="bg-[hsl(220,40%,10%)] border-cyan-800/30 max-h-60">
-                    {timezones.map((tz) => (<SelectItem key={tz.value} value={tz.value} className="text-white hover:bg-cyan-500/10 focus:bg-cyan-500/10"><span className="flex items-center justify-between gap-3 w-full"><span>{tz.label}</span><span className="text-[10px] text-slate-500 font-mono">{tz.offset}</span></span></SelectItem>))}
+                    {TIMEZONE_ENTRIES.map((tz) => (<SelectItem key={tz.value} value={tz.value} className="text-white hover:bg-cyan-500/10 focus:bg-cyan-500/10"><span className="flex items-center justify-between gap-3 w-full"><span>{tz.key ? t(tz.key as any) : tz.label}</span><span className="text-[10px] text-slate-500 font-mono">{tz.offset}</span></span></SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>
