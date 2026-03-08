@@ -202,8 +202,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<Shield className="w-4 h-4 text-emerald-400" />}
         iconColor="bg-emerald-500/15"
-        label="Soporte / Resistencia"
-        description="Alertar cerca del S/R del día anterior"
+        label={t('analysis_alert_sr')}
+        description={t('analysis_alert_sr_desc')}
         checked={localConfig.enableSupportResistance}
         onCheckedChange={(v) => handleChange('enableSupportResistance', v)}
       >
