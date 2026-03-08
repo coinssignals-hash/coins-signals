@@ -347,28 +347,28 @@ function VolatilityIndicator({ newsId, title, category, currencies
           </div>
           <div className="space-y-1 text-[10px]">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Impacto prom.</span>
+              <span className="text-muted-foreground">{t('news_avg_impact')}</span>
               <span className="font-mono font-bold text-foreground">{volatility.avg}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Spread</span>
+              <span className="text-muted-foreground">{t('news_spread')}</span>
               <span className="font-mono font-bold text-foreground">{volatility.spread}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Máx. impacto</span>
+              <span className="text-muted-foreground">{t('news_max_impact')}</span>
               <span className="font-mono font-bold text-foreground">{volatility.maxImpact}%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Promedio hist.</span>
+              <span className="text-muted-foreground">{t('news_hist_avg')}</span>
               <span className={cn('font-mono font-bold', avgImpact >= 0 ? 'text-green-400' : 'text-red-400')}>
                 {avgImpact >= 0 ? '+' : ''}{avgImpact.toFixed(1)}%
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Tendencia</span>
+              <span className="text-muted-foreground">{t('news_trend')}</span>
               <span className={cn('font-bold capitalize',
               trend === 'bullish' ? 'text-green-400' : trend === 'bearish' ? 'text-red-400' : 'text-yellow-400'
-              )}>{trend === 'bullish' ? 'Alcista' : trend === 'bearish' ? 'Bajista' : 'Neutral'}</span>
+              )}>{trend === 'bullish' ? t('news_sentiment_bullish') : trend === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral')}</span>
             </div>
           </div>
         </div>
