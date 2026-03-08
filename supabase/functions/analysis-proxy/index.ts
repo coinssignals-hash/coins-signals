@@ -136,7 +136,8 @@ serve(async (req) => {
     }
 
     // Make request to FastAPI backend
-    const url = `${FASTAPI_BASE_URL}${apiPath}`;
+    const langParam = language ? `${apiPath.includes('?') ? '&' : '?'}language=${language}` : '';
+    const url = `${FASTAPI_BASE_URL}${apiPath}${langParam}`;
     console.log(`Fetching from FastAPI: ${url}`);
 
     const response = await fetch(url, {
