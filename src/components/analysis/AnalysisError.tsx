@@ -41,7 +41,7 @@ export function AnalysisError({
     if (errorMessage.includes('500') || errorMessage.includes('server')) {
       return {
         icon: Server,
-        defaultMessage: 'El servidor no está disponible. Intenta más tarde.',
+        defaultMessage: t('ae_server'),
         isNetwork: false,
       };
     }
