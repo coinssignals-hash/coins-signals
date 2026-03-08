@@ -276,7 +276,7 @@ export default function LessonDetail() {
         {/* Back */}
         <Link to="/courses" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          Volver a cursos
+          {t('lesson_back')}
         </Link>
 
         {/* Media Player */}
