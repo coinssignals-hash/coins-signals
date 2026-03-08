@@ -277,8 +277,8 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                 >
                   <Star className="w-5 h-5" style={{ color: 'hsl(45, 50%, 35%)' }} />
                 </div>
-                <p className="text-[12px] text-slate-400 font-medium">No tienes favoritos aún</p>
-                <p className="text-[10px] text-slate-600 mt-1">Toca ⭐ en cualquier símbolo para guardarlo</p>
+                <p className="text-[12px] text-slate-400 font-medium">{t('ai_center_no_favorites')}</p>
+                <p className="text-[10px] text-slate-600 mt-1">{t('ai_center_tap_star')}</p>
               </div>
             )}
 
