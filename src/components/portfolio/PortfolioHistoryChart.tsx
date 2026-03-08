@@ -334,7 +334,7 @@ export function PortfolioHistoryChart() {
             value={formatCurrency(stats.startEquity)} 
           />
           <StatBox 
-            label="Equity Actual" 
+            label={t('ph_current_equity')} 
             value={formatCurrency(stats.endEquity)} 
           />
           <StatBox 
