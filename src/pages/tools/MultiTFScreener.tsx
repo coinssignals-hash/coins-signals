@@ -228,9 +228,9 @@ export default function MultiTFScreener() {
         {error && !loading && data.length === 0 && (
           <Card className="bg-card border-destructive/30">
             <CardContent className="p-4 text-center space-y-2">
-              <p className="text-sm text-destructive">Error al obtener datos del mercado</p>
+              <p className="text-sm text-destructive">{t('mtf_error')}</p>
               <p className="text-xs text-muted-foreground">{error}</p>
-              <Button size="sm" variant="outline" onClick={() => fetchData(true)}>Reintentar</Button>
+              <Button size="sm" variant="outline" onClick={() => fetchData(true)}>{t('mtf_retry')}</Button>
             </CardContent>
           </Card>
         )}
