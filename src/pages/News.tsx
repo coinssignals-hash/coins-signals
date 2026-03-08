@@ -184,7 +184,7 @@ function FeaturedHistoricalChart({
           </div>
         );
       })}
-      <span className="text-[9px] text-slate-500 ml-1">{data.monthlyData.length} meses</span>
+      <span className="text-[9px] text-slate-500 ml-1">{data.monthlyData.length} {t('news_months')}</span>
     </div>
   );
 }
