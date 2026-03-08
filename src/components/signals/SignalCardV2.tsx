@@ -556,7 +556,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
                     priceDiff.percent >= 0 ? "text-green-400/70" : "text-red-400/70"
                   )}>
-                      vs Entry
+                      {t('signal_vs_entry')}
                     </span>
                   }
                 </div>
