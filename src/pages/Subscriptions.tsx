@@ -11,88 +11,91 @@ import { SUBSCRIPTION_TIERS } from '@/config/subscriptionTiers';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-const plans = [
-  {
-    id: 'basico' as const,
-    name: 'Básico',
-    subtitle: 'Essencial Para las Primeras Operaciones',
-    description: 'Ideal si solo quieres comenzar',
-    priceMonthly: 30,
-    priceWeekly: 10,
-    color: 'from-yellow-500/20 to-yellow-600/10',
-    borderColor: 'border-yellow-500/50',
-    badgeColor: 'bg-yellow-500 text-black',
-    features: [
-      'Señales De las Divisas Principales',
-      'Hasta 10 señales por día',
-      'Historial de señales, Rendimiento y Ganancias',
-      'Accesos a canal educativo',
-      'Alertas por precio, tendencia',
-      'Recomendaciones de Brokers',
-      'Recomendaciones para operar',
-      'Soporte y servicio al cliente 24/7',
-    ],
-  },
-  {
-    id: 'plus' as const,
-    name: 'Plus',
-    subtitle: 'Plus Forex + Acciones + Cripto Multiactivos',
-    description: 'Ideal para aumentar tus ganancias semanales con todas las herramientas',
-    priceMonthly: 35,
-    priceWeekly: 12,
-    color: 'from-primary/30 to-primary/10',
-    borderColor: 'border-primary',
-    badgeColor: 'bg-primary text-primary-foreground',
-    featured: true,
-    features: [
-      'Señales De todas las Divisas, Acciones, Índices',
-      'Hasta 20 señales por día',
-      'Historial de señales, Rendimiento y Ganancias',
-      'Accesos a canal educativo',
-      'Alertas ilimitadas por precio, tendencia',
-      'Recomendaciones de Brokers',
-      'Recomendaciones para operar',
-      'Soporte y servicio al cliente 24/7',
-      'Análisis con inteligencia Artificial',
-      'Estrategia Forex, Acciones, Materia Prima',
-      'Herramientas Trader: Calendario, Calculadora Profit, Reloj por tendencia',
-    ],
-  },
-  {
-    id: 'premium' as const,
-    name: 'Premium Pro Trader',
-    subtitle: 'Multi-Brokers',
-    description: 'Para profesionales que quieren sacar el mejor partido del mercado',
-    priceMonthly: 40,
-    priceWeekly: 15,
-    color: 'from-blue-500/20 to-blue-600/10',
-    borderColor: 'border-blue-500/50',
-    badgeColor: 'bg-blue-500 text-white',
-    features: [
-      'Señales De todas las Divisas, Acciones, Índices',
-      'Señales ilimitadas por día',
-      'Historial de señales, Rendimiento y Ganancias',
-      'Accesos a canal educativo',
-      'Alertas ilimitadas por precio, tendencia',
-      'Recomendaciones de Brokers',
-      'Recomendaciones para operar',
-      'Soporte y servicio al cliente 24/7',
-      'Análisis con inteligencia Artificial',
-      'Estrategia Forex, Acciones, Materia Prima',
-      'Herramientas Trader',
-      'Señales Trader: Meta Pivot, filtro por tendencia',
-      'Conexión de Broker a la Aplicación: Copy, Stop loss, precio apertura, Bid',
-      'Hasta 5 múltiple Broker',
-      'Todo en una sola aplicación',
-    ],
-  },
-];
+function getPlans(t: (key: string) => string) {
+  return [
+    {
+      id: 'basico' as const,
+      name: t('sub_plan_basico'),
+      subtitle: t('sub_plan_basico_subtitle'),
+      description: t('sub_plan_basico_desc'),
+      priceMonthly: 30,
+      priceWeekly: 10,
+      color: 'from-yellow-500/20 to-yellow-600/10',
+      borderColor: 'border-yellow-500/50',
+      badgeColor: 'bg-yellow-500 text-black',
+      features: [
+        t('sub_feat_main_signals'),
+        t('sub_feat_10_signals'),
+        t('sub_feat_history'),
+        t('sub_feat_education'),
+        t('sub_feat_price_alerts'),
+        t('sub_feat_broker_recs'),
+        t('sub_feat_trading_recs'),
+        t('sub_feat_support_247'),
+      ],
+    },
+    {
+      id: 'plus' as const,
+      name: t('sub_plan_plus'),
+      subtitle: t('sub_plan_plus_subtitle'),
+      description: t('sub_plan_plus_desc'),
+      priceMonthly: 35,
+      priceWeekly: 12,
+      color: 'from-primary/30 to-primary/10',
+      borderColor: 'border-primary',
+      badgeColor: 'bg-primary text-primary-foreground',
+      featured: true,
+      features: [
+        t('sub_feat_all_signals'),
+        t('sub_feat_20_signals'),
+        t('sub_feat_history'),
+        t('sub_feat_education'),
+        t('sub_feat_unlimited_alerts'),
+        t('sub_feat_broker_recs'),
+        t('sub_feat_trading_recs'),
+        t('sub_feat_support_247'),
+        t('sub_feat_ai_analysis'),
+        t('sub_feat_strategy'),
+        t('sub_feat_tools'),
+      ],
+    },
+    {
+      id: 'premium' as const,
+      name: t('sub_plan_premium'),
+      subtitle: t('sub_plan_premium_subtitle'),
+      description: t('sub_plan_premium_desc'),
+      priceMonthly: 40,
+      priceWeekly: 15,
+      color: 'from-blue-500/20 to-blue-600/10',
+      borderColor: 'border-blue-500/50',
+      badgeColor: 'bg-blue-500 text-white',
+      features: [
+        t('sub_feat_all_signals'),
+        t('sub_feat_unlimited_signals'),
+        t('sub_feat_history'),
+        t('sub_feat_education'),
+        t('sub_feat_unlimited_alerts'),
+        t('sub_feat_broker_recs'),
+        t('sub_feat_trading_recs'),
+        t('sub_feat_support_247'),
+        t('sub_feat_ai_analysis'),
+        t('sub_feat_strategy'),
+        t('sub_feat_tools'),
+        t('sub_feat_signal_trader'),
+        t('sub_feat_broker_connection'),
+        t('sub_feat_multi_broker'),
+        t('sub_feat_all_in_one'),
+      ],
+    },
+  ];
+}
 
 export default function Subscriptions() {
   const { t } = useTranslation();
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly');
   const [searchParams] = useSearchParams();
   const { subscribed, tier, subscriptionEnd, loading, startCheckout, openPortal, checkSubscription, onTrial, trialDaysLeft } = useSubscription();
+  const plans = getPlans(t);
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -110,7 +113,7 @@ export default function Subscriptions() {
       const priceId = billingPeriod === 'monthly' ? tierConfig.monthly_price_id : tierConfig.weekly_price_id;
       await startCheckout(priceId);
     } catch (err) {
-      toast.error('Error al iniciar el checkout');
+      toast.error(t('sub_checkout_error'));
       console.error(err);
     }
   };
@@ -141,7 +144,7 @@ export default function Subscriptions() {
             <p className="text-xs text-amber-300/80">
               {t('trial_full_access')}{' '}
               <span className="font-bold text-amber-200">
-                {t('trial_days_left').replace('{count}', String(trialDaysLeft)).replace('{unit}', trialDaysLeft === 1 ? 'día' : 'días')}
+                {t('trial_days_left').replace('{count}', String(trialDaysLeft)).replace('{unit}', trialDaysLeft === 1 ? t('sub_trial_day') : t('sub_trial_days'))}
               </span>
             </p>
             <p className="text-[10px] text-muted-foreground mt-1">{t('trial_subscribe_before')}</p>

@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Palette, Eye, Type, Globe, Monitor, Zap, Minimize2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Palette, Eye, Type, Globe, Zap, Minimize2, Sparkles } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useTranslation, LANGUAGE_LABELS, LANGUAGE_FLAGS } from '@/i18n/LanguageContext';
@@ -13,20 +13,30 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
-const ACCENT_COLORS = [
-  { id: 'blue', label: 'Azul', hsl: '217 91% 60%', preview: 'bg-[hsl(217,91%,60%)]' },
-  { id: 'cyan', label: 'Cian', hsl: '187 72% 50%', preview: 'bg-[hsl(187,72%,50%)]' },
-  { id: 'green', label: 'Verde', hsl: '142 70% 45%', preview: 'bg-[hsl(142,70%,45%)]' },
-  { id: 'amber', label: 'Ámbar', hsl: '38 95% 55%', preview: 'bg-[hsl(38,95%,55%)]' },
-  { id: 'rose', label: 'Rosa', hsl: '346 77% 50%', preview: 'bg-[hsl(346,77%,50%)]' },
-  { id: 'violet', label: 'Violeta', hsl: '271 76% 53%', preview: 'bg-[hsl(271,76%,53%)]' },
-];
+const ACCENT_COLOR_IDS = ['blue', 'cyan', 'green', 'amber', 'rose', 'violet'] as const;
+const ACCENT_COLORS_META: Record<string, { hsl: string; preview: string }> = {
+  blue: { hsl: '217 91% 60%', preview: 'bg-[hsl(217,91%,60%)]' },
+  cyan: { hsl: '187 72% 50%', preview: 'bg-[hsl(187,72%,50%)]' },
+  green: { hsl: '142 70% 45%', preview: 'bg-[hsl(142,70%,45%)]' },
+  amber: { hsl: '38 95% 55%', preview: 'bg-[hsl(38,95%,55%)]' },
+  rose: { hsl: '346 77% 50%', preview: 'bg-[hsl(346,77%,50%)]' },
+  violet: { hsl: '271 76% 53%', preview: 'bg-[hsl(271,76%,53%)]' },
+};
 
-const FONT_SCALES = [
-  { value: '85', label: 'Pequeño', desc: '85%' },
-  { value: '100', label: 'Normal', desc: '100%' },
-  { value: '115', label: 'Grande', desc: '115%' },
-  { value: '130', label: 'Muy grande', desc: '130%' },
+const ACCENT_LABEL_KEYS: Record<string, string> = {
+  blue: 'appearance_color_blue',
+  cyan: 'appearance_color_cyan',
+  green: 'appearance_color_green',
+  amber: 'appearance_color_amber',
+  rose: 'appearance_color_rose',
+  violet: 'appearance_color_violet',
+};
+
+const FONT_SCALE_LABEL_KEYS = [
+  { value: '85', labelKey: 'appearance_font_small', desc: '85%' },
+  { value: '100', labelKey: 'appearance_font_normal', desc: '100%' },
+  { value: '115', labelKey: 'appearance_font_large', desc: '115%' },
+  { value: '130', labelKey: 'appearance_font_xlarge', desc: '130%' },
 ];
 
 const TIMEZONES = [
@@ -53,7 +63,7 @@ function applyFontScale(scale: string) {
 }
 
 function applyAccentColor(accent: string) {
-  ACCENT_COLORS.forEach(c => document.documentElement.classList.remove(`accent-${c.id}`));
+  ACCENT_COLOR_IDS.forEach(c => document.documentElement.classList.remove(`accent-${c}`));
   document.documentElement.classList.add(`accent-${accent}`);
   localStorage.setItem('app-accent-color', accent);
 }
@@ -78,7 +88,6 @@ export default function Appearance() {
   const [compactMode, setCompactMode] = useState(() => localStorage.getItem('app-compact-mode') === 'true');
   const { language, setLanguage, t } = useTranslation();
 
-  // Contrast
   useEffect(() => {
     document.documentElement.classList.remove('contrast-low', 'high-contrast', 'contrast-high');
     if (contrastLevel === 'low') document.documentElement.classList.add('contrast-low');
@@ -87,25 +96,11 @@ export default function Appearance() {
     localStorage.setItem('app-contrast-level', contrastLevel);
   }, [contrastLevel]);
 
-  // Large text
-  useEffect(() => {
-    document.body.classList.toggle('large-text', largeText);
-    localStorage.setItem('app-large-text', String(largeText));
-  }, [largeText]);
-
-  // Font scale
+  useEffect(() => { document.body.classList.toggle('large-text', largeText); localStorage.setItem('app-large-text', String(largeText)); }, [largeText]);
   useEffect(() => { applyFontScale(fontSize); }, [fontSize]);
-
-  // Accent color
   useEffect(() => { applyAccentColor(accentColor); }, [accentColor]);
-
-  // Reduced motion
   useEffect(() => { applyReducedMotion(reducedMotion); }, [reducedMotion]);
-
-  // Compact mode
   useEffect(() => { applyCompactMode(compactMode); }, [compactMode]);
-
-  // Timezone
   useEffect(() => { localStorage.setItem('app-timezone', timezone); }, [timezone]);
 
   const handleResetAll = useCallback(() => {
@@ -116,29 +111,32 @@ export default function Appearance() {
     setReducedMotion(false);
     setCompactMode(false);
     setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Bogota');
-    toast.success('Preferencias restauradas');
-  }, []);
+    toast.success(t('appearance_prefs_restored'));
+  }, [t]);
 
   const currentTime = new Date().toLocaleTimeString('es', { timeZone: timezone, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const contrastOptions = [
+    { value: 'normal', labelKey: 'appearance_contrast_normal', icon: '○' },
+    { value: 'low', labelKey: 'appearance_contrast_low', icon: '◔' },
+    { value: 'medium', labelKey: 'appearance_contrast_medium', icon: '◑' },
+    { value: 'high', labelKey: 'appearance_contrast_high', icon: '●' },
+  ];
 
   return (
     <PageShell>
       <Header />
-
       <main className="py-4 px-4 pb-28 space-y-4">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-2">
           <Link to="/settings">
-            <Button variant="ghost" size="icon" className="shrink-0">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
+            <Button variant="ghost" size="icon" className="shrink-0"><ArrowLeft className="w-5 h-5" /></Button>
           </Link>
           <div className="flex-1">
             <h1 className="text-lg font-bold text-foreground">{t('appearance_title')}</h1>
-            <p className="text-xs text-muted-foreground">Personaliza la experiencia visual de la app</p>
+            <p className="text-xs text-muted-foreground">{t('appearance_subtitle')}</p>
           </div>
           <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={handleResetAll}>
-            Restaurar
+            {t('appearance_reset')}
           </Button>
         </div>
 
@@ -146,47 +144,35 @@ export default function Appearance() {
         <Card className="bg-card border-border">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Palette className="w-4 h-4" />
-              {t('appearance_prefs')}
+              <Palette className="w-4 h-4" />{t('appearance_prefs')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Language */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_language')}</label>
-              <Select value={language} onValueChange={(v) => { setLanguage(v as Language); toast.success('Idioma actualizado'); }}>
-                <SelectTrigger className="bg-secondary border-border">
-                  <SelectValue />
-                </SelectTrigger>
+              <Select value={language} onValueChange={(v) => { setLanguage(v as Language); toast.success(t('appearance_lang_updated')); }}>
+                <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {(Object.keys(LANGUAGE_LABELS) as Language[]).map((lang) => (
-                    <SelectItem key={lang} value={lang}>
-                      {LANGUAGE_FLAGS[lang]} {LANGUAGE_LABELS[lang]}
-                    </SelectItem>
+                    <SelectItem key={lang} value={lang}>{LANGUAGE_FLAGS[lang]} {LANGUAGE_LABELS[lang]}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Timezone */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                <Globe className="w-3 h-3" /> Zona horaria
+                <Globe className="w-3 h-3" /> {t('appearance_timezone_label')}
               </label>
               <Select value={timezone} onValueChange={setTimezone}>
-                <SelectTrigger className="bg-secondary border-border">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {TIMEZONES.map(tz => (
-                    <SelectItem key={tz.value} value={tz.value}>
-                      {tz.label} ({tz.offset})
-                    </SelectItem>
+                    <SelectItem key={tz.value} value={tz.value}>{tz.label} ({tz.offset})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                Hora actual: <span className="text-foreground tabular-nums font-medium">{currentTime}</span>
+                {t('appearance_current_time')} <span className="text-foreground tabular-nums font-medium">{currentTime}</span>
               </p>
             </div>
           </CardContent>
@@ -196,36 +182,35 @@ export default function Appearance() {
         <Card className="bg-card border-border">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              Color de acento
+              <Sparkles className="w-4 h-4" />{t('appearance_accent_color')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-6 gap-2">
-              {ACCENT_COLORS.map(color => (
-                <motion.button
-                  key={color.id}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => { setAccentColor(color.id); toast.success(`Acento: ${color.label}`); }}
-                  className={cn(
-                    'flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all',
-                    accentColor === color.id
-                      ? 'border-foreground/30 bg-secondary/60 shadow-md'
-                      : 'border-transparent hover:bg-secondary/30'
-                  )}
-                >
-                  <div className={cn(
-                    'w-8 h-8 rounded-full border-2 transition-all',
-                    color.preview,
-                    accentColor === color.id ? 'border-foreground/50 scale-110 shadow-[0_0_12px_currentColor]' : 'border-transparent'
-                  )} />
-                  <span className="text-[9px] text-muted-foreground">{color.label}</span>
-                </motion.button>
-              ))}
+              {ACCENT_COLOR_IDS.map(id => {
+                const meta = ACCENT_COLORS_META[id];
+                const label = t(ACCENT_LABEL_KEYS[id]);
+                return (
+                  <motion.button
+                    key={id}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => { setAccentColor(id); toast.success(`${t('appearance_accent_color')}: ${label}`); }}
+                    className={cn(
+                      'flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all',
+                      accentColor === id ? 'border-foreground/30 bg-secondary/60 shadow-md' : 'border-transparent hover:bg-secondary/30'
+                    )}
+                  >
+                    <div className={cn(
+                      'w-8 h-8 rounded-full border-2 transition-all',
+                      meta.preview,
+                      accentColor === id ? 'border-foreground/50 scale-110 shadow-[0_0_12px_currentColor]' : 'border-transparent'
+                    )} />
+                    <span className="text-[9px] text-muted-foreground">{label}</span>
+                  </motion.button>
+                );
+              })}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-2">
-              Cambia el color principal de botones, enlaces y elementos destacados.
-            </p>
+            <p className="text-[11px] text-muted-foreground mt-2">{t('appearance_accent_desc')}</p>
           </CardContent>
         </Card>
 
@@ -233,16 +218,14 @@ export default function Appearance() {
         <Card className="bg-card border-border">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Type className="w-4 h-4" />
-              Tipografía
+              <Type className="w-4 h-4" />{t('appearance_typography')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Font scale */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tamaño de fuente</label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_font_scale')}</label>
               <div className="grid grid-cols-4 gap-2">
-                {FONT_SCALES.map(scale => (
+                {FONT_SCALE_LABEL_KEYS.map(scale => (
                   <button
                     key={scale.value}
                     onClick={() => setFontSize(scale.value)}
@@ -254,27 +237,23 @@ export default function Appearance() {
                     )}
                   >
                     <span className="text-xs font-bold block">{scale.desc}</span>
-                    <span className="text-[9px] text-muted-foreground">{scale.label}</span>
+                    <span className="text-[9px] text-muted-foreground">{t(scale.labelKey)}</span>
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Large text toggle */}
             <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/30">
               <div>
-                <p className="text-sm font-medium text-foreground">Texto grande</p>
-                <p className="text-[11px] text-muted-foreground">Aumenta el tamaño base de tipografía</p>
+                <p className="text-sm font-medium text-foreground">{t('appearance_large_text')}</p>
+                <p className="text-[11px] text-muted-foreground">{t('appearance_large_text_desc')}</p>
               </div>
               <Switch checked={largeText} onCheckedChange={setLargeText} />
             </div>
-
-            {/* Preview */}
             <div className="p-3 rounded-xl bg-secondary/20 border border-border/30 space-y-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Vista previa</p>
-              <p className="text-foreground">Texto normal de ejemplo</p>
-              <p className="text-sm text-muted-foreground">Texto secundario más pequeño</p>
-              <p className="text-xs text-muted-foreground">Texto auxiliar diminuto</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('appearance_preview')}</p>
+              <p className="text-foreground">{t('appearance_preview_normal')}</p>
+              <p className="text-sm text-muted-foreground">{t('appearance_preview_secondary')}</p>
+              <p className="text-xs text-muted-foreground">{t('appearance_preview_tiny')}</p>
             </div>
           </CardContent>
         </Card>
@@ -283,21 +262,14 @@ export default function Appearance() {
         <Card className="bg-card border-border">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              Accesibilidad
+              <Eye className="w-4 h-4" />{t('appearance_accessibility')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Contrast */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Nivel de contraste</label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_contrast_level')}</label>
               <div className="grid grid-cols-4 gap-2">
-                {[
-                  { value: 'normal', label: 'Normal', icon: '○' },
-                  { value: 'low', label: 'Bajo', icon: '◔' },
-                  { value: 'medium', label: 'Medio', icon: '◑' },
-                  { value: 'high', label: 'Alto', icon: '●' },
-                ].map((opt) => (
+                {contrastOptions.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() => setContrastLevel(opt.value)}
@@ -309,36 +281,32 @@ export default function Appearance() {
                     )}
                   >
                     <span className="text-base block mb-0.5">{opt.icon}</span>
-                    <span className="text-[10px] font-medium">{opt.label}</span>
+                    <span className="text-[10px] font-medium">{t(opt.labelKey)}</span>
                   </button>
                 ))}
               </div>
               <p className="text-[11px] text-muted-foreground">
-                {contrastLevel === 'normal' && 'Contraste estándar de la aplicación.'}
-                {contrastLevel === 'low' && 'Contraste suave, ideal para ambientes oscuros.'}
-                {contrastLevel === 'medium' && 'Mayor contraste en textos y bordes.'}
-                {contrastLevel === 'high' && 'Máximo contraste para mejor legibilidad.'}
+                {contrastLevel === 'normal' && t('appearance_contrast_desc_normal')}
+                {contrastLevel === 'low' && t('appearance_contrast_desc_low')}
+                {contrastLevel === 'medium' && t('appearance_contrast_desc_medium')}
+                {contrastLevel === 'high' && t('appearance_contrast_desc_high')}
               </p>
             </div>
-
-            {/* Reduced motion */}
             <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/30">
               <div>
                 <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-muted-foreground" /> Reducir movimiento
+                  <Zap className="w-3.5 h-3.5 text-muted-foreground" /> {t('appearance_reduce_motion')}
                 </p>
-                <p className="text-[11px] text-muted-foreground">Desactiva animaciones y transiciones</p>
+                <p className="text-[11px] text-muted-foreground">{t('appearance_reduce_motion_desc')}</p>
               </div>
               <Switch checked={reducedMotion} onCheckedChange={setReducedMotion} />
             </div>
-
-            {/* Compact mode */}
             <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/30">
               <div>
                 <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                  <Minimize2 className="w-3.5 h-3.5 text-muted-foreground" /> Modo compacto
+                  <Minimize2 className="w-3.5 h-3.5 text-muted-foreground" /> {t('appearance_compact_mode')}
                 </p>
-                <p className="text-[11px] text-muted-foreground">Reduce espaciado y bordes para más contenido</p>
+                <p className="text-[11px] text-muted-foreground">{t('appearance_compact_mode_desc')}</p>
               </div>
               <Switch checked={compactMode} onCheckedChange={setCompactMode} />
             </div>
