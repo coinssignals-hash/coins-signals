@@ -148,7 +148,7 @@ export default function Portfolio() {
                   <div className="flex items-center gap-3 text-xs">
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <BarChart3 className="w-3 h-3" />
-                      <span>En posiciones:</span>
+                      <span>{t('portfolio_in_positions')}</span>
                       <span className="text-foreground font-medium">{formatCurrency(totalInPositions)}</span>
                     </div>
                   </div>
