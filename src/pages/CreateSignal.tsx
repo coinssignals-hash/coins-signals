@@ -227,7 +227,7 @@ export default function CreateSignal() {
       setActiveTab('manage');
       fetchActiveSignals();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al actualizar');
+      toast.error(err instanceof Error ? err.message : t('cs_error_update'));
     } finally {
       setLoading(false);
     }
