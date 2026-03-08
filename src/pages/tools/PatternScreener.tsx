@@ -128,7 +128,7 @@ export default function PatternScreener() {
             {filtered.length === 0 ? (
               <div className="p-8 text-center">
                 <CandlestickChart className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-40" />
-                <p className="text-sm text-muted-foreground">No se detectaron patrones con este filtro</p>
+                <p className="text-sm text-muted-foreground">{t('tp_no_patterns')}</p>
               </div>
             ) : (
               filtered.map((item, i) => (
