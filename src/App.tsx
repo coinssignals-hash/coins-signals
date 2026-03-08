@@ -39,6 +39,7 @@ const CreateSignal = lazy(() => import("./pages/CreateSignal"));
 const AICenter = lazy(() => import("./pages/AICenter"));
 const Stocks = lazy(() => import("./pages/Stocks"));
 const MediaLibrary = lazy(() => import("./pages/MediaLibrary"));
+const Tools = lazy(() => import("./pages/Tools"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
