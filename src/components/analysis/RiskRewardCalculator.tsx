@@ -75,10 +75,10 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       {/* Input Fields */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[
-          { label: 'Entrada', value: entry, onChange: setEntry, color: 'border-cyan-500/30' },
+          { label: t('analysis_rr_entry'), value: entry, onChange: setEntry, color: 'border-cyan-500/30' },
           { label: 'Stop Loss', value: stopLoss, onChange: setStopLoss, color: 'border-red-500/30' },
           { label: 'Take Profit', value: takeProfit, onChange: setTakeProfit, color: 'border-green-500/30' },
-          { label: 'Lotes', value: lotSize, onChange: setLotSize, color: 'border-amber-500/30' },
+          { label: t('analysis_rr_lots'), value: lotSize, onChange: setLotSize, color: 'border-amber-500/30' },
         ].map(field => (
           <div key={field.label}>
             <label className="text-[9px] text-gray-500 uppercase tracking-wider">{field.label}</label>
