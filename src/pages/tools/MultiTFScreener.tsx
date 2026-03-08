@@ -256,7 +256,7 @@ export default function MultiTFScreener() {
                     <div className="text-left">
                       <p className="text-sm font-bold text-foreground">{pair.pair}</p>
                       <p className="text-[10px] text-muted-foreground capitalize">
-                        {pair.overallBias === 'bullish' ? 'Alcista' : pair.overallBias === 'bearish' ? 'Bajista' : 'Neutral'}
+                        {pair.overallBias === 'bullish' ? t('mtf_bullish_label') : pair.overallBias === 'bearish' ? t('mtf_bearish_label') : t('mtf_neutral_label')}
                       </p>
                     </div>
                   </div>
