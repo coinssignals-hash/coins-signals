@@ -9,11 +9,12 @@ interface HistoricalChartProps {
 }
 
 export function HistoricalChart({ analysis, className }: HistoricalChartProps) {
+  const { t } = useTranslation();
   return (
     <div className={cn('space-y-6', className)}>
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Impacto Meses Anteriores
+          {t('news_historical_previous_months')}
         </h3>
         <MonthlyChart data={analysis.monthly_data} />
       </div>
