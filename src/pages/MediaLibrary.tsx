@@ -10,6 +10,7 @@ import {
   ArrowLeft, Video, Headphones, Play, Clock, CheckCircle, ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const difficultyColor = (d: string) => {
   if (d === 'Principiante') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
