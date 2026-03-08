@@ -518,7 +518,7 @@ export default function TradingJournal() {
             <Card className="bg-card border-border">
               <CardContent className="p-8 text-center">
                 <BookOpen className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-                <p className="text-sm text-muted-foreground">No hay operaciones registradas</p>
+                <p className="text-sm text-muted-foreground">{t('journal_no_trades')}</p>
                 <p className="text-xs text-muted-foreground/60 mt-1">Comienza registrando tu primera operación</p>
               </CardContent>
             </Card>
