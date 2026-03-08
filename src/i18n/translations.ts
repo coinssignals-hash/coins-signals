@@ -1832,6 +1832,35 @@ export type TranslationKeys = {
   cf_remove_fav: string;
   cf_add_fav: string;
   cf_favorites: string;
+  cf_search_currency: string;
+  cf_search_forex: string;
+  cf_search_crypto: string;
+  cf_no_currencies: string;
+  cf_no_forex: string;
+  cf_no_crypto: string;
+  cf_more: string;
+  cf_close: string;
+  cf_forex_pairs: string;
+  cf_cryptos: string;
+  // CacheStatsPanel extra
+  cache_cleaned: string;
+  cache_cleaned_desc: string;
+  cache_error_load: string;
+  cache_error_clean: string;
+  cache_newest: string;
+  cache_oldest: string;
+  cache_type_sentiment: string;
+  cache_type_prediction: string;
+  cache_type_conclusions: string;
+  cache_type_recommendations: string;
+  cache_type_technical: string;
+  // LessonDetail extra
+  lesson_completed_toast: string;
+  lesson_completed_toast_desc: string;
+  lesson_podcast_ended: string;
+  lesson_video_ended: string;
+  lesson_lesson_of: string;
+  lesson_reading_material: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime
