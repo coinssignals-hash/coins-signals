@@ -210,7 +210,7 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
       <div className="flex items-center justify-center gap-4 mt-3">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'hsl(0, 70%, 50%)' }} />
-          <span className="text-[9px] text-muted-foreground">Bajista</span>
+          <span className="text-[9px] text-muted-foreground">{t('news_impact_legend_bearish')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm bg-muted" />
