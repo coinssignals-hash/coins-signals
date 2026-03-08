@@ -16,6 +16,7 @@ interface IndicatorVote {
 }
 
 export function ConfluenceScore({ data }: ConfluenceScoreProps) {
+  const { t } = useTranslation();
   const { votes, score, level, buyCount, sellCount, neutralCount } = useMemo(() => {
     const votes: IndicatorVote[] = [];
 
