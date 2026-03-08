@@ -34,7 +34,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const { t } = useTranslation();
-  const { isAdmin } = useUserRole();
+  
 
   const menuItems = [
     { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
