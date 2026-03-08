@@ -549,9 +549,14 @@ export default function TradingJournal() {
                             entry.action === 'BUY' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
                           )}>{entry.action}</span>
                         </div>
-                        <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-rose-400 transition-colors">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button onClick={() => startEdit(entry)} className="text-muted-foreground hover:text-primary transition-colors">
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-rose-400 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-3 mt-1">
