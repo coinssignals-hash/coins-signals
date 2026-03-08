@@ -288,7 +288,7 @@ export default function CreateSignal() {
       });
 
       URL.revokeObjectURL(url);
-      toast.success('Gráfico descargado en HD');
+      toast.success(t('cs_chart_downloaded'));
     } catch (err) {
       console.error('Chart download error:', err);
       toast.error('Error al descargar el gráfico');
