@@ -269,8 +269,8 @@ export function CacheStatsPanel() {
         {stats?.total === 0 && (
           <div className="text-center py-6 text-muted-foreground">
             <Database className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>No hay entradas en el cache</p>
-            <p className="text-xs">Los análisis IA se guardarán aquí automáticamente</p>
+            <p>{t('cache_empty')}</p>
+            <p className="text-xs">{t('cache_auto_save')}</p>
           </div>
         )}
       </CardContent>
