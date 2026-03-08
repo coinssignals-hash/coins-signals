@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { 
+import { useTranslation } from '@/i18n/LanguageContext';
   AreaChart, 
   Area, 
   XAxis, 

@@ -267,8 +267,8 @@ export function PortfolioWidget() {
         <div className="mt-3 pt-3 border-t border-green-900/30 flex items-center justify-between text-xs text-gray-400">
           <span>
             {summary.total_positions > 0 
-              ? `${summary.total_positions} posición${summary.total_positions !== 1 ? 'es' : ''}`
-              : 'Sin posiciones'}
+              ? t('pw_positions_count').replace('{count}', String(summary.total_positions))
+              : t('pw_no_positions')}
           </span>
           
           {hasHistoryData && (
