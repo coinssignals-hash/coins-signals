@@ -176,7 +176,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                 >
                   <div className="flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-[10px] text-emerald-300/70 font-medium">TP Hit</span>
+                    <span className="text-[10px] text-emerald-300/70 font-medium">{t('signal_tp_hit')}</span>
                     <span className="ml-auto text-sm font-bold text-emerald-400">{stats.tpCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
