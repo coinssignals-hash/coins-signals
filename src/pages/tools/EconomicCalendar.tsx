@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
-import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { Header } from '@/components/layout/Header';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, CalendarDays, AlertTriangle, TrendingUp, TrendingDown, Minus, Loader2, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -66,35 +67,33 @@ export default function EconomicCalendar() {
 
   return (
     <PageShell>
-      <div className="px-4 py-4 pb-24 space-y-4">
+      <Header />
+      <main className="container py-6">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-9 h-9 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center">
+        <div className="flex items-center gap-3 mb-6">
+          <Link to="/tools" className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
-          <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
-            <CalendarDays className="w-5 h-5 text-blue-400" />
-          </div>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-foreground">Calendario Económico</h1>
+            <h1 className="text-xl font-bold text-foreground">Calendario Económico</h1>
             <p className="text-xs text-muted-foreground">{format(targetDate, "EEEE, d 'de' MMMM", { locale: es })}</p>
           </div>
-          <button onClick={() => refetch()} className="w-8 h-8 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center">
-            <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", isLoading && "animate-spin")} />
+          <button onClick={() => refetch()} className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center">
+            <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isLoading && "animate-spin")} />
           </button>
         </div>
 
         {/* Day tabs */}
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-1 p-1 mb-4 rounded-lg bg-muted/50">
           {DAY_OFFSETS.map(d => (
             <button
               key={d.offset}
               onClick={() => setDayOffset(d.offset)}
               className={cn(
-                "px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border",
+                "flex-1 px-2 py-2.5 rounded-md text-xs font-medium transition-all",
                 dayOffset === d.offset
-                  ? "bg-primary/15 border-primary/40 text-foreground"
-                  : "bg-card/60 border-border/50 text-muted-foreground hover:bg-secondary/50"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {d.label}
@@ -103,12 +102,13 @@ export default function EconomicCalendar() {
         </div>
 
         {/* Impact filter */}
-        <div className="flex gap-1.5">
+        <h2 className="text-sm font-semibold text-primary mb-3">Filtrar por Impacto</h2>
+        <div className="flex gap-2 mb-6">
           <button
             onClick={() => setImpactFilter(null)}
             className={cn(
-              "px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all",
-              !impactFilter ? "bg-primary/15 border-primary/40 text-foreground" : "bg-card/60 border-border/50 text-muted-foreground"
+              "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+              !impactFilter ? "bg-background text-foreground shadow-sm border border-border" : "bg-muted/50 text-muted-foreground"
             )}
           >
             Todos ({events.length})
@@ -120,8 +120,10 @@ export default function EconomicCalendar() {
                 key={key}
                 onClick={() => setImpactFilter(impactFilter === key ? null : key)}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all",
-                  impactFilter === key ? conf.bg : "bg-card/60 border-border/50 text-muted-foreground"
+                  "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  impactFilter === key
+                    ? cn("shadow-sm border", conf.bg)
+                    : "bg-muted/50 text-muted-foreground"
                 )}
               >
                 {conf.label} ({count})
@@ -141,87 +143,106 @@ export default function EconomicCalendar() {
             <p className="text-sm text-muted-foreground">No hay eventos para esta fecha</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {filtered.map((event, i) => {
-              const impact = IMPACT_CONFIG[event.impact] || IMPACT_CONFIG.Low;
-              const time = event.date?.includes('T')
-                ? format(new Date(event.date), 'HH:mm')
-                : '--:--';
-              const deviation = event.actual !== null && event.estimate !== null
-                ? event.actual - event.estimate
-                : null;
+          <>
+            <h2 className="text-sm font-semibold text-primary mb-3">
+              Eventos ({filtered.length})
+            </h2>
+            <Card className="bg-card border-border mb-4">
+              <CardContent className="p-0">
+                {filtered.map((event, i) => {
+                  const impact = IMPACT_CONFIG[event.impact] || IMPACT_CONFIG.Low;
+                  const time = event.date?.includes('T')
+                    ? format(new Date(event.date), 'HH:mm')
+                    : '--:--';
+                  const deviation = event.actual !== null && event.estimate !== null
+                    ? event.actual - event.estimate
+                    : null;
 
-              return (
-                <SignalStyleCard key={`${event.event}-${i}`} className="p-3">
-                  <div className="flex items-start gap-3">
-                    <div className="text-center shrink-0 w-12">
-                      <span className="text-xs font-mono font-bold text-foreground">{time}</span>
-                      <div className={cn("text-[9px] mt-0.5 px-1.5 py-0.5 rounded-full border font-semibold", impact.bg)}>
-                        {impact.label}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold text-primary/80">{event.currency}</span>
-                        <span className="text-[10px] text-muted-foreground/60">·</span>
-                        <span className="text-[10px] text-muted-foreground">{event.country}</span>
-                      </div>
-                      <p className="text-xs font-semibold text-foreground mt-0.5 leading-snug truncate">
-                        {event.event}
-                      </p>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <div className="text-center">
-                          <span className="text-[9px] text-muted-foreground block">Previo</span>
-                          <span className="text-[11px] font-mono font-medium text-foreground">
-                            {event.previous !== null ? event.previous : '—'}
-                          </span>
-                        </div>
-                        <div className="text-center">
-                          <span className="text-[9px] text-muted-foreground block">Estimado</span>
-                          <span className="text-[11px] font-mono font-medium text-foreground">
-                            {event.estimate !== null ? event.estimate : '—'}
-                          </span>
-                        </div>
-                        <div className="text-center">
-                          <span className="text-[9px] text-muted-foreground block">Actual</span>
-                          <span className={cn(
-                            "text-[11px] font-mono font-bold",
-                            event.actual === null ? "text-muted-foreground" :
-                            deviation !== null && deviation > 0 ? "text-emerald-400" :
-                            deviation !== null && deviation < 0 ? "text-red-400" : "text-foreground"
-                          )}>
-                            {event.actual !== null ? event.actual : '—'}
-                          </span>
-                        </div>
-                        {deviation !== null && (
-                          <div className="flex items-center gap-0.5 ml-auto">
-                            {deviation > 0 ? (
-                              <TrendingUp className="w-3 h-3 text-emerald-400" />
-                            ) : deviation < 0 ? (
-                              <TrendingDown className="w-3 h-3 text-red-400" />
-                            ) : (
-                              <Minus className="w-3 h-3 text-muted-foreground" />
-                            )}
-                            <span className={cn(
-                              "text-[10px] font-mono font-bold",
-                              deviation > 0 ? "text-emerald-400" : deviation < 0 ? "text-red-400" : "text-muted-foreground"
-                            )}>
-                              {deviation > 0 ? '+' : ''}{deviation.toFixed(2)}
-                            </span>
+                  return (
+                    <div
+                      key={`${event.event}-${i}`}
+                      className={cn(
+                        "p-4",
+                        i !== filtered.length - 1 && "border-b border-border"
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Time + Impact */}
+                        <div className="flex flex-col items-center shrink-0 w-14 pt-0.5">
+                          <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-1">
+                            <span className="text-[11px] font-mono font-bold text-foreground">{time}</span>
                           </div>
-                        )}
+                          <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full border font-semibold", impact.bg)}>
+                            {impact.label}
+                          </span>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] font-bold text-primary">{event.currency}</span>
+                            <span className="text-[10px] text-muted-foreground">· {event.country}</span>
+                          </div>
+                          <p className="text-sm font-medium text-foreground mt-0.5 leading-snug">
+                            {event.event}
+                          </p>
+
+                          {/* Data row */}
+                          <div className="flex items-center gap-4 mt-2">
+                            <div>
+                              <span className="text-[9px] text-muted-foreground block">Previo</span>
+                              <span className="text-xs font-mono font-medium text-foreground">
+                                {event.previous !== null ? event.previous : '—'}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-muted-foreground block">Estimado</span>
+                              <span className="text-xs font-mono font-medium text-foreground">
+                                {event.estimate !== null ? event.estimate : '—'}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] text-muted-foreground block">Actual</span>
+                              <span className={cn(
+                                "text-xs font-mono font-bold",
+                                event.actual === null ? "text-muted-foreground" :
+                                deviation !== null && deviation > 0 ? "text-emerald-400" :
+                                deviation !== null && deviation < 0 ? "text-red-400" : "text-foreground"
+                              )}>
+                                {event.actual !== null ? event.actual : '—'}
+                              </span>
+                            </div>
+                            {deviation !== null && (
+                              <div className="flex items-center gap-0.5 ml-auto">
+                                {deviation > 0 ? (
+                                  <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                                ) : deviation < 0 ? (
+                                  <TrendingDown className="w-3.5 h-3.5 text-red-400" />
+                                ) : (
+                                  <Minus className="w-3.5 h-3.5 text-muted-foreground" />
+                                )}
+                                <span className={cn(
+                                  "text-xs font-mono font-bold",
+                                  deviation > 0 ? "text-emerald-400" : deviation < 0 ? "text-red-400" : "text-muted-foreground"
+                                )}>
+                                  {deviation > 0 ? '+' : ''}{deviation.toFixed(2)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </SignalStyleCard>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </>
         )}
 
         {/* Warning */}
         {!isLoading && events.length > 0 && (
-          <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border/30">
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border">
             <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
             <p className="text-[11px] text-muted-foreground leading-relaxed">
               Datos proporcionados por Financial Modeling Prep. Los eventos de alto impacto pueden causar 
@@ -229,7 +250,7 @@ export default function EconomicCalendar() {
             </p>
           </div>
         )}
-      </div>
+      </main>
     </PageShell>
   );
 }
