@@ -177,28 +177,28 @@ export function CacheStatsPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Total Entradas</p>
-            <p className="text-2xl font-bold text-foreground">{stats?.total || 0}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_total')}</p>
+              <p className="text-2xl font-bold text-foreground">{stats?.total || 0}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_active')}</p>
+              <p className="text-2xl font-bold text-green-400">
+                {(stats?.total || 0) - (stats?.expired || 0)}
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_expired')}</p>
+              <p className="text-2xl font-bold text-red-400">{stats?.expired || 0}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/50">
+              <p className="text-xs text-muted-foreground">{t('cache_types')}</p>
+              <p className="text-2xl font-bold text-foreground">
+                {Object.keys(stats?.byType || {}).length}
+              </p>
+            </div>
           </div>
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Activas</p>
-            <p className="text-2xl font-bold text-green-400">
-              {(stats?.total || 0) - (stats?.expired || 0)}
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Expiradas</p>
-            <p className="text-2xl font-bold text-red-400">{stats?.expired || 0}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-secondary/50">
-            <p className="text-xs text-muted-foreground">Tipos</p>
-            <p className="text-2xl font-bold text-foreground">
-              {Object.keys(stats?.byType || {}).length}
-            </p>
-          </div>
-        </div>
 
         {/* By Type Breakdown */}
         {stats && Object.keys(stats.byType).length > 0 && (
