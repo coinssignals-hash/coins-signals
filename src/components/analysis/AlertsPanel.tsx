@@ -274,8 +274,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<Activity className="w-4 h-4 text-yellow-400" />}
         iconColor="bg-yellow-500/15"
-        label="Alertas RSI"
-        description="Sobrecompra y sobreventa"
+        label={t('analysis_alert_rsi')}
+        description={t('analysis_alert_rsi_desc')}
         checked={localConfig.enableRSI}
         onCheckedChange={(v) => handleChange('enableRSI', v)}
       >
