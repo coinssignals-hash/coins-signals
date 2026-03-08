@@ -52,8 +52,8 @@ export function PortfolioWidget() {
                   <Wallet className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Conecta tu Broker</p>
-                  <p className="text-xs text-gray-400">Sincroniza tu portfolio</p>
+                  <p className="text-sm font-medium text-white">{t('pw_connect_broker')}</p>
+                  <p className="text-xs text-gray-400">{t('pw_sync_portfolio')}</p>
                 </div>
               </div>
               <ArrowRight className="w-5 h-5 text-green-500 group-hover:translate-x-1 transition-transform" />
