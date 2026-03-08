@@ -11,6 +11,7 @@ interface RiskRewardCalculatorProps {
 }
 
 export function RiskRewardCalculator({ currentPrice, symbol, resistance, support }: RiskRewardCalculatorProps) {
+  const { t } = useTranslation();
   const [direction, setDirection] = useState<'long' | 'short'>('long');
   const [entry, setEntry] = useState(currentPrice.toFixed(5));
   const [stopLoss, setStopLoss] = useState((support || currentPrice * 0.995).toFixed(5));
