@@ -341,7 +341,7 @@ export default function LessonDetail() {
         {/* Navigation */}
         <div className="flex items-center justify-between rounded-xl border border-border/40 bg-card/60 p-3">
           <Button variant="ghost" size="sm" disabled={!hasPrev} onClick={goPrev} className="gap-1 text-xs">
-            <ChevronLeft className="w-4 h-4" />Anterior
+            <ChevronLeft className="w-4 h-4" />{t('lesson_prev')}
           </Button>
           <div className="flex items-center gap-1">
             {lesson.lessons.map((_, i) => (
@@ -352,7 +352,7 @@ export default function LessonDetail() {
             ))}
           </div>
           <Button variant="ghost" size="sm" disabled={!hasNext} onClick={goNext} className="gap-1 text-xs">
-            Siguiente<ChevronRight className="w-4 h-4" />
+            {t('lesson_next')}<ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
