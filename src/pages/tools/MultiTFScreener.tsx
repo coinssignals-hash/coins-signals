@@ -133,9 +133,9 @@ export default function MultiTFScreener() {
                   <SheetTitle className="text-foreground">{t('mtf_customize_pairs')}</SheetTitle>
                 </SheetHeader>
                 <div className="space-y-4 mt-4">
-                  {Object.entries(PAIR_CATEGORIES).map(([category, pairs]) => (
-                    <div key={category}>
-                      <p className="text-xs font-semibold text-muted-foreground mb-2">{category}</p>
+                  {Object.entries(PAIR_CATEGORIES_KEYS).map(([key, { key: catKey, pairs }]) => (
+                    <div key={key}>
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">{catKey === 'mtf_metals' ? t('mtf_metals') : catKey}</p>
                       <div className="grid grid-cols-3 gap-1.5">
                         {pairs.map(pair => {
                           const active = selectedPairs.includes(pair);
