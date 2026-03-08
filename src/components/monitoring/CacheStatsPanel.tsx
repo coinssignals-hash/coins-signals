@@ -170,7 +170,7 @@ export function CacheStatsPanel() {
               ) : (
                 <Trash2 className="w-4 h-4 mr-1" />
               )}
-              Limpiar Expirados
+              {t('cache_clear_expired')}
             </Button>
           </div>
         </div>
