@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { ChevronRight,
   Calculator, CalendarDays, ScanSearch, BookOpen,
   TrendingUp, Target, DollarSign, Percent, BarChart3,
@@ -17,65 +18,75 @@ type TraderLevel = 'novato' | 'medio' | 'avanzado' | 'profesional';
 
 interface ToolItem {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
   icon: typeof Calculator;
   category: 'calculadoras' | 'calendario' | 'screeners' | 'diario';
   status: 'available' | 'coming_soon';
   route?: string;
 }
 
-const LEVELS: { id: TraderLevel; label: string; icon: typeof GraduationCap }[] = [
-  { id: 'novato', label: 'Novato', icon: GraduationCap },
-  { id: 'medio', label: 'Intermedio', icon: Award },
-  { id: 'avanzado', label: 'Avanzado', icon: Star },
-  { id: 'profesional', label: 'Profesional', icon: Crown },
-];
+const LEVEL_KEYS: Record<TraderLevel, string> = {
+  novato: 'tools_level_novice',
+  medio: 'tools_level_intermediate',
+  avanzado: 'tools_level_advanced',
+  profesional: 'tools_level_professional',
+};
+
+const LEVEL_ICONS: Record<TraderLevel, typeof GraduationCap> = {
+  novato: GraduationCap,
+  medio: Award,
+  avanzado: Star,
+  profesional: Crown,
+};
+
+const LEVELS: TraderLevel[] = ['novato', 'medio', 'avanzado', 'profesional'];
+
+const CATEGORY_KEYS: Record<string, string> = {
+  calculadoras: 'tools_cat_calculators',
+  calendario: 'tools_cat_calendar',
+  screeners: 'tools_cat_screeners',
+  diario: 'tools_cat_journal',
+};
 
 const TOOLS_BY_LEVEL: Record<TraderLevel, ToolItem[]> = {
   novato: [
-    { id: 'pip-calc', title: 'Calculadora de Pips', description: 'Calcula el valor de pips para cualquier par de divisas', icon: DollarSign, category: 'calculadoras', status: 'available', route: '/tools/pip-calculator' },
-    { id: 'lot-calc', title: 'Calculadora de Lotes', description: 'Determina el tamaño de lote ideal según tu capital', icon: Calculator, category: 'calculadoras', status: 'available', route: '/tools/lot-calculator' },
-    { id: 'margin-calc', title: 'Calculadora de Margen', description: 'Calcula el margen requerido para abrir posiciones', icon: Percent, category: 'calculadoras', status: 'available', route: '/tools/margin-calculator' },
-    { id: 'eco-calendar-basic', title: 'Calendario Económico', description: 'Eventos de alto impacto con alertas básicas', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/economic-calendar' },
-    { id: 'trade-journal-basic', title: 'Diario de Trading Básico', description: 'Registra tus operaciones con notas simples', icon: BookOpen, category: 'diario', status: 'available', route: '/tools/trading-journal' },
-    { id: 'trend-scanner', title: 'Escáner de Tendencias', description: 'Identifica la dirección general del mercado', icon: TrendingUp, category: 'screeners', status: 'available', route: '/tools/trend-scanner' },
+    { id: 'pip-calc', titleKey: 'tools_pip_calc_title', descKey: 'tools_pip_calc_desc', icon: DollarSign, category: 'calculadoras', status: 'available', route: '/tools/pip-calculator' },
+    { id: 'lot-calc', titleKey: 'tools_lot_calc_title', descKey: 'tools_lot_calc_desc', icon: Calculator, category: 'calculadoras', status: 'available', route: '/tools/lot-calculator' },
+    { id: 'margin-calc', titleKey: 'tools_margin_calc_title', descKey: 'tools_margin_calc_desc', icon: Percent, category: 'calculadoras', status: 'available', route: '/tools/margin-calculator' },
+    { id: 'eco-calendar-basic', titleKey: 'tools_eco_calendar_title', descKey: 'tools_eco_calendar_desc', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/economic-calendar' },
+    { id: 'trade-journal-basic', titleKey: 'tools_journal_basic_title', descKey: 'tools_journal_basic_desc', icon: BookOpen, category: 'diario', status: 'available', route: '/tools/trading-journal' },
+    { id: 'trend-scanner', titleKey: 'tools_trend_scanner_title', descKey: 'tools_trend_scanner_desc', icon: TrendingUp, category: 'screeners', status: 'available', route: '/tools/trend-scanner' },
   ],
   medio: [
-    { id: 'rr-calc', title: 'Calculadora Riesgo/Recompensa', description: 'Evalúa la relación riesgo-beneficio antes de operar', icon: Scale, category: 'calculadoras', status: 'available', route: '/tools/risk-reward' },
-    { id: 'position-size', title: 'Position Sizing', description: 'Calcula el tamaño óptimo de posición con gestión de riesgo', icon: Target, category: 'calculadoras', status: 'available', route: '/tools/position-sizing' },
-    { id: 'swap-calc', title: 'Calculadora de Swaps', description: 'Estima el costo de mantener posiciones overnight', icon: Clock, category: 'calculadoras', status: 'available', route: '/tools/swap-calculator' },
-    { id: 'eco-calendar-adv', title: 'Calendario con Impacto IA', description: 'Análisis de impacto potencial en pares específicos', icon: CalendarDays, category: 'calendario', status: 'available' },
-    { id: 'rsi-screener', title: 'Screener RSI/MACD', description: 'Detecta sobrecompra/sobreventa en múltiples pares', icon: Activity, category: 'screeners', status: 'available', route: '/tools/rsi-macd-screener' },
-    { id: 'trade-journal-stats', title: 'Diario con Estadísticas', description: 'Métricas de rendimiento: win rate, drawdown, profit factor', icon: BarChart3, category: 'diario', status: 'available' },
+    { id: 'rr-calc', titleKey: 'tools_rr_calc_title', descKey: 'tools_rr_calc_desc', icon: Scale, category: 'calculadoras', status: 'available', route: '/tools/risk-reward' },
+    { id: 'position-size', titleKey: 'tools_position_size_title', descKey: 'tools_position_size_desc', icon: Target, category: 'calculadoras', status: 'available', route: '/tools/position-sizing' },
+    { id: 'swap-calc', titleKey: 'tools_swap_calc_title', descKey: 'tools_swap_calc_desc', icon: Clock, category: 'calculadoras', status: 'available', route: '/tools/swap-calculator' },
+    { id: 'eco-calendar-adv', titleKey: 'tools_eco_ai_title', descKey: 'tools_eco_ai_desc', icon: CalendarDays, category: 'calendario', status: 'available' },
+    { id: 'rsi-screener', titleKey: 'tools_rsi_screener_title', descKey: 'tools_rsi_screener_desc', icon: Activity, category: 'screeners', status: 'available', route: '/tools/rsi-macd-screener' },
+    { id: 'trade-journal-stats', titleKey: 'tools_journal_stats_title', descKey: 'tools_journal_stats_desc', icon: BarChart3, category: 'diario', status: 'available' },
   ],
   avanzado: [
-    { id: 'compound-calc', title: 'Calculadora de Interés Compuesto', description: 'Proyecta el crecimiento de tu cuenta con reinversión', icon: LineChart, category: 'calculadoras', status: 'available', route: '/tools/compound-interest' },
-    { id: 'corr-matrix', title: 'Matriz de Correlación', description: 'Analiza correlaciones entre múltiples instrumentos', icon: Layers, category: 'screeners', status: 'available', route: '/tools/correlation-matrix' },
-    { id: 'volatility-scanner', title: 'Escáner de Volatilidad', description: 'ATR, Bollinger width y volatilidad histórica en tiempo real', icon: Gauge, category: 'screeners', status: 'available', route: '/tools/volatility-scanner' },
-    { id: 'pattern-screener', title: 'Screener de Patrones', description: 'Detecta patrones chartistas automáticamente con IA', icon: CandlestickChart, category: 'screeners', status: 'available', route: '/tools/pattern-screener' },
-    { id: 'backtest-basic', title: 'Backtesting Básico', description: 'Prueba estrategias simples con datos históricos', icon: Workflow, category: 'diario', status: 'available' },
-    { id: 'eco-calendar-pro', title: 'Calendario con Predicciones', description: 'Predicciones IA del impacto en precio pre/post evento', icon: CalendarDays, category: 'calendario', status: 'available' },
+    { id: 'compound-calc', titleKey: 'tools_compound_calc_title', descKey: 'tools_compound_calc_desc', icon: LineChart, category: 'calculadoras', status: 'available', route: '/tools/compound-interest' },
+    { id: 'corr-matrix', titleKey: 'tools_corr_matrix_title', descKey: 'tools_corr_matrix_desc', icon: Layers, category: 'screeners', status: 'available', route: '/tools/correlation-matrix' },
+    { id: 'volatility-scanner', titleKey: 'tools_volatility_title', descKey: 'tools_volatility_desc', icon: Gauge, category: 'screeners', status: 'available', route: '/tools/volatility-scanner' },
+    { id: 'pattern-screener', titleKey: 'tools_pattern_screener_title', descKey: 'tools_pattern_screener_desc', icon: CandlestickChart, category: 'screeners', status: 'available', route: '/tools/pattern-screener' },
+    { id: 'backtest-basic', titleKey: 'tools_backtest_basic_title', descKey: 'tools_backtest_basic_desc', icon: Workflow, category: 'diario', status: 'available' },
+    { id: 'eco-calendar-pro', titleKey: 'tools_eco_predictions_title', descKey: 'tools_eco_predictions_desc', icon: CalendarDays, category: 'calendario', status: 'available' },
   ],
   profesional: [
-    { id: 'monte-carlo', title: 'Simulación Monte Carlo', description: 'Proyecciones probabilísticas de rendimiento de estrategia', icon: PieChart, category: 'calculadoras', status: 'available', route: '/tools/monte-carlo' },
-    { id: 'risk-manager', title: 'Risk Manager Avanzado', description: 'Control de exposición multi-cuenta con alertas automáticas', icon: Shield, category: 'calculadoras', status: 'available', route: '/tools/risk-manager' },
-    { id: 'multi-tf-screener', title: 'Screener Multi-Timeframe', description: 'Confluencia de indicadores en múltiples temporalidades', icon: ScanSearch, category: 'screeners', status: 'available', route: '/tools/multi-tf-screener' },
-    { id: 'order-flow', title: 'Análisis de Flujo de Órdenes', description: 'Volumen institucional y posicionamiento del mercado', icon: Zap, category: 'screeners', status: 'available', route: '/tools/order-flow' },
-    { id: 'backtest-pro', title: 'Backtesting Multi-Estrategia', description: 'Backtesting avanzado con múltiples estrategias simultáneas', icon: Workflow, category: 'diario', status: 'available', route: '/tools/backtest-pro' },
-    { id: 'eco-calendar-inst', title: 'Calendario Institucional', description: 'Datos de consenso, histórico de desviaciones y reacciones', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/institutional-calendar' },
+    { id: 'monte-carlo', titleKey: 'tools_monte_carlo_title', descKey: 'tools_monte_carlo_desc', icon: PieChart, category: 'calculadoras', status: 'available', route: '/tools/monte-carlo' },
+    { id: 'risk-manager', titleKey: 'tools_risk_manager_title', descKey: 'tools_risk_manager_desc', icon: Shield, category: 'calculadoras', status: 'available', route: '/tools/risk-manager' },
+    { id: 'multi-tf-screener', titleKey: 'tools_multi_tf_title', descKey: 'tools_multi_tf_desc', icon: ScanSearch, category: 'screeners', status: 'available', route: '/tools/multi-tf-screener' },
+    { id: 'order-flow', titleKey: 'tools_order_flow_title', descKey: 'tools_order_flow_desc', icon: Zap, category: 'screeners', status: 'available', route: '/tools/order-flow' },
+    { id: 'backtest-pro', titleKey: 'tools_backtest_pro_title', descKey: 'tools_backtest_pro_desc', icon: Workflow, category: 'diario', status: 'available', route: '/tools/backtest-pro' },
+    { id: 'eco-calendar-inst', titleKey: 'tools_institutional_cal_title', descKey: 'tools_institutional_cal_desc', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/institutional-calendar' },
   ],
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  calculadoras: 'Calculadoras',
-  calendario: 'Calendario',
-  screeners: 'Screeners',
-  diario: 'Diario & Backtest',
 };
 
 export default function Tools() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeLevel, setActiveLevel] = useState<TraderLevel>('novato');
   const tools = TOOLS_BY_LEVEL[activeLevel];
 
@@ -93,19 +104,19 @@ export default function Tools() {
       <main className="container py-6">
         {/* Title */}
         <div className="flex items-center gap-2 mb-6">
-          <span className="text-xs text-muted-foreground">Trading</span>
-          <span className="text-xl font-bold text-foreground">Herramientas</span>
+          <span className="text-xs text-muted-foreground">{t('tools_trading_label')}</span>
+          <span className="text-xl font-bold text-foreground">{t('tools_title')}</span>
         </div>
 
         {/* Level tabs */}
         <div className="grid grid-cols-2 gap-2 mb-6">
-          {LEVELS.map((level) => {
-            const LevelIcon = level.icon;
-            const isActive = activeLevel === level.id;
+          {LEVELS.map((levelId) => {
+            const LevelIcon = LEVEL_ICONS[levelId];
+            const isActive = activeLevel === levelId;
             return (
               <button
-                key={level.id}
-                onClick={() => setActiveLevel(level.id)}
+                key={levelId}
+                onClick={() => setActiveLevel(levelId)}
                 className={cn(
                   "relative flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all duration-200",
                   isActive
@@ -123,9 +134,9 @@ export default function Tools() {
                   <p className={cn(
                     "text-sm font-semibold truncate",
                     isActive ? "text-primary" : "text-foreground"
-                  )}>{level.label}</p>
+                  )}>{t(LEVEL_KEYS[levelId] as any)}</p>
                   <p className="text-[10px] text-muted-foreground">
-                    {TOOLS_BY_LEVEL[level.id].length} herramientas
+                    {TOOLS_BY_LEVEL[levelId].length} {t('tools_count')}
                   </p>
                 </div>
                 {isActive && (
@@ -154,7 +165,7 @@ export default function Tools() {
               transition={{ duration: 0.25, delay: catIndex * 0.08 }}
             >
               <h2 className="text-sm font-semibold text-primary mb-3">
-                {CATEGORY_LABELS[category] || category}
+                {t(CATEGORY_KEYS[category] as any) || category}
               </h2>
               <Card className="bg-card border-border">
                 <CardContent className="p-0">
@@ -184,19 +195,19 @@ export default function Tools() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <p className="font-medium text-foreground">{tool.title}</p>
+                              <p className="font-medium text-foreground">{t(tool.titleKey as any)}</p>
                               {isClickable && (
                                 <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-semibold uppercase tracking-wider">
-                                  Activa
+                                  {t('tools_active')}
                                 </span>
                               )}
                               {isComingSoon && (
                                 <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold uppercase tracking-wider">
-                                  Próx.
+                                  {t('tools_coming_soon')}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground">{tool.description}</p>
+                            <p className="text-xs text-muted-foreground">{t(tool.descKey as any)}</p>
                           </div>
                         </div>
                         {isClickable ? (
