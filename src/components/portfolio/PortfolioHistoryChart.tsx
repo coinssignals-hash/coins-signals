@@ -125,7 +125,7 @@ export function PortfolioHistoryChart() {
           <div>
             <h3 className="text-white font-semibold flex items-center gap-2">
               <Activity className="w-5 h-5 text-cyan-400" />
-              Evolución del Portfolio
+              {t('ph_evolution')}
             </h3>
             <div className="flex items-center gap-3 mt-1">
               <span className="text-slate-400 text-sm">
