@@ -338,7 +338,7 @@ export function PortfolioHistoryChart() {
             value={formatCurrency(stats.endEquity)} 
           />
           <StatBox 
-            label="Máximo" 
+            label={t('ph_maximum')} 
             value={formatCurrency(stats.maxEquity)} 
             valueColor="text-emerald-400"
           />
