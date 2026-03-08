@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { ChevronDown, Calendar, Brain, RefreshCw } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 interface DayTabsProps {
   selectedDay: Date;
