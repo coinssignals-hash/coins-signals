@@ -186,7 +186,7 @@ export default function Portfolio() {
                 </>
               ) : (
                 <>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Posiciones</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t('portfolio_positions')}</span>
                   <p className="text-2xl font-bold text-foreground">{positionStats.total}</p>
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
