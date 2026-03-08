@@ -14,12 +14,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-const categories = [
-  { icon: TrendingUp, label: 'Forex', sublabel: 'Divisas' },
-  { icon: BarChart3, label: 'Acciones', sublabel: 'Bolsa de Valores' },
-  { icon: Gem, label: 'Materias Primas', sublabel: 'Oro, Petroleo' },
-  { icon: LineChart, label: 'Bursátiles', sublabel: 'Futuro, Opciones' },
-  { icon: Bitcoin, label: 'CryptoMonedas', sublabel: '' },
+const getCategoriesTranslated = (t: (key: string) => string) => [
+  { icon: TrendingUp, label: t('broker_cat_forex'), sublabel: t('broker_cat_forex_sub') },
+  { icon: BarChart3, label: t('broker_cat_stocks'), sublabel: t('broker_cat_stocks_sub') },
+  { icon: Gem, label: t('broker_cat_commodities'), sublabel: t('broker_cat_commodities_sub') },
+  { icon: LineChart, label: t('broker_cat_futures'), sublabel: t('broker_cat_futures_sub') },
+  { icon: Bitcoin, label: t('broker_cat_crypto'), sublabel: '' },
 ];
 
 const brokers = [
