@@ -187,14 +187,14 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       {/* Header badge */}
       <div className="flex items-center gap-2 px-1">
         <Bell className="h-4 w-4 text-primary" />
-        <span className="text-sm font-semibold text-foreground">Alertas</span>
+        <span className="text-sm font-semibold text-foreground">{t('analysis_alerts')}</span>
         <span className={cn(
           'text-[10px] font-mono px-1.5 py-0.5 rounded-full',
           activeCount > 0
             ? 'bg-primary/15 text-primary'
             : 'bg-muted text-muted-foreground'
         )}>
-          {activeCount} activas
+          {activeCount} {t('analysis_alert_active')}
         </span>
       </div>
 
