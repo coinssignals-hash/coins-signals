@@ -146,7 +146,7 @@ export function CacheStatsPanel() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Database className="w-5 h-5 text-primary" />
-            Cache de Análisis IA
+            {t('cache_title')}
           </CardTitle>
           <div className="flex gap-2">
             <Button
