@@ -610,7 +610,7 @@ export default function CreateSignal() {
                     />
                     <div className="bg-card/60 border border-border/30 rounded-xl p-3 grid grid-cols-3 gap-2 text-center text-xs">
                       <div>
-                        <p className="text-muted-foreground">Probabilidad</p>
+                        <p className="text-muted-foreground">{t('cs_probability')}</p>
                         <p className="text-primary font-bold text-sm">{calculateProbability()}%</p>
                       </div>
                       <div>
