@@ -901,7 +901,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                               <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                             </div>
                             <span className="text-xs font-bold text-cyan-100 block">{aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</span>
-                            <span className="text-[9px] text-cyan-300/40 mt-0.5 block">Toca para ver diagrama y explicación</span>
+                            <span className="text-[9px] text-cyan-300/40 mt-0.5 block">{t('signal_tap_diagram')}</span>
                           </div>
                           <div
                           className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
