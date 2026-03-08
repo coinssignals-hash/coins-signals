@@ -137,9 +137,22 @@ export default function Tools() {
         </div>
 
         {/* Grouped tool sections */}
-        <div className="space-y-6">
-          {Object.entries(grouped).map(([category, items]) => (
-            <div key={category}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeLevel}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="space-y-6"
+          >
+          {Object.entries(grouped).map(([category, items], catIndex) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: catIndex * 0.08 }}
+            >
               <h2 className="text-sm font-semibold text-primary mb-3">
                 {CATEGORY_LABELS[category] || category}
               </h2>
