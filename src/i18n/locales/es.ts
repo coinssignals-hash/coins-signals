@@ -148,6 +148,7 @@ const es: TranslationKeys = {
   signal_sentiment_strength_medium: 'Media',
   signal_sentiment_strength_low: 'Baja',
   signal_ai_analysis: 'Análisis AI',
+  signal_translating: 'Traduciendo...',
   signal_analysis_for: 'Análisis para',
   signal_market_structure: 'Confluencia con estructura de mercado',
   signal_sr_confluence: 'Buscar confluencia con niveles S/R y volumen',
