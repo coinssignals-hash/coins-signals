@@ -12,15 +12,6 @@ export interface AIModelSettings {
 
 const MAX_MODELS = 3;
 
-const MODELS = [
-  { id: 'google/gemini-2.5-flash', label: 'Gemini Flash', icon: Zap, desc: 'Rápido y eficiente', provider: 'Google' },
-  { id: 'google/gemini-2.5-pro', label: 'Gemini Pro', icon: Brain, desc: 'Máxima precisión', provider: 'Google' },
-  { id: 'google/gemini-3-flash-preview', label: 'Gemini 3 Flash', icon: Zap, desc: 'Nueva generación', provider: 'Google' },
-  { id: 'openai/gpt-5', label: 'GPT-5', icon: Cpu, desc: 'Potente y preciso', provider: 'OpenAI' },
-  { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', icon: Zap, desc: 'Rápido y equilibrado', provider: 'OpenAI' },
-  { id: 'openai/gpt-5.2', label: 'GPT-5.2', icon: Brain, desc: 'Razonamiento avanzado', provider: 'OpenAI' },
-];
-
 interface Props {
   settings: AIModelSettings;
   onChange: (settings: AIModelSettings) => void;
@@ -30,12 +21,21 @@ export function AIModelConfig({ settings, onChange }: Props) {
   const { t } = useTranslation();
   const selected = settings.models;
 
+  const MODELS = [
+    { id: 'google/gemini-2.5-flash', label: 'Gemini Flash', icon: Zap, desc: t('ai_center_fast_efficient'), provider: 'Google' },
+    { id: 'google/gemini-2.5-pro', label: 'Gemini Pro', icon: Brain, desc: t('ai_center_max_precision'), provider: 'Google' },
+    { id: 'google/gemini-3-flash-preview', label: 'Gemini 3 Flash', icon: Zap, desc: t('ai_center_new_gen'), provider: 'Google' },
+    { id: 'openai/gpt-5', label: 'GPT-5', icon: Cpu, desc: t('ai_center_powerful_precise'), provider: 'OpenAI' },
+    { id: 'openai/gpt-5-mini', label: 'GPT-5 Mini', icon: Zap, desc: t('ai_center_fast_balanced'), provider: 'OpenAI' },
+    { id: 'openai/gpt-5.2', label: 'GPT-5.2', icon: Brain, desc: t('ai_center_advanced_reasoning'), provider: 'OpenAI' },
+  ];
+
   const toggle = (id: string) => {
     if (selected.includes(id)) {
-      if (selected.length <= 1) return; // must keep at least 1
+      if (selected.length <= 1) return;
       onChange({ ...settings, models: selected.filter((m) => m !== id) });
     } else {
-      if (selected.length >= MAX_MODELS) return; // max 3
+      if (selected.length >= MAX_MODELS) return;
       onChange({ ...settings, models: [...selected, id] });
     }
   };
@@ -82,10 +82,10 @@ export function AIModelConfig({ settings, onChange }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <Settings2 className="w-4 h-4 text-primary" />
-          Configuración IA
+          {t('ai_center_config_title')}
         </div>
         <span className="text-xs text-muted-foreground font-mono">
-          {selected.length}/{MAX_MODELS} activos
+          {selected.length}/{MAX_MODELS} {t('ai_center_active_count')}
         </span>
       </div>
 
@@ -108,7 +108,7 @@ export function AIModelConfig({ settings, onChange }: Props) {
       {/* Temperature */}
       <div className="space-y-2">
         <label className="text-xs text-muted-foreground flex items-center justify-between">
-          <span>Temperatura</span>
+          <span>{t('ai_center_temperature')}</span>
           <span className="text-foreground font-mono">{settings.temperature.toFixed(1)}</span>
         </label>
         <input
@@ -121,8 +121,8 @@ export function AIModelConfig({ settings, onChange }: Props) {
           className="w-full accent-primary h-1.5"
         />
         <div className="flex justify-between text-[10px] text-muted-foreground">
-          <span>Preciso</span>
-          <span>Creativo</span>
+          <span>{t('ai_center_precise')}</span>
+          <span>{t('ai_center_creative')}</span>
         </div>
       </div>
     </div>

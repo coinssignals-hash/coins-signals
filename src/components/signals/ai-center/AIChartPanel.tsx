@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import type { OHLCVCandle } from '@/lib/indicators';
 import type { DetectedPattern } from '@/lib/candle-patterns';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   candles: OHLCVCandle[];
@@ -55,7 +56,6 @@ function buildChartSvg(
   const UP = '#22c55e';
   const DN = '#ef4444';
 
-  // Last N candles for clarity
   const visibleData = data.slice(-60);
   const n = visibleData.length;
   const allH = visibleData.map(c => c.high);
@@ -74,11 +74,9 @@ function buildChartSvg(
   const cw = Math.max(2, CW / n * 0.6);
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" style="font-family:'JetBrains Mono',monospace">`;
-  // BG
   svg += `<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${BG}"/><stop offset="100%" stop-color="#0a1628"/></linearGradient></defs>`;
   svg += `<rect width="${W}" height="${H}" fill="url(#bg)" rx="8"/>`;
 
-  // Grid
   const gridLevels = 6;
   for (let i = 0; i <= gridLevels; i++) {
     const y = PAD.top + (PH / gridLevels) * i;
@@ -87,7 +85,6 @@ function buildChartSvg(
     svg += `<text x="${CX2 + 8}" y="${y + 4}" fill="${TEXT}" font-size="10">${fmt(price, jpy)}</text>`;
   }
 
-  // Candles
   visibleData.forEach((c, i) => {
     const x = xOf(i);
     const isUp = c.close >= c.open;
@@ -95,14 +92,10 @@ function buildChartSvg(
     const bodyTop = yOf(Math.max(c.open, c.close));
     const bodyBot = yOf(Math.min(c.open, c.close));
     const bodyH = Math.max(1, bodyBot - bodyTop);
-
-    // Wick
     svg += `<line x1="${x}" y1="${yOf(c.high)}" x2="${x}" y2="${yOf(c.low)}" stroke="${color}" stroke-width="1"/>`;
-    // Body
     svg += `<rect x="${x - cw / 2}" y="${bodyTop}" width="${cw}" height="${bodyH}" fill="${isUp ? color : color}" rx="1" opacity="${isUp ? 0.9 : 1}"/>`;
   });
 
-  // Volume bars
   visibleData.forEach((c, i) => {
     const x = xOf(i);
     const isUp = c.close >= c.open;
@@ -110,7 +103,6 @@ function buildChartSvg(
     svg += `<rect x="${x - cw / 2}" y="${VOL_Y + 8 + VH - vh}" width="${cw}" height="${vh}" fill="${isUp ? UP : DN}" opacity="0.3" rx="1"/>`;
   });
 
-  // EMA lines
   const drawEma = (emaData: { time: string; value: number }[], color: string) => {
     if (!emaData.length) return;
     const timeMap = new Map(emaData.map(e => [e.time, e.value]));
@@ -128,7 +120,6 @@ function buildChartSvg(
   drawEma(ema20Data, '#3b82f6');
   drawEma(ema50Data, '#f59e0b');
 
-  // Support & Resistance lines
   if (support !== undefined) {
     const sy = yOf(support);
     svg += `<line x1="${CX1}" y1="${sy}" x2="${CX2}" y2="${sy}" stroke="${DN}" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.8"/>`;
@@ -142,8 +133,6 @@ function buildChartSvg(
     svg += `<text x="${CX2 + 8}" y="${ry + 4}" fill="${UP}" font-size="10" font-weight="600">R: ${fmt(resistance, jpy)}</text>`;
   }
 
-  // Pattern markers
-  const firstTime = visibleData[0]?.time;
   const timeToIdx = new Map(visibleData.map((c, i) => [c.time, i]));
 
   patterns.forEach(p => {
@@ -155,17 +144,14 @@ function buildChartSvg(
     const markerY = p.type === 'bullish' ? yOf(candle.low) + 14 : yOf(candle.high) - 14;
     const x = xOf(idx);
 
-    // Diamond marker
     svg += `<g>`;
     svg += `<polygon points="${x},${markerY - size} ${x + size},${markerY} ${x},${markerY + size} ${x - size},${markerY}" fill="${color}" opacity="0.85"/>`;
     svg += `<polygon points="${x},${markerY - size} ${x + size},${markerY} ${x},${markerY + size} ${x - size},${markerY}" fill="none" stroke="${color}" stroke-width="1" opacity="0.5"/>`;
-    // Label
     const labelY = p.type === 'bullish' ? markerY + size + 12 : markerY - size - 4;
     svg += `<text x="${x}" y="${labelY}" text-anchor="middle" fill="${color}" font-size="8" font-weight="500" opacity="0.9">${p.name.slice(0, 12)}</text>`;
     svg += `</g>`;
   });
 
-  // X-axis time labels
   const step = Math.max(1, Math.floor(n / 12));
   for (let i = 0; i < n; i += step) {
     const c = visibleData[i];
@@ -183,6 +169,7 @@ function buildChartSvg(
 }
 
 export function AIChartPanel({ candles, patterns = [], support, resistance, ema20, ema50, symbol }: Props) {
+  const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState(false);
   const [showPatterns, setShowPatterns] = useState(true);
 
@@ -203,10 +190,10 @@ export function AIChartPanel({ candles, patterns = [], support, resistance, ema2
   const chartContent = (
     <div className="space-y-2">
       {svgDataUri ? (
-        <img src={svgDataUri} alt={`Gráfico ${symbol}`} className="w-full h-auto block rounded-lg" draggable={false} />
+        <img src={svgDataUri} alt={`${t('ai_center_chart')} ${symbol}`} className="w-full h-auto block rounded-lg" draggable={false} />
       ) : (
         <div className="h-52 rounded-lg bg-card flex items-center justify-center">
-          <span className="text-sm text-muted-foreground">Sin datos</span>
+          <span className="text-sm text-muted-foreground">{t('ai_center_no_data')}</span>
         </div>
       )}
 
@@ -215,13 +202,13 @@ export function AIChartPanel({ candles, patterns = [], support, resistance, ema2
         {support !== undefined && (
           <div className="flex items-center gap-1">
             <div className="w-4 h-0.5 border-t-2 border-dashed border-destructive" />
-            <span className="text-destructive">Soporte {fmt(support, !!jpy)}</span>
+            <span className="text-destructive">{t('ai_center_support')} {fmt(support, !!jpy)}</span>
           </div>
         )}
         {resistance !== undefined && (
           <div className="flex items-center gap-1">
             <div className="w-4 h-0.5 border-t-2 border-dashed" style={{ borderColor: '#22c55e' }} />
-            <span style={{ color: '#22c55e' }}>Resistencia {fmt(resistance, !!jpy)}</span>
+            <span style={{ color: '#22c55e' }}>{t('ai_center_resistance')} {fmt(resistance, !!jpy)}</span>
           </div>
         )}
         {ema20 && ema20.length > 0 && (
@@ -245,7 +232,7 @@ export function AIChartPanel({ candles, patterns = [], support, resistance, ema2
       {/* Chart Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Gráfico de Velas {symbol && `— ${symbol}`}
+          {t('ai_center_candle_chart')} {symbol && `— ${symbol}`}
         </h3>
         <div className="flex items-center gap-1">
           <button
@@ -255,7 +242,7 @@ export function AIChartPanel({ candles, patterns = [], support, resistance, ema2
               showPatterns ? "bg-primary/10 text-primary" : "bg-secondary/50 text-muted-foreground"
             )}
           >
-            Patrones {patterns.length > 0 && `(${patterns.length})`}
+            {t('ai_center_patterns_toggle')} {patterns.length > 0 && `(${patterns.length})`}
           </button>
           <button
             onClick={() => setFullscreen(true)}
@@ -277,7 +264,7 @@ export function AIChartPanel({ candles, patterns = [], support, resistance, ema2
           <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-card border border-border hover:bg-secondary/50 transition-colors group">
             <div className="flex items-center gap-2">
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Patrones Detectados
+                {t('ai_center_detected_patterns')}
               </h4>
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                 {patterns.length}
@@ -324,7 +311,7 @@ export function AIChartPanel({ candles, patterns = [], support, resistance, ema2
       <Dialog open={fullscreen} onOpenChange={setFullscreen}>
         <DialogContent className="max-w-[95vw] w-full h-[90vh] p-4 bg-background border-border">
           <DialogTitle className="text-foreground text-sm flex items-center justify-between">
-            <span>Gráfico {symbol}</span>
+            <span>{t('ai_center_chart')} {symbol}</span>
             <button onClick={() => setFullscreen(false)} className="p-1 rounded hover:bg-secondary">
               <X className="w-5 h-5" />
             </button>
