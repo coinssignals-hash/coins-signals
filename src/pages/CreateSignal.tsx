@@ -41,6 +41,7 @@ interface Signal {
 export default function CreateSignal() {
   const navigate = useNavigate();
   const { isAdmin, loading: roleLoading } = useUserRole();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('create');
 
   // Create form state
