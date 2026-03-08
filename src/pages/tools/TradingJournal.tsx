@@ -418,7 +418,7 @@ export default function TradingJournal() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Fecha</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_date')}</Label>
                   <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="bg-secondary border-border text-foreground" />
                 </div>
                 <div className="space-y-1.5">
