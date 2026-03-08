@@ -272,9 +272,9 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                 !impactFilter ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
               )}
             >
-              Todos
+              {t('ec_all_impacts')}
             </button>
-            {Object.entries(IMPACT_CONFIG).map(([key, conf]) => {
+            {Object.entries(IMPACT_CONFIG_LOCAL).map(([key, conf]) => {
               const count = events.filter(e => e.impact === key).length;
               return (
                 <button
