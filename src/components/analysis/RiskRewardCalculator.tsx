@@ -44,7 +44,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Calculator className="w-4 h-4 text-amber-400" />
-          <h3 className="text-white font-semibold text-sm">Calculadora R:R</h3>
+          <h3 className="text-white font-semibold text-sm">{t('analysis_rr_calculator')}</h3>
         </div>
         <div className="flex gap-1">
           <button
