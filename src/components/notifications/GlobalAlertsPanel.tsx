@@ -78,6 +78,7 @@ function AlertRow({ alert, onDelete }: { alert: StockPriceAlert; onDelete: (id: 
 }
 
 export function GlobalAlertsPanel() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { alerts, isLoading, deleteAlert } = useStockPriceAlerts();
 
@@ -86,7 +87,7 @@ export function GlobalAlertsPanel() {
       <Card className="bg-card border-border">
         <CardContent className="py-6 text-center">
           <BellOff className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Inicia sesión para ver tus alertas de precio</p>
+          <p className="text-sm text-muted-foreground">{t('ga_login_required')}</p>
         </CardContent>
       </Card>
     );
