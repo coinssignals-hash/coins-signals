@@ -221,7 +221,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     <p className="text-lg font-bold text-cyan-300 leading-none">
                       {stats.activeCount}
                     </p>
-                    <p className="text-[9px] text-cyan-300/60">Activas</p>
+                    <p className="text-[9px] text-cyan-300/60">{t('signal_actives')}</p>
                   </div>
                 </div>
 
