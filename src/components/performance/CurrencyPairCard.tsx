@@ -1,6 +1,7 @@
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface CurrencyPairCardProps {
   pair: string;
@@ -27,6 +28,7 @@ const generateChartData = (basePrice: number, isUp: boolean) => {
 };
 
 export function CurrencyPairCard({ pair, currentPrice, change, highPrice, lowPrice, totalSignals = 0 }: CurrencyPairCardProps) {
+  const { t } = useTranslation();
   const currencies = pair.split(' ');
   const flag1 = flagMap[currencies[0]] || '🏳️';
   const flag2 = flagMap[currencies[1]] || '🏳️';
@@ -56,7 +58,7 @@ export function CurrencyPairCard({ pair, currentPrice, change, highPrice, lowPri
               <span className="tabular-nums">{isUp ? '+' : ''}{change}p</span>
             </div>
             {totalSignals > 0 && (
-              <span className="text-[10px] text-muted-foreground">{totalSignals} señales</span>
+              <span className="text-[10px] text-muted-foreground">{totalSignals} {t('perf_signals_label')}</span>
             )}
           </div>
         </div>
@@ -91,7 +93,7 @@ export function CurrencyPairCard({ pair, currentPrice, change, highPrice, lowPri
             <span>R: <span className="text-emerald-400 tabular-nums">{highPrice.toFixed(4)}</span></span>
             <span>S: <span className="text-rose-400 tabular-nums">{lowPrice.toFixed(4)}</span></span>
           </div>
-          <span className="text-muted-foreground/60">Semana</span>
+          <span className="text-muted-foreground/60">{t('perf_week')}</span>
         </div>
       </CardContent>
     </Card>

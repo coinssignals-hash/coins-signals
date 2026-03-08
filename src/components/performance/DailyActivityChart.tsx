@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Line, ComposedChart } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Activity, Globe } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface DailyActivityData {
   day: string;
@@ -20,6 +21,7 @@ interface DailyActivityChartProps {
 }
 
 export function DailyActivityChart({ data, sessions }: DailyActivityChartProps) {
+  const { t } = useTranslation();
   const maxPips = Math.max(...data.map(d => d.pips), 1);
 
   return (
@@ -27,7 +29,7 @@ export function DailyActivityChart({ data, sessions }: DailyActivityChartProps) 
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-3">
           <Activity className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">Actividad Diaria</h3>
+          <h3 className="text-sm font-bold text-foreground">{t('perf_daily_activity')}</h3>
         </div>
         
         <div className="flex gap-4">
@@ -68,7 +70,7 @@ export function DailyActivityChart({ data, sessions }: DailyActivityChartProps) 
           <div className="w-28 space-y-2">
             <div className="flex items-center gap-1 mb-1">
               <Globe className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Sesiones</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('perf_sessions')}</span>
             </div>
             {sessions.map((session) => (
               <div key={session.name} className="space-y-1">

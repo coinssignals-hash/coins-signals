@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { format, startOfWeek, endOfWeek, subWeeks, addWeeks } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, CalendarIcon, CalendarRange } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useTranslation } from '@/i18n/LanguageContext';
+import { useDateLocale } from '@/hooks/useDateLocale';
 
 interface WeekFilterProps {
   selectedWeek: Date;
@@ -15,6 +16,8 @@ interface WeekFilterProps {
 }
 
 export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeChange }: WeekFilterProps) {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [isRangeMode, setIsRangeMode] = useState(false);
 
   const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 });
@@ -74,7 +77,7 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
 
         {/* Date Range */}
         <div className="text-xs text-muted-foreground tabular-nums">
-          {format(weekStart, 'dd MMM', { locale: es })} — {format(weekEnd, 'dd MMM', { locale: es })}
+          {format(weekStart, 'dd MMM', { locale: dateLocale })} — {format(weekEnd, 'dd MMM', { locale: dateLocale })}
         </div>
 
         {/* Custom Range */}
@@ -88,7 +91,7 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="end">
             <div className="p-3 border-b border-border">
-              <h4 className="font-medium text-sm">Rango personalizado</h4>
+              <h4 className="font-medium text-sm">{t('perf_custom_range')}</h4>
             </div>
             <Calendar
               mode="range"
@@ -109,7 +112,7 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
                 <Button variant="ghost" size="sm" onClick={() => {
                   setIsRangeMode(false);
                   onDateRangeChange({ from: undefined, to: undefined });
-                }}>Limpiar</Button>
+                }}>{t('perf_clear')}</Button>
               </div>
             )}
           </PopoverContent>
@@ -119,7 +122,7 @@ export function WeekFilter({ selectedWeek, onWeekChange, dateRange, onDateRangeC
       {isRangeMode && dateRange.from && dateRange.to && (
         <div className="mt-2 flex justify-center">
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 tabular-nums">
-            Rango: {format(dateRange.from, 'dd/MM', { locale: es })} - {format(dateRange.to, 'dd/MM/yy', { locale: es })}
+            {t('perf_range')}: {format(dateRange.from, 'dd/MM', { locale: dateLocale })} - {format(dateRange.to, 'dd/MM/yy', { locale: dateLocale })}
           </span>
         </div>
       )}

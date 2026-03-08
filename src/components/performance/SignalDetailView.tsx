@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { type SignalData } from './SignalsList';
 import { formatPrice } from '@/lib/utils';
 import { Clock, DollarSign } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SignalDetailViewProps {
   signal: SignalData;
@@ -23,6 +24,7 @@ const generateChartData = (entryPrice: number, takeProfit: number, stopLoss: num
 };
 
 export function SignalDetailView({ signal }: SignalDetailViewProps) {
+  const { t } = useTranslation();
   const chartData = generateChartData(signal.entryPrice, signal.takeProfit, signal.stopLoss);
 
   return (
@@ -65,23 +67,23 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
             <div className="rounded-lg p-2.5 bg-secondary/30">
               <div className="flex items-center gap-1 mb-1.5">
                 <Clock className="w-3 h-3 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Tiempo</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('perf_time')}</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-[10px]">
                 <div>
-                  <span className="text-muted-foreground">Señal</span>
+                  <span className="text-muted-foreground">{t('perf_signal_label')}</span>
                   <p className="text-blue-400 font-bold tabular-nums">{signal.signalTime}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Final</span>
+                  <span className="text-muted-foreground">{t('perf_end')}</span>
                   <p className="text-amber-400 font-bold tabular-nums">{signal.endTime}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Ejecución</span>
+                  <span className="text-muted-foreground">{t('perf_execution')}</span>
                   <p className="text-blue-400 font-bold tabular-nums">{signal.executionTime}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Duración</span>
+                  <span className="text-muted-foreground">{t('perf_duration')}</span>
                   <p className="text-amber-400 font-bold tabular-nums">{signal.totalOperationTime}</p>
                 </div>
               </div>
@@ -90,11 +92,11 @@ export function SignalDetailView({ signal }: SignalDetailViewProps) {
             <div className="rounded-lg p-2.5 bg-secondary/30">
               <div className="flex items-center gap-1 mb-1.5">
                 <DollarSign className="w-3 h-3 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Precios</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('perf_prices')}</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-[10px]">
                 <div>
-                  <span className="text-muted-foreground">Entrada</span>
+                  <span className="text-muted-foreground">{t('perf_entry')}</span>
                   <p className="text-blue-400 font-bold tabular-nums">{formatPrice(signal.entryPrice, signal.currencyPair)}</p>
                 </div>
                 <div>
