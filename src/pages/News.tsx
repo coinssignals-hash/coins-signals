@@ -1041,9 +1041,9 @@ const News = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
           {/* Sort modes */}
           {[
-              { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: 'Recientes' },
-              { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: 'Impacto' },
-              { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: 'Volatilidad' }].
+              { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: t('news_sort_recent') },
+              { key: 'impact' as const, icon: <Zap className="w-3 h-3" />, label: t('news_sort_impact') },
+              { key: 'volatility' as const, icon: <BarChart3 className="w-3 h-3" />, label: t('news_sort_volatility') }].
               map(({ key, icon, label }) =>
               <button
                 key={key}
