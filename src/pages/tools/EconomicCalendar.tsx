@@ -306,8 +306,8 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           <Card className="bg-card border-border">
             <CardContent className="p-8 text-center">
               <CalendarDays className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-              <p className="text-sm text-muted-foreground">No hay eventos para esta fecha</p>
-              <p className="text-xs text-muted-foreground/60 mt-1">Prueba seleccionando otro día o quitando filtros</p>
+              <p className="text-sm text-muted-foreground">{t('ec_no_events')}</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">{t('ec_no_events_hint')}</p>
             </CardContent>
           </Card>
         ) : (
