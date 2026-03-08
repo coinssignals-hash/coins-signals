@@ -15,6 +15,7 @@ interface AlertConfig {
   enablePatternAlerts: boolean;
   patternAlertTypes: { bullish: boolean; bearish: boolean; neutral: boolean };
   patternEnableSound: boolean;
+  enableCalendarAlerts: boolean;
 }
 
 const DEFAULT_CONFIG: AlertConfig = {
@@ -29,6 +30,7 @@ const DEFAULT_CONFIG: AlertConfig = {
   enablePatternAlerts: false,
   patternAlertTypes: { bullish: true, bearish: true, neutral: false },
   patternEnableSound: true,
+  enableCalendarAlerts: false,
 };
 
 export function useAlertConfig() {
