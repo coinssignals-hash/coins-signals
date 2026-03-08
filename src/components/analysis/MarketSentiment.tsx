@@ -17,7 +17,7 @@ interface MarketSentimentProps {
 }
 
 /* ─── Professional Radial Gauge ─── */
-function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
+function ProGauge({ value, size = 160, t }: { value: number; size?: number; t: (k: string) => string }) {
   const r = (size - 24) / 2;
   const cx = size / 2;
   const cy = size / 2 + 8;
@@ -39,7 +39,6 @@ function ProGauge({ value, size = 160 }: { value: number; size?: number }) {
   const needle = ptc(valA, r - 14);
   const label = value >= 65 ? t('analysis_sent_bullish_label') : value >= 45 ? t('analysis_sent_neutral_label') : t('analysis_sent_bearish_label');
   const color = value >= 65 ? '#22c55e' : value >= 45 ? '#f59e0b' : '#ef4444';
-  const { t } = useTranslation();
 
   // Tick marks
   const ticks = Array.from({ length: 11 }, (_, i) => {
