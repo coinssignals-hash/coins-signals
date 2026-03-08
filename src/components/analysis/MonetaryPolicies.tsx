@@ -27,7 +27,7 @@ export function MonetaryPolicies({ symbol }: MonetaryPoliciesProps) {
           <h3 className="text-foreground font-semibold text-sm">{t('analysis_monetary_policies')}</h3>
           {totalSources > 0 && (
             <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-              <Database className="w-3 h-3 mr-0.5" />{totalSources} fuentes
+              <Database className="w-3 h-3 mr-0.5" />{totalSources} {t('analysis_mp_sources')}
             </Badge>
           )}
         </div>
