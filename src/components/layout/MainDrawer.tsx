@@ -179,6 +179,23 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
             );
           })}
 
+
+          {isAdmin && (
+            <Link
+              to="/admin"
+              onClick={() => onOpenChange(false)}
+              className={cn(
+                'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all mt-2',
+                location.pathname === '/admin'
+                  ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                  : 'text-accent hover:bg-accent/10 border border-accent/30'
+              )}
+            >
+              <ShieldAlert className="w-5 h-5" />
+              Panel Admin
+            </Link>
+          )}
+
           <Separator className="my-3 bg-border" />
 
           <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
