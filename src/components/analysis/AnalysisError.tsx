@@ -11,12 +11,13 @@ interface AnalysisErrorProps {
 }
 
 export function AnalysisError({ 
-  title = 'Error al cargar datos',
+  title,
   message,
   error,
   onRetry,
   compact = false
 }: AnalysisErrorProps) {
+  const { t } = useTranslation();
   // Determine error type for better messaging
   const getErrorDetails = () => {
     if (!error) {
