@@ -272,7 +272,7 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
       <div className="flex items-center gap-2">
         <BarChart3 className="w-4 h-4 text-primary" />
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Impacto Histórico por Divisa
+          {t('news_impact_historical_by_currency')}
         </h2>
       </div>
 
