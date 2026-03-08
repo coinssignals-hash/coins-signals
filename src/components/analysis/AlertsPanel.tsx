@@ -301,8 +301,8 @@ export function AlertsPanel({ config, onConfigChange }: AlertsPanelProps) {
       <AlertToggleRow
         icon={<TrendingUp className="w-4 h-4 text-blue-400" />}
         iconColor="bg-blue-500/15"
-        label="Cruces MACD"
-        description="Cruce de línea de señal"
+        label={t('analysis_alert_macd')}
+        description={t('analysis_alert_macd_desc')}
         checked={localConfig.enableMACD}
         onCheckedChange={(v) => handleChange('enableMACD', v)}
       />
