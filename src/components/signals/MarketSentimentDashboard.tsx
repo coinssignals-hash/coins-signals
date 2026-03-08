@@ -82,7 +82,7 @@ function FlowComparison({ retail, institutional, detail }: {retail: number;insti
       <div className="flex gap-3">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] text-cyan-300/60">Retail</span>
+             <span className="text-[11px] text-cyan-300/60">{t('signal_sentiment_retail')}</span>
             <span className="text-xs font-bold text-orange-400">{retail}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
