@@ -97,7 +97,7 @@ export default function Tools() {
         </div>
 
         {/* Level tabs */}
-        <div className="flex gap-1 p-1 mb-6 rounded-lg bg-muted/50">
+        <div className="grid grid-cols-2 gap-2 mb-6">
           {LEVELS.map((level) => {
             const LevelIcon = level.icon;
             const isActive = activeLevel === level.id;
@@ -106,14 +106,30 @@ export default function Tools() {
                 key={level.id}
                 onClick={() => setActiveLevel(level.id)}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-md text-xs font-medium transition-all",
+                  "relative flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all duration-200",
                   isActive
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-primary/10 border-primary shadow-md shadow-primary/10 ring-1 ring-primary/20"
+                    : "bg-card border-border hover:border-primary/40 hover:bg-secondary/50"
                 )}
               >
-                <LevelIcon className="w-3.5 h-3.5" />
-                <span className="hidden min-[380px]:inline">{level.label}</span>
+                <div className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors",
+                  isActive ? "bg-primary/20" : "bg-muted"
+                )}>
+                  <LevelIcon className={cn("w-4.5 h-4.5", isActive ? "text-primary" : "text-muted-foreground")} />
+                </div>
+                <div className="min-w-0">
+                  <p className={cn(
+                    "text-sm font-semibold truncate",
+                    isActive ? "text-primary" : "text-foreground"
+                  )}>{level.label}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {TOOLS_BY_LEVEL[level.id].length} herramientas
+                  </p>
+                </div>
+                {isActive && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary animate-pulse" />
+                )}
               </button>
             );
           })}
