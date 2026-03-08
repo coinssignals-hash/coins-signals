@@ -629,7 +629,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       {/* Expandable toggle */}
       <button onClick={() => setExpanded(!expanded)}
       className="w-full flex items-center justify-center py-2 text-cyan-400/60 hover:text-cyan-300 transition-colors border-t border-border/10 active:bg-white/5">
-        <span className="text-[10px] uppercase tracking-wider mr-1.5 font-medium">{expanded ? 'Menos' : 'Más análisis'}</span>
+        <span className="text-[10px] uppercase tracking-wider mr-1.5 font-medium">{expanded ? t('news_less') : t('news_more_analysis')}</span>
         <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', expanded && 'rotate-180')} />
       </button>
 
