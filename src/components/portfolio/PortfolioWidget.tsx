@@ -7,6 +7,7 @@ import { usePortfolio } from '@/hooks/usePortfolio';
 import { usePortfolioHistory } from '@/hooks/usePortfolioHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { EquitySparkline } from './EquitySparkline';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const WIDGET_EXPANDED_KEY = 'portfolio-widget-expanded';
 
