@@ -438,7 +438,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               </div>
             </div>
             <div className="bg-slate-800/60 rounded-xl p-2.5 text-center border border-slate-700/50">
-              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">Sesión</div>
+              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider mb-1">{t('sc_session')}</div>
               <div className="text-slate-300 text-xs font-medium leading-tight">
                 {sessions.split(' / ').map((s, i) => (
                   <div key={i}>{s}</div>
