@@ -202,7 +202,7 @@ export function HeroDashboard({
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
           <QuickStatCard
             icon={<BarChart2 className="w-3.5 h-3.5 text-blue-400" />}
-            label="Rango Diario"
+            label={t('analysis_daily_range')}
             value={`${((high - low) * (currentPrice < 10 ? 10000 : 100)).toFixed(0)} pips`}
             trend="neutral" />
         </motion.div>
