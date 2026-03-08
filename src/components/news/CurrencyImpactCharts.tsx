@@ -234,6 +234,7 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
 }
 
 export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, error } = useQuery<ChartResponse>({
     queryKey: ['news-impact-charts', newsId],
     queryFn: async () => {
