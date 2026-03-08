@@ -443,7 +443,7 @@ export default function CreateSignal() {
                   }`}
                 >
                   <TrendingDown className="w-4 h-4" />
-                  VENDER (SELL)
+                  {t('cs_sell')}
                 </button>
               </div>
             </div>
