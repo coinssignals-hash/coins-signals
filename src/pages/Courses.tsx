@@ -108,7 +108,7 @@ export default function Courses() {
                   >
                     {stats.percentage}%
                   </motion.span>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Progreso</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('courses_progress')}</p>
                 </div>
               </div>
 
