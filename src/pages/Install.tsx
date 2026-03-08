@@ -132,12 +132,12 @@ export default function Install() {
             {platform === 'android' && !deferredPrompt && (
               <InstructionCard
                 emoji="🤖"
-                title="Instrucciones para Android"
+                title={t('inst_android_title')}
                 accentClass="bg-[hsl(142_70%_45%/0.1)]"
                 steps={[
-                  { icon: <MoreVertical className="w-4 h-4" />, title: 'Abre el menú del navegador', desc: 'Toca los tres puntos en la esquina superior derecha de Chrome' },
-                  { icon: <Download className="w-4 h-4" />, title: '"Instalar aplicación"', desc: 'O "Añadir a pantalla de inicio" según tu versión de Chrome' },
-                  { icon: <Smartphone className="w-4 h-4" />, title: 'Confirma la instalación', desc: 'La app aparecerá en tu lista de aplicaciones' },
+                  { icon: <MoreVertical className="w-4 h-4" />, title: t('inst_android_step1'), desc: t('inst_android_step1_desc') },
+                  { icon: <Download className="w-4 h-4" />, title: t('inst_android_step2'), desc: t('inst_android_step2_desc') },
+                  { icon: <Smartphone className="w-4 h-4" />, title: t('inst_android_step3'), desc: t('inst_android_step3_desc') },
                 ]}
               />
             )}
