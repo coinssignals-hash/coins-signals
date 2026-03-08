@@ -164,8 +164,8 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
           <div className="flex items-center gap-2">
             <CalendarDays className="w-5 h-5 text-primary" />
             <div>
-              <h1 className="text-lg font-bold text-foreground">Calendario con Impacto IA</h1>
-              <p className="text-[10px] text-muted-foreground">{format(targetDate, "EEEE, d 'de' MMMM yyyy", { locale: es })}</p>
+              <h1 className="text-lg font-bold text-foreground">{t('ec_title')}</h1>
+              <p className="text-[10px] text-muted-foreground">{format(targetDate, 'PPPP', { locale: dateLocale })}</p>
             </div>
           </div>
           <div className="ml-auto">
