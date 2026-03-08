@@ -264,7 +264,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         <Card className="bg-card border-border">
           <CardContent className="p-3 flex items-center gap-2 flex-wrap">
             <Zap className="w-4 h-4 text-primary shrink-0" />
-            <span className="text-xs font-medium text-muted-foreground shrink-0">Impacto:</span>
+            <span className="text-xs font-medium text-muted-foreground shrink-0">{t('ec_impact')}:</span>
             <button
               onClick={() => setImpactFilter(null)}
               className={cn(
