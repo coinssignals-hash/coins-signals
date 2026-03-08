@@ -232,7 +232,7 @@ export function PortfolioWidget() {
                 onClick={handleToggleExpand}
                 className="w-full flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
               >
-                <span>Top Posiciones ({topPositions.length})</span>
+                <span>{t('pw_top_positions')} ({topPositions.length})</span>
                 <ChevronDown 
                   className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
                 />
