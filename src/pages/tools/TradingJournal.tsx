@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,14 +7,16 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
-  Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3
+  Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
+  Loader2, LogIn
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 
 interface TradeEntry {
   id: string;
@@ -36,22 +38,14 @@ const PAIRS = [
   'USD/CAD','EUR/GBP','EUR/JPY','GBP/JPY','XAU/USD',
 ];
 
-const STORAGE_KEY = 'trading-journal-entries';
-
-function loadEntries(): TradeEntry[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
-
-function saveEntries(entries: TradeEntry[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-}
-
 export default function TradingJournal() {
-  const [entries, setEntries] = useState<TradeEntry[]>(loadEntries);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Form state
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -66,6 +60,60 @@ export default function TradingJournal() {
   const [pips, setPips] = useState('');
   const [notes, setNotes] = useState('');
 
+  // Check auth & load entries
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id ?? null);
+      if (session?.user?.id) {
+        await fetchEntries(session.user.id);
+      }
+      setLoading(false);
+    };
+    
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+      if (session?.user?.id) {
+        fetchEntries(session.user.id);
+      } else {
+        setEntries([]);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchEntries = async (uid: string) => {
+    const { data, error } = await supabase
+      .from('trading_journal')
+      .select('*')
+      .eq('user_id', uid)
+      .order('trade_date', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching journal:', error);
+      return;
+    }
+
+    const mapped: TradeEntry[] = (data || []).map((row: any) => ({
+      id: row.id,
+      date: row.trade_date,
+      pair: row.pair,
+      action: row.action as 'BUY' | 'SELL',
+      entryPrice: String(row.entry_price),
+      exitPrice: String(row.exit_price),
+      lotSize: String(row.lot_size),
+      stopLoss: row.stop_loss ? String(row.stop_loss) : '',
+      takeProfit: row.take_profit ? String(row.take_profit) : '',
+      result: row.result as TradeEntry['result'],
+      pips: String(row.pips),
+      notes: row.notes || '',
+    }));
+    setEntries(mapped);
+  };
+
   const stats = useMemo(() => {
     const total = entries.length;
     const wins = entries.filter(e => e.result === 'win').length;
@@ -78,29 +126,92 @@ export default function TradingJournal() {
     return { total, wins, losses, totalPips: totalPips.toFixed(1), winRate };
   }, [entries]);
 
-  function handleAdd() {
-    const entry: TradeEntry = {
-      id: crypto.randomUUID(),
-      date, pair, action, entryPrice, exitPrice, lotSize,
-      stopLoss, takeProfit, result, pips, notes,
-    };
-    const updated = [entry, ...entries];
-    setEntries(updated);
-    saveEntries(updated);
+  async function handleAdd() {
+    if (!userId) return;
+    setSaving(true);
+
+    const { error } = await supabase.from('trading_journal').insert({
+      user_id: userId,
+      trade_date: date,
+      pair,
+      action,
+      entry_price: parseFloat(entryPrice),
+      exit_price: parseFloat(exitPrice),
+      lot_size: parseFloat(lotSize),
+      stop_loss: stopLoss ? parseFloat(stopLoss) : null,
+      take_profit: takeProfit ? parseFloat(takeProfit) : null,
+      result,
+      pips: parseFloat(pips) || 0,
+      notes: notes || null,
+    });
+
+    setSaving(false);
+
+    if (error) {
+      toast({ title: 'Error', description: 'No se pudo guardar la operación', variant: 'destructive' });
+      console.error(error);
+      return;
+    }
+
+    toast({ title: '✅ Operación guardada' });
     resetForm();
     setShowForm(false);
+    await fetchEntries(userId);
   }
 
-  function handleDelete(id: string) {
-    const updated = entries.filter(e => e.id !== id);
-    setEntries(updated);
-    saveEntries(updated);
+  async function handleDelete(id: string) {
+    const { error } = await supabase.from('trading_journal').delete().eq('id', id);
+    if (error) {
+      toast({ title: 'Error', description: 'No se pudo eliminar', variant: 'destructive' });
+      return;
+    }
+    setEntries(prev => prev.filter(e => e.id !== id));
   }
 
   function resetForm() {
     setEntryPrice(''); setExitPrice(''); setStopLoss('');
     setTakeProfit(''); setPips(''); setNotes('');
     setResult('win'); setLotSize('0.1');
+  }
+
+  if (loading) {
+    return (
+      <PageShell>
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <PageShell>
+        <Header />
+        <main className="container py-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+            </Link>
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-primary" />
+              <h1 className="text-lg font-bold text-foreground">Diario de Trading</h1>
+            </div>
+          </div>
+          <Card className="bg-card border-border">
+            <CardContent className="p-8 text-center space-y-3">
+              <LogIn className="w-10 h-10 text-primary mx-auto opacity-60" />
+              <p className="text-sm text-foreground font-medium">Inicia sesión para usar el Diario</p>
+              <p className="text-xs text-muted-foreground">Tus operaciones se guardarán en la nube y podrás acceder desde cualquier dispositivo.</p>
+              <Button onClick={() => navigate('/auth')} className="mt-2">
+                <LogIn className="w-4 h-4 mr-2" /> Iniciar Sesión
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+      </PageShell>
+    );
   }
 
   return (
@@ -254,8 +365,8 @@ export default function TradingJournal() {
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="¿Qué aprendiste de esta operación?" className="bg-secondary border-border text-foreground min-h-[60px]" />
               </div>
 
-              <Button onClick={handleAdd} className="w-full" disabled={!entryPrice || !exitPrice}>
-                <Plus className="w-4 h-4 mr-2" />
+              <Button onClick={handleAdd} className="w-full" disabled={!entryPrice || !exitPrice || saving}>
+                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                 Guardar Operación
               </Button>
             </CardContent>
@@ -288,7 +399,6 @@ export default function TradingJournal() {
                       i !== entries.length - 1 && 'border-b border-border'
                     )}
                   >
-                    {/* Result indicator */}
                     <div className={cn(
                       'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
                       entry.result === 'win' ? 'bg-emerald-500/15' :
