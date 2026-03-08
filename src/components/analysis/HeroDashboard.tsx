@@ -130,11 +130,11 @@ export function HeroDashboard({
                 {isRealtimeConnected ?
                 <span className="flex items-center gap-1 text-[9px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Live
+                    {t('analysis_live')}
                   </span> :
                 <span className="flex items-center gap-1 text-[9px] text-gray-500 bg-gray-500/10 border border-gray-500/20 px-1.5 py-0.5 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
-                    Offline
+                    {t('analysis_offline')}
                   </span>
                 }
               </div>
