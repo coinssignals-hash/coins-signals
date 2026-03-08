@@ -227,7 +227,7 @@ export default function MonteCarloSimulation() {
             {/* Distribution */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Distribución de Resultados Finales</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_distribution')}</h3>
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={distributionData}>
