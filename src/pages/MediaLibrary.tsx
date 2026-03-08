@@ -22,6 +22,7 @@ export default function MediaLibrary() {
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
   const { isLessonCompleted } = useCourseProgress();
+  const { t } = useTranslation();
 
   const isVideo = type === 'videos';
   const mediaType = isVideo ? 'video' : 'podcast';
