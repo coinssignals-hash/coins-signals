@@ -9,8 +9,8 @@ const corsHeaders = {
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function getCacheKey(endpoint: string, symbol: string, date?: string): string {
-  return `${endpoint}:${symbol}${date ? `:${date}` : ''}`;
+function getCacheKey(endpoint: string, symbol: string, date?: string, language?: string): string {
+  return `${endpoint}:${symbol}${date ? `:${date}` : ''}${language ? `:${language}` : ''}`;
 }
 
 function getFromCache(key: string): any | null {
@@ -52,7 +52,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { endpoint, symbol, date, currentPrice } = body;
+    const { endpoint, symbol, date, currentPrice, language } = body;
 
     if (!endpoint || !symbol) {
       console.error('Missing required parameters: endpoint or symbol');
@@ -124,7 +124,7 @@ serve(async (req) => {
     }
 
     // Check cache first
-    const cacheKey = getCacheKey(endpoint, symbol, date);
+    const cacheKey = getCacheKey(endpoint, symbol, date, language);
     const cachedData = getFromCache(cacheKey);
     if (cachedData) {
       return new Response(
@@ -136,7 +136,8 @@ serve(async (req) => {
     }
 
     // Make request to FastAPI backend
-    const url = `${FASTAPI_BASE_URL}${apiPath}`;
+    const langParam = language ? `${apiPath.includes('?') ? '&' : '?'}language=${language}` : '';
+    const url = `${FASTAPI_BASE_URL}${apiPath}${langParam}`;
     console.log(`Fetching from FastAPI: ${url}`);
 
     const response = await fetch(url, {

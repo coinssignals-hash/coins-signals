@@ -20,12 +20,13 @@ async function fetchViaProxy<T>(
   endpoint: string, 
   symbol: string, 
   date?: string,
-  currentPrice?: number
+  currentPrice?: number,
+  language?: string
 ): Promise<T> {
-  console.log(`Fetching via proxy: ${endpoint} for ${symbol}`);
+  console.log(`Fetching via proxy: ${endpoint} for ${symbol} (lang: ${language || 'default'})`);
   
   const { data, error } = await supabase.functions.invoke('analysis-proxy', {
-    body: { endpoint, symbol, date, currentPrice },
+    body: { endpoint, symbol, date, currentPrice, language },
   });
 
   if (error) {
@@ -374,7 +375,7 @@ const generateMockEconomicEvents = (symbol: string): EconomicEvent[] => {
 // Analysis API Service
 export const analysisApi = {
   // Get full analysis for a symbol
-  async getFullAnalysis(symbol: string, currentPrice: number = 1.05): Promise<FullAnalysisData> {
+  async getFullAnalysis(symbol: string, currentPrice: number = 1.05, language?: string): Promise<FullAnalysisData> {
     if (API_CONFIG.useMockData) {
       return {
         symbol,
@@ -391,29 +392,29 @@ export const analysisApi = {
         economicEvents: generateMockEconomicEvents(symbol),
       };
     }
-    return fetchViaProxy<FullAnalysisData>('fullAnalysis', symbol, undefined, currentPrice);
+    return fetchViaProxy<FullAnalysisData>('fullAnalysis', symbol, undefined, currentPrice, language);
   },
 
   // Individual endpoints
-  async getSentiment(symbol: string): Promise<MarketSentimentData> {
+  async getSentiment(symbol: string, language?: string): Promise<MarketSentimentData> {
     if (API_CONFIG.useMockData) {
       return generateMockSentiment(symbol);
     }
-    return fetchViaProxy<MarketSentimentData>('sentiment', symbol);
+    return fetchViaProxy<MarketSentimentData>('sentiment', symbol, undefined, undefined, language);
   },
 
-  async getPrediction(symbol: string, currentPrice: number): Promise<PricePredictionData> {
+  async getPrediction(symbol: string, currentPrice: number, language?: string): Promise<PricePredictionData> {
     if (API_CONFIG.useMockData) {
       return generateMockPrediction(symbol, currentPrice);
     }
-    return fetchViaProxy<PricePredictionData>('prediction', symbol, undefined, currentPrice);
+    return fetchViaProxy<PricePredictionData>('prediction', symbol, undefined, currentPrice, language);
   },
 
-  async getTechnicalLevels(symbol: string, currentPrice: number): Promise<TechnicalLevelsData> {
+  async getTechnicalLevels(symbol: string, currentPrice: number, language?: string): Promise<TechnicalLevelsData> {
     if (API_CONFIG.useMockData) {
       return generateMockTechnicalLevels(symbol, currentPrice);
     }
-    return fetchViaProxy<TechnicalLevelsData>('technicalLevels', symbol, undefined, currentPrice);
+    return fetchViaProxy<TechnicalLevelsData>('technicalLevels', symbol, undefined, currentPrice, language);
   },
 
   async getPreviousDay(symbol: string, currentPrice: number): Promise<PreviousDayData> {
@@ -423,24 +424,24 @@ export const analysisApi = {
     return fetchViaProxy<PreviousDayData>('previousDay', symbol, undefined, currentPrice);
   },
 
-  async getRecommendations(symbol: string, currentPrice: number): Promise<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }> {
+  async getRecommendations(symbol: string, currentPrice: number, language?: string): Promise<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }> {
     if (API_CONFIG.useMockData) {
       return generateMockRecommendations(symbol, currentPrice);
     }
-    return fetchViaProxy<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }>('recommendations', symbol, undefined, currentPrice);
+    return fetchViaProxy<{ longTerm: StrategicRecommendation; shortTerm: StrategicRecommendation }>('recommendations', symbol, undefined, currentPrice, language);
   },
 
-  async getConclusions(symbol: string, currentPrice: number): Promise<MarketConclusionsData> {
+  async getConclusions(symbol: string, currentPrice: number, language?: string): Promise<MarketConclusionsData> {
     if (API_CONFIG.useMockData) {
       return generateMockConclusions(symbol, currentPrice);
     }
-    return fetchViaProxy<MarketConclusionsData>('conclusions', symbol, undefined, currentPrice);
+    return fetchViaProxy<MarketConclusionsData>('conclusions', symbol, undefined, currentPrice, language);
   },
 
-  async getMonetaryPolicies(symbol: string): Promise<MonetaryPolicyData[]> {
+  async getMonetaryPolicies(symbol: string, language?: string): Promise<MonetaryPolicyData[]> {
     try {
       const { data, error } = await supabase.functions.invoke('monetary-policies', {
-        body: { symbol },
+        body: { symbol, language },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
