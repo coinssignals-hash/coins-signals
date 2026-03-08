@@ -225,8 +225,8 @@ function ImpactHeatmap({ currencies }: { currencies: CurrencyBreakdown[] }) {
             {[0.3, 0.5, 0.7, 1].map(o => (
               <div key={o} className="w-2 h-2 rounded-sm" style={{ backgroundColor: `hsl(var(--primary) / ${o})` }} />
             ))}
-          </div>
-          <span className="text-[9px] text-muted-foreground">Confianza</span>
+           </div>
+          <span className="text-[9px] text-muted-foreground">{t('news_impact_legend_confidence')}</span>
         </div>
       </div>
     </div>
