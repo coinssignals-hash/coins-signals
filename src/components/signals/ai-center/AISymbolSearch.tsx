@@ -294,7 +294,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
                   <Search className="w-5 h-5" style={{ color: 'hsl(210, 40%, 35%)' }} />
                 </div>
                 <p className="text-[12px] text-slate-400 font-medium">
-                  {query.length < 2 ? 'Escribe al menos 2 caracteres' : 'Sin resultados'}
+                  {query.length < 2 ? t('ai_center_min_chars') : t('ai_center_no_results')}
                 </p>
               </div>
             )}
