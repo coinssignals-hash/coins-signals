@@ -85,6 +85,7 @@ function runSimulation(
 }
 
 export default function MonteCarloSimulation() {
+  const { t } = useTranslation();
   const [capital, setCapital] = useState(10000);
   const [winRate, setWinRate] = useState(55);
   const [avgWin, setAvgWin] = useState(2);
