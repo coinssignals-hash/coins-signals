@@ -550,6 +550,117 @@ export type TranslationKeys = {
   sub_checkout_error: string;
   sub_trial_day: string;
   sub_trial_days: string;
+  // Trading tools shared
+  tool_currency_pair: string;
+  tool_lot_size: string;
+  tool_num_lots: string;
+  tool_exchange_rate: string;
+  tool_account_currency: string;
+  tool_account_balance: string;
+  tool_risk_pct: string;
+  tool_stop_loss_pips: string;
+  tool_direction: string;
+  tool_entry: string;
+  tool_parameters: string;
+  tool_result: string;
+  tool_info: string;
+  // Pip calculator
+  pip_title: string;
+  pip_subtitle: string;
+  pip_amount: string;
+  pip_lot_standard: string;
+  pip_lot_mini: string;
+  pip_lot_micro: string;
+  pip_lot_nano: string;
+  pip_pip_size: string;
+  pip_position_size: string;
+  pip_value_per_pip: string;
+  pip_total_value: string;
+  pip_info_text: string;
+  // Lot calculator
+  lot_title: string;
+  lot_subtitle: string;
+  lot_monetary_risk: string;
+  lot_risk_amount: string;
+  lot_recommended_size: string;
+  lot_standard: string;
+  lot_mini: string;
+  lot_micro: string;
+  lot_units: string;
+  lot_pip_value_standard: string;
+  lot_info_text: string;
+  // Margin calculator
+  margin_title: string;
+  margin_subtitle: string;
+  margin_leverage: string;
+  margin_status: string;
+  margin_level: string;
+  margin_safe: string;
+  margin_caution: string;
+  margin_danger: string;
+  margin_balance_used: string;
+  margin_breakdown: string;
+  margin_position_value: string;
+  margin_required: string;
+  margin_free: string;
+  margin_units: string;
+  margin_danger_text: string;
+  margin_warning_text: string;
+  margin_info_text: string;
+  // Risk/Reward calculator
+  rr_title: string;
+  rr_trade_params: string;
+  rr_pair: string;
+  rr_balance: string;
+  rr_ratio: string;
+  rr_excellent: string;
+  rr_acceptable: string;
+  rr_not_recommended: string;
+  rr_risk: string;
+  rr_reward: string;
+  rr_info_text: string;
+  // Position sizing
+  ps_title: string;
+  ps_conservative: string;
+  ps_conservative_desc: string;
+  ps_moderate: string;
+  ps_moderate_desc: string;
+  ps_aggressive: string;
+  ps_aggressive_desc: string;
+  ps_extreme: string;
+  ps_extreme_desc: string;
+  ps_optimal_size: string;
+  ps_standard: string;
+  ps_mini: string;
+  ps_micro: string;
+  ps_max_risk: string;
+  ps_info_text: string;
+  // Swap calculator
+  swap_title: string;
+  swap_lots: string;
+  swap_hold_days: string;
+  swap_rates: string;
+  swap_total_cost: string;
+  swap_pips_in_nights: string;
+  swap_cost_night: string;
+  swap_effective_nights: string;
+  swap_includes_triple: string;
+  swap_info_text: string;
+  // Compound interest
+  ci_title: string;
+  ci_initial_capital: string;
+  ci_monthly_return: string;
+  ci_monthly_deposit: string;
+  ci_months: string;
+  ci_withdrawal: string;
+  ci_final_balance: string;
+  ci_total_return: string;
+  ci_growth_curve: string;
+  ci_month_label: string;
+  ci_profit: string;
+  ci_deposited: string;
+  ci_return: string;
+  ci_info_text: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime
