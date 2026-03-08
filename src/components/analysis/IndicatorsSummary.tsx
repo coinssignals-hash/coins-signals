@@ -63,10 +63,10 @@ export function IndicatorsSummary({
       const isBullishCross = prevMACD.macd <= prevMACD.signal && latestMACD.macd > latestMACD.signal;
       const isBearishCross = prevMACD.macd >= prevMACD.signal && latestMACD.macd < latestMACD.signal;
 
-      if (isBullishCross) { macdSignal = 'buy'; macdLabel = 'Cruce ↑'; macdStrength = 85; crossLabel = '⚡'; }
-      else if (isBearishCross) { macdSignal = 'sell'; macdLabel = 'Cruce ↓'; macdStrength = 85; crossLabel = '⚡'; }
-      else if (latestMACD.macd > latestMACD.signal) { macdSignal = 'buy'; macdLabel = 'Alcista'; macdStrength = 55; }
-      else { macdSignal = 'sell'; macdLabel = 'Bajista'; macdStrength = 55; }
+      if (isBullishCross) { macdSignal = 'buy'; macdLabel = t('analysis_ind_cross_up'); macdStrength = 85; crossLabel = '⚡'; }
+      else if (isBearishCross) { macdSignal = 'sell'; macdLabel = t('analysis_ind_cross_down'); macdStrength = 85; crossLabel = '⚡'; }
+      else if (latestMACD.macd > latestMACD.signal) { macdSignal = 'buy'; macdLabel = t('analysis_ind_bullish'); macdStrength = 55; }
+      else { macdSignal = 'sell'; macdLabel = t('analysis_ind_bearish'); macdStrength = 55; }
     }
     const histValues = macdData?.map(m => m.histogram ?? (m.macd - m.signal)) || [];
     result.push({
