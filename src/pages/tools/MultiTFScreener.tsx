@@ -130,7 +130,7 @@ export default function MultiTFScreener() {
               </SheetTrigger>
               <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle className="text-foreground">Personalizar pares</SheetTitle>
+                  <SheetTitle className="text-foreground">{t('mtf_customize_pairs')}</SheetTitle>
                 </SheetHeader>
                 <div className="space-y-4 mt-4">
                   {Object.entries(PAIR_CATEGORIES).map(([category, pairs]) => (
