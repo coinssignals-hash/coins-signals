@@ -967,6 +967,18 @@ export type TranslationKeys = {
   analysis_ti_weak: string;
   analysis_ti_strong_trend: string;
   analysis_ti_histogram: string;
+  analysis_ti_overbought: string;
+  analysis_ti_oversold: string;
+  analysis_ti_neutral: string;
+  analysis_ti_bullish_cross: string;
+  analysis_ti_bearish_cross: string;
+  analysis_ti_bullish: string;
+  analysis_ti_bearish: string;
+  analysis_ti_above: string;
+  analysis_ti_below: string;
+  analysis_ti_mixed: string;
+  analysis_ti_price_label: string;
+  analysis_ti_bands_label: string;
   // Analysis - RiskRewardCalculator
   analysis_rr_calculator: string;
   analysis_rr_entry: string;
