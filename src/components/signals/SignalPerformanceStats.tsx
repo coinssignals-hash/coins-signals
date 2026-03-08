@@ -88,7 +88,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
       >
         <BarChart3 className="w-4 h-4 text-cyan-400" />
         <span className="text-xs font-bold text-cyan-200 uppercase tracking-wider text-left">
-          Rendimiento de Señales
+          {t('signal_perf_title')}
         </span>
         {activesBadge}
         <span className="ml-auto" />
@@ -160,7 +160,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                   <span className={cn("font-mono text-sm font-extrabold", winRateColor)}>
                     {stats.winRate.toFixed(0)}%
                   </span>
-                  <span className="text-[8px] text-cyan-300/50">Win Rate</span>
+                  <span className="text-[8px] text-cyan-300/50">{t('signal_win_rate')}</span>
                 </div>
               </div>
 
@@ -176,7 +176,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                 >
                   <div className="flex items-center gap-1.5">
                     <Target className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-[10px] text-emerald-300/70 font-medium">TP Hit</span>
+                    <span className="text-[10px] text-emerald-300/70 font-medium">{t('signal_tp_hit')}</span>
                     <span className="ml-auto text-sm font-bold text-emerald-400">{stats.tpCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
@@ -197,7 +197,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                 >
                   <div className="flex items-center gap-1.5">
                     <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-                    <span className="text-[10px] text-rose-300/70 font-medium">SL Hit</span>
+                    <span className="text-[10px] text-rose-300/70 font-medium">{t('signal_sl_hit')}</span>
                     <span className="ml-auto text-sm font-bold text-rose-400">{stats.slCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
@@ -221,7 +221,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     <p className="text-lg font-bold text-cyan-300 leading-none">
                       {stats.activeCount}
                     </p>
-                    <p className="text-[9px] text-cyan-300/60">Activas</p>
+                    <p className="text-[9px] text-cyan-300/60">{t('signal_actives')}</p>
                   </div>
                 </div>
 
@@ -238,7 +238,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     <p className="text-lg font-bold text-slate-300 leading-none">
                       {stats.total}
                     </p>
-                    <p className="text-[9px] text-slate-400/60">Total</p>
+                    <p className="text-[9px] text-slate-400/60">{t('signal_total')}</p>
                   </div>
                 </div>
               </div>
@@ -272,7 +272,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     </span>
                   </div>
                   <div className={cn("font-bold", stats.netPips >= 0 ? "text-emerald-300" : "text-rose-300")}>
-                    Neto: {stats.netPips >= 0 ? "+" : ""}{stats.netPips.toFixed(1)} pips
+                    {t('signal_net')}: {stats.netPips >= 0 ? "+" : ""}{stats.netPips.toFixed(1)} pips
                   </div>
                   <div className="flex items-center gap-1">
                     <TrendingDown className="w-3 h-3 text-rose-400" />
@@ -286,7 +286,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
 
             {stats.completed === 0 && (
               <p className="text-[10px] text-cyan-300/40 text-center italic">
-                Aún no hay señales cerradas. Las estadísticas se actualizarán cuando el precio alcance TP o SL.
+                {t('signal_no_closed')}
               </p>
             )}
           </div>

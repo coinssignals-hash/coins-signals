@@ -73,16 +73,17 @@ function SourceBar({
 }
 
 function FlowComparison({ retail, institutional, detail }: {retail: number;institutional: number;detail: string;}) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Users className="w-4 h-4 text-purple-400" />
-        <span className="text-xs font-semibold text-cyan-200">Flujo de Capital</span>
+      <Users className="w-4 h-4 text-purple-400" />
+        <span className="text-xs font-semibold text-cyan-200">{t('signal_sentiment_capital_flow')}</span>
       </div>
       <div className="flex gap-3">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] text-cyan-300/60">Retail</span>
+             <span className="text-[11px] text-cyan-300/60">{t('signal_sentiment_retail')}</span>
             <span className="text-xs font-bold text-orange-400">{retail}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
@@ -91,7 +92,7 @@ function FlowComparison({ retail, institutional, detail }: {retail: number;insti
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] text-cyan-300/60">Institucional</span>
+             <span className="text-[11px] text-cyan-300/60">{t('signal_sentiment_institutional')}</span>
             <span className="text-xs font-bold text-blue-400">{institutional}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
@@ -104,6 +105,7 @@ function FlowComparison({ retail, institutional, detail }: {retail: number;insti
 }
 
 function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSignal: string;trendStrength: string;smaAlignment: string;};}) {
+  const { t } = useTranslation();
   const rsiColor = indicators.rsi > 70 ? "hsl(0, 70%, 55%)" : indicators.rsi < 30 ? "hsl(135, 70%, 50%)" : "hsl(45, 80%, 55%)";
   const macdColor = indicators.macdSignal === "bullish" ? "hsl(135, 70%, 50%)" : indicators.macdSignal === "bearish" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)";
 
@@ -112,7 +114,7 @@ function TechnicalIndicators({ indicators }: {indicators: {rsi: number;macdSigna
       {[
       { label: "RSI", value: indicators.rsi.toString(), color: rsiColor },
       { label: "MACD", value: indicators.macdSignal === "bullish" ? "↑" : indicators.macdSignal === "bearish" ? "↓" : "→", color: macdColor },
-      { label: "Fuerza", value: indicators.trendStrength === "strong" ? "Alta" : indicators.trendStrength === "moderate" ? "Media" : "Baja", color: indicators.trendStrength === "strong" ? "hsl(135, 70%, 50%)" : "hsl(45, 80%, 55%)" },
+      { label: t('signal_sentiment_strength'), value: indicators.trendStrength === "strong" ? t('signal_sentiment_strength_high') : indicators.trendStrength === "moderate" ? t('signal_sentiment_strength_medium') : t('signal_sentiment_strength_low'), color: indicators.trendStrength === "strong" ? "hsl(135, 70%, 50%)" : "hsl(45, 80%, 55%)" },
       { label: "SMA", value: indicators.smaAlignment === "bullish" ? "↑" : indicators.smaAlignment === "bearish" ? "↓" : "↔", color: indicators.smaAlignment === "bullish" ? "hsl(135, 70%, 50%)" : indicators.smaAlignment === "bearish" ? "hsl(0, 70%, 55%)" : "hsl(45, 80%, 55%)" }].
       map((ind) =>
       <div
@@ -138,7 +140,7 @@ export function MarketSentimentDashboard({ data, loading }: Props) {
           border: "1px solid hsla(200, 60%, 35%, 0.3)"
         }}>
         <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
-        <span className="text-xs text-cyan-300/60 uppercase tracking-wider">Analizando sentimiento del mercado...</span>
+        <span className="text-xs text-cyan-300/60 uppercase tracking-wider">{t('signal_sentiment_analyzing')}</span>
       </div>);
   }
 

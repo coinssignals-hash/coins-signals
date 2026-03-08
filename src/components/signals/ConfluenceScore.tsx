@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SignalMarketData } from '@/hooks/useSignalMarketData';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface ConfluenceScoreProps {
   data: SignalMarketData;
@@ -15,6 +16,7 @@ interface IndicatorVote {
 }
 
 export function ConfluenceScore({ data }: ConfluenceScoreProps) {
+  const { t } = useTranslation();
   const { votes, score, level, buyCount, sellCount, neutralCount } = useMemo(() => {
     const votes: IndicatorVote[] = [];
 
@@ -119,11 +121,11 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
 
   // Traffic light colors
   const lightConfig = {
-    strong_buy:  { color: 'hsl(135, 70%, 50%)', glow: 'hsl(135, 70%, 50%)', label: 'Compra Fuerte', icon: TrendingUp },
-    buy:         { color: 'hsl(135, 60%, 45%)', glow: 'hsl(135, 60%, 45%)', label: 'Compra', icon: TrendingUp },
-    neutral:     { color: 'hsl(45, 80%, 55%)',  glow: 'hsl(45, 80%, 55%)',  label: 'Neutral', icon: Minus },
-    sell:        { color: 'hsl(0, 70%, 55%)',   glow: 'hsl(0, 70%, 55%)',   label: 'Venta', icon: TrendingDown },
-    strong_sell: { color: 'hsl(0, 80%, 50%)',   glow: 'hsl(0, 80%, 50%)',   label: 'Venta Fuerte', icon: TrendingDown },
+    strong_buy:  { color: 'hsl(135, 70%, 50%)', glow: 'hsl(135, 70%, 50%)', label: t('signal_confluence_strong_buy'), icon: TrendingUp },
+    buy:         { color: 'hsl(135, 60%, 45%)', glow: 'hsl(135, 60%, 45%)', label: t('signal_confluence_buy'), icon: TrendingUp },
+    neutral:     { color: 'hsl(45, 80%, 55%)',  glow: 'hsl(45, 80%, 55%)',  label: t('signal_confluence_neutral'), icon: Minus },
+    sell:        { color: 'hsl(0, 70%, 55%)',   glow: 'hsl(0, 70%, 55%)',   label: t('signal_confluence_sell'), icon: TrendingDown },
+    strong_sell: { color: 'hsl(0, 80%, 50%)',   glow: 'hsl(0, 80%, 50%)',   label: t('signal_confluence_strong_sell'), icon: TrendingDown },
   };
 
   const cfg = lightConfig[level];
@@ -211,9 +213,9 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
           {/* Vote distribution */}
           <div className="flex items-center gap-3 mt-1.5">
             {[
-              { label: 'Compra', count: buyCount, color: 'hsl(135, 70%, 50%)' },
-              { label: 'Neutral', count: neutralCount, color: 'hsl(45, 80%, 55%)' },
-              { label: 'Venta', count: sellCount, color: 'hsl(0, 70%, 55%)' },
+              { label: t('signal_confluence_buy'), count: buyCount, color: 'hsl(135, 70%, 50%)' },
+              { label: t('signal_confluence_neutral'), count: neutralCount, color: 'hsl(45, 80%, 55%)' },
+              { label: t('signal_confluence_sell'), count: sellCount, color: 'hsl(0, 70%, 55%)' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-1">
                 <div
@@ -225,7 +227,7 @@ export function ConfluenceScore({ data }: ConfluenceScoreProps) {
                 <span className="text-[9px]" style={{ color: item.color }}>{item.label}</span>
               </div>
             ))}
-            <span className="text-[9px] text-slate-600 ml-auto">{votes.length} indicadores</span>
+            <span className="text-[9px] text-slate-600 ml-auto">{votes.length} {t('signal_confluence_indicators')}</span>
           </div>
         </div>
       </div>

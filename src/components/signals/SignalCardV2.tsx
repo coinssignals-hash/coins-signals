@@ -119,9 +119,10 @@ interface PriceRowFullProps {
   percent: string;
   price: string;
   isPositive: boolean;
+  copyLabel?: string;
 }
 
-function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullProps) {
+function PriceRowFull({ label, pips, percent, price, isPositive, copyLabel }: PriceRowFullProps) {
   const isTP = label.startsWith('TakeProfit');
   const isSL = label.startsWith('Stop');
   // TP siempre verde, SL siempre rojo
@@ -160,7 +161,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive }: PriceRowFullP
               e.stopPropagation();
               navigator.clipboard.writeText(price);
             }}
-            title="Copiar precio">
+                title={copyLabel}>
             <Copy className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -210,7 +211,7 @@ function TakeProfitStopLossSection({ entryPrice, takeProfit, takeProfit2, takePr
 }
 
 // --- Price Age Indicator ---
-function PriceAge({ timestamp }: {timestamp: number;}) {
+function PriceAge({ timestamp, agoLabel }: {timestamp: number; agoLabel: string;}) {
   const [age, setAge] = useState(0);
 
   useEffect(() => {
@@ -230,7 +231,7 @@ function PriceAge({ timestamp }: {timestamp: number;}) {
     <Popover>
       <PopoverTrigger asChild>
         <span className={cn("text-[8px] font-mono tabular-nums cursor-pointer active:scale-95 transition-transform", color)}>
-          ⏱ {label} ago
+          ⏱ {label} {agoLabel}
         </span>
       </PopoverTrigger>
       <PopoverContent side="bottom" className="w-auto text-[10px] font-mono bg-[hsl(225,25%,10%)] border-cyan-500/20 text-cyan-100 p-2 shadow-xl shadow-black/40">
@@ -494,7 +495,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 </span>
               </div>
               {priceDiff.hasData && quote?.timestamp &&
-              <PriceAge timestamp={quote.timestamp} />
+              <PriceAge timestamp={quote.timestamp} agoLabel={t('signal_ago')} />
               }
             </div>
             {/* Circle with price below */}
@@ -556,7 +557,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     "text-[7px] font-bold leading-none mt-0.5 uppercase tracking-widest",
                     priceDiff.percent >= 0 ? "text-green-400/70" : "text-red-400/70"
                   )}>
-                      vs Entry
+                      {t('signal_vs_entry')}
                     </span>
                   }
                 </div>
@@ -753,7 +754,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
                 <div className="flex items-center gap-1.5 mb-2">
                   <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">Análisis AI</span>
+                  <span className="text-[10px] uppercase tracking-wider text-cyan-300/70 font-bold">{t('signal_ai_analysis')}</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{signal.notes}</p>
               </div>
@@ -810,7 +811,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 {aiStrategy?.duration.value ?? "Intradía"}</p>
                         <p className="leading-relaxed">{aiStrategy?.duration.explanation ?? "Operaciones que se abren y cierran dentro del mismo día de trading, reduciendo riesgo de gaps nocturnos."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          Análisis para {currencyPair}
+                          {t('signal_analysis_for')} {currencyPair}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -835,7 +836,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                         <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 {aiStrategy?.approach.value ?? "Smart Money"}</p>
                         <p className="leading-relaxed">{aiStrategy?.approach.explanation ?? "Estrategia basada en seguir el flujo de capital institucional, identificando zonas de liquidez y bloques de órdenes."}</p>
                         <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          Confluencia con estructura de mercado
+                          {t('signal_market_structure')}
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -901,7 +902,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                               <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
                             </div>
                             <span className="text-xs font-bold text-cyan-100 block">{aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</span>
-                            <span className="text-[9px] text-cyan-300/40 mt-0.5 block">Toca para ver diagrama y explicación</span>
+                            <span className="text-[9px] text-cyan-300/40 mt-0.5 block">{t('signal_tap_diagram')}</span>
                           </div>
                           <div
                           className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
@@ -914,9 +915,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     <PopoverContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
                       <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ {aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</p>
                       <p className="leading-relaxed mb-2">{aiStrategy?.confirmationCandle.explanation ?? "Vela con mecha larga y cuerpo pequeño que indica rechazo del precio en una zona clave."}</p>
-                      <img src={pinbarPattern} alt="Patrón de velas" className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
+                      <img src={pinbarPattern} alt={t('signal_candle_pattern')} className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
                       <div className="text-[10px] text-cyan-300/50 text-center">
-                        Buscar confluencia con niveles S/R y volumen
+                        {t('signal_sr_confluence')}
                       </div>
                     </PopoverContent>
                   </Popover>
