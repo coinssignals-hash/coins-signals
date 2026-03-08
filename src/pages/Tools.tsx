@@ -148,8 +148,10 @@ export default function Tools() {
                 key={tool.id}
                 className={cn(
                   "p-4 transition-all",
-                  isComingSoon && "opacity-60"
+                  isComingSoon && "opacity-60",
+                  tool.route && !isComingSoon && "cursor-pointer active:scale-[0.98]"
                 )}
+                onClick={() => tool.route && !isComingSoon && navigate(tool.route)}
               >
                 <div className="flex items-start gap-3">
                   <div className={cn(
