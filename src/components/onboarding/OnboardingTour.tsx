@@ -3,65 +3,24 @@ import { X, ChevronRight, ChevronLeft, Sparkles, TrendingUp, Bell, Wallet, Gradu
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TourStep {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
   icon: React.ElementType;
   route?: string;
-  highlight?: string;
 }
 
 const tourSteps: TourStep[] = [
-  {
-    id: 'welcome',
-    title: '¡Bienvenido a TradeSignals!',
-    description: 'Te guiaremos por las principales funciones de la aplicación para que empieces a operar como un profesional.',
-    icon: Sparkles,
-  },
-  {
-    id: 'signals',
-    title: 'Señales de Trading',
-    description: 'Recibe señales de compra/venta en tiempo real con niveles de entrada, take profit y stop loss calculados por IA.',
-    icon: TrendingUp,
-    route: '/signals',
-  },
-  {
-    id: 'analysis',
-    title: 'Análisis Técnico',
-    description: 'Accede a análisis detallados con indicadores RSI, MACD, Bollinger y más para cualquier par de divisas.',
-    icon: TrendingUp,
-    route: '/',
-  },
-  {
-    id: 'news',
-    title: 'Noticias Económicas',
-    description: 'Mantente informado con noticias de alto impacto y análisis de IA sobre cómo afectarán al mercado.',
-    icon: Newspaper,
-    route: '/news',
-  },
-  {
-    id: 'broker',
-    title: 'Conecta tu Broker',
-    description: 'Vincula hasta 5 cuentas de broker para ver tu portfolio unificado y recibir alertas automáticas.',
-    icon: Wallet,
-    route: '/link-broker',
-  },
-  {
-    id: 'notifications',
-    title: 'Notificaciones Inteligentes',
-    description: 'Configura alertas push, WhatsApp y sonido para no perderte ninguna oportunidad de trading.',
-    icon: Bell,
-    route: '/settings/notifications',
-  },
-  {
-    id: 'courses',
-    title: 'Academia de Trading',
-    description: 'Aprende trading con nuestros cursos en video, desde básico hasta estrategias avanzadas.',
-    icon: GraduationCap,
-    route: '/courses',
-  },
+  { id: 'welcome', titleKey: 'onb_welcome', descKey: 'onb_welcome_desc', icon: Sparkles },
+  { id: 'signals', titleKey: 'onb_signals_title', descKey: 'onb_signals_desc', icon: TrendingUp, route: '/signals' },
+  { id: 'analysis', titleKey: 'onb_analysis_title', descKey: 'onb_analysis_desc', icon: TrendingUp, route: '/' },
+  { id: 'news', titleKey: 'onb_news_title', descKey: 'onb_news_desc', icon: Newspaper, route: '/news' },
+  { id: 'broker', titleKey: 'onb_broker_title', descKey: 'onb_broker_desc', icon: Wallet, route: '/link-broker' },
+  { id: 'notifications', titleKey: 'onb_notif_title', descKey: 'onb_notif_desc', icon: Bell, route: '/settings/notifications' },
+  { id: 'courses', titleKey: 'onb_courses_title', descKey: 'onb_courses_desc', icon: GraduationCap, route: '/courses' },
 ];
 
 interface OnboardingTourProps {
