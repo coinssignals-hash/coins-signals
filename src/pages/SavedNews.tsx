@@ -21,7 +21,7 @@ const SavedNews = () => {
   const handleClearCache = () => {
     clearCache();
     setRefreshKey(prev => prev + 1);
-    toast.success('Caché de noticias limpiado');
+    toast.success(t('saved_clear'));
   };
 
   return (
