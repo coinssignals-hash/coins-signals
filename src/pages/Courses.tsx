@@ -115,7 +115,7 @@ export default function Courses() {
               {/* Progress Bar */}
               <div className="relative space-y-1.5">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{stats.completed} {t('courses_of')} {stats.total} {t('courses_lessons')}</span>
+                  <span>{stats.completed} {t('courses_lessons_of')} {stats.total} {t('courses_lessons')}</span>
                   <span className="flex items-center gap-1 text-primary">
                     <Flame className="w-3 h-3" />
                     {stats.completed > 0 ? t('courses_in_progress') : t('courses_start_now')}
