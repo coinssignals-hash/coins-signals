@@ -222,7 +222,7 @@ export default function CreateSignal() {
         .eq('id', editingSignal.id);
 
       if (error) throw error;
-      toast.success('Señal actualizada');
+      toast.success(t('cs_signal_updated'));
       resetForm();
       setActiveTab('manage');
       fetchActiveSignals();
