@@ -1065,9 +1065,9 @@ const News = () => {
 
           {/* Sentiment toggles */}
           {[
-              { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: 'Alcista', activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
-              { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: 'Bajista', activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
-              { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: 'Neutral', activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' }].
+              { key: 'bullish' as const, icon: <TrendingUp className="w-3 h-3" />, label: t('news_sentiment_bullish'), activeClass: 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500' },
+              { key: 'bearish' as const, icon: <TrendingDown className="w-3 h-3" />, label: t('news_sentiment_bearish'), activeClass: 'bg-red-500/15 border-red-500/50 text-red-500' },
+              { key: 'neutral' as const, icon: <Minus className="w-3 h-3" />, label: t('news_sentiment_neutral'), activeClass: 'bg-muted border-muted-foreground/40 text-muted-foreground' }].
               map(({ key, icon, label, activeClass }) =>
               <button
                 key={key}
