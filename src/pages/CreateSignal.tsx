@@ -350,15 +350,15 @@ export default function CreateSignal() {
       <PageShell showBottomNav={false}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center gap-4">
           <ShieldAlert className="w-16 h-16 text-destructive/60" />
-          <h2 className="text-xl font-bold text-foreground">Acceso Restringido</h2>
+          <h2 className="text-xl font-bold text-foreground">{t('cs_restricted')}</h2>
           <p className="text-muted-foreground text-sm max-w-xs">
-            Solo los administradores pueden crear señales de trading.
+            {t('cs_restricted_desc')}
           </p>
           <button
             onClick={() => navigate('/signals')}
             className="mt-4 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:brightness-110 transition-all"
           >
-            Volver a Señales
+            {t('cs_back_signals')}
           </button>
         </div>
       </PageShell>
