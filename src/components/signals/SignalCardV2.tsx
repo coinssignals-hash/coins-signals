@@ -161,7 +161,7 @@ function PriceRowFull({ label, pips, percent, price, isPositive, copyLabel }: Pr
               e.stopPropagation();
               navigator.clipboard.writeText(price);
             }}
-            title={t('signal_copy_price')}>
+                title={copyLabel}>
             <Copy className="w-3.5 h-3.5" />
           </button>
         </div>
