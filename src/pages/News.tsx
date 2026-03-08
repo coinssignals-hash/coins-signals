@@ -141,7 +141,7 @@ function HistoricalImpactSection({
           'text-xs font-bold',
           isLoading ? 'text-muted-foreground' : isPositiveAvg ? 'text-green-400' : 'text-red-400'
         )}>
-          {isLoading ? '...' : `Promedio: ${isPositiveAvg ? '+' : ''}${avgImpact.toFixed(1)}%`}
+          {isLoading ? '...' : `${t('news_average')}: ${isPositiveAvg ? '+' : ''}${avgImpact.toFixed(1)}%`}
         </span>
       </div>
       <MiniHistoricalChart data={data?.monthlyData ?? []} isLoading={isLoading} />
