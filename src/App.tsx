@@ -40,6 +40,9 @@ const AICenter = lazy(() => import("./pages/AICenter"));
 const Stocks = lazy(() => import("./pages/Stocks"));
 const MediaLibrary = lazy(() => import("./pages/MediaLibrary"));
 const Tools = lazy(() => import("./pages/Tools"));
+const PipCalculator = lazy(() => import("./pages/tools/PipCalculator"));
+const EconomicCalendar = lazy(() => import("./pages/tools/EconomicCalendar"));
+const RsiMacdScreener = lazy(() => import("./pages/tools/RsiMacdScreener"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -103,6 +106,9 @@ function AnimatedRoutes() {
           <Route path="/ai-center" element={<SubscriptionGate requiredTier="plus" featureName="Centro de IA"><AICenter /></SubscriptionGate>} />
           <Route path="/stocks" element={<SubscriptionGate requiredTier="plus" featureName="Análisis de Acciones"><Stocks /></SubscriptionGate>} />
           <Route path="/tools" element={<Tools />} />
+          <Route path="/tools/pip-calculator" element={<PipCalculator />} />
+          <Route path="/tools/economic-calendar" element={<EconomicCalendar />} />
+          <Route path="/tools/rsi-macd-screener" element={<RsiMacdScreener />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

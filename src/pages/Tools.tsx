@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 import {
   Calculator, CalendarDays, ScanSearch, BookOpen,
   TrendingUp, Target, DollarSign, Percent, BarChart3,
@@ -20,6 +21,7 @@ interface ToolItem {
   category: 'calculadoras' | 'calendario' | 'screeners' | 'diario';
   status: 'available' | 'coming_soon';
   accent: string;
+  route?: string;
 }
 
 const LEVELS: { id: TraderLevel; label: string; icon: typeof GraduationCap; color: string }[] = [
@@ -31,10 +33,10 @@ const LEVELS: { id: TraderLevel; label: string; icon: typeof GraduationCap; colo
 
 const TOOLS_BY_LEVEL: Record<TraderLevel, ToolItem[]> = {
   novato: [
-    { id: 'pip-calc', title: 'Calculadora de Pips', description: 'Calcula el valor de pips para cualquier par de divisas', icon: DollarSign, category: 'calculadoras', status: 'available', accent: 'emerald' },
+    { id: 'pip-calc', title: 'Calculadora de Pips', description: 'Calcula el valor de pips para cualquier par de divisas', icon: DollarSign, category: 'calculadoras', status: 'available', accent: 'emerald', route: '/tools/pip-calculator' },
     { id: 'lot-calc', title: 'Calculadora de Lotes', description: 'Determina el tamaño de lote ideal según tu capital', icon: Calculator, category: 'calculadoras', status: 'available', accent: 'emerald' },
     { id: 'margin-calc', title: 'Calculadora de Margen', description: 'Calcula el margen requerido para abrir posiciones', icon: Percent, category: 'calculadoras', status: 'available', accent: 'emerald' },
-    { id: 'eco-calendar-basic', title: 'Calendario Económico', description: 'Eventos de alto impacto con alertas básicas', icon: CalendarDays, category: 'calendario', status: 'available', accent: 'blue' },
+    { id: 'eco-calendar-basic', title: 'Calendario Económico', description: 'Eventos de alto impacto con alertas básicas', icon: CalendarDays, category: 'calendario', status: 'available', accent: 'blue', route: '/tools/economic-calendar' },
     { id: 'trade-journal-basic', title: 'Diario de Trading Básico', description: 'Registra tus operaciones con notas simples', icon: BookOpen, category: 'diario', status: 'available', accent: 'amber' },
     { id: 'trend-scanner', title: 'Escáner de Tendencias', description: 'Identifica la dirección general del mercado', icon: TrendingUp, category: 'screeners', status: 'available', accent: 'cyan' },
   ],
@@ -43,7 +45,7 @@ const TOOLS_BY_LEVEL: Record<TraderLevel, ToolItem[]> = {
     { id: 'position-size', title: 'Position Sizing', description: 'Calcula el tamaño óptimo de posición con gestión de riesgo', icon: Target, category: 'calculadoras', status: 'available', accent: 'blue' },
     { id: 'swap-calc', title: 'Calculadora de Swaps', description: 'Estima el costo de mantener posiciones overnight', icon: Clock, category: 'calculadoras', status: 'available', accent: 'blue' },
     { id: 'eco-calendar-adv', title: 'Calendario con Impacto IA', description: 'Análisis de impacto potencial en pares específicos', icon: CalendarDays, category: 'calendario', status: 'available', accent: 'purple' },
-    { id: 'rsi-screener', title: 'Screener RSI/MACD', description: 'Detecta sobrecompra/sobreventa en múltiples pares', icon: Activity, category: 'screeners', status: 'available', accent: 'cyan' },
+    { id: 'rsi-screener', title: 'Screener RSI/MACD', description: 'Detecta sobrecompra/sobreventa en múltiples pares', icon: Activity, category: 'screeners', status: 'available', accent: 'cyan', route: '/tools/rsi-macd-screener' },
     { id: 'trade-journal-stats', title: 'Diario con Estadísticas', description: 'Métricas de rendimiento: win rate, drawdown, profit factor', icon: BarChart3, category: 'diario', status: 'available', accent: 'amber' },
   ],
   avanzado: [
@@ -79,6 +81,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export default function Tools() {
+  const navigate = useNavigate();
   const [activeLevel, setActiveLevel] = useState<TraderLevel>('novato');
   const tools = TOOLS_BY_LEVEL[activeLevel];
 
@@ -145,8 +148,10 @@ export default function Tools() {
                 key={tool.id}
                 className={cn(
                   "p-4 transition-all",
-                  isComingSoon && "opacity-60"
+                  isComingSoon && "opacity-60",
+                  tool.route && !isComingSoon && "cursor-pointer active:scale-[0.98]"
                 )}
+                onClick={() => tool.route && !isComingSoon && navigate(tool.route)}
               >
                 <div className="flex items-start gap-3">
                   <div className={cn(
