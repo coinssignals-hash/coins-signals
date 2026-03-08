@@ -593,7 +593,7 @@ export default function CreateSignal() {
 
                 {showCardPreview && (
                   <div className="space-y-3">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest text-center">Así se verá la señal</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest text-center">{t('cs_preview_label')}</p>
                     <SignalCardCompact
                       signal={{
                         id: 'preview',
