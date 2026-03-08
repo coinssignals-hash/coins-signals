@@ -289,8 +289,8 @@ export function CurrencyImpactCharts({ newsId, newsTitle, category, currencies }
             </div>
             <div>
               <span className="text-sm font-semibold text-foreground block leading-tight">
-                {data.overall.trend === 'bullish' ? 'Tendencia Alcista' :
-                 data.overall.trend === 'bearish' ? 'Tendencia Bajista' : 'Tendencia Neutral'}
+                {data.overall.trend === 'bullish' ? t('news_impact_trend_bullish') :
+                 data.overall.trend === 'bearish' ? t('news_impact_trend_bearish') : t('news_impact_trend_neutral')}
               </span>
               <span className="text-[10px] text-muted-foreground">
                 {data.overall.totalPoints} puntos de datos
