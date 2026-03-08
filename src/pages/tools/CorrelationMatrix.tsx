@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Layers, RefreshCw, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const PAIRS = ['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','NZD/USD','USD/CAD','EUR/GBP','EUR/JPY','GBP/JPY','XAU/USD'];
 
@@ -36,6 +37,7 @@ function corrColor(val: number): string {
 }
 
 export default function CorrelationMatrix() {
+  const { t } = useTranslation();
   const [matrix, setMatrix] = useState(() => generateMatrix(PAIRS));
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +72,7 @@ export default function CorrelationMatrix() {
             </Link>
             <div className="flex items-center gap-2">
               <Layers className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Matriz de Correlación</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tools_corr_matrix_title')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
@@ -120,7 +122,7 @@ export default function CorrelationMatrix() {
         {/* Legend */}
         <Card className="bg-card border-border">
           <CardContent className="p-3">
-            <p className="text-[10px] text-muted-foreground mb-2 font-medium">Escala de Correlación</p>
+            <p className="text-[10px] text-muted-foreground mb-2 font-medium">{t('tp_correlation_scale')}</p>
             <div className="flex gap-1 items-center">
               {[
                 { label: '-1.0', cls: 'bg-rose-500/70' },
@@ -141,7 +143,7 @@ export default function CorrelationMatrix() {
         {/* Top Correlations */}
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-foreground">Correlaciones Más Fuertes</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('tp_strongest_correlations')}</h3>
             {highlights.map((h, i) => (
               <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                 <span className="text-xs text-foreground">{h.a} ↔ {h.b}</span>
@@ -161,7 +163,7 @@ export default function CorrelationMatrix() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Correlación +1 = se mueven juntos, -1 = se mueven opuestos, 0 = sin relación. Evita abrir posiciones en pares altamente correlacionados para diversificar riesgo.
+                {t('tp_correlation_info')}
               </p>
             </div>
           </CardContent>

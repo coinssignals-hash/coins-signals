@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, PieChart, Play, RotateCcw, TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface SimResult {
   paths: number[][];
@@ -84,6 +85,7 @@ function runSimulation(
 }
 
 export default function MonteCarloSimulation() {
+  const { t } = useTranslation();
   const [capital, setCapital] = useState(10000);
   const [winRate, setWinRate] = useState(55);
   const [avgWin, setAvgWin] = useState(2);
@@ -148,47 +150,47 @@ export default function MonteCarloSimulation() {
           </Link>
           <div className="flex items-center gap-2">
             <PieChart className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">Simulación Monte Carlo</h1>
+            <h1 className="text-lg font-bold text-foreground">{t('tools_monte_carlo_title')}</h1>
           </div>
         </div>
 
         {/* Parameters */}
         <Card className="bg-card border-border">
           <CardContent className="p-4 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Parámetros de Estrategia</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('tp_monte_carlo_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground">Capital Inicial ($)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_initial_capital')}</Label>
                 <Input type="number" value={capital} onChange={e => setCapital(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Win Rate (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_win_rate')}</Label>
                 <Input type="number" value={winRate} onChange={e => setWinRate(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Ratio Ganancia (R)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_gain_ratio')}</Label>
                 <Input type="number" step="0.1" value={avgWin} onChange={e => setAvgWin(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Ratio Pérdida (R)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_loss_ratio')}</Label>
                 <Input type="number" step="0.1" value={avgLoss} onChange={e => setAvgLoss(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Trades/Mes</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_trades_month')}</Label>
                 <Input type="number" value={tradesPerMonth} onChange={e => setTradesPerMonth(+e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Meses</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_months')}</Label>
                 <Input type="number" value={months} onChange={e => setMonths(+e.target.value)} className="mt-1" />
               </div>
               <div className="col-span-2">
-                <Label className="text-xs text-muted-foreground">Riesgo por Trade (%)</Label>
+                <Label className="text-xs text-muted-foreground">{t('tp_risk_per_trade')}</Label>
                 <Input type="number" step="0.5" value={riskPerTrade} onChange={e => setRiskPerTrade(+e.target.value)} className="mt-1" />
               </div>
             </div>
             <Button onClick={handleRun} disabled={running} className="w-full gap-2">
               <Play className="w-4 h-4" />
-              {running ? 'Simulando...' : `Ejecutar ${simulations} Simulaciones`}
+              {running ? t('tp_simulating') : t('tp_run_simulations').replace('{count}', String(simulations))}
             </Button>
           </CardContent>
         </Card>
@@ -198,12 +200,12 @@ export default function MonteCarloSimulation() {
             {/* Equity Projection Chart */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Proyección de Capital</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_capital_projection')}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} label={{ value: 'Mes', position: 'bottom', fontSize: 10 }} />
+                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} label={{ value: t('tp_month_label'), position: 'bottom', fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                       <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
                       <Area type="monotone" dataKey="p5" stackId="1" fill="hsl(var(--destructive) / 0.1)" stroke="none" />
@@ -215,7 +217,7 @@ export default function MonteCarloSimulation() {
                   </ResponsiveContainer>
                 </div>
                 <div className="flex justify-center gap-4 mt-2 text-[9px] text-muted-foreground">
-                  <span>━ Mediana</span>
+                  <span>━ {t('tp_median')}</span>
                   <span className="text-primary/60">■ P25-P75</span>
                   <span className="text-primary/30">■ P5-P95</span>
                 </div>
@@ -225,7 +227,7 @@ export default function MonteCarloSimulation() {
             {/* Distribution */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Distribución de Resultados Finales</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_distribution')}</h3>
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={distributionData}>
@@ -241,14 +243,14 @@ export default function MonteCarloSimulation() {
             {/* Stats */}
             <Card className="bg-card border-border">
               <CardContent className="p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">Estadísticas Clave</h3>
+                <h3 className="text-sm font-semibold text-foreground">{t('tp_key_stats')}</h3>
                 {[
-                  { label: 'Capital Mediano Final', value: `$${result.median.toLocaleString()}`, color: result.median > capital ? 'text-emerald-400' : 'text-rose-400' },
-                  { label: 'Mejor Escenario (P95)', value: `$${result.p95.toLocaleString()}`, color: 'text-emerald-400' },
-                  { label: 'Peor Escenario (P5)', value: `$${result.p5.toLocaleString()}`, color: 'text-rose-400' },
-                  { label: 'Max Drawdown (mediana)', value: `${(result.maxDrawdown * 100).toFixed(1)}%`, color: 'text-rose-400' },
-                  { label: 'Probabilidad de Ganancia', value: `${result.probProfit.toFixed(1)}%`, color: result.probProfit > 50 ? 'text-emerald-400' : 'text-rose-400' },
-                  { label: 'Probabilidad de Ruina (<10%)', value: `${result.probRuin.toFixed(1)}%`, color: result.probRuin < 5 ? 'text-emerald-400' : 'text-rose-400' },
+                  { label: t('tp_median_final'), value: `$${result.median.toLocaleString()}`, color: result.median > capital ? 'text-emerald-400' : 'text-rose-400' },
+                  { label: t('tp_best_scenario'), value: `$${result.p95.toLocaleString()}`, color: 'text-emerald-400' },
+                  { label: t('tp_worst_scenario'), value: `$${result.p5.toLocaleString()}`, color: 'text-rose-400' },
+                  { label: t('tp_max_drawdown'), value: `${(result.maxDrawdown * 100).toFixed(1)}%`, color: 'text-rose-400' },
+                  { label: t('tp_prob_profit'), value: `${result.probProfit.toFixed(1)}%`, color: result.probProfit > 50 ? 'text-emerald-400' : 'text-rose-400' },
+                  { label: t('tp_prob_ruin'), value: `${result.probRuin.toFixed(1)}%`, color: result.probRuin < 5 ? 'text-emerald-400' : 'text-rose-400' },
                 ].map(s => (
                   <div key={s.label} className="flex justify-between items-center py-1.5 border-b border-border/30 last:border-0">
                     <span className="text-xs text-muted-foreground">{s.label}</span>
@@ -262,9 +264,9 @@ export default function MonteCarloSimulation() {
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    La simulación Monte Carlo genera múltiples escenarios aleatorios basados en tus parámetros de trading para proyectar resultados probabilísticos. Úsala para evaluar la robustez de tu estrategia antes de arriesgar capital real.
-                  </p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                {t('tp_monte_carlo_info')}
+              </p>
                 </div>
               </CardContent>
             </Card>

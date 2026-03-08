@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Gauge, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Clock, Zap } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface VolatilityData {
   pair: string;
@@ -35,6 +36,7 @@ function generateData(): VolatilityData[] {
 type FilterLevel = 'all' | 'high' | 'medium' | 'low';
 
 export default function VolatilityScanner() {
+  const { t } = useTranslation();
   const [data, setData] = useState<VolatilityData[]>(generateData);
   const [filter, setFilter] = useState<FilterLevel>('all');
   const [loading, setLoading] = useState(false);
@@ -53,13 +55,13 @@ export default function VolatilityScanner() {
   }), [data]);
 
   const levelConfig = {
-    high: { label: 'Alta', color: 'text-rose-400', bg: 'bg-rose-500/15', icon: Zap },
-    medium: { label: 'Media', color: 'text-amber-400', bg: 'bg-amber-500/15', icon: Gauge },
-    low: { label: 'Baja', color: 'text-emerald-400', bg: 'bg-emerald-500/15', icon: Minus },
+    high: { label: t('tp_volatility_high'), color: 'text-rose-400', bg: 'bg-rose-500/15', icon: Zap },
+    medium: { label: t('tp_volatility_medium'), color: 'text-amber-400', bg: 'bg-amber-500/15', icon: Gauge },
+    low: { label: t('tp_volatility_low'), color: 'text-emerald-400', bg: 'bg-emerald-500/15', icon: Minus },
   };
 
-  const trendLabel = (t: VolatilityData['trend']) => t === 'expanding' ? '↑ Expandiendo' : t === 'contracting' ? '↓ Contrayendo' : '→ Estable';
-  const trendColor = (t: VolatilityData['trend']) => t === 'expanding' ? 'text-rose-400' : t === 'contracting' ? 'text-emerald-400' : 'text-muted-foreground';
+  const trendLabel = (tr: VolatilityData['trend']) => tr === 'expanding' ? t('tp_expanding') : tr === 'contracting' ? t('tp_contracting') : t('tp_stable');
+  const trendColor = (tr: VolatilityData['trend']) => tr === 'expanding' ? 'text-rose-400' : tr === 'contracting' ? 'text-emerald-400' : 'text-muted-foreground';
 
   return (
     <PageShell>
@@ -72,7 +74,7 @@ export default function VolatilityScanner() {
             </Link>
             <div className="flex items-center gap-2">
               <Gauge className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Escáner de Volatilidad</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tools_volatility_title')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
@@ -83,9 +85,9 @@ export default function VolatilityScanner() {
         {/* Summary */}
         <div className="grid grid-cols-3 gap-2">
           {([
-            { key: 'high' as const, label: 'Alta', count: summary.high, color: 'text-rose-400', Icon: Zap },
-            { key: 'medium' as const, label: 'Media', count: summary.medium, color: 'text-amber-400', Icon: Gauge },
-            { key: 'low' as const, label: 'Baja', count: summary.low, color: 'text-emerald-400', Icon: Minus },
+            { key: 'high' as const, label: t('tp_volatility_high'), count: summary.high, color: 'text-rose-400', Icon: Zap },
+            { key: 'medium' as const, label: t('tp_volatility_medium'), count: summary.medium, color: 'text-amber-400', Icon: Gauge },
+            { key: 'low' as const, label: t('tp_volatility_low'), count: summary.low, color: 'text-emerald-400', Icon: Minus },
           ]).map(s => (
             <Card key={s.key} className="bg-card border-border">
               <CardContent className="p-3 text-center">
@@ -100,10 +102,10 @@ export default function VolatilityScanner() {
         {/* Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
           {([
-            { id: 'all' as FilterLevel, label: 'Todos' },
-            { id: 'high' as FilterLevel, label: '🔴 Alta' },
-            { id: 'medium' as FilterLevel, label: '🟡 Media' },
-            { id: 'low' as FilterLevel, label: '🟢 Baja' },
+            { id: 'all' as FilterLevel, label: t('tp_all') },
+            { id: 'high' as FilterLevel, label: `🔴 ${t('tp_volatility_high')}` },
+            { id: 'medium' as FilterLevel, label: `🟡 ${t('tp_volatility_medium')}` },
+            { id: 'low' as FilterLevel, label: `🟢 ${t('tp_volatility_low')}` },
           ]).map(f => (
             <button key={f.id} onClick={() => setFilter(f.id)} className={cn(
               'flex-1 py-2 rounded-md text-xs font-medium transition-all',
@@ -116,10 +118,10 @@ export default function VolatilityScanner() {
         <Card className="bg-card border-border">
           <CardContent className="p-0">
             <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Par</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('tp_pair')}</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-right w-14">ATR14</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-14">Vol%</span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-20">Tendencia</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-20">{t('tp_trend')}</span>
             </div>
 
             {filtered.map((item, i) => {
@@ -158,7 +160,7 @@ export default function VolatilityScanner() {
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
           <Clock className="w-3 h-3" />
-          Actualizado: {lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+          {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
         <Card className="bg-card border-border">
@@ -166,7 +168,7 @@ export default function VolatilityScanner() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                ATR14 mide el rango promedio de las últimas 14 velas. Volatilidad alta = más oportunidad pero más riesgo. La tendencia de volatilidad indica si el mercado se está calmando o activando.
+                {t('tp_volatility_info')}
               </p>
             </div>
           </CardContent>

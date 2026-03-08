@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, CandlestickChart, RefreshCw, TrendingUp, TrendingDown, Info, Clock, Zap, Eye } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface PatternResult {
   pair: string;
@@ -48,6 +49,7 @@ function generatePatterns(): PatternResult[] {
 type FilterType = 'all' | 'bullish' | 'bearish' | 'neutral';
 
 export default function PatternScreener() {
+  const { t } = useTranslation();
   const [patterns, setPatterns] = useState<PatternResult[]>(generatePatterns);
   const [filter, setFilter] = useState<FilterType>('all');
   const [loading, setLoading] = useState(false);
@@ -79,7 +81,7 @@ export default function PatternScreener() {
             </Link>
             <div className="flex items-center gap-2">
               <CandlestickChart className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Screener de Patrones</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('tools_pattern_screener_title')}</h1>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
@@ -90,10 +92,10 @@ export default function PatternScreener() {
         {/* Summary */}
         <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'Total', value: summary.total, icon: Eye, color: 'text-primary' },
-            { label: 'Alcistas', value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
-            { label: 'Bajistas', value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
-            { label: 'Neutros', value: summary.neutral, icon: CandlestickChart, color: 'text-muted-foreground' },
+            { label: t('tp_pattern_total'), value: summary.total, icon: Eye, color: 'text-primary' },
+            { label: t('tp_pattern_bullish'), value: summary.bullish, icon: TrendingUp, color: 'text-emerald-400' },
+            { label: t('tp_pattern_bearish'), value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
+            { label: t('tp_pattern_neutral'), value: summary.neutral, icon: CandlestickChart, color: 'text-muted-foreground' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
               <CardContent className="p-3 text-center">
@@ -108,10 +110,10 @@ export default function PatternScreener() {
         {/* Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
           {([
-            { id: 'all' as FilterType, label: 'Todos' },
-            { id: 'bullish' as FilterType, label: '🟢 Alcista' },
-            { id: 'bearish' as FilterType, label: '🔴 Bajista' },
-            { id: 'neutral' as FilterType, label: '⚪ Neutral' },
+            { id: 'all' as FilterType, label: t('tp_all') },
+            { id: 'bullish' as FilterType, label: `🟢 ${t('tp_trend_bullish')}` },
+            { id: 'bearish' as FilterType, label: `🔴 ${t('tp_trend_bearish')}` },
+            { id: 'neutral' as FilterType, label: `⚪ ${t('tp_trend_neutral')}` },
           ]).map(f => (
             <button key={f.id} onClick={() => setFilter(f.id)} className={cn(
               'flex-1 py-2 rounded-md text-xs font-medium transition-all',
@@ -126,7 +128,7 @@ export default function PatternScreener() {
             {filtered.length === 0 ? (
               <div className="p-8 text-center">
                 <CandlestickChart className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-40" />
-                <p className="text-sm text-muted-foreground">No se detectaron patrones con este filtro</p>
+                <p className="text-sm text-muted-foreground">{t('tp_no_patterns')}</p>
               </div>
             ) : (
               filtered.map((item, i) => (
@@ -169,7 +171,7 @@ export default function PatternScreener() {
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
           <Clock className="w-3 h-3" />
-          Actualizado: {lastUpdate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+          {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
         <Card className="bg-card border-border">
@@ -177,7 +179,7 @@ export default function PatternScreener() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                El screener detecta patrones de velas japonesas y figuras chartistas en múltiples temporalidades. Las estrellas (★) indican la fiabilidad histórica del patrón. Confirma siempre con otros indicadores.
+                {t('tp_pattern_info')}
               </p>
             </div>
           </CardContent>
