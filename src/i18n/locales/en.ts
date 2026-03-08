@@ -1424,6 +1424,10 @@ const en: TranslationKeys = {
   stock_create: 'Create',
   stock_triggered: 'Triggered',
   stock_no_alerts: 'No alerts configured for',
+  pwa_install_title: 'Install Coins Signals',
+  pwa_install_desc: 'Quick access & notifications',
+  pwa_install_btn: 'Install',
+  pwa_learn_more: 'Learn more',
 };
 
 export default en;
