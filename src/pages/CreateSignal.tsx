@@ -588,7 +588,7 @@ export default function CreateSignal() {
                   className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all bg-card/80 border border-border/40 hover:bg-card text-foreground"
                 >
                   {showCardPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  {showCardPreview ? 'Ocultar vista previa' : 'Vista previa de tarjeta'}
+                  {showCardPreview ? t('cs_hide_preview') : t('cs_show_preview')}
                 </button>
 
                 {showCardPreview && (
