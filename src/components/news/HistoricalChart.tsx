@@ -1,6 +1,7 @@
 import { HistoricalAnalysis, HistoricalDataPoint } from '@/types/news';
 import { cn } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface HistoricalChartProps {
   analysis: HistoricalAnalysis;

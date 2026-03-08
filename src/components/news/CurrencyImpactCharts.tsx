@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ResponsiveContainer, Tooltip, XAxis, YAxis, ComposedChart, Bar, Cell, Line, ReferenceLine } from 'recharts';
 import { Loader2, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { CURRENCIES, Currency, EconomicCategory } from '@/types/news';
 
 interface CurrencyBreakdown {
