@@ -120,7 +120,7 @@ export function RiskRewardCalculator({ currentPrice, symbol, resistance, support
       <div className="space-y-1">
         <div className="flex justify-between text-[9px] text-gray-500">
           <span>SL: {stopLoss}</span>
-          <span>Entrada: {entry}</span>
+          <span>{t('analysis_rr_entry')}: {entry}</span>
           <span>TP: {takeProfit}</span>
         </div>
         <div className="h-2 bg-gray-800 rounded-full overflow-hidden flex">
