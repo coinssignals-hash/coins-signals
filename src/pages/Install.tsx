@@ -18,6 +18,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function Install() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop'>('desktop');
