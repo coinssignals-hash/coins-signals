@@ -36,6 +36,7 @@ function generateData(): VolatilityData[] {
 type FilterLevel = 'all' | 'high' | 'medium' | 'low';
 
 export default function VolatilityScanner() {
+  const { t } = useTranslation();
   const [data, setData] = useState<VolatilityData[]>(generateData);
   const [filter, setFilter] = useState<FilterLevel>('all');
   const [loading, setLoading] = useState(false);
@@ -54,13 +55,13 @@ export default function VolatilityScanner() {
   }), [data]);
 
   const levelConfig = {
-    high: { label: 'Alta', color: 'text-rose-400', bg: 'bg-rose-500/15', icon: Zap },
-    medium: { label: 'Media', color: 'text-amber-400', bg: 'bg-amber-500/15', icon: Gauge },
-    low: { label: 'Baja', color: 'text-emerald-400', bg: 'bg-emerald-500/15', icon: Minus },
+    high: { label: t('tp_volatility_high'), color: 'text-rose-400', bg: 'bg-rose-500/15', icon: Zap },
+    medium: { label: t('tp_volatility_medium'), color: 'text-amber-400', bg: 'bg-amber-500/15', icon: Gauge },
+    low: { label: t('tp_volatility_low'), color: 'text-emerald-400', bg: 'bg-emerald-500/15', icon: Minus },
   };
 
-  const trendLabel = (t: VolatilityData['trend']) => t === 'expanding' ? '↑ Expandiendo' : t === 'contracting' ? '↓ Contrayendo' : '→ Estable';
-  const trendColor = (t: VolatilityData['trend']) => t === 'expanding' ? 'text-rose-400' : t === 'contracting' ? 'text-emerald-400' : 'text-muted-foreground';
+  const trendLabel = (tr: VolatilityData['trend']) => tr === 'expanding' ? t('tp_expanding') : tr === 'contracting' ? t('tp_contracting') : t('tp_stable');
+  const trendColor = (tr: VolatilityData['trend']) => tr === 'expanding' ? 'text-rose-400' : tr === 'contracting' ? 'text-emerald-400' : 'text-muted-foreground';
 
   return (
     <PageShell>
