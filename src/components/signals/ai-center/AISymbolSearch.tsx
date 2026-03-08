@@ -153,7 +153,7 @@ export function AISymbolSearch({ value, onChange, onSelect, activeCategory = 'al
     if (isFavorite(item.symbol)) {
       removeFavorite(item.symbol);
     } else {
-      addFavorite(item.symbol, item.name, getTypeLabel(item.type));
+      addFavorite(item.symbol, item.name, getTypeLabel(item.type, t));
     }
   };
 
