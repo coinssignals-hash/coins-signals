@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PageShell } from '@/components/layout/PageShell';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
