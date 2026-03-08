@@ -495,7 +495,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                 </span>
               </div>
               {priceDiff.hasData && quote?.timestamp &&
-              <PriceAge timestamp={quote.timestamp} />
+              <PriceAge timestamp={quote.timestamp} agoLabel={t('signal_ago')} />
               }
             </div>
             {/* Circle with price below */}
