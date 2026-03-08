@@ -422,7 +422,7 @@ export default function TradingJournal() {
                   <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="bg-secondary border-border text-foreground" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Par</Label>
+                  <Label className="text-xs text-muted-foreground">{t('journal_pair')}</Label>
                   <Select value={pair} onValueChange={setPair}>
                     <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
                     <SelectContent>{PAIRS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
