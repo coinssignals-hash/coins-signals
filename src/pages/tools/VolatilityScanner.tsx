@@ -85,9 +85,9 @@ export default function VolatilityScanner() {
         {/* Summary */}
         <div className="grid grid-cols-3 gap-2">
           {([
-            { key: 'high' as const, label: 'Alta', count: summary.high, color: 'text-rose-400', Icon: Zap },
-            { key: 'medium' as const, label: 'Media', count: summary.medium, color: 'text-amber-400', Icon: Gauge },
-            { key: 'low' as const, label: 'Baja', count: summary.low, color: 'text-emerald-400', Icon: Minus },
+            { key: 'high' as const, label: t('tp_volatility_high'), count: summary.high, color: 'text-rose-400', Icon: Zap },
+            { key: 'medium' as const, label: t('tp_volatility_medium'), count: summary.medium, color: 'text-amber-400', Icon: Gauge },
+            { key: 'low' as const, label: t('tp_volatility_low'), count: summary.low, color: 'text-emerald-400', Icon: Minus },
           ]).map(s => (
             <Card key={s.key} className="bg-card border-border">
               <CardContent className="p-3 text-center">
