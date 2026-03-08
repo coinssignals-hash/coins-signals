@@ -1,5 +1,6 @@
 import { AlertTriangle, RefreshCw, WifiOff, Server } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface AnalysisErrorProps {
   title?: string;
