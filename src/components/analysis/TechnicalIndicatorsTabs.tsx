@@ -10,6 +10,7 @@ import type { OHLCVCandle, TimeValue, MACDData, BandData, StochasticData, ADXDat
 import {
   calcRSI, calcMACD, calcSMA, calcEMA, calcBollingerBands, calcStochastic, calcADX } from
 '@/lib/indicators';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   candles: OHLCVCandle[];
@@ -17,12 +18,12 @@ interface Props {
   priceChart?: ReactNode;
 }
 
+type TFn = (key: string) => string;
+
 function formatTime(t: string) {
-  // Handle various formats: "2026-02-27 08:00:00", "2026-02-27T08:00:00Z", "2026-02-27 08:00"
   const normalized = t.includes('T') ? t : t.replace(' ', 'T');
   const d = new Date(normalized.endsWith('Z') ? normalized : normalized + 'Z');
   if (isNaN(d.getTime())) {
-    // Fallback: extract time from string directly
     const match = t.match(/(\d{2}):(\d{2})/);
     return match ? `${match[1]}:${match[2]}` : t.slice(-5);
   }
@@ -39,11 +40,10 @@ function SignalBadge({ signal, label }: {signal: 'buy' | 'sell' | 'neutral';labe
     <span className={cn('px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border', colors[signal])}>
       {label}
     </span>);
-
 }
 
 // ═══════════════ RSI TAB ═══════════════
-function RSIPanel({ candles }: {candles: OHLCVCandle[];}) {
+function RSIPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const rsi = calcRSI(candles);
     return rsi.map((r) => ({ time: formatTime(r.time), rsi: +r.value.toFixed(2) }));
@@ -51,14 +51,14 @@ function RSIPanel({ candles }: {candles: OHLCVCandle[];}) {
 
   const current = data[data.length - 1]?.rsi ?? 50;
   const signal: 'buy' | 'sell' | 'neutral' = current >= 70 ? 'sell' : current <= 30 ? 'buy' : 'neutral';
-  const signalLabel = signal === 'sell' ? 'Sobrecompra' : signal === 'buy' ? 'Sobreventa' : 'Neutral';
+  const signalLabel = signal === 'sell' ? t('analysis_ti_overbought') : signal === 'buy' ? t('analysis_ti_oversold') : t('analysis_ti_neutral');
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-lg font-mono font-bold text-white tabular-nums">{current.toFixed(1)}</span>
-          <span className="text-xs text-gray-500 ml-2">/ 100</span>
+          <span className="text-lg font-mono font-bold text-foreground tabular-nums">{current.toFixed(1)}</span>
+          <span className="text-xs text-muted-foreground ml-2">/ 100</span>
         </div>
         <SignalBadge signal={signal} label={signalLabel} />
       </div>
@@ -88,23 +88,22 @@ function RSIPanel({ candles }: {candles: OHLCVCandle[];}) {
       <div className="grid grid-cols-3 gap-2 text-[10px]">
         <div className="bg-green-500/5 border border-green-500/10 rounded-lg p-2 text-center">
           <div className="text-green-400 font-bold">≤ 30</div>
-          <div className="text-gray-500">Sobreventa</div>
+          <div className="text-muted-foreground">{t('analysis_ti_oversold')}</div>
         </div>
         <div className="bg-gray-500/5 border border-gray-500/10 rounded-lg p-2 text-center">
-          <div className="text-gray-400 font-bold">30 – 70</div>
-          <div className="text-gray-500">Neutral</div>
+          <div className="text-muted-foreground font-bold">30 – 70</div>
+          <div className="text-muted-foreground">{t('analysis_ti_neutral')}</div>
         </div>
         <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-2 text-center">
           <div className="text-red-400 font-bold">≥ 70</div>
-          <div className="text-gray-500">Sobrecompra</div>
+          <div className="text-muted-foreground">{t('analysis_ti_overbought')}</div>
         </div>
       </div>
     </div>);
-
 }
 
 // ═══════════════ MACD TAB ═══════════════
-function MACDPanel({ candles }: {candles: OHLCVCandle[];}) {
+function MACDPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const macd = calcMACD(candles);
     return macd.map((m) => ({
@@ -118,22 +117,22 @@ function MACDPanel({ candles }: {candles: OHLCVCandle[];}) {
   const latest = data[data.length - 1];
   const prev = data[data.length - 2];
   let signal: 'buy' | 'sell' | 'neutral' = 'neutral';
-  let label = 'Neutral';
+  let label = t('analysis_ti_neutral');
   if (latest && prev) {
     const bullCross = prev.macd <= prev.signal && latest.macd > latest.signal;
     const bearCross = prev.macd >= prev.signal && latest.macd < latest.signal;
-    if (bullCross) {signal = 'buy';label = 'Cruce Alcista ⚡';} else
-    if (bearCross) {signal = 'sell';label = 'Cruce Bajista ⚡';} else
-    if (latest.macd > latest.signal) {signal = 'buy';label = 'Alcista';} else
-    {signal = 'sell';label = 'Bajista';}
+    if (bullCross) {signal = 'buy';label = t('analysis_ti_bullish_cross');} else
+    if (bearCross) {signal = 'sell';label = t('analysis_ti_bearish_cross');} else
+    if (latest.macd > latest.signal) {signal = 'buy';label = t('analysis_ti_bullish');} else
+    {signal = 'sell';label = t('analysis_ti_bearish');}
   }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="space-x-3">
-          <span className="text-[10px] text-gray-500">MACD: <span className="text-cyan-400 font-mono">{latest?.macd ?? '—'}</span></span>
-          <span className="text-[10px] text-gray-500">Signal: <span className="text-amber-400 font-mono">{latest?.signal ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">MACD: <span className="text-cyan-400 font-mono">{latest?.macd ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">Signal: <span className="text-amber-400 font-mono">{latest?.signal ?? '—'}</span></span>
         </div>
         <SignalBadge signal={signal} label={label} />
       </div>
@@ -160,17 +159,16 @@ function MACDPanel({ candles }: {candles: OHLCVCandle[];}) {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <div className="text-[10px] text-gray-500">
+      <div className="text-[10px] text-muted-foreground">
         <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1" /> MACD (12,26)
         <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1 ml-3" /> Signal (9)
-        <span className="inline-block w-2 h-2 rounded-sm bg-gray-500/50 mr-1 ml-3" /> Histograma
+        <span className="inline-block w-2 h-2 rounded-sm bg-gray-500/50 mr-1 ml-3" /> {t('analysis_ti_histogram')}
       </div>
     </div>);
-
 }
 
 // ═══════════════ BOLLINGER TAB ═══════════════
-function BollingerPanel({ candles }: {candles: OHLCVCandle[];}) {
+function BollingerPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const bb = calcBollingerBands(candles);
     return bb.map((b) => ({
@@ -185,16 +183,16 @@ function BollingerPanel({ candles }: {candles: OHLCVCandle[];}) {
   const latest = data[data.length - 1];
   const bandwidth = latest ? ((latest.upper - latest.lower) / latest.middle * 100).toFixed(2) : '—';
   let signal: 'buy' | 'sell' | 'neutral' = 'neutral';
-  let label = 'Dentro de bandas';
+  let label = t('analysis_ti_inside_bands');
   if (latest) {
-    if (latest.price >= latest.upper) {signal = 'sell';label = 'Banda superior';} else
-    if (latest.price <= latest.lower) {signal = 'buy';label = 'Banda inferior';}
+    if (latest.price >= latest.upper) {signal = 'sell';label = t('analysis_ti_upper_band');} else
+    if (latest.price <= latest.lower) {signal = 'buy';label = t('analysis_ti_lower_band');}
   }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="text-[10px] text-gray-500">Ancho: <span className="text-cyan-400 font-mono">{bandwidth}%</span></div>
+        <div className="text-[10px] text-muted-foreground">{t('analysis_ti_width')}: <span className="text-cyan-400 font-mono">{bandwidth}%</span></div>
         <SignalBadge signal={signal} label={label} />
       </div>
       <div className="h-[180px]">
@@ -221,16 +219,15 @@ function BollingerPanel({ candles }: {candles: OHLCVCandle[];}) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      <div className="text-[10px] text-gray-500">
-        <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1" /> Precio
-        <span className="inline-block w-2 h-2 rounded-full bg-purple-500 mr-1 ml-3" /> Bandas (20, 2σ)
+      <div className="text-[10px] text-muted-foreground">
+        <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1" /> {t('analysis_ti_price_label')}
+        <span className="inline-block w-2 h-2 rounded-full bg-purple-500 mr-1 ml-3" /> {t('analysis_ti_bands_label')} (20, 2σ)
       </div>
     </div>);
-
 }
 
 // ═══════════════ STOCHASTIC TAB ═══════════════
-function StochasticPanel({ candles }: {candles: OHLCVCandle[];}) {
+function StochasticPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const stoch = calcStochastic(candles);
     return stoch.map((s) => ({
@@ -242,18 +239,18 @@ function StochasticPanel({ candles }: {candles: OHLCVCandle[];}) {
 
   const latest = data[data.length - 1];
   let signal: 'buy' | 'sell' | 'neutral' = 'neutral';
-  let label = 'Neutral';
+  let label = t('analysis_ti_neutral');
   if (latest) {
-    if (latest.k >= 80) {signal = 'sell';label = 'Sobrecompra';} else
-    if (latest.k <= 20) {signal = 'buy';label = 'Sobreventa';}
+    if (latest.k >= 80) {signal = 'sell';label = t('analysis_ti_overbought');} else
+    if (latest.k <= 20) {signal = 'buy';label = t('analysis_ti_oversold');}
   }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="space-x-3">
-          <span className="text-[10px] text-gray-500">%K: <span className="text-cyan-400 font-mono">{latest?.k?.toFixed(1) ?? '—'}</span></span>
-          <span className="text-[10px] text-gray-500">%D: <span className="text-amber-400 font-mono">{latest?.d?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">%K: <span className="text-cyan-400 font-mono">{latest?.k?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">%D: <span className="text-amber-400 font-mono">{latest?.d?.toFixed(1) ?? '—'}</span></span>
         </div>
         <SignalBadge signal={signal} label={label} />
       </div>
@@ -274,16 +271,15 @@ function StochasticPanel({ candles }: {candles: OHLCVCandle[];}) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="text-[10px] text-gray-500">
+      <div className="text-[10px] text-muted-foreground">
         <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1" /> %K (14,3)
         <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1 ml-3" /> %D (3)
       </div>
     </div>);
-
 }
 
 // ═══════════════ ADX TAB ═══════════════
-function ADXPanel({ candles }: {candles: OHLCVCandle[];}) {
+function ADXPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const adx = calcADX(candles);
     return adx.map((a) => ({
@@ -297,21 +293,21 @@ function ADXPanel({ candles }: {candles: OHLCVCandle[];}) {
   const latest = data[data.length - 1];
   const adxVal = latest?.adx ?? 0;
   let signal: 'buy' | 'sell' | 'neutral' = 'neutral';
-  let label = 'Sin tendencia';
+  let label = t('analysis_ti_no_trend');
   if (latest) {
-    if (adxVal >= 25 && latest.plusDI > latest.minusDI) {signal = 'buy';label = 'Tendencia alcista';} else
-    if (adxVal >= 25 && latest.minusDI > latest.plusDI) {signal = 'sell';label = 'Tendencia bajista';} else
-    if (adxVal < 20) {label = 'Sin tendencia';} else
-    {label = 'Débil';}
+    if (adxVal >= 25 && latest.plusDI > latest.minusDI) {signal = 'buy';label = t('analysis_ti_bullish_trend');} else
+    if (adxVal >= 25 && latest.minusDI > latest.plusDI) {signal = 'sell';label = t('analysis_ti_bearish_trend');} else
+    if (adxVal < 20) {label = t('analysis_ti_no_trend');} else
+    {label = t('analysis_ti_weak');}
   }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="space-x-3">
-          <span className="text-[10px] text-gray-500">ADX: <span className="text-cyan-400 font-mono">{latest?.adx?.toFixed(1) ?? '—'}</span></span>
-          <span className="text-[10px] text-gray-500">+DI: <span className="text-green-400 font-mono">{latest?.plusDI?.toFixed(1) ?? '—'}</span></span>
-          <span className="text-[10px] text-gray-500">-DI: <span className="text-red-400 font-mono">{latest?.minusDI?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">ADX: <span className="text-cyan-400 font-mono">{latest?.adx?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">+DI: <span className="text-green-400 font-mono">{latest?.plusDI?.toFixed(1) ?? '—'}</span></span>
+          <span className="text-[10px] text-muted-foreground">-DI: <span className="text-red-400 font-mono">{latest?.minusDI?.toFixed(1) ?? '—'}</span></span>
         </div>
         <SignalBadge signal={signal} label={label} />
       </div>
@@ -334,25 +330,24 @@ function ADXPanel({ candles }: {candles: OHLCVCandle[];}) {
       </div>
       <div className="grid grid-cols-2 gap-2 text-[10px]">
         <div className="bg-gray-500/5 border border-gray-500/10 rounded-lg p-2 text-center">
-          <div className="text-gray-400 font-bold">&lt; 20</div>
-          <div className="text-gray-500">Sin tendencia</div>
+          <div className="text-muted-foreground font-bold">&lt; 20</div>
+          <div className="text-muted-foreground">{t('analysis_ti_no_trend')}</div>
         </div>
         <div className="bg-cyan-500/5 border border-cyan-500/10 rounded-lg p-2 text-center">
           <div className="text-cyan-400 font-bold">≥ 25</div>
-          <div className="text-gray-500">Tendencia fuerte</div>
+          <div className="text-muted-foreground">{t('analysis_ti_strong_trend')}</div>
         </div>
       </div>
-      <div className="text-[10px] text-gray-500">
+      <div className="text-[10px] text-muted-foreground">
         <span className="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1" /> ADX (14)
         <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1 ml-3" /> +DI
         <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1 ml-3" /> -DI
       </div>
     </div>);
-
 }
 
 // ═══════════════ MOVING AVERAGES TAB ═══════════════
-function MovingAveragesPanel({ candles }: {candles: OHLCVCandle[];}) {
+function MovingAveragesPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const ema20 = calcEMA(candles, 20);
     const ema50 = calcEMA(candles, 50);
@@ -376,22 +371,22 @@ function MovingAveragesPanel({ candles }: {candles: OHLCVCandle[];}) {
   const e20 = latest?.ema20;
   const e50 = latest?.ema50;
   let signal: 'buy' | 'sell' | 'neutral' = 'neutral';
-  let label = 'Neutral';
+  let label = t('analysis_ti_neutral');
   if (e20 && e50) {
     const aboveBoth = price > e20 && price > e50;
     const belowBoth = price < e20 && price < e50;
     const golden = e20 > e50;
     if (aboveBoth && golden) {signal = 'buy';label = 'Golden Cross';} else
     if (belowBoth && !golden) {signal = 'sell';label = 'Death Cross';} else
-    if (aboveBoth) {signal = 'buy';label = 'Por encima';} else
-    if (belowBoth) {signal = 'sell';label = 'Por debajo';} else
-    {label = 'Mixto';}
+    if (aboveBoth) {signal = 'buy';label = t('analysis_ti_above');} else
+    if (belowBoth) {signal = 'sell';label = t('analysis_ti_below');} else
+    {label = t('analysis_ti_mixed');}
   }
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="space-x-3 text-[10px] text-gray-500">
+        <div className="space-x-3 text-[10px] text-muted-foreground">
           {e20 && <span>EMA20: <span className="text-green-400 font-mono">{e20.toFixed(5)}</span></span>}
           {e50 && <span>EMA50: <span className="text-amber-400 font-mono">{e50.toFixed(5)}</span></span>}
         </div>
@@ -415,18 +410,18 @@ function MovingAveragesPanel({ candles }: {candles: OHLCVCandle[];}) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="text-[10px] text-gray-500">
-        <span className="inline-block w-2 h-2 rounded-full bg-gray-500 mr-1" /> Precio
+      <div className="text-[10px] text-muted-foreground">
+        <span className="inline-block w-2 h-2 rounded-full bg-gray-500 mr-1" /> {t('analysis_ti_price_label')}
         <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1 ml-3" /> EMA 20
         <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1 ml-3" /> EMA 50
         <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1 ml-3" /> SMA 200
       </div>
     </div>);
-
 }
 
 // ═══════════════ MAIN COMPONENT ═══════════════
 export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('precio');
 
   if (loading || !candles || candles.length === 0) {
@@ -435,18 +430,16 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
         <div className="h-4 w-32 bg-cyan-900/20 rounded mb-4" />
         <div className="h-[180px] bg-cyan-900/10 rounded" />
       </div>);
-
   }
 
   const tabs = [
-  { value: 'precio', label: 'Precio', icon: CandlestickIcon },
+  { value: 'precio', label: t('analysis_ti_price'), icon: CandlestickIcon },
   { value: 'rsi', label: 'RSI', icon: Gauge },
   { value: 'macd', label: 'MACD', icon: BarChart3 },
   { value: 'bollinger', label: 'Bollinger', icon: Waves },
-  { value: 'stochastic', label: 'Estoc.', icon: Activity },
+  { value: 'stochastic', label: t('analysis_ti_stoch'), icon: Activity },
   { value: 'adx', label: 'ADX', icon: TrendingUp },
-  { value: 'ma', label: 'Medias', icon: GitBranch }];
-
+  { value: 'ma', label: t('analysis_ti_averages'), icon: GitBranch }];
 
   return (
     <div className="bg-[#0a1628] border border-cyan-900/20 rounded-xl overflow-hidden">
@@ -463,34 +456,36 @@ export function TechnicalIndicatorsTabs({ candles, loading, priceChart }: Props)
                 <Icon className="w-3 h-3 flex-shrink-0" />
                 <span className="truncate">{tab.label}</span>
               </TabsTrigger>);
-
           })}
         </TabsList>
 
         <TabsContent value="precio" className="mt-0">
           {priceChart}
         </TabsContent>
-        
 
+        <TabsContent value="rsi" className="p-3 mt-0">
+          <RSIPanel candles={candles} t={t} />
+        </TabsContent>
 
+        <TabsContent value="macd" className="p-3 mt-0">
+          <MACDPanel candles={candles} t={t} />
+        </TabsContent>
 
+        <TabsContent value="bollinger" className="p-3 mt-0">
+          <BollingerPanel candles={candles} t={t} />
+        </TabsContent>
 
+        <TabsContent value="stochastic" className="p-3 mt-0">
+          <StochasticPanel candles={candles} t={t} />
+        </TabsContent>
 
+        <TabsContent value="adx" className="p-3 mt-0">
+          <ADXPanel candles={candles} t={t} />
+        </TabsContent>
 
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        <TabsContent value="ma" className="p-3 mt-0">
+          <MovingAveragesPanel candles={candles} t={t} />
+        </TabsContent>
       </Tabs>
     </div>);
-
 }
