@@ -82,6 +82,7 @@ function CompactSummary({ analysis }: { analysis: NewsAIAnalysis }) {
 }
 
 export function NewsAISummaryInline({ news }: NewsAISummaryInlineProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { data: analysis, isLoading, error } = useNewsAIAnalysis(expanded ? news : null);
 
