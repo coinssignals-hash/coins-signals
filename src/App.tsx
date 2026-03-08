@@ -39,6 +39,7 @@ const CreateSignal = lazy(() => import("./pages/CreateSignal"));
 const AICenter = lazy(() => import("./pages/AICenter"));
 const Stocks = lazy(() => import("./pages/Stocks"));
 const MediaLibrary = lazy(() => import("./pages/MediaLibrary"));
+const Tools = lazy(() => import("./pages/Tools"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -101,6 +102,7 @@ function AnimatedRoutes() {
           
           <Route path="/ai-center" element={<SubscriptionGate requiredTier="plus" featureName="Centro de IA"><AICenter /></SubscriptionGate>} />
           <Route path="/stocks" element={<SubscriptionGate requiredTier="plus" featureName="Análisis de Acciones"><Stocks /></SubscriptionGate>} />
+          <Route path="/tools" element={<Tools />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
