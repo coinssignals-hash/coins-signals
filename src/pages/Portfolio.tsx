@@ -278,9 +278,10 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.24 }}
           >
-            <h2 className="text-sm font-semibold text-primary mb-3">
-              Posiciones Abiertas
-              <span className="text-muted-foreground font-normal ml-2 text-[10px]">{allPositions.length} activas</span>
+             <h2 className="text-sm font-semibold text-primary mb-3">
+               {t('portfolio_open_positions')}
+               <span className="text-muted-foreground font-normal ml-2 text-[10px]">{allPositions.length} {t('portfolio_active')}</span>
+             </h2>
             </h2>
             <Card className="bg-card border-border">
               <CardContent className="p-0">
