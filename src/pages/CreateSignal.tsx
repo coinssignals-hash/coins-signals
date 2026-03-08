@@ -413,7 +413,7 @@ export default function CreateSignal() {
                 type="text"
                 value={currencyPair}
                 onChange={(e) => setCurrencyPair(e.target.value.toUpperCase())}
-                placeholder="O escribe el par..."
+                placeholder={t('cs_type_pair')}
                 disabled={!!editingSignal}
                 className="w-full bg-card/60 border border-border/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
               />
