@@ -26,6 +26,8 @@ interface CacheEntry {
 }
 
 export function CacheStatsPanel() {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const [stats, setStats] = useState<CacheStats | null>(null);
   const [entries, setEntries] = useState<CacheEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
