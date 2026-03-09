@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { SubscriptionGate } from "@/components/subscriptions/SubscriptionGate";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -85,8 +85,21 @@ import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
+function useAdminHostnameRedirect() {
+  const location = useLocation();
+  useEffect(() => {
+    if (
+      window.location.hostname === 'admin.coinssignals.com' &&
+      !location.pathname.startsWith('/admin')
+    ) {
+      window.location.replace('/admin');
+    }
+  }, [location.pathname]);
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
+  useAdminHostnameRedirect();
   return (
     <AnimatePresence mode="wait">
       <Suspense fallback={<PageLoader />} key={location.pathname}>
