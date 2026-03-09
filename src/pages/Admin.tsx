@@ -83,6 +83,7 @@ export default function Admin() {
       case 'dashboard': return <AdminDashboardTab />;
       case 'users': return <AdminUsersTab />;
       case 'signals': return <AdminSignalsTab />;
+      case 'notifications': return <AdminNotificationsTab />;
       case 'analytics': return <AdminAnalyticsTab />;
       case 'tables': return <AdminTablesTabV2 />;
       case 'audit': return <AdminAuditTab />;
