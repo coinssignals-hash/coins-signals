@@ -8,7 +8,7 @@ import {
   FileText,
   ScrollText,
   Bell,
-  Settings,
+  Bell,
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
