@@ -87,8 +87,7 @@ import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
 function useAdminHostnameRedirect() {
   const location = useLocation();
-  const navigate = React.lazy ? undefined : undefined; // placeholder
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       window.location.hostname === 'admin.coinssignals.com' &&
       !location.pathname.startsWith('/admin')
