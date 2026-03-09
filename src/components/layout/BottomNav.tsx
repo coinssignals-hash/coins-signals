@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Newspaper, TrendingUp, Wallet, BarChart2, Brain, CandlestickChart } from 'lucide-react';
+import { Newspaper, TrendingUp, Wallet, BarChart2, Brain, CandlestickChart, ShieldAlert } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useEffect } from 'react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useUserRole } from '@/hooks/useUserRole';
 
 export function BottomNav() {
   const location = useLocation();
