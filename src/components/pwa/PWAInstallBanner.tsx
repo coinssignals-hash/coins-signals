@@ -17,8 +17,12 @@ export function PWAInstallBanner() {
   const [show, setShow] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
+    if (isAdminRoute) { setShow(false); return; }
     // Don't show if already installed as PWA
     if (window.matchMedia('(display-mode: standalone)').matches) return;
 

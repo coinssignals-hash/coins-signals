@@ -33,9 +33,14 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
+  // Hide on admin route
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   useEffect(() => {
+    if (isAdminRoute) return;
     const hasSeenTour = localStorage.getItem('onboarding_completed');
     if (!hasSeenTour || forceShow) {
       // Small delay to let the page load
