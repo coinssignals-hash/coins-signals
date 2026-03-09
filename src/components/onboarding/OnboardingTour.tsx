@@ -47,7 +47,9 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
       const timer = setTimeout(() => setIsOpen(true), 500);
       return () => clearTimeout(timer);
     }
-  }, [forceShow]);
+  }, [forceShow, isAdminRoute]);
+
+  if (isAdminRoute) return null;
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
