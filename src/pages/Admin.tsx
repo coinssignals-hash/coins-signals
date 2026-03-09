@@ -13,6 +13,7 @@ import { AdminTablesTabV2 } from '@/components/admin/AdminTablesTabV2';
 import { AdminAuditTab } from '@/components/admin/AdminAuditTab';
 import { AdminDocumentsTab } from '@/components/admin/AdminDocumentsTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
+import { AdminCreateSignalTab } from '@/components/admin/AdminCreateSignalTab';
 import { AdminGlobalSearch } from '@/components/admin/AdminGlobalSearch';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,7 @@ const TAB_TITLES: Record<string, string> = {
   dashboard: 'Dashboard',
   users: 'Gestión de Usuarios',
   signals: 'Señales de Trading',
+  'create-signal': 'Crear / Gestionar Señales',
   notifications: 'Notificaciones Masivas',
   analytics: 'Métricas y Analíticas',
   tables: 'Explorador de Base de Datos',
@@ -83,6 +85,7 @@ export default function Admin() {
       case 'dashboard': return <AdminDashboardTab />;
       case 'users': return <AdminUsersTab />;
       case 'signals': return <AdminSignalsTab />;
+      case 'create-signal': return <AdminCreateSignalTab />;
       case 'notifications': return <AdminNotificationsTab />;
       case 'analytics': return <AdminAnalyticsTab />;
       case 'tables': return <AdminTablesTabV2 />;

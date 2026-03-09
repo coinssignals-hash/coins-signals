@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
+  PlusCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -26,6 +27,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'users', label: 'Usuarios', icon: Users },
   { id: 'signals', label: 'Señales', icon: TrendingUp },
+  { id: 'create-signal', label: 'Crear Señal', icon: PlusCircle },
   { id: 'notifications', label: 'Notificaciones', icon: Bell },
   { id: 'analytics', label: 'Métricas', icon: BarChart3 },
   { id: 'tables', label: 'Base de Datos', icon: Database },
