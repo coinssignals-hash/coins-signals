@@ -179,13 +179,25 @@ export default function Admin() {
             </Button>
             <h1 className="text-sm font-semibold text-white/70">{TAB_TITLES[activeTab] || 'Dashboard'}</h1>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] text-white/25 hidden sm:inline font-mono">{user.email}</span>
+          <div className="flex items-center gap-2">
+            {/* Global search trigger */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-2 h-8 px-3 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/30 hover:text-white/50 hover:bg-white/[0.06] transition-colors text-xs"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Buscar...</span>
+              <kbd className="hidden sm:inline text-[9px] bg-white/[0.06] px-1.5 py-0.5 rounded text-white/20 ml-1 font-mono">⌘K</kbd>
+            </button>
+            <span className="text-[10px] text-white/25 hidden lg:inline font-mono">{user.email}</span>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white/40 hover:text-white hover:bg-white/5 h-8 text-xs">
               <LogOut className="h-3.5 w-3.5 mr-1" /> Salir
             </Button>
           </div>
         </header>
+
+        {/* Global Search Dialog */}
+        <AdminGlobalSearch open={searchOpen} onOpenChange={setSearchOpen} onNavigate={setActiveTab} />
 
         {/* Main content */}
         <main className="p-4 md:p-6 max-w-6xl">
