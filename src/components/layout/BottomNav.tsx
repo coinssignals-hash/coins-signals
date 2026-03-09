@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Newspaper, TrendingUp, Wallet, BarChart2, Brain, CandlestickChart } from 'lucide-react';
+import { Newspaper, TrendingUp, Wallet, BarChart2, Brain, CandlestickChart, ShieldAlert } from 'lucide-react';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useEffect } from 'react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useUserRole } from '@/hooks/useUserRole';
 
 export function BottomNav() {
   const location = useLocation();
@@ -13,6 +14,7 @@ export function BottomNav() {
   const { newCount: newsCount, markAsSeen: markNewsSeen } = useNewNewsCount();
   const { onMouseEnter, onTouchStart } = usePrefetch();
   const { t } = useTranslation();
+  const { isAdmin } = useUserRole();
 
   const navItems = [
     { icon: BarChart2, label: t('nav_analysis'), href: '/', badgeType: null },
@@ -20,6 +22,7 @@ export function BottomNav() {
     { icon: Brain, label: t('nav_ai'), href: '/ai-center', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
     { icon: CandlestickChart, label: t('nav_stocks'), href: '/stocks', badgeType: null },
+    ...(isAdmin ? [{ icon: ShieldAlert, label: 'Admin', href: '/admin', badgeType: null }] : []),
   ];
 
   useEffect(() => {
