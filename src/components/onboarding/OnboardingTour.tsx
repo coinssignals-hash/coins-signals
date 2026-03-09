@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, Sparkles, TrendingUp, Bell, Wallet, GraduationCap, Newspaper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TourStep {
