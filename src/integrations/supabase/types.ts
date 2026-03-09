@@ -745,6 +745,54 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_notifications: {
+        Row: {
+          audience_label: string | null
+          body: string
+          created_at: string
+          created_by: string | null
+          filter: Json | null
+          id: string
+          result: Json | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          tag: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          audience_label?: string | null
+          body: string
+          created_at?: string
+          created_by?: string | null
+          filter?: Json | null
+          id?: string
+          result?: Json | null
+          scheduled_at: string
+          sent_at?: string | null
+          status?: string
+          tag?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          audience_label?: string | null
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          filter?: Json | null
+          id?: string
+          result?: Json | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          tag?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       signal_ai_analysis_history: {
         Row: {
           analysis_text: string
