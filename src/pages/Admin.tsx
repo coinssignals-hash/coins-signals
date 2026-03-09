@@ -3,7 +3,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, ShieldAlert, LogIn, LogOut, Menu, X } from 'lucide-react';
+import { Loader2, ShieldAlert, LogIn, LogOut, Menu, Search } from 'lucide-react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminDashboardTab } from '@/components/admin/AdminDashboardTab';
 import { AdminUsersTab } from '@/components/admin/AdminUsersTab';
