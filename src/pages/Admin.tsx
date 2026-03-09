@@ -21,6 +21,7 @@ const TAB_TITLES: Record<string, string> = {
   dashboard: 'Dashboard',
   users: 'Gestión de Usuarios',
   signals: 'Señales de Trading',
+  notifications: 'Notificaciones Masivas',
   analytics: 'Métricas y Analíticas',
   tables: 'Explorador de Base de Datos',
   audit: 'Registros de Auditoría',
