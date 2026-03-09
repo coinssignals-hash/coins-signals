@@ -173,32 +173,60 @@ export default function Admin() {
       {/* Content area */}
       <div className={cn('transition-all duration-300', sidebarCollapsed ? 'md:ml-16' : 'md:ml-56')}>
         {/* Top bar */}
-        <header className="sticky top-0 z-40 h-14 border-b border-white/5 bg-[#08080d]/95 backdrop-blur flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden text-white/50 hover:text-white hover:bg-white/5 h-8 w-8"
-              onClick={() => setMobileMenuOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <h1 className="text-sm font-semibold text-white/70">{TAB_TITLES[activeTab] || 'Dashboard'}</h1>
+        <header className="sticky top-0 z-40 border-b border-white/5 bg-[#08080d]/95 backdrop-blur">
+          <div className="h-14 flex items-center justify-between px-4 md:px-6">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 h-10 w-10 border border-amber-500/20"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+              <h1 className="text-sm font-semibold text-white/70">{TAB_TITLES[activeTab] || 'Dashboard'}</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Global search trigger */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-2 h-8 px-3 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/30 hover:text-white/50 hover:bg-white/[0.06] transition-colors text-xs"
+              >
+                <Search className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Buscar...</span>
+                <kbd className="hidden sm:inline text-[9px] bg-white/[0.06] px-1.5 py-0.5 rounded text-white/20 ml-1 font-mono">⌘K</kbd>
+              </button>
+              <span className="text-[10px] text-white/25 hidden lg:inline font-mono">{user.email}</span>
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white/40 hover:text-white hover:bg-white/5 h-8 text-xs">
+                <LogOut className="h-3.5 w-3.5 mr-1" /> Salir
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {/* Global search trigger */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 h-8 px-3 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/30 hover:text-white/50 hover:bg-white/[0.06] transition-colors text-xs"
-            >
-              <Search className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Buscar...</span>
-              <kbd className="hidden sm:inline text-[9px] bg-white/[0.06] px-1.5 py-0.5 rounded text-white/20 ml-1 font-mono">⌘K</kbd>
-            </button>
-            <span className="text-[10px] text-white/25 hidden lg:inline font-mono">{user.email}</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white/40 hover:text-white hover:bg-white/5 h-8 text-xs">
-              <LogOut className="h-3.5 w-3.5 mr-1" /> Salir
-            </Button>
+
+          {/* Mobile quick nav */}
+          <div className="md:hidden flex items-center gap-1.5 px-3 pb-2 overflow-x-auto scrollbar-hide">
+            {[
+              { id: 'dashboard', label: 'Dashboard' },
+              { id: 'create-signal', label: '＋ Crear Señal' },
+              { id: 'signals', label: 'Señales' },
+              { id: 'users', label: 'Usuarios' },
+              { id: 'notifications', label: 'Notif.' },
+              { id: 'analytics', label: 'Métricas' },
+              { id: 'tables', label: 'BD' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all whitespace-nowrap',
+                  activeTab === tab.id
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    : 'bg-white/5 text-white/40 border border-white/5 hover:bg-white/10 hover:text-white/60'
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </header>
 
