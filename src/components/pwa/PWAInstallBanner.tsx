@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Download, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '@/assets/logo.svg';
 import { useTranslation } from '@/i18n/LanguageContext';
