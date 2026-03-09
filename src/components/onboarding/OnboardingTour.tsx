@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, Sparkles, TrendingUp, Bell, Wallet, GraduationCap, Newspaper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TourStep {
@@ -33,16 +33,23 @@ export function OnboardingTour({ onComplete, forceShow = false }: OnboardingTour
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
+  // Hide on admin route
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   useEffect(() => {
+    if (isAdminRoute) return;
     const hasSeenTour = localStorage.getItem('onboarding_completed');
     if (!hasSeenTour || forceShow) {
       // Small delay to let the page load
       const timer = setTimeout(() => setIsOpen(true), 500);
       return () => clearTimeout(timer);
     }
-  }, [forceShow]);
+  }, [forceShow, isAdminRoute]);
+
+  if (isAdminRoute) return null;
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {

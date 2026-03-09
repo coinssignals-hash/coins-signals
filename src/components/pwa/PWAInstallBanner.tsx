@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Download, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '@/assets/logo.svg';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -17,8 +17,12 @@ export function PWAInstallBanner() {
   const [show, setShow] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
+    if (isAdminRoute) { setShow(false); return; }
     // Don't show if already installed as PWA
     if (window.matchMedia('(display-mode: standalone)').matches) return;
 
