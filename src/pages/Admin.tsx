@@ -13,6 +13,7 @@ import { AdminTablesTabV2 } from '@/components/admin/AdminTablesTabV2';
 import { AdminAuditTab } from '@/components/admin/AdminAuditTab';
 import { AdminDocumentsTab } from '@/components/admin/AdminDocumentsTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
+import { AdminCreateSignalTab } from '@/components/admin/AdminCreateSignalTab';
 import { AdminGlobalSearch } from '@/components/admin/AdminGlobalSearch';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
