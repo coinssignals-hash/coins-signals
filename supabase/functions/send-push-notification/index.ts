@@ -105,12 +105,34 @@ serve(async (req) => {
   }
 
   try {
-    // Verify API key
+    // Auth: accept x-api-key OR admin JWT
     const apiKey = req.headers.get('x-api-key');
     const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
+    const authHeader = req.headers.get('authorization');
+    let authorized = false;
 
-    if (!apiKey || apiKey !== expectedApiKey) {
-      console.error('Invalid or missing API key');
+    if (apiKey && apiKey === expectedApiKey) {
+      authorized = true;
+    } else if (authHeader?.startsWith('Bearer ')) {
+      // Verify JWT and check admin role
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const authClient = createClient(supabaseUrl, supabaseServiceKey);
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user } } = await authClient.auth.getUser(token);
+      if (user) {
+        const { data: roleData } = await authClient
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        if (roleData) authorized = true;
+      }
+    }
+
+    if (!authorized) {
+      console.error('Unauthorized request');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
