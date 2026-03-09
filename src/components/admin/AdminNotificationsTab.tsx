@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
-import { Bell, Send, Loader2, Users, Megaphone, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Bell, Send, Loader2, Users, Megaphone, CheckCircle2, AlertTriangle, Globe, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface SendResult {
@@ -14,6 +14,8 @@ interface SendResult {
   failed: number;
   errors: string[];
 }
+
+type AudienceType = 'all' | 'country' | 'role';
 
 const TEMPLATES = [
   { id: 'custom', label: 'Personalizado', title: '', body: '' },
@@ -31,13 +33,77 @@ export function AdminNotificationsTab() {
   const [sending, setSending] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState<number | null>(null);
   const [lastResult, setLastResult] = useState<SendResult | null>(null);
-  const [history, setHistory] = useState<{ title: string; body: string; sentAt: string; result: SendResult }[]>([]);
+  const [history, setHistory] = useState<{ title: string; body: string; sentAt: string; result: SendResult; audience: string }[]>([]);
+
+  // Segmentation
+  const [audienceType, setAudienceType] = useState<AudienceType>('all');
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [countries, setCountries] = useState<string[]>([]);
+  const [segmentCount, setSegmentCount] = useState<number | null>(null);
+  const [loadingSegment, setLoadingSegment] = useState(false);
 
   useEffect(() => {
     supabase.from('push_subscriptions').select('id', { count: 'exact', head: true }).then(({ count }) => {
       setSubscriberCount(count || 0);
     });
+    // Fetch distinct countries from profiles
+    supabase.from('profiles').select('country').not('country', 'is', null).then(({ data }) => {
+      if (data) {
+        const unique = [...new Set(data.map(p => p.country).filter(Boolean))] as string[];
+        setCountries(unique.sort());
+      }
+    });
   }, []);
+
+  // Recalculate segment count when audience changes
+  useEffect(() => {
+    if (audienceType === 'all') {
+      setSegmentCount(null);
+      return;
+    }
+
+    const fetchCount = async () => {
+      setLoadingSegment(true);
+      try {
+        if (audienceType === 'country' && selectedCountry) {
+          const { data: profileIds } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('country', selectedCountry);
+          if (profileIds) {
+            const ids = profileIds.map(p => p.id);
+            const { count } = await supabase
+              .from('push_subscriptions')
+              .select('id', { count: 'exact', head: true })
+              .in('user_id', ids);
+            setSegmentCount(count || 0);
+          }
+        } else if (audienceType === 'role' && selectedRole) {
+          const { data: roleUsers } = await supabase
+            .from('user_roles')
+            .select('user_id')
+            .eq('role', selectedRole as any);
+          if (roleUsers) {
+            const ids = roleUsers.map(r => r.user_id);
+            const { count } = await supabase
+              .from('push_subscriptions')
+              .select('id', { count: 'exact', head: true })
+              .in('user_id', ids);
+            setSegmentCount(count || 0);
+          }
+        } else {
+          setSegmentCount(null);
+        }
+      } catch {
+        setSegmentCount(null);
+      } finally {
+        setLoadingSegment(false);
+      }
+    };
+
+    fetchCount();
+  }, [audienceType, selectedCountry, selectedRole]);
 
   const handleTemplate = (templateId: string) => {
     const t = TEMPLATES.find(tp => tp.id === templateId);
@@ -47,33 +113,62 @@ export function AdminNotificationsTab() {
     }
   };
 
+  const getAudienceLabel = () => {
+    if (audienceType === 'country' && selectedCountry) return `País: ${selectedCountry}`;
+    if (audienceType === 'role' && selectedRole) return `Rol: ${selectedRole}`;
+    return 'Todos';
+  };
+
+  const getTargetCount = () => {
+    if (audienceType === 'all') return subscriberCount;
+    return segmentCount;
+  };
+
   const handleSend = async () => {
     if (!title.trim() || !body.trim()) {
       toast({ title: 'Error', description: 'Título y mensaje son obligatorios', variant: 'destructive' });
       return;
     }
 
-    const confirmed = window.confirm(`¿Enviar notificación push a ${subscriberCount ?? '?'} suscriptores?\n\n"${title}"\n${body}`);
+    if (audienceType === 'country' && !selectedCountry) {
+      toast({ title: 'Error', description: 'Selecciona un país', variant: 'destructive' });
+      return;
+    }
+    if (audienceType === 'role' && !selectedRole) {
+      toast({ title: 'Error', description: 'Selecciona un rol', variant: 'destructive' });
+      return;
+    }
+
+    const targetCount = getTargetCount();
+    const audienceLabel = getAudienceLabel();
+    const confirmed = window.confirm(`¿Enviar notificación push a ${targetCount ?? '?'} suscriptores (${audienceLabel})?\n\n"${title}"\n${body}`);
     if (!confirmed) return;
 
     setSending(true);
     setLastResult(null);
 
     try {
+      const payload: Record<string, unknown> = { title, body, url, tag };
+
+      if (audienceType === 'country' && selectedCountry) {
+        payload.filter = { type: 'country', value: selectedCountry };
+      } else if (audienceType === 'role' && selectedRole) {
+        payload.filter = { type: 'role', value: selectedRole };
+      }
+
       const { data, error } = await supabase.functions.invoke('send-push-notification', {
-        headers: { 'x-api-key': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '' },
-        body: { title, body, url, tag },
+        body: payload,
       });
 
       if (error) throw error;
 
       const result: SendResult = data?.results || { success: 0, failed: 0, errors: [] };
       setLastResult(result);
-      setHistory(prev => [{ title, body, sentAt: new Date().toISOString(), result }, ...prev].slice(0, 10));
+      setHistory(prev => [{ title, body, sentAt: new Date().toISOString(), result, audience: audienceLabel }, ...prev].slice(0, 10));
 
       toast({
         title: 'Notificación enviada',
-        description: `✅ ${result.success} exitosas · ❌ ${result.failed} fallidas`,
+        description: `✅ ${result.success} exitosas · ❌ ${result.failed} fallidas (${audienceLabel})`,
       });
     } catch (err: any) {
       toast({ title: 'Error al enviar', description: err.message, variant: 'destructive' });
@@ -131,7 +226,66 @@ export function AdminNotificationsTab() {
       <Card className="bg-[#0f0f18] border-white/5 p-5 space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <Bell className="h-4 w-4 text-amber-400" />
-          <h3 className="text-sm font-semibold text-white/80">Enviar Notificación Masiva</h3>
+          <h3 className="text-sm font-semibold text-white/80">Enviar Notificación</h3>
+        </div>
+
+        {/* Audience Selector */}
+        <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4 space-y-3">
+          <p className="text-xs font-medium text-white/50 flex items-center gap-1.5">
+            <Users className="h-3.5 w-3.5" /> Audiencia
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {([
+              { value: 'all' as const, label: 'Todos', icon: Users },
+              { value: 'country' as const, label: 'País', icon: Globe },
+              { value: 'role' as const, label: 'Rol', icon: Shield },
+            ]).map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => { setAudienceType(opt.value); setSelectedCountry(''); setSelectedRole(''); }}
+                className={`flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium transition-all ${
+                  audienceType === opt.value
+                    ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                    : 'bg-white/[0.03] text-white/40 border border-white/5 hover:text-white/60'
+                }`}
+              >
+                <opt.icon className="h-3.5 w-3.5" />
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {audienceType === 'country' && (
+            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-xs text-white">
+                <SelectValue placeholder="Seleccionar país..." />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map(c => (
+                  <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {audienceType === 'role' && (
+            <Select value={selectedRole} onValueChange={setSelectedRole}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-xs text-white">
+                <SelectValue placeholder="Seleccionar rol..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin" className="text-xs">Admin</SelectItem>
+                <SelectItem value="moderator" className="text-xs">Moderador</SelectItem>
+                <SelectItem value="user" className="text-xs">Usuario</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+
+          {audienceType !== 'all' && (
+            <p className="text-[10px] text-white/30">
+              {loadingSegment ? 'Calculando...' : segmentCount !== null ? `${segmentCount} suscriptores en este segmento` : 'Selecciona un filtro'}
+            </p>
+          )}
         </div>
 
         {/* Template selector */}
@@ -202,7 +356,7 @@ export function AdminNotificationsTab() {
           {sending ? (
             <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Enviando...</>
           ) : (
-            <><Send className="h-4 w-4 mr-2" /> Enviar a {subscriberCount ?? '?'} suscriptores</>
+            <><Send className="h-4 w-4 mr-2" /> Enviar a {getTargetCount() ?? '?'} suscriptores ({getAudienceLabel()})</>
           )}
         </Button>
       </Card>
@@ -218,6 +372,7 @@ export function AdminNotificationsTab() {
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-white/70 font-medium truncate">{h.title}</p>
                   <p className="text-[10px] text-white/30 truncate">{h.body}</p>
+                  <p className="text-[9px] text-amber-400/50 mt-0.5">{h.audience}</p>
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-[10px] text-emerald-400/70">{h.result.success} ✓</p>
