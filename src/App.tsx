@@ -85,8 +85,22 @@ import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
+function useAdminHostnameRedirect() {
+  const location = useLocation();
+  const navigate = React.lazy ? undefined : undefined; // placeholder
+  React.useEffect(() => {
+    if (
+      window.location.hostname === 'admin.coinssignals.com' &&
+      !location.pathname.startsWith('/admin')
+    ) {
+      window.location.replace('/admin');
+    }
+  }, [location.pathname]);
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
+  useAdminHostnameRedirect();
   return (
     <AnimatePresence mode="wait">
       <Suspense fallback={<PageLoader />} key={location.pathname}>
