@@ -27,6 +27,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'users', label: 'Usuarios', icon: Users },
   { id: 'signals', label: 'Señales', icon: TrendingUp },
+  { id: 'notifications', label: 'Notificaciones', icon: Bell },
   { id: 'analytics', label: 'Métricas', icon: BarChart3 },
   { id: 'tables', label: 'Base de Datos', icon: Database },
   { id: 'audit', label: 'Auditoría', icon: ScrollText },
