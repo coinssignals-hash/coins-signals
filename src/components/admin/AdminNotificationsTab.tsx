@@ -335,7 +335,7 @@ export function AdminNotificationsTab() {
       .in('status', ['pending', 'sending', 'sent', 'failed'])
       .order('scheduled_at', { ascending: false })
       .limit(20);
-    setScheduledItems((data as ScheduledNotification[] | null) || []);
+    setScheduledItems((data as unknown as ScheduledNotification[] | null) || []);
     setRefreshingScheduled(false);
   };
 
