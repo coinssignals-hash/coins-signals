@@ -153,6 +153,46 @@ export function AdminAPIUsageTab() {
     return { totalTokens, totalCost, totalCalls, avgLatency, errorCount, errorRate };
   }, [logs]);
 
+  // Alert conditions
+  const alerts = useMemo(() => {
+    if (!thresholds.enabled) return [];
+    const a: { type: 'warning' | 'critical'; message: string; metric: string; value: string; limit: string }[] = [];
+    const { totalTokens, totalCost, avgLatency } = stats;
+    const errorRate = stats.totalCalls > 0 ? (stats.errorCount / stats.totalCalls) * 100 : 0;
+
+    if (totalTokens >= thresholds.dailyTokensLimit) {
+      const isCritical = totalTokens >= thresholds.dailyTokensLimit * 1.5;
+      a.push({
+        type: isCritical ? 'critical' : 'warning',
+        message: isCritical ? 'Consumo de tokens MUY por encima del límite' : 'Límite de tokens diarios alcanzado',
+        metric: 'Tokens', value: formatTokens(totalTokens), limit: formatTokens(thresholds.dailyTokensLimit),
+      });
+    } else if (totalTokens >= thresholds.dailyTokensLimit * 0.8) {
+      a.push({ type: 'warning', message: 'Consumo de tokens cerca del límite (80%)', metric: 'Tokens', value: formatTokens(totalTokens), limit: formatTokens(thresholds.dailyTokensLimit) });
+    }
+
+    if (totalCost >= thresholds.dailyCostLimit) {
+      const isCritical = totalCost >= thresholds.dailyCostLimit * 1.5;
+      a.push({
+        type: isCritical ? 'critical' : 'warning',
+        message: isCritical ? 'Costo MUY por encima del presupuesto' : 'Presupuesto de costo diario alcanzado',
+        metric: 'Costo', value: formatCost(totalCost), limit: formatCost(thresholds.dailyCostLimit),
+      });
+    } else if (totalCost >= thresholds.dailyCostLimit * 0.8) {
+      a.push({ type: 'warning', message: 'Costo cerca del presupuesto (80%)', metric: 'Costo', value: formatCost(totalCost), limit: formatCost(thresholds.dailyCostLimit) });
+    }
+
+    if (errorRate >= thresholds.errorRateLimit) {
+      a.push({ type: 'critical', message: 'Tasa de error por encima del umbral', metric: 'Error Rate', value: `${errorRate.toFixed(1)}%`, limit: `${thresholds.errorRateLimit}%` });
+    }
+
+    if (avgLatency >= thresholds.latencyLimit) {
+      a.push({ type: 'warning', message: 'Latencia promedio por encima del umbral', metric: 'Latencia', value: `${avgLatency}ms`, limit: `${thresholds.latencyLimit}ms` });
+    }
+
+    return a;
+  }, [stats, thresholds, formatTokens, formatCost]);
+
   // Per-provider breakdown
   const providerBreakdown = useMemo(() => {
     const map: Record<string, { calls: number; tokens: number; cost: number; errors: number; avgLatency: number }> = {};
