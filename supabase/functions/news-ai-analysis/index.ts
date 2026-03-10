@@ -231,8 +231,10 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
         tool_choice: { type: 'function', function: { name: 'provide_news_analysis' } }
       }),
     });
+    const latency = Date.now() - t0;
 
     if (!response.ok) {
+      logAIUsage(supabase, response.status, latency, undefined, { newsId });
       if (response.status === 429) {
         console.error('[news-ai-analysis] Rate limit exceeded');
         return new Response(
@@ -253,6 +255,7 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
     }
 
     const aiResponse = await response.json();
+    logAIUsage(supabase, 200, latency, aiResponse.usage, { newsId });
     console.log('[news-ai-analysis] AI response received');
 
     // Extract the function call result
