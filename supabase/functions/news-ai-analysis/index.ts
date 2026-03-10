@@ -1,10 +1,25 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const NEWS_MODEL = 'google/gemini-2.5-flash';
+
+async function logAIUsage(supabase: any, status: number, latencyMs: number, usage?: any, meta?: Record<string, unknown>) {
+  try {
+    await supabase.from('api_usage_logs').insert({
+      function_name: 'news-ai-analysis', provider: 'lovable_ai', model: NEWS_MODEL,
+      response_status: status, latency_ms: latencyMs,
+      tokens_input: usage?.prompt_tokens || 0, tokens_output: usage?.completion_tokens || 0,
+      tokens_total: usage?.total_tokens || 0,
+      estimated_cost: ((usage?.prompt_tokens || 0) * 0.15 + (usage?.completion_tokens || 0) * 0.6) / 1e6,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
 
 interface NewsAnalysisRequest {
   newsId: string;
