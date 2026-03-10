@@ -95,11 +95,15 @@ async function fetchAV_OHLC(symbol: string, interval: string, outputsize: number
     ? `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${from}&to_symbol=${to}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`
     : `https://www.alphavantage.co/query?function=FX_INTRADAY&from_symbol=${from}&to_symbol=${to}&interval=${avi}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`;
 
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('alpha_vantage', res.status, latency, { symbol, type: 'OHLC' }); throw new Error(`AV HTTP ${res.status}`); }
   const data = await res.json();
-  if (data['Note'] || data['Information']) throw new Error('AV_RATE_LIMIT');
+  if (data['Note'] || data['Information']) { logUsage('alpha_vantage', 429, latency, { symbol, type: 'OHLC' }); throw new Error('AV_RATE_LIMIT'); }
   if (data['Error Message']) throw new Error(data['Error Message']);
+
+  logUsage('alpha_vantage', 200, latency, { symbol, type: 'OHLC' });
 
   const tsKey = Object.keys(data).find(k => k.startsWith('Time Series'));
   if (!tsKey || !data[tsKey]) throw new Error('No AV OHLC data');
