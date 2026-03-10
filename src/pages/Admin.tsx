@@ -26,6 +26,7 @@ const TAB_TITLES: Record<string, string> = {
   'create-signal': 'Crear / Gestionar Señales',
   notifications: 'Notificaciones Masivas',
   analytics: 'Métricas y Analíticas',
+  'api-usage': 'Consumo de APIs e IA',
   tables: 'Explorador de Base de Datos',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
