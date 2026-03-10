@@ -419,7 +419,10 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
       }),
     });
 
+    const latency = Date.now() - t0;
+
     if (!response.ok) {
+      logAIUsage(response.status, latency, undefined, { currencyPair });
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -433,6 +436,7 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
     }
 
     const aiData = await response.json();
+    logAIUsage(200, latency, aiData.usage, { currencyPair });
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
 
     if (!toolCall?.function?.arguments) {
