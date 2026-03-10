@@ -155,7 +155,6 @@ export function AdminAPIUsageTab() {
 
   const formatTokens = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
   const formatCost = (n: number) => `$${n.toFixed(4)}`;
-  }, [logs]);
 
   // Alert conditions
   const alerts = useMemo(() => {
