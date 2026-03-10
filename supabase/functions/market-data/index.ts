@@ -306,18 +306,20 @@ async function fetchADXFull(symbol: string, interval: string, outputsize: number
 async function fetchFMP_OHLC(symbol: string, interval: string, outputsize: number) {
   if (!FMP_API_KEY) throw new Error('FMP_KEY_MISSING');
   const pair = symbol.replace('/', '');
-  // FMP intraday chart
   const tfMap: Record<string, string> = { '5min': '5min', '15min': '15min', '30min': '30min', '1h': '1hour', '4h': '4hour', '1day': 'daily', '1week': 'daily' };
   const tf = tfMap[interval] || '1hour';
   const url = tf === 'daily'
     ? `https://financialmodelingprep.com/api/v3/historical-price-full/${pair}?apikey=${FMP_API_KEY}&timeseries=${outputsize}`
     : `https://financialmodelingprep.com/api/v3/historical-chart/${tf}/${pair}?apikey=${FMP_API_KEY}`;
   console.log(`[FMP] OHLC ${pair} ${tf}`);
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`FMP HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('fmp', res.status, latency, { symbol, type: 'OHLC' }); throw new Error(`FMP HTTP ${res.status}`); }
   const data = await res.json();
   const raw = Array.isArray(data) ? data : data?.historical || [];
-  if (raw.length === 0) throw new Error('No FMP data');
+  if (raw.length === 0) { logUsage('fmp', 200, latency, { symbol, type: 'OHLC', empty: true }); throw new Error('No FMP data'); }
+  logUsage('fmp', 200, latency, { symbol, type: 'OHLC' });
   const values = raw.slice(0, outputsize).map((b: any) => ({
     datetime: b.date, open: String(b.open), high: String(b.high), low: String(b.low), close: String(b.close), volume: String(b.volume || 0),
   })).reverse();
