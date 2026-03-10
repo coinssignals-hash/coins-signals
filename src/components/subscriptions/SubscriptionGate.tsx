@@ -30,6 +30,11 @@ export function SubscriptionGate({ children, requiredTier, featureName }: Subscr
     );
   }
 
+  // Admins bypass subscription checks
+  if (isAdmin) {
+    return <>{children}</>;
+  }
+
   // Trial users get full premium access
   if (onTrial) {
     return <>{children}</>;
