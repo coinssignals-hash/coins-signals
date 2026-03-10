@@ -10,6 +10,22 @@ const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Rough cost estimation per 1M tokens (USD)
+function estimateAICost(model: string, inputTokens: number, outputTokens: number): number {
+  const rates: Record<string, { input: number; output: number }> = {
+    'google/gemini-2.5-pro': { input: 1.25, output: 10.0 },
+    'google/gemini-2.5-flash': { input: 0.15, output: 0.6 },
+    'google/gemini-2.5-flash-lite': { input: 0.075, output: 0.3 },
+    'google/gemini-3-flash-preview': { input: 0.15, output: 0.6 },
+    'google/gemini-3.1-pro-preview': { input: 1.25, output: 10.0 },
+    'openai/gpt-5': { input: 2.5, output: 10.0 },
+    'openai/gpt-5-mini': { input: 0.4, output: 1.6 },
+    'openai/gpt-5-nano': { input: 0.1, output: 0.4 },
+  };
+  const rate = rates[model] || { input: 0.5, output: 2.0 };
+  return (inputTokens * rate.input + outputTokens * rate.output) / 1000000;
+}
+
 interface AnalysisRequest {
   type: 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels' | 'indicator_interpretation' | 'advanced_prediction';
   symbol: string;
