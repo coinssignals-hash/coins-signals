@@ -215,6 +215,7 @@ export default function Admin() {
               { id: 'users', label: 'Usuarios' },
               { id: 'notifications', label: 'Notif.' },
               { id: 'analytics', label: 'Métricas' },
+              { id: 'api-usage', label: 'APIs/IA' },
               { id: 'tables', label: 'BD' },
             ].map((tab) => (
               <button
