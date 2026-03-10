@@ -363,12 +363,12 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
           const errStatus = aiResponse.status;
           logAIUsage(stockModel, errStatus, aiLatency, undefined, { symbol });
           console.error(`[stock-analysis] AI gateway error: ${errStatus}`);
-          console.error(`[stock-analysis] AI gateway error: ${errStatus}`);
           result = { error: errStatus === 429 ? 'Rate limited' : errStatus === 402 ? 'Payment required' : 'AI error' };
           break;
         }
 
         const aiJson = await aiResponse.json();
+        logAIUsage(stockModel, 200, aiLatency, aiJson.usage, { symbol });
         const aiContent = aiJson.choices?.[0]?.message?.content || '';
 
         try {
