@@ -15,6 +15,18 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+async function logUsage(provider: string, status: number, latencyMs: number, meta?: Record<string, unknown>) {
+  try {
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: 'market-data',
+      provider,
+      response_status: status,
+      latency_ms: latencyMs,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
+
 // ─── In-memory cache (fast, per-instance) ───
 interface CacheEntry { data: unknown; ts: number }
 const cache = new Map<string, CacheEntry>();
