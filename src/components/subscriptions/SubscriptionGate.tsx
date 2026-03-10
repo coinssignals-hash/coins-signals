@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useUserRole } from '@/hooks/useUserRole';
 import { SubscriptionPaywall } from '@/components/subscriptions/SubscriptionPaywall';
 import { Loader2 } from 'lucide-react';
 
@@ -19,6 +20,7 @@ const TIER_LEVEL: Record<string, number> = {
 
 export function SubscriptionGate({ children, requiredTier, featureName }: SubscriptionGateProps) {
   const { subscribed, tier, loading, onTrial } = useSubscription();
+  const { isAdmin } = useUserRole();
 
   if (loading) {
     return (
@@ -26,6 +28,11 @@ export function SubscriptionGate({ children, requiredTier, featureName }: Subscr
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  // Admins bypass subscription checks
+  if (isAdmin) {
+    return <>{children}</>;
   }
 
   // Trial users get full premium access
