@@ -137,7 +137,7 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: NEWS_MODEL,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
