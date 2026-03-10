@@ -327,6 +327,8 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
           break;
         }
 
+        const stockModel = 'google/gemini-2.5-flash';
+        const aiT0 = Date.now();
         const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -334,7 +336,7 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
+            model: stockModel,
             messages: [
               {
                 role: 'system',
@@ -355,9 +357,12 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
             ],
           }),
         });
+        const aiLatency = Date.now() - aiT0;
 
         if (!aiResponse.ok) {
           const errStatus = aiResponse.status;
+          logAIUsage(stockModel, errStatus, aiLatency, undefined, { symbol });
+          console.error(`[stock-analysis] AI gateway error: ${errStatus}`);
           console.error(`[stock-analysis] AI gateway error: ${errStatus}`);
           result = { error: errStatus === 429 ? 'Rate limited' : errStatus === 402 ? 'Payment required' : 'AI error' };
           break;
