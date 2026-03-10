@@ -90,6 +90,7 @@ export default function Admin() {
       case 'create-signal': return <AdminCreateSignalTab />;
       case 'notifications': return <AdminNotificationsTab />;
       case 'analytics': return <AdminAnalyticsTab />;
+      case 'api-usage': return <AdminAPIUsageTab />;
       case 'tables': return <AdminTablesTabV2 />;
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
