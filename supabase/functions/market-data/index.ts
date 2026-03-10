@@ -124,10 +124,13 @@ async function fetchAV_Indicator(symbol: string, interval: string, fn: string, p
   const qs = new URLSearchParams({ function: fn, symbol: avSym, interval: avi, series_type: 'close', apikey: ALPHA_VANTAGE_KEY, ...params });
   const url = `https://www.alphavantage.co/query?${qs}`;
   console.log(`[AV] ${fn} ${avSym} ${avi}`);
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('alpha_vantage', res.status, latency, { symbol, indicator: fn }); throw new Error(`AV HTTP ${res.status}`); }
   const data = await res.json();
-  if (data['Note'] || data['Information']) throw new Error('AV_RATE_LIMIT');
+  if (data['Note'] || data['Information']) { logUsage('alpha_vantage', 429, latency, { symbol, indicator: fn }); throw new Error('AV_RATE_LIMIT'); }
+  logUsage('alpha_vantage', 200, latency, { symbol, indicator: fn });
   const tsKey = Object.keys(data).find(k => k.startsWith('Technical Analysis'));
   if (!tsKey || !data[tsKey]) throw new Error(`No AV data for ${fn}`);
   return Object.entries(data[tsKey]).slice(0, outputsize);
