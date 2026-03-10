@@ -5,6 +5,54 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const CURRENCY_PAIR_REGEX = /^[A-Z]{2,6}\/[A-Z]{2,6}$/;
+
+function validateSignalPayload(p: Record<string, unknown>): string | null {
+  if (typeof p.currency_pair !== 'string' || !CURRENCY_PAIR_REGEX.test(p.currency_pair)) {
+    return 'currency_pair must match format like EUR/USD';
+  }
+  if (typeof p.entry_price !== 'number' || !isFinite(p.entry_price) || p.entry_price <= 0) {
+    return 'entry_price must be a positive finite number';
+  }
+  if (typeof p.take_profit !== 'number' || !isFinite(p.take_profit) || p.take_profit <= 0) {
+    return 'take_profit must be a positive finite number';
+  }
+  if (typeof p.stop_loss !== 'number' || !isFinite(p.stop_loss) || p.stop_loss <= 0) {
+    return 'stop_loss must be a positive finite number';
+  }
+  if (p.probability !== undefined && (typeof p.probability !== 'number' || p.probability < 0 || p.probability > 100)) {
+    return 'probability must be 0-100';
+  }
+  if (p.trend !== undefined && !['bullish', 'bearish'].includes(p.trend as string)) {
+    return 'trend must be bullish or bearish';
+  }
+  if (p.action !== undefined && !['BUY', 'SELL'].includes(p.action as string)) {
+    return 'action must be BUY or SELL';
+  }
+  if (p.status !== undefined && !['active', 'pending', 'completed', 'cancelled'].includes(p.status as string)) {
+    return 'status must be active, pending, completed, or cancelled';
+  }
+  if (p.take_profit_2 !== undefined && (typeof p.take_profit_2 !== 'number' || !isFinite(p.take_profit_2) || p.take_profit_2 <= 0)) {
+    return 'take_profit_2 must be a positive finite number';
+  }
+  if (p.take_profit_3 !== undefined && (typeof p.take_profit_3 !== 'number' || !isFinite(p.take_profit_3) || p.take_profit_3 <= 0)) {
+    return 'take_profit_3 must be a positive finite number';
+  }
+  if (p.support !== undefined && p.support !== null && (typeof p.support !== 'number' || !isFinite(p.support))) {
+    return 'support must be a finite number';
+  }
+  if (p.resistance !== undefined && p.resistance !== null && (typeof p.resistance !== 'number' || !isFinite(p.resistance))) {
+    return 'resistance must be a finite number';
+  }
+  if (p.notes !== undefined && typeof p.notes !== 'string') {
+    return 'notes must be a string';
+  }
+  if (typeof p.notes === 'string' && p.notes.length > 2000) {
+    return 'notes must be 2000 characters or fewer';
+  }
+  return null;
+}
+
 async function generateAndUploadChart(
   supabaseUrl: string,
   supabase: ReturnType<typeof createClient>,
@@ -64,19 +112,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Auth: accept x-api-key OR valid Supabase JWT
+    // Auth: accept x-api-key OR valid Supabase JWT with admin role
     const apiKey = req.headers.get('x-api-key');
     const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
     const authHeader = req.headers.get('authorization');
     
     let isAuthed = false;
     
-    // Method 1: API key
     if (apiKey && expectedApiKey && apiKey === expectedApiKey) {
       isAuthed = true;
     }
     
-    // Method 2: Supabase JWT (for frontend calls) — must be admin
     if (!isAuthed && authHeader) {
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -84,7 +130,6 @@ Deno.serve(async (req) => {
       const token = authHeader.replace('Bearer ', '');
       const { data: { user }, error: authError } = await authClient.auth.getUser(token);
       if (user && !authError) {
-        // Check admin role
         const { data: hasAdmin } = await authClient
           .from('user_roles')
           .select('id')
@@ -105,8 +150,10 @@ Deno.serve(async (req) => {
 
     const payload = await req.json();
 
-    if (!payload.currency_pair || !payload.entry_price || !payload.take_profit || !payload.stop_loss) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+    // Validate input
+    const validationError = validateSignalPayload(payload);
+    if (validationError) {
+      return new Response(JSON.stringify({ error: validationError }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -115,7 +162,6 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Insert signal first
     const insertData: Record<string, unknown> = {
       currency_pair: payload.currency_pair,
       datetime: new Date().toISOString(),
@@ -132,7 +178,6 @@ Deno.serve(async (req) => {
       analysis_data: [],
     };
 
-    // Optional new fields
     if (payload.take_profit_2 !== undefined) insertData.take_profit_2 = payload.take_profit_2;
     if (payload.take_profit_3 !== undefined) insertData.take_profit_3 = payload.take_profit_3;
     if (payload.notes !== undefined) insertData.notes = payload.notes;
@@ -145,12 +190,11 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error('DB error:', error);
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({ error: 'Failed to insert signal' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Generate HD chart and upload to storage (non-blocking for response but we await it)
     const chartImageUrl = await generateAndUploadChart(
       supabaseUrl,
       supabase,
@@ -160,7 +204,6 @@ Deno.serve(async (req) => {
       payload.resistance ?? payload.take_profit,
     );
 
-    // Update signal with chart URL if generated
     if (chartImageUrl) {
       await supabase
         .from('trading_signals')
@@ -171,11 +214,11 @@ Deno.serve(async (req) => {
 
     // Trigger push notification
     try {
-      const apiKey = Deno.env.get('SIGNALS_API_KEY');
+      const notifApiKey = Deno.env.get('SIGNALS_API_KEY');
       const actionText = payload.action === 'BUY' ? 'COMPRAR' : 'VENDER';
       await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey || '' },
+        headers: { 'Content-Type': 'application/json', 'x-api-key': notifApiKey || '' },
         body: JSON.stringify({
           title: `📈 ${payload.currency_pair} - ${actionText}`,
           body: `Nueva señal: ${actionText} a ${payload.entry_price} | Probabilidad: ${payload.probability}%`,
@@ -192,8 +235,8 @@ Deno.serve(async (req) => {
       status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: message }), {
+    console.error('Error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

@@ -6,24 +6,63 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
 };
 
-interface SignalPayload {
-  currency_pair: string;
-  datetime?: string;
-  status?: 'active' | 'pending' | 'completed' | 'cancelled';
-  probability: number;
-  trend: 'bullish' | 'bearish';
-  action: 'BUY' | 'SELL';
-  entry_price: number;
-  take_profit: number;
-  stop_loss: number;
-  support?: number;
-  resistance?: number;
-  session_data?: { session: string; volume: string; volatility: string }[];
-  analysis_data?: { label: string; value: number }[];
+const CURRENCY_PAIR_REGEX = /^[A-Z]{2,6}\/[A-Z]{2,6}$/;
+
+function validateSignalPayload(payload: unknown): { valid: boolean; error?: string; data?: Record<string, unknown> } {
+  if (!payload || typeof payload !== 'object') {
+    return { valid: false, error: 'Invalid payload' };
+  }
+
+  const p = payload as Record<string, unknown>;
+
+  // Required fields
+  if (typeof p.currency_pair !== 'string' || !CURRENCY_PAIR_REGEX.test(p.currency_pair)) {
+    return { valid: false, error: 'currency_pair must match format like EUR/USD' };
+  }
+  if (typeof p.entry_price !== 'number' || !isFinite(p.entry_price) || p.entry_price <= 0) {
+    return { valid: false, error: 'entry_price must be a positive finite number' };
+  }
+  if (typeof p.take_profit !== 'number' || !isFinite(p.take_profit) || p.take_profit <= 0) {
+    return { valid: false, error: 'take_profit must be a positive finite number' };
+  }
+  if (typeof p.stop_loss !== 'number' || !isFinite(p.stop_loss) || p.stop_loss <= 0) {
+    return { valid: false, error: 'stop_loss must be a positive finite number' };
+  }
+  if (typeof p.probability !== 'number' || p.probability < 0 || p.probability > 100) {
+    return { valid: false, error: 'probability must be 0-100' };
+  }
+  if (!['bullish', 'bearish'].includes(p.trend as string)) {
+    return { valid: false, error: 'trend must be bullish or bearish' };
+  }
+  if (!['BUY', 'SELL'].includes(p.action as string)) {
+    return { valid: false, error: 'action must be BUY or SELL' };
+  }
+
+  // Optional fields
+  if (p.status !== undefined && !['active', 'pending', 'completed', 'cancelled'].includes(p.status as string)) {
+    return { valid: false, error: 'status must be active, pending, completed, or cancelled' };
+  }
+  if (p.support !== undefined && (typeof p.support !== 'number' || !isFinite(p.support))) {
+    return { valid: false, error: 'support must be a finite number' };
+  }
+  if (p.resistance !== undefined && (typeof p.resistance !== 'number' || !isFinite(p.resistance))) {
+    return { valid: false, error: 'resistance must be a finite number' };
+  }
+
+  // Limit JSONB payload sizes
+  if (p.session_data !== undefined) {
+    const sd = JSON.stringify(p.session_data);
+    if (sd.length > 10000) return { valid: false, error: 'session_data too large (max 10KB)' };
+  }
+  if (p.analysis_data !== undefined) {
+    const ad = JSON.stringify(p.analysis_data);
+    if (ad.length > 10000) return { valid: false, error: 'analysis_data too large (max 10KB)' };
+  }
+
+  return { valid: true, data: p };
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -34,14 +73,12 @@ serve(async (req) => {
     const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
 
     if (!apiKey || apiKey !== expectedApiKey) {
-      console.error('Invalid or missing API key');
       return new Response(
         JSON.stringify({ error: 'Unauthorized - Invalid API key' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Only accept POST requests
     if (req.method !== 'POST') {
       return new Response(
         JSON.stringify({ error: 'Method not allowed' }),
@@ -49,40 +86,36 @@ serve(async (req) => {
       );
     }
 
-    const payload: SignalPayload = await req.json();
-    console.log('Received signal payload:', JSON.stringify(payload));
+    const rawPayload = await req.json();
+    const validation = validateSignalPayload(rawPayload);
 
-    // Validate required fields
-    if (!payload.currency_pair || !payload.entry_price || !payload.take_profit || !payload.stop_loss) {
+    if (!validation.valid) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Missing required fields', 
-          required: ['currency_pair', 'entry_price', 'take_profit', 'stop_loss', 'probability', 'trend', 'action'] 
-        }),
+        JSON.stringify({ error: validation.error }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Create Supabase client with service role
+    const payload = validation.data!;
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Insert signal into database
     const { data, error } = await supabase
       .from('trading_signals')
       .insert({
         currency_pair: payload.currency_pair,
-        datetime: payload.datetime || new Date().toISOString(),
-        status: payload.status || 'active',
+        datetime: typeof payload.datetime === 'string' ? payload.datetime : new Date().toISOString(),
+        status: (payload.status as string) || 'active',
         probability: payload.probability,
         trend: payload.trend,
         action: payload.action,
         entry_price: payload.entry_price,
         take_profit: payload.take_profit,
         stop_loss: payload.stop_loss,
-        support: payload.support,
-        resistance: payload.resistance,
+        support: payload.support ?? null,
+        resistance: payload.resistance ?? null,
         session_data: payload.session_data || [],
         analysis_data: payload.analysis_data || [],
       })
@@ -92,22 +125,17 @@ serve(async (req) => {
     if (error) {
       console.error('Database error:', error);
       return new Response(
-        JSON.stringify({ error: 'Failed to insert signal', details: error.message }),
+        JSON.stringify({ error: 'Failed to insert signal' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Signal inserted successfully:', data.id);
-
-    // Send push notification to all subscribers
+    // Send push notification
     try {
       const actionText = payload.action === 'BUY' ? 'COMPRAR' : 'VENDER';
-      const notificationResponse = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+      await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': expectedApiKey,
-        },
+        headers: { 'Content-Type': 'application/json', 'x-api-key': expectedApiKey || '' },
         body: JSON.stringify({
           title: `📈 ${payload.currency_pair} - ${actionText}`,
           body: `Nueva señal: ${actionText} a ${payload.entry_price} | Probabilidad: ${payload.probability}%`,
@@ -116,12 +144,8 @@ serve(async (req) => {
           tag: `signal-${data.id}`,
         }),
       });
-
-      const notificationResult = await notificationResponse.json();
-      console.log('Push notification result:', notificationResult);
     } catch (notifError) {
       console.error('Failed to send push notification:', notifError);
-      // Don't fail the request if notification fails
     }
 
     return new Response(
@@ -131,9 +155,8 @@ serve(async (req) => {
 
   } catch (error: unknown) {
     console.error('Error in insert-signal function:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: message }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
