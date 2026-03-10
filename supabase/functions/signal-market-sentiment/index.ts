@@ -311,6 +311,7 @@ ${realDataContext}
 
 Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
 
+    const t0 = Date.now();
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
