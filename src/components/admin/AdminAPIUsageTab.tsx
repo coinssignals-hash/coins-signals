@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Activity, Zap, DollarSign, Clock, RefreshCw, TrendingUp, AlertCircle } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Loader2, Activity, Zap, DollarSign, Clock, RefreshCw, TrendingUp, AlertCircle, Bell, BellOff, Settings2, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
+import { toast } from '@/hooks/use-toast';
 
 interface UsageLog {
   id: string;
