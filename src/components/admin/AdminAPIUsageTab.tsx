@@ -104,6 +104,17 @@ export function AdminAPIUsageTab() {
   const [timeRange, setTimeRange] = useState('24h');
   const [selectedProvider, setSelectedProvider] = useState<string>('all');
 
+  const [thresholds, setThresholds] = useState<AlertThresholds>(loadThresholds);
+  const [showThresholdConfig, setShowThresholdConfig] = useState(false);
+
+  const updateThreshold = useCallback((key: keyof AlertThresholds, value: number | boolean) => {
+    setThresholds(prev => {
+      const next = { ...prev, [key]: value };
+      saveThresholds(next);
+      return next;
+    });
+  }, []);
+
   const fetchLogs = async () => {
     setLoading(true);
     const since = getTimeFilter(timeRange);
