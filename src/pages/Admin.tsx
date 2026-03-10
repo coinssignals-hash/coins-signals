@@ -15,6 +15,7 @@ import { AdminDocumentsTab } from '@/components/admin/AdminDocumentsTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
 import { AdminCreateSignalTab } from '@/components/admin/AdminCreateSignalTab';
 import { AdminGlobalSearch } from '@/components/admin/AdminGlobalSearch';
+import { AdminAPIUsageTab } from '@/components/admin/AdminAPIUsageTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
