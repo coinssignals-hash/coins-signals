@@ -299,7 +299,115 @@ export function AdminAPIUsageTab() {
         <Button variant="ghost" size="sm" onClick={fetchLogs} className="text-white/40 hover:text-white">
           <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} /> Actualizar
         </Button>
+
+        <div className="flex-1" />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowThresholdConfig(!showThresholdConfig)}
+          className="text-white/40 hover:text-white gap-1.5"
+        >
+          <Settings2 className="h-4 w-4" />
+          <span className="hidden sm:inline">Umbrales</span>
+          {showThresholdConfig ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </Button>
       </div>
+
+      {/* Alert Banners */}
+      {alerts.length > 0 && (
+        <div className="space-y-2">
+          {alerts.map((alert, i) => (
+            <div
+              key={i}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${
+                alert.type === 'critical'
+                  ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              }`}
+            >
+              <AlertTriangle className={`h-4 w-4 shrink-0 ${alert.type === 'critical' ? 'text-red-400' : 'text-amber-400'}`} />
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-medium">{alert.message}</span>
+                <span className="text-[10px] ml-2 opacity-60">{alert.metric}: {alert.value} / {alert.limit}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Threshold Configuration Panel */}
+      {showThresholdConfig && (
+        <Card className="bg-white/[0.03] border-white/5 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider flex items-center gap-2">
+              <Bell className="h-3.5 w-3.5" /> Configuración de Alertas
+            </h3>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-white/30">{thresholds.enabled ? 'Activas' : 'Inactivas'}</span>
+              <Switch
+                checked={thresholds.enabled}
+                onCheckedChange={(v) => updateThreshold('enabled', v)}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <Zap className="h-3 w-3" /> Tokens diarios máx.
+              </label>
+              <Input
+                type="number"
+                value={thresholds.dailyTokensLimit}
+                onChange={e => updateThreshold('dailyTokensLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+              <p className="text-[9px] text-white/20">Alerta al 80% y 100%</p>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <DollarSign className="h-3 w-3" /> Costo diario máx. (USD)
+              </label>
+              <Input
+                type="number"
+                step="0.5"
+                value={thresholds.dailyCostLimit}
+                onChange={e => updateThreshold('dailyCostLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+              <p className="text-[9px] text-white/20">Alerta al 80% y 100%</p>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" /> Tasa de error máx. (%)
+              </label>
+              <Input
+                type="number"
+                step="1"
+                value={thresholds.errorRateLimit}
+                onChange={e => updateThreshold('errorRateLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <Clock className="h-3 w-3" /> Latencia máx. (ms)
+              </label>
+              <Input
+                type="number"
+                step="500"
+                value={thresholds.latencyLimit}
+                onChange={e => updateThreshold('latencyLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
