@@ -337,10 +337,13 @@ async function fetchFinnhub_OHLC(symbol: string, interval: string, outputsize: n
   const from = to - daysBack * 86400;
   const url = `https://finnhub.io/api/v1/forex/candle?symbol=${encodeURIComponent(pair)}&resolution=${resolution}&from=${from}&to=${to}&token=${FINNHUB_KEY}`;
   console.log(`[Finnhub] OHLC ${pair} ${resolution}`);
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Finnhub HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('finnhub', res.status, latency, { symbol, type: 'OHLC' }); throw new Error(`Finnhub HTTP ${res.status}`); }
   const data = await res.json();
-  if (data.s !== 'ok' || !data.c?.length) throw new Error('No Finnhub data');
+  if (data.s !== 'ok' || !data.c?.length) { logUsage('finnhub', 200, latency, { symbol, type: 'OHLC', empty: true }); throw new Error('No Finnhub data'); }
+  logUsage('finnhub', 200, latency, { symbol, type: 'OHLC' });
   const values = data.t.slice(-outputsize).map((t: number, i: number) => ({
     datetime: new Date(t * 1000).toISOString().replace('T', ' ').slice(0, 19),
     open: String(data.o[data.t.length - outputsize + i] ?? data.o[i]),
