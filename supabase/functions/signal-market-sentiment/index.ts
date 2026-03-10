@@ -319,7 +319,7 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: SMS_MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
