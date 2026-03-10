@@ -1,4 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+function estimateAICost(model: string, inputTokens: number, outputTokens: number): number {
+  const rates: Record<string, { input: number; output: number }> = {
+    'google/gemini-2.5-flash': { input: 0.15, output: 0.6 },
+    'google/gemini-3-flash-preview': { input: 0.15, output: 0.6 },
+    'google/gemini-2.5-pro': { input: 1.25, output: 10.0 },
+  };
+  const rate = rates[model] || { input: 0.5, output: 2.0 };
+  return (inputTokens * rate.input + outputTokens * rate.output) / 1000000;
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
