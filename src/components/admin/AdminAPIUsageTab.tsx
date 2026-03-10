@@ -150,7 +150,11 @@ export function AdminAPIUsageTab() {
     const errorCount = logs.filter(l => l.response_status && l.response_status >= 400).length;
     const errorRate = totalCalls > 0 ? ((errorCount / totalCalls) * 100).toFixed(1) : '0';
 
-    return { totalTokens, totalCost, totalCalls, avgLatency, errorCount, errorRate };
+    return { totalTokens, totalCost, totalCalls, avgLatency, errorCount, errorRate: parseFloat(errorRate) };
+  }, [logs]);
+
+  const formatTokens = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
+  const formatCost = (n: number) => `$${n.toFixed(4)}`;
   }, [logs]);
 
   // Alert conditions
