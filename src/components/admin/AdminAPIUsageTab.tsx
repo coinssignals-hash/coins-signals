@@ -57,6 +57,36 @@ const TIME_RANGES = [
   { value: '30d', label: 'Últimos 30 días' },
 ];
 
+interface AlertThresholds {
+  enabled: boolean;
+  dailyTokensLimit: number;
+  dailyCostLimit: number;
+  errorRateLimit: number;
+  latencyLimit: number;
+}
+
+const DEFAULT_THRESHOLDS: AlertThresholds = {
+  enabled: true,
+  dailyTokensLimit: 500000,
+  dailyCostLimit: 5.0,
+  errorRateLimit: 10,
+  latencyLimit: 5000,
+};
+
+const THRESHOLDS_KEY = 'admin_api_usage_alert_thresholds';
+
+function loadThresholds(): AlertThresholds {
+  try {
+    const stored = localStorage.getItem(THRESHOLDS_KEY);
+    if (stored) return { ...DEFAULT_THRESHOLDS, ...JSON.parse(stored) };
+  } catch {}
+  return DEFAULT_THRESHOLDS;
+}
+
+function saveThresholds(t: AlertThresholds) {
+  localStorage.setItem(THRESHOLDS_KEY, JSON.stringify(t));
+}
+
 function getTimeFilter(range: string): string {
   const now = new Date();
   switch (range) {
