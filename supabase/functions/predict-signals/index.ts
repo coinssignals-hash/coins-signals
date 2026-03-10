@@ -1,15 +1,37 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+
+function estimateCost(model: string, inp: number, out: number): number {
+  const r: Record<string, [number, number]> = {
+    'google/gemini-3-flash-preview': [0.15, 0.6], 'google/gemini-2.5-flash': [0.15, 0.6],
+    'google/gemini-2.5-pro': [1.25, 10], 'openai/gpt-5': [2.5, 10], 'openai/gpt-5-mini': [0.4, 1.6],
+  };
+  const [i, o] = r[model] || [0.5, 2];
+  return (inp * i + out * o) / 1e6;
+}
+
+async function logUsage(model: string, status: number, latencyMs: number, usage?: any, meta?: Record<string, unknown>) {
+  try {
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: 'predict-signals', provider: 'lovable_ai', model,
+      response_status: status, latency_ms: latencyMs,
+      tokens_input: usage?.prompt_tokens || 0, tokens_output: usage?.completion_tokens || 0,
+      tokens_total: usage?.total_tokens || 0,
+      estimated_cost: estimateCost(model, usage?.prompt_tokens || 0, usage?.completion_tokens || 0),
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
+
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const { symbol, lastPrice, support, resistance, patterns, rsi, macdHistogram, stochastic, selectedSignals, model, language, detailLevel } = await req.json();
@@ -24,9 +46,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const patternList = (patterns || [])
-      .map((p: any) => `- ${p.name} (${p.type}, fiabilidad: ${p.reliability})`)
-      .join("\n") || "Ninguno detectado";
+    const patternList = (patterns || []).map((p: any) => `- ${p.name} (${p.type}, fiabilidad: ${p.reliability})`).join("\n") || "Ninguno detectado";
 
     const allSignals: Record<number, string> = {
       1: `## 1. 📡 Señal de acumulación por influencers\nDetecta cuando traders respetados empiezan a mencionar este activo repetidamente sin hacer hype.`,
@@ -41,10 +61,7 @@ serve(async (req) => {
       10: `## 10. 😰 Escaneo de compresión de miedo\nEncuentra si el lenguaje de miedo está disminuyendo aunque el precio no se haya movido.`,
     };
 
-    const ids: number[] = Array.isArray(selectedSignals) && selectedSignals.length > 0
-      ? selectedSignals.sort((a: number, b: number) => a - b)
-      : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
+    const ids: number[] = Array.isArray(selectedSignals) && selectedSignals.length > 0 ? selectedSignals.sort((a: number, b: number) => a - b) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const selectedSections = ids.map((id: number) => allSignals[id]).filter(Boolean).join("\n\n");
 
     const prompt = `Eres un analista de inteligencia de mercado especializado en señales alternativas, sentimiento social y flujos de capital.
@@ -71,12 +88,10 @@ ${selectedSections}
 
 ${langInstruction} ${detailInstruction} Usa markdown.`;
 
+    const t0 = Date.now();
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: aiModel,
         messages: [
@@ -86,36 +101,25 @@ ${langInstruction} ${detailInstruction} Usa markdown.`;
         stream: false,
       }),
     });
+    const latency = Date.now() - t0;
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Límite de solicitudes alcanzado." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos agotados." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      logUsage(aiModel, response.status, latency, undefined, { symbol });
+      if (response.status === 429) return new Response(JSON.stringify({ error: "Límite de solicitudes alcanzado." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (response.status === 402) return new Response(JSON.stringify({ error: "Créditos agotados." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Error del gateway de IA" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(JSON.stringify({ error: "Error del gateway de IA" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const data = await response.json();
+    logUsage(aiModel, 200, latency, data.usage, { symbol });
+
     const prediction = data.choices?.[0]?.message?.content || "No se pudo generar la predicción.";
 
-    return new Response(JSON.stringify({ prediction }), {
-      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ prediction }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("predict-signals error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Error desconocido" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Error desconocido" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });

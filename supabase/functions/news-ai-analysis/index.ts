@@ -1,10 +1,25 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const NEWS_MODEL = 'google/gemini-2.5-flash';
+
+async function logAIUsage(supabase: any, status: number, latencyMs: number, usage?: any, meta?: Record<string, unknown>) {
+  try {
+    await supabase.from('api_usage_logs').insert({
+      function_name: 'news-ai-analysis', provider: 'lovable_ai', model: NEWS_MODEL,
+      response_status: status, latency_ms: latencyMs,
+      tokens_input: usage?.prompt_tokens || 0, tokens_output: usage?.completion_tokens || 0,
+      tokens_total: usage?.total_tokens || 0,
+      estimated_cost: ((usage?.prompt_tokens || 0) * 0.15 + (usage?.completion_tokens || 0) * 0.6) / 1e6,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
 
 interface NewsAnalysisRequest {
   newsId: string;
@@ -114,6 +129,7 @@ SENTIMIENTO DETECTADO: ${sentiment}
 
 Responde usando la siguiente función con datos precisos y útiles para traders.`;
 
+    const t0 = Date.now();
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -121,7 +137,7 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: NEWS_MODEL,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -215,8 +231,10 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
         tool_choice: { type: 'function', function: { name: 'provide_news_analysis' } }
       }),
     });
+    const latency = Date.now() - t0;
 
     if (!response.ok) {
+      logAIUsage(supabase, response.status, latency, undefined, { newsId });
       if (response.status === 429) {
         console.error('[news-ai-analysis] Rate limit exceeded');
         return new Response(
@@ -237,6 +255,7 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
     }
 
     const aiResponse = await response.json();
+    logAIUsage(supabase, 200, latency, aiResponse.usage, { newsId });
     console.log('[news-ai-analysis] AI response received');
 
     // Extract the function call result

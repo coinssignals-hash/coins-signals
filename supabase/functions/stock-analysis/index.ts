@@ -1,4 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+
+const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+
+async function logAIUsage(model: string, status: number, latencyMs: number, usage?: any, meta?: Record<string, unknown>) {
+  try {
+    const r: Record<string, [number, number]> = { 'google/gemini-2.5-flash': [0.15, 0.6] };
+    const [i, o] = r[model] || [0.5, 2];
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: 'stock-analysis', provider: 'lovable_ai', model,
+      response_status: status, latency_ms: latencyMs,
+      tokens_input: usage?.prompt_tokens || 0, tokens_output: usage?.completion_tokens || 0,
+      tokens_total: usage?.total_tokens || 0,
+      estimated_cost: ((usage?.prompt_tokens || 0) * i + (usage?.completion_tokens || 0) * o) / 1e6,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -309,6 +327,8 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
           break;
         }
 
+        const stockModel = 'google/gemini-2.5-flash';
+        const aiT0 = Date.now();
         const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -316,7 +336,7 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
+            model: stockModel,
             messages: [
               {
                 role: 'system',
@@ -337,15 +357,18 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
             ],
           }),
         });
+        const aiLatency = Date.now() - aiT0;
 
         if (!aiResponse.ok) {
           const errStatus = aiResponse.status;
+          logAIUsage(stockModel, errStatus, aiLatency, undefined, { symbol });
           console.error(`[stock-analysis] AI gateway error: ${errStatus}`);
           result = { error: errStatus === 429 ? 'Rate limited' : errStatus === 402 ? 'Payment required' : 'AI error' };
           break;
         }
 
         const aiJson = await aiResponse.json();
+        logAIUsage(stockModel, 200, aiLatency, aiJson.usage, { symbol });
         const aiContent = aiJson.choices?.[0]?.message?.content || '';
 
         try {

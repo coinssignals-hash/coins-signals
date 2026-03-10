@@ -1,5 +1,21 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+const SMS_MODEL = "google/gemini-2.5-flash";
+
+async function logAIUsage(status: number, latencyMs: number, usage?: any, meta?: Record<string, unknown>) {
+  try {
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: 'signal-market-sentiment', provider: 'lovable_ai', model: SMS_MODEL,
+      response_status: status, latency_ms: latencyMs,
+      tokens_input: usage?.prompt_tokens || 0, tokens_output: usage?.completion_tokens || 0,
+      tokens_total: usage?.total_tokens || 0,
+      estimated_cost: ((usage?.prompt_tokens || 0) * 0.15 + (usage?.completion_tokens || 0) * 0.6) / 1e6,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -295,6 +311,7 @@ ${realDataContext}
 
 Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
 
+    const t0 = Date.now();
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -302,7 +319,7 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: SMS_MODEL,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -402,7 +419,10 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
       }),
     });
 
+    const latency = Date.now() - t0;
+
     if (!response.ok) {
+      logAIUsage(response.status, latency, undefined, { currencyPair });
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -416,6 +436,7 @@ Sintetiza TODOS estos datos reales en el dashboard de sentimiento.`;
     }
 
     const aiData = await response.json();
+    logAIUsage(200, latency, aiData.usage, { currencyPair });
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
 
     if (!toolCall?.function?.arguments) {
