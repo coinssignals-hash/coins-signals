@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Activity, Zap, DollarSign, Clock, RefreshCw, TrendingUp, AlertCircle } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Loader2, Activity, Zap, DollarSign, Clock, RefreshCw, TrendingUp, AlertCircle, Bell, BellOff, Settings2, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
+import { toast } from '@/hooks/use-toast';
 
 interface UsageLog {
   id: string;
@@ -54,6 +57,36 @@ const TIME_RANGES = [
   { value: '30d', label: 'Últimos 30 días' },
 ];
 
+interface AlertThresholds {
+  enabled: boolean;
+  dailyTokensLimit: number;
+  dailyCostLimit: number;
+  errorRateLimit: number;
+  latencyLimit: number;
+}
+
+const DEFAULT_THRESHOLDS: AlertThresholds = {
+  enabled: true,
+  dailyTokensLimit: 500000,
+  dailyCostLimit: 5.0,
+  errorRateLimit: 10,
+  latencyLimit: 5000,
+};
+
+const THRESHOLDS_KEY = 'admin_api_usage_alert_thresholds';
+
+function loadThresholds(): AlertThresholds {
+  try {
+    const stored = localStorage.getItem(THRESHOLDS_KEY);
+    if (stored) return { ...DEFAULT_THRESHOLDS, ...JSON.parse(stored) };
+  } catch {}
+  return DEFAULT_THRESHOLDS;
+}
+
+function saveThresholds(t: AlertThresholds) {
+  localStorage.setItem(THRESHOLDS_KEY, JSON.stringify(t));
+}
+
 function getTimeFilter(range: string): string {
   const now = new Date();
   switch (range) {
@@ -70,6 +103,17 @@ export function AdminAPIUsageTab() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('24h');
   const [selectedProvider, setSelectedProvider] = useState<string>('all');
+
+  const [thresholds, setThresholds] = useState<AlertThresholds>(loadThresholds);
+  const [showThresholdConfig, setShowThresholdConfig] = useState(false);
+
+  const updateThreshold = useCallback((key: keyof AlertThresholds, value: number | boolean) => {
+    setThresholds(prev => {
+      const next = { ...prev, [key]: value };
+      saveThresholds(next);
+      return next;
+    });
+  }, []);
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -106,8 +150,51 @@ export function AdminAPIUsageTab() {
     const errorCount = logs.filter(l => l.response_status && l.response_status >= 400).length;
     const errorRate = totalCalls > 0 ? ((errorCount / totalCalls) * 100).toFixed(1) : '0';
 
-    return { totalTokens, totalCost, totalCalls, avgLatency, errorCount, errorRate };
+    return { totalTokens, totalCost, totalCalls, avgLatency, errorCount, errorRate: parseFloat(errorRate) };
   }, [logs]);
+
+  const formatTokens = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
+  const formatCost = (n: number) => `$${n.toFixed(4)}`;
+
+  // Alert conditions
+  const alerts = useMemo(() => {
+    if (!thresholds.enabled) return [];
+    const a: { type: 'warning' | 'critical'; message: string; metric: string; value: string; limit: string }[] = [];
+    const { totalTokens, totalCost, avgLatency } = stats;
+    const errorRate = stats.totalCalls > 0 ? (stats.errorCount / stats.totalCalls) * 100 : 0;
+
+    if (totalTokens >= thresholds.dailyTokensLimit) {
+      const isCritical = totalTokens >= thresholds.dailyTokensLimit * 1.5;
+      a.push({
+        type: isCritical ? 'critical' : 'warning',
+        message: isCritical ? 'Consumo de tokens MUY por encima del límite' : 'Límite de tokens diarios alcanzado',
+        metric: 'Tokens', value: formatTokens(totalTokens), limit: formatTokens(thresholds.dailyTokensLimit),
+      });
+    } else if (totalTokens >= thresholds.dailyTokensLimit * 0.8) {
+      a.push({ type: 'warning', message: 'Consumo de tokens cerca del límite (80%)', metric: 'Tokens', value: formatTokens(totalTokens), limit: formatTokens(thresholds.dailyTokensLimit) });
+    }
+
+    if (totalCost >= thresholds.dailyCostLimit) {
+      const isCritical = totalCost >= thresholds.dailyCostLimit * 1.5;
+      a.push({
+        type: isCritical ? 'critical' : 'warning',
+        message: isCritical ? 'Costo MUY por encima del presupuesto' : 'Presupuesto de costo diario alcanzado',
+        metric: 'Costo', value: formatCost(totalCost), limit: formatCost(thresholds.dailyCostLimit),
+      });
+    } else if (totalCost >= thresholds.dailyCostLimit * 0.8) {
+      a.push({ type: 'warning', message: 'Costo cerca del presupuesto (80%)', metric: 'Costo', value: formatCost(totalCost), limit: formatCost(thresholds.dailyCostLimit) });
+    }
+
+    if (errorRate >= thresholds.errorRateLimit) {
+      a.push({ type: 'critical', message: 'Tasa de error por encima del umbral', metric: 'Error Rate', value: `${errorRate.toFixed(1)}%`, limit: `${thresholds.errorRateLimit}%` });
+    }
+
+    if (avgLatency >= thresholds.latencyLimit) {
+      a.push({ type: 'warning', message: 'Latencia promedio por encima del umbral', metric: 'Latencia', value: `${avgLatency}ms`, limit: `${thresholds.latencyLimit}ms` });
+    }
+
+    return a;
+  }, [stats, thresholds, formatTokens, formatCost]);
 
   // Per-provider breakdown
   const providerBreakdown = useMemo(() => {
@@ -181,8 +268,6 @@ export function AdminAPIUsageTab() {
     return Array.from(set).sort();
   }, [logs]);
 
-  const formatTokens = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
-  const formatCost = (n: number) => `$${n.toFixed(4)}`;
 
   return (
     <div className="space-y-6">
@@ -214,7 +299,115 @@ export function AdminAPIUsageTab() {
         <Button variant="ghost" size="sm" onClick={fetchLogs} className="text-white/40 hover:text-white">
           <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} /> Actualizar
         </Button>
+
+        <div className="flex-1" />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowThresholdConfig(!showThresholdConfig)}
+          className="text-white/40 hover:text-white gap-1.5"
+        >
+          <Settings2 className="h-4 w-4" />
+          <span className="hidden sm:inline">Umbrales</span>
+          {showThresholdConfig ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </Button>
       </div>
+
+      {/* Alert Banners */}
+      {alerts.length > 0 && (
+        <div className="space-y-2">
+          {alerts.map((alert, i) => (
+            <div
+              key={i}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${
+                alert.type === 'critical'
+                  ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              }`}
+            >
+              <AlertTriangle className={`h-4 w-4 shrink-0 ${alert.type === 'critical' ? 'text-red-400' : 'text-amber-400'}`} />
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-medium">{alert.message}</span>
+                <span className="text-[10px] ml-2 opacity-60">{alert.metric}: {alert.value} / {alert.limit}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Threshold Configuration Panel */}
+      {showThresholdConfig && (
+        <Card className="bg-white/[0.03] border-white/5 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider flex items-center gap-2">
+              <Bell className="h-3.5 w-3.5" /> Configuración de Alertas
+            </h3>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-white/30">{thresholds.enabled ? 'Activas' : 'Inactivas'}</span>
+              <Switch
+                checked={thresholds.enabled}
+                onCheckedChange={(v) => updateThreshold('enabled', v)}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <Zap className="h-3 w-3" /> Tokens diarios máx.
+              </label>
+              <Input
+                type="number"
+                value={thresholds.dailyTokensLimit}
+                onChange={e => updateThreshold('dailyTokensLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+              <p className="text-[9px] text-white/20">Alerta al 80% y 100%</p>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <DollarSign className="h-3 w-3" /> Costo diario máx. (USD)
+              </label>
+              <Input
+                type="number"
+                step="0.5"
+                value={thresholds.dailyCostLimit}
+                onChange={e => updateThreshold('dailyCostLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+              <p className="text-[9px] text-white/20">Alerta al 80% y 100%</p>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" /> Tasa de error máx. (%)
+              </label>
+              <Input
+                type="number"
+                step="1"
+                value={thresholds.errorRateLimit}
+                onChange={e => updateThreshold('errorRateLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-1">
+                <Clock className="h-3 w-3" /> Latencia máx. (ms)
+              </label>
+              <Input
+                type="number"
+                step="500"
+                value={thresholds.latencyLimit}
+                onChange={e => updateThreshold('latencyLimit', Number(e.target.value))}
+                className="bg-white/5 border-white/10 text-white h-8 text-xs"
+                disabled={!thresholds.enabled}
+              />
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
