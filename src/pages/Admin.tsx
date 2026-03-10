@@ -15,6 +15,7 @@ import { AdminDocumentsTab } from '@/components/admin/AdminDocumentsTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
 import { AdminCreateSignalTab } from '@/components/admin/AdminCreateSignalTab';
 import { AdminGlobalSearch } from '@/components/admin/AdminGlobalSearch';
+import { AdminAPIUsageTab } from '@/components/admin/AdminAPIUsageTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +26,7 @@ const TAB_TITLES: Record<string, string> = {
   'create-signal': 'Crear / Gestionar Señales',
   notifications: 'Notificaciones Masivas',
   analytics: 'Métricas y Analíticas',
+  'api-usage': 'Consumo de APIs e IA',
   tables: 'Explorador de Base de Datos',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
@@ -88,6 +90,7 @@ export default function Admin() {
       case 'create-signal': return <AdminCreateSignalTab />;
       case 'notifications': return <AdminNotificationsTab />;
       case 'analytics': return <AdminAnalyticsTab />;
+      case 'api-usage': return <AdminAPIUsageTab />;
       case 'tables': return <AdminTablesTabV2 />;
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
@@ -212,6 +215,7 @@ export default function Admin() {
               { id: 'users', label: 'Usuarios' },
               { id: 'notifications', label: 'Notif.' },
               { id: 'analytics', label: 'Métricas' },
+              { id: 'api-usage', label: 'APIs/IA' },
               { id: 'tables', label: 'BD' },
             ].map((tab) => (
               <button

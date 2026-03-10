@@ -10,6 +10,22 @@ const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Rough cost estimation per 1M tokens (USD)
+function estimateAICost(model: string, inputTokens: number, outputTokens: number): number {
+  const rates: Record<string, { input: number; output: number }> = {
+    'google/gemini-2.5-pro': { input: 1.25, output: 10.0 },
+    'google/gemini-2.5-flash': { input: 0.15, output: 0.6 },
+    'google/gemini-2.5-flash-lite': { input: 0.075, output: 0.3 },
+    'google/gemini-3-flash-preview': { input: 0.15, output: 0.6 },
+    'google/gemini-3.1-pro-preview': { input: 1.25, output: 10.0 },
+    'openai/gpt-5': { input: 2.5, output: 10.0 },
+    'openai/gpt-5-mini': { input: 0.4, output: 1.6 },
+    'openai/gpt-5-nano': { input: 0.1, output: 0.4 },
+  };
+  const rate = rates[model] || { input: 0.5, output: 2.0 };
+  return (inputTokens * rate.input + outputTokens * rate.output) / 1000000;
+}
+
 interface AnalysisRequest {
   type: 'sentiment' | 'prediction' | 'conclusions' | 'recommendations' | 'technical_levels' | 'indicator_interpretation' | 'advanced_prediction';
   symbol: string;
@@ -348,6 +364,7 @@ serve(async (req) => {
       ? 'google/gemini-2.5-pro' 
       : 'google/gemini-2.5-flash';
 
+    const startTime = Date.now();
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -363,8 +380,21 @@ serve(async (req) => {
         temperature: 0.2,
       }),
     });
+    const latencyMs = Date.now() - startTime;
 
     if (!response.ok) {
+      // Log failed request
+      try {
+        await supabase.from('api_usage_logs').insert({
+          provider: 'lovable_ai',
+          function_name: 'ai-analysis',
+          model,
+          response_status: response.status,
+          latency_ms: latencyMs,
+          metadata: { type, symbol },
+        });
+      } catch (_) { /* non-blocking */ }
+
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
@@ -384,6 +414,23 @@ serve(async (req) => {
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content;
+
+    // Log usage with token info
+    const usage = aiResponse.usage;
+    try {
+      await supabase.from('api_usage_logs').insert({
+        provider: 'lovable_ai',
+        function_name: 'ai-analysis',
+        model,
+        tokens_input: usage?.prompt_tokens || 0,
+        tokens_output: usage?.completion_tokens || 0,
+        tokens_total: usage?.total_tokens || 0,
+        estimated_cost: estimateAICost(model, usage?.prompt_tokens || 0, usage?.completion_tokens || 0),
+        response_status: 200,
+        latency_ms: latencyMs,
+        metadata: { type, symbol },
+      });
+    } catch (_) { /* non-blocking */ }
 
     if (!content) {
       throw new Error('No content in AI response');

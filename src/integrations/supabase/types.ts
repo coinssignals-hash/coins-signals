@@ -124,6 +124,51 @@ export type Database = {
         }
         Relationships: []
       }
+      api_usage_logs: {
+        Row: {
+          created_at: string
+          estimated_cost: number | null
+          function_name: string
+          id: string
+          latency_ms: number | null
+          metadata: Json | null
+          model: string | null
+          provider: string
+          response_status: number | null
+          tokens_input: number | null
+          tokens_output: number | null
+          tokens_total: number | null
+        }
+        Insert: {
+          created_at?: string
+          estimated_cost?: number | null
+          function_name: string
+          id?: string
+          latency_ms?: number | null
+          metadata?: Json | null
+          model?: string | null
+          provider: string
+          response_status?: number | null
+          tokens_input?: number | null
+          tokens_output?: number | null
+          tokens_total?: number | null
+        }
+        Update: {
+          created_at?: string
+          estimated_cost?: number | null
+          function_name?: string
+          id?: string
+          latency_ms?: number | null
+          metadata?: Json | null
+          model?: string | null
+          provider?: string
+          response_status?: number | null
+          tokens_input?: number | null
+          tokens_output?: number | null
+          tokens_total?: number | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
