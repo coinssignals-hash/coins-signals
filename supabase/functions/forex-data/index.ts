@@ -1,10 +1,27 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+async function logUsage(fn: string, provider: string, status: number, latencyMs: number, meta?: Record<string, unknown>) {
+  try {
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: fn,
+      provider,
+      response_status: status,
+      latency_ms: latencyMs,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
 
 function getYahooParams(interval: string): { yhInterval: string; range: string } {
   switch (interval) {
@@ -36,7 +53,6 @@ serve(async (req) => {
       );
     }
 
-    // Handle symbols like EUR/USD, EURUSD, or EURUSD=X
     const cleanSymbol = symbol.replace("/", "").replace("=X", "");
     const yhSymbol = cleanSymbol + "=X";
     const maxCandles = parseInt(outputsize) || 336;
@@ -46,13 +62,16 @@ serve(async (req) => {
 
     console.log("Fetching from Yahoo Finance:", url);
 
+    const t0 = Date.now();
     const response = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; ForexBot/1.0)" },
     });
+    const latency = Date.now() - t0;
 
     if (!response.ok) {
       const text = await response.text();
       console.error("Yahoo Finance HTTP error:", response.status, text.slice(0, 300));
+      logUsage('forex-data', 'yahoo_finance', response.status, latency, { symbol, interval });
       return new Response(
         JSON.stringify({ error: `Yahoo Finance error: ${response.status}` }),
         { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -60,6 +79,8 @@ serve(async (req) => {
     }
 
     const data = await response.json();
+    logUsage('forex-data', 'yahoo_finance', 200, latency, { symbol, interval });
+
     const result = data?.chart?.result?.[0];
     if (!result || !result.timestamp || result.timestamp.length === 0) {
       console.error("Yahoo Finance no data:", JSON.stringify(data?.chart?.error || data).slice(0, 300));

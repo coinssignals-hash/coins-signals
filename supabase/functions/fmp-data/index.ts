@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,6 +7,22 @@ const corsHeaders = {
 };
 
 const FMP_BASE = 'https://financialmodelingprep.com/stable';
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+async function logUsage(fn: string, provider: string, status: number, latencyMs: number, meta?: Record<string, unknown>) {
+  try {
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: fn,
+      provider,
+      response_status: status,
+      latency_ms: latencyMs,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
 
 // In-memory cache (5 min TTL)
 const cache = new Map<string, { data: any; ts: number }>();
@@ -53,22 +70,15 @@ serve(async (req) => {
     }
 
     switch (action) {
-      // ---- Company Profile ----
       case 'profile':
         url = `${FMP_BASE}/profile?symbol=${symbol}&apikey=${apiKey}`;
         break;
-
-      // ---- Single Quote ----
       case 'quote':
         url = `${FMP_BASE}/quote?symbol=${symbol}&apikey=${apiKey}`;
         break;
-
-      // ---- Batch Quotes ----
       case 'batch-quote':
         url = `${FMP_BASE}/batch-quote?symbols=${symbols}&apikey=${apiKey}`;
         break;
-
-      // ---- Historical Stock Price (EOD) ----
       case 'historical': {
         const params = new URLSearchParams({ symbol, apikey: apiKey });
         if (from) params.set('from', from);
@@ -76,8 +86,6 @@ serve(async (req) => {
         url = `${FMP_BASE}/historical-price-eod/full?${params}`;
         break;
       }
-
-      // ---- Intraday Historical ----
       case 'intraday': {
         const intv = interval || '1hour';
         const params = new URLSearchParams({ symbol, apikey: apiKey });
@@ -86,18 +94,12 @@ serve(async (req) => {
         url = `${FMP_BASE}/historical-chart/${intv}?${params}`;
         break;
       }
-
-      // ---- Forex List ----
       case 'forex-list':
         url = `${FMP_BASE}/forex-list?apikey=${apiKey}`;
         break;
-
-      // ---- Forex Quote ----
       case 'forex-quote':
         url = `${FMP_BASE}/forex-quote?symbol=${symbol}&apikey=${apiKey}`;
         break;
-
-      // ---- Forex Historical ----
       case 'forex-historical': {
         const params = new URLSearchParams({ symbol, apikey: apiKey });
         if (from) params.set('from', from);
@@ -105,8 +107,6 @@ serve(async (req) => {
         url = `${FMP_BASE}/forex-historical-price-eod/full?${params}`;
         break;
       }
-
-      // ---- Forex Intraday ----
       case 'forex-intraday': {
         const intv = interval || '1hour';
         const params = new URLSearchParams({ symbol, apikey: apiKey });
@@ -115,18 +115,12 @@ serve(async (req) => {
         url = `${FMP_BASE}/forex-historical-chart/${intv}?${params}`;
         break;
       }
-
-      // ---- Crypto List ----
       case 'crypto-list':
         url = `${FMP_BASE}/crypto-list?apikey=${apiKey}`;
         break;
-
-      // ---- Crypto Quote ----
       case 'crypto-quote':
         url = `${FMP_BASE}/crypto-quote?symbol=${symbol}&apikey=${apiKey}`;
         break;
-
-      // ---- Crypto Historical ----
       case 'crypto-historical': {
         const params = new URLSearchParams({ symbol, apikey: apiKey });
         if (from) params.set('from', from);
@@ -134,8 +128,6 @@ serve(async (req) => {
         url = `${FMP_BASE}/crypto-historical-price-eod/full?${params}`;
         break;
       }
-
-      // ---- Crypto Intraday ----
       case 'crypto-intraday': {
         const intv = interval || '1hour';
         const params = new URLSearchParams({ symbol, apikey: apiKey });
@@ -144,13 +136,9 @@ serve(async (req) => {
         url = `${FMP_BASE}/crypto-historical-chart/${intv}?${params}`;
         break;
       }
-
-      // ---- Search symbol ----
       case 'search':
         url = `${FMP_BASE}/search-symbol?query=${symbol}&limit=${limit || 20}&apikey=${apiKey}`;
         break;
-
-      // ---- Company Screener ----
       case 'screener': {
         const params = new URLSearchParams({ apikey: apiKey });
         if (body.marketCapMoreThan) params.set('marketCapMoreThan', body.marketCapMoreThan);
@@ -162,8 +150,6 @@ serve(async (req) => {
         url = `${FMP_BASE}/company-screener?${params}`;
         break;
       }
-
-      // ---- Economic Calendar ----
       case 'economic-calendar': {
         const params = new URLSearchParams({ apikey: apiKey });
         if (from) params.set('from', from);
@@ -171,8 +157,6 @@ serve(async (req) => {
         url = `${FMP_BASE}/economic-calendar?${params}`;
         break;
       }
-
-      // ---- Financial Statements ----
       case 'income-statement':
         url = `${FMP_BASE}/income-statement?symbol=${symbol}&limit=${limit || 5}&apikey=${apiKey}`;
         break;
@@ -182,7 +166,6 @@ serve(async (req) => {
       case 'cash-flow':
         url = `${FMP_BASE}/cash-flow-statement?symbol=${symbol}&limit=${limit || 5}&apikey=${apiKey}`;
         break;
-
       default:
         return new Response(
           JSON.stringify({ error: `Unknown action: ${action}` }),
@@ -191,11 +174,14 @@ serve(async (req) => {
     }
 
     console.log(`[fmp-data] Fetching: ${action} ${symbol || symbols || ''}`);
+    const t0 = Date.now();
     const response = await fetch(url);
+    const latency = Date.now() - t0;
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[fmp-data] FMP error ${response.status}:`, errorText.slice(0, 300));
+      logUsage('fmp-data', 'fmp', response.status, latency, { action, symbol: symbol || symbols || '' });
       return new Response(
         JSON.stringify({ error: `FMP API error: ${response.status}`, details: errorText.slice(0, 200) }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -204,6 +190,7 @@ serve(async (req) => {
 
     const data = await response.json();
     cache.set(cacheKey, { data, ts: Date.now() });
+    logUsage('fmp-data', 'fmp', 200, latency, { action, symbol: symbol || symbols || '' });
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' }

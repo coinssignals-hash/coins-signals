@@ -15,6 +15,18 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+async function logUsage(provider: string, status: number, latencyMs: number, meta?: Record<string, unknown>) {
+  try {
+    await supabaseAdmin.from('api_usage_logs').insert({
+      function_name: 'market-data',
+      provider,
+      response_status: status,
+      latency_ms: latencyMs,
+      metadata: meta || {},
+    });
+  } catch { /* fire-and-forget */ }
+}
+
 // ─── In-memory cache (fast, per-instance) ───
 interface CacheEntry { data: unknown; ts: number }
 const cache = new Map<string, CacheEntry>();
@@ -83,11 +95,15 @@ async function fetchAV_OHLC(symbol: string, interval: string, outputsize: number
     ? `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${from}&to_symbol=${to}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`
     : `https://www.alphavantage.co/query?function=FX_INTRADAY&from_symbol=${from}&to_symbol=${to}&interval=${avi}&outputsize=compact&apikey=${ALPHA_VANTAGE_KEY}`;
 
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('alpha_vantage', res.status, latency, { symbol, type: 'OHLC' }); throw new Error(`AV HTTP ${res.status}`); }
   const data = await res.json();
-  if (data['Note'] || data['Information']) throw new Error('AV_RATE_LIMIT');
+  if (data['Note'] || data['Information']) { logUsage('alpha_vantage', 429, latency, { symbol, type: 'OHLC' }); throw new Error('AV_RATE_LIMIT'); }
   if (data['Error Message']) throw new Error(data['Error Message']);
+
+  logUsage('alpha_vantage', 200, latency, { symbol, type: 'OHLC' });
 
   const tsKey = Object.keys(data).find(k => k.startsWith('Time Series'));
   if (!tsKey || !data[tsKey]) throw new Error('No AV OHLC data');
@@ -108,10 +124,13 @@ async function fetchAV_Indicator(symbol: string, interval: string, fn: string, p
   const qs = new URLSearchParams({ function: fn, symbol: avSym, interval: avi, series_type: 'close', apikey: ALPHA_VANTAGE_KEY, ...params });
   const url = `https://www.alphavantage.co/query?${qs}`;
   console.log(`[AV] ${fn} ${avSym} ${avi}`);
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`AV HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('alpha_vantage', res.status, latency, { symbol, indicator: fn }); throw new Error(`AV HTTP ${res.status}`); }
   const data = await res.json();
-  if (data['Note'] || data['Information']) throw new Error('AV_RATE_LIMIT');
+  if (data['Note'] || data['Information']) { logUsage('alpha_vantage', 429, latency, { symbol, indicator: fn }); throw new Error('AV_RATE_LIMIT'); }
+  logUsage('alpha_vantage', 200, latency, { symbol, indicator: fn });
   const tsKey = Object.keys(data).find(k => k.startsWith('Technical Analysis'));
   if (!tsKey || !data[tsKey]) throw new Error(`No AV data for ${fn}`);
   return Object.entries(data[tsKey]).slice(0, outputsize);
@@ -287,18 +306,20 @@ async function fetchADXFull(symbol: string, interval: string, outputsize: number
 async function fetchFMP_OHLC(symbol: string, interval: string, outputsize: number) {
   if (!FMP_API_KEY) throw new Error('FMP_KEY_MISSING');
   const pair = symbol.replace('/', '');
-  // FMP intraday chart
   const tfMap: Record<string, string> = { '5min': '5min', '15min': '15min', '30min': '30min', '1h': '1hour', '4h': '4hour', '1day': 'daily', '1week': 'daily' };
   const tf = tfMap[interval] || '1hour';
   const url = tf === 'daily'
     ? `https://financialmodelingprep.com/api/v3/historical-price-full/${pair}?apikey=${FMP_API_KEY}&timeseries=${outputsize}`
     : `https://financialmodelingprep.com/api/v3/historical-chart/${tf}/${pair}?apikey=${FMP_API_KEY}`;
   console.log(`[FMP] OHLC ${pair} ${tf}`);
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`FMP HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('fmp', res.status, latency, { symbol, type: 'OHLC' }); throw new Error(`FMP HTTP ${res.status}`); }
   const data = await res.json();
   const raw = Array.isArray(data) ? data : data?.historical || [];
-  if (raw.length === 0) throw new Error('No FMP data');
+  if (raw.length === 0) { logUsage('fmp', 200, latency, { symbol, type: 'OHLC', empty: true }); throw new Error('No FMP data'); }
+  logUsage('fmp', 200, latency, { symbol, type: 'OHLC' });
   const values = raw.slice(0, outputsize).map((b: any) => ({
     datetime: b.date, open: String(b.open), high: String(b.high), low: String(b.low), close: String(b.close), volume: String(b.volume || 0),
   })).reverse();
@@ -316,10 +337,13 @@ async function fetchFinnhub_OHLC(symbol: string, interval: string, outputsize: n
   const from = to - daysBack * 86400;
   const url = `https://finnhub.io/api/v1/forex/candle?symbol=${encodeURIComponent(pair)}&resolution=${resolution}&from=${from}&to=${to}&token=${FINNHUB_KEY}`;
   console.log(`[Finnhub] OHLC ${pair} ${resolution}`);
+  const t0 = Date.now();
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Finnhub HTTP ${res.status}`);
+  const latency = Date.now() - t0;
+  if (!res.ok) { logUsage('finnhub', res.status, latency, { symbol, type: 'OHLC' }); throw new Error(`Finnhub HTTP ${res.status}`); }
   const data = await res.json();
-  if (data.s !== 'ok' || !data.c?.length) throw new Error('No Finnhub data');
+  if (data.s !== 'ok' || !data.c?.length) { logUsage('finnhub', 200, latency, { symbol, type: 'OHLC', empty: true }); throw new Error('No Finnhub data'); }
+  logUsage('finnhub', 200, latency, { symbol, type: 'OHLC' });
   const values = data.t.slice(-outputsize).map((t: number, i: number) => ({
     datetime: new Date(t * 1000).toISOString().replace('T', ' ').slice(0, 19),
     open: String(data.o[data.t.length - outputsize + i] ?? data.o[i]),
