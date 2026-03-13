@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import {
   ChevronDown, Copy, Check, Sparkles,
@@ -8,6 +8,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AIAnalysisResult } from '@/hooks/useAIAnalysis';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useStreamingBlocks } from './useStreamingBlocks';
+import { StreamingCursor } from './StreamingCursor';
 
 interface Props {
   result: AIAnalysisResult;
