@@ -25,7 +25,14 @@ interface Props {
 
 export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
   const { t } = useTranslation();
-  const [signal, setSignal] = useState<SignalDraft>(draft);
+  const formatPair = (raw: string) => {
+    const clean = raw.replace(/[^A-Z]/g, '');
+    return clean.length >= 6 ? clean.slice(0, 3) + '/' + clean.slice(3, 6) : clean;
+  };
+  const [signal, setSignal] = useState<SignalDraft>(() => ({
+    ...draft,
+    currencyPair: formatPair(draft.currencyPair.toUpperCase()),
+  }));
   const [creating, setCreating] = useState(false);
 
   const isBuy = signal.action === 'BUY';
@@ -76,7 +83,18 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
     }
   };
 
+  const formatCurrencyPair = (raw: string): string => {
+    const clean = raw.replace(/[^A-Z]/g, '');
+    if (clean.length >= 6) {
+      return clean.slice(0, 3) + '/' + clean.slice(3, 6);
+    }
+    return clean;
+  };
+
   const updateField = (field: keyof SignalDraft, value: number | string) => {
+    if (field === 'currencyPair' && typeof value === 'string') {
+      value = formatCurrencyPair(value.toUpperCase());
+    }
     setSignal(prev => ({ ...prev, [field]: value }));
   };
 
@@ -127,7 +145,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
         <input
           type="text"
           value={signal.currencyPair}
-          onChange={(e) => updateField('currencyPair', e.target.value.toUpperCase())}
+          onChange={(e) => updateField('currencyPair', e.target.value)}
           className="w-full px-3 py-2 rounded-lg bg-secondary/30 border border-border text-sm text-foreground font-mono focus:outline-none focus:border-primary"
         />
       </div>
