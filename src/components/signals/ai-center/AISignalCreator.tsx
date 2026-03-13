@@ -76,7 +76,18 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
     }
   };
 
+  const formatCurrencyPair = (raw: string): string => {
+    const clean = raw.replace(/[^A-Z]/g, '');
+    if (clean.length >= 6) {
+      return clean.slice(0, 3) + '/' + clean.slice(3, 6);
+    }
+    return clean;
+  };
+
   const updateField = (field: keyof SignalDraft, value: number | string) => {
+    if (field === 'currencyPair' && typeof value === 'string') {
+      value = formatCurrencyPair(value.toUpperCase());
+    }
     setSignal(prev => ({ ...prev, [field]: value }));
   };
 
