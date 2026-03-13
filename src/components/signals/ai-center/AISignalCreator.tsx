@@ -34,6 +34,8 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
     ...draft,
     currencyPair: formatPair(draft.currencyPair.toUpperCase()),
   }));
+  const [notes, setNotes] = useState(draft.notes || '');
+  const [showNotes, setShowNotes] = useState(!!draft.notes);
   const [creating, setCreating] = useState(false);
 
   const isBuy = signal.action === 'BUY';
