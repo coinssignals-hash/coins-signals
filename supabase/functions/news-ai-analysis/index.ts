@@ -29,6 +29,7 @@ interface NewsAnalysisRequest {
   category: string;
   affectedCurrencies: string[];
   sentiment: string;
+  language?: string;
 }
 
 interface KeyPoint {
@@ -74,7 +75,8 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { newsId, title, summary, source, category, affectedCurrencies, sentiment }: NewsAnalysisRequest = await req.json();
+    const { newsId, title, summary, source, category, affectedCurrencies, sentiment, language }: NewsAnalysisRequest = await req.json();
+    const lang = language || 'es';
 
     if (!newsId) {
       throw new Error('newsId is required');
@@ -82,17 +84,19 @@ serve(async (req) => {
 
     console.log('[news-ai-analysis] Checking cache for news:', newsId);
 
+    const cacheId = lang === 'es' ? newsId : `${newsId}_${lang}`;
+
     // Check cache first
     const { data: cachedAnalysis, error: cacheError } = await supabase
       .from('news_ai_analysis_cache')
       .select('analysis_data, expires_at')
-      .eq('news_id', newsId)
+      .eq('news_id', cacheId)
       .single();
 
     if (cachedAnalysis && !cacheError) {
       const expiresAt = new Date(cachedAnalysis.expires_at);
       if (expiresAt > new Date()) {
-        console.log('[news-ai-analysis] Cache HIT for:', newsId);
+        console.log('[news-ai-analysis] Cache HIT for:', cacheId);
         return new Response(
           JSON.stringify({
             success: true,
@@ -102,32 +106,39 @@ serve(async (req) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } else {
-        console.log('[news-ai-analysis] Cache expired for:', newsId);
-        // Delete expired cache entry
+        console.log('[news-ai-analysis] Cache expired for:', cacheId);
         await supabase
           .from('news_ai_analysis_cache')
           .delete()
-          .eq('news_id', newsId);
+          .eq('news_id', cacheId);
       }
     }
 
     console.log('[news-ai-analysis] Cache MISS - generating analysis for:', title.substring(0, 50) + '...');
 
-    const systemPrompt = `Eres un analista financiero experto especializado en forex y mercados financieros. 
-Tu tarea es analizar noticias financieras y proporcionar insights accionables para traders.
-Responde SIEMPRE en español.
-Sé conciso pero informativo. Enfócate en el impacto práctico para el trading.`;
+    const langLabels: Record<string, { locale: string; respondIn: string }> = {
+      es: { locale: 'español', respondIn: 'Responde SIEMPRE en español.' },
+      en: { locale: 'English', respondIn: 'ALWAYS respond in English.' },
+      pt: { locale: 'português', respondIn: 'Responda SEMPRE em português.' },
+      fr: { locale: 'français', respondIn: 'Réponds TOUJOURS en français.' },
+    };
+    const lm = langLabels[lang] || langLabels.es;
 
-    const userPrompt = `Analiza la siguiente noticia financiera y proporciona un análisis detallado para traders:
+    const systemPrompt = `You are an expert financial analyst specialized in forex and financial markets.
+Your task is to analyze financial news and provide actionable insights for traders.
+${lm.respondIn}
+Be concise but informative. Focus on practical trading impact.`;
 
-TÍTULO: ${title}
-RESUMEN: ${summary}
-FUENTE: ${source}
-CATEGORÍA: ${category}
-DIVISAS AFECTADAS: ${affectedCurrencies.join(', ')}
-SENTIMIENTO DETECTADO: ${sentiment}
+    const userPrompt = `Analyze the following financial news and provide a detailed analysis for traders (respond in ${lm.locale}):
 
-Responde usando la siguiente función con datos precisos y útiles para traders.`;
+TITLE: ${title}
+SUMMARY: ${summary}
+SOURCE: ${source}
+CATEGORY: ${category}
+AFFECTED CURRENCIES: ${affectedCurrencies.join(', ')}
+DETECTED SENTIMENT: ${sentiment}
+
+Respond using the following function with precise and useful data for traders. All text fields must be in ${lm.locale}.`;
 
     const t0 = Date.now();
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -147,32 +158,32 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
             type: 'function',
             function: {
               name: 'provide_news_analysis',
-              description: 'Proporciona análisis detallado de una noticia financiera para traders',
+              description: `Provide detailed analysis of a financial news item for traders. All text must be in ${lm.locale}.`,
               parameters: {
                 type: 'object',
                 properties: {
                   aiSummary: {
                     type: 'string',
-                    description: 'Resumen ejecutivo de 2-3 oraciones explicando el impacto de la noticia en los mercados'
+                    description: `Executive summary of 2-3 sentences explaining the news impact on markets (in ${lm.locale})`
                   },
                   keyPoints: {
                     type: 'array',
-                    description: 'Lista de 3-5 puntos clave de la noticia',
+                    description: '3-5 key points from the news',
                     items: {
                       type: 'object',
                       properties: {
                         icon: { 
                           type: 'string', 
-                          description: 'Emoji relevante para el punto (ej: 📈, 💹, ⚠️, 🏦, 💰, 📊)' 
+                          description: 'Relevant emoji (e.g.: 📈, 💹, ⚠️, 🏦, 💰, 📊)' 
                         },
                         text: { 
                           type: 'string', 
-                          description: 'Descripción concisa del punto clave' 
+                          description: `Concise description of the key point (in ${lm.locale})` 
                         },
                         importance: { 
                           type: 'string', 
                           enum: ['high', 'medium', 'low'],
-                          description: 'Nivel de importancia del punto'
+                          description: 'Importance level'
                         }
                       },
                       required: ['icon', 'text', 'importance']
@@ -180,47 +191,47 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
                   },
                   traderConclusion: {
                     type: 'object',
-                    description: 'Conclusión y recomendación para traders',
+                    description: 'Conclusion and recommendation for traders',
                     properties: {
                       bias: { 
                         type: 'string', 
                         enum: ['bullish', 'bearish', 'neutral'],
-                        description: 'Sesgo general de la noticia'
+                        description: 'Overall news bias'
                       },
                       biasStrength: { 
                         type: 'string', 
                         enum: ['strong', 'moderate', 'weak'],
-                        description: 'Fuerza del sesgo'
+                        description: 'Bias strength'
                       },
                       summary: { 
                         type: 'string', 
-                        description: 'Resumen de la conclusión para traders en 2-3 oraciones'
+                        description: `Trader conclusion summary in 2-3 sentences (in ${lm.locale})`
                       },
                       recommendedPairs: { 
                         type: 'array', 
                         items: { type: 'string' },
-                        description: 'Pares de divisas recomendados para operar (ej: EUR/USD, GBP/JPY)'
+                        description: 'Recommended currency pairs (e.g.: EUR/USD, GBP/JPY)'
                       },
                       riskLevel: { 
                         type: 'string', 
                         enum: ['high', 'medium', 'low'],
-                        description: 'Nivel de riesgo asociado'
+                        description: 'Associated risk level'
                       },
                       timeHorizon: { 
                         type: 'string', 
                         enum: ['short_term', 'medium_term', 'long_term'],
-                        description: 'Horizonte temporal recomendado'
+                        description: 'Recommended time horizon'
                       }
                     },
                     required: ['bias', 'biasStrength', 'summary', 'recommendedPairs', 'riskLevel', 'timeHorizon']
                   },
                   marketImpact: {
                     type: 'string',
-                    description: 'Descripción del impacto esperado en el mercado (1-2 oraciones)'
+                    description: `Expected market impact description in 1-2 sentences (in ${lm.locale})`
                   },
                   tradingStrategy: {
                     type: 'string',
-                    description: 'Estrategia de trading sugerida basada en esta noticia (1-2 oraciones)'
+                    description: `Suggested trading strategy based on this news in 1-2 sentences (in ${lm.locale})`
                   }
                 },
                 required: ['aiSummary', 'keyPoints', 'traderConclusion', 'marketImpact', 'tradingStrategy']
@@ -273,7 +284,7 @@ Responde usando la siguiente función con datos precisos y útiles para traders.
     const { error: insertError } = await supabase
       .from('news_ai_analysis_cache')
       .upsert({
-        news_id: newsId,
+        news_id: cacheId,
         news_title: title.substring(0, 500), // Limit title length
         analysis_data: analysisData,
         expires_at: expiresAt.toISOString(),

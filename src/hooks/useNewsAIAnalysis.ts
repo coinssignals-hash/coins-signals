@@ -67,8 +67,9 @@ async function fetchNewsAIAnalysis(news: RealNewsItem): Promise<NewsAIAnalysis> 
 }
 
 export function useNewsAIAnalysis(news: RealNewsItem | null) {
+  const language = getStoredLanguage();
   return useQuery({
-    queryKey: ['news-ai-analysis', news?.id],
+    queryKey: ['news-ai-analysis', news?.id, language],
     queryFn: () => fetchNewsAIAnalysis(news!),
     enabled: !!news,
     staleTime: 30 * 60 * 1000,
