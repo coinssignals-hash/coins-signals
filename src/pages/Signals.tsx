@@ -142,7 +142,7 @@ export default function Signals() {
     });
 
     return result;
-  }, [signals, showFavoritesOnly, favoriteIds, sortBy]);
+  }, [signals, showFavoritesOnly, favoriteIds, sortBy, sourceFilter]);
 
   // Separate today, tomorrow, yesterday, and other days
   const { todaySignals, tomorrowSignals, yesterdaySignals, otherDayGroups } = useMemo(() => {
