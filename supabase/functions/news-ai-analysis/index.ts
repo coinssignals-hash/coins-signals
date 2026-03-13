@@ -284,7 +284,7 @@ Respond using the following function with precise and useful data for traders. A
     const { error: insertError } = await supabase
       .from('news_ai_analysis_cache')
       .upsert({
-        news_id: newsId,
+        news_id: cacheId,
         news_title: title.substring(0, 500), // Limit title length
         analysis_data: analysisData,
         expires_at: expiresAt.toISOString(),
