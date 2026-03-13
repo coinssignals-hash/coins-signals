@@ -25,21 +25,36 @@ interface StockAISummaryCardProps {
 
 const recConfig: Record<string, { color: string; icon: typeof TrendingUp; bg: string }> = {
   COMPRAR: { color: 'text-[hsl(142,70%,45%)]', icon: TrendingUp, bg: 'bg-[hsl(142,70%,45%)]' },
+  BUY: { color: 'text-[hsl(142,70%,45%)]', icon: TrendingUp, bg: 'bg-[hsl(142,70%,45%)]' },
+  ACHETER: { color: 'text-[hsl(142,70%,45%)]', icon: TrendingUp, bg: 'bg-[hsl(142,70%,45%)]' },
   VENDER: { color: 'text-[hsl(0,70%,55%)]', icon: TrendingDown, bg: 'bg-[hsl(0,70%,55%)]' },
+  SELL: { color: 'text-[hsl(0,70%,55%)]', icon: TrendingDown, bg: 'bg-[hsl(0,70%,55%)]' },
+  VENDRE: { color: 'text-[hsl(0,70%,55%)]', icon: TrendingDown, bg: 'bg-[hsl(0,70%,55%)]' },
   MANTENER: { color: 'text-[hsl(45,90%,55%)]', icon: Minus, bg: 'bg-[hsl(45,90%,55%)]' },
+  HOLD: { color: 'text-[hsl(45,90%,55%)]', icon: Minus, bg: 'bg-[hsl(45,90%,55%)]' },
+  MANTER: { color: 'text-[hsl(45,90%,55%)]', icon: Minus, bg: 'bg-[hsl(45,90%,55%)]' },
+  CONSERVER: { color: 'text-[hsl(45,90%,55%)]', icon: Minus, bg: 'bg-[hsl(45,90%,55%)]' },
 };
 
 const signalColor = (signal: string) => {
   const s = signal?.toUpperCase();
-  if (['ALCISTA', 'POSITIVO', 'BULLISH', 'POSITIVE'].includes(s)) return 'text-[hsl(142,70%,45%)]';
-  if (['BAJISTA', 'NEGATIVO', 'BEARISH', 'NEGATIVE'].includes(s)) return 'text-[hsl(0,70%,55%)]';
+  if (['ALCISTA', 'POSITIVO', 'BULLISH', 'POSITIVE', 'ALTISTA', 'POSITIF', 'HAUSSIER'].includes(s)) return 'text-[hsl(142,70%,45%)]';
+  if (['BAJISTA', 'NEGATIVO', 'BEARISH', 'NEGATIVE', 'BAIXISTA', 'NÉGATIF', 'BAISSIER'].includes(s)) return 'text-[hsl(0,70%,55%)]';
   return 'text-slate-400';
 };
 
 const riskConfig: Record<string, { color: string; icon: typeof ShieldAlert }> = {
   BAJO: { color: 'text-[hsl(142,70%,45%)]', icon: CheckCircle2 },
+  LOW: { color: 'text-[hsl(142,70%,45%)]', icon: CheckCircle2 },
+  BAIXO: { color: 'text-[hsl(142,70%,45%)]', icon: CheckCircle2 },
+  FAIBLE: { color: 'text-[hsl(142,70%,45%)]', icon: CheckCircle2 },
   MEDIO: { color: 'text-[hsl(45,90%,55%)]', icon: AlertTriangle },
+  MEDIUM: { color: 'text-[hsl(45,90%,55%)]', icon: AlertTriangle },
+  MÉDIO: { color: 'text-[hsl(45,90%,55%)]', icon: AlertTriangle },
+  MOYEN: { color: 'text-[hsl(45,90%,55%)]', icon: AlertTriangle },
   ALTO: { color: 'text-[hsl(0,70%,55%)]', icon: ShieldAlert },
+  HIGH: { color: 'text-[hsl(0,70%,55%)]', icon: ShieldAlert },
+  ÉLEVÉ: { color: 'text-[hsl(0,70%,55%)]', icon: ShieldAlert },
 };
 
 export function StockAISummaryCard({ data, loading, currentPrice }: StockAISummaryCardProps) {
