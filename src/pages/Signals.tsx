@@ -39,6 +39,7 @@ import {
 type ViewMode = 'full' | 'compact';
 type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
 type DayTab = 'today' | 'tomorrow' | 'yesterday' | 'calendar' | 'all';
+type SourceFilter = 'all' | 'server' | 'ai-center';
 
 function useSortOptions() {
   const { t } = useTranslation();
