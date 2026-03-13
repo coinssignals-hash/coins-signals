@@ -138,7 +138,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
         <input
           type="text"
           value={signal.currencyPair}
-          onChange={(e) => updateField('currencyPair', e.target.value.toUpperCase())}
+          onChange={(e) => updateField('currencyPair', e.target.value)}
           className="w-full px-3 py-2 rounded-lg bg-secondary/30 border border-border text-sm text-foreground font-mono focus:outline-none focus:border-primary"
         />
       </div>
