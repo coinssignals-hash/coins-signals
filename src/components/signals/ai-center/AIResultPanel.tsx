@@ -14,13 +14,31 @@ interface Props {
   title: string;
 }
 
-/* ── Markdown-lite parser ── */
+/* ── Extract text content from edge function response ── */
+function extractContent(data: unknown): string {
+  if (typeof data === 'string') return data;
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    // Known response keys from edge functions
+    for (const key of ['analysis', 'prediction', 'report', 'synthesis', 'correlation', 'content', 'text', 'result']) {
+      if (typeof obj[key] === 'string') return obj[key] as string;
+    }
+    // Fallback: find first string value that looks like content
+    for (const val of Object.values(obj)) {
+      if (typeof val === 'string' && (val as string).length > 50) return val as string;
+    }
+  }
+  return JSON.stringify(data, null, 2);
+}
+
+/* ── Parsed block types ── */
 interface ParsedBlock {
-  type: 'heading' | 'subheading' | 'bullet' | 'numbered' | 'paragraph' | 'separator' | 'keyvalue';
+  type: 'heading' | 'subheading' | 'bullet' | 'numbered' | 'paragraph' | 'separator' | 'keyvalue' | 'emoji-heading';
   text: string;
   level?: number;
   label?: string;
   value?: string;
+  emoji?: string;
 }
 
 function parseContent(raw: string): ParsedBlock[] {
@@ -31,40 +49,69 @@ function parseContent(raw: string): ParsedBlock[] {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
+    // Horizontal rule
     if (/^[-*_]{3,}$/.test(trimmed)) {
       blocks.push({ type: 'separator', text: '' });
       continue;
     }
 
+    // Headings with emojis (e.g. "📊 Resumen del mercado" or "## 📊 Resumen")
+    const emojiHeading = trimmed.match(/^#{1,3}\s*([\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}])\s*(.+)/u);
+    if (emojiHeading) {
+      blocks.push({ type: 'emoji-heading', text: emojiHeading[2].replace(/\*\*/g, ''), emoji: emojiHeading[1] });
+      continue;
+    }
+
+    // Bold emoji heading (e.g. "**📊 Resumen:**")
+    const boldEmojiHeading = trimmed.match(/^\*\*([\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}])\s*(.+?)\*\*:?\s*$/u);
+    if (boldEmojiHeading) {
+      blocks.push({ type: 'emoji-heading', text: boldEmojiHeading[2], emoji: boldEmojiHeading[1] });
+      continue;
+    }
+
+    // Standalone emoji line as heading
+    const standaloneEmoji = trimmed.match(/^([\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FEFF}])\s+(.{3,})/u);
+    if (standaloneEmoji && !trimmed.startsWith('-') && !trimmed.startsWith('*') && !trimmed.match(/^\d/)) {
+      blocks.push({ type: 'emoji-heading', text: standaloneEmoji[2].replace(/\*\*/g, ''), emoji: standaloneEmoji[1] });
+      continue;
+    }
+
+    // H3
     const h3 = trimmed.match(/^###\s+(.+)/);
     if (h3) { blocks.push({ type: 'subheading', text: h3[1].replace(/\*\*/g, ''), level: 3 }); continue; }
 
+    // H2
     const h2 = trimmed.match(/^##\s+(.+)/);
     if (h2) { blocks.push({ type: 'subheading', text: h2[1].replace(/\*\*/g, ''), level: 2 }); continue; }
 
+    // H1
     const h1 = trimmed.match(/^#\s+(.+)/);
     if (h1) { blocks.push({ type: 'heading', text: h1[1].replace(/\*\*/g, ''), level: 1 }); continue; }
 
+    // Bold-only line as subheading
     const boldLine = trimmed.match(/^\*\*(.+?)\*\*:?\s*$/);
     if (boldLine) { blocks.push({ type: 'subheading', text: boldLine[1], level: 2 }); continue; }
 
-    // Key: Value pattern (e.g. "Entrada: 1.0850")
+    // Key: Value (bold key)
     const kvBold = trimmed.match(/^\*\*(.+?)\*\*:\s*(.+)/);
     if (kvBold) { blocks.push({ type: 'keyvalue', text: trimmed, label: kvBold[1], value: kvBold[2] }); continue; }
 
+    // Bullet
     const bullet = trimmed.match(/^[-*•]\s+(.+)/);
     if (bullet) { blocks.push({ type: 'bullet', text: bullet[1] }); continue; }
 
+    // Numbered
     const numbered = trimmed.match(/^\d+[.)]\s+(.+)/);
     if (numbered) { blocks.push({ type: 'numbered', text: numbered[1] }); continue; }
 
+    // Paragraph
     blocks.push({ type: 'paragraph', text: trimmed });
   }
 
   return blocks;
 }
 
-/* ── Inline formatting ── */
+/* ── Inline formatting with emoji support ── */
 function renderInline(text: string) {
   const parts: (string | JSX.Element)[] = [];
   const regex = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(`(.+?)`)/g;
@@ -100,7 +147,7 @@ function renderInline(text: string) {
   return parts;
 }
 
-/* ── Smart icon for heading text ── */
+/* ── Icon mapping ── */
 function getHeadingIcon(text: string) {
   const t = text.toLowerCase();
   if (t.includes('señal') || t.includes('signal') || t.includes('predicción') || t.includes('prediccion'))
@@ -111,35 +158,164 @@ function getHeadingIcon(text: string) {
     return <TrendingUp className="w-3.5 h-3.5" />;
   if (t.includes('patrón') || t.includes('patron') || t.includes('pattern') || t.includes('técnic'))
     return <BarChart3 className="w-3.5 h-3.5" />;
-  if (t.includes('recomend') || t.includes('conclus') || t.includes('resumen'))
+  if (t.includes('recomend') || t.includes('conclus') || t.includes('resumen') || t.includes('síntesis'))
     return <Lightbulb className="w-3.5 h-3.5" />;
   if (t.includes('alerta') || t.includes('alert') || t.includes('precaución'))
     return <AlertTriangle className="w-3.5 h-3.5" />;
   return <ArrowRight className="w-3.5 h-3.5" />;
 }
 
-/* ── Numbered counter ── */
-let numberedCounter = 0;
+/* ── Block renderer ── */
+function RenderBlock({ block, index }: { block: ParsedBlock; index: number }) {
+  switch (block.type) {
+    case 'heading':
+      return (
+        <div className="pt-5 pb-2 first:pt-1">
+          <div
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, hsl(200, 80%, 10%), hsl(210, 60%, 8%))',
+              border: '1px solid hsl(200, 50%, 20%)',
+            }}
+          >
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, hsl(200, 90%, 40%), hsl(200, 70%, 30%))' }}
+            >
+              {getHeadingIcon(block.text)}
+            </div>
+            <h3 className="text-[13px] font-bold text-white tracking-tight">{block.text}</h3>
+          </div>
+        </div>
+      );
 
+    case 'emoji-heading':
+      return (
+        <div className="pt-4 pb-2 first:pt-1">
+          <div
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, hsl(270, 60%, 10%), hsl(210, 50%, 8%))',
+              border: '1px solid hsl(270, 40%, 20%)',
+            }}
+          >
+            <span className="text-lg flex-shrink-0">{block.emoji}</span>
+            <h4 className="text-[12px] font-bold text-white tracking-tight">{block.text}</h4>
+          </div>
+        </div>
+      );
+
+    case 'subheading':
+      return (
+        <div className="pt-4 pb-1.5 first:pt-1">
+          <div className="flex items-center gap-2">
+            <div
+              className="w-1.5 h-5 rounded-full flex-shrink-0"
+              style={{
+                background: block.level === 2
+                  ? 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(200, 70%, 35%))'
+                  : 'linear-gradient(to bottom, hsl(270, 70%, 55%), hsl(270, 50%, 35%))',
+              }}
+            />
+            <h4
+              className={cn("font-semibold tracking-tight", block.level === 2 ? "text-[12px]" : "text-[11px]")}
+              style={{ color: block.level === 2 ? 'hsl(200, 80%, 70%)' : 'hsl(210, 30%, 70%)' }}
+            >
+              {block.text}
+            </h4>
+          </div>
+        </div>
+      );
+
+    case 'keyvalue':
+      return (
+        <div
+          className="flex items-center justify-between px-3 py-2 ml-3 rounded-lg"
+          style={{
+            background: 'hsl(210, 60%, 7%)',
+            borderLeft: '2px solid hsl(200, 60%, 30%)',
+          }}
+        >
+          <span className="text-[11px] text-slate-400 font-medium">{block.label}</span>
+          <span className="text-[12px] text-white font-bold font-mono">{block.value}</span>
+        </div>
+      );
+
+    case 'bullet':
+      return (
+        <div className="flex gap-2.5 pl-3 py-1 group/bullet">
+          <div
+            className="w-1.5 h-1.5 rounded-full mt-[7px] flex-shrink-0 transition-all group-hover/bullet:scale-125"
+            style={{
+              background: 'hsl(200, 90%, 55%)',
+              boxShadow: '0 0 6px hsla(200, 90%, 55%, 0.4)',
+            }}
+          />
+          <p className="text-[12px] text-slate-400 leading-[1.7] flex-1">{renderInline(block.text)}</p>
+        </div>
+      );
+
+    case 'numbered':
+      return (
+        <div className="flex gap-2.5 pl-2 py-1.5">
+          <span
+            className="text-[10px] font-bold mt-[2px] flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(135deg, hsl(200, 80%, 15%), hsl(210, 60%, 12%))',
+              color: 'hsl(200, 90%, 65%)',
+              border: '1px solid hsl(200, 50%, 25%)',
+            }}
+          >
+            {index + 1}
+          </span>
+          <p className="text-[12px] text-slate-400 leading-[1.7] flex-1">{renderInline(block.text)}</p>
+        </div>
+      );
+
+    case 'separator':
+      return (
+        <div className="py-3">
+          <div
+            className="h-px"
+            style={{ background: 'linear-gradient(90deg, transparent, hsl(200, 50%, 22%), hsl(270, 40%, 22%), transparent)' }}
+          />
+        </div>
+      );
+
+    case 'paragraph':
+      return (
+        <p className="text-[12px] text-slate-400 leading-[1.8] py-0.5 pl-1">
+          {renderInline(block.text)}
+        </p>
+      );
+
+    default:
+      return null;
+  }
+}
+
+/* ── Main Panel ── */
 export function AIResultPanel({ result, title }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
-  const rawContent = typeof result.data === 'string'
-    ? result.data
-    : JSON.stringify(result.data, null, 2);
-
+  const rawContent = useMemo(() => extractContent(result.data), [result.data]);
   const blocks = useMemo(() => parseContent(rawContent), [rawContent]);
-  const isStructured = blocks.some(b => b.type === 'heading' || b.type === 'subheading' || b.type === 'bullet');
+  const isStructured = blocks.some(b =>
+    b.type === 'heading' || b.type === 'subheading' || b.type === 'bullet' || b.type === 'emoji-heading'
+  );
+
+  // Track numbered items sequentially
+  const numberedIndices = useMemo(() => {
+    let counter = 0;
+    return blocks.map(b => b.type === 'numbered' ? counter++ : -1);
+  }, [blocks]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(rawContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  // Reset numbered counter for each render
-  numberedCounter = 0;
 
   return (
     <Collapsible defaultOpen>
@@ -154,9 +330,7 @@ export function AIResultPanel({ result, title }: Props) {
         {/* Accent top line */}
         <div
           className="h-[2px]"
-          style={{
-            background: 'linear-gradient(90deg, hsl(270, 80%, 55%), hsl(200, 90%, 50%), hsl(160, 70%, 50%))',
-          }}
+          style={{ background: 'linear-gradient(90deg, hsl(270, 80%, 55%), hsl(200, 90%, 50%), hsl(160, 70%, 50%))' }}
         />
 
         {/* Header */}
@@ -180,7 +354,6 @@ export function AIResultPanel({ result, title }: Props) {
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          {/* Divider */}
           <div className="mx-4 h-px" style={{ background: 'linear-gradient(90deg, transparent, hsl(210, 50%, 18%), transparent)' }} />
 
           <div className="relative">
@@ -204,129 +377,13 @@ export function AIResultPanel({ result, title }: Props) {
             <div className="px-4 pt-4 pb-5 max-h-[600px] overflow-y-auto scrollbar-thin">
               {isStructured ? (
                 <div className="space-y-1">
-                  {blocks.map((block, i) => {
-                    switch (block.type) {
-                      case 'heading':
-                        return (
-                          <div key={i} className="pt-5 pb-2 first:pt-1">
-                            <div
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
-                              style={{
-                                background: 'linear-gradient(135deg, hsl(200, 80%, 10%), hsl(210, 60%, 8%))',
-                                border: '1px solid hsl(200, 50%, 20%)',
-                              }}
-                            >
-                              <div
-                                className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                style={{
-                                  background: 'linear-gradient(135deg, hsl(200, 90%, 40%), hsl(200, 70%, 30%))',
-                                }}
-                              >
-                                {getHeadingIcon(block.text)}
-                              </div>
-                              <h3 className="text-[13px] font-bold text-white tracking-tight">{block.text}</h3>
-                            </div>
-                          </div>
-                        );
-
-                      case 'subheading':
-                        return (
-                          <div key={i} className="pt-4 pb-1.5 first:pt-1">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-1.5 h-5 rounded-full flex-shrink-0"
-                                style={{
-                                  background: block.level === 2
-                                    ? 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(200, 70%, 35%))'
-                                    : 'linear-gradient(to bottom, hsl(270, 70%, 55%), hsl(270, 50%, 35%))',
-                                }}
-                              />
-                              <h4
-                                className={cn(
-                                  "font-semibold tracking-tight",
-                                  block.level === 2 ? "text-[12px]" : "text-[11px]"
-                                )}
-                                style={{
-                                  color: block.level === 2 ? 'hsl(200, 80%, 70%)' : 'hsl(210, 30%, 70%)',
-                                }}
-                              >
-                                {block.text}
-                              </h4>
-                            </div>
-                          </div>
-                        );
-
-                      case 'keyvalue':
-                        return (
-                          <div
-                            key={i}
-                            className="flex items-center justify-between px-3 py-2 ml-3 rounded-lg"
-                            style={{
-                              background: 'hsl(210, 60%, 7%)',
-                              borderLeft: '2px solid hsl(200, 60%, 30%)',
-                            }}
-                          >
-                            <span className="text-[11px] text-slate-400 font-medium">{block.label}</span>
-                            <span className="text-[12px] text-white font-bold font-mono">{block.value}</span>
-                          </div>
-                        );
-
-                      case 'bullet':
-                        return (
-                          <div key={i} className="flex gap-2.5 pl-3 py-1 group/bullet">
-                            <div
-                              className="w-1.5 h-1.5 rounded-full mt-[7px] flex-shrink-0 transition-all group-hover/bullet:scale-125"
-                              style={{
-                                background: 'hsl(200, 90%, 55%)',
-                                boxShadow: '0 0 6px hsla(200, 90%, 55%, 0.4)',
-                              }}
-                            />
-                            <p className="text-[12px] text-slate-400 leading-[1.7] flex-1">{renderInline(block.text)}</p>
-                          </div>
-                        );
-
-                      case 'numbered': {
-                        numberedCounter++;
-                        return (
-                          <div key={i} className="flex gap-2.5 pl-2 py-1.5">
-                            <span
-                              className="text-[10px] font-bold mt-[2px] flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center"
-                              style={{
-                                background: 'linear-gradient(135deg, hsl(200, 80%, 15%), hsl(210, 60%, 12%))',
-                                color: 'hsl(200, 90%, 65%)',
-                                border: '1px solid hsl(200, 50%, 25%)',
-                              }}
-                            >
-                              {numberedCounter}
-                            </span>
-                            <p className="text-[12px] text-slate-400 leading-[1.7] flex-1">{renderInline(block.text)}</p>
-                          </div>
-                        );
-                      }
-
-                      case 'separator':
-                        return (
-                          <div key={i} className="py-3">
-                            <div
-                              className="h-px"
-                              style={{
-                                background: 'linear-gradient(90deg, transparent, hsl(200, 50%, 22%), hsl(270, 40%, 22%), transparent)',
-                              }}
-                            />
-                          </div>
-                        );
-
-                      case 'paragraph':
-                        return (
-                          <p key={i} className="text-[12px] text-slate-400 leading-[1.8] py-0.5 pl-1">
-                            {renderInline(block.text)}
-                          </p>
-                        );
-
-                      default:
-                        return null;
-                    }
-                  })}
+                  {blocks.map((block, i) => (
+                    <RenderBlock
+                      key={i}
+                      block={block}
+                      index={block.type === 'numbered' ? numberedIndices[i] : i}
+                    />
+                  ))}
                 </div>
               ) : (
                 <pre
