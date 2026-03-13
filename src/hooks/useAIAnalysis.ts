@@ -43,7 +43,7 @@ export function useAIAnalysis() {
     setLoading(true);
     setError(null);
     // Run first 3 modules, then synthesize with their results
-    const initialModules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report'];
+    const initialModules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'correlation-analysis'];
     const allResults: Record<string, AIAnalysisResult> = {};
 
     try {

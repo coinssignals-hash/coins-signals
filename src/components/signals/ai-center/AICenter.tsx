@@ -113,7 +113,7 @@ export function AICenter({ onClose }: Props) {
       await handleFetchData();
     }
     const indicators = computeAllIndicators();
-    const modules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'synthesize-analysis'];
+    const modules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'correlation-analysis', 'synthesize-analysis'];
     for (const mod of modules) {
       setModuleStatuses((prev) => ({ ...prev, [mod]: 'running' }));
     }
