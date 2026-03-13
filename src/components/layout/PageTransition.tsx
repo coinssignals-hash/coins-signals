@@ -23,7 +23,7 @@ const pageVariants = {
     opacity: 0,
     transition: {
       duration: 0.08,
-      ease: 'easeIn',
+      ease: [0.4, 0, 1, 1] as [number, number, number, number],
     },
   },
 };
