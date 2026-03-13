@@ -29,6 +29,7 @@ interface NewsAnalysisRequest {
   category: string;
   affectedCurrencies: string[];
   sentiment: string;
+  language?: string;
 }
 
 interface KeyPoint {
