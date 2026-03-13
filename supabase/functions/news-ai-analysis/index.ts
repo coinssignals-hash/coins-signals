@@ -158,32 +158,32 @@ Respond using the following function with precise and useful data for traders. A
             type: 'function',
             function: {
               name: 'provide_news_analysis',
-              description: 'Proporciona análisis detallado de una noticia financiera para traders',
+              description: `Provide detailed analysis of a financial news item for traders. All text must be in ${lm.locale}.`,
               parameters: {
                 type: 'object',
                 properties: {
                   aiSummary: {
                     type: 'string',
-                    description: 'Resumen ejecutivo de 2-3 oraciones explicando el impacto de la noticia en los mercados'
+                    description: `Executive summary of 2-3 sentences explaining the news impact on markets (in ${lm.locale})`
                   },
                   keyPoints: {
                     type: 'array',
-                    description: 'Lista de 3-5 puntos clave de la noticia',
+                    description: '3-5 key points from the news',
                     items: {
                       type: 'object',
                       properties: {
                         icon: { 
                           type: 'string', 
-                          description: 'Emoji relevante para el punto (ej: 📈, 💹, ⚠️, 🏦, 💰, 📊)' 
+                          description: 'Relevant emoji (e.g.: 📈, 💹, ⚠️, 🏦, 💰, 📊)' 
                         },
                         text: { 
                           type: 'string', 
-                          description: 'Descripción concisa del punto clave' 
+                          description: `Concise description of the key point (in ${lm.locale})` 
                         },
                         importance: { 
                           type: 'string', 
                           enum: ['high', 'medium', 'low'],
-                          description: 'Nivel de importancia del punto'
+                          description: 'Importance level'
                         }
                       },
                       required: ['icon', 'text', 'importance']
@@ -191,47 +191,47 @@ Respond using the following function with precise and useful data for traders. A
                   },
                   traderConclusion: {
                     type: 'object',
-                    description: 'Conclusión y recomendación para traders',
+                    description: 'Conclusion and recommendation for traders',
                     properties: {
                       bias: { 
                         type: 'string', 
                         enum: ['bullish', 'bearish', 'neutral'],
-                        description: 'Sesgo general de la noticia'
+                        description: 'Overall news bias'
                       },
                       biasStrength: { 
                         type: 'string', 
                         enum: ['strong', 'moderate', 'weak'],
-                        description: 'Fuerza del sesgo'
+                        description: 'Bias strength'
                       },
                       summary: { 
                         type: 'string', 
-                        description: 'Resumen de la conclusión para traders en 2-3 oraciones'
+                        description: `Trader conclusion summary in 2-3 sentences (in ${lm.locale})`
                       },
                       recommendedPairs: { 
                         type: 'array', 
                         items: { type: 'string' },
-                        description: 'Pares de divisas recomendados para operar (ej: EUR/USD, GBP/JPY)'
+                        description: 'Recommended currency pairs (e.g.: EUR/USD, GBP/JPY)'
                       },
                       riskLevel: { 
                         type: 'string', 
                         enum: ['high', 'medium', 'low'],
-                        description: 'Nivel de riesgo asociado'
+                        description: 'Associated risk level'
                       },
                       timeHorizon: { 
                         type: 'string', 
                         enum: ['short_term', 'medium_term', 'long_term'],
-                        description: 'Horizonte temporal recomendado'
+                        description: 'Recommended time horizon'
                       }
                     },
                     required: ['bias', 'biasStrength', 'summary', 'recommendedPairs', 'riskLevel', 'timeHorizon']
                   },
                   marketImpact: {
                     type: 'string',
-                    description: 'Descripción del impacto esperado en el mercado (1-2 oraciones)'
+                    description: `Expected market impact description in 1-2 sentences (in ${lm.locale})`
                   },
                   tradingStrategy: {
                     type: 'string',
-                    description: 'Estrategia de trading sugerida basada en esta noticia (1-2 oraciones)'
+                    description: `Suggested trading strategy based on this news in 1-2 sentences (in ${lm.locale})`
                   }
                 },
                 required: ['aiSummary', 'keyPoints', 'traderConclusion', 'marketImpact', 'tradingStrategy']
