@@ -60,10 +60,11 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           support: signal.support ?? null,
           resistance: signal.resistance ?? null,
           probability: signal.probability,
-          trend: signal.trend,
-          status: 'active',
-          source: 'ai-center',
-        },
+           trend: signal.trend,
+           status: 'active',
+           source: 'ai-center',
+           ...(notes.trim() ? { notes: notes.trim() } : {}),
+         },
       });
 
       if (error) throw error;
