@@ -460,21 +460,36 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-lg sm:text-xl font-bold text-white tracking-wide">{displayPair}</span>
-              {/* Long/Short position badge */}
-              <div
-                className={cn(
-                  "inline-flex items-center gap-0.5 px-1 py-px rounded text-[8px] font-bold uppercase tracking-wider w-fit",
-                  action === "BUY" ?
-                  "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" :
-                  "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                )}>
-                
-                {action === "BUY" ?
-                <TrendingUp className="w-2.5 h-2.5" /> :
+              <div className="flex items-center gap-1">
+                {/* Long/Short position badge */}
+                <div
+                  className={cn(
+                    "inline-flex items-center gap-0.5 px-1 py-px rounded text-[8px] font-bold uppercase tracking-wider w-fit",
+                    action === "BUY" ?
+                    "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" :
+                    "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                  )}>
+                  
+                  {action === "BUY" ?
+                  <TrendingUp className="w-2.5 h-2.5" /> :
 
-                <TrendingDown className="w-2.5 h-2.5" />
-                }
-                {action === "BUY" ? t('signal_long') : t('signal_short')}
+                  <TrendingDown className="w-2.5 h-2.5" />
+                  }
+                  {action === "BUY" ? t('signal_long') : t('signal_short')}
+                </div>
+                {/* AI source badge */}
+                {signal?.source === 'ai-center' && (
+                  <div className="inline-flex items-center gap-0.5 px-1 py-px rounded text-[8px] font-bold uppercase tracking-wider w-fit"
+                    style={{
+                      background: 'hsla(270, 80%, 55%, 0.15)',
+                      color: 'hsl(270, 80%, 70%)',
+                      border: '1px solid hsla(270, 60%, 55%, 0.3)',
+                    }}
+                  >
+                    <Sparkles className="w-2.5 h-2.5" />
+                    AI
+                  </div>
+                )}
               </div>
             </div>
           </div>
