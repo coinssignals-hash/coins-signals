@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Loader2, Zap, TrendingUp, TrendingDown, Check, X, AlertTriangle } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, TrendingDown, Check, X, AlertTriangle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -15,6 +15,7 @@ interface SignalDraft {
   resistance?: number;
   probability: number;
   trend: 'bullish' | 'bearish';
+  notes?: string;
 }
 
 interface Props {
@@ -33,6 +34,8 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
     ...draft,
     currencyPair: formatPair(draft.currencyPair.toUpperCase()),
   }));
+  const [notes, setNotes] = useState(draft.notes || '');
+  const [showNotes, setShowNotes] = useState(!!draft.notes);
   const [creating, setCreating] = useState(false);
 
   const isBuy = signal.action === 'BUY';
@@ -57,10 +60,11 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           support: signal.support ?? null,
           resistance: signal.resistance ?? null,
           probability: signal.probability,
-          trend: signal.trend,
-          status: 'active',
-          source: 'ai-center',
-        },
+           trend: signal.trend,
+           status: 'active',
+           source: 'ai-center',
+           ...(notes.trim() ? { notes: notes.trim() } : {}),
+         },
       });
 
       if (error) throw error;
@@ -225,6 +229,29 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           <span className="text-[10px] text-accent">{t('ai_center_verify_tp_sl')} {signal.action}</span>
         </div>
       )}
+
+      {/* AI Notes Toggle */}
+      <div className="space-y-2">
+        <button
+          onClick={() => setShowNotes(!showNotes)}
+          className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>{t('ai_center_attach_notes') || 'Adjuntar notas del análisis'}</span>
+          {showNotes ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
+          {notes.trim() && <span className="text-primary text-[9px]">✓</span>}
+        </button>
+        {showNotes && (
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={4}
+            maxLength={2000}
+            placeholder={t('ai_center_notes_placeholder') || 'Resumen del análisis IA, patrones detectados, niveles clave...'}
+            className="w-full px-3 py-2 rounded-lg bg-secondary/30 border border-border text-xs text-foreground resize-none focus:outline-none focus:border-primary placeholder:text-muted-foreground/50"
+          />
+        )}
+      </div>
 
       {/* Create Button */}
       <button
