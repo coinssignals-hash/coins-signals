@@ -75,7 +75,8 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { newsId, title, summary, source, category, affectedCurrencies, sentiment }: NewsAnalysisRequest = await req.json();
+    const { newsId, title, summary, source, category, affectedCurrencies, sentiment, language }: NewsAnalysisRequest = await req.json();
+    const lang = language || 'es';
 
     if (!newsId) {
       throw new Error('newsId is required');
