@@ -58,10 +58,11 @@ serve(async (req) => {
   const MARKETAUX_KEY = Deno.env.get('MARKETAUX_API_KEY') || '';
 
   try {
-    const { symbol, action } = await req.json();
+    const { symbol, action, language } = await req.json();
     if (!symbol) throw new Error('symbol required');
+    const lang = language || 'es';
 
-    const cacheKey = `${action}:${symbol}`;
+    const cacheKey = `${action}:${symbol}:${lang}`;
     const cached = getCached(cacheKey);
     if (cached) {
       return new Response(JSON.stringify(cached), {
@@ -242,7 +243,7 @@ serve(async (req) => {
       // ---- AI SUMMARY: Unified recommendation ----
       case 'ai-summary': {
         const AI_CACHE_TTL = 15 * 60 * 1000;
-        const aiCacheKey = `ai-summary:${symbol}`;
+        const aiCacheKey = `ai-summary:${symbol}:${lang}`;
         const aiCached = getCached(aiCacheKey);
         if (aiCached) {
           return new Response(JSON.stringify(aiCached), {
@@ -303,23 +304,30 @@ serve(async (req) => {
         const quoteData = getVal(quoteRes);
         const quote = Array.isArray(quoteData) ? quoteData[0] : null;
 
-        // Build context for AI
+        const langMap: Record<string, { locale: string; buy: string; hold: string; sell: string; bullish: string; neutral: string; bearish: string; positive: string; negative: string; low: string; medium: string; high: string; respondIn: string }> = {
+          es: { locale: 'español', buy: 'COMPRAR', hold: 'MANTENER', sell: 'VENDER', bullish: 'ALCISTA', neutral: 'NEUTRAL', bearish: 'BAJISTA', positive: 'POSITIVO', negative: 'NEGATIVO', low: 'BAJO', medium: 'MEDIO', high: 'ALTO', respondIn: 'Responde en español' },
+          en: { locale: 'English', buy: 'BUY', hold: 'HOLD', sell: 'SELL', bullish: 'BULLISH', neutral: 'NEUTRAL', bearish: 'BEARISH', positive: 'POSITIVE', negative: 'NEGATIVE', low: 'LOW', medium: 'MEDIUM', high: 'HIGH', respondIn: 'Respond in English' },
+          pt: { locale: 'português', buy: 'COMPRAR', hold: 'MANTER', sell: 'VENDER', bullish: 'ALTISTA', neutral: 'NEUTRO', bearish: 'BAIXISTA', positive: 'POSITIVO', negative: 'NEGATIVO', low: 'BAIXO', medium: 'MÉDIO', high: 'ALTO', respondIn: 'Responda em português' },
+          fr: { locale: 'français', buy: 'ACHETER', hold: 'CONSERVER', sell: 'VENDRE', bullish: 'HAUSSIER', neutral: 'NEUTRE', bearish: 'BAISSIER', positive: 'POSITIF', negative: 'NÉGATIF', low: 'FAIBLE', medium: 'MOYEN', high: 'ÉLEVÉ', respondIn: 'Réponds en français' },
+        };
+        const lm = langMap[lang] || langMap.es;
+
         const context = `
-Acción: ${symbol}
-Precio actual: $${quote?.price || 'N/A'} | Cambio: ${quote?.changesPercentage?.toFixed(2) || 'N/A'}%
+Stock: ${symbol}
+Current price: $${quote?.price || 'N/A'} | Change: ${quote?.changesPercentage?.toFixed(2) || 'N/A'}%
 P/E: ${quote?.pe || 'N/A'} | Market Cap: $${quote?.marketCap ? (quote.marketCap / 1e9).toFixed(1) + 'B' : 'N/A'}
 
-INDICADORES TÉCNICOS:
+TECHNICAL INDICATORS:
 - RSI(14): ${latestRsi || 'N/A'}
-- MACD: ${latestMacd ? `Línea: ${(latestMacd as any).MACD}, Signal: ${(latestMacd as any).MACD_Signal}, Hist: ${(latestMacd as any).MACD_Hist}` : 'N/A'}
-- SMA(50): ${latestSma50 || 'N/A'} ${latestSma50 && quote?.price ? (quote.price > parseFloat(latestSma50) ? '(precio ENCIMA)' : '(precio DEBAJO)') : ''}
+- MACD: ${latestMacd ? `Line: ${(latestMacd as any).MACD}, Signal: ${(latestMacd as any).MACD_Signal}, Hist: ${(latestMacd as any).MACD_Hist}` : 'N/A'}
+- SMA(50): ${latestSma50 || 'N/A'} ${latestSma50 && quote?.price ? (quote.price > parseFloat(latestSma50) ? '(price ABOVE)' : '(price BELOW)') : ''}
 
-SENTIMIENTO:
-- Alpha Vantage avg score: ${avgSentScore?.toFixed(3) || 'N/A'} (escala -1 a 1)
+SENTIMENT:
+- Alpha Vantage avg score: ${avgSentScore?.toFixed(3) || 'N/A'} (scale -1 to 1)
 - Finnhub bullish%: ${fhBullish != null ? (fhBullish * 100).toFixed(0) + '%' : 'N/A'}
 
-TITULARES RECIENTES:
-${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}`).join('\n') : 'Sin noticias recientes'}`;
+RECENT HEADLINES:
+${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}`).join('\n') : 'No recent news'}`;
 
         const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
         if (!LOVABLE_API_KEY) {
@@ -340,20 +348,20 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
             messages: [
               {
                 role: 'system',
-                content: `Eres un analista financiero profesional. Genera un resumen ejecutivo en español para traders. Responde SOLO con un JSON válido (sin markdown ni backticks) con esta estructura exacta:
+                content: `You are a professional financial analyst. ${lm.respondIn}. Generate an executive summary for traders. Respond ONLY with valid JSON (no markdown or backticks) with this exact structure:
 {
-  "recommendation": "COMPRAR" | "MANTENER" | "VENDER",
+  "recommendation": "${lm.buy}" | "${lm.hold}" | "${lm.sell}",
   "confidence": 0-100,
-  "summary": "Resumen de 2-3 oraciones máximo con el análisis unificado.",
-  "technicalSignal": "ALCISTA" | "NEUTRAL" | "BAJISTA",
-  "sentimentSignal": "POSITIVO" | "NEUTRAL" | "NEGATIVO",
-  "newsSignal": "POSITIVO" | "NEUTRAL" | "NEGATIVO",
+  "summary": "2-3 sentence summary with unified analysis in ${lm.locale}.",
+  "technicalSignal": "${lm.bullish}" | "${lm.neutral}" | "${lm.bearish}",
+  "sentimentSignal": "${lm.positive}" | "${lm.neutral}" | "${lm.negative}",
+  "newsSignal": "${lm.positive}" | "${lm.neutral}" | "${lm.negative}",
   "keyFactors": ["factor1", "factor2", "factor3"],
-  "riskLevel": "BAJO" | "MEDIO" | "ALTO",
+  "riskLevel": "${lm.low}" | "${lm.medium}" | "${lm.high}",
   "priceTarget": { "low": number, "mid": number, "high": number }
 }`
               },
-              { role: 'user', content: `Analiza esta acción y genera la recomendación unificada:\n${context}` }
+              { role: 'user', content: `Analyze this stock and generate a unified recommendation:\n${context}` }
             ],
           }),
         });
@@ -375,7 +383,7 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
           const cleaned = aiContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
           result = JSON.parse(cleaned);
         } catch {
-          result = { recommendation: 'MANTENER', confidence: 50, summary: aiContent.slice(0, 300), technicalSignal: 'NEUTRAL', sentimentSignal: 'NEUTRAL', newsSignal: 'NEUTRAL', keyFactors: [], riskLevel: 'MEDIO', priceTarget: null };
+          result = { recommendation: lm.hold, confidence: 50, summary: aiContent.slice(0, 300), technicalSignal: lm.neutral, sentimentSignal: lm.neutral, newsSignal: lm.neutral, keyFactors: [], riskLevel: lm.medium, priceTarget: null };
         }
 
         cache.set(aiCacheKey, { data: result, ts: Date.now() });
