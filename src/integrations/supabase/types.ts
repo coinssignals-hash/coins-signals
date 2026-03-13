@@ -1054,6 +1054,7 @@ export type Database = {
           probability: number
           resistance: number | null
           session_data: Json | null
+          source: string
           status: string
           stop_loss: number
           support: number | null
@@ -1078,6 +1079,7 @@ export type Database = {
           probability?: number
           resistance?: number | null
           session_data?: Json | null
+          source?: string
           status?: string
           stop_loss: number
           support?: number | null
@@ -1102,6 +1104,7 @@ export type Database = {
           probability?: number
           resistance?: number | null
           session_data?: Json | null
+          source?: string
           status?: string
           stop_loss?: number
           support?: number | null

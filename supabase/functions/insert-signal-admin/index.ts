@@ -174,6 +174,7 @@ Deno.serve(async (req) => {
       stop_loss: payload.stop_loss,
       support: payload.support,
       resistance: payload.resistance,
+      source: payload.source || 'server',
       session_data: [],
       analysis_data: [],
     };

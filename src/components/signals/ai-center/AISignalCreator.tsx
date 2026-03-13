@@ -52,6 +52,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           probability: signal.probability,
           trend: signal.trend,
           status: 'active',
+          source: 'ai-center',
         },
       });
 
