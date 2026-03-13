@@ -292,7 +292,7 @@ function StockDetail({ symbol }: { symbol: string }) {
   const { data: technicals, isLoading: technicalsLoading } = useStockTechnicals(symbol);
   const { data: sentiment, isLoading: sentimentLoading } = useStockSentiment(symbol);
   const { data: news, isLoading: newsLoading } = useStockNews(symbol);
-  const { data: aiSummary, isLoading: aiLoading } = useStockAISummary(symbol);
+  const { data: aiSummary, isLoading: aiLoading } = useStockAISummary(symbol, language);
 
   const [chartPeriod, setChartPeriod] = useState('3m');
   const { data: historical, isLoading: histLoading } = useStockHistorical(symbol, chartPeriod);
