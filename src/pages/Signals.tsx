@@ -116,6 +116,11 @@ export default function Signals() {
     signals.filter((s) => favoriteIds.has(s.id)) :
     signals;
 
+    // Filter by source
+    if (sourceFilter !== 'all') {
+      result = result.filter((s) => s.source === sourceFilter);
+    }
+
     // Sort signals
     result = [...result].sort((a, b) => {
       switch (sortBy) {
