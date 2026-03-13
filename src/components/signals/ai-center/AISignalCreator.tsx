@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Loader2, Zap, TrendingUp, TrendingDown, Check, X, AlertTriangle } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, TrendingDown, Check, X, AlertTriangle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -15,6 +15,7 @@ interface SignalDraft {
   resistance?: number;
   probability: number;
   trend: 'bullish' | 'bearish';
+  notes?: string;
 }
 
 interface Props {
