@@ -230,6 +230,29 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
         </div>
       )}
 
+      {/* AI Notes Toggle */}
+      <div className="space-y-2">
+        <button
+          onClick={() => setShowNotes(!showNotes)}
+          className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors w-full"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>{t('ai_center_attach_notes') || 'Adjuntar notas del análisis'}</span>
+          {showNotes ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
+          {notes.trim() && <span className="text-primary text-[9px]">✓</span>}
+        </button>
+        {showNotes && (
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={4}
+            maxLength={2000}
+            placeholder={t('ai_center_notes_placeholder') || 'Resumen del análisis IA, patrones detectados, niveles clave...'}
+            className="w-full px-3 py-2 rounded-lg bg-secondary/30 border border-border text-xs text-foreground resize-none focus:outline-none focus:border-primary placeholder:text-muted-foreground/50"
+          />
+        )}
+      </div>
+
       {/* Create Button */}
       <button
         onClick={handleCreate}
