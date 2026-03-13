@@ -112,15 +112,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Auth: accept x-api-key OR valid Supabase JWT with admin role
+    // Auth: accept x-api-key OR valid Supabase JWT (admin for server/admin source, any user for ai-center)
     const apiKey = req.headers.get('x-api-key');
     const expectedApiKey = Deno.env.get('SIGNALS_API_KEY');
     const authHeader = req.headers.get('authorization');
     
     let isAuthed = false;
+    let isAdmin = false;
     
     if (apiKey && expectedApiKey && apiKey === expectedApiKey) {
       isAuthed = true;
+      isAdmin = true;
     }
     
     if (!isAuthed && authHeader) {
@@ -130,6 +132,7 @@ Deno.serve(async (req) => {
       const token = authHeader.replace('Bearer ', '');
       const { data: { user }, error: authError } = await authClient.auth.getUser(token);
       if (user && !authError) {
+        isAuthed = true;
         const { data: hasAdmin } = await authClient
           .from('user_roles')
           .select('id')
@@ -137,7 +140,7 @@ Deno.serve(async (req) => {
           .eq('role', 'admin')
           .maybeSingle();
         if (hasAdmin) {
-          isAuthed = true;
+          isAdmin = true;
         }
       }
     }
@@ -148,7 +151,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Read body early to check source for permission
     const payload = await req.json();
+    const requestedSource = payload.source || 'server';
+
+    // Non-admin users can only create ai-center signals
+    if (!isAdmin && requestedSource !== 'ai-center') {
+      return new Response(JSON.stringify({ error: 'Only admins can create server/admin signals' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
 
     // Validate input
     const validationError = validateSignalPayload(payload);
