@@ -84,6 +84,7 @@ export default function Signals() {
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showAICenter, setShowAICenter] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
