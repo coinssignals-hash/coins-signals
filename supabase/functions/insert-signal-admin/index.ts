@@ -162,7 +162,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const payload = await req.json();
 
     // Validate input
     const validationError = validateSignalPayload(payload);
