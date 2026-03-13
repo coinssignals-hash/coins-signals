@@ -101,7 +101,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   useAdminHostnameRedirect();
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="popLayout" initial={false}>
       <Suspense fallback={<PageLoader />} key={location.pathname}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Analysis />} />
