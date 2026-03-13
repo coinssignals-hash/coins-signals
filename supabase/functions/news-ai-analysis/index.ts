@@ -106,12 +106,11 @@ serve(async (req) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } else {
-        console.log('[news-ai-analysis] Cache expired for:', newsId);
-        // Delete expired cache entry
+        console.log('[news-ai-analysis] Cache expired for:', cacheId);
         await supabase
           .from('news_ai_analysis_cache')
           .delete()
-          .eq('news_id', newsId);
+          .eq('news_id', cacheId);
       }
     }
 
