@@ -39,6 +39,7 @@ import {
 type ViewMode = 'full' | 'compact';
 type SortOption = 'date-desc' | 'date-asc' | 'probability-desc' | 'probability-asc' | 'pips-desc' | 'pips-asc';
 type DayTab = 'today' | 'tomorrow' | 'yesterday' | 'calendar' | 'all';
+type SourceFilter = 'all' | 'server' | 'ai-center';
 
 function useSortOptions() {
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ export default function Signals() {
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showAICenter, setShowAICenter] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
@@ -114,6 +116,11 @@ export default function Signals() {
     signals.filter((s) => favoriteIds.has(s.id)) :
     signals;
 
+    // Filter by source
+    if (sourceFilter !== 'all') {
+      result = result.filter((s) => s.source === sourceFilter);
+    }
+
     // Sort signals
     result = [...result].sort((a, b) => {
       switch (sortBy) {
@@ -135,7 +142,7 @@ export default function Signals() {
     });
 
     return result;
-  }, [signals, showFavoritesOnly, favoriteIds, sortBy]);
+  }, [signals, showFavoritesOnly, favoriteIds, sortBy, sourceFilter]);
 
   // Separate today, tomorrow, yesterday, and other days
   const { todaySignals, tomorrowSignals, yesterdaySignals, otherDayGroups } = useMemo(() => {
@@ -335,7 +342,33 @@ export default function Signals() {
             </button>
           </div>
           }
-      
+      {/* Source Filter Chips */}
+      <div className="flex gap-1.5 px-3 py-1.5">
+        {([
+          { key: 'all' as SourceFilter, label: t('signals_all'), icon: null },
+          { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3 h-3" /> },
+          { key: 'ai-center' as SourceFilter, label: 'AI', icon: <Brain className="w-3 h-3" /> },
+        ]).map((opt) => (
+          <button
+            key={opt.key}
+            onClick={() => setSourceFilter(opt.key)}
+            className={cn(
+              "flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 border",
+              sourceFilter === opt.key
+                ? opt.key === 'ai-center'
+                  ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                  : opt.key === 'server'
+                    ? "bg-primary/15 text-primary border-primary/30"
+                    : "bg-secondary text-foreground border-border"
+                : "text-muted-foreground border-transparent hover:bg-secondary/50"
+            )}
+          >
+            {opt.icon}
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
 
       {/* Filters Bar */}
       
