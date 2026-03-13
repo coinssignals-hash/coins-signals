@@ -243,7 +243,7 @@ serve(async (req) => {
       // ---- AI SUMMARY: Unified recommendation ----
       case 'ai-summary': {
         const AI_CACHE_TTL = 15 * 60 * 1000;
-        const aiCacheKey = `ai-summary:${symbol}`;
+        const aiCacheKey = `ai-summary:${symbol}:${lang}`;
         const aiCached = getCached(aiCacheKey);
         if (aiCached) {
           return new Response(JSON.stringify(aiCached), {
