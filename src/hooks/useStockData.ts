@@ -179,10 +179,10 @@ export function useStockNews(symbol: string) {
 }
 
 // ---- AI Summary ----
-export function useStockAISummary(symbol: string) {
+export function useStockAISummary(symbol: string, language: string = 'es') {
   return useQuery({
-    queryKey: ['stock-ai-summary', symbol],
-    queryFn: () => stockAnalysisFetch({ action: 'ai-summary', symbol }),
+    queryKey: ['stock-ai-summary', symbol, language],
+    queryFn: () => stockAnalysisFetch({ action: 'ai-summary', symbol, language }),
     enabled: !!symbol,
     staleTime: 15 * 60_000,
     retry: 1,

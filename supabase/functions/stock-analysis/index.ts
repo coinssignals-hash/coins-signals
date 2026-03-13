@@ -58,10 +58,11 @@ serve(async (req) => {
   const MARKETAUX_KEY = Deno.env.get('MARKETAUX_API_KEY') || '';
 
   try {
-    const { symbol, action } = await req.json();
+    const { symbol, action, language } = await req.json();
     if (!symbol) throw new Error('symbol required');
+    const lang = language || 'es';
 
-    const cacheKey = `${action}:${symbol}`;
+    const cacheKey = `${action}:${symbol}:${lang}`;
     const cached = getCached(cacheKey);
     if (cached) {
       return new Response(JSON.stringify(cached), {
