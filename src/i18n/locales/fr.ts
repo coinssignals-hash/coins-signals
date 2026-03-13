@@ -1084,6 +1084,8 @@ const fr: TranslationKeys = {
   ai_center_pro_report_desc: 'Rapport technique détaillé du marché',
   ai_center_multi_synthesis: 'Synthèse Multi-Modèle',
   ai_center_multi_synth_desc: 'Analyse combinée avec plusieurs perspectives',
+  ai_center_correlation: 'Corrélation de Paires',
+  ai_center_correlation_desc: 'Analyse les corrélations entre instruments financiers',
   ai_center_status_pending: 'En attente',
   ai_center_status_analyzing: 'Analyse en cours...',
   ai_center_status_completed: 'Terminé',

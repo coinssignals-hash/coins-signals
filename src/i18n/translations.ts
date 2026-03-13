@@ -1340,6 +1340,8 @@ export type TranslationKeys = {
   ai_center_pro_report_desc: string;
   ai_center_multi_synthesis: string;
   ai_center_multi_synth_desc: string;
+  ai_center_correlation: string;
+  ai_center_correlation_desc: string;
   ai_center_status_pending: string;
   ai_center_status_analyzing: string;
   ai_center_status_completed: string;
