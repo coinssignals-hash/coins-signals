@@ -71,6 +71,7 @@ const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
   chartImageUrl: dbSignal.chart_image_url ?? undefined,
   closedPrice: dbSignal.closed_price ? Number(dbSignal.closed_price) : undefined,
   closedResult: dbSignal.closed_result as TradingSignal['closedResult'],
+  source: (dbSignal.source as TradingSignal['source']) ?? 'server',
 });
 
 export function useSignals(selectedDate?: string) {
