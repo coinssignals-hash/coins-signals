@@ -84,11 +84,13 @@ serve(async (req) => {
 
     console.log('[news-ai-analysis] Checking cache for news:', newsId);
 
+    const cacheId = lang === 'es' ? newsId : `${newsId}_${lang}`;
+
     // Check cache first
     const { data: cachedAnalysis, error: cacheError } = await supabase
       .from('news_ai_analysis_cache')
       .select('analysis_data, expires_at')
-      .eq('news_id', newsId)
+      .eq('news_id', cacheId)
       .single();
 
     if (cachedAnalysis && !cacheError) {
