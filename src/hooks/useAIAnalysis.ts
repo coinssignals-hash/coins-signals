@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AIModule = 'analyze-patterns' | 'predict-signals' | 'generate-report' | 'synthesize-analysis';
+export type AIModule = 'analyze-patterns' | 'predict-signals' | 'generate-report' | 'synthesize-analysis' | 'correlation-analysis';
 
 export interface AIAnalysisResult {
   module: AIModule;

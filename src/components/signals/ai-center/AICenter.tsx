@@ -129,6 +129,7 @@ export function AICenter({ onClose }: Props) {
   { id: 'analyze-patterns', title: t('ai_center_pattern_analysis'), desc: t('ai_center_pattern_desc'), icon: BarChart3, accent: 'cyan' },
   { id: 'predict-signals', title: t('ai_center_signal_prediction'), desc: t('ai_center_signal_pred_desc'), icon: Target, accent: 'purple' },
   { id: 'generate-report', title: t('ai_center_pro_report'), desc: t('ai_center_pro_report_desc'), icon: FileText, accent: 'emerald' },
+  { id: 'correlation-analysis', title: t('ai_center_correlation'), desc: t('ai_center_correlation_desc'), icon: GitCompareArrows, accent: 'rose' },
   { id: 'synthesize-analysis', title: t('ai_center_multi_synthesis'), desc: t('ai_center_multi_synth_desc'), icon: Layers, accent: 'amber' }];
 
 
