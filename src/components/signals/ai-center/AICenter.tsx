@@ -180,7 +180,7 @@ export function AICenter({ onClose }: Props) {
             </div>
             <div className="text-center py-2 rounded-lg bg-white/5 border border-white/10">
               <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">{t('ai_center_modules')}</div>
-              <div className="text-sm font-bold text-white font-mono">{completedModules}/4</div>
+              <div className="text-sm font-bold text-white font-mono">{completedModules}/5</div>
             </div>
           </div>
         </div>
