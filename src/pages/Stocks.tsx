@@ -285,7 +285,7 @@ function PopularStockCard({ symbol, name, onSelect }: { symbol: string; name: st
 }
 
 function StockDetail({ symbol }: { symbol: string }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { data: profile, isLoading: profileLoading } = useStockProfile(symbol);
   const { data: quote, isLoading: quoteLoading } = useStockQuote(symbol);
   const { data: financials, isLoading: financialsLoading } = useStockFinancials(symbol);
