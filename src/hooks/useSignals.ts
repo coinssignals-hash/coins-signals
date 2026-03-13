@@ -23,6 +23,7 @@ export interface TradingSignal {
   chartImageUrl?: string;
   closedPrice?: number;
   closedResult?: 'tp_hit' | 'sl_hit';
+  source?: 'server' | 'ai-center' | 'admin';
 }
 
 interface DbSignal {
