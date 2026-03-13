@@ -116,21 +116,29 @@ serve(async (req) => {
 
     console.log('[news-ai-analysis] Cache MISS - generating analysis for:', title.substring(0, 50) + '...');
 
-    const systemPrompt = `Eres un analista financiero experto especializado en forex y mercados financieros. 
-Tu tarea es analizar noticias financieras y proporcionar insights accionables para traders.
-Responde SIEMPRE en español.
-Sé conciso pero informativo. Enfócate en el impacto práctico para el trading.`;
+    const langLabels: Record<string, { locale: string; respondIn: string }> = {
+      es: { locale: 'español', respondIn: 'Responde SIEMPRE en español.' },
+      en: { locale: 'English', respondIn: 'ALWAYS respond in English.' },
+      pt: { locale: 'português', respondIn: 'Responda SEMPRE em português.' },
+      fr: { locale: 'français', respondIn: 'Réponds TOUJOURS en français.' },
+    };
+    const lm = langLabels[lang] || langLabels.es;
 
-    const userPrompt = `Analiza la siguiente noticia financiera y proporciona un análisis detallado para traders:
+    const systemPrompt = `You are an expert financial analyst specialized in forex and financial markets.
+Your task is to analyze financial news and provide actionable insights for traders.
+${lm.respondIn}
+Be concise but informative. Focus on practical trading impact.`;
 
-TÍTULO: ${title}
-RESUMEN: ${summary}
-FUENTE: ${source}
-CATEGORÍA: ${category}
-DIVISAS AFECTADAS: ${affectedCurrencies.join(', ')}
-SENTIMIENTO DETECTADO: ${sentiment}
+    const userPrompt = `Analyze the following financial news and provide a detailed analysis for traders (respond in ${lm.locale}):
 
-Responde usando la siguiente función con datos precisos y útiles para traders.`;
+TITLE: ${title}
+SUMMARY: ${summary}
+SOURCE: ${source}
+CATEGORY: ${category}
+AFFECTED CURRENCIES: ${affectedCurrencies.join(', ')}
+DETECTED SENTIMENT: ${sentiment}
+
+Respond using the following function with precise and useful data for traders. All text fields must be in ${lm.locale}.`;
 
     const t0 = Date.now();
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
