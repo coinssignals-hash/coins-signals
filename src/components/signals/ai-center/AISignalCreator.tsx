@@ -25,7 +25,14 @@ interface Props {
 
 export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
   const { t } = useTranslation();
-  const [signal, setSignal] = useState<SignalDraft>(draft);
+  const formatPair = (raw: string) => {
+    const clean = raw.replace(/[^A-Z]/g, '');
+    return clean.length >= 6 ? clean.slice(0, 3) + '/' + clean.slice(3, 6) : clean;
+  };
+  const [signal, setSignal] = useState<SignalDraft>(() => ({
+    ...draft,
+    currencyPair: formatPair(draft.currencyPair.toUpperCase()),
+  }));
   const [creating, setCreating] = useState(false);
 
   const isBuy = signal.action === 'BUY';
