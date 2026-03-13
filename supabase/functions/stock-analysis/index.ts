@@ -383,7 +383,7 @@ ${headlines.length > 0 ? headlines.map((h: string, i: number) => `${i + 1}. ${h}
           const cleaned = aiContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
           result = JSON.parse(cleaned);
         } catch {
-          result = { recommendation: 'MANTENER', confidence: 50, summary: aiContent.slice(0, 300), technicalSignal: 'NEUTRAL', sentimentSignal: 'NEUTRAL', newsSignal: 'NEUTRAL', keyFactors: [], riskLevel: 'MEDIO', priceTarget: null };
+          result = { recommendation: lm.hold, confidence: 50, summary: aiContent.slice(0, 300), technicalSignal: lm.neutral, sentimentSignal: lm.neutral, newsSignal: lm.neutral, keyFactors: [], riskLevel: lm.medium, priceTarget: null };
         }
 
         cache.set(aiCacheKey, { data: result, ts: Date.now() });
