@@ -448,7 +448,24 @@ export function AICenter({ onClose }: Props) {
             const last = chartData.ohlcv[chartData.ohlcv.length - 1];
             const prev = chartData.ohlcv[chartData.ohlcv.length - 2];
             return last && prev && last.close > prev.close ? 'bullish' : 'bearish';
-          })()
+          })(),
+          notes: (() => {
+            const parts: string[] = [];
+            if (results['synthesize-analysis']?.data) {
+              const syn = results['synthesize-analysis'].data as Record<string, unknown>;
+              if (syn.summary) parts.push(String(syn.summary));
+              if (syn.recommendation) parts.push(`Recomendación: ${syn.recommendation}`);
+            }
+            if (results['analyze-patterns']?.data) {
+              const pat = results['analyze-patterns'].data as Record<string, unknown>;
+              if (pat.patterns) parts.push(`Patrones: ${JSON.stringify(pat.patterns).slice(0, 300)}`);
+            }
+            if (results['predict-signals']?.data) {
+              const pred = results['predict-signals'].data as Record<string, unknown>;
+              if (pred.prediction) parts.push(`Predicción: ${JSON.stringify(pred.prediction).slice(0, 300)}`);
+            }
+            return parts.join('\n\n').slice(0, 2000) || '';
+          })(),
         }}
         onCreated={() => {setShowSignalCreator(false);onClose();}}
         onCancel={() => setShowSignalCreator(false)} />
