@@ -300,6 +300,7 @@ function RenderBlock({ block, index }: { block: ParsedBlock; index: number }) {
 export function AIResultPanel({ result, title }: Props) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const rawContent = useMemo(() => extractContent(result.data), [result.data]);
   const blocks = useMemo(() => parseContent(rawContent), [rawContent]);
@@ -307,11 +308,24 @@ export function AIResultPanel({ result, title }: Props) {
     b.type === 'heading' || b.type === 'subheading' || b.type === 'bullet' || b.type === 'emoji-heading'
   );
 
+  // Unique ID for this result to avoid re-animating
+  const resultId = `${result.module}-${result.timestamp}`;
+
+  // Streaming reveal
+  const { visibleCount, isStreaming } = useStreamingBlocks(blocks.length, resultId, 55);
+
   // Track numbered items sequentially
   const numberedIndices = useMemo(() => {
     let counter = 0;
     return blocks.map(b => b.type === 'numbered' ? counter++ : -1);
   }, [blocks]);
+
+  // Auto-scroll to bottom as blocks appear
+  useEffect(() => {
+    if (isStreaming && scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [visibleCount, isStreaming]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(rawContent);
@@ -349,9 +363,18 @@ export function AIResultPanel({ result, title }: Props) {
           <div className="flex-1 text-left min-w-0">
             <span className="text-[13px] font-bold text-white block truncate">{title}</span>
             <span className="text-[10px] text-slate-500">
-              {blocks.length} {t('ai_center_sections')} · {new Date(result.timestamp).toLocaleTimeString()}
+              {isStreaming
+                ? `${visibleCount}/${blocks.length} ${t('ai_center_sections')}…`
+                : `${blocks.length} ${t('ai_center_sections')} · ${new Date(result.timestamp).toLocaleTimeString()}`
+              }
             </span>
           </div>
+          {isStreaming && (
+            <div
+              className="w-2 h-2 rounded-full animate-pulse flex-shrink-0"
+              style={{ background: 'hsl(160, 70%, 50%)', boxShadow: '0 0 8px hsla(160, 70%, 50%, 0.5)' }}
+            />
+          )}
           <ChevronDown className="w-4 h-4 text-slate-500 transition-transform duration-300 group-data-[state=open]:rotate-180" />
         </CollapsibleTrigger>
 
@@ -366,8 +389,10 @@ export function AIResultPanel({ result, title }: Props) {
               style={{
                 background: 'hsl(210, 50%, 10%)',
                 border: '1px solid hsl(210, 40%, 20%)',
+                opacity: isStreaming ? 0.4 : 1,
               }}
               title={t('ai_center_copy_content')}
+              disabled={isStreaming}
             >
               {copied
                 ? <Check className="w-3.5 h-3.5" style={{ color: 'hsl(160, 70%, 55%)' }} />
@@ -376,16 +401,22 @@ export function AIResultPanel({ result, title }: Props) {
             </button>
 
             {/* Content area */}
-            <div className="px-4 pt-4 pb-5 max-h-[600px] overflow-y-auto scrollbar-thin">
+            <div ref={scrollRef} className="px-4 pt-4 pb-5 max-h-[600px] overflow-y-auto scrollbar-thin">
               {isStructured ? (
                 <div className="space-y-1">
-                  {blocks.map((block, i) => (
-                    <RenderBlock
+                  {blocks.slice(0, visibleCount).map((block, i) => (
+                    <div
                       key={i}
-                      block={block}
-                      index={block.type === 'numbered' ? numberedIndices[i] : i}
-                    />
+                      className="animate-fade-in"
+                      style={{ animationDuration: '0.25s', animationFillMode: 'both' }}
+                    >
+                      <RenderBlock
+                        block={block}
+                        index={block.type === 'numbered' ? numberedIndices[i] : i}
+                      />
+                    </div>
                   ))}
+                  {isStreaming && <StreamingCursor />}
                 </div>
               ) : (
                 <pre
@@ -409,8 +440,10 @@ export function AIResultPanel({ result, title }: Props) {
               }}
             >
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(160, 70%, 50%)' }} />
-                <span className="text-[10px] text-slate-600">{t('ai_center_generated_by')}</span>
+                <div className="w-1.5 h-1.5 rounded-full" style={{ background: isStreaming ? 'hsl(45, 90%, 55%)' : 'hsl(160, 70%, 50%)' }} />
+                <span className="text-[10px] text-slate-600">
+                  {isStreaming ? 'Streaming…' : t('ai_center_generated_by')}
+                </span>
               </div>
               <span className="text-[10px] font-mono text-slate-600">
                 {rawContent.length.toLocaleString()} chars
