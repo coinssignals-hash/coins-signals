@@ -47,6 +47,7 @@ interface DbSignal {
   chart_image_url: string | null;
   closed_price: number | null;
   closed_result: string | null;
+  source: string | null;
 }
 
 const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
