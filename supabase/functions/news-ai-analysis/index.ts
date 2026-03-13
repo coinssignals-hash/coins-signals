@@ -96,7 +96,7 @@ serve(async (req) => {
     if (cachedAnalysis && !cacheError) {
       const expiresAt = new Date(cachedAnalysis.expires_at);
       if (expiresAt > new Date()) {
-        console.log('[news-ai-analysis] Cache HIT for:', newsId);
+        console.log('[news-ai-analysis] Cache HIT for:', cacheId);
         return new Response(
           JSON.stringify({
             success: true,
