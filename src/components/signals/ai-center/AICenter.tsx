@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import {
-  Brain, BarChart3, Target, FileText, Layers,
+  Brain, BarChart3, Target, FileText, Layers, GitCompareArrows,
   Play, Loader2, Sparkles, TrendingUp, AlertTriangle, Zap, ChevronDown } from
 'lucide-react';
 import { AIModelConfig, AIModelSettings } from './AIModelConfig';
@@ -113,7 +113,7 @@ export function AICenter({ onClose }: Props) {
       await handleFetchData();
     }
     const indicators = computeAllIndicators();
-    const modules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'synthesize-analysis'];
+    const modules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'correlation-analysis', 'synthesize-analysis'];
     for (const mod of modules) {
       setModuleStatuses((prev) => ({ ...prev, [mod]: 'running' }));
     }
@@ -129,6 +129,7 @@ export function AICenter({ onClose }: Props) {
   { id: 'analyze-patterns', title: t('ai_center_pattern_analysis'), desc: t('ai_center_pattern_desc'), icon: BarChart3, accent: 'cyan' },
   { id: 'predict-signals', title: t('ai_center_signal_prediction'), desc: t('ai_center_signal_pred_desc'), icon: Target, accent: 'purple' },
   { id: 'generate-report', title: t('ai_center_pro_report'), desc: t('ai_center_pro_report_desc'), icon: FileText, accent: 'emerald' },
+  { id: 'correlation-analysis', title: t('ai_center_correlation'), desc: t('ai_center_correlation_desc'), icon: GitCompareArrows, accent: 'rose' },
   { id: 'synthesize-analysis', title: t('ai_center_multi_synthesis'), desc: t('ai_center_multi_synth_desc'), icon: Layers, accent: 'amber' }];
 
 
@@ -179,7 +180,7 @@ export function AICenter({ onClose }: Props) {
             </div>
             <div className="text-center py-2 rounded-lg bg-white/5 border border-white/10">
               <div className="text-[10px] text-cyan-300/50 uppercase tracking-wider">{t('ai_center_modules')}</div>
-              <div className="text-sm font-bold text-white font-mono">{completedModules}/4</div>
+              <div className="text-sm font-bold text-white font-mono">{completedModules}/5</div>
             </div>
           </div>
         </div>
