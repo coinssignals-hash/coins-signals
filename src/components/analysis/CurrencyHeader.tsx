@@ -300,4 +300,3 @@ export function CurrencyHeader({
 
   return null;
 }
-}
