@@ -894,8 +894,8 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
             />
           </div>
           <div className="flex justify-between mt-0.5">
-            <span className="text-[7px] text-muted-foreground/50">0</span>
-            <span className="text-[7px] text-muted-foreground/50">{config.thresholdPips}</span>
+            <span className="text-[9px] text-muted-foreground/50">0</span>
+            <span className="text-[9px] text-muted-foreground/50">{config.thresholdPips}</span>
           </div>
         </div>
       )}
