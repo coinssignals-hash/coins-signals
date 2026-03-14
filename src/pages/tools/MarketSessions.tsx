@@ -29,6 +29,8 @@ interface SessionData {
   color: string;
   weeklyVolatility: number[];
   weeklyLiquidity: number[];
+  /** UTC hours with historically highest volume/movement for this session */
+  peakHoursUTC: number[];
 }
 
 const SESSIONS: SessionData[] = [
