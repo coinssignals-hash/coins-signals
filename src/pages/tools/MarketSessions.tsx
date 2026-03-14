@@ -939,7 +939,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
                     key={v}
                     onClick={() => updateThreshold(v)}
                     className={cn(
-                      "text-[8px] px-1.5 py-0.5 rounded-md border transition-all",
+                      "text-[10px] px-1.5 py-0.5 rounded-md border transition-all",
                       config.thresholdPips === v
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border text-muted-foreground hover:text-foreground"
