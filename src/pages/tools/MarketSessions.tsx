@@ -495,10 +495,10 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
       <div className="rounded-lg border overflow-hidden" style={{ borderColor: `hsl(${color} / 0.15)` }}>
         {/* Table header */}
         <div className="grid grid-cols-4 gap-0 px-2 py-1" style={{ background: `hsl(${color} / 0.08)` }}>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase">Par</span>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Bid</span>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Ask</span>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Spread</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase">Par</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Bid</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Ask</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Spread</span>
         </div>
         {quotes.map((q, i) => (
           <div
