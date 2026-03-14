@@ -616,9 +616,22 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
 export default function MarketSessions() {
   const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [swipeDir, setSwipeDir] = useState<1 | -1>(1);
 
-  const goNext = () => setActiveIndex(i => Math.min(i + 1, SESSIONS.length - 1));
-  const goPrev = () => setActiveIndex(i => Math.max(i - 1, 0));
+  const goNext = () => {
+    if (activeIndex < SESSIONS.length - 1) {
+      setSwipeDir(1);
+      setActiveIndex(i => i + 1);
+    }
+  };
+  const goPrev = () => {
+    if (activeIndex > 0) {
+      setSwipeDir(-1);
+      setActiveIndex(i => i - 1);
+    }
+  };
+
+  const SWIPE_THRESHOLD = 50;
 
   return (
     <PageShell>
@@ -628,7 +641,7 @@ export default function MarketSessions() {
           {SESSIONS.map((s, i) => (
             <button
               key={s.id}
-              onClick={() => setActiveIndex(i)}
+              onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
               className={cn(
                 'flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium whitespace-nowrap transition-all shrink-0',
                 i === activeIndex
@@ -642,14 +655,26 @@ export default function MarketSessions() {
           ))}
         </div>
 
-        <div className="relative">
-          <AnimatePresence mode="wait">
+        <div className="relative overflow-hidden touch-pan-y">
+          <AnimatePresence mode="wait" custom={swipeDir}>
             <motion.div
               key={SESSIONS[activeIndex].id}
-              initial={{ opacity: 0, x: 30 }}
+              custom={swipeDir}
+              initial={{ opacity: 0, x: swipeDir * 80 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0, x: -swipeDir * 80 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.15}
+              onDragEnd={(_e, info) => {
+                if (info.offset.x < -SWIPE_THRESHOLD && activeIndex < SESSIONS.length - 1) {
+                  goNext();
+                } else if (info.offset.x > SWIPE_THRESHOLD && activeIndex > 0) {
+                  goPrev();
+                }
+              }}
+              style={{ cursor: 'grab' }}
             >
               <SessionCard session={SESSIONS[activeIndex]} isActive={true} />
             </motion.div>
