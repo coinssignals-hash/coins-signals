@@ -36,28 +36,54 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const { t } = useTranslation();
   
 
-  const menuItems = [
-    { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
-    { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio' },
-    { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
-    { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
-    { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
-    { icon: Link2, label: t('drawer_link_broker'), href: '/link-broker' },
-    { icon: Shield, label: t('drawer_security'), href: '/settings/security' },
-    { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
-    { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
-    { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
-    
-    { icon: BarChart3, label: t('drawer_stock_market'), href: '/stocks' },
-    { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
-    { icon: Info, label: t('drawer_about_us'), href: '/about' },
-  ];
-
-  const settingsItems = [
-    { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
-    { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
-    { icon: Globe, label: t('drawer_language_tz'), href: '/settings/language' },
-    { icon: Download, label: t('drawer_install_app'), href: '/install' },
+  const menuSections = [
+    {
+      title: t('drawer_cat_trading'),
+      items: [
+        { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
+        { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
+        { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio' },
+        { icon: BarChart3, label: t('drawer_stock_market'), href: '/stocks' },
+      ],
+    },
+    {
+      title: t('drawer_cat_broker'),
+      items: [
+        { icon: Link2, label: t('drawer_link_broker'), href: '/link-broker' },
+        { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
+      ],
+    },
+    {
+      title: t('drawer_cat_learn'),
+      items: [
+        { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
+      ],
+    },
+    {
+      title: t('drawer_cat_account'),
+      items: [
+        { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
+        { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
+        { icon: Shield, label: t('drawer_security'), href: '/settings/security' },
+        { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
+      ],
+    },
+    {
+      title: t('drawer_preferences'),
+      items: [
+        { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
+        { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
+        { icon: Globe, label: t('drawer_language_tz'), href: '/settings/language' },
+        { icon: Download, label: t('drawer_install_app'), href: '/install' },
+      ],
+    },
+    {
+      title: t('drawer_cat_help'),
+      items: [
+        { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
+        { icon: Info, label: t('drawer_about_us'), href: '/about' },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -129,86 +155,51 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         <Separator className="bg-border" />
 
         <nav className="flex flex-col p-4 gap-1 max-h-[calc(100vh-260px)] overflow-y-auto">
-          {menuItems.map((item, index) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-            const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
-            const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
+          {menuSections.map((section, sIdx) => (
+            <div key={section.title}>
+              {sIdx > 0 && <Separator className="my-2 bg-border" />}
+              <p className="px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                {section.title}
+              </p>
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.href;
+                const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
+                const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
 
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => onOpenChange(false)}
-                onMouseEnter={onMouseEnter(item.href)}
-                onTouchStart={onTouchStart(item.href)}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
-                  isActive
-                    ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                    : 'text-foreground hover:bg-secondary'
-                )}
-                style={{ animationDelay: `${index * 0.03}s` }}
-              >
-                <div className="relative">
-                  <Icon className="w-5 h-5" />
-                  {showNewsBadge && (
-                    <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
-                      {newsCount > 99 ? '99+' : newsCount}
-                    </span>
-                  )}
-                  {showSavedBadge && (
-                    <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground rounded-full">
-                      {savedNewsCount > 99 ? '99+' : savedNewsCount}
-                    </span>
-                  )}
-                </div>
-                {item.label}
-                {showNewsBadge && (
-                  <span className="ml-auto px-1.5 py-0.5 text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full">
-                    {newsCount > 99 ? '99+' : newsCount} {t('drawer_new')}
-                  </span>
-                )}
-                {showSavedBadge && (
-                  <span className="ml-auto px-1.5 py-0.5 text-[10px] font-medium bg-primary/20 text-primary rounded-full">
-                    {savedNewsCount}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-
-
-
-          <Separator className="my-3 bg-border" />
-
-          <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {t('drawer_preferences')}
-          </p>
-
-          {settingsItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => onOpenChange(false)}
-                onMouseEnter={onMouseEnter(item.href)}
-                onTouchStart={onTouchStart(item.href)}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
-                  isActive
-                    ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                    : 'text-foreground hover:bg-secondary'
-                )}
-              >
-                <Icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            );
-          })}
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    onClick={() => onOpenChange(false)}
+                    onMouseEnter={onMouseEnter(item.href)}
+                    onTouchStart={onTouchStart(item.href)}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
+                      isActive
+                        ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                        : 'text-foreground hover:bg-secondary'
+                    )}
+                  >
+                    <div className="relative">
+                      <Icon className="w-5 h-5" />
+                      {showNewsBadge && (
+                        <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
+                          {newsCount > 99 ? '99+' : newsCount}
+                        </span>
+                      )}
+                      {showSavedBadge && (
+                        <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground rounded-full">
+                          {savedNewsCount > 99 ? '99+' : savedNewsCount}
+                        </span>
+                      )}
+                    </div>
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">

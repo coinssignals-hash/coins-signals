@@ -55,6 +55,11 @@ export type TranslationKeys = {
   drawer_contact_support: string;
   drawer_about_us: string;
   drawer_preferences: string;
+  drawer_cat_trading: string;
+  drawer_cat_broker: string;
+  drawer_cat_learn: string;
+  drawer_cat_account: string;
+  drawer_cat_help: string;
   drawer_notifications: string;
   drawer_appearance: string;
   drawer_language_tz: string;
