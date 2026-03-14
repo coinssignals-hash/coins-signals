@@ -207,6 +207,9 @@ serve(async (req) => {
     const body = await req.json();
     let symbol = body.symbol || '';
     const type = body.type || 'quote';
+    const from = body.from || '';
+    const to = body.to || '';
+    const timespan = body.timespan || 'day';
     const POLYGON_API_KEY = Deno.env.get('POLYGON_API_KEY');
     if (!POLYGON_API_KEY) {
       return new Response(JSON.stringify({ error: 'POLYGON_API_KEY not configured' }), {
@@ -222,9 +225,13 @@ serve(async (req) => {
     let url = '';
     if (symbol.includes('/')) {
       const [base, quote] = symbol.split('/');
-      url = type === 'aggregates'
-        ? `https://api.polygon.io/v2/aggs/ticker/C:${base}${quote}/prev?apiKey=${POLYGON_API_KEY}`
-        : `https://api.polygon.io/v1/last_quote/currencies/${base}/${quote}?apiKey=${POLYGON_API_KEY}`;
+      if (type === 'range' && from && to) {
+        url = `https://api.polygon.io/v2/aggs/ticker/C:${base}${quote}/range/1/${timespan}/${from}/${to}?adjusted=true&sort=asc&apiKey=${POLYGON_API_KEY}`;
+      } else if (type === 'aggregates') {
+        url = `https://api.polygon.io/v2/aggs/ticker/C:${base}${quote}/prev?apiKey=${POLYGON_API_KEY}`;
+      } else {
+        url = `https://api.polygon.io/v1/last_quote/currencies/${base}/${quote}?apiKey=${POLYGON_API_KEY}`;
+      }
     } else if (symbol.includes('BTC') || symbol.includes('ETH')) {
       const pair = symbol.replace('/', '-');
       url = `https://api.polygon.io/v1/last/crypto/${pair}?apiKey=${POLYGON_API_KEY}`;
