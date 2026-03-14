@@ -1165,8 +1165,8 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
                   background: isHighlighted ? 'hsl(var(--primary) / 0.12)' : 'hsl(var(--card) / 0.6)',
                 }}>
                   <div className="flex items-center -space-x-1">
-                    <span className="text-sm leading-none">{c.flag1}</span>
-                    <span className="text-sm leading-none">{c.flag2}</span>
+                    <span className="text-sm leading-none">{pairFlags(c.pair).flag1}</span>
+                    <span className="text-sm leading-none">{pairFlags(c.pair).flag2}</span>
                   </div>
                   <span className="text-[10px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
                   {liveQuote && liveQuote.price > 0 ? (
