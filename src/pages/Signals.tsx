@@ -306,7 +306,7 @@ export default function Signals() {
                     : null}
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-700" align="end">
+              <PopoverContent className="w-auto p-0 bg-popover border-border" align="end">
                 <Calendar
                   mode="single"
                   selected={calendarDate}
