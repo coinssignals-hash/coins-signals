@@ -394,6 +394,7 @@ Analiza y devuelve la estrategia óptima.`;
 
       const strategyResult = { strategy, generatedAt: new Date().toISOString() };
       cache.set(cacheKey, { data: strategyResult, ts: Date.now() });
+      setDbCache(cacheKey, strategyResult);
       if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
       return new Response(JSON.stringify(strategyResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
