@@ -20,8 +20,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const [, setReady] = useState(0);
 
-  // Pre-load the active language on mount / change
+  // Pre-load the active language on mount / change + set dir
   useEffect(() => {
+    const dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
     loadTranslations(language).then(() => setReady(r => r + 1));
   }, [language]);
 
