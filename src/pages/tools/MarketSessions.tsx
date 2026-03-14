@@ -46,6 +46,7 @@ const SESSIONS: SessionData[] = [
     color: '200 80% 55%',
     weeklyVolatility: [35, 40, 45, 50, 30],
     weeklyLiquidity: [45, 50, 55, 60, 40],
+    peakHoursUTC: [0, 1, 2], // overlap with Tokyo
   },
   {
     id: 'tokyo', name: 'Tokyo', emoji: '🇯🇵', openUTC: 0, closeUTC: 9,
