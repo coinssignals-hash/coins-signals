@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain, PlusCircle } from 'lucide-react';
+import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain, PlusCircle, ChevronDown } from 'lucide-react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { SignalCard } from '@/components/signals/SignalCard';
 const SignalCardV2 = lazy(() => import('@/components/signals/SignalCardV2').then(m => ({ default: m.SignalCardV2 })));
