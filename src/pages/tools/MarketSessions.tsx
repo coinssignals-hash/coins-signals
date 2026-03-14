@@ -102,6 +102,7 @@ const SESSIONS: SessionData[] = [
     color: '140 60% 50%',
     weeklyVolatility: [80, 85, 90, 85, 70],
     weeklyLiquidity: [85, 90, 95, 90, 75],
+    peakHoursUTC: [13, 14, 15, 19], // open rush + close
   },
 ];
 
