@@ -17,6 +17,7 @@ const fr: TranslationKeys = {
   drawer_courses_tutorials: 'Cours et tutoriels', drawer_earnings: 'Rendements et gains',
   drawer_broker_score: 'Notation des courtiers', drawer_contact_support: 'Contact et support',
   drawer_about_us: 'À propos de nous', drawer_preferences: 'Préférences',
+  drawer_cat_trading: 'Trading', drawer_cat_broker: 'Courtier', drawer_cat_learn: 'Apprentissage', drawer_cat_account: 'Compte', drawer_cat_help: 'Aide',
   drawer_notifications: 'Notifications', drawer_appearance: 'Apparence',
   drawer_language_tz: 'Langue et fuseau horaire', drawer_install_app: 'Installer l\'appli',
   drawer_new: 'nouvelles',
