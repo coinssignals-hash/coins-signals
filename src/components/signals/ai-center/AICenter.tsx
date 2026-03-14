@@ -141,7 +141,11 @@ export function AICenter({ onClose }: Props) {
 
       {/* Hero Header Card */}
       <SignalStyleCard>
-        <div className="px-5 py-5">
+        {/* Brand logo watermark */}
+        <div className="absolute top-4 left-0 right-0 z-[5] pointer-events-none flex items-center justify-center">
+          <img src={brandLogo} alt="" aria-hidden="true" className="w-52 h-52 opacity-[0.07] select-none" />
+        </div>
+        <div className="px-5 py-5 relative z-10">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <div className="relative">
