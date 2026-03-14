@@ -3,7 +3,8 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { ChevronLeft, ChevronRight, Wifi, WifiOff, RefreshCw, Loader2, BarChart3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wifi, WifiOff, RefreshCw, Loader2, BarChart3, Bell, BellOff, Settings2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -712,6 +713,200 @@ function WeeklyChart({ session, color }: {
   );
 }
 
+/* ─────────── Volatility Alerts ─────────── */
+
+interface VolatilityAlertConfig {
+  enabled: boolean;
+  thresholdPips: number;
+}
+
+function getAlertConfig(sessionId: string): VolatilityAlertConfig {
+  try {
+    const stored = localStorage.getItem(`vol-alert-${sessionId}`);
+    if (stored) return JSON.parse(stored);
+  } catch { /* ignore */ }
+  return { enabled: false, thresholdPips: 100 };
+}
+
+function saveAlertConfig(sessionId: string, config: VolatilityAlertConfig) {
+  localStorage.setItem(`vol-alert-${sessionId}`, JSON.stringify(config));
+}
+
+function VolatilityAlerts({ session, sessionVolume, color }: {
+  session: SessionData;
+  sessionVolume: SessionVolume;
+  color: string;
+}) {
+  const [config, setConfig] = useState<VolatilityAlertConfig>(() => getAlertConfig(session.id));
+  const [showSettings, setShowSettings] = useState(false);
+  const alertedRef = useRef(false);
+
+  // Reset alert flag when threshold changes
+  useEffect(() => { alertedRef.current = false; }, [config.thresholdPips]);
+
+  // Check threshold and fire notification
+  useEffect(() => {
+    if (!config.enabled || sessionVolume.loading || alertedRef.current) return;
+    if (sessionVolume.avgDailyRange >= config.thresholdPips && sessionVolume.avgDailyRange > 0) {
+      alertedRef.current = true;
+      toast.warning(`⚡ ${session.name}: Rango diario ${sessionVolume.avgDailyRange.toFixed(1)} pips supera umbral de ${config.thresholdPips} pips`, {
+        duration: 8000,
+        description: `Volatilidad elevada en la sesión de ${session.name}`,
+      });
+    }
+  }, [config.enabled, config.thresholdPips, sessionVolume.avgDailyRange, sessionVolume.loading, session.name]);
+
+  const toggleEnabled = () => {
+    const next = { ...config, enabled: !config.enabled };
+    setConfig(next);
+    saveAlertConfig(session.id, next);
+    alertedRef.current = false;
+    if (next.enabled) {
+      toast.success(`Alerta activada para ${session.name} (${next.thresholdPips} pips)`);
+    }
+  };
+
+  const updateThreshold = (val: number) => {
+    const next = { ...config, thresholdPips: val };
+    setConfig(next);
+    saveAlertConfig(session.id, next);
+  };
+
+  const isTriggered = config.enabled && !sessionVolume.loading && sessionVolume.avgDailyRange >= config.thresholdPips && sessionVolume.avgDailyRange > 0;
+
+  return (
+    <div
+      className="rounded-lg border p-2.5 transition-all"
+      style={{
+        borderColor: isTriggered ? `hsl(0 70% 50% / 0.5)` : `hsl(${color} / 0.15)`,
+        background: isTriggered ? 'hsl(0 70% 50% / 0.06)' : `hsl(${color} / 0.03)`,
+        boxShadow: isTriggered ? '0 0 12px hsl(0 70% 50% / 0.15)' : undefined,
+      }}
+    >
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px]">🔔</span>
+          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Alerta Volatilidad</span>
+          {isTriggered && (
+            <motion.span
+              className="text-[7px] px-1.5 py-0.5 rounded-full font-bold"
+              style={{ background: 'hsl(0 70% 50% / 0.2)', color: 'hsl(0 70% 55%)' }}
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
+              TRIGGERED
+            </motion.span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-1 rounded-md transition-colors hover:bg-muted/30"
+          >
+            <Settings2 className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button
+            onClick={toggleEnabled}
+            className={cn(
+              "p-1 rounded-md transition-all",
+              config.enabled ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {config.enabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Current status */}
+      <div className="flex items-center justify-between">
+        <span className="text-[9px] text-muted-foreground">
+          Rango actual: <span className="font-bold text-foreground">{sessionVolume.loading ? '...' : `${sessionVolume.avgDailyRange.toFixed(1)} pips`}</span>
+        </span>
+        <span className="text-[9px] text-muted-foreground">
+          Umbral: <span className="font-bold" style={{ color: config.enabled ? `hsl(${color})` : undefined }}>{config.thresholdPips} pips</span>
+        </span>
+      </div>
+
+      {/* Progress bar showing proximity to threshold */}
+      {config.enabled && !sessionVolume.loading && (
+        <div className="mt-1.5">
+          <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.2)' }}>
+            <motion.div
+              className="h-full rounded-full"
+              style={{
+                background: isTriggered
+                  ? 'linear-gradient(90deg, hsl(0 70% 40%), hsl(0 70% 55%))'
+                  : `linear-gradient(90deg, hsl(${color} / 0.4), hsl(${color}))`,
+              }}
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min((sessionVolume.avgDailyRange / config.thresholdPips) * 100, 100)}%` }}
+              transition={{ duration: 0.8 }}
+            />
+          </div>
+          <div className="flex justify-between mt-0.5">
+            <span className="text-[7px] text-muted-foreground/50">0</span>
+            <span className="text-[7px] text-muted-foreground/50">{config.thresholdPips}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Settings panel */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 pt-2 border-t" style={{ borderColor: `hsl(${color} / 0.1)` }}>
+              <label className="text-[9px] text-muted-foreground font-medium block mb-1.5">Umbral de pips</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min={10}
+                  max={300}
+                  step={5}
+                  value={config.thresholdPips}
+                  onChange={e => updateThreshold(Number(e.target.value))}
+                  className="flex-1 h-1.5 rounded-full appearance-none cursor-pointer accent-primary"
+                  style={{ accentColor: `hsl(${color})` }}
+                />
+                <input
+                  type="number"
+                  min={5}
+                  max={500}
+                  value={config.thresholdPips}
+                  onChange={e => updateThreshold(Math.max(5, Number(e.target.value)))}
+                  className="w-14 text-center text-[10px] font-mono rounded-md border bg-background py-1"
+                  style={{ borderColor: `hsl(${color} / 0.3)` }}
+                />
+              </div>
+              <div className="flex gap-1 mt-1.5">
+                {[50, 80, 100, 150, 200].map(v => (
+                  <button
+                    key={v}
+                    onClick={() => updateThreshold(v)}
+                    className={cn(
+                      "text-[8px] px-1.5 py-0.5 rounded-md border transition-all",
+                      config.thresholdPips === v
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function SessionCard({ session, isActive }: { session: SessionData; isActive: boolean }) {
   const [, setTick] = useState(0);
   useEffect(() => {
@@ -836,6 +1031,9 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
 
         {/* Volume Indicator */}
         <VolumeIndicator sessionVolume={sessionVolume} color={session.color} />
+
+        {/* Volatility Alerts */}
+        <VolatilityAlerts session={session} sessionVolume={sessionVolume} color={session.color} />
 
         {/* Weekly Chart */}
         <WeeklyChart session={session} color={session.color} />
