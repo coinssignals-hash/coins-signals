@@ -298,21 +298,7 @@ export function CurrencyHeader({
     }
   }, [symbol]);
 
-  if (loading) {
-    return (
-      <div className="p-5 overflow-hidden">
-        <div className="flex items-center gap-4 animate-pulse">
-          <div className="w-20 h-20 rounded-full bg-slate-800/60" />
-          <div className="space-y-3 flex-1">
-            <div className="h-8 bg-slate-800/40 rounded w-40" />
-            <div className="h-4 bg-slate-800/40 rounded w-32" />
-          </div>
-        </div>
-      </div>);
-
-  }
-
-  return;
+  return null;
 
 
 
