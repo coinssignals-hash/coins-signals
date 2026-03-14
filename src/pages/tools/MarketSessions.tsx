@@ -1375,7 +1375,7 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
 
             {/* Volume with mini bar */}
             <div className="text-right space-y-0.5">
-              <span className="text-[10px] font-mono font-bold tabular-nums text-foreground block">
+              <span className="text-xs font-mono font-bold tabular-nums text-foreground block">
                 {stats.totalVolume > 0 ? formatVolume(stats.totalVolume) : '—'}
               </span>
               {stats.totalVolume > 0 && (
