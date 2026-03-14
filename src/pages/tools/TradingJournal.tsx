@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
-  Loader2, LogIn, Pencil
+  Loader2, LogIn, Pencil, Clock, Play, CheckCircle2
 } from 'lucide-react';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
