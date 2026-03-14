@@ -8,13 +8,23 @@ import { ChevronLeft, ChevronRight, Wifi, WifiOff, RefreshCw, Loader2, BarChart3
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
+
+/* ─────────── Helpers ─────────── */
+
+/** Derive flag emoji from a currency code via the centralized symbolVisuals map */
+const getFlag = (code: string): string => getSymbolVisual(code).flag || code;
+
+/** Build flags string from a pair like "EUR/USD" */
+const pairFlags = (pair: string) => {
+  const [base, quote] = pair.split('/');
+  return { flag1: getFlag(base), flag2: getFlag(quote) };
+};
 
 /* ─────────── Session Data ─────────── */
 
 interface CurrencyPair {
   pair: string;
-  flag1: string;
-  flag2: string;
 }
 
 interface SessionData {
