@@ -333,7 +333,7 @@ export default function Signals() {
                 className={cn(
                   "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
                   sourceFilter === 'ai-center'
-                    ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                    ? "bg-accent/15 text-accent-foreground border-accent/30"
                     : sourceFilter === 'server'
                       ? "bg-primary/15 text-primary border-primary/30"
                       : "bg-secondary/50 text-foreground border-border/50"
