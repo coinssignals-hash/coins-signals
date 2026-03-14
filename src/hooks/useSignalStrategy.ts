@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/i18n/LanguageContext';
+
 export interface StrategyField {
   value: string;
   explanation: string;
@@ -28,10 +29,34 @@ interface SignalInput {
 
 // In-memory cache keyed by signal fingerprint
 const strategyCache = new Map<string, { strategy: SignalStrategy; timestamp: number }>();
-const CACHE_TTL = 60 * 60 * 1000; // 60 min
+const CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours
+const LS_PREFIX = 'sig-strategy-';
 
 function getCacheKey(signal: SignalInput): string {
   return `${signal.currencyPair}-${signal.entryPrice}-${signal.takeProfit}-${signal.stopLoss}`;
+}
+
+/** Try to restore from localStorage */
+function getFromStorage(key: string): SignalStrategy | null {
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { strategy: SignalStrategy; timestamp: number };
+    if (Date.now() - parsed.timestamp < CACHE_TTL) {
+      // Also populate in-memory cache
+      strategyCache.set(key, parsed);
+      return parsed.strategy;
+    }
+    localStorage.removeItem(LS_PREFIX + key);
+  } catch { /* ignore */ }
+  return null;
+}
+
+/** Persist to localStorage */
+function saveToStorage(key: string, strategy: SignalStrategy) {
+  try {
+    localStorage.setItem(LS_PREFIX + key, JSON.stringify({ strategy, timestamp: Date.now() }));
+  } catch { /* quota exceeded — ignore */ }
 }
 
 export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) {
@@ -43,16 +68,24 @@ export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) 
 
   const fetchStrategy = useCallback(async () => {
     if (!signal || !enabled) return;
-    
+
     const key = getCacheKey(signal) + `-${language}`;
-    
+
     // Already fetched this one
     if (fetchedRef.current === key) return;
 
-    // Check cache
+    // 1) Check in-memory cache
     const cached = strategyCache.get(key);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       setStrategy(cached.strategy);
+      fetchedRef.current = key;
+      return;
+    }
+
+    // 2) Check localStorage
+    const stored = getFromStorage(key);
+    if (stored) {
+      setStrategy(stored);
       fetchedRef.current = key;
       return;
     }
@@ -85,7 +118,9 @@ export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) 
 
       const s = data.strategy as SignalStrategy;
       setStrategy(s);
+      // Save to both caches
       strategyCache.set(key, { strategy: s, timestamp: Date.now() });
+      saveToStorage(key, s);
     } catch (e) {
       console.error('[useSignalStrategy] Error:', e);
       setError(e instanceof Error ? e.message : 'Error');
