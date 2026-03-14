@@ -20,14 +20,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const [, setReady] = useState(0);
 
-  // Pre-load the active language on mount / change
+  // Pre-load the active language on mount / change + set dir
   useEffect(() => {
+    const dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
     loadTranslations(language).then(() => setReady(r => r + 1));
   }, [language]);
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem(STORAGE_KEY, lang);
+    // Set RTL direction for Arabic
+    const dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+    document.documentElement.lang = lang;
   }, []);
 
   const t = useCallback((key: string): string => {

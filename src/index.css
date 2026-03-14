@@ -626,3 +626,70 @@
   20% { opacity: 0.6; }
   100% { opacity: 0; }
 }
+
+/* ===== RTL Support (Arabic) ===== */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .flex {
+  /* Allow flex containers to auto-reverse in RTL */
+}
+
+[dir="rtl"] .space-x-1 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-3 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .gap-1,
+[dir="rtl"] .gap-2,
+[dir="rtl"] .gap-3,
+[dir="rtl"] .gap-4 {
+  /* gaps work automatically in RTL */
+}
+
+/* Mirror gradients for RTL */
+[dir="rtl"] .bg-gradient-to-r {
+  background-image: linear-gradient(to left, var(--tw-gradient-stops));
+}
+
+[dir="rtl"] .bg-gradient-to-l {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+/* Ensure scrollable areas work in RTL */
+[dir="rtl"] .overflow-x-auto {
+  direction: rtl;
+}
+
+/* Fix icons/badges positioning in RTL */
+[dir="rtl"] .-right-1 { right: auto; left: -0.25rem; }
+[dir="rtl"] .-right-1\.5 { right: auto; left: -0.375rem; }
+[dir="rtl"] .right-0 { right: auto; left: 0; }
+[dir="rtl"] .right-2 { right: auto; left: 0.5rem; }
+[dir="rtl"] .right-3 { right: auto; left: 0.75rem; }
+[dir="rtl"] .right-4 { right: auto; left: 1rem; }
+[dir="rtl"] .left-0 { left: auto; right: 0; }
+[dir="rtl"] .left-2 { left: auto; right: 0.5rem; }
+[dir="rtl"] .left-3 { left: auto; right: 0.75rem; }
+[dir="rtl"] .left-4 { left: auto; right: 1rem; }
+
+/* RTL-safe text alignment */
+[dir="rtl"] .text-left { text-align: right; }
+[dir="rtl"] .text-right { text-align: left; }
+
+/* Fix drawer/sheet sliding direction */
+[dir="rtl"] [data-state="open"][data-side="left"] {
+  transform: translateX(0) !important;
+}
+
+/* Numeric values should stay LTR */
+[dir="rtl"] .font-mono,
+[dir="rtl"] .tabular-nums,
+[dir="rtl"] [data-numeric] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
