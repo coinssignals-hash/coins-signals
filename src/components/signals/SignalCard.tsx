@@ -330,6 +330,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
           {/* Date and Favorite */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
+              <SaveSignalToJournal signal={signal} />
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs text-slate-400 font-medium">
                 {formattedDateShort}
@@ -339,7 +340,6 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <SaveSignalToJournal signal={signal} />
               {onToggleFavorite && (
                 <button
                   onClick={(e) => {
