@@ -158,6 +158,7 @@ function AnimatedRoutes() {
           <Route path="/tools/order-flow" element={<OrderFlowAnalysis />} />
           <Route path="/tools/backtest-pro" element={<BacktestPro />} />
           <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
+          <Route path="/tools/market-sessions" element={<MarketSessions />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
