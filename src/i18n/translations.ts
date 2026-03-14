@@ -33,6 +33,7 @@ export type TranslationKeys = {
   nav_ai: string;
   nav_ai_center: string;
   nav_tools: string;
+  nav_back: string;
   // Drawer
   drawer_ai_center: string;
   drawer_stock_market: string;
