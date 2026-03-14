@@ -94,7 +94,7 @@ export default function Tools() {
                 key={tab.key}
                 onClick={() => setActiveCategory(tab.key)}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium whitespace-nowrap transition-all shrink-0",
+                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium whitespace-nowrap transition-all shrink-0 min-h-[32px] min-w-0 active:scale-95",
                   isActive
                     ? "bg-primary/10 border-primary text-primary"
                     : "bg-card border-border text-muted-foreground hover:border-primary/40"
