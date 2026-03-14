@@ -1131,6 +1131,13 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
 
 function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number; onSelect: (i: number) => void }) {
   const [tick, setTick] = useState(0);
+  const [flashIdx, setFlashIdx] = useState<number | null>(null);
+
+  const handleSelect = (i: number) => {
+    setFlashIdx(i);
+    onSelect(i);
+    setTimeout(() => setFlashIdx(null), 600);
+  };
 
   // Re-render periodically to pick up fresh cache data
   useEffect(() => {
