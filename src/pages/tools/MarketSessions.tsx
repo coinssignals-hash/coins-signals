@@ -958,7 +958,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
   );
 }
 
-function SessionCard({ session, isActive }: { session: SessionData; isActive: boolean }) {
+function SessionCard({ session, isActive, highlightPair }: { session: SessionData; isActive: boolean; highlightPair?: string | null }) {
   const [, setTick] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setTick(t => t + 1), 60_000);
