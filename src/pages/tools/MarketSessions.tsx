@@ -707,12 +707,12 @@ function WeeklyChart({ session, color }: {
   return (
     <div className="mt-3">
       <div className="flex items-center justify-between mb-1 px-1">
-        <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
           {hasRealData ? '📊 Vol. Semanal Real' : '📊 Vol. Semanal'}
         </span>
         {loading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
         {hasRealData && !loading && (
-          <span className="text-[7px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>LIVE</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>LIVE</span>
         )}
       </div>
       <div className="flex items-end gap-1 justify-between h-24 px-1">
