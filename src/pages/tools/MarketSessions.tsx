@@ -442,7 +442,7 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
 function LevelBadge({ level }: { level: 'low' | 'moderate' | 'high' }) {
   const config = LEVEL_COLORS[level];
   return (
-    <span className={cn('px-2 py-0.5 rounded text-[9px] font-bold uppercase', config.bg, config.text)}>
+    <span className={cn('px-2 py-0.5 rounded text-[11px] font-bold uppercase', config.bg, config.text)}>
       {config.label}
     </span>
   );
