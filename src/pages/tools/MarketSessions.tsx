@@ -1346,8 +1346,8 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
           >
             {/* Session name */}
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-xs">{session.emoji}</span>
-              <span className={cn('text-[10px] font-semibold truncate', isSelected ? 'text-foreground' : 'text-muted-foreground')}>
+              <span className="text-sm">{session.emoji}</span>
+              <span className={cn('text-xs font-semibold truncate', isSelected ? 'text-foreground' : 'text-muted-foreground')}>
                 {session.name}
               </span>
               {status.isOpen && (
