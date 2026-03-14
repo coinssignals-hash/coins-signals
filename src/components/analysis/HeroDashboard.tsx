@@ -196,7 +196,7 @@ export function HeroDashboard({
           <QuickStatCard
             icon={<Activity className="w-3.5 h-3.5 text-cyan-400" />}
             label={t('analysis_volatility')}
-            value={`${(Math.abs(changePercent) * 2.5).toFixed(1)}%`}
+            value={`${(Math.abs(changePercent) * 2.5).toFixed(0)}%`}
             trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'} />
         </motion.div>
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
