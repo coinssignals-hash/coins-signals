@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { BookOpen, Clock, Play, CheckCircle2, Loader2, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Clock, Play, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -30,6 +30,24 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
   const dateLocale = useDateLocale();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [alreadySaved, setAlreadySaved] = useState(false);
+
+  // Check if signal is already in journal
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user?.id) return;
+      const { count } = await supabase
+        .from('trading_journal')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', session.user.id)
+        .eq('signal_id', signal.id);
+      if (!cancelled && count && count > 0) setAlreadySaved(true);
+    };
+    check();
+    return () => { cancelled = true; };
+  }, [signal.id]);
 
   // Pre-filled from signal
   const [lotSize, setLotSize] = useState('0.1');
@@ -91,6 +109,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
     }
 
     toast.success('Señal guardada en tu Diario de Trading');
+    setAlreadySaved(true);
     setOpen(false);
   };
 
@@ -106,12 +125,15 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
           onClick={(e) => e.stopPropagation()}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all active:scale-95",
-            "bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20",
+            alreadySaved
+              ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 cursor-default"
+              : "bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20",
             className
           )}
+          disabled={alreadySaved}
         >
-          <BookOpen className="w-3.5 h-3.5" />
-          <span>Diario</span>
+          {alreadySaved ? <Check className="w-3.5 h-3.5" /> : <BookOpen className="w-3.5 h-3.5" />}
+          <span>{alreadySaved ? 'Guardada' : 'Diario'}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-sm mx-auto bg-card border-border" onClick={(e) => e.stopPropagation()}>
