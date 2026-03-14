@@ -1009,7 +1009,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
 
           <div className="flex flex-col items-end gap-1">
             <span className={cn(
-              "text-[9px] font-bold uppercase px-2 py-0.5 rounded-full tracking-wider"
+              "text-[11px] font-bold uppercase px-2 py-0.5 rounded-full tracking-wider"
             )} style={{
               background: status.isOpen ? 'hsl(var(--bullish) / 0.12)' : 'hsl(var(--muted) / 0.3)',
               color: status.isOpen ? 'hsl(var(--bullish))' : 'hsl(var(--muted-foreground))',
@@ -1017,7 +1017,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
             }}>
               {status.isOpen ? '● OPEN' : 'CLOSED'}
             </span>
-            <span className="text-[10px] font-mono font-bold tabular-nums" style={{
+            <span className="text-xs font-mono font-bold tabular-nums" style={{
               color: status.isOpen ? `hsl(${session.color})` : 'hsl(var(--muted-foreground))',
             }}>
               {status.isOpen ? `${status.timeRemaining} left` : `opens ${status.timeRemaining}`}
