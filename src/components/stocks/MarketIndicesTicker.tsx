@@ -20,9 +20,9 @@ const INDICES = [
   { symbol: 'QQQ', label: 'NASDAQ' },
   { symbol: 'DIA', label: 'DOW' },
   { symbol: 'IWM', label: 'Russell 2K' },
-  { symbol: 'ISF.L', label: 'FTSE 100' },
-  { symbol: 'EXS1.DE', label: 'DAX' },
-  { symbol: '1329.T', label: 'Nikkei 225' },
+  { symbol: 'EWU', label: 'FTSE 100' },
+  { symbol: 'EWG', label: 'DAX' },
+  { symbol: 'EWJ', label: 'Nikkei 225' },
 ];
 
 const POLL_INTERVAL = 15_000;
