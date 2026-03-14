@@ -472,6 +472,7 @@ Genera un análisis profesional y detallado.`;
 
     const fullResult = { analysis, generatedAt: new Date().toISOString() };
     cache.set(cacheKey, { data: fullResult, ts: Date.now() });
+    setDbCache(cacheKey, fullResult);
     if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
     return new Response(JSON.stringify(fullResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
