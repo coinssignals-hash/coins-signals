@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { BookOpen, Clock, Play, CheckCircle2, Loader2, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Clock, Play, CheckCircle2, Loader2, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -30,6 +30,24 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
   const dateLocale = useDateLocale();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [alreadySaved, setAlreadySaved] = useState(false);
+
+  // Check if signal is already in journal
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user?.id) return;
+      const { count } = await supabase
+        .from('trading_journal')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', session.user.id)
+        .eq('signal_id', signal.id);
+      if (!cancelled && count && count > 0) setAlreadySaved(true);
+    };
+    check();
+    return () => { cancelled = true; };
+  }, [signal.id]);
 
   // Pre-filled from signal
   const [lotSize, setLotSize] = useState('0.1');
