@@ -258,6 +258,7 @@ Genera una nota breve de análisis para acompañar esta señal.`;
 
       const notesResult = { notes: generatedNotes.trim(), generatedAt: new Date().toISOString() };
       cache.set(cacheKey, { data: notesResult, ts: Date.now() });
+      setDbCache(cacheKey, notesResult);
       if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
       return new Response(JSON.stringify(notesResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
