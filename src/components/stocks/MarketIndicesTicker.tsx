@@ -15,13 +15,13 @@ interface IndexData {
 }
 
 const INDICES = [
-  { symbol: '^GSPC', label: 'S&P 500', fmpSymbol: '^GSPC', finnhubSymbol: 'SPX' },
-  { symbol: '^IXIC', label: 'NASDAQ', fmpSymbol: '^IXIC', finnhubSymbol: 'IXIC' },
-  { symbol: '^DJI', label: 'DOW', fmpSymbol: '^DJI', finnhubSymbol: 'DJI' },
-  { symbol: '^RUT', label: 'Russell 2K', fmpSymbol: '^RUT', finnhubSymbol: 'RUT' },
-  { symbol: '^FTSE', label: 'FTSE 100', fmpSymbol: '^FTSE', finnhubSymbol: 'FTSE' },
-  { symbol: '^GDAXI', label: 'DAX', fmpSymbol: '^GDAXI', finnhubSymbol: 'DAX' },
-  { symbol: '^N225', label: 'Nikkei 225', fmpSymbol: '^N225', finnhubSymbol: 'NI225' },
+  { symbol: 'SPY', label: 'S&P 500', fmpSymbol: 'SPY', finnhubSymbol: 'SPY' },
+  { symbol: 'QQQ', label: 'NASDAQ', fmpSymbol: 'QQQ', finnhubSymbol: 'QQQ' },
+  { symbol: 'DIA', label: 'DOW', fmpSymbol: 'DIA', finnhubSymbol: 'DIA' },
+  { symbol: 'IWM', label: 'Russell 2K', fmpSymbol: 'IWM', finnhubSymbol: 'IWM' },
+  { symbol: 'EWU', label: 'FTSE 100', fmpSymbol: 'EWU', finnhubSymbol: 'EWU' },
+  { symbol: 'EWG', label: 'DAX', fmpSymbol: 'EWG', finnhubSymbol: 'EWG' },
+  { symbol: 'EWJ', label: 'Nikkei 225', fmpSymbol: 'EWJ', finnhubSymbol: 'EWJ' },
 ];
 
 const POLL_INTERVAL = 15_000;
