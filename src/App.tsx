@@ -86,16 +86,23 @@ import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
+const ADMIN_HOSTNAME = 'admin.coinssignals.com';
+
 function useAdminHostnameRedirect() {
   const location = useLocation();
   useEffect(() => {
     if (
-      window.location.hostname === 'admin.coinssignals.com' &&
+      window.location.hostname === ADMIN_HOSTNAME &&
       !location.pathname.startsWith('/admin')
     ) {
       window.location.replace('/admin');
     }
   }, [location.pathname]);
+}
+
+function isAdminAllowed() {
+  const hostname = window.location.hostname;
+  return hostname === ADMIN_HOSTNAME || hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('lovable.app');
 }
 
 function AnimatedRoutes() {
