@@ -1152,43 +1152,54 @@ export default function MarketSessions() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-4 max-w-lg mx-auto">
-        <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1 scrollbar-hide">
-          {SESSIONS.map((s, i) => (
-            <button
-              key={s.id}
-              onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
-              className={cn(
-                'flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium whitespace-nowrap transition-all shrink-0',
-                i === activeIndex
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border bg-card text-muted-foreground hover:border-primary/40'
-              )}
-            >
-              <span>{s.emoji}</span>
-              {s.name}
-            </button>
-          ))}
+      <main className="container py-3 max-w-lg mx-auto px-3">
+        {/* Session Tabs */}
+        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+          {SESSIONS.map((s, i) => {
+            const isSelected = i === activeIndex;
+            const sessionStatus = getSessionStatus(s);
+            return (
+              <button
+                key={s.id}
+                onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all shrink-0 active:scale-95',
+                  isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
+                )}
+                style={{
+                  background: isSelected
+                    ? `linear-gradient(135deg, hsl(${s.color} / 0.2), hsl(${s.color} / 0.08))`
+                    : 'hsl(var(--card) / 0.5)',
+                  border: `1px solid ${isSelected ? `hsl(${s.color} / 0.35)` : 'hsl(var(--border) / 0.5)'}`,
+                  boxShadow: isSelected ? `0 2px 8px hsl(${s.color} / 0.15)` : undefined,
+                }}
+              >
+                <span className="text-sm">{s.emoji}</span>
+                <span>{s.name}</span>
+                {sessionStatus.isOpen && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
+        {/* Card carousel */}
         <div className="relative overflow-hidden touch-pan-y">
           <AnimatePresence mode="wait" custom={swipeDir}>
             <motion.div
               key={SESSIONS[activeIndex].id}
               custom={swipeDir}
-              initial={{ opacity: 0, x: swipeDir * 80 }}
+              initial={{ opacity: 0, x: swipeDir * 60 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -swipeDir * 80 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              exit={{ opacity: 0, x: -swipeDir * 60 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.15}
+              dragElastic={0.12}
               onDragEnd={(_e, info) => {
-                if (info.offset.x < -SWIPE_THRESHOLD && activeIndex < SESSIONS.length - 1) {
-                  goNext();
-                } else if (info.offset.x > SWIPE_THRESHOLD && activeIndex > 0) {
-                  goPrev();
-                }
+                if (info.offset.x < -SWIPE_THRESHOLD && activeIndex < SESSIONS.length - 1) goNext();
+                else if (info.offset.x > SWIPE_THRESHOLD && activeIndex > 0) goPrev();
               }}
               style={{ cursor: 'grab' }}
             >
@@ -1197,23 +1208,38 @@ export default function MarketSessions() {
           </AnimatePresence>
 
           {activeIndex > 0 && (
-            <button onClick={goPrev} className="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors z-10">
+            <button onClick={goPrev} className="absolute left-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-all z-10 active:scale-90 backdrop-blur-sm" style={{
+              background: 'hsl(var(--card) / 0.85)',
+              border: '1px solid hsl(var(--border) / 0.6)',
+              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+            }}>
               <ChevronLeft className="w-4 h-4" />
             </button>
           )}
           {activeIndex < SESSIONS.length - 1 && (
-            <button onClick={goNext} className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors z-10">
+            <button onClick={goNext} className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-all z-10 active:scale-90 backdrop-blur-sm" style={{
+              background: 'hsl(var(--card) / 0.85)',
+              border: '1px solid hsl(var(--border) / 0.6)',
+              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+            }}>
               <ChevronRight className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 mt-3">
+        {/* Dot indicators */}
+        <div className="flex items-center justify-center gap-1.5 mt-3 pb-2">
           {SESSIONS.map((s, i) => (
             <button
               key={s.id}
               onClick={() => setActiveIndex(i)}
-              className={cn('w-1.5 h-1.5 rounded-full transition-all', i === activeIndex ? 'bg-primary w-4' : 'bg-muted-foreground/30')}
+              className="transition-all rounded-full"
+              style={{
+                width: i === activeIndex ? 18 : 6,
+                height: 6,
+                background: i === activeIndex ? `hsl(${s.color})` : 'hsl(var(--muted-foreground) / 0.2)',
+                boxShadow: i === activeIndex ? `0 0 6px hsl(${s.color} / 0.4)` : undefined,
+              }}
             />
           ))}
         </div>
