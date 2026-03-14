@@ -22,7 +22,7 @@ export function BottomNav() {
     { icon: Brain, label: t('nav_ai'), href: '/ai-center', badgeType: null },
     { icon: Newspaper, label: t('nav_news'), href: '/news', badgeType: 'news' },
     { icon: CandlestickChart, label: t('nav_stocks'), href: '/stocks', badgeType: null },
-    ...(isAdmin ? [{ icon: ShieldAlert, label: 'Admin', href: '/admin', badgeType: null }] : []),
+    
   ];
 
   useEffect(() => {
