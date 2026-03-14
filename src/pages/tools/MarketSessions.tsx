@@ -490,6 +490,86 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
   );
 }
 
+function formatVolume(vol: number): string {
+  if (vol === 0) return '—';
+  if (vol >= 1_000_000_000) return `${(vol / 1_000_000_000).toFixed(1)}B`;
+  if (vol >= 1_000_000) return `${(vol / 1_000_000).toFixed(1)}M`;
+  if (vol >= 1_000) return `${(vol / 1_000).toFixed(1)}K`;
+  return vol.toFixed(0);
+}
+
+function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolume; color: string }) {
+  if (sessionVolume.loading) {
+    return (
+      <div className="rounded-lg border p-3 space-y-2" style={{ borderColor: `hsl(${color} / 0.15)` }}>
+        <div className="flex items-center gap-1.5">
+          <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
+          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+        </div>
+        <div className="flex items-center justify-center py-3">
+          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
+
+  const maxVol = Math.max(...sessionVolume.pairVolumes.map(p => p.volume), 1);
+
+  return (
+    <div className="rounded-lg border p-3 space-y-2" style={{ borderColor: `hsl(${color} / 0.15)` }}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
+          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[8px] text-muted-foreground">
+            Total: <span className="font-bold" style={{ color: `hsl(${color})` }}>{formatVolume(sessionVolume.totalVolume)}</span>
+          </span>
+          {sessionVolume.avgDailyRange > 0 && (
+            <span className="text-[8px] text-muted-foreground">
+              Avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{sessionVolume.avgDailyRange.toFixed(0)}p</span>
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Per-pair volume bars */}
+      <div className="space-y-1.5">
+        {sessionVolume.pairVolumes.map(pv => {
+          const pct = maxVol > 0 ? (pv.volume / maxVol) * 100 : 0;
+          return (
+            <div key={pv.pair} className="space-y-0.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-bold text-foreground">{pv.pair}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[8px] font-mono tabular-nums text-muted-foreground">{formatVolume(pv.volume)}</span>
+                  {pv.range > 0 && (
+                    <span className="text-[8px] font-mono tabular-nums" style={{ color: `hsl(${color})` }}>{pv.range.toFixed(0)}p</span>
+                  )}
+                </div>
+              </div>
+              <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: `hsl(${color} / 0.1)` }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: `linear-gradient(90deg, hsl(${color} / 0.4), hsl(${color}))`,
+                    boxShadow: pct > 50 ? `0 0 6px hsl(${color} / 0.3)` : undefined,
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.max(pct, 2)}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function WeeklyChart({ volatilityData, liquidityData, color }: {
   volatilityData: number[];
   liquidityData: number[];
