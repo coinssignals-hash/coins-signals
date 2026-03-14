@@ -40,6 +40,7 @@ import {
   PopoverContent,
   PopoverTrigger } from
 "@/components/ui/popover";
+import { SaveSignalToJournal } from './SaveSignalToJournal';
 
 interface SignalCardV2Props {
   signal?: TradingSignal;
