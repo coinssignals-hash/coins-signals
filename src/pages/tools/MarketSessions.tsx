@@ -125,6 +125,10 @@ interface SessionVolume {
 const liveCache = new Map<string, { bid: number; ask: number; price: number; volume: number; high: number; low: number; ts: number }>();
 const aggCache = new Map<string, { volume: number; high: number; low: number; close: number; ts: number }>();
 const QUOTE_CACHE_TTL = 55_000;
+
+/* Spread history buffer — stores up to 12 snapshots (~2h at 10s ticks) per session */
+const MAX_HISTORY = 12;
+const spreadHistory: number[][] = Array.from({ length: 5 }, () => []);
 const AGG_CACHE_TTL = 120_000; // aggregates change less often
 const POLL_INTERVAL = 60_000;
 
@@ -1129,6 +1133,27 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
 
 /* ─────────── Session Comparison Table ─────────── */
 
+/* ─── Mini Sparkline SVG ─── */
+function MiniSparkline({ data, color, width = 36, height = 14 }: { data: number[]; color: string; width?: number; height?: number }) {
+  if (data.length < 2) return <div style={{ width, height }} className="rounded bg-muted/20" />;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((v - min) / range) * (height - 2) - 1;
+    return `${x},${y}`;
+  }).join(' ');
+  const trend = data[data.length - 1] >= data[0];
+  const strokeColor = `hsl(${color})`;
+  return (
+    <svg width={width} height={height} className="shrink-0">
+      <polyline points={points} fill="none" stroke={strokeColor} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" opacity={0.85} />
+      <circle cx={(data.length - 1) / (data.length - 1) * width} cy={height - ((data[data.length - 1] - min) / range) * (height - 2) - 1} r={2} fill={strokeColor} />
+    </svg>
+  );
+}
+
 function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number; onSelect: (i: number) => void }) {
   const [tick, setTick] = useState(0);
   const [flashIdx, setFlashIdx] = useState<number | null>(null);
@@ -1139,9 +1164,29 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
     setTimeout(() => setFlashIdx(null), 600);
   };
 
-  // Re-render periodically to pick up fresh cache data
+  // Re-render periodically and record spread snapshots
   useEffect(() => {
-    const iv = setInterval(() => setTick(t => t + 1), 10_000);
+    const iv = setInterval(() => {
+      // Snapshot current avg spreads into history
+      SESSIONS.forEach((session, si) => {
+        let total = 0, count = 0;
+        session.currencies.forEach(c => {
+          const symbol = `C:${c.pair.replace('/', '')}`;
+          const isJPY = c.pair.includes('JPY');
+          const pipMul = isJPY ? 100 : 10000;
+          const cached = liveCache.get(symbol);
+          if (cached && cached.bid > 0 && cached.ask > 0) {
+            total += Math.abs(cached.ask - cached.bid) * pipMul;
+            count++;
+          }
+        });
+        if (count > 0) {
+          spreadHistory[si].push(total / count);
+          if (spreadHistory[si].length > MAX_HISTORY) spreadHistory[si].shift();
+        }
+      });
+      setTick(t => t + 1);
+    }, 10_000);
     return () => clearInterval(iv);
   }, []);
 
@@ -1199,8 +1244,9 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
       </div>
 
       {/* Header row */}
-      <div className="grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+      <div className="grid grid-cols-[1fr_40px_50px_60px_50px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
         <span className="text-[8px] font-bold text-muted-foreground uppercase">Sesión</span>
+        <span className="text-[8px] font-bold text-muted-foreground uppercase text-center">Trend</span>
         <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Spread</span>
         <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
         <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Rango</span>
@@ -1229,7 +1275,7 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
           <button
             onClick={() => handleSelect(i)}
             className={cn(
-              'w-full grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-2 items-center transition-all duration-500 border-b last:border-b-0 text-left',
+              'w-full grid grid-cols-[1fr_40px_50px_60px_50px] gap-0 px-3 py-2 items-center transition-all duration-500 border-b last:border-b-0 text-left',
               isSelected ? 'bg-muted/30' : 'hover:bg-muted/10',
             )}
             style={{
@@ -1247,6 +1293,11 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
               {status.isOpen && (
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
               )}
+            </div>
+
+            {/* Sparkline */}
+            <div className="flex justify-center">
+              <MiniSparkline data={spreadHistory[i]} color={session.color} />
             </div>
 
             {/* Spread */}
