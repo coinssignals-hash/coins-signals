@@ -30,10 +30,22 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
     const clean = raw.replace(/[^A-Z]/g, '');
     return clean.length >= 6 ? clean.slice(0, 3) + '/' + clean.slice(3, 6) : clean;
   };
-  const [signal, setSignal] = useState<SignalDraft>(() => ({
-    ...draft,
-    currencyPair: formatPair(draft.currencyPair.toUpperCase()),
-  }));
+  const roundPrice = (val: number, pair: string) => {
+    const decimals = getDecimals(pair);
+    return parseFloat(val.toFixed(decimals));
+  };
+  const [signal, setSignal] = useState<SignalDraft>(() => {
+    const pair = formatPair(draft.currencyPair.toUpperCase());
+    return {
+      ...draft,
+      currencyPair: pair,
+      entryPrice: roundPrice(draft.entryPrice, pair),
+      takeProfit: roundPrice(draft.takeProfit, pair),
+      stopLoss: roundPrice(draft.stopLoss, pair),
+      support: draft.support ? roundPrice(draft.support, pair) : undefined,
+      resistance: draft.resistance ? roundPrice(draft.resistance, pair) : undefined,
+    };
+  });
   const [notes, setNotes] = useState(draft.notes || '');
   const [showNotes, setShowNotes] = useState(!!draft.notes);
   const [creating, setCreating] = useState(false);
