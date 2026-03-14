@@ -239,18 +239,27 @@ serve(async (req) => {
 
     console.log('Polygon REST response:', data);
 
-    const polygonError = String(data?.error || '').toLowerCase();
-    const polygonUnauthorized = data?.status === 'ERROR' &&
-      (polygonError.includes('unknown api key') || polygonError.includes('not authorized'));
+    const polygonError = String(data?.error || data?.message || '').toLowerCase();
+    const polygonStatus = String(data?.status || '').toUpperCase();
+    const polygonUnauthorized = 
+      (polygonStatus === 'ERROR' || polygonStatus === 'NOT_AUTHORIZED') &&
+      (polygonError.includes('unknown api key') || polygonError.includes('not authorized') || polygonError.includes('not entitled'));
 
     logUsage('realtime-market', 'polygon', polygonUnauthorized ? 401 : 200, latency, { symbol, type });
 
     if (polygonUnauthorized) {
       console.log('Polygon unauthorized. Falling back to Yahoo Finance for:', symbol);
-      const yahooFallback = await fetchYahooPrice(symbol);
-      return new Response(JSON.stringify(yahooFallback), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      try {
+        const yahooFallback = await fetchYahooPrice(symbol);
+        return new Response(JSON.stringify(yahooFallback), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (yahooError) {
+        console.error('Yahoo fallback also failed:', yahooError);
+        return new Response(JSON.stringify({ error: 'All price providers failed', polygon_status: polygonStatus }), {
+          status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     return new Response(JSON.stringify(data), {
