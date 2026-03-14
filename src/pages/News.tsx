@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageTransition } from '@/components/layout/PageTransition';
@@ -1039,7 +1040,8 @@ const News = () => {
         </div>
 
         {/* Impact & Sentiment Filter Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
+        <ScrollFadeTabs className="pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
+          <div className="flex items-center gap-1.5">
           {/* Sort modes */}
           {[
               { key: 'recent' as const, icon: <Clock className="w-3 h-3" />, label: t('news_sort_recent') },
@@ -1094,7 +1096,8 @@ const News = () => {
               ✕ Reset
             </button>
               }
-        </div>
+          </div>
+        </ScrollFadeTabs>
 
         {/* Advanced Filters */}
         {filtersOpen
