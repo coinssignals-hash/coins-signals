@@ -36,28 +36,54 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const { t } = useTranslation();
   
 
-  const menuItems = [
-    { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
-    { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio' },
-    { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
-    { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
-    { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
-    { icon: Link2, label: t('drawer_link_broker'), href: '/link-broker' },
-    { icon: Shield, label: t('drawer_security'), href: '/settings/security' },
-    { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
-    { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
-    { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
-    
-    { icon: BarChart3, label: t('drawer_stock_market'), href: '/stocks' },
-    { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
-    { icon: Info, label: t('drawer_about_us'), href: '/about' },
-  ];
-
-  const settingsItems = [
-    { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
-    { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
-    { icon: Globe, label: t('drawer_language_tz'), href: '/settings/language' },
-    { icon: Download, label: t('drawer_install_app'), href: '/install' },
+  const menuSections = [
+    {
+      title: t('drawer_cat_trading'),
+      items: [
+        { icon: Brain, label: t('drawer_ai_center'), href: '/ai-center' },
+        { icon: TrendingUp, label: t('drawer_earnings'), href: '/performance' },
+        { icon: Wallet, label: t('nav_portfolio'), href: '/portfolio' },
+        { icon: BarChart3, label: t('drawer_stock_market'), href: '/stocks' },
+      ],
+    },
+    {
+      title: t('drawer_cat_broker'),
+      items: [
+        { icon: Link2, label: t('drawer_link_broker'), href: '/link-broker' },
+        { icon: BarChart3, label: t('drawer_broker_score'), href: '/broker-rating' },
+      ],
+    },
+    {
+      title: t('drawer_cat_learn'),
+      items: [
+        { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
+      ],
+    },
+    {
+      title: t('drawer_cat_account'),
+      items: [
+        { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
+        { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
+        { icon: Shield, label: t('drawer_security'), href: '/settings/security' },
+        { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
+      ],
+    },
+    {
+      title: t('drawer_preferences'),
+      items: [
+        { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
+        { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
+        { icon: Globe, label: t('drawer_language_tz'), href: '/settings/language' },
+        { icon: Download, label: t('drawer_install_app'), href: '/install' },
+      ],
+    },
+    {
+      title: t('drawer_cat_help'),
+      items: [
+        { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
+        { icon: Info, label: t('drawer_about_us'), href: '/about' },
+      ],
+    },
   ];
 
   useEffect(() => {
