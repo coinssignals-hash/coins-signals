@@ -12,9 +12,10 @@ interface DayTabsProps {
   onAICenter?: () => void;
   onRefresh?: () => void;
   isLoading?: boolean;
+  symbol?: string;
 }
 
-export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoading }: DayTabsProps) {
+export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoading, symbol }: DayTabsProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
