@@ -619,7 +619,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
   }, []);
 
   const status = getSessionStatus(session);
-  const { quotes, isConnected, refetch } = useSessionLiveData(session, isActive);
+  const { quotes, isConnected, sessionVolume, refetch } = useSessionLiveData(session, isActive);
 
   // Compute live avg spread for the gauge
   const liveAvgSpread = useMemo(() => {
