@@ -19,6 +19,9 @@ const INDICES = [
   { symbol: '^IXIC', label: 'NASDAQ', fmpSymbol: '^IXIC', finnhubSymbol: 'IXIC' },
   { symbol: '^DJI', label: 'DOW', fmpSymbol: '^DJI', finnhubSymbol: 'DJI' },
   { symbol: '^RUT', label: 'Russell 2K', fmpSymbol: '^RUT', finnhubSymbol: 'RUT' },
+  { symbol: '^FTSE', label: 'FTSE 100', fmpSymbol: '^FTSE', finnhubSymbol: 'FTSE' },
+  { symbol: '^GDAXI', label: 'DAX', fmpSymbol: '^GDAXI', finnhubSymbol: 'DAX' },
+  { symbol: '^N225', label: 'Nikkei 225', fmpSymbol: '^N225', finnhubSymbol: 'NI225' },
 ];
 
 const POLL_INTERVAL = 15_000;
