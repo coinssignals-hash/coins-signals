@@ -15,7 +15,7 @@ const pt: TranslationKeys = {
   drawer_security: 'Segurança', drawer_courses_tutorials: 'Cursos e Tutoriais',
   drawer_earnings: 'Rendimentos e Ganhos', drawer_broker_score: 'Avaliação de Corretora',
   drawer_contact_support: 'Contato e Suporte', drawer_about_us: 'Sobre Nós',
-  drawer_preferences: 'Preferências', drawer_notifications: 'Notificações',
+  drawer_preferences: 'Preferências', drawer_cat_trading: 'Trading', drawer_cat_broker: 'Corretora', drawer_cat_learn: 'Aprendizado', drawer_cat_account: 'Conta', drawer_cat_help: 'Ajuda', drawer_notifications: 'Notificações',
   drawer_appearance: 'Aparência', drawer_language_tz: 'Idioma e Fuso Horário',
   drawer_install_app: 'Instalar App', drawer_new: 'novas',
   settings_title: 'Configurações', settings_profile: 'Perfil',
