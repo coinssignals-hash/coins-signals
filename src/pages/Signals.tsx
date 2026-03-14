@@ -277,10 +277,7 @@ export default function Signals() {
                 className={cn(
                   "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
                   dayTab === tab.key
-                    ? tab.key === 'today' ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                    : tab.key === 'yesterday' ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
-                    : tab.key === 'tomorrow' ? "bg-amber-600 text-white shadow-md shadow-amber-500/25"
-                    : "bg-slate-600 text-white shadow-md shadow-slate-500/25"
+                    ? "bg-primary text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 )}
               >
