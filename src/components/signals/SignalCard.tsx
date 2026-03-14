@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity, History, Clock, Trash2 } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity, History, Clock, Trash2, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
