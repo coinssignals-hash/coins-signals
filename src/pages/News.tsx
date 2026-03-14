@@ -1096,7 +1096,8 @@ const News = () => {
               ✕ Reset
             </button>
               }
-        </div>
+          </div>
+        </ScrollFadeTabs>
 
         {/* Advanced Filters */}
         {filtersOpen
