@@ -290,6 +290,7 @@ const pt: TranslationKeys = {
   tools_count: 'ferramentas',
   tools_active: 'Ativa',
   tools_coming_soon: 'Em breve',
+  tools_cat_all: 'Todas',
   tools_cat_calculators: 'Calculadoras',
   tools_cat_calendar: 'Calendário',
   tools_cat_screeners: 'Screeners',

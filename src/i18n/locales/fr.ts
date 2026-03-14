@@ -295,6 +295,7 @@ const fr: TranslationKeys = {
   tools_count: 'outils',
   tools_active: 'Active',
   tools_coming_soon: 'Bientôt',
+  tools_cat_all: 'Toutes',
   tools_cat_calculators: 'Calculatrices',
   tools_cat_calendar: 'Calendrier',
   tools_cat_screeners: 'Screeners',
