@@ -1162,7 +1162,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                     <span className="text-[10px] text-muted-foreground/50">—</span>
                   )}
                   {liveQuote && liveQuote.spread > 0 && (
-                    <span className="text-[7px] font-mono tabular-nums px-1 py-px rounded" style={{
+                    <span className="text-[9px] font-mono tabular-nums px-1 py-px rounded" style={{
                       background: liveQuote.spread < 2 ? 'hsl(var(--bullish) / 0.1)' : liveQuote.spread < 4 ? 'hsl(var(--accent) / 0.1)' : 'hsl(var(--destructive) / 0.1)',
                       color: liveQuote.spread < 2 ? 'hsl(var(--bullish))' : liveQuote.spread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
                     }}>
