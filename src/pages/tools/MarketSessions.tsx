@@ -1374,7 +1374,7 @@ export default function MarketSessions() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3">
         {/* Session Tabs */}
-        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+        <div className="grid grid-cols-5 gap-1 mb-3">
           {SESSIONS.map((s, i) => {
             const isSelected = i === activeIndex;
             const sessionStatus = getSessionStatus(s);
@@ -1383,19 +1383,19 @@ export default function MarketSessions() {
                 key={s.id}
                 onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all shrink-0 active:scale-95',
+                  'flex flex-col items-center gap-0.5 py-2 rounded-xl text-[9px] font-semibold transition-all active:scale-95',
                   isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
                 )}
                 style={{
                   background: isSelected
                     ? `linear-gradient(135deg, hsl(${s.color} / 0.2), hsl(${s.color} / 0.08))`
                     : 'hsl(var(--card) / 0.5)',
-                  border: `1px solid ${isSelected ? `hsl(${s.color} / 0.35)` : 'hsl(var(--border) / 0.5)'}`,
+                  border: `1px solid ${isSelected ? `hsl(${s.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
                   boxShadow: isSelected ? `0 2px 8px hsl(${s.color} / 0.15)` : undefined,
                 }}
               >
-                <span className="text-sm">{s.emoji}</span>
-                <span>{s.name}</span>
+                <span className="text-base leading-none">{s.emoji}</span>
+                <span className="truncate w-full text-center">{s.name.length > 6 ? s.name.slice(0, 3).toUpperCase() : s.name}</span>
                 {sessionStatus.isOpen && (
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                 )}
