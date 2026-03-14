@@ -1244,8 +1244,9 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
       </div>
 
       {/* Header row */}
-      <div className="grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+      <div className="grid grid-cols-[1fr_40px_50px_60px_50px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
         <span className="text-[8px] font-bold text-muted-foreground uppercase">Sesión</span>
+        <span className="text-[8px] font-bold text-muted-foreground uppercase text-center">Trend</span>
         <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Spread</span>
         <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
         <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Rango</span>
