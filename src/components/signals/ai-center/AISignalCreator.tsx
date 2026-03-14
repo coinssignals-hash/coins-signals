@@ -160,7 +160,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Entry</label>
           <input
             type="number"
-            step="0.00001"
+            step="0.0001"
             value={signal.entryPrice}
             onChange={(e) => updateField('entryPrice', parseFloat(e.target.value) || 0)}
             className="w-full px-2 py-2 rounded-lg bg-secondary/30 border border-border text-xs text-foreground font-mono focus:outline-none focus:border-primary"
@@ -170,7 +170,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           <label className="text-[10px] text-bullish uppercase tracking-wider">TP</label>
           <input
             type="number"
-            step="0.00001"
+            step="0.0001"
             value={signal.takeProfit}
             onChange={(e) => updateField('takeProfit', parseFloat(e.target.value) || 0)}
             className="w-full px-2 py-2 rounded-lg bg-bullish/5 border border-bullish/20 text-xs text-foreground font-mono focus:outline-none focus:border-bullish"
@@ -180,7 +180,7 @@ export function AISignalCreator({ draft, onCreated, onCancel }: Props) {
           <label className="text-[10px] text-destructive uppercase tracking-wider">SL</label>
           <input
             type="number"
-            step="0.00001"
+            step="0.0001"
             value={signal.stopLoss}
             onChange={(e) => updateField('stopLoss', parseFloat(e.target.value) || 0)}
             className="w-full px-2 py-2 rounded-lg bg-destructive/5 border border-destructive/20 text-xs text-foreground font-mono focus:outline-none focus:border-destructive"
