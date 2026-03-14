@@ -119,6 +119,9 @@ export default function TradingJournal() {
       result: row.result as TradeEntry['result'],
       pips: String(row.pips),
       notes: row.notes || '',
+      signalArrivedAt: row.signal_arrived_at || null,
+      executedAt: row.executed_at || null,
+      completedAt: row.completed_at || null,
     }));
     setEntries(mapped);
   };
