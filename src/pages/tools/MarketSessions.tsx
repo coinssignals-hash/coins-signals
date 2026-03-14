@@ -1102,7 +1102,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
           </div>
           {status.isOpen && (
             <div className="flex justify-end -mt-1">
-              <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
+              <span className="text-[11px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
                 {status.progressPercent}%
               </span>
             </div>
