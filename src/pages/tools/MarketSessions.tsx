@@ -1032,6 +1032,9 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
         {/* Volume Indicator */}
         <VolumeIndicator sessionVolume={sessionVolume} color={session.color} />
 
+        {/* Volatility Alerts */}
+        <VolatilityAlerts session={session} sessionVolume={sessionVolume} color={session.color} />
+
         {/* Weekly Chart */}
         <WeeklyChart session={session} color={session.color} />
       </div>
