@@ -33,7 +33,8 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const savedNewsCount = getAllCachedNews().length;
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const drawerSide = language === 'ar' ? 'right' : 'left';
   
 
   const menuSections = [
