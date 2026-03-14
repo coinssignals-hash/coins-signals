@@ -166,7 +166,7 @@ function AnimatedRoutes() {
           <Route path="/tools/backtest-pro" element={<BacktestPro />} />
           <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="/tools/market-sessions" element={<MarketSessions />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
