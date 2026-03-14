@@ -1295,6 +1295,11 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
               )}
             </div>
 
+            {/* Sparkline */}
+            <div className="flex justify-center">
+              <MiniSparkline data={spreadHistory[i]} color={session.color} />
+            </div>
+
             {/* Spread */}
             <div className="text-right">
               {stats.hasData && stats.avgSpread > 0 ? (
