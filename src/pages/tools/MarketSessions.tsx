@@ -1151,15 +1151,15 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                     <span className="text-sm leading-none">{c.flag1}</span>
                     <span className="text-sm leading-none">{c.flag2}</span>
                   </div>
-                  <span className="text-[8px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
+                  <span className="text-[10px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
                   {liveQuote && liveQuote.price > 0 ? (
-                    <span className="text-[8px] font-mono tabular-nums leading-none" style={{ color: `hsl(${session.color})` }}>
+                    <span className="text-[10px] font-mono tabular-nums leading-none" style={{ color: `hsl(${session.color})` }}>
                       {formatPrice(liveQuote.price, c.pair)}
                     </span>
                   ) : liveQuote?.loading ? (
-                    <Loader2 className="w-2 h-2 animate-spin text-muted-foreground" />
+                    <Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground" />
                   ) : (
-                    <span className="text-[8px] text-muted-foreground/50">—</span>
+                    <span className="text-[10px] text-muted-foreground/50">—</span>
                   )}
                   {liveQuote && liveQuote.spread > 0 && (
                     <span className="text-[7px] font-mono tabular-nums px-1 py-px rounded" style={{
