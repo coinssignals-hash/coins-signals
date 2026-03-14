@@ -109,6 +109,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
     }
 
     toast.success('Señal guardada en tu Diario de Trading');
+    setAlreadySaved(true);
     setOpen(false);
   };
 
