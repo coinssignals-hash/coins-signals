@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import brandLogo from '@/assets/g174.svg';
 import { cn } from '@/lib/utils';
 import {
   Brain, BarChart3, Target, FileText, Layers, GitCompareArrows,
