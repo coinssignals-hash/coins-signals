@@ -33,7 +33,8 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const savedNewsCount = getAllCachedNews().length;
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const drawerSide = language === 'ar' ? 'right' : 'left';
   
 
   const menuSections = [
@@ -114,7 +115,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-80 p-0 bg-background border-border">
+      <SheetContent side={drawerSide} className="w-80 p-0 bg-background border-border">
         <SheetHeader className="p-6 pb-4">
           {user ? (
             <div className="flex items-center gap-3">
