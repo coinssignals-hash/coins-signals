@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
-import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity, History, Clock, Trash2 } from 'lucide-react';
+import { Copy, TrendingUp, TrendingDown, Heart, ChevronDown, ChevronUp, Loader2, Sparkles, X, Wifi, WifiOff, Activity, History, Clock, Trash2, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -10,6 +10,7 @@ import { useDateLocale } from '@/hooks/useDateLocale';
 import signalCardBg from '@/assets/signal-card-bg.png';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import { PriceSparkline } from './PriceSparkline';
+import { SaveSignalToJournal } from './SaveSignalToJournal';
 
 interface SignalCardProps {
   signal: TradingSignal;
@@ -337,22 +338,25 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                 UTC+01:00
               </span>
             </div>
-            {onToggleFavorite && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleFavorite(signal.id);
-                }}
-                className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-              >
-                <Heart
-                  className={cn(
-                    "w-5 h-5 transition-colors",
-                    isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-500 hover:text-rose-400"
-                  )}
-                />
-              </button>
-            )}
+            <div className="flex items-center gap-1.5">
+              <SaveSignalToJournal signal={signal} />
+              {onToggleFavorite && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleFavorite(signal.id);
+                  }}
+                  className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <Heart
+                    className={cn(
+                      "w-5 h-5 transition-colors",
+                      isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-500 hover:text-rose-400"
+                    )}
+                  />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Main Header Row */}
