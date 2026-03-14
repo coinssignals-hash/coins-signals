@@ -1,7 +1,5 @@
-import { TrendingUp, TrendingDown, Wifi, WifiOff, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { cn, formatPrice, getDecimals } from '@/lib/utils';
 import { useEffect, useState, useRef } from 'react';
-import { getSymbolVisual } from './symbolVisuals';
 
 // Animated currency icon with elaborate entrance
 const CurrencyIcon = ({ code, isAnimating, delay = 0, position }: {code: string;isAnimating: boolean;delay?: number;position: 'base' | 'quote';}) => {
