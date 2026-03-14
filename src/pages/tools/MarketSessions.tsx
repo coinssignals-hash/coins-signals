@@ -107,73 +107,107 @@ interface LiveQuote {
   spread: number;
   price: number;
   change: number;
+  volume: number;
+  dailyRange: number; // in pips
   loading: boolean;
   error: boolean;
   updatedAt: number;
 }
 
-const liveCache = new Map<string, { bid: number; ask: number; price: number; ts: number }>();
+interface SessionVolume {
+  totalVolume: number;
+  avgDailyRange: number;
+  pairVolumes: { pair: string; volume: number; range: number }[];
+  loading: boolean;
+}
+
+const liveCache = new Map<string, { bid: number; ask: number; price: number; volume: number; high: number; low: number; ts: number }>();
 const CACHE_TTL = 25_000;
 
 function useSessionLiveData(session: SessionData, isActive: boolean) {
   const [quotes, setQuotes] = useState<LiveQuote[]>(
     session.currencies.map(c => ({
-      pair: c.pair, bid: 0, ask: 0, spread: 0, price: 0, change: 0,
+      pair: c.pair, bid: 0, ask: 0, spread: 0, price: 0, change: 0, volume: 0, dailyRange: 0,
       loading: true, error: false, updatedAt: 0,
     }))
   );
   const [isConnected, setIsConnected] = useState(false);
   const [lastFetch, setLastFetch] = useState(0);
+  const [sessionVolume, setSessionVolume] = useState<SessionVolume>({
+    totalVolume: 0, avgDailyRange: 0, pairVolumes: [], loading: true,
+  });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchQuotes = useCallback(async () => {
-    // Collect unique pairs for this session
     const pairs = session.currencies.map(c => {
       const clean = c.pair.replace('/', '');
       return { display: c.pair, symbol: `C:${clean}`, polygonPair: c.pair };
     });
 
+    // Fetch both quotes and aggregates in parallel
     const results = await Promise.allSettled(
       pairs.map(async (p) => {
-        // Check cache
         const cached = liveCache.get(p.symbol);
         if (cached && Date.now() - cached.ts < CACHE_TTL) {
           return { pair: p.display, ...cached, fromCache: true };
         }
 
-        const { data, error } = await supabase.functions.invoke('realtime-market', {
-          body: { symbol: p.symbol, type: 'quote' },
-        });
+        // Fetch quote and aggregates in parallel
+        const [quoteRes, aggRes] = await Promise.allSettled([
+          supabase.functions.invoke('realtime-market', {
+            body: { symbol: p.symbol, type: 'quote' },
+          }),
+          supabase.functions.invoke('realtime-market', {
+            body: { symbol: p.symbol, type: 'aggregates' },
+          }),
+        ]);
 
-        if (error) throw error;
+        let bid = 0, ask = 0, price = 0, volume = 0, high = 0, low = 0;
 
-        let bid = 0, ask = 0, price = 0;
+        // Process quote data
+        if (quoteRes.status === 'fulfilled' && !quoteRes.value.error) {
+          const data = quoteRes.value.data;
+          if (data?.last) {
+            bid = data.last.bid || 0;
+            ask = data.last.ask || 0;
+            price = (bid + ask) / 2;
+          } else if (data?.price) {
+            price = data.price;
+            const isJPY = p.display.includes('JPY');
+            const spreadPips = isJPY ? 0.02 : 0.00015;
+            bid = price - spreadPips / 2;
+            ask = price + spreadPips / 2;
+          } else if (data?.results?.[0]) {
+            price = data.results[0].c;
+            bid = data.results[0].l || price;
+            ask = data.results[0].h || price;
+          }
+        }
 
-        if (data?.last) {
-          bid = data.last.bid || 0;
-          ask = data.last.ask || 0;
-          price = (bid + ask) / 2;
-        } else if (data?.price) {
-          price = data.price;
-          // Estimate spread from price
-          const isJPY = p.display.includes('JPY');
-          const spreadPips = isJPY ? 0.02 : 0.00015;
-          bid = price - spreadPips / 2;
-          ask = price + spreadPips / 2;
-        } else if (data?.results?.[0]) {
-          price = data.results[0].c;
-          bid = data.results[0].l || price;
-          ask = data.results[0].h || price;
+        // Process aggregate data (volume + daily range)
+        if (aggRes.status === 'fulfilled' && !aggRes.value.error) {
+          const aggData = aggRes.value.data;
+          if (aggData?.results?.[0]) {
+            const r = aggData.results[0];
+            volume = r.v || 0;
+            high = r.h || high;
+            low = r.l || low;
+            if (price === 0 && r.c) price = r.c;
+          } else if (aggData?.price) {
+            if (price === 0) price = aggData.price;
+          }
         }
 
         if (price > 0) {
-          liveCache.set(p.symbol, { bid, ask, price, ts: Date.now() });
-          return { pair: p.display, bid, ask, price, ts: Date.now(), fromCache: false };
+          liveCache.set(p.symbol, { bid, ask, price, volume, high, low, ts: Date.now() });
+          return { pair: p.display, bid, ask, price, volume, high, low, ts: Date.now(), fromCache: false };
         }
 
         throw new Error('No price data');
       })
     );
+
+    const pairVolumes: { pair: string; volume: number; range: number }[] = [];
 
     const newQuotes: LiveQuote[] = results.map((r, i) => {
       const pair = pairs[i].display;
@@ -181,30 +215,36 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
       const pipMultiplier = isJPY ? 100 : 10000;
 
       if (r.status === 'fulfilled') {
-        const { bid, ask, price } = r.value;
+        const { bid, ask, price, volume, high, low } = r.value;
         const spread = Math.abs(ask - bid) * pipMultiplier;
+        const dailyRange = Math.abs(high - low) * pipMultiplier;
+        pairVolumes.push({ pair, volume, range: dailyRange });
         return {
-          pair, bid, ask, price,
+          pair, bid, ask, price, volume,
           spread: Math.round(spread * 10) / 10,
+          dailyRange: Math.round(dailyRange * 10) / 10,
           change: 0,
           loading: false, error: false,
           updatedAt: Date.now(),
         };
       }
-      // Use cached data if available
       const cached = liveCache.get(pairs[i].symbol);
       if (cached) {
         const spread = Math.abs(cached.ask - cached.bid) * pipMultiplier;
+        const dailyRange = Math.abs(cached.high - cached.low) * pipMultiplier;
+        pairVolumes.push({ pair, volume: cached.volume, range: dailyRange });
         return {
           pair, bid: cached.bid, ask: cached.ask, price: cached.price,
+          volume: cached.volume,
           spread: Math.round(spread * 10) / 10,
+          dailyRange: Math.round(dailyRange * 10) / 10,
           change: 0,
           loading: false, error: true,
           updatedAt: cached.ts,
         };
       }
       return {
-        pair, bid: 0, ask: 0, spread: 0, price: 0, change: 0,
+        pair, bid: 0, ask: 0, spread: 0, price: 0, change: 0, volume: 0, dailyRange: 0,
         loading: false, error: true, updatedAt: 0,
       };
     });
@@ -212,6 +252,16 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
     setQuotes(newQuotes);
     setIsConnected(newQuotes.some(q => !q.error && q.price > 0));
     setLastFetch(Date.now());
+
+    // Compute session volume
+    const totalVolume = pairVolumes.reduce((s, p) => s + p.volume, 0);
+    const validRanges = pairVolumes.filter(p => p.range > 0);
+    const avgDailyRange = validRanges.length > 0
+      ? validRanges.reduce((s, p) => s + p.range, 0) / validRanges.length
+      : 0;
+    setSessionVolume({
+      totalVolume, avgDailyRange, pairVolumes, loading: false,
+    });
   }, [session]);
 
   useEffect(() => {
@@ -223,7 +273,6 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
     };
   }, [isActive, fetchQuotes]);
 
-  // Pause when tab hidden
   useEffect(() => {
     const handler = () => {
       if (document.hidden) {
@@ -237,7 +286,7 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
     return () => document.removeEventListener('visibilitychange', handler);
   }, [isActive, fetchQuotes]);
 
-  return { quotes, isConnected, lastFetch, refetch: fetchQuotes };
+  return { quotes, isConnected, lastFetch, sessionVolume, refetch: fetchQuotes };
 }
 
 /* ─────────── Helpers ─────────── */
