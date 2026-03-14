@@ -73,7 +73,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
   const handleSave = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user?.id) {
-      toast.error(t('journal_login_required') || 'Inicia sesión para guardar en el diario');
+      toast.error(t('journal_login_required'));
       return;
     }
 
@@ -92,7 +92,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
       take_profit: signal.takeProfit,
       result,
       pips,
-      notes: notes || `Señal ${signal.source || 'server'} — ${signal.currencyPair}`,
+      notes: notes || `${t('journal_btn_journal')} ${signal.source || 'server'} — ${signal.currencyPair}`,
       signal_id: signal.id,
       signal_arrived_at: signalArrivedAt,
       executed_at: executedAt || null,
@@ -104,11 +104,11 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
 
     if (error) {
       console.error(error);
-      toast.error('Error al guardar en el diario');
+      toast.error(t('journal_save_error_toast'));
       return;
     }
 
-    toast.success('Señal guardada en tu Diario de Trading');
+    toast.success(t('journal_signal_saved_toast'));
     setAlreadySaved(true);
     setOpen(false);
   };
@@ -133,14 +133,14 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
           disabled={alreadySaved}
         >
           {alreadySaved ? <Check className="w-3.5 h-3.5" /> : <BookOpen className="w-3.5 h-3.5" />}
-          <span>{alreadySaved ? 'Guardada' : 'Diario'}</span>
+          <span>{alreadySaved ? t('journal_btn_saved') : t('journal_btn_journal')}</span>
         </button>
       </DialogTrigger>
       <DialogContent className="max-w-sm mx-auto bg-card border-border" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-foreground">
             <BookOpen className="w-5 h-5 text-primary" />
-            Guardar en Diario
+            {t('journal_save_to_journal')}
           </DialogTitle>
         </DialogHeader>
 
@@ -158,7 +158,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div>
-                <span className="text-[10px] text-muted-foreground block">Entrada</span>
+                <span className="text-[10px] text-muted-foreground block">{t('journal_entry_label')}</span>
                 <span className="text-xs font-mono font-bold text-foreground">{signal.entryPrice}</span>
               </div>
               <div>
@@ -176,13 +176,12 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Clock className="w-3.5 h-3.5 text-primary" />
-              <span className="font-medium">Tiempos de la operación</span>
+              <span className="font-medium">{t('journal_trade_times')}</span>
             </div>
 
-            {/* Signal Arrived */}
             <div>
               <Label className="text-[11px] text-muted-foreground flex items-center gap-1.5 mb-1">
-                <Clock className="w-3 h-3" /> Llegada de señal
+                <Clock className="w-3 h-3" /> {t('journal_signal_arrival')}
               </Label>
               <Input
                 type="datetime-local"
@@ -192,10 +191,9 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
               />
             </div>
 
-            {/* Execution Time */}
             <div>
               <Label className="text-[11px] text-muted-foreground flex items-center gap-1.5 mb-1">
-                <Play className="w-3 h-3" /> Hora de ejecución
+                <Play className="w-3 h-3" /> {t('journal_execution_time')}
               </Label>
               <Input
                 type="datetime-local"
@@ -205,10 +203,9 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
               />
             </div>
 
-            {/* Completion Time */}
             <div>
               <Label className="text-[11px] text-muted-foreground flex items-center gap-1.5 mb-1">
-                <CheckCircle2 className="w-3 h-3" /> Hora de finalización
+                <CheckCircle2 className="w-3 h-3" /> {t('journal_completion_time')}
               </Label>
               <Input
                 type="datetime-local"
@@ -222,20 +219,20 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
           {/* Result & Lot Size */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[11px] text-muted-foreground mb-1 block">Resultado</Label>
+              <Label className="text-[11px] text-muted-foreground mb-1 block">{t('journal_result')}</Label>
               <Select value={result} onValueChange={(v) => setResult(v as any)}>
                 <SelectTrigger className="text-xs bg-input border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="win">✅ Win</SelectItem>
-                  <SelectItem value="loss">❌ Loss</SelectItem>
-                  <SelectItem value="breakeven">➖ Breakeven</SelectItem>
+                  <SelectItem value="win">✅ {t('journal_win')}</SelectItem>
+                  <SelectItem value="loss">❌ {t('journal_loss')}</SelectItem>
+                  <SelectItem value="breakeven">➖ {t('journal_breakeven')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label className="text-[11px] text-muted-foreground mb-1 block">Lote</Label>
+              <Label className="text-[11px] text-muted-foreground mb-1 block">{t('journal_lot_size')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -248,7 +245,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
 
           {/* Pips preview */}
           <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-muted/30 border border-border">
-            <span className="text-[11px] text-muted-foreground">Pips calculados</span>
+            <span className="text-[11px] text-muted-foreground">{t('journal_calculated_pips')}</span>
             <span className={cn(
               "text-sm font-bold font-mono tabular-nums",
               calcPips() > 0 ? 'text-emerald-400' : calcPips() < 0 ? 'text-rose-400' : 'text-muted-foreground'
@@ -259,11 +256,11 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
 
           {/* Notes */}
           <div>
-            <Label className="text-[11px] text-muted-foreground mb-1 block">Notas (opcional)</Label>
+            <Label className="text-[11px] text-muted-foreground mb-1 block">{t('journal_notes_optional')}</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Observaciones sobre la operación..."
+              placeholder={t('journal_notes_placeholder')}
               className="text-xs bg-input border-border min-h-[60px] resize-none"
             />
           </div>
@@ -275,7 +272,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
             className="w-full"
           >
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <BookOpen className="w-4 h-4 mr-2" />}
-            Guardar en Diario
+            {t('journal_save_to_journal')}
           </Button>
         </div>
       </DialogContent>
