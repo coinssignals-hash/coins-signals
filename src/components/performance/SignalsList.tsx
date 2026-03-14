@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { SignalDetailView } from './SignalDetailView';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
 
 export interface SignalData {
   id: string;
@@ -26,13 +27,8 @@ interface SignalsListProps {
   signals: SignalData[];
 }
 
-const flagMap: Record<string, string> = {
-  'EUR': '🇪🇺', 'USD': '🇺🇸', 'GBP': '🇬🇧', 'JPY': '🇯🇵',
-  'AUD': '🇦🇺', 'CAD': '🇨🇦', 'CHF': '🇨🇭', 'NZD': '🇳🇿',
-};
-
 function getCurrencyFlags(pair: string) {
-  return pair.split(' ').map(c => flagMap[c] || '🏳️').join(' ');
+  return pair.split(' ').map(c => getSymbolVisual(c).flag || '🏳️').join(' ');
 }
 
 export function SignalsList({ signals }: SignalsListProps) {

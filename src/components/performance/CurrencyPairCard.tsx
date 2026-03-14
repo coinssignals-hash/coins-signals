@@ -2,6 +2,7 @@ import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, ReferenceLine } fro
 import { Card, CardContent } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
 
 interface CurrencyPairCardProps {
   pair: string;
@@ -11,11 +12,6 @@ interface CurrencyPairCardProps {
   lowPrice: number;
   totalSignals?: number;
 }
-
-const flagMap: Record<string, string> = {
-  'EUR': '🇪🇺', 'USD': '🇺🇸', 'GBP': '🇬🇧', 'JPY': '🇯🇵',
-  'AUD': '🇦🇺', 'CAD': '🇨🇦', 'CHF': '🇨🇭', 'NZD': '🇳🇿',
-};
 
 const generateChartData = (basePrice: number, isUp: boolean) => {
   const data = [];
@@ -30,8 +26,8 @@ const generateChartData = (basePrice: number, isUp: boolean) => {
 export function CurrencyPairCard({ pair, currentPrice, change, highPrice, lowPrice, totalSignals = 0 }: CurrencyPairCardProps) {
   const { t } = useTranslation();
   const currencies = pair.split(' ');
-  const flag1 = flagMap[currencies[0]] || '🏳️';
-  const flag2 = flagMap[currencies[1]] || '🏳️';
+  const flag1 = getSymbolVisual(currencies[0]).flag || '🏳️';
+  const flag2 = getSymbolVisual(currencies[1]).flag || '🏳️';
   const isUp = change >= 0;
   const chartData = generateChartData(currentPrice, isUp);
 
