@@ -570,29 +570,130 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
   );
 }
 
-function WeeklyChart({ volatilityData, liquidityData, color }: {
-  volatilityData: number[];
-  liquidityData: number[];
+function useWeeklyVolume(session: SessionData) {
+  const [weeklyData, setWeeklyData] = useState<{ day: string; volume: number; range: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    async function fetchWeekly() {
+      try {
+        const mainPair = session.currencies[0];
+        const symbol = `C:${mainPair.pair.replace('/', '')}`;
+        const now = new Date();
+        // Get last 7 calendar days to capture 5 weekdays
+        const from = new Date(now);
+        from.setDate(from.getDate() - 9);
+        const formatDate = (d: Date) => d.toISOString().split('T')[0];
+
+        const { data, error } = await supabase.functions.invoke('realtime-market', {
+          body: {
+            symbol,
+            type: 'range',
+            from: formatDate(from),
+            to: formatDate(now),
+            timespan: 'day',
+          },
+        });
+
+        if (error || !data?.results?.length) {
+          setLoading(false);
+          return;
+        }
+
+        const isJPY = mainPair.pair.includes('JPY');
+        const pipMult = isJPY ? 100 : 10000;
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        const weekdays = data.results
+          .map((r: any) => {
+            const d = new Date(r.t);
+            const dow = d.getUTCDay();
+            if (dow === 0 || dow === 6) return null;
+            return {
+              day: dayNames[dow],
+              volume: r.v || 0,
+              range: Math.abs((r.h || 0) - (r.l || 0)) * pipMult,
+            };
+          })
+          .filter(Boolean)
+          .slice(-5);
+
+        setWeeklyData(weekdays);
+      } catch {
+        // keep static fallback
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchWeekly();
+  }, [session]);
+
+  return { weeklyData, loading };
+}
+
+function WeeklyChart({ session, color }: {
+  session: SessionData;
   color: string;
 }) {
+  const { weeklyData, loading } = useWeeklyVolume(session);
+
+  // Fallback to static data if API didn't return results
+  const hasRealData = weeklyData.length > 0;
+
+  const displayData = hasRealData
+    ? weeklyData
+    : DAYS.map((d, i) => ({ day: d, volume: session.weeklyVolatility[i] * 1000, range: session.weeklyLiquidity[i] }));
+
+  const maxVol = Math.max(...displayData.map(d => d.volume), 1);
+  const maxRange = Math.max(...displayData.map(d => d.range), 1);
   const maxH = 80;
+
   return (
     <div className="mt-3">
+      <div className="flex items-center justify-between mb-1 px-1">
+        <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
+          {hasRealData ? '📊 Vol. Semanal Real' : '📊 Vol. Semanal'}
+        </span>
+        {loading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+        {hasRealData && !loading && (
+          <span className="text-[7px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>LIVE</span>
+        )}
+      </div>
       <div className="flex items-end gap-1 justify-between h-24 px-1">
-        {DAYS.map((day, i) => {
-          const volH = (volatilityData[i] / 100) * maxH;
-          const liqH = (liquidityData[i] / 100) * maxH;
+        {displayData.map((item, i) => {
+          const volH = (item.volume / maxVol) * maxH;
+          const rangeH = (item.range / maxRange) * maxH;
           return (
-            <div key={day} className="flex flex-col items-center gap-0.5 flex-1">
+            <div key={item.day + i} className="flex flex-col items-center gap-0.5 flex-1">
               <div className="flex items-end gap-[2px] h-20">
-                <div className="relative w-3 rounded-t overflow-hidden" style={{ height: `${volH}%` }}>
+                <motion.div
+                  className="relative w-3 rounded-t overflow-hidden"
+                  initial={{ height: 0 }}
+                  animate={{ height: `${Math.max(volH, 3)}%` }}
+                  transition={{ duration: 0.6, delay: i * 0.08 }}
+                >
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, hsl(${color} / 0.3), hsl(${color} / 0.8))` }} />
-                </div>
-                <div className="relative w-3 rounded-t overflow-hidden" style={{ height: `${liqH}%` }}>
+                </motion.div>
+                <motion.div
+                  className="relative w-3 rounded-t overflow-hidden"
+                  initial={{ height: 0 }}
+                  animate={{ height: `${Math.max(rangeH, 3)}%` }}
+                  transition={{ duration: 0.6, delay: i * 0.08 + 0.05 }}
+                >
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, hsl(45 80% 55% / 0.3), hsl(45 80% 55% / 0.8))` }} />
-                </div>
+                </motion.div>
               </div>
-              <span className="text-[8px] text-muted-foreground">{day}</span>
+              <span className="text-[8px] text-muted-foreground">{item.day}</span>
+              {hasRealData && (
+                <span className="text-[6px] font-mono text-muted-foreground/60 tabular-nums">
+                  {item.volume >= 1e6 ? `${(item.volume / 1e6).toFixed(1)}M` : item.volume >= 1e3 ? `${(item.volume / 1e3).toFixed(0)}K` : item.volume}
+                </span>
+              )}
             </div>
           );
         })}
@@ -600,11 +701,11 @@ function WeeklyChart({ volatilityData, liquidityData, color }: {
       <div className="flex items-center gap-3 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: `hsl(${color})` }} />
-          <span className="text-[8px] text-muted-foreground">Volatility</span>
+          <span className="text-[8px] text-muted-foreground">{hasRealData ? 'Volume' : 'Volatility'}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: 'hsl(45 80% 55%)' }} />
-          <span className="text-[8px] text-muted-foreground">Liquidity</span>
+          <span className="text-[8px] text-muted-foreground">{hasRealData ? 'Range (pips)' : 'Liquidity'}</span>
         </div>
       </div>
     </div>
