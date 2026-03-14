@@ -1243,6 +1243,9 @@ export default function MarketSessions() {
             />
           ))}
         </div>
+
+        {/* Session Comparison Table */}
+        <SessionComparisonTable activeIndex={activeIndex} onSelect={(i) => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }} />
       </main>
     </PageShell>
   );
