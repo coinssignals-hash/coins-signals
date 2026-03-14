@@ -2147,6 +2147,11 @@ const localeLoaders: Record<Language, () => Promise<{ default: TranslationKeys }
   en: () => import('./locales/en'),
   pt: () => import('./locales/pt'),
   fr: () => import('./locales/fr'),
+  it: () => import('./locales/it'),
+  nl: () => import('./locales/nl'),
+  de: () => import('./locales/de'),
+  ar: () => import('./locales/ar'),
+  mt: () => import('./locales/mt'),
 };
 
 // Keep a synchronous fallback (Spanish is default and bundled inline for instant first paint)
