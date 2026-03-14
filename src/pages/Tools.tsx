@@ -4,6 +4,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
 import {
