@@ -1120,7 +1120,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
               background: 'hsl(var(--card) / 0.6)',
               border: '1px solid hsl(var(--border) / 0.5)',
             }}>
-              <span className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
               {stat.value ? (
                 <LevelBadge level={stat.value} />
               ) : (
