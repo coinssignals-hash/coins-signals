@@ -32,13 +32,11 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
       {/* Date pill - centered */}
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-2 px-4 py-1.5 text-[11px] rounded-full bg-gradient-to-r from-cyan-950/40 to-slate-800/60 border border-cyan-800/30 shadow-[0_0_8px_-2px_rgba(6,182,212,0.15)] hover:border-cyan-700/40 transition-all duration-200 active:scale-[0.97]">
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-cyan-500/15">
-          <Calendar className="w-3 h-3 text-cyan-400" />
-        </div>
-        <span className="capitalize text-white/90 font-semibold tracking-wide">{selectedLabel}</span>
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] rounded-full bg-gradient-to-r from-cyan-950/40 to-slate-800/60 border border-cyan-800/30 hover:border-cyan-700/40 transition-all duration-200 active:scale-[0.97] min-w-0">
+        <Calendar className="w-3 h-3 text-cyan-400 shrink-0" />
+        <span className="capitalize text-white/90 font-semibold tracking-wide truncate">{selectedLabel}</span>
         <ChevronDown className={cn(
-          'w-3 h-3 text-cyan-400/60 transition-transform duration-300',
+          'w-2.5 h-2.5 text-cyan-400/60 transition-transform duration-300 shrink-0',
           open && 'rotate-180 text-cyan-400'
         )} />
       </button>
