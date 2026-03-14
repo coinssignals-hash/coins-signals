@@ -956,7 +956,6 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
   const status = getSessionStatus(session);
   const { quotes, isConnected, sessionVolume, refetch } = useSessionLiveData(session, isActive);
 
-  // Compute live avg spread for the gauge
   const liveAvgSpread = useMemo(() => {
     const valid = quotes.filter(q => q.spread > 0);
     if (valid.length === 0) return undefined;
@@ -964,117 +963,164 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
   }, [quotes]);
 
   return (
-    <div
-      className="relative rounded-xl border overflow-hidden"
-      style={{
-        borderColor: `hsl(${session.color} / 0.3)`,
-        background: 'radial-gradient(ellipse at center 30%, hsl(200 100% 10%) 0%, hsl(210 100% 5%) 100%)',
-      }}
-    >
-      <div className="absolute top-0 left-[10%] right-[10%] h-[1px]" style={{ background: `radial-gradient(ellipse at center, hsl(${session.color} / 0.6) 0%, transparent 70%)` }} />
+    <div className="relative rounded-2xl overflow-hidden" style={{
+      background: `linear-gradient(165deg, hsl(${session.color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+      border: `1px solid hsl(${session.color} / 0.2)`,
+    }}>
+      {/* Top glow line */}
+      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+        background: `linear-gradient(90deg, transparent, hsl(${session.color} / 0.7), transparent)`,
+      }} />
 
-      <div className="p-4 space-y-3">
-        {/* Header */}
-        <div className="text-center">
-          <h2 className="text-lg font-bold text-foreground">Sesión {session.name}</h2>
+      {/* Subtle radial glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
+        background: `radial-gradient(circle, hsl(${session.color} / 0.4), transparent 70%)`,
+      }} />
+
+      <div className="relative p-4 space-y-4">
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{
+              background: `linear-gradient(135deg, hsl(${session.color} / 0.2), hsl(${session.color} / 0.08))`,
+              border: `1px solid hsl(${session.color} / 0.25)`,
+              boxShadow: `0 4px 12px hsl(${session.color} / 0.1)`,
+            }}>
+              {session.emoji}
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-foreground leading-tight">{session.name}</h2>
+              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+                {formatHour(session.openUTC)} – {formatHour(session.closeUTC)} UTC
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-1">
+            <span className={cn(
+              "text-[9px] font-bold uppercase px-2 py-0.5 rounded-full tracking-wider"
+            )} style={{
+              background: status.isOpen ? 'hsl(var(--bullish) / 0.12)' : 'hsl(var(--muted) / 0.3)',
+              color: status.isOpen ? 'hsl(var(--bullish))' : 'hsl(var(--muted-foreground))',
+              border: `1px solid ${status.isOpen ? 'hsl(var(--bullish) / 0.25)' : 'hsl(var(--border))'}`,
+            }}>
+              {status.isOpen ? '● OPEN' : 'CLOSED'}
+            </span>
+            <span className="text-[10px] font-mono font-bold tabular-nums" style={{
+              color: status.isOpen ? `hsl(${session.color})` : 'hsl(var(--muted-foreground))',
+            }}>
+              {status.isOpen ? `${status.timeRemaining} left` : `opens ${status.timeRemaining}`}
+            </span>
+          </div>
         </div>
 
-        {/* Progress */}
-        <div className="flex flex-col items-center gap-1.5">
-          {status.isOpen && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: `hsl(${session.color} / 0.2)`, color: `hsl(${session.color})` }}>
-              {status.progressPercent}%
-            </span>
-          )}
-          <div className="w-full rounded-full h-3 relative overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.2)' }}>
+        {/* ── Progress Bar ── */}
+        <div className="space-y-1">
+          <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
             {status.isOpen ? (
               <motion.div
-                className="h-full rounded-full"
+                className="h-full rounded-full relative"
                 style={{
-                  background: `linear-gradient(90deg, hsl(${session.color} / 0.4), hsl(${session.color}))`,
-                  boxShadow: `0 0 12px hsl(${session.color} / 0.5)`,
+                  background: `linear-gradient(90deg, hsl(${session.color} / 0.5), hsl(${session.color}))`,
+                  boxShadow: `0 0 8px hsl(${session.color} / 0.4)`,
                 }}
                 initial={{ width: 0 }}
                 animate={{ width: `${status.progressPercent}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
-              />
+              >
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-foreground shadow-lg" />
+              </motion.div>
             ) : (
-              <div className="h-full w-full flex items-center justify-center">
-                <span className="text-[8px] text-muted-foreground font-medium">CERRADA</span>
-              </div>
+              <div className="h-full w-full rounded-full" style={{ background: 'hsl(var(--muted) / 0.1)' }} />
             )}
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-[10px]">{status.isOpen ? '⏱' : '🔒'}</span>
-            <span className="text-xs font-bold" style={{ color: status.isOpen ? `hsl(${session.color})` : undefined }}>
-              {status.isOpen ? `Cierre en - ${status.timeRemaining}` : `Abre en - ${status.timeRemaining}`}
-            </span>
-          </div>
+          {status.isOpen && (
+            <div className="flex justify-end">
+              <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
+                {status.progressPercent}%
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Info Grid */}
+        {/* ── Stats Row ── */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="col-span-1 space-y-2 border rounded-lg p-2" style={{ borderColor: `hsl(${session.color} / 0.15)` }}>
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold text-foreground">Open</span>
-                <span className="text-[10px] font-mono text-muted-foreground">{formatHour(session.openUTC)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold text-foreground">Closed</span>
-                <span className="text-[10px] font-mono" style={{ color: `hsl(${session.color})` }}>{formatHour(session.closeUTC)}</span>
-              </div>
+          {[
+            { label: 'Volatilidad', value: session.volatility },
+            { label: 'Liquidez', value: session.liquidity },
+            { label: 'Rango Pips', value: null, custom: `${session.avgPipsRange[0]}–${session.avgPipsRange[1]}` },
+          ].map((stat, idx) => (
+            <div key={idx} className="rounded-xl p-2.5 text-center" style={{
+              background: 'hsl(var(--card) / 0.6)',
+              border: '1px solid hsl(var(--border) / 0.5)',
+            }}>
+              <span className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
+              {stat.value ? (
+                <LevelBadge level={stat.value} />
+              ) : (
+                <span className="text-xs font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
+              )}
             </div>
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center">
-                <span className="text-[9px] font-semibold text-foreground">Volatility</span>
-                <LevelBadge level={session.volatility} />
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[9px] font-semibold text-foreground">Liquidity</span>
-                <LevelBadge level={session.liquidity} />
-              </div>
-            </div>
-          </div>
+          ))}
+        </div>
 
-          <div className="col-span-1 flex items-center justify-center">
+        {/* ── Currency Pairs Grid ── */}
+        <div className="rounded-xl overflow-hidden" style={{
+          background: 'hsl(var(--card) / 0.4)',
+          border: '1px solid hsl(var(--border) / 0.4)',
+        }}>
+          <div className="px-3 py-1.5 flex items-center justify-between" style={{
+            background: `hsl(${session.color} / 0.06)`,
+            borderBottom: '1px solid hsl(var(--border) / 0.3)',
+          }}>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Pares de Divisas</span>
             <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} />
           </div>
-
-          <div className="col-span-1 space-y-1">
-            <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider block text-center">Divisa</span>
-            <div className="grid grid-cols-2 gap-1">
-              {session.currencies.map(c => {
-                const liveQuote = quotes.find(q => q.pair === c.pair);
-                return (
-                  <div key={c.pair} className="flex flex-col items-center gap-0.5 p-1 rounded-lg" style={{ background: `hsl(${session.color} / 0.06)` }}>
-                    <div className="flex items-center -space-x-1">
-                      <span className="text-sm">{c.flag1}</span>
-                      <span className="text-sm">{c.flag2}</span>
-                    </div>
-                    <span className="text-[7px] font-bold text-muted-foreground leading-none">{c.pair}</span>
-                    {liveQuote && liveQuote.price > 0 && (
-                      <span className="text-[7px] font-mono tabular-nums" style={{ color: `hsl(${session.color})` }}>
+          <div className="grid grid-cols-2 gap-px" style={{ background: 'hsl(var(--border) / 0.2)' }}>
+            {session.currencies.map(c => {
+              const liveQuote = quotes.find(q => q.pair === c.pair);
+              return (
+                <div key={c.pair} className="flex items-center gap-2 p-2.5" style={{ background: 'hsl(var(--card) / 0.6)' }}>
+                  <div className="flex items-center -space-x-1.5">
+                    <span className="text-base">{c.flag1}</span>
+                    <span className="text-base">{c.flag2}</span>
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] font-bold text-foreground leading-tight">{c.pair}</span>
+                    {liveQuote && liveQuote.price > 0 ? (
+                      <span className="text-[10px] font-mono tabular-nums leading-tight" style={{ color: `hsl(${session.color})` }}>
                         {formatPrice(liveQuote.price, c.pair)}
                       </span>
+                    ) : liveQuote?.loading ? (
+                      <Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground mt-0.5" />
+                    ) : (
+                      <span className="text-[9px] text-muted-foreground/50">—</span>
                     )}
                   </div>
-                );
-              })}
-            </div>
+                  {liveQuote && liveQuote.spread > 0 && (
+                    <span className="ml-auto text-[8px] font-mono tabular-nums px-1.5 py-0.5 rounded-md" style={{
+                      background: liveQuote.spread < 2 ? 'hsl(var(--bullish) / 0.1)' : liveQuote.spread < 4 ? 'hsl(var(--accent) / 0.1)' : 'hsl(var(--destructive) / 0.1)',
+                      color: liveQuote.spread < 2 ? 'hsl(var(--bullish))' : liveQuote.spread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
+                    }}>
+                      {liveQuote.spread.toFixed(1)}p
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Live Data Panel */}
+        {/* ── Live Data Panel ── */}
         <LiveDataPanel quotes={quotes} isConnected={isConnected} color={session.color} onRefresh={refetch} />
 
-        {/* Volume Indicator */}
+        {/* ── Volume Indicator ── */}
         <VolumeIndicator sessionVolume={sessionVolume} color={session.color} />
 
-        {/* Volatility Alerts */}
+        {/* ── Volatility Alerts ── */}
         <VolatilityAlerts session={session} sessionVolume={sessionVolume} color={session.color} />
 
-        {/* Weekly Chart */}
+        {/* ── Weekly Chart ── */}
         <WeeklyChart session={session} color={session.color} />
       </div>
     </div>
