@@ -1391,11 +1391,11 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
             {/* Range */}
             <div className="text-right">
               {stats.avgRange > 0 ? (
-                <span className="text-[10px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
+                <span className="text-xs font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
                   {stats.avgRange.toFixed(0)}p
                 </span>
               ) : (
-                <span className="text-[9px] text-muted-foreground">—</span>
+                <span className="text-[11px] text-muted-foreground">—</span>
               )}
             </div>
           </button>
