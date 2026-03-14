@@ -35,13 +35,13 @@ export function formatPrice(price: number, symbol?: string): string {
   const stocks = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META', 'SPX', 'NDX', 'DJI'];
   const isStock = stocks.some(s => upper.includes(s));
 
-  if (isJpy) return price.toFixed(3);
-  if (isCrypto) return price > 100 ? price.toFixed(2) : price.toFixed(6);
-  if (isCommodity) return price.toFixed(2);
-  if (isStock) return price.toFixed(2);
+  if (isJpy) return price.toFixed(2);
+  if (isCrypto) return price > 100 ? price.toFixed(1) : price.toFixed(5);
+  if (isCommodity) return price.toFixed(1);
+  if (isStock) return price.toFixed(1);
 
-  // Default forex: 5 decimals
-  return price.toFixed(5);
+  // Default forex: 4 decimals
+  return price.toFixed(4);
 }
 
 /** Check if a symbol is a JPY pair */
