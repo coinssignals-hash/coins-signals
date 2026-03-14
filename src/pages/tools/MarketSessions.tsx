@@ -8,13 +8,23 @@ import { ChevronLeft, ChevronRight, Wifi, WifiOff, RefreshCw, Loader2, BarChart3
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
+
+/* ─────────── Helpers ─────────── */
+
+/** Derive flag emoji from a currency code via the centralized symbolVisuals map */
+const getFlag = (code: string): string => getSymbolVisual(code).flag || code;
+
+/** Build flags string from a pair like "EUR/USD" */
+const pairFlags = (pair: string) => {
+  const [base, quote] = pair.split('/');
+  return { flag1: getFlag(base), flag2: getFlag(quote) };
+};
 
 /* ─────────── Session Data ─────────── */
 
 interface CurrencyPair {
   pair: string;
-  flag1: string;
-  flag2: string;
 }
 
 interface SessionData {
@@ -39,10 +49,10 @@ const SESSIONS: SessionData[] = [
     id: 'sydney', name: 'Sydney', emoji: '🇦🇺', openUTC: 22, closeUTC: 7,
     volatility: 'low', liquidity: 'moderate', avgPipsRange: [30, 50],
     currencies: [
-      { pair: 'AUD/USD', flag1: '🇦🇺', flag2: '🇺🇸' },
-      { pair: 'NZD/USD', flag1: '🇳🇿', flag2: '🇺🇸' },
-      { pair: 'AUD/JPY', flag1: '🇦🇺', flag2: '🇯🇵' },
-      { pair: 'USD/JPY', flag1: '🇺🇸', flag2: '🇯🇵' },
+      { pair: 'AUD/USD' },
+      { pair: 'NZD/USD' },
+      { pair: 'AUD/JPY' },
+      { pair: 'USD/JPY' },
     ],
     color: '200 80% 55%',
     weeklyVolatility: [35, 40, 45, 50, 30],
@@ -53,10 +63,10 @@ const SESSIONS: SessionData[] = [
     id: 'tokyo', name: 'Tokyo', emoji: '🇯🇵', openUTC: 0, closeUTC: 9,
     volatility: 'moderate', liquidity: 'moderate', avgPipsRange: [40, 70],
     currencies: [
-      { pair: 'USD/JPY', flag1: '🇺🇸', flag2: '🇯🇵' },
-      { pair: 'EUR/JPY', flag1: '🇪🇺', flag2: '🇯🇵' },
-      { pair: 'GBP/JPY', flag1: '🇬🇧', flag2: '🇯🇵' },
-      { pair: 'AUD/JPY', flag1: '🇦🇺', flag2: '🇯🇵' },
+      { pair: 'USD/JPY' },
+      { pair: 'EUR/JPY' },
+      { pair: 'GBP/JPY' },
+      { pair: 'AUD/JPY' },
     ],
     color: '330 70% 60%',
     weeklyVolatility: [50, 55, 60, 65, 45],
@@ -67,10 +77,10 @@ const SESSIONS: SessionData[] = [
     id: 'london', name: 'London', emoji: '🇬🇧', openUTC: 7, closeUTC: 16,
     volatility: 'high', liquidity: 'high', avgPipsRange: [80, 150],
     currencies: [
-      { pair: 'EUR/USD', flag1: '🇪🇺', flag2: '🇺🇸' },
-      { pair: 'GBP/USD', flag1: '🇬🇧', flag2: '🇺🇸' },
-      { pair: 'EUR/GBP', flag1: '🇪🇺', flag2: '🇬🇧' },
-      { pair: 'USD/CHF', flag1: '🇺🇸', flag2: '🇨🇭' },
+      { pair: 'EUR/USD' },
+      { pair: 'GBP/USD' },
+      { pair: 'EUR/GBP' },
+      { pair: 'USD/CHF' },
     ],
     color: '45 80% 55%',
     weeklyVolatility: [75, 80, 85, 80, 65],
@@ -81,10 +91,10 @@ const SESSIONS: SessionData[] = [
     id: 'frankfurt', name: 'Frankfurt', emoji: '🇩🇪', openUTC: 7, closeUTC: 16,
     volatility: 'high', liquidity: 'high', avgPipsRange: [70, 130],
     currencies: [
-      { pair: 'EUR/USD', flag1: '🇪🇺', flag2: '🇺🇸' },
-      { pair: 'EUR/GBP', flag1: '🇪🇺', flag2: '🇬🇧' },
-      { pair: 'EUR/JPY', flag1: '🇪🇺', flag2: '🇯🇵' },
-      { pair: 'EUR/CHF', flag1: '🇪🇺', flag2: '🇨🇭' },
+      { pair: 'EUR/USD' },
+      { pair: 'EUR/GBP' },
+      { pair: 'EUR/JPY' },
+      { pair: 'EUR/CHF' },
     ],
     color: '30 80% 50%',
     weeklyVolatility: [70, 78, 82, 78, 60],
@@ -95,10 +105,10 @@ const SESSIONS: SessionData[] = [
     id: 'newyork', name: 'New York', emoji: '🇺🇸', openUTC: 13, closeUTC: 22,
     volatility: 'high', liquidity: 'high', avgPipsRange: [80, 140],
     currencies: [
-      { pair: 'EUR/USD', flag1: '🇪🇺', flag2: '🇺🇸' },
-      { pair: 'GBP/USD', flag1: '🇬🇧', flag2: '🇺🇸' },
-      { pair: 'USD/CAD', flag1: '🇺🇸', flag2: '🇨🇦' },
-      { pair: 'USD/JPY', flag1: '🇺🇸', flag2: '🇯🇵' },
+      { pair: 'EUR/USD' },
+      { pair: 'GBP/USD' },
+      { pair: 'USD/CAD' },
+      { pair: 'USD/JPY' },
     ],
     color: '140 60% 50%',
     weeklyVolatility: [80, 85, 90, 85, 70],
@@ -1155,8 +1165,8 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
                   background: isHighlighted ? 'hsl(var(--primary) / 0.12)' : 'hsl(var(--card) / 0.6)',
                 }}>
                   <div className="flex items-center -space-x-1">
-                    <span className="text-sm leading-none">{c.flag1}</span>
-                    <span className="text-sm leading-none">{c.flag2}</span>
+                    <span className="text-sm leading-none">{pairFlags(c.pair).flag1}</span>
+                    <span className="text-sm leading-none">{pairFlags(c.pair).flag2}</span>
                   </div>
                   <span className="text-[10px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
                   {liveQuote && liveQuote.price > 0 ? (
