@@ -371,7 +371,7 @@ export default function Signals() {
         {/* Calendar date indicator */}
         {dayTab === 'calendar' && calendarDate && (
           <div className="flex items-center gap-2 px-4 pb-2">
-            <span className="text-xs text-emerald-400">
+            <span className="text-xs text-primary">
               {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: dateLocale })}
             </span>
             <button
