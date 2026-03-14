@@ -491,6 +491,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     AI
                   </div>
                 )}
+                {/* Journal button */}
+                {signal && <SaveSignalToJournal signal={signal} className="py-px px-1.5 text-[8px]" />}
               </div>
             </div>
           </div>
