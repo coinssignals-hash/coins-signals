@@ -272,7 +272,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     </span>
                   </div>
                   <div className={cn("font-bold", stats.netPips >= 0 ? "text-emerald-300" : "text-rose-300")}>
-                    {t('signal_net')}: {stats.netPips >= 0 ? "+" : ""}{stats.netPips.toFixed(1)} pips
+                    {t('signal_net')}: {stats.netPips >= 0 ? "+" : ""}{stats.netPips.toFixed(0)} pips
                   </div>
                   <div className="flex items-center gap-1">
                     <TrendingDown className="w-3 h-3 text-rose-400" />
