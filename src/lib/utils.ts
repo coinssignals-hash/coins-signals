@@ -16,9 +16,9 @@ export function cn(...inputs: ClassValue[]) {
 export function formatPrice(price: number, symbol?: string): string {
   if (!symbol) {
     // Fallback: guess by price magnitude
-    if (price > 1000) return price.toFixed(2);
-    if (price > 10) return price.toFixed(3);
-    return price.toFixed(5);
+    if (price > 1000) return price.toFixed(1);
+    if (price > 10) return price.toFixed(2);
+    return price.toFixed(4);
   }
 
   const upper = symbol.toUpperCase().replace(/[^A-Z]/g, '');
