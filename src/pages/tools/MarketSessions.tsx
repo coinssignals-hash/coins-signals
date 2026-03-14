@@ -1511,7 +1511,7 @@ export default function MarketSessions() {
               }}
               style={{ cursor: 'grab' }}
             >
-              <SessionCard session={SESSIONS[activeIndex]} isActive={true} />
+              <SessionCard session={SESSIONS[activeIndex]} isActive={true} highlightPair={pairParam} />
             </motion.div>
           </AnimatePresence>
 
