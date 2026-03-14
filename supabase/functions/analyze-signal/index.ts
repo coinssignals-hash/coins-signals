@@ -72,11 +72,19 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Cache check
+    // Cache check: memory → DB
     const cacheKey = `${signal.currencyPair}_${signal.entryPrice}_${signal.takeProfit}_${signal.stopLoss}_${mode || 'full'}_${language || 'es'}`;
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
       return new Response(JSON.stringify({ ...cached.data as object, cached: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // Check DB cache
+    const dbCached = await getDbCache(cacheKey);
+    if (dbCached) {
+      cache.set(cacheKey, { data: dbCached, ts: Date.now() });
+      return new Response(JSON.stringify({ ...dbCached as object, cached: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
