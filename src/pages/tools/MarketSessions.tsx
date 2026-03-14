@@ -1127,6 +1127,154 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
   );
 }
 
+/* ─────────── Session Comparison Table ─────────── */
+
+function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number; onSelect: (i: number) => void }) {
+  const [tick, setTick] = useState(0);
+
+  // Re-render periodically to pick up fresh cache data
+  useEffect(() => {
+    const iv = setInterval(() => setTick(t => t + 1), 10_000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const sessionStats = useMemo(() => {
+    return SESSIONS.map(session => {
+      let totalSpread = 0;
+      let spreadCount = 0;
+      let totalVolume = 0;
+      let totalRange = 0;
+      let rangeCount = 0;
+
+      session.currencies.forEach(c => {
+        const symbol = `C:${c.pair.replace('/', '')}`;
+        const isJPY = c.pair.includes('JPY');
+        const pipMul = isJPY ? 100 : 10000;
+        const cached = liveCache.get(symbol);
+        const agg = aggCache.get(symbol);
+
+        if (cached && cached.bid > 0 && cached.ask > 0) {
+          const spread = Math.abs(cached.ask - cached.bid) * pipMul;
+          totalSpread += spread;
+          spreadCount++;
+        }
+        if (agg) {
+          totalVolume += agg.volume;
+          if (agg.high > 0 && agg.low > 0) {
+            totalRange += Math.abs(agg.high - agg.low) * pipMul;
+            rangeCount++;
+          }
+        }
+      });
+
+      return {
+        avgSpread: spreadCount > 0 ? totalSpread / spreadCount : 0,
+        totalVolume,
+        avgRange: rangeCount > 0 ? totalRange / rangeCount : 0,
+        hasData: spreadCount > 0 || totalVolume > 0,
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tick]);
+
+  const maxVol = Math.max(...sessionStats.map(s => s.totalVolume), 1);
+  const maxRange = Math.max(...sessionStats.map(s => s.avgRange), 1);
+
+  return (
+    <div className="mt-4 rounded-xl border overflow-hidden" style={{
+      borderColor: 'hsl(var(--border) / 0.5)',
+      background: 'hsl(var(--card) / 0.6)',
+    }}>
+      {/* Title */}
+      <div className="px-3 py-2 flex items-center gap-1.5" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
+        <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Comparativa de sesiones</span>
+      </div>
+
+      {/* Header row */}
+      <div className="grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+        <span className="text-[8px] font-bold text-muted-foreground uppercase">Sesión</span>
+        <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Spread</span>
+        <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
+        <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Rango</span>
+      </div>
+
+      {/* Rows */}
+      {SESSIONS.map((session, i) => {
+        const stats = sessionStats[i];
+        const status = getSessionStatus(session);
+        const isSelected = i === activeIndex;
+        const volPct = maxVol > 0 ? (stats.totalVolume / maxVol) * 100 : 0;
+
+        return (
+          <button
+            key={session.id}
+            onClick={() => onSelect(i)}
+            className={cn(
+              'w-full grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-2 items-center transition-all border-b last:border-b-0 text-left',
+              isSelected ? 'bg-muted/30' : 'hover:bg-muted/10',
+            )}
+            style={{
+              borderColor: 'hsl(var(--border) / 0.15)',
+              ...(isSelected ? { boxShadow: `inset 3px 0 0 hsl(${session.color})` } : {}),
+            }}
+          >
+            {/* Session name */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-xs">{session.emoji}</span>
+              <span className={cn('text-[10px] font-semibold truncate', isSelected ? 'text-foreground' : 'text-muted-foreground')}>
+                {session.name}
+              </span>
+              {status.isOpen && (
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
+              )}
+            </div>
+
+            {/* Spread */}
+            <div className="text-right">
+              {stats.hasData && stats.avgSpread > 0 ? (
+                <span className="text-[10px] font-mono font-bold tabular-nums" style={{
+                  color: stats.avgSpread < 2 ? 'hsl(var(--bullish, 140 60% 50%))' : stats.avgSpread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
+                }}>
+                  {stats.avgSpread.toFixed(1)}p
+                </span>
+              ) : (
+                <span className="text-[9px] text-muted-foreground">—</span>
+              )}
+            </div>
+
+            {/* Volume with mini bar */}
+            <div className="text-right space-y-0.5">
+              <span className="text-[10px] font-mono font-bold tabular-nums text-foreground block">
+                {stats.totalVolume > 0 ? formatVolume(stats.totalVolume) : '—'}
+              </span>
+              {stats.totalVolume > 0 && (
+                <div className="w-full h-[3px] rounded-full overflow-hidden ml-auto" style={{ background: `hsl(${session.color} / 0.1)` }}>
+                  <div className="h-full rounded-full transition-all duration-500" style={{
+                    width: `${volPct}%`,
+                    background: `hsl(${session.color})`,
+                  }} />
+                </div>
+              )}
+            </div>
+
+            {/* Range */}
+            <div className="text-right">
+              {stats.avgRange > 0 ? (
+                <span className="text-[10px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
+                  {stats.avgRange.toFixed(0)}p
+                </span>
+              ) : (
+                <span className="text-[9px] text-muted-foreground">—</span>
+              )}
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ─────────── Main Page ─────────── */
 
 export default function MarketSessions() {
@@ -1243,6 +1391,9 @@ export default function MarketSessions() {
             />
           ))}
         </div>
+
+        {/* Session Comparison Table */}
+        <SessionComparisonTable activeIndex={activeIndex} onSelect={(i) => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }} />
       </main>
     </PageShell>
   );
