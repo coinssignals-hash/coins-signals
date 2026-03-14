@@ -1130,41 +1130,39 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
           ))}
         </div>
 
-        {/* ── Currency Pairs Grid ── */}
+        {/* ── Currency Pairs Compact Grid ── */}
         <div className="rounded-xl overflow-hidden" style={{
           background: 'hsl(var(--card) / 0.4)',
           border: '1px solid hsl(var(--border) / 0.4)',
         }}>
-          <div className="px-3 py-1.5 flex items-center justify-between" style={{
+          <div className="px-2.5 py-1 flex items-center justify-between" style={{
             background: `hsl(${session.color} / 0.06)`,
             borderBottom: '1px solid hsl(var(--border) / 0.3)',
           }}>
-            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Pares de Divisas</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
             <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} />
           </div>
-          <div className="grid grid-cols-2 gap-px" style={{ background: 'hsl(var(--border) / 0.2)' }}>
+          <div className="grid grid-cols-4 gap-px" style={{ background: 'hsl(var(--border) / 0.15)' }}>
             {session.currencies.map(c => {
               const liveQuote = quotes.find(q => q.pair === c.pair);
               return (
-                <div key={c.pair} className="flex items-center gap-2 p-2.5" style={{ background: 'hsl(var(--card) / 0.6)' }}>
-                  <div className="flex items-center -space-x-1.5">
-                    <span className="text-base">{c.flag1}</span>
-                    <span className="text-base">{c.flag2}</span>
+                <div key={c.pair} className="flex flex-col items-center py-1.5 px-1 gap-0.5" style={{ background: 'hsl(var(--card) / 0.6)' }}>
+                  <div className="flex items-center -space-x-1">
+                    <span className="text-sm leading-none">{c.flag1}</span>
+                    <span className="text-sm leading-none">{c.flag2}</span>
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-bold text-foreground leading-tight">{c.pair}</span>
-                    {liveQuote && liveQuote.price > 0 ? (
-                      <span className="text-[10px] font-mono tabular-nums leading-tight" style={{ color: `hsl(${session.color})` }}>
-                        {formatPrice(liveQuote.price, c.pair)}
-                      </span>
-                    ) : liveQuote?.loading ? (
-                      <Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground mt-0.5" />
-                    ) : (
-                      <span className="text-[9px] text-muted-foreground/50">—</span>
-                    )}
-                  </div>
+                  <span className="text-[8px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
+                  {liveQuote && liveQuote.price > 0 ? (
+                    <span className="text-[8px] font-mono tabular-nums leading-none" style={{ color: `hsl(${session.color})` }}>
+                      {formatPrice(liveQuote.price, c.pair)}
+                    </span>
+                  ) : liveQuote?.loading ? (
+                    <Loader2 className="w-2 h-2 animate-spin text-muted-foreground" />
+                  ) : (
+                    <span className="text-[8px] text-muted-foreground/50">—</span>
+                  )}
                   {liveQuote && liveQuote.spread > 0 && (
-                    <span className="ml-auto text-[8px] font-mono tabular-nums px-1.5 py-0.5 rounded-md" style={{
+                    <span className="text-[7px] font-mono tabular-nums px-1 py-px rounded" style={{
                       background: liveQuote.spread < 2 ? 'hsl(var(--bullish) / 0.1)' : liveQuote.spread < 4 ? 'hsl(var(--accent) / 0.1)' : 'hsl(var(--destructive) / 0.1)',
                       color: liveQuote.spread < 2 ? 'hsl(var(--bullish))' : liveQuote.spread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
                     }}>
