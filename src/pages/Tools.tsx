@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
