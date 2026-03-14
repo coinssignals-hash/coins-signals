@@ -572,14 +572,14 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
-          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[8px] text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground">
             Total: <span className="font-bold" style={{ color: `hsl(${color})` }}>{formatVolume(sessionVolume.totalVolume)}</span>
           </span>
           {sessionVolume.avgDailyRange > 0 && (
-            <span className="text-[8px] text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground">
               Avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{sessionVolume.avgDailyRange.toFixed(0)}p</span>
             </span>
           )}
