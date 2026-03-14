@@ -1000,8 +1000,8 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
               {session.emoji}
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground leading-tight">{session.name}</h2>
-              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+              <h2 className="text-lg font-bold text-foreground leading-tight">{session.name}</h2>
+              <span className="text-xs font-mono text-muted-foreground tabular-nums">
                 {formatHour(session.openUTC)} – {formatHour(session.closeUTC)} UTC
               </span>
             </div>
