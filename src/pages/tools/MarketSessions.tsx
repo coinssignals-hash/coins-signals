@@ -1124,7 +1124,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
               {stat.value ? (
                 <LevelBadge level={stat.value} />
               ) : (
-                <span className="text-xs font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
+                <span className="text-sm font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
               )}
             </div>
           ))}
