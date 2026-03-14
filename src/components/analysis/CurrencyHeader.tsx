@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-
-
+interface CurrencyHeaderProps {
   symbol: string;
   currentPrice: number;
   change: number;
