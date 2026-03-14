@@ -836,10 +836,10 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px]">🔔</span>
-          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Alerta Volatilidad</span>
+          <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Alerta Volatilidad</span>
           {isTriggered && (
             <motion.span
-              className="text-[7px] px-1.5 py-0.5 rounded-full font-bold"
+              className="text-[9px] px-1.5 py-0.5 rounded-full font-bold"
               style={{ background: 'hsl(0 70% 50% / 0.2)', color: 'hsl(0 70% 55%)' }}
               animate={{ opacity: [1, 0.5, 1] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
