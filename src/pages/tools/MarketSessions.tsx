@@ -733,6 +733,9 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
         {/* Live Data Panel */}
         <LiveDataPanel quotes={quotes} isConnected={isConnected} color={session.color} onRefresh={refetch} />
 
+        {/* Volume Indicator */}
+        <VolumeIndicator sessionVolume={sessionVolume} color={session.color} />
+
         {/* Weekly Chart */}
         <WeeklyChart volatilityData={session.weeklyVolatility} liquidityData={session.weeklyLiquidity} color={session.color} />
       </div>
