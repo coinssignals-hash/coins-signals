@@ -1227,14 +1227,15 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
             }}
           >
           <button
-            onClick={() => onSelect(i)}
+            onClick={() => handleSelect(i)}
             className={cn(
-              'w-full grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-2 items-center transition-all border-b last:border-b-0 text-left',
+              'w-full grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-2 items-center transition-all duration-500 border-b last:border-b-0 text-left',
               isSelected ? 'bg-muted/30' : 'hover:bg-muted/10',
             )}
             style={{
               borderColor: 'hsl(var(--border) / 0.15)',
               ...(isSelected ? { boxShadow: `inset 3px 0 0 hsl(${session.color})` } : {}),
+              ...(flashIdx === i ? { background: `hsl(${session.color} / 0.15)` } : {}),
             }}
           >
             {/* Session name */}
