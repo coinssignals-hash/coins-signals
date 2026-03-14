@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { ChevronDown, Calendar, Brain, RefreshCw } from 'lucide-react';
+import { ChevronDown, Calendar, Brain, RefreshCw, Globe } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
 
