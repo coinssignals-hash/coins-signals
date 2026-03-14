@@ -123,7 +123,22 @@ interface SessionVolume {
 }
 
 const liveCache = new Map<string, { bid: number; ask: number; price: number; volume: number; high: number; low: number; ts: number }>();
-const CACHE_TTL = 25_000;
+const aggCache = new Map<string, { volume: number; high: number; low: number; close: number; ts: number }>();
+const QUOTE_CACHE_TTL = 55_000;
+const AGG_CACHE_TTL = 120_000; // aggregates change less often
+const POLL_INTERVAL = 60_000;
+
+// Global in-flight tracker to deduplicate concurrent requests for the same symbol
+const inFlight = new Map<string, Promise<any>>();
+
+function deduplicatedInvoke(key: string, body: Record<string, any>): Promise<any> {
+  const existing = inFlight.get(key);
+  if (existing) return existing;
+  const p = supabase.functions.invoke('realtime-market', { body })
+    .finally(() => inFlight.delete(key));
+  inFlight.set(key, p);
+  return p;
+}
 
 function useSessionLiveData(session: SessionData, isActive: boolean) {
   const [quotes, setQuotes] = useState<LiveQuote[]>(
@@ -142,71 +157,96 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
   const fetchQuotes = useCallback(async () => {
     const pairs = session.currencies.map(c => {
       const clean = c.pair.replace('/', '');
-      return { display: c.pair, symbol: `C:${clean}`, polygonPair: c.pair };
+      return { display: c.pair, symbol: `C:${clean}` };
     });
 
-    // Fetch both quotes and aggregates in parallel
-    const results = await Promise.allSettled(
-      pairs.map(async (p) => {
-        const cached = liveCache.get(p.symbol);
-        if (cached && Date.now() - cached.ts < CACHE_TTL) {
-          return { pair: p.display, ...cached, fromCache: true };
-        }
-
-        // Fetch quote and aggregates in parallel
-        const [quoteRes, aggRes] = await Promise.allSettled([
-          supabase.functions.invoke('realtime-market', {
-            body: { symbol: p.symbol, type: 'quote' },
-          }),
-          supabase.functions.invoke('realtime-market', {
-            body: { symbol: p.symbol, type: 'aggregates' },
-          }),
-        ]);
-
-        let bid = 0, ask = 0, price = 0, volume = 0, high = 0, low = 0;
-
-        // Process quote data
-        if (quoteRes.status === 'fulfilled' && !quoteRes.value.error) {
-          const data = quoteRes.value.data;
-          if (data?.last) {
-            bid = data.last.bid || 0;
-            ask = data.last.ask || 0;
-            price = (bid + ask) / 2;
-          } else if (data?.price) {
-            price = data.price;
-            const isJPY = p.display.includes('JPY');
-            const spreadPips = isJPY ? 0.02 : 0.00015;
-            bid = price - spreadPips / 2;
-            ask = price + spreadPips / 2;
-          } else if (data?.results?.[0]) {
-            price = data.results[0].c;
-            bid = data.results[0].l || price;
-            ask = data.results[0].h || price;
+    // Stagger requests: fetch pairs sequentially in small batches of 2
+    const results: PromiseSettledResult<any>[] = [];
+    for (let i = 0; i < pairs.length; i += 2) {
+      const batch = pairs.slice(i, i + 2);
+      const batchResults = await Promise.allSettled(
+        batch.map(async (p) => {
+          // Check full cache first
+          const cached = liveCache.get(p.symbol);
+          if (cached && Date.now() - cached.ts < QUOTE_CACHE_TTL) {
+            return { pair: p.display, ...cached, fromCache: true };
           }
-        }
 
-        // Process aggregate data (volume + daily range)
-        if (aggRes.status === 'fulfilled' && !aggRes.value.error) {
-          const aggData = aggRes.value.data;
-          if (aggData?.results?.[0]) {
-            const r = aggData.results[0];
-            volume = r.v || 0;
-            high = r.h || high;
-            low = r.l || low;
-            if (price === 0 && r.c) price = r.c;
-          } else if (aggData?.price) {
-            if (price === 0) price = aggData.price;
+          // Always fetch quote; only fetch aggregates if agg cache is stale
+          const needAgg = (() => {
+            const ac = aggCache.get(p.symbol);
+            return !ac || Date.now() - ac.ts > AGG_CACHE_TTL;
+          })();
+
+          const promises: Promise<any>[] = [
+            deduplicatedInvoke(`quote:${p.symbol}`, { symbol: p.symbol, type: 'quote' }),
+          ];
+          if (needAgg) {
+            promises.push(
+              deduplicatedInvoke(`agg:${p.symbol}`, { symbol: p.symbol, type: 'aggregates' })
+            );
           }
-        }
 
-        if (price > 0) {
-          liveCache.set(p.symbol, { bid, ask, price, volume, high, low, ts: Date.now() });
-          return { pair: p.display, bid, ask, price, volume, high, low, ts: Date.now(), fromCache: false };
-        }
+          const [quoteRes, aggRes] = await Promise.allSettled(promises);
 
-        throw new Error('No price data');
-      })
-    );
+          let bid = 0, ask = 0, price = 0, volume = 0, high = 0, low = 0;
+
+          // Process quote
+          if (quoteRes.status === 'fulfilled' && !quoteRes.value.error) {
+            const data = quoteRes.value.data;
+            if (data?.last) {
+              bid = data.last.bid || 0;
+              ask = data.last.ask || 0;
+              price = (bid + ask) / 2;
+            } else if (data?.price) {
+              price = data.price;
+              const isJPY = p.display.includes('JPY');
+              const spreadPips = isJPY ? 0.02 : 0.00015;
+              bid = price - spreadPips / 2;
+              ask = price + spreadPips / 2;
+            } else if (data?.results?.[0]) {
+              price = data.results[0].c;
+              bid = data.results[0].l || price;
+              ask = data.results[0].h || price;
+            }
+          }
+
+          // Process aggregates (fresh or cached)
+          if (aggRes && aggRes.status === 'fulfilled' && !aggRes.value.error) {
+            const aggData = aggRes.value.data;
+            if (aggData?.results?.[0]) {
+              const r = aggData.results[0];
+              volume = r.v || 0;
+              high = r.h || 0;
+              low = r.l || 0;
+              if (price === 0 && r.c) price = r.c;
+              aggCache.set(p.symbol, { volume, high, low, close: r.c || 0, ts: Date.now() });
+            } else if (aggData?.price) {
+              if (price === 0) price = aggData.price;
+            }
+          } else {
+            // Use cached aggregates
+            const ac = aggCache.get(p.symbol);
+            if (ac) {
+              volume = ac.volume;
+              high = ac.high;
+              low = ac.low;
+              if (price === 0 && ac.close) price = ac.close;
+            }
+          }
+
+          if (price > 0) {
+            liveCache.set(p.symbol, { bid, ask, price, volume, high, low, ts: Date.now() });
+            return { pair: p.display, bid, ask, price, volume, high, low, ts: Date.now(), fromCache: false };
+          }
+
+          throw new Error('No price data');
+        })
+      );
+      results.push(...batchResults);
+      // Small delay between batches to avoid rate limiting
+      if (i + 2 < pairs.length) await new Promise(r => setTimeout(r, 300));
+    }
 
     const pairVolumes: { pair: string; volume: number; range: number }[] = [];
 
@@ -254,7 +294,6 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
     setIsConnected(newQuotes.some(q => !q.error && q.price > 0));
     setLastFetch(Date.now());
 
-    // Compute session volume
     const totalVolume = pairVolumes.reduce((s, p) => s + p.volume, 0);
     const validRanges = pairVolumes.filter(p => p.range > 0);
     const avgDailyRange = validRanges.length > 0
@@ -268,7 +307,7 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
   useEffect(() => {
     if (!isActive) return;
     fetchQuotes();
-    intervalRef.current = setInterval(fetchQuotes, 30_000);
+    intervalRef.current = setInterval(fetchQuotes, POLL_INTERVAL);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
@@ -280,7 +319,7 @@ function useSessionLiveData(session: SessionData, isActive: boolean) {
         if (intervalRef.current) clearInterval(intervalRef.current);
       } else if (isActive) {
         fetchQuotes();
-        intervalRef.current = setInterval(fetchQuotes, 30_000);
+        intervalRef.current = setInterval(fetchQuotes, POLL_INTERVAL);
       }
     };
     document.addEventListener('visibilitychange', handler);
