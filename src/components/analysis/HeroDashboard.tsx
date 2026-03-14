@@ -168,7 +168,7 @@ export function HeroDashboard({
                   </span>
                   <span className={`flex items-center gap-0.5 text-xs font-bold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
                     {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                    {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+                    {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
                   </span>
                 </div>
                 <p className="text-[10px] text-cyan-300/50 mt-0.5 font-medium truncate">
