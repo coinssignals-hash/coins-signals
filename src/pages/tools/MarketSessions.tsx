@@ -417,24 +417,24 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
 
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Average Pips</span>
+      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Average Pips</span>
       <div className="relative w-20 h-12 overflow-hidden">
         <svg viewBox="0 0 100 55" className="w-full h-full">
           <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="hsl(var(--muted) / 0.3)" strokeWidth="6" strokeLinecap="round" />
           <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke={`hsl(${color})`} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${percent * 1.26} 126`} />
           <line x1="50" y1="50" x2={50 + 30 * Math.cos((angle * Math.PI) / 180)} y2={50 + 30 * Math.sin((angle * Math.PI) / 180)} stroke="white" strokeWidth="2" strokeLinecap="round" />
           <circle cx="50" cy="50" r="3" fill="white" />
-          <text x="8" y="54" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="start">20</text>
-          <text x="35" y="18" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">50</text>
-          <text x="65" y="18" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">100</text>
-          <text x="92" y="54" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="end">200</text>
+          <text x="8" y="54" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="start">20</text>
+          <text x="35" y="18" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">50</text>
+          <text x="65" y="18" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">100</text>
+          <text x="92" y="54" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="end">200</text>
         </svg>
       </div>
       <div className="flex items-center gap-1">
-        <span className="text-xs font-bold" style={{ color: `hsl(${color})` }}>{avg}</span>
-        <span className="text-[9px] text-muted-foreground">Pips</span>
+        <span className="text-sm font-bold" style={{ color: `hsl(${color})` }}>{avg}</span>
+        <span className="text-[11px] text-muted-foreground">Pips</span>
       </div>
-      <span className="text-[8px] text-muted-foreground">{range[0]} - {range[1]}</span>
+      <span className="text-[10px] text-muted-foreground">{range[0]} - {range[1]}</span>
     </div>
   );
 }
