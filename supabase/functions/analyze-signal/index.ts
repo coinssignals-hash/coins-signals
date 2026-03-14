@@ -1,13 +1,49 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
 // In-memory cache: key -> { data, ts }
 const cache = new Map<string, { data: unknown; ts: number }>();
-const CACHE_TTL = 60 * 60_000; // 60 minutes
+const CACHE_TTL = 2 * 60 * 60_000; // 2 hours
+
+/** Check DB cache in ai_analysis_cache */
+async function getDbCache(key: string): Promise<unknown | null> {
+  try {
+    const { data } = await supabaseAdmin
+      .from('ai_analysis_cache')
+      .select('analysis_data, expires_at')
+      .eq('symbol', key)
+      .eq('analysis_type', 'signal_strategy')
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle();
+    if (data) return data.analysis_data;
+  } catch { /* ignore */ }
+  return null;
+}
+
+/** Save to DB cache */
+async function setDbCache(key: string, result: unknown) {
+  try {
+    const expiresAt = new Date(Date.now() + CACHE_TTL).toISOString();
+    await supabaseAdmin
+      .from('ai_analysis_cache')
+      .upsert({
+        symbol: key,
+        analysis_type: 'signal_strategy',
+        analysis_data: result as any,
+        expires_at: expiresAt,
+      }, { onConflict: 'symbol,analysis_type' })
+      .throwOnError();
+  } catch { /* fire-and-forget */ }
+}
 
 interface SignalData {
   currencyPair: string;
@@ -36,11 +72,19 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Cache check
+    // Cache check: memory → DB
     const cacheKey = `${signal.currencyPair}_${signal.entryPrice}_${signal.takeProfit}_${signal.stopLoss}_${mode || 'full'}_${language || 'es'}`;
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
       return new Response(JSON.stringify({ ...cached.data as object, cached: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // Check DB cache
+    const dbCached = await getDbCache(cacheKey);
+    if (dbCached) {
+      cache.set(cacheKey, { data: dbCached, ts: Date.now() });
+      return new Response(JSON.stringify({ ...dbCached as object, cached: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -146,6 +190,7 @@ Evaluate the risk.`;
 
       const riskResult = { risk, generatedAt: new Date().toISOString() };
       cache.set(cacheKey, { data: riskResult, ts: Date.now() });
+      setDbCache(cacheKey, riskResult);
       if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
       return new Response(JSON.stringify(riskResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -213,6 +258,7 @@ Genera una nota breve de análisis para acompañar esta señal.`;
 
       const notesResult = { notes: generatedNotes.trim(), generatedAt: new Date().toISOString() };
       cache.set(cacheKey, { data: notesResult, ts: Date.now() });
+      setDbCache(cacheKey, notesResult);
       if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
       return new Response(JSON.stringify(notesResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -348,6 +394,7 @@ Analiza y devuelve la estrategia óptima.`;
 
       const strategyResult = { strategy, generatedAt: new Date().toISOString() };
       cache.set(cacheKey, { data: strategyResult, ts: Date.now() });
+      setDbCache(cacheKey, strategyResult);
       if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
       return new Response(JSON.stringify(strategyResult), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -425,6 +472,7 @@ Genera un análisis profesional y detallado.`;
 
     const fullResult = { analysis, generatedAt: new Date().toISOString() };
     cache.set(cacheKey, { data: fullResult, ts: Date.now() });
+    setDbCache(cacheKey, fullResult);
     if (cache.size > 200) { const oldest = cache.keys().next().value; if (oldest) cache.delete(oldest); }
     return new Response(JSON.stringify(fullResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
