@@ -586,6 +586,30 @@ export default function TradingJournal() {
                         {entry.takeProfit && <span className="ml-2">TP: {entry.takeProfit}</span>}
                       </div>
 
+                      {/* Timestamps */}
+                      {(entry.signalArrivedAt || entry.executedAt || entry.completedAt) && (
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                          {entry.signalArrivedAt && (
+                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-2.5 h-2.5 text-primary/70" />
+                              Señal: {format(new Date(entry.signalArrivedAt), 'dd/MM HH:mm', { locale: dateLocale })}
+                            </span>
+                          )}
+                          {entry.executedAt && (
+                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                              <Play className="w-2.5 h-2.5 text-emerald-400/70" />
+                              Ejec: {format(new Date(entry.executedAt), 'dd/MM HH:mm', { locale: dateLocale })}
+                            </span>
+                          )}
+                          {entry.completedAt && (
+                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-amber-400/70" />
+                              Cierre: {format(new Date(entry.completedAt), 'dd/MM HH:mm', { locale: dateLocale })}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                       {entry.notes && (
                         <p className="text-[10px] text-muted-foreground/70 mt-1 italic line-clamp-2">"{entry.notes}"</p>
                       )}
