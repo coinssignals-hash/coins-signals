@@ -417,24 +417,24 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
 
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Average Pips</span>
+      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Average Pips</span>
       <div className="relative w-20 h-12 overflow-hidden">
         <svg viewBox="0 0 100 55" className="w-full h-full">
           <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="hsl(var(--muted) / 0.3)" strokeWidth="6" strokeLinecap="round" />
           <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke={`hsl(${color})`} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${percent * 1.26} 126`} />
           <line x1="50" y1="50" x2={50 + 30 * Math.cos((angle * Math.PI) / 180)} y2={50 + 30 * Math.sin((angle * Math.PI) / 180)} stroke="white" strokeWidth="2" strokeLinecap="round" />
           <circle cx="50" cy="50" r="3" fill="white" />
-          <text x="8" y="54" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="start">20</text>
-          <text x="35" y="18" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">50</text>
-          <text x="65" y="18" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">100</text>
-          <text x="92" y="54" className="text-[7px]" fill="hsl(var(--muted-foreground))" textAnchor="end">200</text>
+          <text x="8" y="54" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="start">20</text>
+          <text x="35" y="18" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">50</text>
+          <text x="65" y="18" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="middle">100</text>
+          <text x="92" y="54" className="text-[8px]" fill="hsl(var(--muted-foreground))" textAnchor="end">200</text>
         </svg>
       </div>
       <div className="flex items-center gap-1">
-        <span className="text-xs font-bold" style={{ color: `hsl(${color})` }}>{avg}</span>
-        <span className="text-[9px] text-muted-foreground">Pips</span>
+        <span className="text-sm font-bold" style={{ color: `hsl(${color})` }}>{avg}</span>
+        <span className="text-[11px] text-muted-foreground">Pips</span>
       </div>
-      <span className="text-[8px] text-muted-foreground">{range[0]} - {range[1]}</span>
+      <span className="text-[10px] text-muted-foreground">{range[0]} - {range[1]}</span>
     </div>
   );
 }
@@ -442,7 +442,7 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
 function LevelBadge({ level }: { level: 'low' | 'moderate' | 'high' }) {
   const config = LEVEL_COLORS[level];
   return (
-    <span className={cn('px-2 py-0.5 rounded text-[9px] font-bold uppercase', config.bg, config.text)}>
+    <span className={cn('px-2 py-0.5 rounded text-[11px] font-bold uppercase', config.bg, config.text)}>
       {config.label}
     </span>
   );
@@ -475,10 +475,10 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
           ) : (
             <WifiOff className="w-3 h-3 text-yellow-500" />
           )}
-          <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: isConnected ? 'hsl(140 60% 50%)' : 'hsl(45 80% 55%)' }}>
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: isConnected ? 'hsl(140 60% 50%)' : 'hsl(45 80% 55%)' }}>
             {isConnected ? 'LIVE' : 'OFFLINE'}
           </span>
-          <span className="text-[8px] text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground">
             Spread avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{avgSpread.toFixed(1)}p</span>
           </span>
         </div>
@@ -495,10 +495,10 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
       <div className="rounded-lg border overflow-hidden" style={{ borderColor: `hsl(${color} / 0.15)` }}>
         {/* Table header */}
         <div className="grid grid-cols-4 gap-0 px-2 py-1" style={{ background: `hsl(${color} / 0.08)` }}>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase">Par</span>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Bid</span>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Ask</span>
-          <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Spread</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase">Par</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Bid</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Ask</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Spread</span>
         </div>
         {quotes.map((q, i) => (
           <div
@@ -509,7 +509,7 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
             )}
             style={{ borderColor: `hsl(${color} / 0.08)` }}
           >
-            <span className="text-[9px] font-bold text-foreground">{q.pair}</span>
+            <span className="text-[11px] font-bold text-foreground">{q.pair}</span>
             {q.loading ? (
               <>
                 <span className="text-right"><Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground inline" /></span>
@@ -518,16 +518,16 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
               </>
             ) : q.error && q.price === 0 ? (
               <>
-                <span className="text-[9px] text-muted-foreground text-right">—</span>
-                <span className="text-[9px] text-muted-foreground text-right">—</span>
-                <span className="text-[9px] text-muted-foreground text-right">—</span>
+                <span className="text-[11px] text-muted-foreground text-right">—</span>
+                <span className="text-[11px] text-muted-foreground text-right">—</span>
+                <span className="text-[11px] text-muted-foreground text-right">—</span>
               </>
             ) : (
               <>
-                <span className="text-[9px] font-mono text-red-400 text-right tabular-nums">{formatPrice(q.bid, q.pair)}</span>
-                <span className="text-[9px] font-mono text-green-400 text-right tabular-nums">{formatPrice(q.ask, q.pair)}</span>
+                <span className="text-[11px] font-mono text-red-400 text-right tabular-nums">{formatPrice(q.bid, q.pair)}</span>
+                <span className="text-[11px] font-mono text-green-400 text-right tabular-nums">{formatPrice(q.ask, q.pair)}</span>
                 <span
-                  className="text-[9px] font-bold text-right tabular-nums"
+                  className="text-[11px] font-bold text-right tabular-nums"
                   style={{ color: q.spread < 2 ? 'hsl(140 60% 50%)' : q.spread < 4 ? 'hsl(45 80% 55%)' : 'hsl(0 70% 55%)' }}
                 >
                   {q.spread.toFixed(1)}p
@@ -555,7 +555,7 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
       <div className="rounded-lg border p-3 space-y-2" style={{ borderColor: `hsl(${color} / 0.15)` }}>
         <div className="flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
-          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
         </div>
         <div className="flex items-center justify-center py-3">
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
@@ -572,14 +572,14 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
-          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[8px] text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground">
             Total: <span className="font-bold" style={{ color: `hsl(${color})` }}>{formatVolume(sessionVolume.totalVolume)}</span>
           </span>
           {sessionVolume.avgDailyRange > 0 && (
-            <span className="text-[8px] text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground">
               Avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{sessionVolume.avgDailyRange.toFixed(0)}p</span>
             </span>
           )}
@@ -593,11 +593,11 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
           return (
             <div key={pv.pair} className="space-y-0.5">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-foreground">{pv.pair}</span>
+                <span className="text-[11px] font-bold text-foreground">{pv.pair}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-mono tabular-nums text-muted-foreground">{formatVolume(pv.volume)}</span>
+                  <span className="text-[10px] font-mono tabular-nums text-muted-foreground">{formatVolume(pv.volume)}</span>
                   {pv.range > 0 && (
-                    <span className="text-[8px] font-mono tabular-nums" style={{ color: `hsl(${color})` }}>{pv.range.toFixed(0)}p</span>
+                    <span className="text-[10px] font-mono tabular-nums" style={{ color: `hsl(${color})` }}>{pv.range.toFixed(0)}p</span>
                   )}
                 </div>
               </div>
@@ -707,12 +707,12 @@ function WeeklyChart({ session, color }: {
   return (
     <div className="mt-3">
       <div className="flex items-center justify-between mb-1 px-1">
-        <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
           {hasRealData ? '📊 Vol. Semanal Real' : '📊 Vol. Semanal'}
         </span>
         {loading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
         {hasRealData && !loading && (
-          <span className="text-[7px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>LIVE</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>LIVE</span>
         )}
       </div>
       <div className="flex items-end gap-1 justify-between h-24 px-1">
@@ -739,9 +739,9 @@ function WeeklyChart({ session, color }: {
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, hsl(45 80% 55% / 0.3), hsl(45 80% 55% / 0.8))` }} />
                 </motion.div>
               </div>
-              <span className="text-[8px] text-muted-foreground">{item.day}</span>
+              <span className="text-[10px] text-muted-foreground">{item.day}</span>
               {hasRealData && (
-                <span className="text-[6px] font-mono text-muted-foreground/60 tabular-nums">
+                <span className="text-[8px] font-mono text-muted-foreground/60 tabular-nums">
                   {item.volume >= 1e6 ? `${(item.volume / 1e6).toFixed(1)}M` : item.volume >= 1e3 ? `${(item.volume / 1e3).toFixed(0)}K` : item.volume}
                 </span>
               )}
@@ -752,11 +752,11 @@ function WeeklyChart({ session, color }: {
       <div className="flex items-center gap-3 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: `hsl(${color})` }} />
-          <span className="text-[8px] text-muted-foreground">{hasRealData ? 'Volume' : 'Volatility'}</span>
+          <span className="text-[10px] text-muted-foreground">{hasRealData ? 'Volume' : 'Volatility'}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: 'hsl(45 80% 55%)' }} />
-          <span className="text-[8px] text-muted-foreground">{hasRealData ? 'Range (pips)' : 'Liquidity'}</span>
+          <span className="text-[10px] text-muted-foreground">{hasRealData ? 'Range (pips)' : 'Liquidity'}</span>
         </div>
       </div>
     </div>
@@ -836,10 +836,10 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px]">🔔</span>
-          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Alerta Volatilidad</span>
+          <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Alerta Volatilidad</span>
           {isTriggered && (
             <motion.span
-              className="text-[7px] px-1.5 py-0.5 rounded-full font-bold"
+              className="text-[9px] px-1.5 py-0.5 rounded-full font-bold"
               style={{ background: 'hsl(0 70% 50% / 0.2)', color: 'hsl(0 70% 55%)' }}
               animate={{ opacity: [1, 0.5, 1] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
@@ -869,10 +869,10 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
 
       {/* Current status */}
       <div className="flex items-center justify-between">
-        <span className="text-[9px] text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           Rango actual: <span className="font-bold text-foreground">{sessionVolume.loading ? '...' : `${sessionVolume.avgDailyRange.toFixed(1)} pips`}</span>
         </span>
-        <span className="text-[9px] text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           Umbral: <span className="font-bold" style={{ color: config.enabled ? `hsl(${color})` : undefined }}>{config.thresholdPips} pips</span>
         </span>
       </div>
@@ -894,8 +894,8 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
             />
           </div>
           <div className="flex justify-between mt-0.5">
-            <span className="text-[7px] text-muted-foreground/50">0</span>
-            <span className="text-[7px] text-muted-foreground/50">{config.thresholdPips}</span>
+            <span className="text-[9px] text-muted-foreground/50">0</span>
+            <span className="text-[9px] text-muted-foreground/50">{config.thresholdPips}</span>
           </div>
         </div>
       )}
@@ -911,7 +911,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
             className="overflow-hidden"
           >
             <div className="mt-2 pt-2 border-t" style={{ borderColor: `hsl(${color} / 0.1)` }}>
-              <label className="text-[9px] text-muted-foreground font-medium block mb-1.5">Umbral de pips</label>
+              <label className="text-[11px] text-muted-foreground font-medium block mb-1.5">Umbral de pips</label>
               <div className="flex items-center gap-2">
                 <input
                   type="range"
@@ -929,7 +929,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
                   max={500}
                   value={config.thresholdPips}
                   onChange={e => updateThreshold(Math.max(5, Number(e.target.value)))}
-                  className="w-14 text-center text-[10px] font-mono rounded-md border bg-background py-1"
+                  className="w-14 text-center text-xs font-mono rounded-md border bg-background py-1"
                   style={{ borderColor: `hsl(${color} / 0.3)` }}
                 />
               </div>
@@ -939,7 +939,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
                     key={v}
                     onClick={() => updateThreshold(v)}
                     className={cn(
-                      "text-[8px] px-1.5 py-0.5 rounded-md border transition-all",
+                      "text-[10px] px-1.5 py-0.5 rounded-md border transition-all",
                       config.thresholdPips === v
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border text-muted-foreground hover:text-foreground"
@@ -1000,8 +1000,8 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
               {session.emoji}
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground leading-tight">{session.name}</h2>
-              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+              <h2 className="text-lg font-bold text-foreground leading-tight">{session.name}</h2>
+              <span className="text-xs font-mono text-muted-foreground tabular-nums">
                 {formatHour(session.openUTC)} – {formatHour(session.closeUTC)} UTC
               </span>
             </div>
@@ -1009,7 +1009,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
 
           <div className="flex flex-col items-end gap-1">
             <span className={cn(
-              "text-[9px] font-bold uppercase px-2 py-0.5 rounded-full tracking-wider"
+              "text-[11px] font-bold uppercase px-2 py-0.5 rounded-full tracking-wider"
             )} style={{
               background: status.isOpen ? 'hsl(var(--bullish) / 0.12)' : 'hsl(var(--muted) / 0.3)',
               color: status.isOpen ? 'hsl(var(--bullish))' : 'hsl(var(--muted-foreground))',
@@ -1017,7 +1017,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
             }}>
               {status.isOpen ? '● OPEN' : 'CLOSED'}
             </span>
-            <span className="text-[10px] font-mono font-bold tabular-nums" style={{
+            <span className="text-xs font-mono font-bold tabular-nums" style={{
               color: status.isOpen ? `hsl(${session.color})` : 'hsl(var(--muted-foreground))',
             }}>
               {status.isOpen ? `${status.timeRemaining} left` : `opens ${status.timeRemaining}`}
@@ -1088,7 +1088,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                 return (
                   <span
                     key={hour}
-                    className="absolute text-[7px] font-mono font-bold -translate-x-1/2"
+                    className="absolute text-[9px] font-mono font-bold -translate-x-1/2"
                     style={{
                       left: `${pct + (100 / totalHours) / 2}%`,
                       color: `hsl(${session.color} / 0.7)`,
@@ -1102,7 +1102,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
           </div>
           {status.isOpen && (
             <div className="flex justify-end -mt-1">
-              <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
+              <span className="text-[11px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
                 {status.progressPercent}%
               </span>
             </div>
@@ -1120,11 +1120,11 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
               background: 'hsl(var(--card) / 0.6)',
               border: '1px solid hsl(var(--border) / 0.5)',
             }}>
-              <span className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
               {stat.value ? (
                 <LevelBadge level={stat.value} />
               ) : (
-                <span className="text-xs font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
+                <span className="text-sm font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
               )}
             </div>
           ))}
@@ -1139,7 +1139,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
             background: `hsl(${session.color} / 0.06)`,
             borderBottom: '1px solid hsl(var(--border) / 0.3)',
           }}>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
             <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} />
           </div>
           <div className="grid grid-cols-4 gap-px" style={{ background: 'hsl(var(--border) / 0.15)' }}>
@@ -1151,18 +1151,18 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                     <span className="text-sm leading-none">{c.flag1}</span>
                     <span className="text-sm leading-none">{c.flag2}</span>
                   </div>
-                  <span className="text-[8px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
+                  <span className="text-[10px] font-bold text-foreground leading-none">{c.pair.replace('/', '')}</span>
                   {liveQuote && liveQuote.price > 0 ? (
-                    <span className="text-[8px] font-mono tabular-nums leading-none" style={{ color: `hsl(${session.color})` }}>
+                    <span className="text-[10px] font-mono tabular-nums leading-none" style={{ color: `hsl(${session.color})` }}>
                       {formatPrice(liveQuote.price, c.pair)}
                     </span>
                   ) : liveQuote?.loading ? (
-                    <Loader2 className="w-2 h-2 animate-spin text-muted-foreground" />
+                    <Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground" />
                   ) : (
-                    <span className="text-[8px] text-muted-foreground/50">—</span>
+                    <span className="text-[10px] text-muted-foreground/50">—</span>
                   )}
                   {liveQuote && liveQuote.spread > 0 && (
-                    <span className="text-[7px] font-mono tabular-nums px-1 py-px rounded" style={{
+                    <span className="text-[9px] font-mono tabular-nums px-1 py-px rounded" style={{
                       background: liveQuote.spread < 2 ? 'hsl(var(--bullish) / 0.1)' : liveQuote.spread < 4 ? 'hsl(var(--accent) / 0.1)' : 'hsl(var(--destructive) / 0.1)',
                       color: liveQuote.spread < 2 ? 'hsl(var(--bullish))' : liveQuote.spread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
                     }}>
@@ -1300,16 +1300,16 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
       {/* Title */}
       <div className="px-3 py-2 flex items-center gap-1.5" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Comparativa de sesiones</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Comparativa de sesiones</span>
       </div>
 
       {/* Header row */}
       <div className="grid grid-cols-[1fr_40px_50px_60px_50px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
-        <span className="text-[8px] font-bold text-muted-foreground uppercase">Sesión</span>
-        <span className="text-[8px] font-bold text-muted-foreground uppercase text-center">Trend</span>
-        <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Spread</span>
-        <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
-        <span className="text-[8px] font-bold text-muted-foreground uppercase text-right">Rango</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase">Sesión</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-center">Trend</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Spread</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Rango</span>
       </div>
 
       {/* Rows */}
@@ -1346,8 +1346,8 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
           >
             {/* Session name */}
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-xs">{session.emoji}</span>
-              <span className={cn('text-[10px] font-semibold truncate', isSelected ? 'text-foreground' : 'text-muted-foreground')}>
+              <span className="text-sm">{session.emoji}</span>
+              <span className={cn('text-xs font-semibold truncate', isSelected ? 'text-foreground' : 'text-muted-foreground')}>
                 {session.name}
               </span>
               {status.isOpen && (
@@ -1363,19 +1363,19 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
             {/* Spread */}
             <div className="text-right">
               {stats.hasData && stats.avgSpread > 0 ? (
-                <span className="text-[10px] font-mono font-bold tabular-nums" style={{
+                <span className="text-xs font-mono font-bold tabular-nums" style={{
                   color: stats.avgSpread < 2 ? 'hsl(var(--bullish, 140 60% 50%))' : stats.avgSpread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
                 }}>
                   {stats.avgSpread.toFixed(1)}p
                 </span>
               ) : (
-                <span className="text-[9px] text-muted-foreground">—</span>
+                <span className="text-[11px] text-muted-foreground">—</span>
               )}
             </div>
 
             {/* Volume with mini bar */}
             <div className="text-right space-y-0.5">
-              <span className="text-[10px] font-mono font-bold tabular-nums text-foreground block">
+              <span className="text-xs font-mono font-bold tabular-nums text-foreground block">
                 {stats.totalVolume > 0 ? formatVolume(stats.totalVolume) : '—'}
               </span>
               {stats.totalVolume > 0 && (
@@ -1391,11 +1391,11 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
             {/* Range */}
             <div className="text-right">
               {stats.avgRange > 0 ? (
-                <span className="text-[10px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
+                <span className="text-xs font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
                   {stats.avgRange.toFixed(0)}p
                 </span>
               ) : (
-                <span className="text-[9px] text-muted-foreground">—</span>
+                <span className="text-[11px] text-muted-foreground">—</span>
               )}
             </div>
           </button>
@@ -1443,7 +1443,7 @@ export default function MarketSessions() {
                 key={s.id}
                 onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
                 className={cn(
-                  'flex flex-col items-center gap-0.5 py-2 rounded-xl text-[9px] font-semibold transition-all active:scale-95',
+                  'flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
                   isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
                 )}
                 style={{
