@@ -277,7 +277,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                   <div className="flex items-center gap-1">
                     <TrendingDown className="w-3 h-3 text-rose-400" />
                     <span className="text-rose-400 font-bold">
-                      -{stats.totalPipsLost.toFixed(1)} pips
+                      -{stats.totalPipsLost.toFixed(0)} pips
                     </span>
                   </div>
                 </div>

@@ -66,7 +66,7 @@ export function QuickStatsGrid({
     {
       label: t('analysis_qs_support'),
       value: formatPrice(support, symbol),
-      subValue: `${((displayPrice - support) * 10000).toFixed(2)}p`,
+      subValue: `${((displayPrice - support) * 10000).toFixed(1)}p`,
       icon: Shield,
       color: 'text-green-400',
       bgColor: 'bg-green-500/10 border-green-500/20',

@@ -274,7 +274,7 @@ function MarketPairRow({ pair, isSelected, onClick
           'text-emerald-400 bg-emerald-500/10' :
           'text-red-400 bg-red-500/10'
         )}>
-          {pair.loading ? '...' : `${isPositive ? '+' : ''}${pair.changePercent.toFixed(2)}%`}
+          {pair.loading ? '...' : `${isPositive ? '+' : ''}${pair.changePercent.toFixed(1)}%`}
         </span>
         <ChevronRight className="w-3 h-3 text-gray-600" />
       </div>

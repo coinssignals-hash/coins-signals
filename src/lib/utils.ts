@@ -52,8 +52,8 @@ export function isJpyPair(symbol: string): boolean {
 /** Get decimal count for a symbol */
 export function getDecimals(symbol: string): number {
   const upper = symbol.toUpperCase().replace(/[^A-Z]/g, '');
-  if (upper.includes('JPY')) return 3;
+  if (upper.includes('JPY')) return 2;
   const nonForex = ['XAU', 'XAG', 'OIL', 'BRENT', 'WTI', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META'];
-  if (nonForex.some(s => upper.includes(s))) return 2;
-  return 5;
+  if (nonForex.some(s => upper.includes(s))) return 1;
+  return 4;
 }

@@ -29,8 +29,8 @@ export function StatusBadge({ state, pulse: p, isCompleted, closedResult }: Stat
   const priceStr = isCompleted && displayPrice != null ? ` @ ${formatPrice(displayPrice, sym)}` : '';
 
   const statusText = isCompleted
-    ? `${icon} ${targetLabel} ${targetPercent.toFixed(1)}% · ${pipsFromEntry.toFixed(2)}p${priceStr}`
-    : `${targetLabel} ${targetPercent.toFixed(1)}% · ${pipsFromEntry.toFixed(2)}p`;
+    ? `${icon} ${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p${priceStr}`
+    : `${targetLabel} ${targetPercent.toFixed(0)}% · ${pipsFromEntry.toFixed(1)}p`;
 
   return (
     <div
