@@ -44,10 +44,10 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
       </button>
 
       {/* Right action buttons */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={() => navigate(`/tools/market-sessions${symbol ? `?pair=${encodeURIComponent(symbol)}` : ''}`)}
-          className="flex items-center justify-center gap-1 px-2 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(16,185,129,0.2)]"
+          className="flex items-center justify-center gap-0.5 px-1.5 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/30 active:scale-90 transition-all duration-200"
           title="Market Sessions">
           <Globe className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-[9px] font-semibold text-emerald-300 tracking-wide">Sessions</span>
@@ -56,7 +56,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
         {onAICenter && (
           <button
             onClick={onAICenter}
-            className="flex items-center justify-center gap-1 px-2 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(168,85,247,0.2)]"
+            className="flex items-center justify-center gap-0.5 px-1.5 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/30 active:scale-90 transition-all duration-200"
             title="Central AI">
             <Brain className="w-3.5 h-3.5 text-purple-400" />
             <span className="text-[9px] font-semibold text-purple-300 tracking-wide">AI</span>
@@ -67,9 +67,9 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
           <button
             onClick={onRefresh}
             disabled={isLoading}
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(6,182,212,0.2)] disabled:opacity-50"
+            className="flex items-center justify-center w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 active:scale-90 transition-all duration-200 disabled:opacity-50"
             title={t('analysis_refresh')}>
-            <RefreshCw className={cn('w-4 h-4 text-cyan-400', isLoading && 'animate-spin')} />
+            <RefreshCw className={cn('w-3.5 h-3.5 text-cyan-400', isLoading && 'animate-spin')} />
           </button>
         )}
       </div>
