@@ -88,6 +88,7 @@ const SESSIONS: SessionData[] = [
     color: '30 80% 50%',
     weeklyVolatility: [70, 78, 82, 78, 60],
     weeklyLiquidity: [75, 82, 88, 82, 65],
+    peakHoursUTC: [8, 9, 13, 14], // open rush + NY overlap
   },
   {
     id: 'newyork', name: 'New York', emoji: '🇺🇸', openUTC: 13, closeUTC: 22,
