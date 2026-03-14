@@ -510,6 +510,19 @@ export type TranslationKeys = {
   journal_save_error: string;
   journal_update_error: string;
   journal_delete_error: string;
+  journal_btn_journal: string;
+  journal_btn_saved: string;
+  journal_save_to_journal: string;
+  journal_entry_label: string;
+  journal_trade_times: string;
+  journal_signal_arrival: string;
+  journal_execution_time: string;
+  journal_completion_time: string;
+  journal_calculated_pips: string;
+  journal_notes_optional: string;
+  journal_notes_placeholder: string;
+  journal_signal_saved_toast: string;
+  journal_save_error_toast: string;
   // Tools page
   tools_title: string;
   tools_level_novice: string;
