@@ -1139,7 +1139,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
             background: `hsl(${session.color} / 0.06)`,
             borderBottom: '1px solid hsl(var(--border) / 0.3)',
           }}>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
             <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} />
           </div>
           <div className="grid grid-cols-4 gap-px" style={{ background: 'hsl(var(--border) / 0.15)' }}>
