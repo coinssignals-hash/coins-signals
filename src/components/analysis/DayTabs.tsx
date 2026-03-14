@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { ChevronDown, Calendar, Brain, RefreshCw } from 'lucide-react';
+import { ChevronDown, Calendar, Brain, RefreshCw, Globe } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
 
@@ -14,6 +15,7 @@ interface DayTabsProps {
 }
 
 export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoading }: DayTabsProps) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
   const [open, setOpen] = useState(false);
@@ -42,6 +44,14 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
 
       {/* Right action buttons */}
       <div className="flex items-center gap-1.5">
+        <button
+          onClick={() => navigate('/tools/market-sessions')}
+          className="flex items-center justify-center gap-1.5 px-3 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(16,185,129,0.2)]"
+          title="Market Sessions">
+          <Globe className="w-4 h-4 text-emerald-400" />
+          <span className="text-[10px] font-semibold text-emerald-300 tracking-wide">Sessions</span>
+        </button>
+
         {onAICenter && (
           <button
             onClick={onAICenter}
