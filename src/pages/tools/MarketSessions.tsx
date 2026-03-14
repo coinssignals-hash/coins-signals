@@ -958,7 +958,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
   );
 }
 
-function SessionCard({ session, isActive }: { session: SessionData; isActive: boolean }) {
+function SessionCard({ session, isActive, highlightPair }: { session: SessionData; isActive: boolean; highlightPair?: string | null }) {
   const [, setTick] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setTick(t => t + 1), 60_000);
@@ -1146,8 +1146,14 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
           <div className="grid grid-cols-4 gap-px" style={{ background: 'hsl(var(--border) / 0.15)' }}>
             {session.currencies.map(c => {
               const liveQuote = quotes.find(q => q.pair === c.pair);
+              const isHighlighted = highlightPair ? c.pair.replace('/', '').toUpperCase() === highlightPair.replace('/', '').toUpperCase() : false;
               return (
-                <div key={c.pair} className="flex flex-col items-center py-1.5 px-1 gap-0.5" style={{ background: 'hsl(var(--card) / 0.6)' }}>
+                <div key={c.pair} className={cn(
+                  "flex flex-col items-center py-1.5 px-1 gap-0.5 relative transition-all duration-300",
+                  isHighlighted && "ring-1 ring-primary rounded-sm"
+                )} style={{
+                  background: isHighlighted ? 'hsl(var(--primary) / 0.12)' : 'hsl(var(--card) / 0.6)',
+                }}>
                   <div className="flex items-center -space-x-1">
                     <span className="text-sm leading-none">{c.flag1}</span>
                     <span className="text-sm leading-none">{c.flag2}</span>
@@ -1511,7 +1517,7 @@ export default function MarketSessions() {
               }}
               style={{ cursor: 'grab' }}
             >
-              <SessionCard session={SESSIONS[activeIndex]} isActive={true} />
+              <SessionCard session={SESSIONS[activeIndex]} isActive={true} highlightPair={pairParam} />
             </motion.div>
           </AnimatePresence>
 
