@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
-  Loader2, LogIn, Pencil
+  Loader2, LogIn, Pencil, Clock, Play, CheckCircle2
 } from 'lucide-react';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
@@ -34,6 +34,9 @@ interface TradeEntry {
   result: 'win' | 'loss' | 'breakeven';
   pips: string;
   notes: string;
+  signalArrivedAt: string | null;
+  executedAt: string | null;
+  completedAt: string | null;
 }
 
 const PAIRS = [
@@ -116,6 +119,9 @@ export default function TradingJournal() {
       result: row.result as TradeEntry['result'],
       pips: String(row.pips),
       notes: row.notes || '',
+      signalArrivedAt: row.signal_arrived_at || null,
+      executedAt: row.executed_at || null,
+      completedAt: row.completed_at || null,
     }));
     setEntries(mapped);
   };
@@ -579,6 +585,30 @@ export default function TradingJournal() {
                         {entry.stopLoss && <span className="ml-2">SL: {entry.stopLoss}</span>}
                         {entry.takeProfit && <span className="ml-2">TP: {entry.takeProfit}</span>}
                       </div>
+
+                      {/* Timestamps */}
+                      {(entry.signalArrivedAt || entry.executedAt || entry.completedAt) && (
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                          {entry.signalArrivedAt && (
+                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-2.5 h-2.5 text-primary/70" />
+                              Señal: {format(new Date(entry.signalArrivedAt), 'dd/MM HH:mm', { locale: dateLocale })}
+                            </span>
+                          )}
+                          {entry.executedAt && (
+                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                              <Play className="w-2.5 h-2.5 text-emerald-400/70" />
+                              Ejec: {format(new Date(entry.executedAt), 'dd/MM HH:mm', { locale: dateLocale })}
+                            </span>
+                          )}
+                          {entry.completedAt && (
+                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-amber-400/70" />
+                              Cierre: {format(new Date(entry.completedAt), 'dd/MM HH:mm', { locale: dateLocale })}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       {entry.notes && (
                         <p className="text-[10px] text-muted-foreground/70 mt-1 italic line-clamp-2">"{entry.notes}"</p>
