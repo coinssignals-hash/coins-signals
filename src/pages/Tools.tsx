@@ -82,7 +82,7 @@ export default function Tools() {
         </div>
 
         {/* Category tabs - horizontal scroll with dynamic fade edges */}
-        <ScrollFadeTabs>
+        <ScrollFadeTabs className="mb-5">
           {CATEGORY_TABS.map((tab) => {
             const TabIcon = tab.icon;
             const isActive = activeCategory === tab.key;
