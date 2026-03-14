@@ -34,6 +34,9 @@ interface TradeEntry {
   result: 'win' | 'loss' | 'breakeven';
   pips: string;
   notes: string;
+  signalArrivedAt: string | null;
+  executedAt: string | null;
+  completedAt: string | null;
 }
 
 const PAIRS = [
