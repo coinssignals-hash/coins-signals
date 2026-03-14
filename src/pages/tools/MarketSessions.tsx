@@ -593,11 +593,11 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
           return (
             <div key={pv.pair} className="space-y-0.5">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-foreground">{pv.pair}</span>
+                <span className="text-[11px] font-bold text-foreground">{pv.pair}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-mono tabular-nums text-muted-foreground">{formatVolume(pv.volume)}</span>
+                  <span className="text-[10px] font-mono tabular-nums text-muted-foreground">{formatVolume(pv.volume)}</span>
                   {pv.range > 0 && (
-                    <span className="text-[8px] font-mono tabular-nums" style={{ color: `hsl(${color})` }}>{pv.range.toFixed(0)}p</span>
+                    <span className="text-[10px] font-mono tabular-nums" style={{ color: `hsl(${color})` }}>{pv.range.toFixed(0)}p</span>
                   )}
                 </div>
               </div>
