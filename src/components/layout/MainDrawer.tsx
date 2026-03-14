@@ -154,9 +154,14 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
           )}
         </SheetHeader>
 
+        <div className="flex items-center justify-between px-6 py-2">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('drawer_language_tz')}</span>
+          <LanguageQuickSelect />
+        </div>
+
         <Separator className="bg-border" />
 
-        <nav className="flex flex-col p-4 gap-1 max-h-[calc(100vh-260px)] overflow-y-auto">
+        <nav className="flex flex-col p-4 gap-1 max-h-[calc(100vh-300px)] overflow-y-auto">
           {menuSections.map((section, sIdx) => (
             <div key={section.title}>
               {sIdx > 0 && <Separator className="my-2 bg-border" />}
