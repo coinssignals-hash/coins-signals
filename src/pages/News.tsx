@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageTransition } from '@/components/layout/PageTransition';
