@@ -1411,7 +1411,34 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
 
 export default function MarketSessions() {
   const { t } = useTranslation();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [searchParams] = useSearchParams();
+  const pairParam = searchParams.get('pair'); // e.g. "EUR/USD"
+
+  // Find the best session for the given currency pair
+  const getInitialIndex = () => {
+    if (!pairParam) return 0;
+    const normalized = pairParam.replace('/', '').toUpperCase();
+    // Score each session: exact pair match + currency component match
+    let bestIdx = 0;
+    let bestScore = -1;
+    SESSIONS.forEach((s, i) => {
+      let score = 0;
+      const hasPair = s.currencies.some(c => c.pair.replace('/', '').toUpperCase() === normalized);
+      if (hasPair) score += 10;
+      // Also check if either currency in the pair matches session currencies
+      const [base, quote] = pairParam.toUpperCase().split('/');
+      s.currencies.forEach(c => {
+        if (c.pair.includes(base || '')) score += 1;
+        if (c.pair.includes(quote || '')) score += 1;
+      });
+      // Prefer higher liquidity sessions
+      if (s.liquidity === 'high') score += 2;
+      if (score > bestScore) { bestScore = score; bestIdx = i; }
+    });
+    return bestIdx;
+  };
+
+  const [activeIndex, setActiveIndex] = useState(getInitialIndex);
   const [swipeDir, setSwipeDir] = useState<1 | -1>(1);
 
   const goNext = () => {

@@ -123,7 +123,7 @@ export default function Analysis() {
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
       <Header />
-      <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} onAICenter={() => navigate('/ai-center')} onRefresh={refetch} isLoading={loading} />
+      <DayTabs selectedDay={selectedDay} onSelectDay={setSelectedDay} onAICenter={() => navigate('/ai-center')} onRefresh={refetch} isLoading={loading} symbol={selectedPair} />
 
       <main className="py-2 px-1 sm:px-4 space-y-1.5 sm:space-y-3">
         {/* Terminal Header Bar */}

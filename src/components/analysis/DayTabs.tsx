@@ -46,7 +46,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
       {/* Right action buttons */}
       <div className="flex items-center gap-1.5">
         <button
-          onClick={() => navigate('/tools/market-sessions')}
+          onClick={() => navigate(`/tools/market-sessions${symbol ? `?pair=${encodeURIComponent(symbol)}` : ''}`)}
           className="flex items-center justify-center gap-1.5 px-3 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/30 active:scale-90 transition-all duration-200 shadow-[0_0_8px_-3px_rgba(16,185,129,0.2)]"
           title="Market Sessions">
           <Globe className="w-4 h-4 text-emerald-400" />
