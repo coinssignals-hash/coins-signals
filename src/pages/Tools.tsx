@@ -58,6 +58,7 @@ const ALL_TOOLS: ToolItem[] = [
   // Diario
   { id: 'trade-journal', titleKey: 'tools_journal_basic_title', descKey: 'tools_journal_basic_desc', icon: BookOpen, category: 'diario', status: 'available', route: '/tools/trading-journal' },
   { id: 'backtest-pro', titleKey: 'tools_backtest_pro_title', descKey: 'tools_backtest_pro_desc', icon: Workflow, category: 'diario', status: 'available', route: '/tools/backtest-pro' },
+  { id: 'market-sessions', titleKey: 'tools_market_sessions_title', descKey: 'tools_market_sessions_desc', icon: Clock, category: 'calendario', status: 'available', route: '/tools/market-sessions' },
 ];
 
 export default function Tools() {

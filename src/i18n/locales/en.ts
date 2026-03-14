@@ -538,6 +538,8 @@ const en: TranslationKeys = {
   tools_backtest_pro_desc: 'Advanced backtesting with multiple simultaneous strategies',
   tools_institutional_cal_title: 'Institutional Calendar',
   tools_institutional_cal_desc: 'Consensus data, historical deviations and reactions',
+  tools_market_sessions_title: 'Market Sessions',
+  tools_market_sessions_desc: 'Schedules, volatility and key currencies per session',
   tp_correlation_scale: 'Correlation Scale',
   tp_strongest_correlations: 'Strongest Correlations',
   tp_correlation_info: 'Correlation +1 = move together, -1 = move opposite, 0 = no relation. Avoid opening positions on highly correlated pairs to diversify risk.',

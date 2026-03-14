@@ -573,6 +573,8 @@ export type TranslationKeys = {
   tools_backtest_pro_desc: string;
   tools_institutional_cal_title: string;
   tools_institutional_cal_desc: string;
+  tools_market_sessions_title: string;
+  tools_market_sessions_desc: string;
   // Tool sub-pages shared
   tp_correlation_scale: string;
   tp_strongest_correlations: string;
