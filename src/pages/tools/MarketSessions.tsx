@@ -125,6 +125,10 @@ interface SessionVolume {
 const liveCache = new Map<string, { bid: number; ask: number; price: number; volume: number; high: number; low: number; ts: number }>();
 const aggCache = new Map<string, { volume: number; high: number; low: number; close: number; ts: number }>();
 const QUOTE_CACHE_TTL = 55_000;
+
+/* Spread history buffer — stores up to 12 snapshots (~2h at 10s ticks) per session */
+const MAX_HISTORY = 12;
+const spreadHistory: number[][] = Array.from({ length: 5 }, () => []);
 const AGG_CACHE_TTL = 120_000; // aggregates change less often
 const POLL_INTERVAL = 60_000;
 
