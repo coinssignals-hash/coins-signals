@@ -155,86 +155,51 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         <Separator className="bg-border" />
 
         <nav className="flex flex-col p-4 gap-1 max-h-[calc(100vh-260px)] overflow-y-auto">
-          {menuItems.map((item, index) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-            const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
-            const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
+          {menuSections.map((section, sIdx) => (
+            <div key={section.title}>
+              {sIdx > 0 && <Separator className="my-2 bg-border" />}
+              <p className="px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                {section.title}
+              </p>
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.href;
+                const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
+                const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
 
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => onOpenChange(false)}
-                onMouseEnter={onMouseEnter(item.href)}
-                onTouchStart={onTouchStart(item.href)}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
-                  isActive
-                    ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                    : 'text-foreground hover:bg-secondary'
-                )}
-                style={{ animationDelay: `${index * 0.03}s` }}
-              >
-                <div className="relative">
-                  <Icon className="w-5 h-5" />
-                  {showNewsBadge && (
-                    <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
-                      {newsCount > 99 ? '99+' : newsCount}
-                    </span>
-                  )}
-                  {showSavedBadge && (
-                    <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground rounded-full">
-                      {savedNewsCount > 99 ? '99+' : savedNewsCount}
-                    </span>
-                  )}
-                </div>
-                {item.label}
-                {showNewsBadge && (
-                  <span className="ml-auto px-1.5 py-0.5 text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full">
-                    {newsCount > 99 ? '99+' : newsCount} {t('drawer_new')}
-                  </span>
-                )}
-                {showSavedBadge && (
-                  <span className="ml-auto px-1.5 py-0.5 text-[10px] font-medium bg-primary/20 text-primary rounded-full">
-                    {savedNewsCount}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-
-
-
-          <Separator className="my-3 bg-border" />
-
-          <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {t('drawer_preferences')}
-          </p>
-
-          {settingsItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                onClick={() => onOpenChange(false)}
-                onMouseEnter={onMouseEnter(item.href)}
-                onTouchStart={onTouchStart(item.href)}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
-                  isActive
-                    ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                    : 'text-foreground hover:bg-secondary'
-                )}
-              >
-                <Icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            );
-          })}
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    onClick={() => onOpenChange(false)}
+                    onMouseEnter={onMouseEnter(item.href)}
+                    onTouchStart={onTouchStart(item.href)}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
+                      isActive
+                        ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                        : 'text-foreground hover:bg-secondary'
+                    )}
+                  >
+                    <div className="relative">
+                      <Icon className="w-5 h-5" />
+                      {showNewsBadge && (
+                        <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
+                          {newsCount > 99 ? '99+' : newsCount}
+                        </span>
+                      )}
+                      {showSavedBadge && (
+                        <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground rounded-full">
+                          {savedNewsCount > 99 ? '99+' : savedNewsCount}
+                        </span>
+                      )}
+                    </div>
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
