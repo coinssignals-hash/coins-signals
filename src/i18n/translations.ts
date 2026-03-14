@@ -1,10 +1,15 @@
-export type Language = 'es' | 'en' | 'pt' | 'fr';
+export type Language = 'es' | 'en' | 'pt' | 'fr' | 'it' | 'nl' | 'de' | 'ar' | 'mt';
 
 export const LANGUAGE_LABELS: Record<Language, string> = {
   es: 'Español',
   en: 'English',
   pt: 'Português',
   fr: 'Français',
+  it: 'Italiano',
+  nl: 'Nederlands',
+  de: 'Deutsch',
+  ar: 'العربية',
+  mt: 'Malti',
 };
 
 export const LANGUAGE_FLAGS: Record<Language, string> = {
@@ -12,6 +17,11 @@ export const LANGUAGE_FLAGS: Record<Language, string> = {
   en: '🇺🇸',
   pt: '🇧🇷',
   fr: '🇫🇷',
+  it: '🇮🇹',
+  nl: '🇳🇱',
+  de: '🇩🇪',
+  ar: '🇸🇦',
+  mt: '🇲🇹',
 };
 
 export type TranslationKeys = {
@@ -2137,6 +2147,11 @@ const localeLoaders: Record<Language, () => Promise<{ default: TranslationKeys }
   en: () => import('./locales/en'),
   pt: () => import('./locales/pt'),
   fr: () => import('./locales/fr'),
+  it: () => import('./locales/it'),
+  nl: () => import('./locales/nl'),
+  de: () => import('./locales/de'),
+  ar: () => import('./locales/ar'),
+  mt: () => import('./locales/mt'),
 };
 
 // Keep a synchronous fallback (Spanish is default and bundled inline for instant first paint)
