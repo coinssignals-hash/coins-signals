@@ -911,7 +911,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
             className="overflow-hidden"
           >
             <div className="mt-2 pt-2 border-t" style={{ borderColor: `hsl(${color} / 0.1)` }}>
-              <label className="text-[9px] text-muted-foreground font-medium block mb-1.5">Umbral de pips</label>
+              <label className="text-[11px] text-muted-foreground font-medium block mb-1.5">Umbral de pips</label>
               <div className="flex items-center gap-2">
                 <input
                   type="range"
