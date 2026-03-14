@@ -485,6 +485,7 @@ const es: TranslationKeys = {
   tools_count: 'herramientas',
   tools_active: 'Activa',
   tools_coming_soon: 'Próx.',
+  tools_cat_all: 'Todas',
   tools_cat_calculators: 'Calculadoras',
   tools_cat_calendar: 'Calendario',
   tools_cat_screeners: 'Screeners',

@@ -485,6 +485,7 @@ const en: TranslationKeys = {
   tools_count: 'tools',
   tools_active: 'Active',
   tools_coming_soon: 'Soon',
+  tools_cat_all: 'All',
   tools_cat_calculators: 'Calculators',
   tools_cat_calendar: 'Calendar',
   tools_cat_screeners: 'Screeners',

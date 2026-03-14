@@ -520,6 +520,7 @@ export type TranslationKeys = {
   tools_count: string;
   tools_active: string;
   tools_coming_soon: string;
+  tools_cat_all: string;
   tools_cat_calculators: string;
   tools_cat_calendar: string;
   tools_cat_screeners: string;
