@@ -3,7 +3,8 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { ChevronLeft, ChevronRight, Wifi, WifiOff, RefreshCw, Loader2, BarChart3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wifi, WifiOff, RefreshCw, Loader2, BarChart3, Bell, BellOff, Settings2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
