@@ -420,8 +420,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
           style={{ background: "radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)" }} />
 
 
-        {/* Date header */}
-        <div className="relative text-center pt-3 pb-1">
+        {/* Top bar: Journal + Date */}
+        <div className="relative flex items-center justify-between px-3 pt-3 pb-1">
+          {signal && <SaveSignalToJournal signal={signal} className="py-px px-1.5 text-[8px]" />}
           <span className="text-[11px] text-cyan-300/70 tracking-wide">
             {format(signalDate, "EEEE dd MMMM yyyy HH:mm:ss", { locale: dateLocale })}
           </span>
