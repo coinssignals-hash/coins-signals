@@ -509,7 +509,7 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
             )}
             style={{ borderColor: `hsl(${color} / 0.08)` }}
           >
-            <span className="text-[9px] font-bold text-foreground">{q.pair}</span>
+            <span className="text-[11px] font-bold text-foreground">{q.pair}</span>
             {q.loading ? (
               <>
                 <span className="text-right"><Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground inline" /></span>
@@ -518,16 +518,16 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
               </>
             ) : q.error && q.price === 0 ? (
               <>
-                <span className="text-[9px] text-muted-foreground text-right">—</span>
-                <span className="text-[9px] text-muted-foreground text-right">—</span>
-                <span className="text-[9px] text-muted-foreground text-right">—</span>
+                <span className="text-[11px] text-muted-foreground text-right">—</span>
+                <span className="text-[11px] text-muted-foreground text-right">—</span>
+                <span className="text-[11px] text-muted-foreground text-right">—</span>
               </>
             ) : (
               <>
-                <span className="text-[9px] font-mono text-red-400 text-right tabular-nums">{formatPrice(q.bid, q.pair)}</span>
-                <span className="text-[9px] font-mono text-green-400 text-right tabular-nums">{formatPrice(q.ask, q.pair)}</span>
+                <span className="text-[11px] font-mono text-red-400 text-right tabular-nums">{formatPrice(q.bid, q.pair)}</span>
+                <span className="text-[11px] font-mono text-green-400 text-right tabular-nums">{formatPrice(q.ask, q.pair)}</span>
                 <span
-                  className="text-[9px] font-bold text-right tabular-nums"
+                  className="text-[11px] font-bold text-right tabular-nums"
                   style={{ color: q.spread < 2 ? 'hsl(140 60% 50%)' : q.spread < 4 ? 'hsl(45 80% 55%)' : 'hsl(0 70% 55%)' }}
                 >
                   {q.spread.toFixed(1)}p
