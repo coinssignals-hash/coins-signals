@@ -1164,9 +1164,29 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
     setTimeout(() => setFlashIdx(null), 600);
   };
 
-  // Re-render periodically to pick up fresh cache data
+  // Re-render periodically and record spread snapshots
   useEffect(() => {
-    const iv = setInterval(() => setTick(t => t + 1), 10_000);
+    const iv = setInterval(() => {
+      // Snapshot current avg spreads into history
+      SESSIONS.forEach((session, si) => {
+        let total = 0, count = 0;
+        session.currencies.forEach(c => {
+          const symbol = `C:${c.pair.replace('/', '')}`;
+          const isJPY = c.pair.includes('JPY');
+          const pipMul = isJPY ? 100 : 10000;
+          const cached = liveCache.get(symbol);
+          if (cached && cached.bid > 0 && cached.ask > 0) {
+            total += Math.abs(cached.ask - cached.bid) * pipMul;
+            count++;
+          }
+        });
+        if (count > 0) {
+          spreadHistory[si].push(total / count);
+          if (spreadHistory[si].length > MAX_HISTORY) spreadHistory[si].shift();
+        }
+      });
+      setTick(t => t + 1);
+    }, 10_000);
     return () => clearInterval(iv);
   }, []);
 
