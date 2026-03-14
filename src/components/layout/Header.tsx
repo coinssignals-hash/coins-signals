@@ -13,6 +13,7 @@ import { usePrefetch } from '@/hooks/usePrefetch';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { NotificationToggle } from '@/components/notifications/NotificationToggle';
+import { LanguageQuickSelect } from './LanguageQuickSelect';
 
 export function Header() {
   const location = useLocation();
