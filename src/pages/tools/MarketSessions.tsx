@@ -929,7 +929,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
                   max={500}
                   value={config.thresholdPips}
                   onChange={e => updateThreshold(Math.max(5, Number(e.target.value)))}
-                  className="w-14 text-center text-[10px] font-mono rounded-md border bg-background py-1"
+                  className="w-14 text-center text-xs font-mono rounded-md border bg-background py-1"
                   style={{ borderColor: `hsl(${color} / 0.3)` }}
                 />
               </div>
