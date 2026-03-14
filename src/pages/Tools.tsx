@@ -81,39 +81,35 @@ export default function Tools() {
           <span className="text-xl font-bold text-foreground">{t('tools_title')}</span>
         </div>
 
-        {/* Category tabs - horizontal scroll with fade edges */}
-        <div className="relative mb-5">
-          <div className="pointer-events-none absolute left-0 top-0 bottom-1 w-5 z-10" style={{ background: 'linear-gradient(to right, hsl(var(--background)), transparent)' }} />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-1 w-5 z-10" style={{ background: 'linear-gradient(to left, hsl(var(--background)), transparent)' }} />
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide px-1">
-            {CATEGORY_TABS.map((tab) => {
-              const TabIcon = tab.icon;
-              const isActive = activeCategory === tab.key;
-              const count = tab.key === 'all'
-                ? ALL_TOOLS.length
-                : ALL_TOOLS.filter((t) => t.category === tab.key).length;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveCategory(tab.key)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium whitespace-nowrap transition-all shrink-0 min-h-[32px] min-w-0 active:scale-95",
-                    isActive
-                      ? "bg-primary/10 border-primary text-primary"
-                      : "bg-card border-border text-muted-foreground hover:border-primary/40"
-                  )}
-                >
-                  <TabIcon className="w-3.5 h-3.5" />
-                  {t(tab.labelKey as any)}
-                  <span className={cn(
-                    "text-[10px] px-1.5 rounded-full",
-                    isActive ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-                  )}>{count}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Category tabs - horizontal scroll with dynamic fade edges */}
+        <ScrollFadeTabs>
+          {CATEGORY_TABS.map((tab) => {
+            const TabIcon = tab.icon;
+            const isActive = activeCategory === tab.key;
+            const count = tab.key === 'all'
+              ? ALL_TOOLS.length
+              : ALL_TOOLS.filter((t) => t.category === tab.key).length;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveCategory(tab.key)}
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium whitespace-nowrap transition-all shrink-0 min-h-[32px] min-w-0 active:scale-95",
+                  isActive
+                    ? "bg-primary/10 border-primary text-primary"
+                    : "bg-card border-border text-muted-foreground hover:border-primary/40"
+                )}
+              >
+                <TabIcon className="w-3.5 h-3.5" />
+                {t(tab.labelKey as any)}
+                <span className={cn(
+                  "text-[10px] px-1.5 rounded-full",
+                  isActive ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+                )}>{count}</span>
+              </button>
+            );
+          })}
+        </ScrollFadeTabs>
 
         {/* Tools list */}
         <AnimatePresence mode="wait">
