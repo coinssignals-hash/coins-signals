@@ -987,8 +987,10 @@ export type Database = {
       trading_journal: {
         Row: {
           action: string
+          completed_at: string | null
           created_at: string
           entry_price: number
+          executed_at: string | null
           exit_price: number
           id: string
           lot_size: number
@@ -996,6 +998,8 @@ export type Database = {
           pair: string
           pips: number
           result: string
+          signal_arrived_at: string | null
+          signal_id: string | null
           stop_loss: number | null
           take_profit: number | null
           trade_date: string
@@ -1004,8 +1008,10 @@ export type Database = {
         }
         Insert: {
           action?: string
+          completed_at?: string | null
           created_at?: string
           entry_price: number
+          executed_at?: string | null
           exit_price: number
           id?: string
           lot_size?: number
@@ -1013,6 +1019,8 @@ export type Database = {
           pair: string
           pips?: number
           result?: string
+          signal_arrived_at?: string | null
+          signal_id?: string | null
           stop_loss?: number | null
           take_profit?: number | null
           trade_date?: string
@@ -1021,8 +1029,10 @@ export type Database = {
         }
         Update: {
           action?: string
+          completed_at?: string | null
           created_at?: string
           entry_price?: number
+          executed_at?: string | null
           exit_price?: number
           id?: string
           lot_size?: number
@@ -1030,13 +1040,23 @@ export type Database = {
           pair?: string
           pips?: number
           result?: string
+          signal_arrived_at?: string | null
+          signal_id?: string | null
           stop_loss?: number | null
           take_profit?: number | null
           trade_date?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trading_journal_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "trading_signals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trading_signals: {
         Row: {
