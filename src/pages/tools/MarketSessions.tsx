@@ -1025,12 +1025,40 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
           </div>
         </div>
 
-        {/* ── Progress Bar ── */}
+        {/* ── Progress Bar with Peak Hour Markers ── */}
         <div className="space-y-1">
-          <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+          <div className="w-full h-3 rounded-full overflow-hidden relative" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+            {/* Peak hour markers */}
+            {(() => {
+              const totalHours = session.closeUTC > session.openUTC
+                ? session.closeUTC - session.openUTC
+                : (24 - session.openUTC) + session.closeUTC;
+              return session.peakHoursUTC.map(hour => {
+                const hoursFromOpen = hour >= session.openUTC
+                  ? hour - session.openUTC
+                  : (24 - session.openUTC) + hour;
+                const pct = (hoursFromOpen / totalHours) * 100;
+                if (pct < 0 || pct > 100) return null;
+                return (
+                  <div
+                    key={hour}
+                    className="absolute top-0 h-full z-[1]"
+                    style={{
+                      left: `${pct}%`,
+                      width: `${100 / totalHours}%`,
+                      background: `hsl(${session.color} / 0.12)`,
+                      borderLeft: `1px solid hsl(${session.color} / 0.3)`,
+                      borderRight: `1px solid hsl(${session.color} / 0.3)`,
+                    }}
+                    title={`Peak: ${hour}:00 UTC`}
+                  />
+                );
+              });
+            })()}
+            {/* Progress fill */}
             {status.isOpen ? (
               <motion.div
-                className="h-full rounded-full relative"
+                className="h-full rounded-full relative z-[2]"
                 style={{
                   background: `linear-gradient(90deg, hsl(${session.color} / 0.5), hsl(${session.color}))`,
                   boxShadow: `0 0 8px hsl(${session.color} / 0.4)`,
@@ -1039,14 +1067,41 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                 animate={{ width: `${status.progressPercent}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
               >
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-foreground shadow-lg" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-foreground shadow-lg" />
               </motion.div>
             ) : (
               <div className="h-full w-full rounded-full" style={{ background: 'hsl(var(--muted) / 0.1)' }} />
             )}
           </div>
+          {/* Peak hour labels */}
+          <div className="w-full relative h-3">
+            {(() => {
+              const totalHours = session.closeUTC > session.openUTC
+                ? session.closeUTC - session.openUTC
+                : (24 - session.openUTC) + session.closeUTC;
+              return session.peakHoursUTC.map(hour => {
+                const hoursFromOpen = hour >= session.openUTC
+                  ? hour - session.openUTC
+                  : (24 - session.openUTC) + hour;
+                const pct = (hoursFromOpen / totalHours) * 100;
+                if (pct < 0 || pct > 100) return null;
+                return (
+                  <span
+                    key={hour}
+                    className="absolute text-[7px] font-mono font-bold -translate-x-1/2"
+                    style={{
+                      left: `${pct + (100 / totalHours) / 2}%`,
+                      color: `hsl(${session.color} / 0.7)`,
+                    }}
+                  >
+                    🔥{hour}h
+                  </span>
+                );
+              });
+            })()}
+          </div>
           {status.isOpen && (
-            <div className="flex justify-end">
+            <div className="flex justify-end -mt-1">
               <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
                 {status.progressPercent}%
               </span>
