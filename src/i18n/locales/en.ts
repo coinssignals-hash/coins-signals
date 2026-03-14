@@ -18,6 +18,7 @@ const en: TranslationKeys = {
   nav_ai: 'AI',
   nav_ai_center: 'AI Center',
   nav_tools: 'Tools',
+  nav_back: 'Back',
   drawer_ai_center: 'AI Analysis Center',
   drawer_stock_market: 'Stock Market',
   drawer_welcome: 'Welcome',

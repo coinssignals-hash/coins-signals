@@ -18,6 +18,7 @@ const es: TranslationKeys = {
   nav_ai: 'IA',
   nav_ai_center: 'Centro IA',
   nav_tools: 'Herramientas',
+  nav_back: 'Volver',
   drawer_ai_center: 'Centro de Análisis IA',
   drawer_stock_market: 'Mercado de Acciones',
   drawer_welcome: 'Bienvenido',
