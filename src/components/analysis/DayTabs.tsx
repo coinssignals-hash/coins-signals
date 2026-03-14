@@ -15,6 +15,7 @@ interface DayTabsProps {
 }
 
 export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoading }: DayTabsProps) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
   const [open, setOpen] = useState(false);
