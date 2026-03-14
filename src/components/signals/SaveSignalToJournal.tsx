@@ -124,7 +124,7 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
         <button
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all active:scale-95",
+            "flex items-center gap-1.5 px-3 py-0.5 rounded-lg text-xs font-semibold transition-all active:scale-95",
             alreadySaved
               ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 cursor-default"
               : "bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20",
