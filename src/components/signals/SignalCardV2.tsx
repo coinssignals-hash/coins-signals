@@ -180,8 +180,8 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   const sign = isPositive ? "+ " : "- ";
   const sym = isJpy ? 'JPY' : 'EUR/USD';
   return {
-    pips: `${sign}${Math.abs(pips).toFixed(2)}`,
-    percent: `${sign}${Math.abs(percent).toFixed(3)}`,
+    pips: `${sign}${Math.abs(pips).toFixed(1)}`,
+    percent: `${sign}${Math.abs(percent).toFixed(2)}`,
     price: formatPrice(target, sym),
     isPositive
   };
