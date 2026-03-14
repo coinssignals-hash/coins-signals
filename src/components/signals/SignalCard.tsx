@@ -10,6 +10,7 @@ import { useDateLocale } from '@/hooks/useDateLocale';
 import signalCardBg from '@/assets/signal-card-bg.png';
 import { useRealtimeMarket } from '@/hooks/useRealtimeMarket';
 import { PriceSparkline } from './PriceSparkline';
+import { SaveSignalToJournal } from './SaveSignalToJournal';
 
 interface SignalCardProps {
   signal: TradingSignal;
