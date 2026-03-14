@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, getDecimals } from '@/lib/utils';
 import { Loader2, Zap, TrendingUp, TrendingDown, Check, X, AlertTriangle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
