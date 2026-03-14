@@ -29,6 +29,8 @@ interface SessionData {
   color: string;
   weeklyVolatility: number[];
   weeklyLiquidity: number[];
+  /** UTC hours with historically highest volume/movement for this session */
+  peakHoursUTC: number[];
 }
 
 const SESSIONS: SessionData[] = [
@@ -44,6 +46,7 @@ const SESSIONS: SessionData[] = [
     color: '200 80% 55%',
     weeklyVolatility: [35, 40, 45, 50, 30],
     weeklyLiquidity: [45, 50, 55, 60, 40],
+    peakHoursUTC: [0, 1, 2], // overlap with Tokyo
   },
   {
     id: 'tokyo', name: 'Tokyo', emoji: '🇯🇵', openUTC: 0, closeUTC: 9,
@@ -57,6 +60,7 @@ const SESSIONS: SessionData[] = [
     color: '330 70% 60%',
     weeklyVolatility: [50, 55, 60, 65, 45],
     weeklyLiquidity: [55, 60, 65, 70, 50],
+    peakHoursUTC: [2, 3, 7], // early morning + London overlap
   },
   {
     id: 'london', name: 'London', emoji: '🇬🇧', openUTC: 7, closeUTC: 16,
@@ -70,6 +74,7 @@ const SESSIONS: SessionData[] = [
     color: '45 80% 55%',
     weeklyVolatility: [75, 80, 85, 80, 65],
     weeklyLiquidity: [80, 85, 90, 85, 70],
+    peakHoursUTC: [8, 9, 13, 14], // open rush + NY overlap
   },
   {
     id: 'frankfurt', name: 'Frankfurt', emoji: '🇩🇪', openUTC: 7, closeUTC: 16,
@@ -83,6 +88,7 @@ const SESSIONS: SessionData[] = [
     color: '30 80% 50%',
     weeklyVolatility: [70, 78, 82, 78, 60],
     weeklyLiquidity: [75, 82, 88, 82, 65],
+    peakHoursUTC: [8, 9, 13, 14], // open rush + NY overlap
   },
   {
     id: 'newyork', name: 'New York', emoji: '🇺🇸', openUTC: 13, closeUTC: 22,
@@ -96,6 +102,7 @@ const SESSIONS: SessionData[] = [
     color: '140 60% 50%',
     weeklyVolatility: [80, 85, 90, 85, 70],
     weeklyLiquidity: [85, 90, 95, 90, 75],
+    peakHoursUTC: [13, 14, 15, 19], // open rush + close
   },
 ];
 
@@ -1018,12 +1025,40 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
           </div>
         </div>
 
-        {/* ── Progress Bar ── */}
+        {/* ── Progress Bar with Peak Hour Markers ── */}
         <div className="space-y-1">
-          <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+          <div className="w-full h-3 rounded-full overflow-hidden relative" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+            {/* Peak hour markers */}
+            {(() => {
+              const totalHours = session.closeUTC > session.openUTC
+                ? session.closeUTC - session.openUTC
+                : (24 - session.openUTC) + session.closeUTC;
+              return session.peakHoursUTC.map(hour => {
+                const hoursFromOpen = hour >= session.openUTC
+                  ? hour - session.openUTC
+                  : (24 - session.openUTC) + hour;
+                const pct = (hoursFromOpen / totalHours) * 100;
+                if (pct < 0 || pct > 100) return null;
+                return (
+                  <div
+                    key={hour}
+                    className="absolute top-0 h-full z-[1]"
+                    style={{
+                      left: `${pct}%`,
+                      width: `${100 / totalHours}%`,
+                      background: `hsl(${session.color} / 0.12)`,
+                      borderLeft: `1px solid hsl(${session.color} / 0.3)`,
+                      borderRight: `1px solid hsl(${session.color} / 0.3)`,
+                    }}
+                    title={`Peak: ${hour}:00 UTC`}
+                  />
+                );
+              });
+            })()}
+            {/* Progress fill */}
             {status.isOpen ? (
               <motion.div
-                className="h-full rounded-full relative"
+                className="h-full rounded-full relative z-[2]"
                 style={{
                   background: `linear-gradient(90deg, hsl(${session.color} / 0.5), hsl(${session.color}))`,
                   boxShadow: `0 0 8px hsl(${session.color} / 0.4)`,
@@ -1032,14 +1067,41 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                 animate={{ width: `${status.progressPercent}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
               >
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-foreground shadow-lg" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-foreground shadow-lg" />
               </motion.div>
             ) : (
               <div className="h-full w-full rounded-full" style={{ background: 'hsl(var(--muted) / 0.1)' }} />
             )}
           </div>
+          {/* Peak hour labels */}
+          <div className="w-full relative h-3">
+            {(() => {
+              const totalHours = session.closeUTC > session.openUTC
+                ? session.closeUTC - session.openUTC
+                : (24 - session.openUTC) + session.closeUTC;
+              return session.peakHoursUTC.map(hour => {
+                const hoursFromOpen = hour >= session.openUTC
+                  ? hour - session.openUTC
+                  : (24 - session.openUTC) + hour;
+                const pct = (hoursFromOpen / totalHours) * 100;
+                if (pct < 0 || pct > 100) return null;
+                return (
+                  <span
+                    key={hour}
+                    className="absolute text-[7px] font-mono font-bold -translate-x-1/2"
+                    style={{
+                      left: `${pct + (100 / totalHours) / 2}%`,
+                      color: `hsl(${session.color} / 0.7)`,
+                    }}
+                  >
+                    🔥{hour}h
+                  </span>
+                );
+              });
+            })()}
+          </div>
           {status.isOpen && (
-            <div className="flex justify-end">
+            <div className="flex justify-end -mt-1">
               <span className="text-[9px] font-mono font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>
                 {status.progressPercent}%
               </span>
