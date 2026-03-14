@@ -277,10 +277,7 @@ export default function Signals() {
                 className={cn(
                   "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
                   dayTab === tab.key
-                    ? tab.key === 'today' ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                    : tab.key === 'yesterday' ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
-                    : tab.key === 'tomorrow' ? "bg-amber-600 text-white shadow-md shadow-amber-500/25"
-                    : "bg-slate-600 text-white shadow-md shadow-slate-500/25"
+                    ? "bg-primary text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 )}
               >
@@ -299,7 +296,7 @@ export default function Signals() {
                   className={cn(
                     "flex items-center gap-0.5 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center active:scale-95",
                     dayTab === 'calendar'
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/25"
+                      ? "bg-primary text-primary-foreground shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   )}
                 >
@@ -309,7 +306,7 @@ export default function Signals() {
                     : null}
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-700" align="end">
+              <PopoverContent className="w-auto p-0 bg-popover border-border" align="end">
                 <Calendar
                   mode="single"
                   selected={calendarDate}
@@ -336,7 +333,7 @@ export default function Signals() {
                 className={cn(
                   "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
                   sourceFilter === 'ai-center'
-                    ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                    ? "bg-accent/15 text-accent-foreground border-accent/30"
                     : sourceFilter === 'server'
                       ? "bg-primary/15 text-primary border-primary/30"
                       : "bg-secondary/50 text-foreground border-border/50"
@@ -374,7 +371,7 @@ export default function Signals() {
         {/* Calendar date indicator */}
         {dayTab === 'calendar' && calendarDate && (
           <div className="flex items-center gap-2 px-4 pb-2">
-            <span className="text-xs text-emerald-400">
+            <span className="text-xs text-primary">
               {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: dateLocale })}
             </span>
             <button
