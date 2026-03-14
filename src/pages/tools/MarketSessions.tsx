@@ -739,9 +739,9 @@ function WeeklyChart({ session, color }: {
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, hsl(45 80% 55% / 0.3), hsl(45 80% 55% / 0.8))` }} />
                 </motion.div>
               </div>
-              <span className="text-[8px] text-muted-foreground">{item.day}</span>
+              <span className="text-[10px] text-muted-foreground">{item.day}</span>
               {hasRealData && (
-                <span className="text-[6px] font-mono text-muted-foreground/60 tabular-nums">
+                <span className="text-[8px] font-mono text-muted-foreground/60 tabular-nums">
                   {item.volume >= 1e6 ? `${(item.volume / 1e6).toFixed(1)}M` : item.volume >= 1e3 ? `${(item.volume / 1e3).toFixed(0)}K` : item.volume}
                 </span>
               )}
