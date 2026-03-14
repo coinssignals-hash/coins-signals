@@ -201,7 +201,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     <span className="ml-auto text-sm font-bold text-rose-400">{stats.slCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-rose-400/80 font-mono">-{stats.totalPipsLost.toFixed(1)} pips</span>
+                    <span className="text-rose-400/80 font-mono">-{stats.totalPipsLost.toFixed(0)} pips</span>
                     <span className="text-rose-300/60 font-mono">
                       {stats.completed > 0 ? ((stats.slCount / stats.completed) * 100).toFixed(0) : 0}%
                     </span>
