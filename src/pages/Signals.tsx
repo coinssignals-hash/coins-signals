@@ -296,7 +296,7 @@ export default function Signals() {
                   className={cn(
                     "flex items-center gap-0.5 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center active:scale-95",
                     dayTab === 'calendar'
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/25"
+                      ? "bg-primary text-primary-foreground shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   )}
                 >
