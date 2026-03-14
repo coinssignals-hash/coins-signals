@@ -168,7 +168,7 @@ export function HeroDashboard({
                   </span>
                   <span className={`flex items-center gap-0.5 text-xs font-bold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
                     {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                    {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+                    {isPositive ? '+' : ''}{changePercent.toFixed(1)}%
                   </span>
                 </div>
                 <p className="text-[10px] text-cyan-300/50 mt-0.5 font-medium truncate">
@@ -196,7 +196,7 @@ export function HeroDashboard({
           <QuickStatCard
             icon={<Activity className="w-3.5 h-3.5 text-cyan-400" />}
             label={t('analysis_volatility')}
-            value={`${(Math.abs(changePercent) * 2.5).toFixed(1)}%`}
+            value={`${(Math.abs(changePercent) * 2.5).toFixed(0)}%`}
             trend={Math.abs(changePercent) > 0.3 ? 'high' : 'low'} />
         </motion.div>
         <motion.div variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
@@ -274,7 +274,7 @@ function MarketPairRow({ pair, isSelected, onClick
           'text-emerald-400 bg-emerald-500/10' :
           'text-red-400 bg-red-500/10'
         )}>
-          {pair.loading ? '...' : `${isPositive ? '+' : ''}${pair.changePercent.toFixed(2)}%`}
+          {pair.loading ? '...' : `${isPositive ? '+' : ''}${pair.changePercent.toFixed(1)}%`}
         </span>
         <ChevronRight className="w-3 h-3 text-gray-600" />
       </div>

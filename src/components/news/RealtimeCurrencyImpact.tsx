@@ -114,7 +114,7 @@ export function RealtimeCurrencyImpact({ currencies }: Props) {
                         isUp ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'
                       )}>
                         {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {isUp ? '+' : ''}{change.toFixed(3)}%
+                        {isUp ? '+' : ''}{change.toFixed(2)}%
                       </span>
                     </>
                   ) : (

@@ -180,8 +180,8 @@ function computePriceMetrics(target: number, entry: number, isJpy: boolean) {
   const sign = isPositive ? "+ " : "- ";
   const sym = isJpy ? 'JPY' : 'EUR/USD';
   return {
-    pips: `${sign}${Math.abs(pips).toFixed(2)}`,
-    percent: `${sign}${Math.abs(percent).toFixed(3)}`,
+    pips: `${sign}${Math.abs(pips).toFixed(1)}`,
+    percent: `${sign}${Math.abs(percent).toFixed(2)}`,
     price: formatPrice(target, sym),
     isPositive
   };
@@ -568,7 +568,7 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     priceDiff.percent >= 0 ? '0 0 8px hsl(142, 70%, 45%, 0.4)' :
                     '0 0 8px hsl(0, 70%, 50%, 0.4)' : 'none'
                   }}>
-                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(3)}%` : "—"}
+                    {priceDiff.hasData ? `${priceDiff.percent >= 0 ? "+" : ""}${priceDiff.percent.toFixed(2)}%` : "—"}
                   </span>
                   {priceDiff.hasData &&
                   <span className={cn(

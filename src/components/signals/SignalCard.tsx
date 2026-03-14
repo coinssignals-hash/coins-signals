@@ -638,14 +638,14 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                         isNearResistance && "text-rose-300",
                         !isNearSupport && !isNearResistance && "text-amber-300"
                       )}>
-                        {currentPrice.toFixed(currentPrice < 10 ? 5 : 2)}
+                        {currentPrice.toFixed(currentPrice < 10 ? 4 : 1)}
                       </div>
                       {hasLivePrice && (
                         <div className={cn(
                           "text-[10px] font-medium tabular-nums",
                           priceChange >= 0 ? "text-emerald-400" : "text-rose-400"
                         )}>
-                          {priceChange >= 0 ? "+" : ""}{priceChange.toFixed(currentPrice < 10 ? 5 : 2)} ({priceChangePercent >= 0 ? "+" : ""}{priceChangePercent.toFixed(2)}%)
+                          {priceChange >= 0 ? "+" : ""}{priceChange.toFixed(currentPrice < 10 ? 4 : 1)} ({priceChangePercent >= 0 ? "+" : ""}{priceChangePercent.toFixed(1)}%)
                         </div>
                       )}
                       <div className="text-[10px] text-slate-500 uppercase tracking-wider">

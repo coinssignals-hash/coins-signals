@@ -40,8 +40,8 @@ export function QuickStatsGrid({
   const stats = [
     {
       label: t('analysis_qs_change'),
-      value: `${isPositive ? '+' : ''}${changePercent.toFixed(3)}%`,
-      subValue: `${isPositive ? '+' : ''}${(pips).toFixed(2)}p`,
+      value: `${isPositive ? '+' : ''}${changePercent.toFixed(2)}%`,
+      subValue: `${isPositive ? '+' : ''}${(pips).toFixed(1)}p`,
       icon: isPositive ? TrendingUp : TrendingDown,
       color: isPositive ? 'text-green-400' : 'text-red-400',
       bgColor: isPositive ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20',
@@ -58,7 +58,7 @@ export function QuickStatsGrid({
     {
       label: t('analysis_qs_resistance'),
       value: formatPrice(resistance, symbol),
-      subValue: `${((resistance - displayPrice) * 10000).toFixed(2)}p`,
+      subValue: `${((resistance - displayPrice) * 10000).toFixed(1)}p`,
       icon: Target,
       color: 'text-red-400',
       bgColor: 'bg-red-500/10 border-red-500/20',
@@ -66,7 +66,7 @@ export function QuickStatsGrid({
     {
       label: t('analysis_qs_support'),
       value: formatPrice(support, symbol),
-      subValue: `${((displayPrice - support) * 10000).toFixed(2)}p`,
+      subValue: `${((displayPrice - support) * 10000).toFixed(1)}p`,
       icon: Shield,
       color: 'text-green-400',
       bgColor: 'bg-green-500/10 border-green-500/20',

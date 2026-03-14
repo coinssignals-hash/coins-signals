@@ -16,9 +16,9 @@ export function cn(...inputs: ClassValue[]) {
 export function formatPrice(price: number, symbol?: string): string {
   if (!symbol) {
     // Fallback: guess by price magnitude
-    if (price > 1000) return price.toFixed(2);
-    if (price > 10) return price.toFixed(3);
-    return price.toFixed(5);
+    if (price > 1000) return price.toFixed(1);
+    if (price > 10) return price.toFixed(2);
+    return price.toFixed(4);
   }
 
   const upper = symbol.toUpperCase().replace(/[^A-Z]/g, '');
@@ -35,13 +35,13 @@ export function formatPrice(price: number, symbol?: string): string {
   const stocks = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META', 'SPX', 'NDX', 'DJI'];
   const isStock = stocks.some(s => upper.includes(s));
 
-  if (isJpy) return price.toFixed(3);
-  if (isCrypto) return price > 100 ? price.toFixed(2) : price.toFixed(6);
-  if (isCommodity) return price.toFixed(2);
-  if (isStock) return price.toFixed(2);
+  if (isJpy) return price.toFixed(2);
+  if (isCrypto) return price > 100 ? price.toFixed(1) : price.toFixed(5);
+  if (isCommodity) return price.toFixed(1);
+  if (isStock) return price.toFixed(1);
 
-  // Default forex: 5 decimals
-  return price.toFixed(5);
+  // Default forex: 4 decimals
+  return price.toFixed(4);
 }
 
 /** Check if a symbol is a JPY pair */
@@ -52,8 +52,8 @@ export function isJpyPair(symbol: string): boolean {
 /** Get decimal count for a symbol */
 export function getDecimals(symbol: string): number {
   const upper = symbol.toUpperCase().replace(/[^A-Z]/g, '');
-  if (upper.includes('JPY')) return 3;
+  if (upper.includes('JPY')) return 2;
   const nonForex = ['XAU', 'XAG', 'OIL', 'BRENT', 'WTI', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META'];
-  if (nonForex.some(s => upper.includes(s))) return 2;
-  return 5;
+  if (nonForex.some(s => upper.includes(s))) return 1;
+  return 4;
 }
