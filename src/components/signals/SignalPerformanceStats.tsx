@@ -180,7 +180,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
                     <span className="ml-auto text-sm font-bold text-emerald-400">{stats.tpCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-emerald-400/80 font-mono">+{stats.totalPipsWon.toFixed(1)} pips</span>
+                    <span className="text-emerald-400/80 font-mono">+{stats.totalPipsWon.toFixed(0)} pips</span>
                     <span className="text-emerald-300/60 font-mono">
                       {stats.completed > 0 ? ((stats.tpCount / stats.completed) * 100).toFixed(0) : 0}%
                     </span>
