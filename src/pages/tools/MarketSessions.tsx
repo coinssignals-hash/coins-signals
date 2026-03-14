@@ -1280,8 +1280,10 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
               )}
             </div>
           </button>
+          </motion.div>
         );
       })}
+      </motion.div>
     </div>
   );
 }
