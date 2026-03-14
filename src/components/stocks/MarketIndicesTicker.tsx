@@ -14,21 +14,31 @@ interface IndexData {
   flash: 'up' | 'down' | null;
 }
 
-const INDICES = [
-  { symbol: 'SPY', label: 'S&P 500', fmpSymbol: 'SPY', finnhubSymbol: 'SPY' },
-  { symbol: 'QQQ', label: 'NASDAQ', fmpSymbol: 'QQQ', finnhubSymbol: 'QQQ' },
-  { symbol: 'DIA', label: 'DOW', fmpSymbol: 'DIA', finnhubSymbol: 'DIA' },
-  { symbol: 'IWM', label: 'Russell 2K', fmpSymbol: 'IWM', finnhubSymbol: 'IWM' },
-  { symbol: 'EWU', label: 'FTSE 100', fmpSymbol: 'EWU', finnhubSymbol: 'EWU' },
-  { symbol: 'EWG', label: 'DAX', fmpSymbol: 'EWG', finnhubSymbol: 'EWG' },
-  { symbol: 'EWJ', label: 'Nikkei 225', fmpSymbol: 'EWJ', finnhubSymbol: 'EWJ' },
+// US indices via FMP (ETF proxies that work on free plan)
+const US_INDICES = [
+  { symbol: 'SPY', label: 'S&P 500', fmpSymbol: 'SPY' },
+  { symbol: 'QQQ', label: 'NASDAQ', fmpSymbol: 'QQQ' },
+  { symbol: 'DIA', label: 'DOW', fmpSymbol: 'DIA' },
+  { symbol: 'IWM', label: 'Russell 2K', fmpSymbol: 'IWM' },
+];
+
+// International indices via Alpha Vantage (real index symbols)
+const INTL_INDICES = [
+  { symbol: 'FTSE', label: 'FTSE 100', avSymbol: 'FTSE:IND' },
+  { symbol: 'DAX', label: 'DAX', avSymbol: 'DAX:IND' },
+  { symbol: 'NIKKEI', label: 'Nikkei 225', avSymbol: 'NIKKEI:IND' },
+];
+
+const ALL_SYMBOLS = [
+  ...US_INDICES.map(i => ({ symbol: i.symbol, label: i.label })),
+  ...INTL_INDICES.map(i => ({ symbol: i.symbol, label: i.label })),
 ];
 
 const POLL_INTERVAL = 15_000;
 
 export function MarketIndicesTicker() {
   const [indices, setIndices] = useState<IndexData[]>(
-    INDICES.map(i => ({
+    ALL_SYMBOLS.map(i => ({
       symbol: i.symbol, label: i.label, price: null, change: null,
       changePercent: null, loading: true, lastUpdate: null, flash: null,
     }))
@@ -38,51 +48,97 @@ export function MarketIndicesTicker() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevPricesRef = useRef<Record<string, number>>({});
 
-  const fetchFromFMP = useCallback(async (): Promise<any[] | null> => {
+  // Fetch US indices from FMP
+  const fetchUS = useCallback(async (): Promise<any[]> => {
     try {
-      const symbols = INDICES.map(i => i.fmpSymbol).join(',');
+      const symbols = US_INDICES.map(i => i.fmpSymbol).join(',');
       const { data, error } = await supabase.functions.invoke('fmp-data', {
         body: { action: 'quote', symbol: symbols },
       });
-      if (error || !Array.isArray(data)) return null;
-      return data;
+      if (error || !Array.isArray(data)) return [];
+      return data.map((d: any) => ({
+        symbol: d.symbol,
+        price: d.price ?? null,
+        change: d.change ?? null,
+        changesPercentage: d.changesPercentage ?? null,
+      }));
     } catch {
-      return null;
+      return [];
     }
   }, []);
 
-  const fetchFromFinnhub = useCallback(async (): Promise<any[] | null> => {
-    try {
-      const results: any[] = [];
-      // Fetch one by one from market-data edge function with Finnhub
-      for (const idx of INDICES) {
-        const { data } = await supabase.functions.invoke('market-data', {
-          body: { symbol: idx.finnhubSymbol, indicator: 'quote', interval: '1d' },
+  // Fetch international indices from Alpha Vantage via market-data edge function
+  const fetchIntl = useCallback(async (): Promise<any[]> => {
+    const results: any[] = [];
+    // Batch requests with small delay to avoid rate limits
+    for (const idx of INTL_INDICES) {
+      try {
+        const { data } = await supabase.functions.invoke('alpha-vantage', {
+          body: { function: 'GLOBAL_QUOTE', symbol: idx.avSymbol },
         });
-        if (data?.data) {
-          const q = data.data;
+
+        const quote = data?.['Global Quote'] ?? data?.data?.['Global Quote'] ?? data?.data ?? data;
+
+        const price = parseFloat(quote?.['05. price'] ?? quote?.price ?? quote?.c ?? '0');
+        const change = parseFloat(quote?.['09. change'] ?? quote?.change ?? quote?.d ?? '0');
+        const changePercent = parseFloat(
+          (quote?.['10. change percent'] ?? quote?.changePercent ?? quote?.dp ?? '0')
+            .toString().replace('%', '')
+        );
+
+        if (price > 0) {
           results.push({
             symbol: idx.symbol,
-            price: q.c ?? q.price ?? null,
-            change: q.d ?? q.change ?? null,
-            changesPercentage: q.dp ?? q.changePercent ?? null,
+            price,
+            change,
+            changesPercentage: changePercent,
           });
         }
+      } catch {
+        // Skip this index on error
       }
-      return results.length > 0 ? results : null;
-    } catch {
-      return null;
     }
+
+    // If Alpha Vantage failed, try Finnhub as fallback
+    if (results.length < INTL_INDICES.length) {
+      const finnhubMap: Record<string, string> = {
+        'FTSE': '^FTSE',
+        'DAX': '^GDAXI',
+        'NIKKEI': '^N225',
+      };
+      const missing = INTL_INDICES.filter(i => !results.find(r => r.symbol === i.symbol));
+      for (const idx of missing) {
+        try {
+          const { data } = await supabase.functions.invoke('market-data', {
+            body: { symbol: finnhubMap[idx.symbol] || idx.symbol, indicator: 'quote', interval: '1d' },
+          });
+          if (data?.data) {
+            const q = data.data;
+            const price = q.c ?? q.price ?? 0;
+            if (price > 0) {
+              results.push({
+                symbol: idx.symbol,
+                price,
+                change: q.d ?? q.change ?? 0,
+                changesPercentage: q.dp ?? q.changePercent ?? 0,
+              });
+            }
+          }
+        } catch {
+          // Skip
+        }
+      }
+    }
+
+    return results;
   }, []);
 
   const fetchIndices = useCallback(async () => {
-    // Try FMP first, fallback to Finnhub/market-data
-    let data = await fetchFromFMP();
-    if (!data || data.length === 0) {
-      data = await fetchFromFinnhub();
-    }
+    // Fetch US and international in parallel
+    const [usData, intlData] = await Promise.all([fetchUS(), fetchIntl()]);
+    const allData = [...usData, ...intlData];
 
-    if (!data || data.length === 0) {
+    if (allData.length === 0) {
       setIsLive(false);
       setIndices(prev => prev.map(i => ({ ...i, loading: false })));
       return;
@@ -93,7 +149,7 @@ export function MarketIndicesTicker() {
 
     setIndices(prev =>
       prev.map(idx => {
-        const match = data!.find((d: any) => d.symbol === idx.symbol);
+        const match = allData.find((d: any) => d.symbol === idx.symbol);
         if (!match) return { ...idx, loading: false };
 
         const newPrice = match.price ?? null;
@@ -123,7 +179,7 @@ export function MarketIndicesTicker() {
     setTimeout(() => {
       setIndices(prev => prev.map(i => ({ ...i, flash: null })));
     }, 800);
-  }, [fetchFromFMP, fetchFromFinnhub]);
+  }, [fetchUS, fetchIntl]);
 
   // Visibility-based polling
   useEffect(() => {
@@ -155,10 +211,6 @@ export function MarketIndicesTicker() {
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [fetchIndices]);
-
-  const timeSinceUpdate = lastFetchTime
-    ? `${Math.round((Date.now() - lastFetchTime.getTime()) / 1000)}s`
-    : '—';
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-cyan-800/25 bg-[hsl(210,40%,8%)]">
