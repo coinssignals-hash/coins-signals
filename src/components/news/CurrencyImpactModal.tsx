@@ -148,7 +148,7 @@ function SignalRow({ signal, getQuote }: { signal: SignalMatch; getQuote: (s: st
             !diff ? 'text-muted-foreground' :
             diff.isPositive ? 'text-green-400' : 'text-red-400'
           }`}>
-            {diff ? `${diff.isPositive ? '+' : ''}${diff.percent.toFixed(3)}%` : '—'}
+            {diff ? `${diff.isPositive ? '+' : ''}${diff.percent.toFixed(2)}%` : '—'}
           </span>
         </div>
       </div>

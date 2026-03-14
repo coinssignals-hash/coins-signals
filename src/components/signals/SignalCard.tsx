@@ -638,7 +638,7 @@ export function SignalCard({ signal, isFavorite = false, onToggleFavorite }: Sig
                         isNearResistance && "text-rose-300",
                         !isNearSupport && !isNearResistance && "text-amber-300"
                       )}>
-                        {currentPrice.toFixed(currentPrice < 10 ? 5 : 2)}
+                        {currentPrice.toFixed(currentPrice < 10 ? 4 : 1)}
                       </div>
                       {hasLivePrice && (
                         <div className={cn(
