@@ -1200,6 +1200,11 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
       </div>
 
       {/* Rows */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+      >
       {SESSIONS.map((session, i) => {
         const stats = sessionStats[i];
         const status = getSessionStatus(session);
@@ -1207,8 +1212,14 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
         const volPct = maxVol > 0 ? (stats.totalVolume / maxVol) * 100 : 0;
 
         return (
-          <button
+          <motion.div
             key={session.id}
+            variants={{
+              hidden: { opacity: 0, x: -12 },
+              visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } },
+            }}
+          >
+          <button
             onClick={() => onSelect(i)}
             className={cn(
               'w-full grid grid-cols-[1fr_60px_70px_60px] gap-0 px-3 py-2 items-center transition-all border-b last:border-b-0 text-left',
@@ -1269,8 +1280,10 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
               )}
             </div>
           </button>
+          </motion.div>
         );
       })}
+      </motion.div>
     </div>
   );
 }
