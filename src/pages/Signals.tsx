@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain, PlusCircle } from 'lucide-react';
+import { User, Loader2, Heart, LayoutGrid, List, ArrowUpDown, TrendingUp, Clock, Target, History, CalendarIcon, X, Brain, PlusCircle, ChevronDown } from 'lucide-react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { SignalCard } from '@/components/signals/SignalCard';
 const SignalCardV2 = lazy(() => import('@/components/signals/SignalCardV2').then(m => ({ default: m.SignalCardV2 })));
@@ -261,58 +261,56 @@ export default function Signals() {
             
         </div>
 
-        {/* Day Tab Switcher — edge-to-edge scroll on mobile */}
-        <div className="flex gap-1 px-3 py-2 overflow-x-auto scrollbar-hide -mx-0 sm:mx-0">
-        {[
-            { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
-            { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
-            { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
-            { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 }].
-            map((tab) =>
-            <button
-              key={tab.key}
-              onClick={() => {setDayTab(tab.key);setCalendarDate(undefined);}}
-              className={cn(
-                "flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
-                dayTab === tab.key && tab.key !== 'calendar' ?
-                tab.key === 'today' ?
-                "bg-blue-600 text-white shadow-lg shadow-blue-500/30" :
-                tab.key === 'yesterday' ?
-                "bg-violet-600 text-white shadow-lg shadow-violet-500/30" :
-                tab.key === 'tomorrow' ?
-                "bg-amber-600 text-white shadow-lg shadow-amber-500/30" :
-                "bg-slate-600 text-white shadow-lg shadow-slate-500/30" :
-                "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-              )}>
-              
-              {tab.icon}
-              <span className="hidden xs:inline sm:inline">{tab.label}</span>
-              <span className="xs:hidden sm:hidden">{tab.label.slice(0, 3)}</span>
-              {tab.count > 0 &&
-              <span className="ml-0.5 bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full">{tab.count}</span>
-              }
-            </button>
-            )}
-
-          {/* Calendar picker */}
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
+        {/* Unified Nav Bar — day tabs + source filter in one row */}
+        <div className="flex items-center gap-1 px-3 py-2">
+          {/* Day tabs — take available space */}
+          <div className="flex gap-0.5 flex-1 min-w-0">
+            {[
+              { key: 'yesterday' as DayTab, label: t('signals_yesterday'), abbr: 'Ayer', icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
+              { key: 'today' as DayTab, label: t('signals_today'), abbr: 'Hoy', icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
+              { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), abbr: 'Mañ', icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
+              { key: 'all' as DayTab, label: t('signals_all'), abbr: 'All', icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
+            ].map((tab) => (
               <button
-                  className={cn(
-                    "flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all justify-center active:scale-95",
-                    dayTab === 'calendar' ?
-                    "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30" :
-                    "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                  )}>
-                  
-                <CalendarIcon className="w-3.5 h-3.5" />
-                {dayTab === 'calendar' && calendarDate ?
-                  format(calendarDate, 'd MMM', { locale: dateLocale }) :
-                  ''}
+                key={tab.key}
+                onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
+                className={cn(
+                  "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
+                  dayTab === tab.key
+                    ? tab.key === 'today' ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                    : tab.key === 'yesterday' ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
+                    : tab.key === 'tomorrow' ? "bg-amber-600 text-white shadow-md shadow-amber-500/25"
+                    : "bg-slate-600 text-white shadow-md shadow-slate-500/25"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                )}
+              >
+                {tab.icon}
+                <span className="hidden sm:inline">{tab.abbr}</span>
+                {tab.count > 0 && (
+                  <span className="bg-white/20 text-[9px] px-1 py-px rounded-full leading-none">{tab.count}</span>
+                )}
               </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-700" align="end">
-              <Calendar
+            ))}
+
+            {/* Calendar */}
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    "flex items-center gap-0.5 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center active:scale-95",
+                    dayTab === 'calendar'
+                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/25"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  )}
+                >
+                  <CalendarIcon className="w-3.5 h-3.5" />
+                  {dayTab === 'calendar' && calendarDate
+                    ? <span className="hidden sm:inline">{format(calendarDate, 'd MMM', { locale: dateLocale })}</span>
+                    : null}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-slate-900 border-slate-700" align="end">
+                <Calendar
                   mode="single"
                   selected={calendarDate}
                   onSelect={(date) => {
@@ -322,52 +320,71 @@ export default function Signals() {
                   }}
                   initialFocus
                   className={cn("p-3 pointer-events-auto")}
-                  locale={dateLocale} />
-                
+                  locale={dateLocale}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-5 bg-border/40 mx-0.5 shrink-0" />
+
+          {/* Source filter dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
+                  sourceFilter === 'ai-center'
+                    ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                    : sourceFilter === 'server'
+                      ? "bg-primary/15 text-primary border-primary/30"
+                      : "bg-secondary/50 text-foreground border-border/50"
+                )}
+              >
+                {sourceFilter === 'ai-center' ? <Brain className="w-3 h-3" /> : sourceFilter === 'server' ? <TrendingUp className="w-3 h-3" /> : null}
+                {sourceFilter === 'all' ? 'Src' : sourceFilter === 'server' ? 'Srv' : 'AI'}
+                <ChevronDown className="w-3 h-3 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-36 p-1 bg-card border-border" align="end" sideOffset={4}>
+              {([
+                { key: 'all' as SourceFilter, label: t('signals_all'), icon: null },
+                { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+                { key: 'ai-center' as SourceFilter, label: 'AI Center', icon: <Brain className="w-3.5 h-3.5" /> },
+              ]).map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setSourceFilter(opt.key)}
+                  className={cn(
+                    "w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-xs font-medium transition-colors",
+                    sourceFilter === opt.key
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  )}
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
             </PopoverContent>
           </Popover>
         </div>
 
         {/* Calendar date indicator */}
-        {dayTab === 'calendar' && calendarDate &&
+        {dayTab === 'calendar' && calendarDate && (
           <div className="flex items-center gap-2 px-4 pb-2">
             <span className="text-xs text-emerald-400">
               {format(calendarDate, "EEEE d 'de' MMMM yyyy", { locale: dateLocale })}
             </span>
             <button
-              onClick={() => {setDayTab('today');setCalendarDate(undefined);}}
-              className="text-slate-500 hover:text-slate-300">
-              
+              onClick={() => { setDayTab('today'); setCalendarDate(undefined); }}
+              className="text-muted-foreground hover:text-foreground"
+            >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          }
-      {/* Source Filter Chips */}
-      <div className="flex gap-1.5 px-3 py-1.5">
-        {([
-          { key: 'all' as SourceFilter, label: t('signals_all'), icon: null },
-          { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3 h-3" /> },
-          { key: 'ai-center' as SourceFilter, label: 'AI', icon: <Brain className="w-3 h-3" /> },
-        ]).map((opt) => (
-          <button
-            key={opt.key}
-            onClick={() => setSourceFilter(opt.key)}
-            className={cn(
-              "flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all active:scale-95 border",
-              sourceFilter === opt.key
-                ? opt.key === 'ai-center'
-                  ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
-                  : opt.key === 'server'
-                    ? "bg-primary/15 text-primary border-primary/30"
-                    : "bg-secondary text-foreground border-border"
-                : "text-muted-foreground border-transparent hover:bg-secondary/50"
-            )}
-          >
-            {opt.icon}
-            {opt.label}
-          </button>
-        ))}
-      </div>
+        )}
 
 
       {/* Filters Bar */}
