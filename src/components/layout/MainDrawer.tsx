@@ -115,7 +115,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-80 p-0 bg-background border-border">
+      <SheetContent side={drawerSide} className="w-80 p-0 bg-background border-border">
         <SheetHeader className="p-6 pb-4">
           {user ? (
             <div className="flex items-center gap-3">
