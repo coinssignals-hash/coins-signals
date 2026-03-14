@@ -1443,7 +1443,7 @@ export default function MarketSessions() {
                 key={s.id}
                 onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
                 className={cn(
-                  'flex flex-col items-center gap-0.5 py-2 rounded-xl text-[9px] font-semibold transition-all active:scale-95',
+                  'flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
                   isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
                 )}
                 style={{
