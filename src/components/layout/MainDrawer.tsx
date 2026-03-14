@@ -12,6 +12,7 @@ import {
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
   Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert
 } from 'lucide-react';
+import { LanguageQuickSelect } from './LanguageQuickSelect';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
