@@ -1088,7 +1088,7 @@ function SessionCard({ session, isActive }: { session: SessionData; isActive: bo
                 return (
                   <span
                     key={hour}
-                    className="absolute text-[7px] font-mono font-bold -translate-x-1/2"
+                    className="absolute text-[9px] font-mono font-bold -translate-x-1/2"
                     style={{
                       left: `${pct + (100 / totalHours) / 2}%`,
                       color: `hsl(${session.color} / 0.7)`,
