@@ -1363,13 +1363,13 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
             {/* Spread */}
             <div className="text-right">
               {stats.hasData && stats.avgSpread > 0 ? (
-                <span className="text-[10px] font-mono font-bold tabular-nums" style={{
+                <span className="text-xs font-mono font-bold tabular-nums" style={{
                   color: stats.avgSpread < 2 ? 'hsl(var(--bullish, 140 60% 50%))' : stats.avgSpread < 4 ? 'hsl(var(--accent))' : 'hsl(var(--destructive))',
                 }}>
                   {stats.avgSpread.toFixed(1)}p
                 </span>
               ) : (
-                <span className="text-[9px] text-muted-foreground">—</span>
+                <span className="text-[11px] text-muted-foreground">—</span>
               )}
             </div>
 
