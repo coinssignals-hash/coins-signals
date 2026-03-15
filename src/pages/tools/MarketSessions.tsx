@@ -1157,8 +1157,8 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
             background: `hsl(${session.color} / 0.06)`,
             borderBottom: '1px solid hsl(var(--border) / 0.3)',
           }}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
-            <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t('ms_pairs')}</span>
+            <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} t={t} />
           </div>
           <div className="grid grid-cols-4 gap-px" style={{ background: 'hsl(var(--border) / 0.15)' }}>
             {session.currencies.map(c => {
