@@ -125,7 +125,7 @@ export default function SwapCalculator() {
                 <div className="bg-secondary/50 rounded-lg p-3 text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <TrendingDown className="w-3 h-3 text-rose-400" />
-                    <span className="text-[10px] text-muted-foreground uppercase">Short (Sell)</span>
+                    <span className="text-[10px] text-muted-foreground uppercase">{t('swap_short_sell')}</span>
                   </div>
                   <p className={cn('text-lg font-bold tabular-nums', pairData.shortSwap >= 0 ? 'text-emerald-400' : 'text-rose-400')}>
                     {pairData.shortSwap >= 0 ? '+' : ''}{pairData.shortSwap} pips

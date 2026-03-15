@@ -284,7 +284,7 @@ export default function MultiTFScreener() {
                       <table className="w-full mt-3">
                         <thead>
                           <tr>
-                            <th className="text-[9px] text-muted-foreground text-left pb-2 w-16">TF</th>
+                            <th className="text-[9px] text-muted-foreground text-left pb-2 w-16">{t('mtf_tf')}</th>
                             {INDICATORS_KEYS.map(ind => (
                               <th key={ind} className="text-[9px] text-muted-foreground text-center pb-2">{ind === 'mtf_trend' ? t('mtf_trend') : ind}</th>
                             ))}

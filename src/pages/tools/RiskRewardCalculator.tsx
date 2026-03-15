@@ -290,19 +290,19 @@ export default function RiskRewardCalculator() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground mb-1">Standard</p>
+                    <p className="text-[10px] text-muted-foreground mb-1">{t('rr_lot_standard')}</p>
                     <p className="text-lg font-bold text-primary tabular-nums">{result.optimalLots}</p>
-                    <p className="text-[9px] text-muted-foreground">100K units</p>
+                    <p className="text-[9px] text-muted-foreground">{t('rr_100k_units')}</p>
                   </div>
                   <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground mb-1">Mini</p>
+                    <p className="text-[10px] text-muted-foreground mb-1">{t('rr_lot_mini')}</p>
                     <p className="text-lg font-bold text-primary tabular-nums">{result.miniLots}</p>
-                    <p className="text-[9px] text-muted-foreground">10K units</p>
+                    <p className="text-[9px] text-muted-foreground">{t('rr_10k_units')}</p>
                   </div>
                   <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground mb-1">Micro</p>
+                    <p className="text-[10px] text-muted-foreground mb-1">{t('rr_lot_micro')}</p>
                     <p className="text-lg font-bold text-primary tabular-nums">{result.microLots}</p>
-                    <p className="text-[9px] text-muted-foreground">1K units</p>
+                    <p className="text-[9px] text-muted-foreground">{t('rr_1k_units')}</p>
                   </div>
                 </div>
                 <p className="text-[10px] text-muted-foreground text-center">

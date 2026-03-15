@@ -257,7 +257,7 @@ export default function BacktestPro() {
                         { label: t('tp_max_drawdown'), key: 'maxDrawdown', fmt: (v: number) => `${v.toFixed(1)}%`, good: (v: number) => v < 20 },
                         { label: t('tp_sharpe_ratio'), key: 'sharpeRatio', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1 },
                         { label: t('tp_profit_factor'), key: 'profitFactor', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1.5 },
-                        { label: 'Win Rate', key: 'winningTrades', fmt: (v: number, r: BacktestResult) => `${((r.winningTrades / r.totalTrades) * 100).toFixed(1)}%`, good: (v: number) => v > 50 },
+                        { label: t('tp_win_rate'), key: 'winningTrades', fmt: (v: number, r: BacktestResult) => `${((r.winningTrades / r.totalTrades) * 100).toFixed(1)}%`, good: (v: number) => v > 50 },
                         { label: t('tp_total_trades'), key: 'totalTrades', fmt: (v: number) => v.toString(), good: () => true },
                       ].map(metric => (
                         <tr key={metric.label} className="border-t border-border/20">
