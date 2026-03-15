@@ -687,99 +687,93 @@ export default function BrokerRating() {
                 );
               })}
             </div>
+
+            {/* Advanced filters toggle inline */}
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="flex items-center justify-between w-full mt-3 px-3 py-2 rounded-lg bg-muted/50 border border-border transition-colors hover:bg-muted active:scale-[0.99]"
+            >
+              <span className="text-[11px] font-semibold text-muted-foreground">{t('broker_advanced_filters')}</span>
+              {showAdvancedFilters ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+            </button>
+
+            {showAdvancedFilters && (
+              <div className="mt-3 pt-3 border-t border-border space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1 block font-medium">{t('broker_country')}</label>
+                    <Select value={location} onValueChange={setLocation}>
+                      <SelectTrigger className="bg-secondary h-9 text-xs"><SelectValue placeholder="..." /></SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="europa">Europa</SelectItem>
+                        <SelectItem value="latam">LATAM</SelectItem>
+                        <SelectItem value="usa">USA</SelectItem>
+                        <SelectItem value="asia">Asia</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1 block font-medium">{t('broker_trader_mode')}</label>
+                    <Select value={currency} onValueChange={setCurrency}>
+                      <SelectTrigger className="bg-secondary h-9 text-xs"><SelectValue placeholder="..." /></SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="usd">USD</SelectItem>
+                        <SelectItem value="eur">EUR</SelectItem>
+                        <SelectItem value="gbp">GBP</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1 block font-medium">{t('broker_deposit_amount')}</label>
+                    <Select value={depositRange} onValueChange={setDepositRange}>
+                      <SelectTrigger className="bg-secondary h-9 text-xs"><SelectValue placeholder="..." /></SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="0-100">$0 - $100</SelectItem>
+                        <SelectItem value="100-500">$100 - $500</SelectItem>
+                        <SelectItem value="500-1000">$500 - $1,000</SelectItem>
+                        <SelectItem value="1000+">$1,000+</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1 block font-medium">{t('broker_country_currency')}</label>
+                    <Select value={method} onValueChange={setMethod}>
+                      <SelectTrigger className="bg-secondary h-9 text-xs"><SelectValue placeholder="..." /></SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="transferencia">Transferencia</SelectItem>
+                        <SelectItem value="tarjeta">Tarjeta</SelectItem>
+                        <SelectItem value="crypto">Crypto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1 block font-medium">{t('broker_market_entry')}</label>
+                    <Select value={operation} onValueChange={setOperation}>
+                      <SelectTrigger className="bg-secondary h-9 text-xs"><SelectValue placeholder="..." /></SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="scalping">Scalping</SelectItem>
+                        <SelectItem value="day">Day Trading</SelectItem>
+                        <SelectItem value="swing">Swing Trading</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-muted-foreground mb-1 block font-medium">{t('broker_preferred_market')}</label>
+                    <Select value={markets} onValueChange={setMarkets}>
+                      <SelectTrigger className="bg-secondary h-9 text-xs"><SelectValue placeholder="..." /></SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="forex">Forex</SelectItem>
+                        <SelectItem value="acciones">Acciones</SelectItem>
+                        <SelectItem value="crypto">Crypto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary/90 h-9 text-xs">{t('broker_search_btn')}</Button>
+              </div>
+            )}
           </CardContent>
         </Card>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="w-full mb-4 justify-between"
-        >
-          <span>{t('broker_advanced_filters')}</span>
-          {showAdvancedFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </Button>
-
-        {showAdvancedFilters && (
-          <Card className="mb-4">
-            <CardContent className="p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-2">{t('broker_filter_title')}</h3>
-              <p className="text-xs text-muted-foreground mb-4">{t('broker_filter_desc')}</p>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_country')}</label>
-                  <Select value={location} onValueChange={setLocation}>
-                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      <SelectItem value="europa">Europa</SelectItem>
-                      <SelectItem value="latam">LATAM</SelectItem>
-                      <SelectItem value="usa">USA</SelectItem>
-                      <SelectItem value="asia">Asia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_trader_mode')}</label>
-                  <Select value={currency} onValueChange={setCurrency}>
-                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      <SelectItem value="usd">USD</SelectItem>
-                      <SelectItem value="eur">EUR</SelectItem>
-                      <SelectItem value="gbp">GBP</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_deposit_amount')}</label>
-                  <Select value={depositRange} onValueChange={setDepositRange}>
-                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      <SelectItem value="0-100">$0 - $100</SelectItem>
-                      <SelectItem value="100-500">$100 - $500</SelectItem>
-                      <SelectItem value="500-1000">$500 - $1,000</SelectItem>
-                      <SelectItem value="1000+">$1,000+</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_country_currency')}</label>
-                  <Select value={method} onValueChange={setMethod}>
-                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      <SelectItem value="transferencia">Transferencia</SelectItem>
-                      <SelectItem value="tarjeta">Tarjeta</SelectItem>
-                      <SelectItem value="crypto">Crypto</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_market_entry')}</label>
-                  <Select value={operation} onValueChange={setOperation}>
-                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      <SelectItem value="scalping">Scalping</SelectItem>
-                      <SelectItem value="day">Day Trading</SelectItem>
-                      <SelectItem value="swing">Swing Trading</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('broker_preferred_market')}</label>
-                  <Select value={markets} onValueChange={setMarkets}>
-                    <SelectTrigger className="bg-secondary"><SelectValue placeholder="..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      <SelectItem value="forex">Forex</SelectItem>
-                      <SelectItem value="acciones">Acciones</SelectItem>
-                      <SelectItem value="crypto">Crypto</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <Button className="w-full mt-4 bg-primary hover:bg-primary/90">{t('broker_search_btn')}</Button>
-            </CardContent>
-          </Card>
-        )}
 
         <div className="flex items-center justify-between mb-4 gap-2">
           <p className="text-xs text-muted-foreground flex-1">
