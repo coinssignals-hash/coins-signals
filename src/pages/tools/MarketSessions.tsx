@@ -466,6 +466,7 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
   color: string;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
