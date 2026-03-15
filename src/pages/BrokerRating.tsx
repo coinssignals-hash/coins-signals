@@ -1074,8 +1074,8 @@ export default function BrokerRating() {
                   </div>
                 </DialogHeader>
                 <div className="flex gap-4 mb-6">
-                  <div className="w-32 h-32 bg-secondary rounded-lg flex items-center justify-center">
-                    <span className="text-4xl font-bold text-foreground">{selectedBroker.logo}</span>
+                  <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden p-3">
+                    <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground leading-relaxed">
