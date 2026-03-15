@@ -129,7 +129,7 @@ Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa 
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: "Eres un analista de trading Forex profesional. Respondes siempre en español con reportes concisos y accionables." },
+          { role: "system", content: `Eres un analista de trading Forex profesional. ${langInstruction} Genera reportes concisos y accionables.` },
           { role: "user", content: prompt },
         ],
         stream: false,
