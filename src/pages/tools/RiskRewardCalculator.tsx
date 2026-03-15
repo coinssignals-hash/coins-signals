@@ -13,12 +13,17 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 
 const PAIRS = [
-  { symbol: 'EUR/USD', pipSize: 0.0001 }, { symbol: 'GBP/USD', pipSize: 0.0001 },
-  { symbol: 'USD/JPY', pipSize: 0.01 }, { symbol: 'USD/CHF', pipSize: 0.0001 },
-  { symbol: 'AUD/USD', pipSize: 0.0001 }, { symbol: 'NZD/USD', pipSize: 0.0001 },
-  { symbol: 'USD/CAD', pipSize: 0.0001 }, { symbol: 'EUR/GBP', pipSize: 0.0001 },
-  { symbol: 'EUR/JPY', pipSize: 0.01 }, { symbol: 'GBP/JPY', pipSize: 0.01 },
-  { symbol: 'XAU/USD', pipSize: 0.01 },
+  { symbol: 'EUR/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'GBP/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'USD/JPY', pipSize: 0.01, pipValue: 6.7 },
+  { symbol: 'USD/CHF', pipSize: 0.0001, pipValue: 10.3 },
+  { symbol: 'AUD/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'NZD/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'USD/CAD', pipSize: 0.0001, pipValue: 7.4 },
+  { symbol: 'EUR/GBP', pipSize: 0.0001, pipValue: 12.7 },
+  { symbol: 'EUR/JPY', pipSize: 0.01, pipValue: 6.7 },
+  { symbol: 'GBP/JPY', pipSize: 0.01, pipValue: 6.7 },
+  { symbol: 'XAU/USD', pipSize: 0.01, pipValue: 1 },
 ];
 
 interface Result {
