@@ -191,7 +191,7 @@ export function AICenter({ onClose }: Props) {
       <div className="rounded-xl border border-cyan-800/30 overflow-hidden"
       style={{ background: 'radial-gradient(ellipse at top center, hsl(200,100%,12%) 0%, hsl(210,100%,6%) 100%)' }}>
           <div className="p-4">
-            <AIModelConfig settings={modelSettings} onChange={setModelSettings} />
+            <AIModelConfig settings={modelSettings} onChange={setModelSettings} detailLevel={detailLevel} onDetailLevelChange={setDetailLevel} />
           </div>
         </div>
       }

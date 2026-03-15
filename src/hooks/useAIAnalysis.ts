@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 export type AIModule = 'analyze-patterns' | 'predict-signals' | 'generate-report' | 'synthesize-analysis' | 'correlation-analysis';
+export type DetailLevel = 'concise' | 'standard' | 'detailed';
 
 export interface AIAnalysisResult {
   module: AIModule;
@@ -15,13 +16,14 @@ export function useAIAnalysis() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, AIAnalysisResult>>({});
+  const [detailLevel, setDetailLevel] = useState<DetailLevel>('standard');
 
   const runModule = useCallback(async (module: AIModule, payload: Record<string, unknown>) => {
     setLoading(true);
     setError(null);
     try {
       const { data, error: fnError } = await supabase.functions.invoke(module, {
-        body: { ...payload, language },
+        body: { ...payload, language, detailLevel },
       });
       if (fnError) throw fnError;
 
@@ -39,28 +41,25 @@ export function useAIAnalysis() {
     } finally {
       setLoading(false);
     }
-  }, [language]);
+  }, [language, detailLevel]);
 
   const runFullAnalysis = useCallback(async (symbol: string, candles: unknown[], indicators: unknown) => {
     setLoading(true);
     setError(null);
-    // Run first 3 modules, then synthesize with their results
     const initialModules: AIModule[] = ['analyze-patterns', 'predict-signals', 'generate-report', 'correlation-analysis'];
     const allResults: Record<string, AIAnalysisResult> = {};
 
     try {
-      // Run first 3 modules sequentially
       for (const mod of initialModules) {
         const { data, error: fnError } = await supabase.functions.invoke(mod, {
-          body: { symbol, candles, indicators, language },
+          body: { symbol, candles, indicators, language, detailLevel },
         });
         if (fnError) throw fnError;
         allResults[mod] = { module: mod, data, timestamp: new Date().toISOString() };
       }
 
-      // Run synthesize-analysis with previous results
       const { data, error: fnError } = await supabase.functions.invoke('synthesize-analysis', {
-        body: { symbol, candles, indicators, previousResults: allResults, language },
+        body: { symbol, candles, indicators, previousResults: allResults, language, detailLevel },
       });
       if (fnError) throw fnError;
       allResults['synthesize-analysis'] = { module: 'synthesize-analysis', data, timestamp: new Date().toISOString() };
@@ -74,7 +73,7 @@ export function useAIAnalysis() {
     } finally {
       setLoading(false);
     }
-  }, [language]);
+  }, [language, detailLevel]);
 
-  return { results, loading, error, runModule, runFullAnalysis };
+  return { results, loading, error, runModule, runFullAnalysis, detailLevel, setDetailLevel };
 }
