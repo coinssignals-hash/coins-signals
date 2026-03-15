@@ -1,14 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Scale, Target, ShieldAlert, Info } from 'lucide-react';
+import { ArrowLeft, Scale, Target, ShieldAlert, Info, Calculator } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { toast } from 'sonner';
 
 const PAIRS = [
   { symbol: 'EUR/USD', pipSize: 0.0001 }, { symbol: 'GBP/USD', pipSize: 0.0001 },
@@ -19,6 +21,17 @@ const PAIRS = [
   { symbol: 'XAU/USD', pipSize: 0.01 },
 ];
 
+interface Result {
+  riskPips: string;
+  rewardPips: string;
+  ratio: string;
+  riskAmount: string;
+  potentialProfit: string;
+  isGoodRatio: boolean;
+  isAcceptable: boolean;
+  verdict: string;
+}
+
 export default function RiskRewardCalculator() {
   const { t } = useTranslation();
   const [pair, setPair] = useState('EUR/USD');
@@ -28,16 +41,31 @@ export default function RiskRewardCalculator() {
   const [takeProfit, setTakeProfit] = useState('');
   const [accountBalance, setAccountBalance] = useState('10000');
   const [riskPercent, setRiskPercent] = useState('2');
+  const [result, setResult] = useState<Result | null>(null);
 
-  const result = useMemo(() => {
+  const handleCalculate = () => {
     const entry = parseFloat(entryPrice);
     const sl = parseFloat(stopLoss);
     const tp = parseFloat(takeProfit);
     const balance = parseFloat(accountBalance);
     const riskPct = parseFloat(riskPercent);
-    if (!entry || !sl || !tp || !balance || !riskPct) return null;
+
+    if (!entry || !sl || !tp) {
+      toast.error(t('rr_fill_prices') || 'Completa Entry, Stop Loss y Take Profit');
+      return;
+    }
+    if (!balance || balance <= 0) {
+      toast.error(t('rr_invalid_balance') || 'Ingresa un balance válido');
+      return;
+    }
+    if (!riskPct || riskPct <= 0) {
+      toast.error(t('rr_invalid_risk') || 'Ingresa un % de riesgo válido');
+      return;
+    }
+
     const pairData = PAIRS.find(p => p.symbol === pair);
-    if (!pairData) return null;
+    if (!pairData) return;
+
     const riskPips = Math.abs(entry - sl) / pairData.pipSize;
     const rewardPips = Math.abs(tp - entry) / pairData.pipSize;
     const ratio = riskPips > 0 ? rewardPips / riskPips : 0;
@@ -45,13 +73,20 @@ export default function RiskRewardCalculator() {
     const potentialProfit = ratio * riskAmount;
     const isGoodRatio = ratio >= 2;
     const isAcceptable = ratio >= 1 && ratio < 2;
-    return {
-      riskPips: riskPips.toFixed(1), rewardPips: rewardPips.toFixed(1),
-      ratio: ratio.toFixed(2), riskAmount: riskAmount.toFixed(2),
-      potentialProfit: potentialProfit.toFixed(2), isGoodRatio, isAcceptable,
-      verdict: isGoodRatio ? t('rr_excellent') : isAcceptable ? t('rr_acceptable') : t('rr_not_recommended'),
-    };
-  }, [pair, direction, entryPrice, stopLoss, takeProfit, accountBalance, riskPercent, t]);
+
+    setResult({
+      riskPips: riskPips.toFixed(1),
+      rewardPips: rewardPips.toFixed(1),
+      ratio: ratio.toFixed(2),
+      riskAmount: riskAmount.toFixed(2),
+      potentialProfit: potentialProfit.toFixed(2),
+      isGoodRatio,
+      isAcceptable,
+      verdict: isGoodRatio ? (t('rr_excellent') || 'Excelente') : isAcceptable ? (t('rr_acceptable') || 'Aceptable') : (t('rr_not_recommended') || 'No recomendado'),
+    });
+
+    toast.success(t('rr_calculated') || 'Resultado calculado');
+  };
 
   return (
     <PageShell>
@@ -116,6 +151,11 @@ export default function RiskRewardCalculator() {
                 <Input type="number" step="0.5" value={riskPercent} onChange={e => setRiskPercent(e.target.value)} className="bg-secondary border-border text-foreground" />
               </div>
             </div>
+
+            <Button onClick={handleCalculate} className="w-full gap-2 font-semibold">
+              <Calculator className="w-4 h-4" />
+              {t('rr_calculate_btn') || 'Calcular Riesgo / Recompensa'}
+            </Button>
           </CardContent>
         </Card>
 
