@@ -20,7 +20,7 @@ interface Props {
   onDetailLevelChange: (level: DetailLevel) => void;
 }
 
-export function AIModelConfig({ settings, onChange }: Props) {
+export function AIModelConfig({ settings, onChange, detailLevel, onDetailLevelChange }: Props) {
   const { t } = useTranslation();
   const selected = settings.models;
 
