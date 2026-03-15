@@ -14,6 +14,30 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 
+import igGroupLogo from '@/assets/brokers/ig-group.png';
+import xtbLogo from '@/assets/brokers/xtb.png';
+import pepperstoneLogo from '@/assets/brokers/pepperstone.png';
+import oandaLogo from '@/assets/brokers/oanda.png';
+import etoroLogo from '@/assets/brokers/etoro.png';
+import plus500Logo from '@/assets/brokers/plus500.png';
+import ibLogo from '@/assets/brokers/interactive-brokers.png';
+import exnessLogo from '@/assets/brokers/exness.png';
+import saxoLogo from '@/assets/brokers/saxo-bank.png';
+import avatradeLogo from '@/assets/brokers/avatrade.png';
+
+const BROKER_LOGOS: Record<string, string> = {
+  '1': igGroupLogo,
+  '2': xtbLogo,
+  '3': pepperstoneLogo,
+  '4': oandaLogo,
+  '5': etoroLogo,
+  '6': plus500Logo,
+  '7': ibLogo,
+  '8': exnessLogo,
+  '9': saxoLogo,
+  '10': avatradeLogo,
+};
+
 const CATEGORY_COLORS: Record<string, string> = {
   forex: 'hsl(200, 90%, 50%)',
   stocks: 'hsl(270, 70%, 55%)',
@@ -855,8 +879,8 @@ export default function BrokerRating() {
                         className="border-primary data-[state=checked]:bg-primary" 
                       />
                     )}
-                    <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0">
-                      <span className="text-sm font-bold text-foreground">{broker.logo}</span>
+                    <div className="w-11 h-11 bg-white rounded-xl flex items-center justify-center shrink-0 overflow-hidden p-1">
+                      <img src={BROKER_LOGOS[broker.id]} alt={broker.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -1050,8 +1074,8 @@ export default function BrokerRating() {
                   </div>
                 </DialogHeader>
                 <div className="flex gap-4 mb-6">
-                  <div className="w-32 h-32 bg-secondary rounded-lg flex items-center justify-center">
-                    <span className="text-4xl font-bold text-foreground">{selectedBroker.logo}</span>
+                  <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden p-3">
+                    <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground leading-relaxed">
