@@ -177,7 +177,7 @@ export default function RiskRewardCalculator() {
               </div>
             </div>
 
-            <Button onClick={handleCalculate} className="w-full gap-2 font-semibold">
+            <Button onClick={() => handleCalculate()} className="w-full gap-2 font-semibold">
               <Calculator className="w-4 h-4" />
               {t('rr_calculate_btn') || 'Calcular Riesgo / Recompensa'}
             </Button>
