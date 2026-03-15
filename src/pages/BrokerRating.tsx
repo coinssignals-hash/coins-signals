@@ -1095,10 +1095,14 @@ export default function BrokerRating() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Description */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.08 }}
+                  className="px-5 mb-4">
                   <p className="text-xs text-muted-foreground leading-relaxed">{selectedBroker.description}</p>
                 </div>
 
