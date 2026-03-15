@@ -64,6 +64,8 @@ export default function BrokerRating() {
   const categories = getCategoriesTranslated(t);
   const [selectedRegion, setSelectedRegion] = useState('intl');
   const [searchTerm, setSearchTerm] = useState('');
+  const [globalSearchTerm, setGlobalSearchTerm] = useState('');
+  const [isGlobalSearch, setIsGlobalSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState<NormalizedBroker | null>(null);
@@ -73,6 +75,7 @@ export default function BrokerRating() {
   const [sortBy, setSortBy] = useState<SortOption | ''>('');
 
   const { brokers, loading, error } = useBrokerData(selectedRegion);
+  const { results: globalResults, loading: globalLoading } = useGlobalBrokerSearch(isGlobalSearch ? globalSearchTerm : '');
 
   // Parallax
   const scrollY = useMotionValue(0);
