@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight, User, FileText, Shield, Bell, Palette, Globe, HelpCircle } from 'lucide-react';
+import { ChevronRight, User, FileText, Shield, Bell, Palette, HelpCircle } from 'lucide-react';
 import { useOnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { useTranslation } from '@/i18n/LanguageContext';
 
