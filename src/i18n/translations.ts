@@ -1389,6 +1389,13 @@ export type TranslationKeys = {
   ai_center_temperature: string;
   ai_center_precise: string;
   ai_center_creative: string;
+  ai_center_detail_level: string;
+  ai_center_detail_concise: string;
+  ai_center_detail_concise_desc: string;
+  ai_center_detail_standard: string;
+  ai_center_detail_standard_desc: string;
+  ai_center_detail_detailed: string;
+  ai_center_detail_detailed_desc: string;
   ai_center_fast_efficient: string;
   ai_center_max_precision: string;
   ai_center_new_gen: string;
