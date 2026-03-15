@@ -81,7 +81,7 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/` } });
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/onboarding` } });
       if (error) toast({ title: t('common_error'), description: error.message, variant: 'destructive' });
     } catch {
       toast({ title: t('common_error'), description: t('auth_error_google'), variant: 'destructive' });
