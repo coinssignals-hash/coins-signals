@@ -1,8 +1,25 @@
 // API Configuration
-// The app will use the Edge Function proxy when FASTAPI_BASE_URL secret is configured
-// For local development, set VITE_USE_MOCK_DATA=false to use real API
+// Production: points to Hetzner VPS backend
+// Local dev: falls back to localhost:8000
+// Set VITE_API_URL in environment to override
+
+const PRODUCTION_API_URL = 'https://api.yourdomain.com'; // ← Reemplaza con tu dominio Hetzner
+
+const resolveBaseUrl = (): string => {
+  // 1. Explicit env var always wins
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // 2. Production build → use Hetzner
+  if (import.meta.env.PROD) {
+    return PRODUCTION_API_URL;
+  }
+  // 3. Dev → localhost
+  return 'http://localhost:8000';
+};
+
 export const API_CONFIG = {
-  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  baseUrl: resolveBaseUrl(),
   endpoints: {
     // News endpoints
     news: '/api/v1/news',
@@ -24,8 +41,6 @@ export const API_CONFIG = {
     relevantNews: (symbol: string) => `/api/v1/analysis/relevant-news/${encodeURIComponent(symbol)}`,
     economicEvents: (symbol: string, date: string) => `/api/v1/analysis/economic-events/${encodeURIComponent(symbol)}/${date}`,
   },
-  // In production (Lovable), use real API via Edge Function proxy
-  // For local dev, set VITE_USE_MOCK_DATA=true to use mock data
   useMockData: import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_DATA !== 'false' 
     ? true 
     : import.meta.env.VITE_USE_MOCK_DATA === 'true',
