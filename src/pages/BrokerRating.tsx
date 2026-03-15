@@ -286,7 +286,11 @@ export default function BrokerRating() {
                         />
                       )}
                       <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0 overflow-hidden text-lg">
-                        {broker.countryFlag}
+                        {getBrokerLogo(broker.name) ? (
+                          <LazyImage src={getBrokerLogo(broker.name)} alt={broker.name} className="w-full h-full object-contain p-1" />
+                        ) : (
+                          broker.countryFlag
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
