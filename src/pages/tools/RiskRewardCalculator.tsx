@@ -110,7 +110,7 @@ export default function RiskRewardCalculator() {
       microLots: microLots.toFixed(2),
     });
 
-    toast.success(t('rr_calculated') || 'Resultado calculado');
+    if (!silent) toast.success(t('rr_calculated') || 'Resultado calculado');
   };
 
   return (
