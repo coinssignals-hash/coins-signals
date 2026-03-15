@@ -1197,10 +1197,14 @@ export default function BrokerRating() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Platforms */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_trading_platforms')}</h4>
                   <div className="space-y-1.5">
                     {selectedBroker.platforms.map((plat, i) => (
