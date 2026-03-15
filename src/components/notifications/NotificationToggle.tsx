@@ -125,26 +125,3 @@ export function NotificationToggle() {
     </Button>
   );
 }
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={handleToggle}
-      disabled={isLoading}
-      className="relative"
-      title={isSubscribed ? t('nt_disable_title') : t('nt_enable_title')}
-    >
-      {isLoading ? (
-        <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
-      ) : isSubscribed ? (
-        <Bell className="w-5 h-5 text-green-400" />
-      ) : (
-        <BellOff className="w-5 h-5 text-blue-300" />
-      )}
-      {isSubscribed && (
-        <span className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full" />
-      )}
-    </Button>
-  );
-}
