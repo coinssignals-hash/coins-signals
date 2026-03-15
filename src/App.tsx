@@ -136,6 +136,7 @@ function AnimatedRoutes() {
           <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/install" element={<Install />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/performance" element={<Performance />} />
           <Route path="/about" element={<About />} />
           <Route path="/broker-rating" element={<BrokerRating />} />
