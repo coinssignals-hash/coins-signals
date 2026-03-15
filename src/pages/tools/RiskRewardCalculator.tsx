@@ -60,7 +60,7 @@ export default function RiskRewardCalculator() {
     }
   }, []);
 
-  const handleCalculate = () => {
+  const handleCalculate = (silent = false) => {
     const entry = parseFloat(entryPrice);
     const sl = parseFloat(stopLoss);
     const tp = parseFloat(takeProfit);
