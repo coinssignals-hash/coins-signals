@@ -1130,9 +1130,9 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
         {/* ── Stats Row ── */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Volatilidad', value: session.volatility },
-            { label: 'Liquidez', value: session.liquidity },
-            { label: 'Rango Pips', value: null, custom: `${session.avgPipsRange[0]}–${session.avgPipsRange[1]}` },
+            { label: t('ms_volatility_label'), value: session.volatility },
+            { label: t('ms_liquidity'), value: session.liquidity },
+            { label: t('ms_range_pips_label'), value: null, custom: `${session.avgPipsRange[0]}–${session.avgPipsRange[1]}` },
           ].map((stat, idx) => (
             <div key={idx} className="rounded-xl p-2.5 text-center" style={{
               background: 'hsl(var(--card) / 0.6)',
@@ -1140,7 +1140,7 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
             }}>
               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
               {stat.value ? (
-                <LevelBadge level={stat.value} />
+                <LevelBadge level={stat.value} t={t} />
               ) : (
                 <span className="text-sm font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
               )}
