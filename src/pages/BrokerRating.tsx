@@ -555,6 +555,13 @@ export default function BrokerRating() {
   const [selectedLevel, setSelectedLevel] = useState('Principiante');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
+
+  // Parallax motion values
+  const scrollY = useMotionValue(0);
+  const heroParallaxY = useTransform(scrollY, [0, 200], [0, -30]);
+  const bgParallaxY = useTransform(scrollY, [0, 200], [0, -50]);
+  const bgScale = useTransform(scrollY, [0, 200], [1, 1.15]);
+  const logoParallaxY = useTransform(scrollY, [0, 200], [0, -8]);
   const [compareMode, setCompareMode] = useState(false);
   const [brokersToCompare, setBrokersToCompare] = useState<Broker[]>([]);
   const [showComparePanel, setShowComparePanel] = useState(false);
