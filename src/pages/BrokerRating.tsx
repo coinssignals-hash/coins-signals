@@ -267,40 +267,46 @@ export default function BrokerRating() {
                 const isSelected = selectedCategory === cat.matchKey;
                 const color = CATEGORY_COLORS[cat.colorKey] || 'hsl(200, 90%, 50%)';
                 return (
-                  <button
-                    key={cat.matchKey}
-                    onClick={() => setSelectedCategory(isSelected ? null : cat.matchKey)}
-                    className="group relative flex flex-col items-center gap-1.5 py-3 px-1.5 rounded-2xl transition-all duration-300 active:scale-[0.92] overflow-hidden"
-                    style={{
-                      background: isSelected
-                        ? `linear-gradient(145deg, ${color}22, ${color}0a)`
-                        : 'hsl(var(--secondary) / 0.5)',
-                      boxShadow: isSelected
-                        ? `inset 0 0 0 1.5px ${color}50, 0 4px 16px -6px ${color}35`
-                        : 'inset 0 0 0 1px hsl(var(--border) / 0.3)',
-                    }}
-                  >
-                    {isSelected && (
-                      <div className="absolute inset-0 opacity-[0.15]" style={{
-                        background: `radial-gradient(ellipse at 50% -20%, ${color}, transparent 65%)`,
-                      }} />
-                    )}
-                    <div
-                      className="relative w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300"
-                      style={{
-                        background: isSelected
-                          ? `linear-gradient(135deg, ${color}30, ${color}15)`
-                          : 'hsl(var(--muted) / 0.7)',
-                        boxShadow: isSelected ? `0 0 12px -4px ${color}40` : undefined,
-                      }}
-                    >
-                      <Icon size={24} strokeWidth={isSelected ? 2.2 : 1.8} className="transition-all duration-300"
-                        style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }} />
-                    </div>
-                    {isSelected && (
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: color }} />
-                    )}
-                  </button>
+                  <Popover key={cat.matchKey}>
+                    <PopoverTrigger asChild>
+                      <button
+                        onClick={() => setSelectedCategory(isSelected ? null : cat.matchKey)}
+                        className="group relative flex flex-col items-center gap-1.5 py-3 px-1.5 rounded-2xl transition-all duration-300 active:scale-[0.92] overflow-hidden"
+                        style={{
+                          background: isSelected
+                            ? `linear-gradient(145deg, ${color}22, ${color}0a)`
+                            : 'hsl(var(--secondary) / 0.5)',
+                          boxShadow: isSelected
+                            ? `inset 0 0 0 1.5px ${color}50, 0 4px 16px -6px ${color}35`
+                            : 'inset 0 0 0 1px hsl(var(--border) / 0.3)',
+                        }}
+                      >
+                        {isSelected && (
+                          <div className="absolute inset-0 opacity-[0.15]" style={{
+                            background: `radial-gradient(ellipse at 50% -20%, ${color}, transparent 65%)`,
+                          }} />
+                        )}
+                        <div
+                          className="relative w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300"
+                          style={{
+                            background: isSelected
+                              ? `linear-gradient(135deg, ${color}30, ${color}15)`
+                              : 'hsl(var(--muted) / 0.7)',
+                            boxShadow: isSelected ? `0 0 12px -4px ${color}40` : undefined,
+                          }}
+                        >
+                          <Icon size={24} strokeWidth={isSelected ? 2.2 : 1.8} className="transition-all duration-300"
+                            style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }} />
+                        </div>
+                        {isSelected && (
+                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: color }} />
+                        )}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="bottom" className="w-auto px-3 py-1.5 text-xs font-semibold rounded-lg" sideOffset={4}>
+                      {cat.label}
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
