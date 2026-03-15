@@ -1,0 +1,4328 @@
+{
+  "metadata": {
+    "titulo": "Brokers Internacionales con Operación en toda LATAM — Listado Completo",
+    "descripcion": "Todos los brokers internacionales que aceptan clientes de América Latina con detalles completos de comisiones, depósito mínimo, tipos de cuenta, regulación y cobertura regional.",
+    "fecha_generacion": "14/03/2026 22:40",
+    "version": "2.0",
+    "total_brokers": 30,
+    "cobertura_paises": [
+      "México",
+      "Guatemala",
+      "Belice",
+      "Honduras",
+      "El Salvador",
+      "Nicaragua",
+      "Costa Rica",
+      "Panamá",
+      "Colombia",
+      "Venezuela",
+      "Ecuador",
+      "Perú",
+      "Bolivia",
+      "Brasil",
+      "Paraguay",
+      "Argentina",
+      "Uruguay",
+      "Chile"
+    ],
+    "aviso_legal": "Solo fines informativos. El Forex y CFDs no están regulados localmente en la mayoría de países LATAM. Siempre verifique la entidad legal que le atiende y su regulación antes de depositar. Los instrumentos apalancados conllevan riesgo de perder todo su capital.",
+    "categorias_score": {
+      "9.0-10.0": "Excelente — Tier 1 regulación, spreads óptimos",
+      "8.0-8.9": "Muy bueno — Recomendado para la mayoría de perfiles",
+      "7.0-7.9": "Bueno — Adecuado con condiciones específicas",
+      "6.0-6.9": "Aceptable — Revisar regulación aplicable"
+    }
+  },
+  "brokers": [
+    {
+      "id": "B001",
+      "nombre": "Pepperstone",
+      "nombre_completo": "Pepperstone Group Limited",
+      "fundacion": 2010,
+      "pais_sede": "Australia (Melbourne)",
+      "score_latam": 9.2,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 414530)",
+          "FCA UK (No. 684312)",
+          "BaFIN Alemania",
+          "CySEC Chipre (No. 388/20)",
+          "DFSA Dubai",
+          "SCB Bahamas",
+          "CMA Kenia"
+        ],
+        "entidad_latam": "Pepperstone Markets Limited — SCB Bahamas (No. SIA-F217)",
+        "nivel_regulacion": "Tier 1 (ASIC + FCA + BaFIN)",
+        "nota_latam": "Para clientes LATAM aplica SCB Bahamas. Apalancamiento hasta 1:500"
+      },
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD",
+        "nota": "Sin mínimo formal declarado, recomendado USD 200+",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Tarjeta Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "PayPal (algunos países)",
+          "Criptomonedas (Bitcoin, USDT)"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.60 - 1.10",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker (STP)",
+          "para_quien": "Traders principiantes e intermedios"
+        },
+        {
+          "nombre": "Razor (ECN)",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN puro",
+          "para_quien": "Scalpers, traders de alto volumen"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "62+ (incluye pares exóticos LATAM USD/MXN, USD/BRL, USD/CLP, USD/COP, USD/PEN)",
+          "spread_eurusd_min": "0.0 pips Razor"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+",
+          "bolsas": [
+            "NYSE",
+            "NASDAQ",
+            "LSE",
+            "ASX",
+            "DAX"
+          ]
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "26",
+          "incluye": [
+            "S&P500",
+            "NASDAQ100",
+            "IBEX35",
+            "MERVAL via CFD"
+          ]
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "27+",
+          "incluye": [
+            "BTC/USD",
+            "ETH/USD",
+            "XRP/USD",
+            "BNB/USD"
+          ]
+        },
+        "materias_primas": {
+          "disponible": true,
+          "incluye": [
+            "Oro (XAU/USD)",
+            "Plata (XAG/USD)",
+            "Petróleo WTI",
+            "Gas Natural"
+          ]
+        },
+        "etfs_cfd": {
+          "disponible": true,
+          "cantidad": "100+"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "0.60 pips promedio",
+        "spread_eurusd_razor": "0.0 pips + USD 3.50/lote",
+        "swap_posicion_overnight": "Variable según instrumento (SWAP points)",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin comisión de inactividad declarada",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (SCB Bahamas para LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:50",
+        "cripto_max": "1:10",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4 (MT4)",
+        "MetaTrader 5 (MT5)",
+        "cTrader",
+        "TradingView",
+        "Pepperstone App (iOS/Android)"
+      ],
+      "ejecucion": {
+        "tipo": "STP/NDD",
+        "velocidad_promedio_ms": "<37ms",
+        "slippage": "Mínimo"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués"
+        ],
+        "horario": "24/5 (lunes a viernes)",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono",
+          "WhatsApp (algunos países)"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba y Corea del Norte",
+      "educacion": "Bootcamps de trading, webinars, análisis de mercado, guías",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "Triple regulación Tier 1 (ASIC+FCA+BaFIN)",
+        "Ejecución ECN ultrarrápida <37ms",
+        "Spreads más bajos del mercado en cuentas Razor",
+        "Sin comisión de retiro",
+        "Soporte en español"
+      ],
+      "contras": [
+        "SCB Bahamas aplica para LATAM (menor protección)",
+        "Sin opciones vanilla",
+        "Sin plataforma propia"
+      ]
+    },
+    {
+      "id": "B002",
+      "nombre": "IC Markets",
+      "nombre_completo": "International Capital Markets Pty Ltd",
+      "fundacion": 2007,
+      "pais_sede": "Australia (Sídney)",
+      "score_latam": 9.1,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 335692)",
+          "CySEC Chipre (No. 362/18)",
+          "FSA Seychelles (No. SD018)"
+        ],
+        "entidad_latam": "IC Markets (EU) Ltd — CySEC / Raw Trading Ltd — FSA Seychelles",
+        "nivel_regulacion": "Tier 1 (ASIC) + Tier 2 (CySEC)",
+        "nota_latam": "Clientes LATAM principalmente bajo FSA Seychelles. Spreads los más bajos del mercado"
+      },
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD",
+        "nota": "USD 200 recomendado",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "UnionPay",
+          "Criptomonedas"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.60-1.00",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Principiantes e intermedios"
+        },
+        {
+          "nombre": "Raw Spread (ECN)",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN/DMA",
+          "para_quien": "Traders activos, scalpers"
+        },
+        {
+          "nombre": "cTrader Raw",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN cTrader",
+          "para_quien": "Traders que prefieren cTrader"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "60+",
+          "spread_eurusd_min": "0.0 pips"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2100+",
+          "bolsas": [
+            "NYSE",
+            "NASDAQ",
+            "LSE",
+            "TSX",
+            "ASX"
+          ]
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "25+"
+        },
+        "materias_primas": {
+          "disponible": true,
+          "incluye": [
+            "Oro",
+            "Plata",
+            "Petróleo WTI/Brent",
+            "Gas",
+            "Cobre"
+          ]
+        },
+        "etfs_cfd": {
+          "disponible": true,
+          "cantidad": "100+"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "bonos": {
+          "disponible": true,
+          "cantidad": "2 (Tesoro EEUU, Alemán)"
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "0.60 pips",
+        "spread_eurusd_raw": "0.0 pips + USD 3.50/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin comisión de inactividad",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500",
+        "acciones_max": "1:20",
+        "indices_max": "1:100",
+        "cripto_max": "1:10",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "TradingView"
+      ],
+      "ejecucion": {
+        "tipo": "ECN/STP",
+        "velocidad_promedio_ms": "40ms",
+        "slippage": "Prácticamente nulo"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués"
+        ],
+        "horario": "24/7",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba",
+      "educacion": "Webinars, tutoriales, análisis técnico",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "Spreads más bajos del mercado (0.0 pips ECN)",
+        "Mayor liquidez para grandes volúmenes",
+        "VPS gratuito para EAs",
+        "Sin comisión de inactividad",
+        "2100+ CFD de acciones"
+      ],
+      "contras": [
+        "FSA Seychelles para LATAM (no Tier 1)",
+        "Sin copy trading nativo",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B003",
+      "nombre": "XTB",
+      "nombre_completo": "X-Trade Brokers Dom Maklerski S.A.",
+      "fundacion": 2002,
+      "pais_sede": "Polonia (Varsovia) — Cotizada en Bolsa",
+      "score_latam": 8.9,
+      "regulacion": {
+        "principal": [
+          "KNF Polonia (cotizado bolsa polaca)",
+          "FCA UK (No. 522157)",
+          "CySEC (No. 169/12)",
+          "CNMV España",
+          "DFSA Dubai",
+          "FSCA Sudáfrica"
+        ],
+        "entidad_latam": "XTB Limited — IFSC Belice (No. IFSC/60/413/TS/19) / XTB Online Trading — IFSC",
+        "nivel_regulacion": "Tier 1 (KNF+FCA+CySEC)",
+        "nota_latam": "IFSC Belice para clientes LATAM. Oficina física en Chile (XTB Chile). Acciones REALES disponibles en LATAM (no solo CFD)"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin depósito mínimo — uno de los pocos brokers sin mínimo real",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "Payoneer",
+          "Apple Pay"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "0.9 - 1.5",
+          "comision_por_lote_usd": 0,
+          "comision_acciones_etfs": "0% hasta EUR 100,000/mes luego 0.2% mín. EUR 10",
+          "modelo": "Market Maker",
+          "para_quien": "Todos los perfiles — principal cuenta"
+        },
+        {
+          "nombre": "Pro",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "0.5 - 1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP mejorado",
+          "para_quien": "Traders con mayor experiencia",
+          "requisito": "Solicitar acceso especial"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "57+",
+          "incluye_exoticos_latam": true,
+          "spread_eurusd_min": "0.9 pips"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "nota": "ACCIONES REALES (no CFD) disponibles en LATAM — diferencial clave",
+          "cantidad": "5800+",
+          "bolsas": [
+            "NYSE",
+            "NASDAQ",
+            "LSE",
+            "DAX",
+            "CAC40",
+            "IBEX35"
+          ]
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2200+"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "30+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "40+"
+        },
+        "materias_primas": {
+          "disponible": true,
+          "incluye": [
+            "Oro",
+            "Plata",
+            "Petróleo",
+            "Gas",
+            "Cacao",
+            "Café",
+            "Azúcar",
+            "Trigo",
+            "Maíz"
+          ]
+        },
+        "etfs_reales": {
+          "disponible": true,
+          "cantidad": "250+",
+          "nota": "ETFs reales disponibles en LATAM"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "0.9 pips",
+        "comision_acciones_etfs": "0% hasta EUR 100K/mes — GRATIS para construir cartera",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "EUR 10/mes después de 12 meses sin operar",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:200 (IFSC Belice para LATAM)",
+        "acciones_max": "1:10",
+        "indices_max": "1:25",
+        "cripto_max": "1:5",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "xStation 5 (propia — premiada)",
+        "MetaTrader 4 (solo algunos países)",
+        "XTB App (iOS/Android)"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker / DMA para Pro",
+        "velocidad_promedio_ms": "85ms",
+        "slippage": "Bajo"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español nativo",
+          "Inglés",
+          "Portugués",
+          "+14 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono",
+          "WhatsApp LATAM"
+        ]
+      },
+      "presencia_fisica_latam": {
+        "chile": "Oficina física en Santiago de Chile",
+        "otros": "Atención remota"
+      },
+      "paises_latam_aceptados": "Todos (con excepciones específicas — verificar por país)",
+      "educacion": "Academia xStation — una de las mejores del sector. Webinars diarios en español, análisis técnico, cursos gratuitos",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "0% comisión acciones/ETFs hasta EUR 100K/mes",
+        "Sin depósito mínimo",
+        "Acciones REALES (no solo CFD) en LATAM",
+        "xStation 5 — plataforma más intuitiva del mercado",
+        "Oficina física en Chile",
+        "Academia gratuita excepcional"
+      ],
+      "contras": [
+        "IFSC Belice para LATAM (menor regulación)",
+        "Inactividad EUR 10/mes después de 12 meses",
+        "Sin opciones vanilla",
+        "Sin copy trading"
+      ]
+    },
+    {
+      "id": "B004",
+      "nombre": "AvaTrade",
+      "nombre_completo": "AVA Trade EU Ltd / Ava Trade Markets Ltd",
+      "fundacion": 2006,
+      "pais_sede": "Irlanda (Dublín)",
+      "score_latam": 8.8,
+      "regulacion": {
+        "principal": [
+          "CBI Irlanda (No. C53877)",
+          "ASIC Australia (No. 406684)",
+          "FSCA Sudáfrica (No. 45984)",
+          "FSC Islas Vírgenes Británicas (BVI)",
+          "ADGM Abu Dhabi",
+          "ISA Israel",
+          "FFAJ Japón"
+        ],
+        "entidad_latam": "Ava Trade Markets Ltd — FSC BVI (No. SIBA/L/13/1049)",
+        "nivel_regulacion": "Tier 1 (ASIC + CBI)",
+        "nota_latam": "FSC BVI para la mayoría de clientes LATAM. SFC Colombia (2025). Acepta depósitos en criptomonedas"
+      },
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100 mínimo",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "Criptomonedas (BTC, ETH, USDT)"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Retail (Standard)",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.9",
+          "spread_tipo": "FIJO — diferencial clave vs. competidores",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker — spreads fijos",
+          "para_quien": "Todos los perfiles — spreads predecibles"
+        },
+        {
+          "nombre": "Professional",
+          "deposito_minimo_usd": 1000,
+          "spread_eurusd_pips": "0.6",
+          "spread_tipo": "Fijo mejorado",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker mejorado",
+          "para_quien": "Traders con mayor experiencia",
+          "requisito": "Cumplir criterios profesionales"
+        },
+        {
+          "nombre": "AvaOptions",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "Variable",
+          "comision_por_lote_usd": 0,
+          "modelo": "Opciones vanilla sobre Forex",
+          "para_quien": "Traders que operan opciones — ÚNICO en el mercado retail LATAM",
+          "instrumentos_disponibles": "55 pares de divisas con opciones vanilla"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "55+",
+          "spread_eurusd_min": "0.9 pips (fijo)",
+          "pares_latam": [
+            "USD/MXN",
+            "USD/BRL",
+            "USD/COP",
+            "USD/CLP",
+            "USD/PEN",
+            "USD/ARS"
+          ]
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+",
+          "comision": "0.13% mín."
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "14+",
+          "incluye": [
+            "BTC",
+            "ETH",
+            "XRP",
+            "LTC",
+            "BCH",
+            "ADA"
+          ]
+        },
+        "materias_primas": {
+          "disponible": true,
+          "incluye": [
+            "Oro",
+            "Plata",
+            "Platino",
+            "Petróleo WTI/Brent",
+            "Gas",
+            "Cobre",
+            "Algodón",
+            "Café",
+            "Azúcar"
+          ]
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones_vanilla": {
+          "disponible": true,
+          "nota": "AvaOptions — ÚNICO broker retail con opciones vanilla en LATAM",
+          "pares": "55"
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.9 pips FIJO (no variable)",
+        "comision_por_operacion": "0 (spreads incluidos)",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 50/mes después de 3 meses de inactividad",
+        "tarifa_trimestral_inactividad": "USD 100 después de 12 meses"
+      },
+      "apalancamiento": {
+        "forex_max": "1:400 (BVI para LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:100",
+        "cripto_max": "1:20",
+        "opciones": "Definido por perfil de riesgo",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "AvaTradeGO (propia — premiada)",
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "DupliTrade (copy trading)",
+        "ZuluTrade (copy trading)",
+        "AvaSocial"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker",
+        "velocidad_promedio_ms": "200ms",
+        "slippage": "Bajo (spreads fijos)"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español nativo (soporte en LATAM)",
+          "Inglés",
+          "Portugués",
+          "+14 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono",
+          "WhatsApp LATAM"
+        ],
+        "whatsapp_latam": true
+      },
+      "presencia_fisica_latam": {
+        "colombia": "Autorizado SFC Colombia (2025)",
+        "panama": "Operación remota",
+        "otros": "Atención remota"
+      },
+      "paises_latam_aceptados": "Todos (con excepciones específicas)",
+      "educacion": "SharpTrader — academia educativa propia. Cursos, webinars, análisis técnico y fundamental",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "DupliTrade",
+        "ZuluTrade"
+      ],
+      "pros": [
+        "ÚNICO broker con opciones vanilla en retail LATAM (AvaOptions)",
+        "Spreads FIJOS — predecibles",
+        "7 regulaciones internacionales",
+        "Copy trading (DupliTrade + ZuluTrade)",
+        "Acepta cripto como fondeo (VE/SV)",
+        "Soporte WhatsApp en español"
+      ],
+      "contras": [
+        "FSC BVI para LATAM",
+        "Inactividad USD 50/mes tras 3 meses",
+        "Spreads fijos pueden ser caros en sesiones de baja volatilidad"
+      ]
+    },
+    {
+      "id": "B005",
+      "nombre": "XM Group",
+      "nombre_completo": "Trading Point of Financial Instruments Ltd",
+      "fundacion": 2009,
+      "pais_sede": "Chipre (Limassol)",
+      "score_latam": 8.6,
+      "regulacion": {
+        "principal": [
+          "CySEC Chipre (No. 120/10)",
+          "ASIC Australia (No. 443670)",
+          "FCA UK (No. 705428)",
+          "DFSA Dubai"
+        ],
+        "entidad_latam": "XM Global Limited — IFSC Belice (No. 000261/397)",
+        "nivel_regulacion": "Tier 1 (CySEC + ASIC + FCA)",
+        "nota_latam": "IFSC Belice para LATAM. Depósito mínimo más bajo del mercado (USD 5). 100+ premios internacionales"
+      },
+      "deposito_minimo": {
+        "valor": 5,
+        "moneda": "USD",
+        "nota": "USD 5 — el depósito mínimo más bajo del mercado para LATAM",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "Bitcoin",
+          "Ethereum",
+          "USDT",
+          "Método locales según país"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Micro",
+          "deposito_minimo_usd": 5,
+          "spread_eurusd_pips": "1.6",
+          "comision_por_lote_usd": 0,
+          "tamano_lote": "1 lote = 1,000 unidades (micro lotes)",
+          "modelo": "Market Maker",
+          "para_quien": "Principiantes, bajo capital inicial",
+          "apalancamiento_max": "1:1000"
+        },
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 5,
+          "spread_eurusd_pips": "1.6",
+          "comision_por_lote_usd": 0,
+          "tamano_lote": "Estándar 100,000 unidades",
+          "modelo": "Market Maker",
+          "para_quien": "Traders con experiencia básica"
+        },
+        {
+          "nombre": "Ultra Low",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "0.6",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP mejorado",
+          "para_quien": "Traders intermedios que buscan spreads menores"
+        },
+        {
+          "nombre": "XM Zero",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN",
+          "para_quien": "Traders activos y scalpers"
+        },
+        {
+          "nombre": "XM Shares",
+          "deposito_minimo_usd": 10000,
+          "spread_eurusd_pips": "N/A",
+          "comision_porcentaje": "0.10%",
+          "modelo": "Acciones reales",
+          "para_quien": "Inversores de largo plazo en acciones reales (solo CySEC)"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "55+",
+          "spread_eurusd_min": "0.0 pips (Zero)"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "1300+"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "15+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "materias_primas": {
+          "disponible": true,
+          "incluye": [
+            "Oro",
+            "Plata",
+            "Petróleo",
+            "Gas",
+            "Cobre",
+            "Paladio",
+            "Platino"
+          ]
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "nota": "Solo bajo entidad CySEC — no disponible en LATAM"
+        }
+      },
+      "costos": {
+        "spread_eurusd_micro_standard": "1.6 pips",
+        "spread_eurusd_ultra_low": "0.6 pips",
+        "spread_eurusd_zero": "0.0 pips + USD 3.5/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 15 cada 90 días de inactividad",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:1000 (IFSC Belice)",
+        "acciones_max": "1:20",
+        "indices_max": "1:500",
+        "cripto_max": "1:2",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "XM WebTrader",
+        "XM App (iOS/Android)"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker / STP (Ultra Low y Zero)",
+        "velocidad_promedio_ms": "98ms"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Portugués",
+          "Inglés",
+          "+30 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo 24/5",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba",
+      "educacion": "Academia XM — una de las mejores en español. Seminarios presenciales en países LATAM, webinars diarios, análisis de mercado",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "MQL5 (MT4/MT5)"
+      ],
+      "pros": [
+        "Depósito mínimo USD 5 — el más bajo de LATAM",
+        "100+ premios internacionales",
+        "Academia educativa en español de primer nivel",
+        "Sin comisión de depósito/retiro",
+        "Acepta cripto para fondeo"
+      ],
+      "contras": [
+        "IFSC Belice para LATAM",
+        "Inactividad USD 15/trimestre",
+        "Spreads Micro/Standard altos (1.6 pips)"
+      ]
+    },
+    {
+      "id": "B006",
+      "nombre": "FP Markets",
+      "nombre_completo": "First Prudential Markets Pty Ltd",
+      "fundacion": 2005,
+      "pais_sede": "Australia (Sídney)",
+      "score_latam": 8.8,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 286354)",
+          "CySEC Chipre (No. 371/18)",
+          "FSA Seychelles (No. SD119)",
+          "FSCA Sudáfrica"
+        ],
+        "entidad_latam": "FP Markets LLC — FSA Seychelles (No. SD119)",
+        "nivel_regulacion": "Tier 1 (ASIC)",
+        "nota_latam": "FSA Seychelles para LATAM. 10,000+ instrumentos — mayor diversidad. Acepta cripto"
+      },
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "Bitcoin",
+          "USDT",
+          "Ethereum",
+          "Fasapay"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Traders principiantes e intermedios"
+        },
+        {
+          "nombre": "Raw (ECN)",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN/DMA",
+          "para_quien": "Traders activos, scalpers y HFT"
+        },
+        {
+          "nombre": "IRESS (acciones directas)",
+          "deposito_minimo_usd": 1000,
+          "spread": "Variable por acción",
+          "comision_porcentaje": "0.10% por operación (mín. USD 10)",
+          "modelo": "DMA — acceso directo al mercado",
+          "para_quien": "Inversores en acciones reales globales"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "70+",
+          "spread_eurusd_min": "0.0 pips Raw"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "10000+",
+          "nota": "Mayor cantidad de instrumentos CFD del mercado"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "via": "IRESS platform",
+          "mercados": "NYSE, NASDAQ, ASX, LSE, TSX"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "30+"
+        },
+        "materias_primas": {
+          "disponible": true,
+          "cantidad": "Amplia gama"
+        },
+        "etfs_cfd": {
+          "disponible": true,
+          "cantidad": "150+"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "bonos": {
+          "disponible": true
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "1.0 pips",
+        "spread_eurusd_raw": "0.0 pips + USD 3.0/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 0 (sin comisión de inactividad)",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (Seychelles para LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:200",
+        "cripto_max": "1:10",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "IRESS (acciones directas)",
+        "FP Markets App"
+      ],
+      "ejecucion": {
+        "tipo": "ECN/DMA",
+        "velocidad_promedio_ms": "40ms",
+        "slippage": "Mínimo"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués",
+          "+20 idiomas"
+        ],
+        "horario": "24/7",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba",
+      "educacion": "Webinars, análisis técnico, guías de trading",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "10,000+ instrumentos CFD — mayor diversidad del mercado",
+        "Sin comisión de inactividad",
+        "Acepta cripto para fondeo",
+        "IRESS para acciones directas globales",
+        "Spreads ECN más bajos (0.0 pips + USD 3/lote)"
+      ],
+      "contras": [
+        "FSA Seychelles para LATAM",
+        "Sin copy trading nativo",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B007",
+      "nombre": "Exness",
+      "nombre_completo": "Exness Group",
+      "fundacion": 2008,
+      "pais_sede": "Chipre",
+      "score_latam": 8.7,
+      "regulacion": {
+        "principal": [
+          "CySEC Chipre (No. 178/12)",
+          "FCA UK (No. 730729)",
+          "FSCA Sudáfrica (No. 51024)",
+          "FSA Seychelles (No. SD025)",
+          "CBCS Curazao"
+        ],
+        "entidad_latam": "Exness (SC) Ltd — FSA Seychelles (No. 8423606-1)",
+        "nivel_regulacion": "Tier 1 (CySEC + FCA)",
+        "nota_latam": "FSA Seychelles para LATAM. Especialidad: retiros instantáneos (98% automáticos). Acepta Bitcoin nativo — ideal para Venezuela/El Salvador"
+      },
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD",
+        "nota": "Standard: USD 10. Pro: USD 200. Zero/Raw: USD 200",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "Bitcoin",
+          "Ethereum",
+          "USDT TRC20/ERC20",
+          "Tether",
+          "PayPal (algunos países)",
+          "Métodos locales LATAM"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 10,
+          "spread_eurusd_pips": "0.3 - 1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Principiantes — el más popular en LATAM",
+          "apalancamiento_max": "1:2000"
+        },
+        {
+          "nombre": "Standard Cent",
+          "deposito_minimo_usd": 10,
+          "spread_eurusd_pips": "0.3",
+          "comision_por_lote_usd": 0,
+          "unidad_minima": "0.01 lotes en USD",
+          "modelo": "Cuenta en centavos",
+          "para_quien": "Principiantes absolutos, práctica con dinero real mínimo",
+          "apalancamiento_max": "1:2000"
+        },
+        {
+          "nombre": "Pro",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.1",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP Pro — spreads bajos sin comisión",
+          "para_quien": "Traders intermedios y avanzados"
+        },
+        {
+          "nombre": "Raw Spread",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN",
+          "para_quien": "Scalpers y traders de alto volumen"
+        },
+        {
+          "nombre": "Zero",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN — Zero spread en los 30 pares más populares",
+          "para_quien": "Traders que requieren spreads exactamente en 0.0 en pares principales"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "100+",
+          "incluye_latam": true,
+          "spread_eurusd_min": "0.0 pips"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "22+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "50+",
+          "nota": "Acepta Bitcoin NATIVO como depósito — ideal para VE y SV"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "0.3-1.0 pips",
+        "spread_eurusd_raw_zero": "0.0 pips + USD 3.5/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0% — SIN comisión de retiro (diferencial clave)",
+        "inactividad": "USD 5/mes después de 180 días",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:2000 (Seychelles para LATAM) — el más alto del mercado",
+        "acciones_max": "1:20",
+        "indices_max": "1:1000",
+        "cripto_max": "1:100",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "Exness Terminal (propia)",
+        "Exness Trade App (iOS/Android)"
+      ],
+      "ejecucion": {
+        "tipo": "STP/ECN",
+        "velocidad_promedio_ms": "100ms"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués",
+          "+15 idiomas"
+        ],
+        "horario": "24/7",
+        "canales": [
+          "Chat en vivo 24/7",
+          "Email",
+          "Teléfono",
+          "Telegram"
+        ]
+      },
+      "caracteristica_unica": "98% de los retiros son procesados de forma automática e instantánea — la mejor experiencia de retiro del mercado",
+      "paises_latam_aceptados": "Todos excepto Cuba, Irán, Corea del Norte",
+      "educacion": "Tutoriales básicos, análisis de mercado",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "98% retiros automáticos e instantáneos — el mejor del mercado",
+        "Bitcoin nativo como depósito (ideal VE/SV)",
+        "Apalancamiento hasta 1:2000",
+        "Cuenta Standard Cent para principiantes",
+        "0% comisión de retiro",
+        "Dep. mínimo desde USD 10"
+      ],
+      "contras": [
+        "FSA Seychelles para LATAM",
+        "Inactividad USD 5/mes tras 180 días",
+        "Sin opciones",
+        "Educación básica"
+      ]
+    },
+    {
+      "id": "B008",
+      "nombre": "Interactive Brokers (IBKR)",
+      "nombre_completo": "Interactive Brokers LLC",
+      "fundacion": 1978,
+      "pais_sede": "EE.UU. (Greenwich, Connecticut) — Cotizado NASDAQ",
+      "score_latam": 9.3,
+      "regulacion": {
+        "principal": [
+          "SEC EE.UU.",
+          "FINRA EE.UU.",
+          "SIPC (protección USD 500K)",
+          "FCA UK",
+          "ASIC Australia",
+          "MAS Singapur",
+          "SFC Hong Kong",
+          "IIROC Canadá"
+        ],
+        "entidad_latam": "Interactive Brokers LLC — SEC/FINRA (para clientes directos) / Interactive Brokers (U.K.) Ltd — FCA",
+        "nivel_regulacion": "Tier 1 supremo — la regulación más sólida del mercado global",
+        "nota_latam": "Acceso a 150+ bolsas en 33 países. Sin cepo cambiario desde Argentina (verificar). Fondeo irrestricto desde UY. Recomendado para traders avanzados"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "IBKR Lite: sin mínimo. IBKR Pro: recomendado USD 10,000+",
+        "metodos_deposito": [
+          "Transferencia bancaria ACH",
+          "Transferencia Wire",
+          "Cheque (EE.UU.)",
+          "Transferencia internacional SWIFT"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "IBKR Lite",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "Variable",
+          "comision_acciones_usa": "0% — sin comisión en acciones USA",
+          "comision_opciones_usd": "USD 0.65 por contrato",
+          "modelo": "Best execution (orden flow)",
+          "para_quien": "Inversores de largo plazo, carteras de acciones USA",
+          "nota": "Disponible principalmente para clientes USA"
+        },
+        {
+          "nombre": "IBKR Pro",
+          "deposito_minimo_usd": 0,
+          "comision_acciones_usa": "USD 0.005 por acción (mín. USD 1 por orden)",
+          "comision_acciones_europa": "0.10% mín. EUR 4",
+          "comision_forex": "USD 2 por USD 100,000 negociados",
+          "comision_opciones_usd": "USD 0.65 por contrato",
+          "modelo": "DMA — acceso directo al mercado",
+          "para_quien": "Traders profesionales, institucionales, algorítmico"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "100+",
+          "tipo": "Forex REAL (no CFD) — interbank rates"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "cantidad": "150+ bolsas / 33 países",
+          "incluye": "NYSE, NASDAQ, LSE, TSX, ASX, DAX, IBEX, Nikkei, Hang Seng, BMV (México), BVL (Perú)"
+        },
+        "indices": {
+          "disponible": true,
+          "tipo": "Futuros sobre índices"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "tipo": "Spot y CFD"
+        },
+        "materias_primas": {
+          "disponible": true,
+          "tipo": "Futuros y CFD"
+        },
+        "etfs_reales": {
+          "disponible": true,
+          "cantidad": "10,000+ ETFs globales reales"
+        },
+        "opciones_reales": {
+          "disponible": true,
+          "nota": "Opciones REALES listadas en CBOE, Euronext, NYSE Amex, CBOE Europe — diferencial máximo",
+          "estrategias": "Todas las estrategias de opciones disponibles"
+        },
+        "futuros": {
+          "disponible": true,
+          "bolsas": "CME, CBOT, NYMEX, ICE, Eurex, y más"
+        },
+        "renta_fija_real": {
+          "disponible": true,
+          "cantidad": "Millones de bonos globales — treasuries, corporativos, municipales"
+        },
+        "fondos": {
+          "disponible": true,
+          "cantidad": "37,000+ fondos globales"
+        }
+      },
+      "costos": {
+        "acciones_usa_lite": "0%",
+        "acciones_usa_pro": "USD 0.005/acción",
+        "forex": "USD 2 por USD 100K negociados",
+        "rendimiento_saldo_usd": "4.33% anual sobre saldo en USD (IBKR Pro) — característica única",
+        "comision_deposito": "0%",
+        "comision_retiro": "1 retiro gratis/mes — luego USD 10",
+        "inactividad": "USD 10/mes si el portafolio es menor a USD 100K y genera menos de USD 10 en comisiones",
+        "comision_custodia": "0%"
+      },
+      "apalancamiento": {
+        "forex_max": "1:50 (regulación USA para clientes domésticos) / Varía para clientes internacionales",
+        "acciones_max": "1:4 (Reg T) — 1:6 (Portfolio Margin para cuentas grandes)",
+        "opciones": "Según cuenta y nivel de opciones",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "TWS (Trader Workstation) — desktop — la más completa del mercado",
+        "IBKR Mobile (iOS/Android)",
+        "Client Portal (web)",
+        "API FIX/REST/WebSocket para algorítmico"
+      ],
+      "ejecucion": {
+        "tipo": "DMA/Smart routing — acceso directo a múltiples bolsas",
+        "nota": "Smart Order Routing — busca la mejor ejecución en todas las bolsas conectadas"
+      },
+      "soporte": {
+        "idiomas": [
+          "Inglés (principal)",
+          "Español (limitado)",
+          "Portugués (limitado)"
+        ],
+        "horario": "24/5 (lunes a viernes)",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "caracteristica_unica": "4.33% anual de interés sobre saldo en USD parado en cuenta — la única gran corredora que paga intereses sobre liquidez",
+      "paises_latam_aceptados": "Todos (verificar restricciones individuales)",
+      "educacion": "IBKR Campus — cursos, webinars, paper trading ilimitado",
+      "demo_disponible": true,
+      "paper_trading": true,
+      "copy_trading": false,
+      "pros": [
+        "La regulación más sólida del mundo (SEC+FINRA+SIPC)",
+        "150+ bolsas en 33 países — acceso global máximo",
+        "Opciones REALES en CBOE, Euronext y más",
+        "4.33% a.a. sobre saldo USD parado",
+        "Sin comisión de custodia",
+        "API profesional para trading algorítmico",
+        "SIPC USD 500K protección"
+      ],
+      "contras": [
+        "Plataforma TWS muy compleja — curva de aprendizado alta",
+        "Soporte en español limitado",
+        "Inactividad USD 10/mes (cuentas pequeñas)",
+        "Sin copy trading"
+      ]
+    },
+    {
+      "id": "B009",
+      "nombre": "Plus500",
+      "nombre_completo": "Plus500 Ltd",
+      "fundacion": 2008,
+      "pais_sede": "Israel (Tel Aviv) — Cotizado LSE",
+      "score_latam": 8.3,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 509909)",
+          "ASIC Australia (No. 417727)",
+          "CySEC Chipre (No. 250/14)",
+          "MAS Singapur",
+          "FSCA Sudáfrica",
+          "SCB Bahamas"
+        ],
+        "entidad_latam": "Plus500SEY Ltd — Seychelles / Plus500 Ltd — SCB Bahamas (Colombia: apertura oficina 2025)",
+        "nivel_regulacion": "Tier 1 (FCA + ASIC)",
+        "nota_latam": "SCB Bahamas / FSA Seychelles para LATAM. Primer broker en abrir oficina en Colombia (2025). Apalancamiento máximo 1:5 para retail en Colombia"
+      },
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100 estándar",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "PayPal",
+          "Skrill"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "CFD Standard",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.8",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker — plataforma propia (sin MT4/MT5)",
+          "para_quien": "Traders retail — plataforma muy intuitiva"
+        },
+        {
+          "nombre": "Pro (Colombia)",
+          "deposito_minimo_usd": 100,
+          "apalancamiento_max_colombia": "1:5 (regulación SFC Colombia)",
+          "modelo": "Market Maker con restricciones regulatorias locales",
+          "nota": "Para clientes de Colombia bajo regulación SFC local"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "60+",
+          "spread_eurusd_min": "0.8 pips"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "15+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.8 pips",
+        "comision_por_operacion": "0",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 10/mes después de 3 meses",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:300 (SCB Bahamas) / 1:5 Colombia (SFC)",
+        "acciones_max": "1:20",
+        "indices_max": "1:100",
+        "cripto_max": "1:2",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "Plus500 Platform (propia — NO usa MT4/MT5)",
+        "Plus500 App (iOS/Android)"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker",
+        "nota": "Plataforma exclusiva — no acepta EAs ni bots externos"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués",
+          "+30 idiomas"
+        ],
+        "horario": "24/7",
+        "canales": [
+          "Chat en vivo 24/7",
+          "Email"
+        ]
+      },
+      "presencia_fisica_latam": {
+        "colombia": "Primera oficina de representación en Colombia (agosto 2025 — SFC)",
+        "otros": "Atención remota"
+      },
+      "paises_latam_aceptados": "Todos (Colombia con regulación SFC local y apalancamiento 1:5)",
+      "educacion": "Guías básicas, cuenta demo ilimitada",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "Cotizado en LSE — máxima transparencia corporativa",
+        "Plataforma propia muy intuitiva",
+        "Primera oficina en Colombia bajo SFC (2025)",
+        "Sin comisión de retiro",
+        "Cuenta demo ilimitada"
+      ],
+      "contras": [
+        "Sin MT4/MT5 — sin EAs ni bots",
+        "Inactividad USD 10/mes tras 3 meses",
+        "Sin opciones",
+        "Sin copy trading"
+      ]
+    },
+    {
+      "id": "B010",
+      "nombre": "eToro",
+      "nombre_completo": "eToro Group Ltd",
+      "fundacion": 2007,
+      "pais_sede": "Israel (Tel Aviv)",
+      "score_latam": 8.4,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 583263)",
+          "ASIC Australia (No. 491139)",
+          "CySEC Chipre (No. 109/10)",
+          "FSA Seychelles (No. SD076)"
+        ],
+        "entidad_latam": "eToro (Seychelles) Ltd — FSA Seychelles",
+        "nivel_regulacion": "Tier 1 (FCA + ASIC)",
+        "nota_latam": "FSA Seychelles para LATAM. Autorizado publicidad en Colombia (2026). SOCIAL TRADING — el inventor del copy trading"
+      },
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "USD 50 para la mayoría de países. USD 200 para algunos mercados",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "PayPal",
+          "Skrill",
+          "Neteller",
+          "Transferencia bancaria",
+          "Klarna (algunos países)"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Retail Standard",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "1.0",
+          "comision_por_lote_usd": 0,
+          "comision_acciones": "0% para acciones reales",
+          "modelo": "Market Maker / Broker mixto (acciones reales + CFDs)",
+          "para_quien": "Inversores y traders — el más popular"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "tipo": "CFD",
+          "pares": "49+",
+          "spread_eurusd_min": "1.0 pips"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "cantidad": "3000+",
+          "comision": "0%",
+          "mercados": "NYSE, NASDAQ, LSE, DAX, IBEX35 y más"
+        },
+        "acciones_cfd": {
+          "disponible": true
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "80+",
+          "tipo": "Real (no CFD en muchos casos)"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_reales": {
+          "disponible": true,
+          "cantidad": "700+",
+          "comision": "0%"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "smart_portfolios": {
+          "disponible": true,
+          "nota": "Carteras temáticas diversificadas"
+        }
+      },
+      "costos": {
+        "spread_eurusd": "1.0 pips",
+        "comision_acciones_etfs": "0% — compra de acciones reales sin comisión",
+        "comision_deposito": "0%",
+        "comision_retiro": "USD 5 por retiro",
+        "inactividad": "USD 10/mes después de 12 meses",
+        "conversion_moneda": "Spread del 0.5% al convertir a USD"
+      },
+      "apalancamiento": {
+        "forex_max": "1:30 (FCA/ASIC) / 1:400 (FSA Seychelles para LATAM)",
+        "acciones_max": "1:5",
+        "indices_max": "1:20",
+        "cripto_max": "1:2",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "eToro Platform (propia web)",
+        "eToro App (iOS/Android)"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker / Agency Broker"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués",
+          "+17 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Centro de ayuda"
+        ]
+      },
+      "caracteristica_unica": "SOCIAL TRADING — el inventor. CopyTrader permite copiar automáticamente a traders exitosos. Popular Investors ganan comisiones. SmartPortfolios para carteras temáticas",
+      "paises_latam_aceptados": "La mayoría. Autorizado publicidad en Colombia 2026. Verificar por país",
+      "educacion": "eToro Academy — cursos, webinars, análisis, artículos",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "CopyTrader (propia)",
+        "Popular Investors program"
+      ],
+      "pros": [
+        "Inventor del copy trading — la mejor plataforma social de inversión",
+        "0% comisión en acciones reales y ETFs",
+        "80+ criptomonedas disponibles",
+        "SmartPortfolios temáticos",
+        "Dep. mínimo USD 50 — accesible"
+      ],
+      "contras": [
+        "Spread Forex relativamente alto (1.0 pips)",
+        "USD 5 comisión de retiro",
+        "FSA Seychelles para LATAM",
+        "Sin MT4/MT5"
+      ]
+    },
+    {
+      "id": "B011",
+      "nombre": "Capital.com",
+      "nombre_completo": "Capital Com SV Investments Limited",
+      "fundacion": 2016,
+      "pais_sede": "Chipre",
+      "score_latam": 8.5,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 793714)",
+          "CySEC Chipre (No. 319/17)",
+          "ASIC Australia (No. 513393)",
+          "NBRB Bielorrusia",
+          "SCB Bahamas"
+        ],
+        "entidad_latam": "Capital Com SV Investments Limited — SCB Bahamas",
+        "nivel_regulacion": "Tier 1 (FCA + CySEC + ASIC)",
+        "nota_latam": "SCB Bahamas para LATAM. Autorizado publicidad en Colombia (SFC 2025). Sin comisión en acciones. IA integrada en la plataforma"
+      },
+      "deposito_minimo": {
+        "valor": 20,
+        "moneda": "USD",
+        "nota": "USD 20 — uno de los más accesibles",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "PayPal",
+          "Skrill",
+          "Neteller",
+          "Apple Pay",
+          "Google Pay"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 20,
+          "spread_eurusd_pips": "0.6",
+          "comision_por_lote_usd": 0,
+          "comision_acciones": "0%",
+          "modelo": "Market Maker / CFD — 0% comisión en acciones",
+          "para_quien": "Todos los perfiles — la cuenta más popular"
+        },
+        {
+          "nombre": "Plus",
+          "deposito_minimo_usd": 3000,
+          "spread_eurusd_pips": "0.4",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP mejorado",
+          "para_quien": "Traders con mayor capital"
+        },
+        {
+          "nombre": "Premier",
+          "deposito_minimo_usd": 10000,
+          "spread_eurusd_pips": "0.3",
+          "modelo": "DMA mejorado",
+          "para_quien": "Traders con alto capital — spreads más ajustados"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "140+",
+          "spread_eurusd_min": "0.6 pips"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "5000+",
+          "comision": "0% CFD acciones"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "25+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "200+",
+          "nota": "Mayor variedad cripto del mercado"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true,
+          "cantidad": "600+"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.6 pips",
+        "comision_acciones_etfs": "0%",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 0 (sin comisión de inactividad)",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:30 (FCA/ASIC regulado) / 1:200 (SCB Bahamas LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:100",
+        "cripto_max": "1:2",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "Capital.com Platform (propia + IA integrada)",
+        "Capital.com App (iOS/Android)",
+        "MetaTrader 4 (disponible para Forex)"
+      ],
+      "caracteristica_unica": "Inteligencia Artificial integrada que detecta sesgos cognitivos del trader y sugiere mejoras en tiempo real. 200+ criptomonedas — mayor variedad del sector",
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués",
+          "+20 idiomas"
+        ],
+        "horario": "24/7",
+        "canales": [
+          "Chat en vivo 24/7",
+          "Email"
+        ]
+      },
+      "paises_latam_aceptados": "Todos. Autorizado publicidad en Colombia (SFC 2025)",
+      "educacion": "Academia educativa completa, IA para análisis",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "IA integrada que mejora la toma de decisiones",
+        "200+ criptomonedas — la mayor variedad",
+        "0% comisión en CFD de acciones",
+        "Sin inactividad",
+        "Dep. mínimo USD 20",
+        "Autorizado SFC Colombia"
+      ],
+      "contras": [
+        "SCB Bahamas para LATAM",
+        "Sin opciones",
+        "Sin copy trading",
+        "Plataforma MT4 limitada vs. competidores"
+      ]
+    },
+    {
+      "id": "B012",
+      "nombre": "BlackBull Markets",
+      "nombre_completo": "BlackBull Group Limited",
+      "fundacion": 2014,
+      "pais_sede": "Nueva Zelanda (Auckland)",
+      "score_latam": 8.4,
+      "regulacion": {
+        "principal": [
+          "FMA Nueva Zelanda (No. FSP403326)",
+          "FSA Seychelles",
+          "SCB Bahamas"
+        ],
+        "entidad_latam": "BlackBull Markets Ltd — FSA Seychelles / SCB Bahamas",
+        "nivel_regulacion": "Tier 2 (FMA NZ)",
+        "nota_latam": "Mejor broker ECN para Perú según rankings 2025. Apalancamiento hasta 1:500 FMA"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Cuenta ECN Standard: sin mínimo. ECN Prime: recomendado desde S/20,000 para mejores spreads",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "UnionPay",
+          "Bitcoin",
+          "USDT"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard (ECN)",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "0.0-0.8",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN",
+          "para_quien": "Todos los perfiles — ECN desde el principio"
+        },
+        {
+          "nombre": "Prime (ECN)",
+          "deposito_minimo_usd": 2000,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote": "Negociado con gestor de cuenta",
+          "modelo": "ECN Prime",
+          "para_quien": "Traders de alto volumen — spread 0.0 y comisión personalizada"
+        },
+        {
+          "nombre": "Institutional",
+          "deposito_minimo_usd": 20000,
+          "spread_eurusd_pips": "0.0",
+          "modelo": "ECN Institucional",
+          "para_quien": "Fondos, family offices, grandes traders"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "70+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "23000+",
+          "nota": "La mayor cantidad de CFD de acciones del mercado"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "30+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.0 pips + USD 3.0/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin comisión de inactividad declarada",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (FMA NZ permite hasta 1:500)",
+        "acciones_max": "1:20",
+        "indices_max": "1:500",
+        "cripto_max": "1:10",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "BlackBull CopyTrader",
+        "BlackBull App",
+        "TradingView (integración)"
+      ],
+      "ejecucion": {
+        "tipo": "ECN puro",
+        "velocidad_promedio_ms": "<100ms"
+      },
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos",
+      "educacion": "Webinars, análisis de mercado",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "BlackBull CopyTrader (propia)"
+      ],
+      "pros": [
+        "23,000+ CFD de acciones — mayor cantidad del mercado",
+        "ECN desde la cuenta más básica",
+        "Sin comisión de inactividad",
+        "Apalancamiento 1:500 (FMA NZ)",
+        "TradingView integrado"
+      ],
+      "contras": [
+        "FMA NZ / FSA Seychelles para LATAM (Tier 2)",
+        "Sin opciones",
+        "Comisión ECN obligatoria (no hay spread only)"
+      ]
+    },
+    {
+      "id": "B013",
+      "nombre": "OANDA",
+      "nombre_completo": "OANDA Corporation",
+      "fundacion": 1996,
+      "pais_sede": "EE.UU. (Nueva York)",
+      "score_latam": 8.5,
+      "regulacion": {
+        "principal": [
+          "CFTC EE.UU.",
+          "NFA EE.UU. (No. 0325821)",
+          "FCA UK (No. 542574)",
+          "ASIC Australia (No. 412981)",
+          "MAS Singapur",
+          "IIROC Canadá",
+          "FSC BVI"
+        ],
+        "entidad_latam": "OANDA Corporation — FSC BVI / OANDA (Canada) Corporation — IIROC (para algunos países)",
+        "nivel_regulacion": "Tier 1 (CFTC+NFA+FCA)",
+        "nota_latam": "Pionero del Forex online — una de las primeras plataformas de Forex del mundo. Datos históricos de divisas gratuitos"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin depósito mínimo — uno de los pocos",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Visa/Mastercard",
+          "PayPal",
+          "Cheque"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "1.0-1.4",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker",
+          "para_quien": "Traders Forex — sin mínimo"
+        },
+        {
+          "nombre": "Premium",
+          "deposito_minimo_usd": 20000,
+          "spread_eurusd_pips": "0.6",
+          "modelo": "STP mejorado",
+          "para_quien": "Traders de alto volumen"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "70+",
+          "nota": "Especialista en Forex — la mejor plataforma del sector"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "100+ (limitado vs. competidores)"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "10+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": false
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "1.0-1.4 pips (Standard)",
+        "comision_deposito": "0%",
+        "comision_retiro": "Variable según método",
+        "inactividad": "USD 10/mes después de 12 meses",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:50 (USA) / 1:200 (FSC BVI para LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:50",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "OANDA Trade (propia web)",
+        "MetaTrader 4",
+        "OANDA App (iOS/Android)",
+        "API REST/FIX para algorítmico"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker / NDD para Premium"
+      },
+      "soporte": {
+        "idiomas": [
+          "Inglés",
+          "Español (limitado)"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "caracteristica_unica": "Datos históricos gratuitos de precios de divisas — referencia mundial para análisis histórico de Forex",
+      "paises_latam_aceptados": "La mayoría (verificar restricciones USA OFAC)",
+      "educacion": "Artículos, webinars, análisis fundamental",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "Pionero del Forex online (desde 1996)",
+        "Sin depósito mínimo",
+        "Datos históricos gratuitos de divisas",
+        "Fuerte regulación CFTC/NFA/FCA",
+        "API para trading algorítmico"
+      ],
+      "contras": [
+        "Spreads más altos que ECN brokers",
+        "CFD de acciones limitado (100+)",
+        "Inactividad USD 10/mes",
+        "Sin copy trading"
+      ]
+    },
+    {
+      "id": "B014",
+      "nombre": "Saxo Bank",
+      "nombre_completo": "Saxo Bank A/S",
+      "fundacion": 1992,
+      "pais_sede": "Dinamarca (Copenhague)",
+      "score_latam": 9.2,
+      "regulacion": {
+        "principal": [
+          "FSA Dinamarca (No. 1149)",
+          "MAS Singapur",
+          "ASIC Australia (No. 32110128286)",
+          "FCA UK (No. 551422)",
+          "JFSA Japón"
+        ],
+        "entidad_latam": "Saxo Bank A/S — FSA Dinamarca (Tier 1 — banco licenciado)",
+        "nivel_regulacion": "Banco regulado — la mayor solidez del sector",
+        "nota_latam": "J. Safra Sarasin adquirió 70% de Saxo Bank en 2025. Calificación S&P: A-. 71,000+ instrumentos — mayor diversidad del sector. Mínimo USD 10K+"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Técnicamente sin mínimo formal pero recomendado USD 10,000+ para acceso completo. Classic: sin mínimo. Platinum: USD 200,000. VIP: USD 1,000,000",
+        "metodos_deposito": [
+          "Transferencia bancaria SWIFT",
+          "Tarjeta bancaria"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Classic",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "0.9",
+          "comision_acciones_usa": "USD 3 por orden (mín.)",
+          "modelo": "DMA/Prime Brokerage",
+          "para_quien": "Inversores activos con capital USD 10K+"
+        },
+        {
+          "nombre": "Platinum",
+          "deposito_minimo_usd": 200000,
+          "spread_eurusd_pips": "0.6",
+          "comision_acciones_usa": "USD 1 por orden (mín.)",
+          "modelo": "DMA Priority",
+          "para_quien": "Inversores de alto patrimonio"
+        },
+        {
+          "nombre": "VIP",
+          "deposito_minimo_usd": 1000000,
+          "spread_eurusd_pips": "0.4",
+          "modelo": "Prime Brokerage — condiciones institucionales",
+          "para_quien": "Family offices, institucionales"
+        },
+        {
+          "nombre": "SaxoSelect",
+          "deposito_minimo_usd": 20000,
+          "modelo": "Gestión discrecional automática",
+          "para_quien": "Inversores que prefieren gestión automática",
+          "nota": "Carteras gestionadas automáticamente por Saxo Bank"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "185+"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "cantidad": "23,500+ en 50+ bolsas"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "60+ futuros y CFD"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "150+"
+        },
+        "materias_primas": {
+          "disponible": true,
+          "cantidad": "40+ futuros y CFD"
+        },
+        "etfs_reales": {
+          "disponible": true,
+          "cantidad": "6,500+"
+        },
+        "opciones_reales": {
+          "disponible": true,
+          "cantidad": "1,200+ sobre acciones e índices en bolsas reales"
+        },
+        "futuros_reales": {
+          "disponible": true,
+          "cantidad": "300+ en CME, CBOT, ICE, Eurex"
+        },
+        "renta_fija_real": {
+          "disponible": true,
+          "cantidad": "40,000+ bonos globales"
+        },
+        "total_instrumentos": "71,000+ — el mayor del sector"
+      },
+      "costos": {
+        "spread_eurusd_classic": "0.9 pips",
+        "comision_acciones_usa_classic": "USD 3 por orden (mín.)",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 100/trimestre si sin operaciones (se puede evitar con 3+ operaciones/trimestre)",
+        "tarifa_mensual_cuenta": "Puede aplicar según país y nivel"
+      },
+      "apalancamiento": {
+        "forex_max": "1:100 (Classic)",
+        "acciones_max": "1:5",
+        "indices_max": "1:50",
+        "opciones": "Disponible con margen",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "SaxoTraderGO (web — la más completa del mercado)",
+        "SaxoTraderPRO (desktop)",
+        "SaxoInvestor (app simple)",
+        "API FIX/OpenAPI para algorítmico"
+      ],
+      "ejecucion": {
+        "tipo": "DMA / Prime Brokerage — acceso directo a bolsas reales"
+      },
+      "soporte": {
+        "idiomas": [
+          "Inglés",
+          "Español (limitado)",
+          "Portugués (limitado)",
+          "+20 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat en vivo",
+          "Email",
+          "Teléfono directo (cliente Platinum/VIP)"
+        ]
+      },
+      "caracteristica_unica": "Es un BANCO (no solo broker) — calificación S&P A-. Adquirido 70% por J. Safra Sarasin (banco suizo) en 2025. 71,000+ instrumentos — la mayor diversidad del sector retail",
+      "paises_latam_aceptados": "La mayoría — mejor para clientes de alta renta con USD 10K+",
+      "educacion": "SaxoAcademy — webinars, análisis, investigación institucional",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "SaxoSelect (gestión automática)"
+      ],
+      "pros": [
+        "BANCO licenciado — mayor solidez del sector (calificación S&P A-)",
+        "71,000+ instrumentos — el mayor del mercado",
+        "Opciones REALES en bolsas mundiales",
+        "40,000+ bonos globales",
+        "SaxoTraderGO — la plataforma más completa",
+        "J. Safra Sarasin (banco suizo) como accionista 70%"
+      ],
+      "contras": [
+        "No recomendado para bajo capital (mínimo práctico USD 10K+)",
+        "Comisiones más altas que brokers discount",
+        "Inactividad USD 100/trimestre (se puede evitar)",
+        "Soporte en español limitado"
+      ]
+    },
+    {
+      "id": "B015",
+      "nombre": "Swissquote",
+      "nombre_completo": "Swissquote Bank Ltd",
+      "fundacion": 1996,
+      "pais_sede": "Suiza (Gland, Vaud) — Cotizado SIX Swiss Exchange",
+      "score_latam": 9.0,
+      "regulacion": {
+        "principal": [
+          "FINMA Suiza (licencia bancaria plena)",
+          "FCA UK",
+          "DFSA Dubai",
+          "MAS Singapur",
+          "HKMA Hong Kong"
+        ],
+        "entidad_latam": "Swissquote Bank Ltd — FINMA Suiza",
+        "nivel_regulacion": "BANCO suizo — la regulación más sólida del mundo",
+        "nota_latam": "Banco suizo regulado FINMA. CHF 76B en AUM. Ideal para empresas, tesorerías corporativas y clientes institucionales de LATAM"
+      },
+      "deposito_minimo": {
+        "valor": 1000,
+        "moneda": "CHF",
+        "nota": "CHF 1,000 (≈ USD 1,100). Recomendado CHF 10,000+ para uso pleno",
+        "metodos_deposito": [
+          "Transferencia bancaria SWIFT",
+          "Tarjeta bancaria",
+          "SEPA (Europa)"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_chf": 1000,
+          "spread_eurusd_pips": "1.7",
+          "comision_acciones_chf": "9 CHF por orden mínimo",
+          "modelo": "Banco completo",
+          "para_quien": "Inversores con patrimonio medio-alto"
+        },
+        {
+          "nombre": "Premium",
+          "deposito_minimo_chf": 10000,
+          "spread_eurusd_pips": "1.4",
+          "modelo": "Banco Premium",
+          "para_quien": "Inversores de alta renta"
+        },
+        {
+          "nombre": "Elite",
+          "deposito_minimo_chf": 50000,
+          "spread_eurusd_pips": "1.1",
+          "modelo": "Private Banking Lite",
+          "para_quien": "Ultra high net worth"
+        },
+        {
+          "nombre": "Cuenta Corporativa",
+          "deposito_minimo_chf": 1000,
+          "modelo": "Corporativo completo",
+          "para_quien": "Empresas, tesorerías corporativas LATAM — banca corporativa completa"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "80+"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "cantidad": "60,000+ en 60+ bolsas globales"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "200+",
+          "tipo": "Compra real (no CFD)"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_reales": {
+          "disponible": true,
+          "cantidad": "2,000+"
+        },
+        "opciones_reales": {
+          "disponible": true
+        },
+        "futuros_reales": {
+          "disponible": true
+        },
+        "renta_fija_real": {
+          "disponible": true,
+          "cantidad": "Amplia selección"
+        },
+        "fondos": {
+          "disponible": true
+        },
+        "robo_advisor": {
+          "disponible": true,
+          "nombre": "eForex / Robo advisory"
+        }
+      },
+      "costos": {
+        "spread_eurusd": "1.7 pips (Standard)",
+        "comision_acciones_suizas": "9 CHF mín.",
+        "comision_deposito": "0%",
+        "comision_retiro": "Puede aplicar para algunos métodos",
+        "inactividad": "Puede aplicar según cuenta",
+        "tarifa_cuenta_mensual": "Variable según cuenta"
+      },
+      "apalancamiento": {
+        "forex_max": "1:100",
+        "acciones_max": "1:5",
+        "cripto_max": "1:1 (compra real)",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "Advanced Trader (propia)",
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "Swissquote App"
+      ],
+      "caracteristica_unica": "BANCO SUIZO (FINMA) — la mayor garantía de solidez financiera del sector. CHF 76B AUM. Criptomonedas como compra real (no CFD). Cuenta corporativa para empresas LATAM",
+      "soporte": {
+        "idiomas": [
+          "Inglés",
+          "Alemán",
+          "Francés",
+          "Italiano",
+          "Español (limitado)"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "La mayoría — mejor para alto patrimonio e institucionales",
+      "educacion": "Research institucional, análisis técnico, webinars",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "BANCO suizo — la mayor solidez del sector global",
+        "60,000+ acciones reales en 60+ bolsas",
+        "Criptomonedas como compra real (no CFD)",
+        "Cuenta corporativa para empresas LATAM",
+        "FINMA regulación — la mejor protección del mundo"
+      ],
+      "contras": [
+        "Spreads más altos que brokers discount",
+        "No recomendado para bajo capital",
+        "Soporte en español limitado",
+        "Comisiones altas para operaciones pequeñas"
+      ]
+    },
+    {
+      "id": "B016",
+      "nombre": "Admirals (Admiral Markets)",
+      "nombre_completo": "Admirals Group AS",
+      "fundacion": 2001,
+      "pais_sede": "Estonia (Tallinn)",
+      "score_latam": 8.3,
+      "regulacion": {
+        "principal": [
+          "EFSA Estonia (No. 4.1-1/46)",
+          "FCA UK (No. 595450)",
+          "ASIC Australia (No. 410681)",
+          "CySEC Chipre (No. 201/13)",
+          "JSC Jordania"
+        ],
+        "entidad_latam": "Admirals SC Ltd — FSA Seychelles (No. SEC/BD/SA/19/0018)",
+        "nivel_regulacion": "Tier 1 (FCA + ASIC)",
+        "nota_latam": "FSA Seychelles para LATAM. Extensión MetaTrader Trading Central — análisis técnico premium. Cuenta Invest para acciones reales"
+      },
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100 para la mayoría. Trade.MT4/MT5: USD 100. Invest.MT5: USD 1",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "Criptomonedas"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Trade.MT4 / Trade.MT5",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.5",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP/NDD",
+          "para_quien": "Traders Forex y CFD"
+        },
+        {
+          "nombre": "Zero.MT5",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN",
+          "para_quien": "Scalpers y traders activos"
+        },
+        {
+          "nombre": "Invest.MT5",
+          "deposito_minimo_usd": 1,
+          "spread_tipo": "Comisión por acción",
+          "comision_acciones_usa": "USD 0.02 por acción (mín. USD 1)",
+          "comision_etfs": "USD 0.02 por ETF",
+          "modelo": "Acciones y ETFs reales",
+          "para_quien": "Inversores de largo plazo en acciones reales"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "80+"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "via": "Invest.MT5",
+          "cantidad": "4,500+"
+        },
+        "acciones_cfd": {
+          "disponible": true
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_reales": {
+          "disponible": true,
+          "cantidad": "200+"
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_trade": "0.5 pips",
+        "spread_eurusd_zero": "0.0 pips + USD 3/lote",
+        "comision_acciones_invest": "USD 0.02/acción",
+        "comision_deposito": "0%",
+        "comision_retiro": "0% (1 retiro gratis/mes)",
+        "inactividad": "EUR 10/mes después de 24 meses",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (FSA Seychelles para LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:100",
+        "cripto_max": "1:10",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4 + extensión Trading Central",
+        "MetaTrader 5 + extensión",
+        "Admiral Markets App",
+        "Invest.MT5 (web)"
+      ],
+      "caracteristica_unica": "Extensión gratuita Trading Central para MT4/MT5 — análisis técnico profesional con señales automáticas. Cuenta Invest con acciones desde USD 1",
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués",
+          "+15 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba",
+      "educacion": "Admirals Education Hub — cursos, webinars, análisis",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "Extensión Trading Central gratuita para MT4/MT5",
+        "Cuenta Invest desde USD 1",
+        "FCA + ASIC regulación Tier 1",
+        "Sin inactividad durante 24 meses",
+        "80+ pares Forex"
+      ],
+      "contras": [
+        "FSA Seychelles para LATAM",
+        "Sin copy trading nativo",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B017",
+      "nombre": "FXTM (ForexTime)",
+      "nombre_completo": "FXTM — Exinity Limited",
+      "fundacion": 2011,
+      "pais_sede": "Chipre (Limassol)",
+      "score_latam": 8.2,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 777911)",
+          "CySEC Chipre (No. 185/12)",
+          "FSCA Sudáfrica (No. 46614)",
+          "CMA Kenia",
+          "FSC Mauricio (No. C113012295)"
+        ],
+        "entidad_latam": "Exinity Limited — FSC Mauricio",
+        "nivel_regulacion": "Tier 1 (FCA + CySEC)",
+        "nota_latam": "FSC Mauricio para LATAM. Cuenta FXTM Pro (ECN) con condiciones institucionales. VPS gratuito"
+      },
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "Micro: USD 50. Advantage: USD 500. Advantage Plus: USD 1,000",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "Fasapay",
+          "Bitcoin (algunos países)"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Micro",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "1.5",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker",
+          "para_quien": "Principiantes"
+        },
+        {
+          "nombre": "Advantage",
+          "deposito_minimo_usd": 500,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 4.0,
+          "modelo": "ECN",
+          "para_quien": "Traders intermedios"
+        },
+        {
+          "nombre": "Advantage Plus",
+          "deposito_minimo_usd": 1000,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 2.0,
+          "modelo": "ECN Pro",
+          "para_quien": "Traders avanzados"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "60+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "15+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_micro": "1.5 pips",
+        "spread_eurusd_advantage": "0.0 pips + USD 2/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 5/mes después de 6 meses",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:2000 (FSC Mauricio para LATAM)",
+        "acciones_max": "1:20",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "FXTM App",
+        "FXTM Trader (propia)"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba",
+      "educacion": "Academia FXTM — webinars, seminarios presenciales en países LATAM",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "Seminarios presenciales en países LATAM",
+        "Apalancamiento hasta 1:2000",
+        "Cuenta ECN desde USD 500",
+        "VPS gratuito para EAs"
+      ],
+      "contras": [
+        "FSC Mauricio para LATAM",
+        "Spread Micro alto (1.5 pips)",
+        "Inactividad USD 5/mes tras 6 meses"
+      ]
+    },
+    {
+      "id": "B018",
+      "nombre": "Eightcap",
+      "nombre_completo": "Eightcap Pty Ltd",
+      "fundacion": 2009,
+      "pais_sede": "Australia (Melbourne)",
+      "score_latam": 8.4,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 391441)",
+          "FCA UK (No. 921296)",
+          "CySEC Chipre (No. 246/14)",
+          "SCB Bahamas (No. SIA-F220)"
+        ],
+        "entidad_latam": "Eightcap Ltd — SCB Bahamas",
+        "nivel_regulacion": "Tier 1 (ASIC + FCA)",
+        "nota_latam": "SCB Bahamas para LATAM. Integración nativa con TradingView. Copy trading integrado"
+      },
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "PayPal",
+          "Skrill",
+          "Neteller",
+          "Bitcoin",
+          "USDT"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Principiantes e intermedios"
+        },
+        {
+          "nombre": "Raw",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN",
+          "para_quien": "Traders activos"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "50+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "800+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "250+",
+          "nota": "Mayor variedad cripto del sector junto con Capital.com"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "1.0 pips",
+        "spread_eurusd_raw": "0.0 pips + USD 3.5/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin comisión declarada",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (SCB Bahamas)",
+        "acciones_max": "1:20",
+        "cripto_max": "1:5",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "TradingView (integración directa — diferencial clave)",
+        "Eightcap App"
+      ],
+      "caracteristica_unica": "Integración nativa con TradingView — opera directamente desde TradingView sin salir de la plataforma. 250+ criptomonedas",
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos excepto Cuba",
+      "educacion": "Artículos, análisis técnico",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "Integración nativa TradingView — diferencial único",
+        "250+ criptomonedas",
+        "ASIC + FCA Tier 1",
+        "Sin comisión de inactividad",
+        "Copy trading disponible"
+      ],
+      "contras": [
+        "SCB Bahamas para LATAM",
+        "CFD de acciones limitado (800+)",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B019",
+      "nombre": "ZERO Markets",
+      "nombre_completo": "ZERO Global Ltd",
+      "fundacion": 2017,
+      "pais_sede": "Australia",
+      "score_latam": 8.3,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 618036)",
+          "FMA Nueva Zelanda (No. FSP1002495)"
+        ],
+        "entidad_latam": "ZERO Markets (SVG) Ltd — SVGFSA",
+        "nivel_regulacion": "Tier 1 (ASIC)",
+        "nota_latam": "SVG para LATAM. Depósito mínimo USD 10 — muy accesible. Acepta Nequi Visa y tarjetas colombianas"
+      },
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD",
+        "nota": "USD 10 — de los más bajos del mercado",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "Bitcoin",
+          "USDT",
+          "Tarjetas locales LATAM (Nequi Visa para Colombia)"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 10,
+          "spread_eurusd_pips": "1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Principiantes"
+        },
+        {
+          "nombre": "Prime (ECN)",
+          "deposito_minimo_usd": 10,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN",
+          "para_quien": "Traders activos"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "55+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "500+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "25+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "1.0 pips",
+        "spread_eurusd_prime": "0.0 pips + USD 3/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin comisión",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email"
+        ]
+      },
+      "paises_latam_aceptados": "Todos — especialmente popular en Colombia (acepta Nequi Visa)",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "Dep. mínimo USD 10 — muy accesible",
+        "Acepta Nequi Visa Colombia",
+        "ASIC + FMA regulación Tier 1 principal",
+        "0% comisión de retiro"
+      ],
+      "contras": [
+        "SVG/SVGFSA para LATAM (regulación offshore mínima)",
+        "Catálogo de acciones limitado (500+)",
+        "Sin copy trading"
+      ]
+    },
+    {
+      "id": "B020",
+      "nombre": "Vantage Markets",
+      "nombre_completo": "Vantage International Group Ltd",
+      "fundacion": 2009,
+      "pais_sede": "Australia (Sídney)",
+      "score_latam": 8.3,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 428901)",
+          "FCA UK (No. 590299)",
+          "CIMA Islas Caimán (No. 1383491)",
+          "VFSC Vanuatu"
+        ],
+        "entidad_latam": "Vantage International Group Ltd — CIMA Islas Caimán",
+        "nivel_regulacion": "Tier 1 (ASIC + FCA)",
+        "nota_latam": "CIMA Islas Caimán para LATAM. Dep. mínimo USD 50. Copy trading ProTrader"
+      },
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "USD 50 — accessible",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "Bitcoin",
+          "USDT"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard STP",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "1.4",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Principiantes"
+        },
+        {
+          "nombre": "Raw ECN",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN",
+          "para_quien": "Traders activos"
+        },
+        {
+          "nombre": "Pro ECN",
+          "deposito_minimo_usd": 1000,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 4.0,
+          "modelo": "ECN Pro",
+          "para_quien": "Traders de alto volumen"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "40+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "900+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "30+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "1.4 pips",
+        "spread_eurusd_raw": "0.0 pips + USD 3/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 0",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "ProTrader (copy trading)",
+        "TradingView integración",
+        "Vantage App"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono",
+          "WhatsApp"
+        ]
+      },
+      "paises_latam_aceptados": "Todos",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "ProTrader (propia)",
+        "ZuluTrade",
+        "DupliTrade"
+      ],
+      "pros": [
+        "Triple copy trading (ProTrader + ZuluTrade + DupliTrade)",
+        "Dep. mínimo USD 50",
+        "Sin inactividad",
+        "ASIC + FCA Tier 1"
+      ],
+      "contras": [
+        "CIMA Islas Caimán para LATAM",
+        "Catálogo acciones limitado (900+)",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B021",
+      "nombre": "Libertex",
+      "nombre_completo": "Indication Investments Ltd (Libertex)",
+      "fundacion": 1997,
+      "pais_sede": "Chipre",
+      "score_latam": 8.0,
+      "regulacion": {
+        "principal": [
+          "CySEC Chipre (No. 164/12)",
+          "FSC Mauricio"
+        ],
+        "entidad_latam": "Indication Investments Ltd — CySEC / FSC Mauricio",
+        "nivel_regulacion": "Tier 2 (CySEC)",
+        "nota_latam": "Comisiones en vez de spreads — modelo único. 25+ años en el mercado. Bien conocido en LATAM hispanoparlante"
+      },
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD",
+        "nota": "Desde USD 10 según país",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Skrill",
+          "Neteller",
+          "Transferencia bancaria",
+          "PayPal (algunos países)",
+          "Bitcoin"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 10,
+          "spread_eurusd_pips": "0",
+          "comision_por_lote_porcentaje": "0.008% por operación",
+          "modelo": "Comisión sobre operación (sin spread)",
+          "para_quien": "Todos — modelo de costos diferente"
+        },
+        {
+          "nombre": "VIP",
+          "deposito_minimo_usd": 250,
+          "comision_porcentaje": "Reducida",
+          "modelo": "Comisión reducida",
+          "para_quien": "Traders con mayor capital"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "50+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "200+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "100+",
+          "nota": "Cartera Portfolio para acciones/cripto reales"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "modelo_costos": "Comisión % por operación (sin spread)",
+        "comision_eurusd": "0.008% por operación",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "EUR 10/mes después de 180 días",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:30 (CySEC) / 1:999 (Mauricio para LATAM)",
+        "acciones_max": "1:20",
+        "cripto_max": "1:10",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "Libertex Platform (propia)",
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "Libertex App"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Portugués"
+        ],
+        "horario": "24/7",
+        "canales": [
+          "Chat 24/7",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "La mayoría. NO disponible para Venezuela, Nicaragua, Cuba",
+      "educacion": "Cursos, webinars, análisis, 25+ años de contenido",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "25+ años en el mercado",
+        "Modelo de comisión % sin spread — transparente",
+        "Cuenta Portfolio para acciones/cripto reales",
+        "Soporte 24/7",
+        "Desde USD 10"
+      ],
+      "contras": [
+        "NO disponible para Venezuela, Nicaragua, Cuba",
+        "CySEC/FSC Mauricio — no Tier 1 principal",
+        "Sin opciones",
+        "Inactividad EUR 10/mes tras 180 días"
+      ]
+    },
+    {
+      "id": "B022",
+      "nombre": "ThinkMarkets",
+      "nombre_completo": "TF Global Markets Int Limited",
+      "fundacion": 2010,
+      "pais_sede": "Australia (Melbourne)",
+      "score_latam": 8.2,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 424700)",
+          "FCA UK (No. 629628)",
+          "FSCA Sudáfrica",
+          "JSC Jordania",
+          "VFSC Vanuatu"
+        ],
+        "entidad_latam": "TF Global Markets Onshore Limited — VFSC Vanuatu",
+        "nivel_regulacion": "Tier 1 (ASIC + FCA)",
+        "nota_latam": "VFSC Vanuatu para LATAM. Plataforma ThinkTrader — premiada. Acciones reales disponibles via ThinkInvest"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "ThinkZero: USD 500. ThinkSTP: USD 0",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "Bitcoin"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "ThinkSTP",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "1.2",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "para_quien": "Principiantes"
+        },
+        {
+          "nombre": "ThinkZero",
+          "deposito_minimo_usd": 500,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN",
+          "para_quien": "Traders activos"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "60+"
+        },
+        "acciones_reales": {
+          "disponible": true,
+          "via": "ThinkInvest",
+          "cantidad": "2000+"
+        },
+        "acciones_cfd": {
+          "disponible": true
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "30+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_stp": "1.2 pips",
+        "spread_eurusd_zero": "0.0 pips + USD 3.5/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 0",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (VFSC Vanuatu)",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "ThinkTrader (propia web/app — premiada)",
+        "MetaTrader 4",
+        "MetaTrader 5"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "Todos",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "ThinkTrader — plataforma propia premiada",
+        "ThinkInvest para acciones reales",
+        "Sin inactividad",
+        "ASIC + FCA Tier 1"
+      ],
+      "contras": [
+        "VFSC Vanuatu para LATAM",
+        "ThinkZero requiere USD 500 mínimo",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B023",
+      "nombre": "MultiBank Group",
+      "nombre_completo": "MultiBank Group",
+      "fundacion": 2005,
+      "pais_sede": "Alemania (Múnich) / EAU (Dubái)",
+      "score_latam": 8.3,
+      "regulacion": {
+        "principal": [
+          "BaFin Alemania",
+          "ASIC Australia (No. 416279)",
+          "FCA UK (No. 679312)",
+          "DFSA Dubai",
+          "FSC BVI",
+          "SFC Hong Kong"
+        ],
+        "entidad_latam": "MultiBank FX International Corp — FSC BVI / ASIC Australia",
+        "nivel_regulacion": "Tier 1 (BaFin + ASIC + FCA)",
+        "nota_latam": "Oficinas físicas en Panamá. BaFin Alemania — regulación de primer nivel europeo. Dep. mínimo USD 50 — muy accesible"
+      },
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "USD 50 — muy accesible",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "PayPal",
+          "Bitcoin",
+          "USDT"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP"
+        },
+        {
+          "nombre": "ECN",
+          "deposito_minimo_usd": 1000,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 6.0,
+          "modelo": "ECN"
+        },
+        {
+          "nombre": "Premium",
+          "deposito_minimo_usd": 5000,
+          "spread_eurusd_pips": "0.0",
+          "comision_negociada": true,
+          "modelo": "ECN Premium — condiciones personalizadas"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "55+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "20000+",
+          "nota": "20,000+ instrumentos — de los mayores"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "1.0 pips (Standard) / 0.0 pips ECN + USD 3/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 0",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500",
+        "acciones_max": "1:20",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "MT Pro (MultiBank)",
+        "MultiBank App"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español",
+          "Inglés",
+          "Árabe",
+          "+10 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono",
+          "WhatsApp"
+        ]
+      },
+      "presencia_fisica_latam": {
+        "panama": "Oficina física en Ciudad de Panamá — soporte presencial"
+      },
+      "paises_latam_aceptados": "Todos",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "BaFin Alemania + ASIC + FCA — triple regulación Tier 1",
+        "Dep. mínimo USD 50 — muy accesible",
+        "20,000+ instrumentos",
+        "Oficina física en Panamá",
+        "Sin inactividad"
+      ],
+      "contras": [
+        "ECN requiere USD 1,000 mínimo",
+        "Sin opciones",
+        "Sin copy trading nativo"
+      ]
+    },
+    {
+      "id": "B024",
+      "nombre": "FXCM",
+      "nombre_completo": "FXCM Group, LLC",
+      "fundacion": 1999,
+      "pais_sede": "EE.UU. (Nueva York)",
+      "score_latam": 8.0,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 217689)",
+          "ASIC Australia (No. 309763)",
+          "FSCA Sudáfrica (No. 46578)",
+          "ISA Israel"
+        ],
+        "entidad_latam": "FXCM Ltd — FCA UK (para la mayoría)",
+        "nivel_regulacion": "Tier 1 (FCA + ASIC)",
+        "nota_latam": "Broker introductorio de Gletir Uruguay. Pionero del trading online en los 90s. API avanzada"
+      },
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "USD 50",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Payoneer"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Active Trader",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "0.3-1.0",
+          "comision_por_lote_usd": 0,
+          "modelo": "NDD",
+          "para_quien": "Traders Forex activos"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "40+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "100+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": false
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.3-1.0 pips (NDD)",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 0",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:400 (FCA offshore para LATAM)",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "Trading Station (propia)",
+        "MetaTrader 4",
+        "NinjaTrader",
+        "ZuluTrade",
+        "FXCM App"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Inglés",
+          "Español (limitado)"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "paises_latam_aceptados": "La mayoría",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "copy_plataformas": [
+        "ZuluTrade"
+      ],
+      "pros": [
+        "Pionero del trading online (desde 1999)",
+        "NDD — No Dealing Desk",
+        "NinjaTrader compatible",
+        "FCA + ASIC Tier 1"
+      ],
+      "contras": [
+        "Catálogo limitado (40+ forex pares)",
+        "Soporte español limitado",
+        "Menos competitivo vs. nuevos brokers"
+      ]
+    },
+    {
+      "id": "B025",
+      "nombre": "CMC Markets",
+      "nombre_completo": "CMC Markets plc",
+      "fundacion": 1989,
+      "pais_sede": "Reino Unido (Londres) — Cotizado LSE",
+      "score_latam": 8.4,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 173730)",
+          "ASIC Australia (No. 238054)",
+          "CFTC EE.UU.",
+          "MAS Singapur",
+          "IIROC Canadá",
+          "BaFin Alemania"
+        ],
+        "entidad_latam": "CMC Markets UK plc — FCA UK",
+        "nivel_regulacion": "Tier 1 supremo (FCA + ASIC + BaFin)",
+        "nota_latam": "Cotizado en LSE — máxima transparencia. 12,000+ instrumentos. Plataforma Next Generation de alta calidad"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "GBP/USD",
+        "nota": "Sin mínimo formal",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "PayPal (UK)",
+          "Cheque"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "CFD Account",
+          "deposito_minimo_usd": 0,
+          "spread_eurusd_pips": "0.7",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker",
+          "para_quien": "Todos los perfiles"
+        },
+        {
+          "nombre": "CMC Invest (acciones reales)",
+          "deposito_minimo_usd": 0,
+          "comision_acciones_uk": "0% con plan free (máx 3 operaciones/mes)",
+          "modelo": "Acciones reales — principalmente para clientes UK/AU",
+          "nota": "Disponibilidad limitada en LATAM"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "330+",
+          "nota": "Mayor cantidad de pares Forex del mercado"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "9000+"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "80+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true,
+          "cantidad": "1000+"
+        },
+        "opciones": {
+          "disponible": false,
+          "nota": "Disponible en Australia pero no en LATAM"
+        },
+        "renta_fija": {
+          "disponible": true,
+          "cantidad": "50+ bonos government CFD"
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.7 pips",
+        "comision_por_operacion": "0 (spreads incluidos)",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "GBP 10/mes después de 12 meses",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:30 (FCA) / 1:500 (offshore LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:200",
+        "cripto_max": "1:2",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "Next Generation (propia — premiada)",
+        "MetaTrader 4",
+        "CMC Markets App"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker / DMA para grandes cuentas"
+      },
+      "soporte": {
+        "idiomas": [
+          "Inglés",
+          "Español (limitado)"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "caracteristica_unica": "330+ pares Forex — mayor cantidad del mercado. Cotizado en LSE. Next Generation es considerada una de las mejores plataformas del sector. 12,000+ instrumentos totales",
+      "paises_latam_aceptados": "La mayoría — verificar disponibilidad por país",
+      "educacion": "Análisis técnico, webinars, cursos",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "330+ pares Forex — el mayor del sector",
+        "Cotizado en LSE — transparencia máxima",
+        "Next Generation — plataforma premiada",
+        "FCA + ASIC + BaFin Tier 1",
+        "9,000+ CFD de acciones"
+      ],
+      "contras": [
+        "Inactividad GBP 10/mes tras 12 meses",
+        "Soporte español limitado",
+        "Sin copy trading",
+        "Acciones reales limitadas para LATAM"
+      ]
+    },
+    {
+      "id": "B026",
+      "nombre": "IG Markets",
+      "nombre_completo": "IG Group Holdings plc",
+      "fundacion": 1974,
+      "pais_sede": "Reino Unido (Londres) — Cotizado LSE",
+      "score_latam": 9.0,
+      "regulacion": {
+        "principal": [
+          "FCA UK (No. 195355)",
+          "ASIC Australia (No. 515106)",
+          "BaFin Alemania",
+          "FSCA Sudáfrica",
+          "JFSA Japón",
+          "MAS Singapur",
+          "IIROC Canadá"
+        ],
+        "entidad_latam": "IG Markets Limited — FCA UK / IG (offline) para LATAM",
+        "nivel_regulacion": "Tier 1 supremo — uno de los más regulados del mundo",
+        "nota_latam": "Fundado en 1974 — el broker más antiguo del mundo. 17,000+ instrumentos incluyendo opciones vanilla sobre Forex y acciones. Cotizado en LSE"
+      },
+      "deposito_minimo": {
+        "valor": 300,
+        "moneda": "GBP/USD",
+        "nota": "Aprox. USD 300-500 según país",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "PayPal (limitado)",
+          "Debit card"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "CFD Account",
+          "deposito_minimo_usd": 300,
+          "spread_eurusd_pips": "0.6",
+          "comision_por_lote_usd": 0,
+          "modelo": "Market Maker",
+          "para_quien": "Todos los perfiles"
+        },
+        {
+          "nombre": "Direct Market Access (DMA)",
+          "deposito_minimo_usd": 5000,
+          "spread_eurusd_pips": "0.0-0.3",
+          "comision_por_lote_usd": 8.0,
+          "modelo": "DMA — acceso directo bolsa",
+          "para_quien": "Traders profesionales"
+        },
+        {
+          "nombre": "Options Account",
+          "deposito_minimo_usd": 300,
+          "modelo": "Opciones vanilla sobre Forex y acciones",
+          "para_quien": "Traders de opciones — único en el sector para LATAM"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "100+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "13000+"
+        },
+        "indices": {
+          "disponible": true,
+          "cantidad": "80+"
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "20+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true,
+          "cantidad": "2000+"
+        },
+        "opciones_vanilla": {
+          "disponible": true,
+          "nota": "Opciones vanilla sobre Forex Y acciones — diferencial máximo junto con AvaTrade"
+        },
+        "futuros_cfd": {
+          "disponible": true
+        },
+        "renta_fija_cfd": {
+          "disponible": true
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.6 pips (CFD)",
+        "spread_eurusd_dma": "0.0-0.3 pips + comisión",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "GBP 12/mes después de 24 meses sin operar",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "forex_max": "1:30 (FCA) / 1:400 (offshore LATAM)",
+        "acciones_max": "1:20",
+        "indices_max": "1:200",
+        "opciones": "Según contrato",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "IG Platform (propia web — de las mejores)",
+        "MetaTrader 4",
+        "ProRealTime (análisis técnico avanzado)",
+        "IG Trading App",
+        "L2 Dealer (DMA)"
+      ],
+      "ejecucion": {
+        "tipo": "Market Maker / DMA para grandes cuentas"
+      },
+      "soporte": {
+        "idiomas": [
+          "Inglés",
+          "Español (limitado)",
+          "+12 idiomas"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono"
+        ]
+      },
+      "caracteristica_unica": "Fundado en 1974 — el broker CFD más antiguo del mundo. 17,000+ instrumentos incluyendo opciones vanilla sobre Forex Y acciones — solo junto con AvaTrade en el sector retail",
+      "paises_latam_aceptados": "La mayoría — verificar disponibilidad por país",
+      "educacion": "IG Academy — una de las mejores del sector. Cursos completos, análisis, webinars",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "50+ años de historia — el broker CFD más antiguo del mundo",
+        "17,000+ instrumentos",
+        "Opciones vanilla sobre Forex Y acciones",
+        "FCA + ASIC + BaFin Tier 1 supremo",
+        "ProRealTime para análisis técnico avanzado",
+        "Cotizado en LSE"
+      ],
+      "contras": [
+        "Dep. mínimo más alto (USD 300+)",
+        "Sin copy trading",
+        "Soporte español limitado",
+        "Inactividad GBP 12/mes tras 24 meses"
+      ]
+    },
+    {
+      "id": "B027",
+      "nombre": "Pepperstone (Colombia — SFC)",
+      "nombre_completo": "Pepperstone Colombia (entidad SFC)",
+      "fundacion": 2010,
+      "pais_sede": "Australia / Colombia (representación)",
+      "score_latam": 8.7,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia",
+          "FCA UK",
+          "SFC Colombia (Superintendencia Financiera de Colombia — 2025)"
+        ],
+        "entidad_latam": "Pepperstone — SFC Colombia (primera entidad bajo regulación local CO)",
+        "nivel_regulacion": "Tier 1 + regulación local Colombia",
+        "nota_latam": "Pepperstone recibió autorización SFC Colombia en 2025 para publicidad y operación. Primera regulación local de un broker ECN en Colombia"
+      },
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD",
+        "nota": "USD 200 para Colombia",
+        "metodos_deposito": [
+          "Transferencia bancaria en COP",
+          "Tarjeta Visa/Mastercard COP",
+          "Nequi",
+          "Daviplata"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard (Colombia)",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.9",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP",
+          "nota": "Regulación SFC aplica — restricciones colombianas"
+        },
+        {
+          "nombre": "Razor ECN (Colombia)",
+          "deposito_minimo_usd": 200,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "62+ incluyendo USD/COP",
+          "nota": "USD/COP disponible — par local colombiano"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "27+"
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        },
+        "renta_fija": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "0.9 pips",
+        "spread_eurusd_razor": "0.0 pips + USD 3.5/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin declarado"
+      },
+      "apalancamiento": {
+        "forex_max": "Pendiente definición SFC Colombia",
+        "nota": "Regulación SFC puede limitar apalancamiento para retail colombiano"
+      },
+      "plataformas": [
+        "MT4",
+        "MT5",
+        "cTrader",
+        "TradingView",
+        "Pepperstone App"
+      ],
+      "soporte": {
+        "idiomas": [
+          "Español Colombia",
+          "Inglés"
+        ],
+        "horario": "24/5",
+        "canales": [
+          "Chat",
+          "Email",
+          "Teléfono",
+          "WhatsApp Colombia"
+        ]
+      },
+      "paises_latam_aceptados": "Colombia (regulación local SFC) + resto de LATAM via SCB Bahamas",
+      "nota_especial": "Primera entidad bajo regulación SFC Colombia de un broker ECN internacional. Referencia para la normalización del trading Forex en Colombia",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "Primera regulación SFC Colombia de broker ECN — protección local máxima",
+        "USD/COP disponible",
+        "Depósitos en COP via transferencia bancaria local",
+        "Nequi y Daviplata para depósitos"
+      ],
+      "contras": [
+        "Regulación SFC puede imponer restricciones de apalancamiento",
+        "Solo aplica SFC para clientes colombianos — resto de LATAM usa SCB Bahamas"
+      ]
+    },
+    {
+      "id": "B028",
+      "nombre": "AvaTrade (Colombia — SFC)",
+      "nombre_completo": "AvaTrade — Entidad Colombia",
+      "fundacion": 2006,
+      "pais_sede": "Irlanda / Colombia (representación)",
+      "score_latam": 8.6,
+      "regulacion": {
+        "principal": [
+          "CBI Irlanda",
+          "ASIC Australia",
+          "SFC Colombia (2025)"
+        ],
+        "entidad_latam": "Ava Trade Markets Ltd — SFC Colombia (aprobación 2025)",
+        "nivel_regulacion": "Tier 1 + regulación local Colombia",
+        "nota_latam": "AvaTrade recibió aprobación SFC Colombia en 2025 — primera del mercado. Autorizado publicidad a clientes colombianos"
+      },
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100 — accesible para Colombia"
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard Colombia (SFC)",
+          "deposito_minimo_usd": 100,
+          "spread_eurusd_pips": "0.9",
+          "nota": "Bajo regulación SFC — restricciones colombianas aplicables"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "55+"
+        },
+        "acciones_cfd": {
+          "disponible": true
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones_vanilla": {
+          "disponible": true,
+          "nota": "AvaOptions disponible"
+        }
+      },
+      "costos": {
+        "spread_eurusd": "0.9 pips fijo",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "USD 50/mes tras 3 meses"
+      },
+      "apalancamiento": {
+        "nota": "Pendiente definición SFC Colombia — posible restricción retail"
+      },
+      "plataformas": [
+        "AvaTradeGO",
+        "MT4",
+        "MT5"
+      ],
+      "paises_latam_aceptados": "Colombia (SFC) + resto de LATAM vía FSC BVI",
+      "nota_especial": "Segunda entidad bajo regulación SFC Colombia (junto con Pepperstone). Primer broker en recibir aprobación SFC para publicidad activa en Colombia",
+      "demo_disponible": true,
+      "copy_trading": true,
+      "pros": [
+        "Aprobación SFC Colombia — protección local",
+        "AvaOptions disponible (opciones vanilla)",
+        "Soporte WhatsApp Colombia"
+      ],
+      "contras": [
+        "Inactividad USD 50/mes tras 3 meses",
+        "SFC puede limitar apalancamiento retail"
+      ]
+    },
+    {
+      "id": "B029",
+      "nombre": "ACY Securities (Colombia — Oficina Bogotá)",
+      "nombre_completo": "ACY Securities Pty Ltd",
+      "fundacion": 2013,
+      "pais_sede": "Australia / Colombia (oficina física Bogotá)",
+      "score_latam": 8.1,
+      "regulacion": {
+        "principal": [
+          "ASIC Australia (No. 403469)",
+          "SVGFSA"
+        ],
+        "entidad_latam": "ACY Capital Australia Pty Ltd — SVGFSA / Oficina física Bogotá (agosto 2025)",
+        "nivel_regulacion": "Tier 1 (ASIC)",
+        "nota_latam": "Primera operación presencial física en LATAM — Bogotá Colombia (agosto 2025). Soporte presencial en español para toda la región"
+      },
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "USD 50",
+        "metodos_deposito": [
+          "Visa/Mastercard",
+          "Transferencia bancaria",
+          "Skrill",
+          "Neteller",
+          "Bitcoin",
+          "USDT"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "0.8",
+          "comision_por_lote_usd": 0,
+          "modelo": "STP"
+        },
+        {
+          "nombre": "ECN Ultra",
+          "deposito_minimo_usd": 50,
+          "spread_eurusd_pips": "0.0",
+          "comision_por_lote_usd": 7.0,
+          "modelo": "ECN"
+        }
+      ],
+      "instrumentos": {
+        "forex": {
+          "disponible": true,
+          "pares": "60+"
+        },
+        "acciones_cfd": {
+          "disponible": true,
+          "cantidad": "2000+"
+        },
+        "indices": {
+          "disponible": true
+        },
+        "criptomonedas": {
+          "disponible": true
+        },
+        "materias_primas": {
+          "disponible": true
+        },
+        "etfs_cfd": {
+          "disponible": true
+        },
+        "opciones": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "spread_eurusd_standard": "0.8 pips",
+        "spread_eurusd_ecn": "0.0 pips + USD 3.5/lote",
+        "comision_deposito": "0%",
+        "comision_retiro": "0%",
+        "inactividad": "Sin declarado"
+      },
+      "apalancamiento": {
+        "forex_max": "1:500 (SVGFSA)",
+        "proteccion_saldo_negativo": true
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "ACY App"
+      ],
+      "presencia_fisica_latam": {
+        "colombia": "Oficina física en Bogotá (agosto 2025) — primera presencia LATAM"
+      },
+      "paises_latam_aceptados": "Todos — primera presencia física en LATAM (Bogotá)",
+      "demo_disponible": true,
+      "copy_trading": false,
+      "pros": [
+        "Primera oficina física en LATAM (Bogotá, Colombia)",
+        "Soporte presencial en español para toda la región",
+        "Dep. mínimo USD 50",
+        "ASIC regulación Tier 1"
+      ],
+      "contras": [
+        "SVGFSA para clientes LATAM",
+        "Sin copy trading",
+        "Sin opciones"
+      ]
+    },
+    {
+      "id": "B030",
+      "nombre": "Kraken / Binance (Criptomonedas LATAM)",
+      "nombre_completo": "Exchanges Cripto — Binance / Kraken / Coinbase",
+      "fundacion": 2011,
+      "pais_sede": "Global",
+      "score_latam": 8.5,
+      "regulacion": {
+        "principal": [
+          "FinCEN EE.UU. (Kraken/Coinbase)",
+          "FCA UK (Kraken UK)",
+          "Binance: múltiples licencias en proceso"
+        ],
+        "entidad_latam": "Binance.com / Kraken.com — operación offshore global",
+        "nivel_regulacion": "Variable — Coinbase/Kraken más regulados. Binance en proceso de regularización global",
+        "nota_latam": "Fundamentales para Venezuela (USDT/BTC), El Salvador (BTC moneda legal), y toda LATAM como alternativa de inversión en cripto"
+      },
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — desde fracciones de satoshi",
+        "metodos_deposito": [
+          "Transferencia bancaria",
+          "Tarjeta Visa/Mastercard",
+          "P2P (Binance P2P)",
+          "Transferencia cripto",
+          "SPEI México",
+          "PIX Brasil",
+          "PSE Colombia",
+          "Nequi Colombia"
+        ]
+      },
+      "cuentas": [
+        {
+          "nombre": "Spot Trading",
+          "deposito_minimo_usd": 0,
+          "comision_por_operacion": "0.1% (Binance) / 0.16% (Kraken maker)",
+          "tipo": "Compra/venta real de criptomonedas",
+          "para_quien": "Inversores de largo plazo en cripto"
+        },
+        {
+          "nombre": "Futures (Derivados Cripto)",
+          "deposito_minimo_usd": 0,
+          "comision_por_operacion": "0.02% maker / 0.05% taker (Binance)",
+          "apalancamiento_max": "1:125 (Binance) / 1:50 (Kraken)",
+          "tipo": "Futuros y perpetuos sobre cripto",
+          "para_quien": "Traders activos en cripto"
+        },
+        {
+          "nombre": "P2P Trading",
+          "deposito_minimo_usd": 0,
+          "comision_por_operacion": "0% (Binance P2P)",
+          "nota": "Clave para Venezuela, Argentina (buy cripto con pesos), El Salvador (BTC local)",
+          "tipo": "Peer-to-peer — sin intermediario bancario"
+        }
+      ],
+      "instrumentos": {
+        "criptomonedas": {
+          "disponible": true,
+          "cantidad": "300+ (Binance) / 200+ (Kraken) / 200+ (Coinbase)",
+          "incluye": "BTC, ETH, USDT, BNB, SOL, ADA, AVAX, DOT, MATIC y cientos más"
+        },
+        "stablecoins": {
+          "disponible": true,
+          "incluye": [
+            "USDT (Tether)",
+            "USDC (Circle)",
+            "BUSD (Binance)",
+            "DAI"
+          ],
+          "nota_latam": "USDT = dólar digital más usado en LATAM, especialmente Venezuela"
+        },
+        "futuros_cripto": {
+          "disponible": true
+        },
+        "opciones_cripto": {
+          "disponible": true,
+          "via": "Deribit para opciones avanzadas"
+        },
+        "forex": {
+          "disponible": false
+        },
+        "acciones": {
+          "disponible": false
+        },
+        "indices": {
+          "disponible": false
+        },
+        "materias_primas": {
+          "disponible": false
+        }
+      },
+      "costos": {
+        "comision_spot_binance": "0.10% por operación (descuento con BNB: 0.075%)",
+        "comision_futuros_binance": "0.02% maker / 0.05% taker",
+        "comision_spot_kraken": "0.16% maker / 0.26% taker",
+        "comision_deposito": "0% para cripto / Variable para fiat",
+        "comision_retiro": "Fija en cripto (cubre fees de red)",
+        "inactividad": "0% en todos los exchanges",
+        "tarifa_mensual_cuenta": "0"
+      },
+      "apalancamiento": {
+        "cripto_futuros_max": "1:125 (Binance Futures)",
+        "spot": "Sin apalancamiento"
+      },
+      "plataformas": [
+        "Binance Web/App (iOS/Android)",
+        "Kraken Web/App",
+        "Coinbase Web/App",
+        "Binance P2P (P2P sin comisión)"
+      ],
+      "relevancia_latam_especial": {
+        "venezuela": "USDT como dólar digital. Reserve app. P2P evita restricciones bancarias. Bitcoin como reserva de valor ante hiperinflación",
+        "el_salvador": "Bitcoin = moneda de curso legal. Chivo Wallet (gobierno). Binance y Kraken ampliamente usados",
+        "argentina": "Arbitraje dólar MEP via crypto. Protección contra devaluación ARS. P2P ampliamente usado",
+        "mexico": "SPEI para depósitos. Bitso (exchange local) complementa a Binance. CETES vs. Staking",
+        "brasil": "PIX para depósitos instantáneos. Mayor mercado cripto de LATAM por volumen",
+        "colombia": "PSE y Nequi para depósitos. P2P popular. Regulación en desarrollo"
+      },
+      "paises_latam_aceptados": "Todos (con restricciones específicas por país y regulación local). Binance con restricciones en algunos países de LATAM",
+      "educacion": "Binance Academy (gratuita y en español) — una de las mejores",
+      "demo_disponible": false,
+      "copy_trading": false,
+      "pros": [
+        "USDT como dólar digital — clave para Venezuela, Argentina, El Salvador",
+        "0% comisión P2P (Binance)",
+        "300+ criptomonedas disponibles",
+        "Binance Academy gratuita en español",
+        "PIX/SPEI/PSE/Nequi para depósitos locales LATAM"
+      ],
+      "contras": [
+        "Solo criptoactivos — sin acceso a Forex, acciones, índices tradicionales",
+        "Alta volatilidad (excepto stablecoins)",
+        "Regulación en proceso en varios países",
+        "Riesgo de hackeos y scams",
+        "Sin regulación protectora local en la mayoría de países LATAM"
+      ]
+    }
+  ]
+}

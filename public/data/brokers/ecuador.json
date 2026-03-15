@@ -1,0 +1,552 @@
+{
+  "metadata": {
+    "pais": "Ecuador",
+    "bandera": "🇪🇨",
+    "color": "#006400",
+    "subtitulo": "Casas de Valores · Brokers Internacionales · Banca · Fintech · USD (economía dolarizada)",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. Ecuador usa USD como moneda oficial. Verifique con la Superintendencia de Compañías, Valores y Seguros (SCVS), BVQ y BVG antes de invertir.",
+    "stats": [
+      {
+        "val": "USD",
+        "lbl": "Moneda oficial (dolarizado)"
+      },
+      {
+        "val": "SCVS",
+        "lbl": "Regulador del mercado de valores"
+      },
+      {
+        "val": "BVQ + BVG",
+        "lbl": "Bolsas de Quito y Guayaquil"
+      },
+      {
+        "val": "8%+",
+        "lbl": "Rentabilidad renta fija local"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "casas",
+        "nombre": "CASAS DE VALORES — Reguladas SCVS"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Ecuatorianos"
+      },
+      {
+        "key": "banca",
+        "nombre": "BANCA DE INVERSIÓN — Ecuador"
+      },
+      {
+        "key": "fintech",
+        "nombre": "PLATAFORMAS DIGITALES Y FINTECH"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "EC001",
+      "nombre": "Mercapital Casa de Valores",
+      "tipo": "Casa de Valores — SCVS Ecuador",
+      "seccion": "casas",
+      "pais": "Ecuador",
+      "region": "Ecuador (BVQ + BVG)",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 1000,
+        "moneda": "USD",
+        "nota": "Depósito mínimo recomendado"
+      },
+      "modelo_costos": "Comisión por operación según tarifario SCVS",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Acciones y bonos reales"
+      },
+      "regulacion": [
+        "SCVS (Superintendencia de Compañías, Valores y Seguros)",
+        "BVQ (Bolsa de Valores Quito)",
+        "BVG (Bolsa de Valores Guayaquil)"
+      ],
+      "instrumentos": {
+        "acciones": "Corporación Favorita, Banco Pichincha, Cervecería Nacional, etc.",
+        "renta_fija": "Bonos, Papel Comercial, Titulizaciones — rendimientos 8%+ a.a.",
+        "fondos": "Portafolios administrados",
+        "etfs": "Limitado",
+        "indices": "Vía fondos",
+        "materias_primas": "No",
+        "forex": "Sí (divisas)",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma Mercapital online",
+        "Asesoría presencial",
+        "Portal web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Inversión",
+          "min": "USD 1,000",
+          "tarifa": "Comisión por operación"
+        }
+      ],
+      "pros": [
+        "Casa #1 en transacciones 2024 en Ecuador (9,900+ transacciones)",
+        "Líder en Notas de Crédito SRI (USD 384M negociados)",
+        "Acreditación en 24h en BVQ/BVG",
+        "Asesoría gratuita personalizada",
+        "Miembro de ambas bolsas (BVQ + BVG)",
+        "25+ años de trayectoria"
+      ],
+      "contras": [
+        "Solo mercado ecuatoriano",
+        "Sin acceso a mercados internacionales directos",
+        "Sin criptomonedas",
+        "Interface menos moderna que fintechs"
+      ],
+      "nota": "Casa de valores #1 en Ecuador por volumen de transacciones en 2024. Especialista en Notas de Crédito SRI y renta fija corporativa. Miembro de BVQ y BVG. Asesoría gratuita.",
+      "presencia": "Quito + Guayaquil"
+    },
+    {
+      "id": "EC002",
+      "nombre": "PlusBursátil Casa de Valores",
+      "tipo": "Casa de Valores — SCVS Ecuador",
+      "seccion": "casas",
+      "pais": "Ecuador",
+      "region": "Ecuador (BVQ + BVG)",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 500,
+        "moneda": "USD",
+        "nota": "Mínimo variable según instrumento"
+      },
+      "modelo_costos": "Comisión por operación",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Instrumentos reales"
+      },
+      "regulacion": [
+        "SCVS",
+        "BVQ",
+        "BVG"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BVQ y BVG",
+        "renta_fija": "Bonos, Obligaciones, Papel Comercial",
+        "fondos": "Portafolios de inversión",
+        "etfs": "Limitado",
+        "indices": "No",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "PlusBursátil Online",
+        "Asesoría telefónica y presencial"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Inversión",
+          "min": "USD 500",
+          "tarifa": "Comisión por operación"
+        }
+      ],
+      "pros": [
+        "Miembro de ambas bolsas ecuatorianas",
+        "Servicio personalizado",
+        "Acceso a toda la renta fija local",
+        "Buena reputación institucional"
+      ],
+      "contras": [
+        "Sin acceso a mercados internacionales",
+        "Sin criptomonedas ni ETFs internacionales",
+        "Plataforma digital básica"
+      ],
+      "nota": "Casa de valores líder en Ecuador. Miembro BVQ y BVG. Especializada en renta fija corporativa y acciones locales. Buena opción para inversores conservadores.",
+      "presencia": "Guayaquil + Quito"
+    },
+    {
+      "id": "EC003",
+      "nombre": "Advfin Casa de Valores",
+      "tipo": "Casa de Valores Pionera — 25+ años",
+      "seccion": "casas",
+      "pais": "Ecuador",
+      "region": "Ecuador (BVQ + BVG)",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 1000,
+        "moneda": "USD",
+        "nota": "Variable según instrumento"
+      },
+      "modelo_costos": "Comisión por operación + asesoría financiera",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Instrumentos reales"
+      },
+      "regulacion": [
+        "SCVS",
+        "BVQ",
+        "BVG"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones locales",
+        "renta_fija": "Bonos, Titulizaciones, Papel Comercial",
+        "fondos": "Portafolios administrados",
+        "etfs": "No",
+        "indices": "No",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma ADVFIN",
+        "Asesoría presencial y telefónica"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Advfin",
+          "min": "USD 1,000",
+          "tarifa": "Comisión"
+        }
+      ],
+      "pros": [
+        "25+ años de trayectoria — pionera del mercado",
+        "Premio mayor número de emisiones BVG por 3 años consecutivos",
+        "Especialista en estructuración financiera",
+        "Clientes: Deutsche Bank, Produbanco, LundinGold"
+      ],
+      "contras": [
+        "Sin modernización digital significativa",
+        "Sin acceso a mercados internacionales",
+        "Enfoque principalmente institucional"
+      ],
+      "nota": "Pionera del mercado de valores ecuatoriano con 25+ años. Premio al mayor número de emisiones inscritas en BVG. Clientes de primer nivel: Deutsche Bank, Produbanco, Liberty Seguros.",
+      "presencia": "Guayaquil"
+    },
+    {
+      "id": "EC004",
+      "nombre": "Metrovalores Casa de Valores",
+      "tipo": "Casa de Valores — Desde 1994",
+      "seccion": "casas",
+      "pais": "Ecuador",
+      "region": "Ecuador",
+      "calificacion": 7.5,
+      "deposito_minimo": {
+        "valor": 500,
+        "moneda": "USD",
+        "nota": "Variable"
+      },
+      "modelo_costos": "Comisión por operación",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Instrumentos reales"
+      },
+      "regulacion": [
+        "SCVS",
+        "BVQ",
+        "BVG"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BVQ y BVG",
+        "renta_fija": "Bonos y valores de renta fija",
+        "fondos": "Portafolios básicos",
+        "etfs": "No",
+        "indices": "No",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Metrovalores Online",
+        "Asesoría presencial"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Metrovalores",
+          "min": "USD 500",
+          "tarifa": "Comisión"
+        }
+      ],
+      "pros": [
+        "Desde 1994 — reconocida trayectoria",
+        "Registrada en BVQ y BVG",
+        "Gestión de carteras personalizada",
+        "Corretaje y finanzas corporativas"
+      ],
+      "contras": [
+        "Sin innovación digital significativa",
+        "Solo mercado local",
+        "Sin productos internacionales"
+      ],
+      "nota": "Casa de valores con trayectoria desde 1994. Registrada en ambas bolsas ecuatorianas. Especializada en corretaje e intermediación de valores locales.",
+      "presencia": "Quito"
+    },
+    {
+      "id": "EC005",
+      "nombre": "Futuro Casa de Valores",
+      "tipo": "Casa de Valores Digital — Fintech",
+      "seccion": "fintech",
+      "pais": "Ecuador",
+      "region": "Ecuador",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "Desde USD 100"
+      },
+      "modelo_costos": "Comisión competitiva con foco digital",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Instrumentos reales"
+      },
+      "regulacion": [
+        "SCVS",
+        "BVQ",
+        "BVG"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones ecuatorianas",
+        "renta_fija": "Bonos, Obligaciones, Renta Fija corporativa",
+        "fondos": "Portafolios digitales",
+        "etfs": "Limitado",
+        "indices": "Vía fondos",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Futuro (iOS/Android)",
+        "Portal web Futuro",
+        "Simulador de inversión"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Digital Futuro",
+          "min": "USD 100",
+          "tarifa": "Comisión competitiva"
+        }
+      ],
+      "pros": [
+        "Plataforma 100% digital — pionera en Ecuador",
+        "Simulador de inversión gratuito",
+        "App móvil moderna",
+        "Proceso de apertura de cuenta rápido",
+        "Foco en educación financiera"
+      ],
+      "contras": [
+        "Sin acceso a mercados internacionales",
+        "Sin criptomonedas",
+        "Plataforma relativamente nueva",
+        "Sin opciones avanzadas"
+      ],
+      "nota": "Casa de valores más digital de Ecuador. Pionera en fintech de inversión en el país. App con simulador de inversión. Proceso de apertura de cuenta 100% digital.",
+      "presencia": "Quito — 100% digital"
+    },
+    {
+      "id": "EC006",
+      "nombre": "Pepperstone Ecuador (Intl)",
+      "tipo": "Broker Internacional CFD/Forex",
+      "seccion": "intl",
+      "pais": "Australia",
+      "region": "Global / Ecuador",
+      "calificacion": 8.9,
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD",
+        "nota": "Sin mínimo formal"
+      },
+      "modelo_costos": "Spreads + comisión (Razor) / Solo spreads (Standard). Depósitos en USD (dolarizado)",
+      "apalancamiento": {
+        "max": "1:30 (ASIC) / 1:500 (offshore)",
+        "nota": "Entidad offshore para Ecuador"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FCA UK",
+        "CySEC",
+        "BaFIN",
+        "SCB Bahamas (Ecuador)"
+      ],
+      "instrumentos": {
+        "forex": "62+ pares — ventaja: USD es moneda local en Ecuador",
+        "acciones": "2,000+ CFD globales",
+        "indices": "Principales mundiales",
+        "criptomonedas": "27+ cryptos",
+        "materias_primas": "Oro, plata, petróleo, gas",
+        "etfs": "Sí CFD",
+        "opciones": "Limitado",
+        "renta_fija": "No"
+      },
+      "plataformas": [
+        "MT4",
+        "MT5",
+        "cTrader",
+        "TradingView",
+        "App Pepperstone"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 200",
+          "tarifa": "0.9 pips"
+        },
+        {
+          "nombre": "Razor ECN",
+          "min": "USD 200",
+          "tarifa": "0.0 pips + USD 3.5/lote"
+        }
+      ],
+      "pros": [
+        "VENTAJA: Ecuador usa USD — sin riesgo de conversión",
+        "Triple regulación Tier 1 (ASIC, FCA, BaFIN)",
+        "Ejecución ultrarrápida <40ms",
+        "Amplia gama de instrumentos",
+        "Acepta depósitos en USD directamente"
+      ],
+      "contras": [
+        "No regulado por SCVS Ecuador",
+        "Entidad aplicable = SCB Bahamas",
+        "Sin acceso al mercado ecuatoriano local",
+        "Sin oficina en Ecuador"
+      ],
+      "nota": "VENTAJA ÚNICA DE ECUADOR: Al ser economía dolarizada, los residentes ecuatorianos no tienen riesgo de conversión de moneda con brokers USD. Esto facilita mucho el acceso a brokers internacionales.",
+      "presencia": "Sin oficina — atiende clientes remotamente"
+    },
+    {
+      "id": "EC007",
+      "nombre": "XTB Ecuador (Intl)",
+      "tipo": "Broker Internacional CFD",
+      "seccion": "intl",
+      "pais": "Polonia",
+      "region": "Global / Ecuador",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "0% en acciones/ETFs hasta EUR 100K/mes. CFDs: spread incluido",
+      "apalancamiento": {
+        "max": "1:30 FCA / 1:200 LATAM",
+        "nota": "IFSC Belice para Ecuador"
+      },
+      "regulacion": [
+        "FCA UK",
+        "KNF Polonia",
+        "CySEC",
+        "IFSC Belice (Ecuador)"
+      ],
+      "instrumentos": {
+        "forex": "57+ pares",
+        "acciones": "5,800 instrumentos",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí acciones reales en LATAM",
+        "opciones": "No",
+        "renta_fija": "No"
+      },
+      "plataformas": [
+        "xStation 5",
+        "MT4",
+        "XTB App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 0",
+          "tarifa": "0% acciones/ETFs"
+        },
+        {
+          "nombre": "Pro",
+          "min": "USD 0",
+          "tarifa": "Spread reducido"
+        }
+      ],
+      "pros": [
+        "Sin depósito mínimo",
+        "0% comisión acciones hasta EUR 100K",
+        "Academia educativa gratuita",
+        "5,800+ instrumentos",
+        "Ventaja: USD moneda de Ecuador — sin conversión"
+      ],
+      "contras": [
+        "IFSC Belice para Ecuador",
+        "Sin licencia SCVS",
+        "Sin acceso a mercado ecuatoriano"
+      ],
+      "nota": "Uno de los brokers más populares de LATAM para Ecuador. La dolarización de Ecuador facilita operar en USD sin costos de conversión adicionales. Sin licencia SCVS.",
+      "presencia": "Sin oficina en Ecuador"
+    },
+    {
+      "id": "EC008",
+      "nombre": "Banco Pichincha Inversiones",
+      "tipo": "Banca Tradicional + Servicios de Inversión",
+      "seccion": "banca",
+      "pais": "Ecuador",
+      "region": "Ecuador",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "Depósitos a plazo desde USD 100"
+      },
+      "modelo_costos": "Rendimiento según instrumento (DPF, fondos)",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Productos bancarios conservadores"
+      },
+      "regulacion": [
+        "Superintendencia de Bancos Ecuador",
+        "SCVS (fondos)"
+      ],
+      "instrumentos": {
+        "acciones": "No (directo)",
+        "renta_fija": "Depósitos a Plazo Fijo (DPF) — rendimiento 6-9% a.a.",
+        "fondos": "Fondos de inversión básicos",
+        "etfs": "No",
+        "indices": "No",
+        "materias_primas": "No",
+        "forex": "Sí — cambio de divisas",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Banco Pichincha",
+        "Portal web Pichincha",
+        "Sucursales (200+ en Ecuador)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "DPF (Depósito a Plazo Fijo)",
+          "min": "USD 100",
+          "tarifa": "Tasa de rendimiento"
+        },
+        {
+          "nombre": "Fondos de Inversión",
+          "min": "USD 500",
+          "tarifa": "Fee de gestión"
+        }
+      ],
+      "pros": [
+        "Mayor banco privado de Ecuador",
+        "200+ sucursales en todo el país",
+        "DPFs con tasas competitivas (6-9% a.a.)",
+        "Acceso a toda la red bancaria",
+        "Garantía Fondo de Seguro de Depósitos Ecuador (USD 32,000 por depositante)"
+      ],
+      "contras": [
+        "Sin acceso a bolsa de valores directamente",
+        "Sin criptomonedas",
+        "Sin plataforma de trading activo",
+        "Tasas DPF inferiores a renta fija bursátil"
+      ],
+      "nota": "Banco más grande de Ecuador con mayor red de sucursales. DPFs como alternativa de inversión conservadora. Para inversión en bolsa, referir a casas de valores reguladas.",
+      "presencia": "Todo Ecuador — sede Quito"
+    }
+  ]
+}

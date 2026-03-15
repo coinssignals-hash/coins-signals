@@ -1,0 +1,365 @@
+{
+  "metadata": {
+    "pais": "Nicaragua",
+    "bandera": "🇳🇮",
+    "color": "#003F87",
+    "subtitulo": "Puestos de Bolsa SIBOIF · BVN · NIO + USD · Letras BCN · Mercado incipiente",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. La SIBOIF (Superintendencia de Bancos y de Otras Instituciones Financieras) regula el mercado de valores. La BVN (Bolsa de Valores de Nicaragua) es el único mercado organizado. Los Puestos de Bolsa son los intermediarios autorizados. Comisiones no fijadas por la Bolsa — cada Puesto define la suya.",
+    "stats": [
+      {
+        "val": "SIBOIF",
+        "lbl": "Regulador del sistema financiero"
+      },
+      {
+        "val": "BVN",
+        "lbl": "Bolsa de Valores de Nicaragua"
+      },
+      {
+        "val": "CENIVAL",
+        "lbl": "Custodia de valores"
+      },
+      {
+        "val": "BCN",
+        "lbl": "Emisor de Letras del Banco Central"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "puestos",
+        "nombre": "PUESTOS DE BOLSA — Regulados SIBOIF / BVN Nicaragua"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Nicaragüenses"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "NI001",
+      "nombre": "Invercasa Puesto de Bolsa",
+      "tipo": "Puesto de Bolsa — SIBOIF/BVN — Referente Nicaragua",
+      "seccion": "puestos",
+      "pais": "Nicaragua",
+      "region": "Nicaragua (BVN) + Internacional",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "NIO/USD",
+        "nota": "Sin mínimo publicado — negociable"
+      },
+      "modelo_costos": "Comisión por operación — no fijada por BVN. Política interna de Invercasa",
+      "apalancamiento": {
+        "max": "No aplica (valores reales)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SIBOIF (Superintendencia de Bancos y Otras Instituciones Financieras)",
+        "BVN (Bolsa de Valores de Nicaragua)",
+        "CENIVAL (Central Nicaragüense de Valores)"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BVN — acciones nicaragüenses",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Bonos del Estado, Letras BCN, Títulos de Deuda Corporativa, Certificados de Inversión, Fideicomisos de Oferta Pública",
+        "opciones": "Sí — Reportos (operaciones corto plazo respaldadas en valores)"
+      },
+      "plataformas": [
+        "Invercasa Online",
+        "App Invercasa",
+        "Asesoría personalizada"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Invercasa",
+          "min": "Sin mínimo",
+          "tarifa": "Comisión interna"
+        },
+        {
+          "nombre": "Gestión de Portafolios",
+          "min": "Negociable",
+          "tarifa": "Fee de gestión"
+        }
+      ],
+      "pros": [
+        "Más de 30 años de experiencia — líder en Nicaragua",
+        "Custodia en CENIVAL — máxima seguridad regulada",
+        "Educación bursátil incluida",
+        "Programa de alianzas internacionales para colocaciones regionales",
+        "Acceso a bonos Estado, Letras BCN, fideicomisos y más",
+        "Independiente — mayor objetividad asesoría"
+      ],
+      "contras": [
+        "Solo mercado nicaragüense — muy pequeño",
+        "Sin acceso a mercados internacionales amplios",
+        "Sin criptomonedas",
+        "Liquidez del BVN muy baja",
+        "Contexto político Nicaragua afecta estabilidad"
+      ],
+      "nota": "Invercasa es el puesto de bolsa más reconocido de Nicaragua con más de 30 años. Custodia en CENIVAL (supervisada SIBOIF). Alianzas internacionales para colocaciones regionales. Líder del mercado local.",
+      "presencia": "Managua, Nicaragua"
+    },
+    {
+      "id": "NI002",
+      "nombre": "Invernic Puesto de Bolsa",
+      "tipo": "Puesto de Bolsa — SIBOIF/BVN Nicaragua",
+      "seccion": "puestos",
+      "pais": "Nicaragua",
+      "region": "Nicaragua (BVN)",
+      "calificacion": 7.6,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "NIO/USD",
+        "nota": "Variable"
+      },
+      "modelo_costos": "Comisión por intermediación — no fijada por BVN",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SIBOIF",
+        "BVN",
+        "CENIVAL"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BVN",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Bonos Estado, Letras BCN, Certificados de Inversión, Pagarés Bursátiles",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Invernic Online",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Invernic",
+          "min": "Variable",
+          "tarifa": "Comisión interna"
+        }
+      ],
+      "pros": [
+        "Autorizado SIBOIF para operar en BVN",
+        "Asesoría financiera personalizada",
+        "Acceso a títulos del BCN y deuda corporativa",
+        "Fideicomisos de Oferta Pública — instrumento poco conocido pero disponible"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Solo mercado local NI",
+        "Muy poca liquidez en BVN",
+        "Sin herramientas digitales avanzadas"
+      ],
+      "nota": "Puesto de bolsa autorizado SIBOIF para operar en la BVN. Intermedia entre inversores y el mercado bursátil nacional. Acceso a Letras BCN como instrumento de corto plazo.",
+      "presencia": "Managua, Nicaragua"
+    },
+    {
+      "id": "NI003",
+      "nombre": "Credifactor Puesto de Bolsa",
+      "tipo": "Puesto de Bolsa — SIBOIF — Especialista Renta Fija",
+      "seccion": "puestos",
+      "pais": "Nicaragua",
+      "region": "Nicaragua",
+      "calificacion": 7.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "NIO/USD",
+        "nota": "Variable"
+      },
+      "modelo_costos": "Comisión por intermediación en renta fija",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SIBOIF",
+        "BVN"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "No (especialidad renta fija)",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Especialista en renta fija local — Letras BCN, bonos, certificados",
+        "opciones": "Reportos"
+      },
+      "plataformas": [
+        "Plataforma interna",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Credifactor",
+          "min": "Variable",
+          "tarifa": "Comisión interna"
+        }
+      ],
+      "pros": [
+        "Especialista en renta fija — nicho bien definido",
+        "Letras BCN como instrumento conservador",
+        "Estructura sólida para instrumentos de bajo riesgo",
+        "Regulado SIBOIF"
+      ],
+      "contras": [
+        "Sin acceso a acciones ni mercados globales",
+        "Mercado muy limitado",
+        "Sin herramientas digitales modernas"
+      ],
+      "nota": "Puesto de bolsa especializado en renta fija nicaragüense. Las Letras del BCN son su instrumento principal — bajo riesgo aunque rendimientos modestos.",
+      "presencia": "Managua, Nicaragua"
+    },
+    {
+      "id": "NI004",
+      "nombre": "XM Nicaragua (Intl)",
+      "tipo": "Broker Internacional — Más accesible para Nicaragua",
+      "seccion": "intl",
+      "pais": "Chipre / Belice",
+      "region": "Global / Nicaragua",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 5,
+        "moneda": "USD",
+        "nota": "Desde USD 5 — más bajo del mercado"
+      },
+      "modelo_costos": "Standard: spreads desde 1.6 pips. Ultra Low: 0.6 pips. Sin comisión de depósito",
+      "apalancamiento": {
+        "max": "1:30 CySEC / 1:1000 offshore",
+        "nota": "IFSC Belice para Nicaragua"
+      },
+      "regulacion": [
+        "CySEC Chipre",
+        "ASIC Australia",
+        "FCA UK",
+        "IFSC Belice (Nicaragua)"
+      ],
+      "instrumentos": {
+        "forex": "55+ pares",
+        "acciones": "1,300+ CFD",
+        "indices": "Principales",
+        "criptomonedas": "15+",
+        "materias_primas": "Sí",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MT4",
+        "MT5",
+        "XM WebTrader",
+        "XM App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Micro",
+          "min": "USD 5",
+          "tarifa": "1.6 pips"
+        },
+        {
+          "nombre": "Ultra Low",
+          "min": "USD 50",
+          "tarifa": "0.6 pips"
+        },
+        {
+          "nombre": "XM Zero",
+          "min": "USD 100",
+          "tarifa": "0.0 pips + $3.5/lote"
+        }
+      ],
+      "pros": [
+        "Dep. mínimo USD 5 — el más bajo para Nicaragua",
+        "Academia XM en español — muy completa",
+        "Sin comisión de depósito ni retiro",
+        "Múltiples métodos de depósito accesibles desde NI",
+        "Soporte 24/5 en español"
+      ],
+      "contras": [
+        "IFSC Belice para Nicaragua",
+        "Sin licencia SIBOIF local",
+        "Sin acceso al BVN"
+      ],
+      "nota": "XM ofrece el dep. mínimo más bajo (USD 5) — ideal para el mercado nicaragüense. Academia educativa en español completa. IFSC Belice aplica para residentes.",
+      "presencia": "Sin oficina — remoto"
+    },
+    {
+      "id": "NI005",
+      "nombre": "AvaTrade Nicaragua (Intl)",
+      "tipo": "Broker Internacional CFD/Forex",
+      "seccion": "intl",
+      "pais": "Irlanda",
+      "region": "Global / Nicaragua",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100"
+      },
+      "modelo_costos": "Spreads fijos desde 0.9 pips EUR/USD. Sin comisión por operación",
+      "apalancamiento": {
+        "max": "1:30 regulado / 1:400 offshore",
+        "nota": "FSC BVI para Nicaragua"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "CySEC",
+        "FSC BVI (Nicaragua)",
+        "FSCA Sudáfrica"
+      ],
+      "instrumentos": {
+        "forex": "55 pares",
+        "acciones": "2,000+ CFD",
+        "indices": "Principales",
+        "criptomonedas": "14+",
+        "materias_primas": "Completa",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "Sí — AvaOptions"
+      },
+      "plataformas": [
+        "AvaTradeGO",
+        "MT4",
+        "MT5",
+        "DupliTrade",
+        "SharpTrader"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "min": "USD 100",
+          "tarifa": "0.9 pips"
+        },
+        {
+          "nombre": "Pro",
+          "min": "USD 1,000",
+          "tarifa": "Mejorado"
+        }
+      ],
+      "pros": [
+        "Acepta residentes nicaragüenses",
+        "Soporte en español via WhatsApp",
+        "Copy trading DupliTrade",
+        "AvaOptions — opciones vanilla",
+        "Academia SharpTrader completa",
+        "Múltiples métodos de pago accesibles"
+      ],
+      "contras": [
+        "FSC BVI para Nicaragua (offshore)",
+        "Sin licencia SIBOIF local",
+        "Inactividad $50/mes si no operas"
+      ],
+      "nota": "AvaTrade es el broker más recomendado para Nicaragua junto con XM. Acepta clientes nicaragüenses confirmado. FSC BVI offshore. Soporte en español vía WhatsApp.",
+      "presencia": "Sin oficina — remoto"
+    }
+  ]
+}

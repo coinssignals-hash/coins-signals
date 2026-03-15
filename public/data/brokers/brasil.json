@@ -1,0 +1,1774 @@
+{
+  "metadata": {
+    "titulo": "Auditoria Completa de Entidades de Investimento no Brasil",
+    "subtitulo": "Corretoras CVM, Bancos de Investimento, Plataformas para o Exterior, Apps Fintech",
+    "data_geracao": "14 de March de 2026",
+    "versao": "1.0",
+    "total_entidades": 25,
+    "cobertura": "Brasil 2025–2026",
+    "selic_2025": "15% a.a.",
+    "cdi_ref": "~14.9% a.a.",
+    "reguladores": [
+      "CVM (Comissão de Valores Mobiliários)",
+      "BACEN (Banco Central do Brasil)",
+      "B3 (Brasil, Bolsa, Balcão)",
+      "ANBIMA (Autorregulação)",
+      "BSM + MRP (Proteção até R$120K)",
+      "FGC (Proteção até R$250K por CPF)"
+    ],
+    "nota_forex": "IMPORTANTE: Forex NÃO é regulamentado pela CVM no Brasil. Corretoras de Forex operam em zona cinzenta regulatória."
+  },
+  "entidades": [
+    {
+      "id": "BR001",
+      "nome": "XP Investimentos",
+      "tipo": "Corretora CVM — Maior Plataforma Independente",
+      "pais": "Brasil",
+      "regiao": "Brasil + EUA (XP Internacional)",
+      "fundacao": "2001",
+      "calificacion": 9.1,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Corretagem zero plataforma digital. Mesa: 0.5% vol + R$25.21",
+      "spread_ref": "Taxa zero ou regressiva",
+      "comissao": "Zero (plataforma) / Negociável (mesa)",
+      "alavancagem": {
+        "max": "Disponível — day trade e swing trade com garantias",
+        "nota": "Regras da B3"
+      },
+      "regulacao": [
+        "CVM",
+        "BACEN",
+        "B3",
+        "ANBIMA",
+        "SEC EUA (XPBR31)"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3 (todas)",
+        "renda_fixa": "CDB, LCI, LCA, Debêntures, CRI, CRA",
+        "fundos": "1,000+ fundos na plataforma",
+        "etfs_bdrs": "ETFs e BDRs completos",
+        "fiis": "Todos os FIIs listados",
+        "derivativos": "Opções, Futuros, Minicontratos",
+        "cripto": "Limitado",
+        "tesouro": "Tesouro Direto (0% taxa)",
+        "exterior": "XP Internacional (NYSE/NASDAQ)",
+        "opcoes": "Sim"
+      },
+      "plataformas": [
+        "XP Home Broker",
+        "XP Trader",
+        "XP Pro",
+        "XP App (iOS/Android)",
+        "MetaTrader (via Área do Trader)"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Padrão",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "XP Private",
+          "min": "R$3M+",
+          "taxas": "Fee sobre AUM"
+        },
+        {
+          "nome": "XP Corporate",
+          "min": "Negociável",
+          "taxas": "Institucional"
+        },
+        {
+          "nome": "XP Internacional",
+          "min": "USD 0",
+          "taxas": "Ver Avenue"
+        }
+      ],
+      "pros": [
+        "Maior plataforma independente do Brasil",
+        "Assessores especializados em todo o país",
+        "Research próprio de qualidade (XP Research)",
+        "Acesso a COEs exclusivos",
+        "AUM total: R$1 trilhão+",
+        "IPO Nasdaq 2019 — transparência"
+      ],
+      "contras": [
+        "Conflito de interesse com assessores comissionados",
+        "Taxa mesa de operações alta (0.5%)",
+        "Interface menos intuitiva que fintechs",
+        "Spread em renda fixa pode ser elevado"
+      ],
+      "presenca": "São Paulo (sede) + 650+ escritórios de AAIs em todo o Brasil"
+    },
+    {
+      "id": "BR002",
+      "nome": "BTG Pactual Digital",
+      "tipo": "Banco de Investimento + Corretora Digital",
+      "pais": "Brasil",
+      "regiao": "LATAM + Global",
+      "fundacao": "1983",
+      "calificacion": 9.2,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Corretagem regressiva: 1ª–10ª ordem R$12 / 11ª–20ª R$9 / 21ª–50ª R$6 / 51ª+ R$4.50. Zero para FIIs, FI-Agro e Futuros Bitcoin",
+      "spread_ref": "Regressiva por volume",
+      "comissao": "Regressiva",
+      "alavancagem": {
+        "max": "Disponível — derivativos com garantias de margem",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM",
+        "B3",
+        "ANBIMA",
+        "SEC EUA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3 (todas)",
+        "renda_fixa": "CDB com melhores taxas do mercado, LCI, LCA, Debêntures",
+        "fundos": "Fundos próprios + plataforma aberta",
+        "etfs_bdrs": "ETFs e BDRs completos",
+        "fiis": "Todos os FIIs (zero corretagem)",
+        "derivativos": "Opções, Futuros, Minicontratos, Swaps",
+        "cripto": "Criptoativos disponíveis",
+        "tesouro": "Tesouro Direto (0%)",
+        "exterior": "BTG Pactual International",
+        "opcoes": "Sim"
+      },
+      "plataformas": [
+        "BTG App",
+        "BTG Home Broker",
+        "BTG+ (banco digital)",
+        "Plataforma Web",
+        "API Institucional"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Digital",
+          "min": "R$0",
+          "taxas": "Regressiva"
+        },
+        {
+          "nome": "BTG Prime",
+          "min": "R$300K+",
+          "taxas": "Fee + regressiva"
+        },
+        {
+          "nome": "BTG Ultra",
+          "min": "R$3M+",
+          "taxas": "Private"
+        },
+        {
+          "nome": "BTG Corporate",
+          "min": "Negociável",
+          "taxas": "Institucional"
+        }
+      ],
+      "pros": [
+        "Maior banco de investimento da LATAM",
+        "Tabela regressiva — ideal para alto volume",
+        "Zero custódia em TODOS os produtos",
+        "Cartão Black a partir de R$5K investido",
+        "ROE 30%+ sustentável",
+        "Cotado na B3 (BPAC11)"
+      ],
+      "contras": [
+        "Tabela regressiva desfavorável para baixo volume",
+        "Sem suporte MT4/MT5 nativo",
+        "Foco em alta renda nas melhores condições"
+      ],
+      "presenca": "São Paulo (sede Faria Lima) + presença em 3 continentes"
+    },
+    {
+      "id": "BR003",
+      "nome": "Clear Corretora (XP Group)",
+      "tipo": "Corretora — Especializada Day Trade",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2014",
+      "calificacion": 8.7,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "CORRETAGEM ZERO em todos os produtos — pioneira no Brasil",
+      "spread_ref": "Zero",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Sim — day trade com alavancagem B3. Saldo negativo: multa R$9.90/dia",
+        "nota": "Monitoramento de risco diário"
+      },
+      "regulacao": [
+        "CVM",
+        "B3",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3 (todas)",
+        "renda_fixa": "Tesouro Direto",
+        "fundos": "Básicos",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Opções, Futuros, Minicontratos WIN/WDO",
+        "cripto": "Não",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Via XP Internacional",
+        "opcoes": "Sim — opções completas"
+      },
+      "plataformas": [
+        "Clear Home Broker",
+        "Profit (gratuito)",
+        "Tryd",
+        "MetaTrader (parceiros)",
+        "Clear App",
+        "Salas ao vivo 24h"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Clear",
+          "min": "R$0",
+          "taxas": "Zero corretagem"
+        }
+      ],
+      "pros": [
+        "PIONEIRA em corretagem zero no Brasil",
+        "Melhor para day traders — sem custo de corretagem",
+        "Salas ao vivo com analistas durante pregão",
+        "Suporte a múltiplas plataformas profissionais",
+        "AIA — inteligência artificial para trading"
+      ],
+      "contras": [
+        "Foco quase exclusivo em renda variável",
+        "Menos produtos de renda fixa privada",
+        "Multa diária por saldo negativo (alavancagem)"
+      ],
+      "presenca": "São Paulo — 100% digital"
+    },
+    {
+      "id": "BR004",
+      "nome": "Rico (XP Group)",
+      "tipo": "Corretora — Iniciantes e Renda Fixa",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2011",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Taxa zero para a maioria. Renda fixa: 0.10% a.a. proporcional ao prazo",
+      "spread_ref": "Zero / 0.10% a.a. renda fixa",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Limitado",
+        "nota": "Disponível para produtos específicos"
+      },
+      "regulacao": [
+        "CVM",
+        "B3",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "Tesouro, CDB, LCI, LCA, Fundos RF",
+        "fundos": "Fundos variados",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Limitado",
+        "cripto": "Limitado",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Limitado",
+        "opcoes": "Limitado"
+      },
+      "plataformas": [
+        "Rico App (iOS/Android)",
+        "Rico Home Broker Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Rico",
+          "min": "R$0",
+          "taxas": "Zero / 0.10% RF"
+        }
+      ],
+      "pros": [
+        "Interface simples para iniciantes",
+        "Ampla área educacional com cursos e vídeos",
+        "Boa variedade de renda fixa",
+        "Nota Reclame Aqui: 8.0 (Ótimo)"
+      ],
+      "contras": [
+        "Mínimos mais altos em renda fixa privada",
+        "Ferramentas limitadas para traders avançados"
+      ],
+      "presenca": "São Paulo — 100% digital"
+    },
+    {
+      "id": "BR005",
+      "nome": "Banco Inter / Inter Invest",
+      "tipo": "Banco Digital + Corretora — Melhor Custo-Benefício",
+      "pais": "Brasil",
+      "regiao": "Brasil + EUA (Inter Invest Global)",
+      "fundacao": "2001",
+      "calificacion": 8.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "R$1 em alguns produtos"
+      },
+      "modelo_custos": "Corretagem ZERO para todos os produtos",
+      "spread_ref": "Zero corretagem. Câmbio: 0.99% (WIN) / 1.5% (padrão) + IOF 1.1%",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Disponível em renda variável com garantias",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "CVM",
+        "BACEN",
+        "B3",
+        "ANBIMA",
+        "SEC EUA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3 (todas)",
+        "renda_fixa": "CDB, LCI, LCA, Tesouro, Poupança",
+        "fundos": "Fundos diversificados",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Minicontratos",
+        "cripto": "Criptomoedas disponíveis",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Inter Invest Global (NYSE/NASDAQ EUA)",
+        "opcoes": "Opções disponíveis"
+      },
+      "plataformas": [
+        "App Inter (tudo integrado: banco + corretora + câmbio)",
+        "Inter Home Broker Web",
+        "Inter Global Account"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Inter padrão",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "Inter WIN",
+          "min": "Critérios de uso",
+          "taxas": "Spread câmbio 0.99%"
+        },
+        {
+          "nome": "Inter ONE",
+          "min": "Critérios de uso",
+          "taxas": "Premium"
+        },
+        {
+          "nome": "Inter Global",
+          "min": "USD 1",
+          "taxas": "0% + spread câmbio"
+        }
+      ],
+      "pros": [
+        "TUDO em um app — banco + corretora + câmbio + cartão",
+        "Zero corretagem em TODOS os produtos",
+        "Melhor spread câmbio do mercado (0.99% WIN)",
+        "Criptomoedas disponíveis",
+        "Cotado na Nasdaq (INTR) — transparência",
+        "20M+ clientes"
+      ],
+      "contras": [
+        "App pode ser lento em horários de pico",
+        "Plataforma menos robusta para traders avançados",
+        "Research de mercado limitado"
+      ],
+      "presenca": "Belo Horizonte (sede) + 100% digital — todo o Brasil"
+    },
+    {
+      "id": "BR006",
+      "nome": "Toro Investimentos (Santander)",
+      "tipo": "Corretora Digital — Plataforma Aberta",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2010",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Zero manual. Automação com lucro: 10% do ganho",
+      "spread_ref": "Zero / 10% ganho na automação",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Disponível — minicontratos e renda variável",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "CVM",
+        "B3",
+        "ANBIMA",
+        "Santander Brasil"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "CDB, Tesouro, LCI, LCA",
+        "fundos": "Fundos com cashback",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Minicontratos, Commodities (boi gordo, milho, café arábica)",
+        "cripto": "Limitado",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Limitado",
+        "opcoes": "Disponível"
+      },
+      "plataformas": [
+        "Toro App",
+        "Profit Toro Trader (gratuito)",
+        "Plataforma Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Toro",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "Assessoria Exclusiva",
+          "min": "R$250K+",
+          "taxas": "Negociável"
+        }
+      ],
+      "pros": [
+        "Profit Pro GRATUITO — plataforma profissional",
+        "5ª maior em volume B3",
+        "Santander como respaldo financeiro",
+        "Cashback em fundos",
+        "Acesso a commodities agrícolas"
+      ],
+      "contras": [
+        "Automação cobra 10% dos ganhos",
+        "Adquirida 100% pelo Santander — menos independência"
+      ],
+      "presenca": "São Paulo + Santander em todo o Brasil"
+    },
+    {
+      "id": "BR007",
+      "nome": "NuInvest (Nubank)",
+      "tipo": "Neobank + Corretora — 100M+ Clientes",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2013 (NuInvest: ex-Easynvest 2021)",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo — caixinhas a partir de R$1"
+      },
+      "modelo_custos": "Zero corretagem para ações, FIIs, BDRs, ETFs. Mesa: 0.5% + R$25.21",
+      "spread_ref": "Zero",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Disponível em renda variável",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "CVM",
+        "BACEN",
+        "B3",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "CDB, LCI, LCA, Poupança 100% CDI automática",
+        "fundos": "Fundos variados",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Limitado",
+        "cripto": "25+ criptoativos",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Não direto",
+        "opcoes": "Limitado"
+      },
+      "plataformas": [
+        "App Nubank integrado (100M+ users)",
+        "NuInvest Home Broker Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Nubank",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "Ultravioleta (Black)",
+          "min": "Análise de crédito",
+          "taxas": "Zero + benefícios"
+        },
+        {
+          "nome": "Caixinhas",
+          "min": "R$1",
+          "taxas": "Zero"
+        }
+      ],
+      "pros": [
+        "100M+ CLIENTES — maior base do Brasil e do mundo",
+        "Conta rende 100% CDI AUTOMATICAMENTE",
+        "Interface mais intuitiva do mercado",
+        "25+ criptoativos",
+        "ROE 31% — melhor entre fintechs BR",
+        "IPO NYSE 2021"
+      ],
+      "contras": [
+        "Ferramentas avançadas limitadas",
+        "Renda fixa privada com mínimos mais altos",
+        "Sem assessoria para grandes patrimônios"
+      ],
+      "presenca": "São Paulo (sede) + 100% digital — Brasil + México + Colômbia"
+    },
+    {
+      "id": "BR008",
+      "nome": "Ágora Investimentos (Bradesco)",
+      "tipo": "Corretora — Integrada ao Bradesco",
+      "pais": "Brasil",
+      "regiao": "Brasil + EUA (InvestUS)",
+      "fundacao": "2001",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Corretagem ZERO desde 2022",
+      "spread_ref": "Zero",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Disponível com garantias",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "CVM",
+        "B3",
+        "ANBIMA",
+        "Bradesco (2º maior banco privado BR)"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "CDB, LCI, LCA, Debêntures, COE",
+        "fundos": "Fundos Bradesco + abertos",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Disponível",
+        "cripto": "Limitado",
+        "tesouro": "Tesouro Direto",
+        "exterior": "InvestUS (NYSE/NASDAQ)",
+        "opcoes": "Disponível"
+      },
+      "plataformas": [
+        "App Ágora",
+        "Home Broker Ágora",
+        "InvestUS",
+        "Plataforma Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Ágora",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "Bradesco Prime",
+          "min": "R$100K+",
+          "taxas": "Assessoria"
+        },
+        {
+          "nome": "Bradesco Private",
+          "min": "R$3M+",
+          "taxas": "Private Banking"
+        }
+      ],
+      "pros": [
+        "Integração com Bradesco (50M+ clientes)",
+        "Zero corretagem desde 2022",
+        "COEs exclusivos Bradesco",
+        "InvestUS para ações americanas"
+      ],
+      "contras": [
+        "Interface menos moderna que fintechs",
+        "Foco maior em clientes do Bradesco"
+      ],
+      "presenca": "São Paulo + rede Bradesco em todo o Brasil"
+    },
+    {
+      "id": "BR009",
+      "nome": "Warren Investimentos",
+      "tipo": "Gestora Digital — Objetivos de Vida",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2014 (Vale do Silício) / 2016 (Brasil)",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 1,
+        "moeda": "BRL",
+        "nota": "Mínimo mais baixo do Brasil"
+      },
+      "modelo_custos": "Zero corretagem. Fundos: taxa de administração variável",
+      "spread_ref": "Zero",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Não — sem alavancagem na proposta principal",
+        "nota": "Foco em gestão passiva"
+      },
+      "regulacao": [
+        "CVM",
+        "B3",
+        "ANBIMA",
+        "BACEN"
+      ],
+      "instrumentos": {
+        "acoes": "Via fundos",
+        "renda_fixa": "Renda fixa via fundos próprios",
+        "fundos": "Fundos proprietários por objetivo",
+        "etfs_bdrs": "ETFs via fundos",
+        "fiis": "Via fundos",
+        "derivativos": "Não",
+        "cripto": "Não",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Não direto",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "Warren App (iOS/Android)",
+        "Portal Web Warren"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Warren",
+          "min": "R$1",
+          "taxas": "Zero + fee fundos"
+        }
+      ],
+      "pros": [
+        "Depósito mínimo R$1 — mais baixo do Brasil",
+        "Carteiras por objetivo de vida",
+        "Fundada por ex-sócios da XP",
+        "Auditoria independente regular"
+      ],
+      "contras": [
+        "Sem ações individuais diretas",
+        "Foco em fundos próprios",
+        "Menor variedade de produtos"
+      ],
+      "presenca": "Porto Alegre + São Paulo — 100% digital"
+    },
+    {
+      "id": "BR010",
+      "nome": "CM Capital",
+      "tipo": "Corretora — Especialista em Derivativos",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2011",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Zero ações e ETFs. Derivativos: negociado",
+      "spread_ref": "Zero / Negociável derivativos",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "SIM — forte foco em derivativos e mercado futuro",
+        "nota": "Referência em opções e futuros"
+      },
+      "regulacao": [
+        "CVM",
+        "B3",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "Tesouro Direto, CDB básico",
+        "fundos": "Fundos básicos",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Opções completas, Contratos Futuros, Forex (via parceiros)",
+        "cripto": "Limitado",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Limitado",
+        "opcoes": "SIM — melhor seleção de opções"
+      },
+      "plataformas": [
+        "CM Broker (própria)",
+        "MetaTrader 5 (nativo)",
+        "Home Broker Web",
+        "App"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Varejo",
+          "min": "R$0",
+          "taxas": "Zero ações"
+        },
+        {
+          "nome": "Conta Pro",
+          "min": "Negociável",
+          "taxas": "Negociável"
+        },
+        {
+          "nome": "Institucional",
+          "min": "Negociável",
+          "taxas": "Institucional"
+        }
+      ],
+      "pros": [
+        "Melhor para derivativos e opções no Brasil",
+        "MT5 nativo — diferencial único",
+        "Educação focada em mercado futuro",
+        "Atendimento especializado para traders"
+      ],
+      "contras": [
+        "Menos conhecida que grandes plataformas",
+        "Interface menos intuitiva para iniciantes",
+        "Menos variação em renda fixa"
+      ],
+      "presenca": "São Paulo — 100% digital"
+    },
+    {
+      "id": "BR011",
+      "nome": "BTG Pactual (Banco)",
+      "tipo": "Banco de Investimento — Maior da LATAM",
+      "pais": "Brasil",
+      "regiao": "LATAM + Global (3 continentes)",
+      "fundacao": "1983",
+      "calificacion": 9.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Private: R$5M+"
+      },
+      "modelo_custos": "Corporate e institucional: negociável. Digital: tabela regressiva",
+      "spread_ref": "Negociável",
+      "comissao": "Negociável",
+      "alavancagem": {
+        "max": "Disponível — produtos estruturados, derivativos, margem",
+        "nota": "Gestão de risco institucional"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM",
+        "B3",
+        "ANBIMA",
+        "SEC EUA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações globais",
+        "renda_fixa": "Renda fixa local e internacional",
+        "fundos": "Gestão própria + distribuição",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Derivativos complexos completos",
+        "cripto": "Criptoativos",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Acesso global",
+        "opcoes": "Opções completas"
+      },
+      "plataformas": [
+        "BTG Pactual Business",
+        "BTG Prime",
+        "BTG Ultra",
+        "API Institucional"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Corporate",
+          "min": "Negociável",
+          "taxas": "Institucional"
+        },
+        {
+          "nome": "Private",
+          "min": "R$5M+",
+          "taxas": "Fee AUM"
+        },
+        {
+          "nome": "Ultra",
+          "min": "R$10M+",
+          "taxas": "Best available"
+        },
+        {
+          "nome": "Institutional",
+          "min": "USD 1M+",
+          "taxas": "Negociável"
+        }
+      ],
+      "pros": [
+        "Maior banco de investimento da LATAM",
+        "ROE 30%+ sustentável",
+        "6.430 profissionais em 3 continentes",
+        "Gestão de ativos R$600B+ AUM",
+        "Parceria Patria para private equity",
+        "Research de classe mundial"
+      ],
+      "contras": [
+        "Risco reputacional por casos históricos",
+        "Acesso restrito para pequenos clientes"
+      ],
+      "presenca": "São Paulo (sede) + LATAM + Nova York + Londres"
+    },
+    {
+      "id": "BR012",
+      "nome": "Itaú BBA",
+      "tipo": "Banco de Investimento — Itaú Unibanco",
+      "pais": "Brasil",
+      "regiao": "Brasil + LATAM + Global",
+      "fundacao": "2002 (fusão Banco BBA-Creditanstalt)",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Institucional — negociável"
+      },
+      "modelo_custos": "Negociável por operação / mandato",
+      "spread_ref": "Institucional",
+      "comissao": "Por operação/mandato",
+      "alavancagem": {
+        "max": "Disponível — produtos estruturados",
+        "nota": "Gestão de risco"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Equity capital markets, M&A",
+        "renda_fixa": "DCM, bonds locais e internacionais",
+        "fundos": "Gestão de recursos Itaú Asset",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Derivativos complexos",
+        "cripto": "Limitado",
+        "tesouro": "Institucional",
+        "exterior": "Global via rede Itaú",
+        "opcoes": "Sim"
+      },
+      "plataformas": [
+        "Itaú BBA Platform",
+        "Íon (plataforma digital)",
+        "Personnalité (alta renda)"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Itaú Private",
+          "min": "R$3M+",
+          "taxas": "Fee AUM"
+        },
+        {
+          "nome": "Personnalité",
+          "min": "R$100K+",
+          "taxas": "Premium"
+        },
+        {
+          "nome": "Institutional",
+          "min": "Negociável",
+          "taxas": "Negociável"
+        }
+      ],
+      "pros": [
+        "Parte do maior banco da LATAM por ativos",
+        "Força em M&A e ECM brasileiro",
+        "Adquiriu Avenue Securities (EUA) em 2022",
+        "Íon: plataforma digital taxa zero"
+      ],
+      "contras": [
+        "Estrutura burocrática de grande banco",
+        "Plataformas digitais menos inovadoras"
+      ],
+      "presenca": "São Paulo (sede) + rede Itaú global"
+    },
+    {
+      "id": "BR013",
+      "nome": "XP Inc. (Grupo)",
+      "tipo": "Maior Plataforma Independente de Investimentos",
+      "pais": "Brasil",
+      "regiao": "Brasil + EUA (Nasdaq: XPBR31)",
+      "fundacao": "2001",
+      "calificacion": 9.1,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo (varejo) / R$3M+ (Private)"
+      },
+      "modelo_custos": "Zero varejo / Negociável institucional / Private: fee sobre AUM",
+      "spread_ref": "Zero / Negociável",
+      "comissao": "Zero (digital)",
+      "alavancagem": {
+        "max": "Disponível com garantias",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "CVM",
+        "BACEN",
+        "B3",
+        "ANBIMA",
+        "SEC EUA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3 e globais",
+        "renda_fixa": "Renda fixa completa + COEs",
+        "fundos": "1.000+ fundos",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Derivativos completos",
+        "cripto": "Limitado",
+        "tesouro": "Tesouro Direto 0%",
+        "exterior": "XP Internacional (NYSE/NASDAQ)",
+        "opcoes": "Opções completas"
+      },
+      "plataformas": [
+        "XP App",
+        "XP Home Broker",
+        "XP Trader",
+        "XP Pro",
+        "XP Internacional"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "XP Varejo",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "XP Private",
+          "min": "R$3M+",
+          "taxas": "Fee AUM"
+        },
+        {
+          "nome": "XP Corporate",
+          "min": "Negociável",
+          "taxas": "Institucional"
+        }
+      ],
+      "pros": [
+        "R$1 trilhão+ em AUM gerido",
+        "Maior rede de AAIs do Brasil",
+        "XP Internacional para bolsas americanas",
+        "IPO Nasdaq 2019"
+      ],
+      "contras": [
+        "Conflito de interesse por comissões",
+        "Taxa mesa alta"
+      ],
+      "presenca": "São Paulo + 650+ escritórios AAIs em todo o Brasil"
+    },
+    {
+      "id": "BR014",
+      "nome": "Avenue Securities",
+      "tipo": "Corretora Brasileira para Mercado EUA (Grupo Itaú)",
+      "pais": "EUA (sede) / Brasil (clientes)",
+      "regiao": "EUA — NYSE, NASDAQ, AMEX",
+      "fundacao": "2019",
+      "calificacion": 8.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "USD",
+        "nota": "Sem mínimo formal"
+      },
+      "modelo_custos": "Corretagem 0% para diversificadores ativos. Spread câmbio regressivo: 1.95%–0.50%",
+      "spread_ref": "1.95%–0.50% câmbio (regressivo). IOF 1.1%",
+      "comissao": "0% / Mesa USD10+",
+      "alavancagem": {
+        "max": "Sem alavancagem para brasileiros",
+        "nota": "Conta investimento padrão"
+      },
+      "regulacao": [
+        "SEC EUA",
+        "FINRA",
+        "SIPC (USD 500K)",
+        "Grupo Itaú"
+      ],
+      "instrumentos": {
+        "acoes": "Ações NYSE/NASDAQ/AMEX",
+        "renda_fixa": "Bonds EUA",
+        "fundos": "Fundos selecionados EUA",
+        "etfs_bdrs": "ETFs e ADRs",
+        "fiis": "REITs (similares FIIs)",
+        "derivativos": "Limitado",
+        "cripto": "Não",
+        "tesouro": "Treasury Bills EUA",
+        "exterior": "100% mercado americano",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "Avenue App (iOS/Android)",
+        "Avenue Web",
+        "Assessoria em português 24h"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Digital",
+          "min": "USD 0",
+          "taxas": "Câmbio 1.95%"
+        },
+        {
+          "nome": "Exclusive",
+          "min": "USD 1K+",
+          "taxas": "Assessor dedicado"
+        },
+        {
+          "nome": "Institutional",
+          "min": "Negociável",
+          "taxas": "Negociável"
+        }
+      ],
+      "pros": [
+        "Criada POR brasileiros PARA brasileiros",
+        "Parte do Itaú — solidez máxima",
+        "Assessoria completa em português",
+        "Conta em USD e EUR",
+        "SIPC USD 500K",
+        "Spread regressivo — quanto mais, menos paga"
+      ],
+      "contras": [
+        "Taxa inatividade USD 2/mês (<USD 2K sem aportes)",
+        "Spread câmbio padrão 1.95% pode ser alto",
+        "Apenas mercado americano",
+        "IOF 1.1% na remessa"
+      ],
+      "presenca": "Miami (sede) + digital para todos os brasileiros"
+    },
+    {
+      "id": "BR015",
+      "nome": "Nomad",
+      "tipo": "Fintech Brasileira — Conta e Investimento USD",
+      "pais": "EUA (operação) / Brasil (empresa)",
+      "regiao": "EUA — NYSE, NASDAQ",
+      "fundacao": "2020",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "USD",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "0% corretagem. Taxa câmbio 2.0% (padrão) → 1.0% (Nomad Pass alto). IOF 1.1%",
+      "spread_ref": "2.0%–1.0% câmbio. IOF 1.1%",
+      "comissao": "0%",
+      "alavancagem": {
+        "max": "Sem alavancagem",
+        "nota": "Conta investimento padrão"
+      },
+      "regulacao": [
+        "SEC EUA",
+        "FINRA",
+        "SIPC (USD 500K)",
+        "FDIC (USD 250K)",
+        "BACEN (Ouribank parceiro)"
+      ],
+      "instrumentos": {
+        "acoes": "Ações NYSE/NASDAQ",
+        "renda_fixa": "Bonds EUA (Time Deposits)",
+        "fundos": "Fundos selecionados",
+        "etfs_bdrs": "ETFs e ADRs",
+        "fiis": "REITs",
+        "derivativos": "Não",
+        "cripto": "Não",
+        "tesouro": "Não",
+        "exterior": "100% EUA",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "Nomad App (iOS/Android)",
+        "Nomad Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Nomad",
+          "min": "USD 0",
+          "taxas": "2% câmbio"
+        },
+        {
+          "nome": "Nomad Pass (fidelidade)",
+          "min": "Critérios de uso",
+          "taxas": "1%–0.5% câmbio"
+        }
+      ],
+      "pros": [
+        "FDIC USD 250K + SIPC USD 500K — dupla proteção",
+        "Sem mínimo de investimento",
+        "Nomad Pass reduz spread progressivamente",
+        "Sala VIP Guarulhos (nível 2)",
+        "Suporte em português",
+        "1.5M+ usuários"
+      ],
+      "contras": [
+        "Spread padrão 2% pode ser caro para baixo volume",
+        "USD 10 para Wire de retorno ao Brasil",
+        "Apenas mercado americano"
+      ],
+      "presenca": "São Paulo (empresa) + Miami (operação) — digital para brasileiros"
+    },
+    {
+      "id": "BR016",
+      "nome": "Inter Invest Global",
+      "tipo": "Banco Digital + Investimento Exterior",
+      "pais": "Brasil / EUA",
+      "regiao": "EUA — NYSE, NASDAQ",
+      "fundacao": "2020 (funcionalidade)",
+      "calificacion": 8.6,
+      "deposito_minimo": {
+        "valor": 1,
+        "moeda": "USD",
+        "nota": "USD 1 mínimo"
+      },
+      "modelo_custos": "0% corretagem EUA. Spread câmbio 0.99% (WIN) / 1.5% (padrão) + IOF 1.1%",
+      "spread_ref": "0.99%–1.5% câmbio. IOF 1.1%",
+      "comissao": "0%",
+      "alavancagem": {
+        "max": "Sem alavancagem",
+        "nota": "Conta investimento padrão"
+      },
+      "regulacao": [
+        "SEC EUA",
+        "FINRA",
+        "SIPC",
+        "BACEN (Banco Inter)"
+      ],
+      "instrumentos": {
+        "acoes": "Ações NYSE/NASDAQ",
+        "renda_fixa": "Não",
+        "fundos": "Não",
+        "etfs_bdrs": "ETFs e ADRs",
+        "fiis": "REITs",
+        "derivativos": "Não",
+        "cripto": "Não",
+        "tesouro": "Não",
+        "exterior": "100% EUA",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "App Inter (tudo integrado)",
+        "Inter Global Account Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Inter Global",
+          "min": "USD 1",
+          "taxas": "0% + 0.99–1.5% câmbio"
+        }
+      ],
+      "pros": [
+        "Melhor custo-benefício do mercado (0% + 0.99% WIN)",
+        "TUDO em um app — banco BR + investimento EUA",
+        "Frações de ações disponíveis",
+        "20M+ clientes do Inter têm acesso direto"
+      ],
+      "contras": [
+        "Sem bonds ou renda fixa americana",
+        "Interface menos especializada que Avenue"
+      ],
+      "presenca": "Belo Horizonte + digital — para todos os clientes Inter"
+    },
+    {
+      "id": "BR017",
+      "nome": "Interactive Brokers (IBKR)",
+      "tipo": "Corretora Global — Maior Cobertura Mundial",
+      "pais": "EUA (fundada 1978)",
+      "regiao": "150 mercados / 33 países",
+      "fundacao": "1978",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "USD",
+        "nota": "Recomendado USD 10,000+"
+      },
+      "modelo_custos": "IBKR Lite: 0% ações USA. IBKR Pro: USD 0.005/ação. Juros sobre saldo USD: 4.33% a.a.",
+      "spread_ref": "IBKR Pro: USD 0.005/ação",
+      "comissao": "0% Lite / USD 0.005/ação Pro",
+      "alavancagem": {
+        "max": "Até 1:50 para Forex retail EUA / variável por produto",
+        "nota": "Regulação SEC/FINRA"
+      },
+      "regulacao": [
+        "SEC EUA",
+        "FINRA",
+        "SIPC",
+        "FCA",
+        "ASIC"
+      ],
+      "instrumentos": {
+        "acoes": "150+ bolsas / 33 países — ações REAIS",
+        "renda_fixa": "Bonds globais",
+        "fundos": "ETFs e fundos globais",
+        "etfs_bdrs": "Miles de ETFs globais",
+        "fiis": "REITs globais",
+        "derivativos": "Opções e Futuros REAIS listados em bolsas",
+        "cripto": "Criptoativos",
+        "tesouro": "Treasuries EUA",
+        "exterior": "100% global",
+        "opcoes": "SIM — opções reais CBOE, Euronext e outras"
+      },
+      "plataformas": [
+        "TWS (Trader Workstation)",
+        "IBKR Mobile",
+        "Client Portal Web",
+        "API FIX/REST"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "IBKR Lite",
+          "min": "USD 0",
+          "taxas": "0% ações USA"
+        },
+        {
+          "nome": "IBKR Pro",
+          "min": "USD 0",
+          "taxas": "USD 0.005/ação"
+        },
+        {
+          "nome": "Institutional",
+          "min": "USD 100K+",
+          "taxas": "Negociável"
+        },
+        {
+          "nome": "Prime Brokerage",
+          "min": "USD 1M+",
+          "taxas": "Prime"
+        }
+      ],
+      "pros": [
+        "Acesso a 150+ bolsas em 33 países",
+        "Opções e futuros REAIS em bolsas mundiais",
+        "API avançada para algorithmic trading",
+        "Juros 4.33% sobre saldo USD parado",
+        "Sem taxas de abertura ou manutenção"
+      ],
+      "contras": [
+        "Plataforma muito complexa para iniciantes",
+        "Sem suporte em português de qualidade",
+        "TWS tem curva de aprendizado alta"
+      ],
+      "presenca": "Greenwich (sede) — digital para clientes brasileiros"
+    },
+    {
+      "id": "BR018",
+      "nome": "Nubank",
+      "tipo": "Neobank — 100M+ Clientes — IPO NYSE",
+      "pais": "Brasil",
+      "regiao": "Brasil + México + Colômbia",
+      "fundacao": "2013",
+      "calificacion": 8.7,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo — caixinhas R$1"
+      },
+      "modelo_custos": "Zero em tudo. 100% CDI automático no saldo",
+      "spread_ref": "Zero",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Não",
+        "nota": "Foco em investimentos sem alavancagem"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM (NuInvest)",
+        "B3",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "CDB, LCI, LCA, Poupança, 100% CDI automático",
+        "fundos": "Fundos básicos",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Não",
+        "cripto": "25+ criptoativos",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Não",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "App Nubank (iOS/Android) integrado",
+        "NuInvest Home Broker"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Nubank",
+          "min": "R$0",
+          "taxas": "100% CDI auto"
+        },
+        {
+          "nome": "Ultravioleta",
+          "min": "Análise de crédito",
+          "taxas": "Premium"
+        },
+        {
+          "nome": "Caixinhas",
+          "min": "R$1",
+          "taxas": "Gratuito"
+        }
+      ],
+      "pros": [
+        "100M+ clientes — maior base do Brasil",
+        "100% CDI automático no saldo em conta",
+        "Interface mais intuitiva do mercado",
+        "25+ criptoativos",
+        "ROE 31%"
+      ],
+      "contras": [
+        "Sem assessoria para grandes patrimônios",
+        "Produtos avançados limitados"
+      ],
+      "presenca": "São Paulo + México + Colômbia — 100% digital"
+    },
+    {
+      "id": "BR019",
+      "nome": "Mercado Pago",
+      "tipo": "Fintech — Braço Financeiro do Mercado Livre",
+      "pais": "Argentina (sede) / Brasil (operação)",
+      "regiao": "Brasil e LATAM",
+      "fundacao": "2004",
+      "calificacion": 7.9,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Conta rende 100% CDI. Fundos: taxa variável",
+      "spread_ref": "100% CDI",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Não",
+        "nota": "Foco em pagamentos e crédito"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM (fundos)",
+        "FGC"
+      ],
+      "instrumentos": {
+        "acoes": "Não",
+        "renda_fixa": "CDB básico, 100% CDI automático",
+        "fundos": "Fundos básicos",
+        "etfs_bdrs": "Não",
+        "fiis": "Não",
+        "derivativos": "Não",
+        "cripto": "Sim — via parceiros",
+        "tesouro": "Não",
+        "exterior": "Não",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "App Mercado Pago (iOS/Android)"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Mercado Pago",
+          "min": "R$0",
+          "taxas": "100% CDI auto"
+        }
+      ],
+      "pros": [
+        "100% CDI automaticamente no saldo",
+        "Integração com Mercado Livre (maior e-commerce LATAM)",
+        "Sem taxas",
+        "Fácil uso para todos os perfis"
+      ],
+      "contras": [
+        "Sem acesso à B3 (ações, ETFs, BDRs)",
+        "Portfólio muito limitado",
+        "Não é uma corretora completa"
+      ],
+      "presenca": "São Paulo + LATAM — 100% digital"
+    },
+    {
+      "id": "BR020",
+      "nome": "PicPay",
+      "tipo": "Fintech — IPO Nasdaq jan/2026",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2012",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Conta rende 102% CDI",
+      "spread_ref": "102% CDI",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Não",
+        "nota": "Foco em pagamentos"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM (fundos)",
+        "Banco Original (parceiro)"
+      ],
+      "instrumentos": {
+        "acoes": "Não",
+        "renda_fixa": "CDB básico, 102% CDI",
+        "fundos": "Básicos",
+        "etfs_bdrs": "Não",
+        "fiis": "Não",
+        "derivativos": "Não",
+        "cripto": "Não",
+        "tesouro": "Não",
+        "exterior": "Não",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "App PicPay (iOS/Android)"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta PicPay",
+          "min": "R$0",
+          "taxas": "102% CDI"
+        }
+      ],
+      "pros": [
+        "102% CDI — acima da Selic em campanhas",
+        "Receita +90% jan-set 2025",
+        "IPO Nasdaq jan/2026 (USD 2.2–2.6B avaliação)",
+        "PIX ilimitado gratuito"
+      ],
+      "contras": [
+        "Portfólio de investimentos muito limitado",
+        "Sem acesso à B3",
+        "Foco principal em pagamentos e crédito"
+      ],
+      "presenca": "São Paulo — 100% digital"
+    },
+    {
+      "id": "BR021",
+      "nome": "C6 Bank",
+      "tipo": "Banco Digital — C6 Global Invest",
+      "pais": "Brasil",
+      "regiao": "Brasil + EUA",
+      "fundacao": "2019",
+      "calificacion": 7.9,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Sem mínimo"
+      },
+      "modelo_custos": "Zero corretagem. Câmbio C6 Global: 1.5–2.5%",
+      "spread_ref": "Zero / 1.5–2.5% câmbio",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Disponível em renda variável",
+        "nota": "Regras B3"
+      },
+      "regulacao": [
+        "BACEN",
+        "CVM",
+        "B3",
+        "ANBIMA"
+      ],
+      "instrumentos": {
+        "acoes": "Ações B3",
+        "renda_fixa": "CDB, LCI, LCA, Tesouro",
+        "fundos": "Fundos diversificados",
+        "etfs_bdrs": "ETFs e BDRs",
+        "fiis": "FIIs",
+        "derivativos": "Minicontratos",
+        "cripto": "Criptoativos",
+        "tesouro": "Tesouro Direto",
+        "exterior": "C6 Global (NYSE/NASDAQ)",
+        "opcoes": "Disponível"
+      },
+      "plataformas": [
+        "App C6 Bank (integrado)",
+        "C6 Home Broker",
+        "C6 Global Account"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta C6",
+          "min": "R$0",
+          "taxas": "Zero"
+        },
+        {
+          "nome": "C6 Platinum",
+          "min": "Critérios",
+          "taxas": "Premium"
+        },
+        {
+          "nome": "C6 Global",
+          "min": "USD 0",
+          "taxas": "Câmbio 1.5–2.5%"
+        }
+      ],
+      "pros": [
+        "Portfólio completo: banco + corretora + câmbio + exterior",
+        "C6 Global para investir nos EUA",
+        "Zero corretagem",
+        "Cartão Black sem anuidade com pontos"
+      ],
+      "contras": [
+        "Spread C6 Global mais caro que Inter ou Nomad",
+        "Research limitado vs. XP ou BTG"
+      ],
+      "presenca": "São Paulo — digital + agências físicas C6"
+    },
+    {
+      "id": "BR022",
+      "nome": "Sproutfi",
+      "tipo": "Plataforma de Investimento no Exterior",
+      "pais": "Brasil / EUA",
+      "regiao": "EUA — NYSE, NASDAQ",
+      "fundacao": "2021",
+      "calificacion": 7.5,
+      "deposito_minimo": {
+        "valor": 1,
+        "moeda": "USD",
+        "nota": "USD 1 mínimo"
+      },
+      "modelo_custos": "Zero corretagem. Spread câmbio 2.5% + IOF 1.1%",
+      "spread_ref": "2.5% câmbio. IOF 1.1%",
+      "comissao": "0%",
+      "alavancagem": {
+        "max": "Sem alavancagem",
+        "nota": "Conta investimento padrão"
+      },
+      "regulacao": [
+        "SEC EUA",
+        "FINRA",
+        "SIPC"
+      ],
+      "instrumentos": {
+        "acoes": "Ações NYSE/NASDAQ",
+        "renda_fixa": "Não",
+        "fundos": "Fundos básicos EUA",
+        "etfs_bdrs": "ETFs e ADRs",
+        "fiis": "REITs",
+        "derivativos": "Não",
+        "cripto": "Não",
+        "tesouro": "Não",
+        "exterior": "100% EUA",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "Sproutfi App (iOS/Android)",
+        "Portal Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Sproutfi",
+          "min": "USD 1",
+          "taxas": "0% + 2.5% câmbio"
+        }
+      ],
+      "pros": [
+        "Interface muito simples e educativa",
+        "Conteúdo em português sobre EUA",
+        "USD 1 de mínimo"
+      ],
+      "contras": [
+        "Spread câmbio 2.5% — mais caro que Inter e Nomad",
+        "Portfólio limitado",
+        "Sem conta corrente em USD"
+      ],
+      "presenca": "São Paulo — 100% digital"
+    },
+    {
+      "id": "BR023",
+      "nome": "Warren Fintech",
+      "tipo": "Gestora Digital de Patrimônio",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2014",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 1,
+        "moeda": "BRL",
+        "nota": "R$1 — mais baixo do Brasil"
+      },
+      "modelo_custos": "Zero corretagem. Fundos próprios com taxa de administração",
+      "spread_ref": "Zero / Fee fundos",
+      "comissao": "Zero",
+      "alavancagem": {
+        "max": "Não",
+        "nota": "Foco em gestão de patrimônio passiva"
+      },
+      "regulacao": [
+        "CVM",
+        "ANBIMA",
+        "BACEN"
+      ],
+      "instrumentos": {
+        "acoes": "Via fundos próprios",
+        "renda_fixa": "Via fundos próprios",
+        "fundos": "Fundos por objetivo de vida",
+        "etfs_bdrs": "Via fundos",
+        "fiis": "Via fundos",
+        "derivativos": "Não",
+        "cripto": "Não",
+        "tesouro": "Tesouro Direto",
+        "exterior": "Não",
+        "opcoes": "Não"
+      },
+      "plataformas": [
+        "Warren App (iOS/Android)",
+        "Portal Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Conta Warren",
+          "min": "R$1",
+          "taxas": "Zero + fee fundos"
+        }
+      ],
+      "pros": [
+        "R$1 mínimo — mais democrático do Brasil",
+        "Carteiras por objetivo de vida",
+        "Fundadores ex-XP",
+        "Auditoria independente"
+      ],
+      "contras": [
+        "Sem ações individuais",
+        "Menos flexibilidade para traders"
+      ],
+      "presenca": "Porto Alegre + São Paulo — digital"
+    },
+    {
+      "id": "BR024",
+      "nome": "Kinvo",
+      "tipo": "App Consolidador de Investimentos",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2017",
+      "calificacion": 7.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Ferramenta de acompanhamento — não executa operações"
+      },
+      "modelo_custos": "Gratuito para investidores. Plano Pro para escritórios",
+      "spread_ref": "Não aplica",
+      "comissao": "Gratuito",
+      "alavancagem": {
+        "max": "Não aplicável",
+        "nota": "Ferramenta de gestão — não executa operações"
+      },
+      "regulacao": [
+        "Sem regulação específica — não é corretora"
+      ],
+      "instrumentos": {
+        "acoes": "Consolida",
+        "renda_fixa": "Consolida",
+        "fundos": "Consolida",
+        "etfs_bdrs": "Consolida",
+        "fiis": "Consolida",
+        "derivativos": "Consolida",
+        "cripto": "Consolida",
+        "tesouro": "Consolida",
+        "exterior": "Consolida",
+        "opcoes": "Consolida"
+      },
+      "plataformas": [
+        "Kinvo App (iOS/Android)",
+        "Kinvo Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Kinvo Gratuito",
+          "min": "R$0",
+          "taxas": "Gratuito"
+        },
+        {
+          "nome": "Kinvo Pro (escritórios)",
+          "min": "Mensalidade",
+          "taxas": "Pago"
+        }
+      ],
+      "pros": [
+        "Consolida TODOS os investimentos de múltiplas corretoras",
+        "Ferramenta de análise de portfólio",
+        "Disponível app e web",
+        "Ótimo para IR — histórico completo"
+      ],
+      "contras": [
+        "Não executa operações — apenas visualiza",
+        "Sem regulação como corretora",
+        "Dados dependem de integração"
+      ],
+      "presenca": "São Paulo — 100% digital"
+    },
+    {
+      "id": "BR025",
+      "nome": "Gorila",
+      "tipo": "App Consolidador Profissional e de Escritórios",
+      "pais": "Brasil",
+      "regiao": "Brasil",
+      "fundacao": "2019",
+      "calificacion": 7.3,
+      "deposito_minimo": {
+        "valor": 0,
+        "moeda": "BRL",
+        "nota": "Gratuito para investidores — não executa operações"
+      },
+      "modelo_custos": "Gratuito investidores. Pago para escritórios de investimento",
+      "spread_ref": "Não aplica",
+      "comissao": "Gratuito",
+      "alavancagem": {
+        "max": "Não aplicável",
+        "nota": "Ferramenta de gestão"
+      },
+      "regulacao": [
+        "Sem regulação específica — não é corretora"
+      ],
+      "instrumentos": {
+        "acoes": "Consolida",
+        "renda_fixa": "Consolida",
+        "fundos": "Consolida",
+        "etfs_bdrs": "Consolida",
+        "fiis": "Consolida",
+        "derivativos": "Consolida",
+        "cripto": "Consolida",
+        "tesouro": "Consolida",
+        "exterior": "Consolida",
+        "opcoes": "Consolida"
+      },
+      "plataformas": [
+        "Gorila App (iOS/Android)",
+        "Gorila Web"
+      ],
+      "tipos_conta": [
+        {
+          "nome": "Gorila Gratuito",
+          "min": "R$0",
+          "taxas": "Gratuito"
+        },
+        {
+          "nome": "Gorila Pro",
+          "min": "Mensalidade",
+          "taxas": "Escritórios"
+        }
+      ],
+      "pros": [
+        "Guia Gorila — FAQ educativo completo",
+        "Gorila Radar — recomenda melhores produtos",
+        "Atende investidores e escritórios de investimento",
+        "Boletador intuitivo"
+      ],
+      "contras": [
+        "Não executa operações",
+        "Sem regulação específica",
+        "Menos integrações que Kinvo"
+      ],
+      "presenca": "São Paulo — digital"
+    }
+  ]
+}

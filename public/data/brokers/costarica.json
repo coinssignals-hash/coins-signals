@@ -1,0 +1,420 @@
+{
+  "metadata": {
+    "pais": "Costa Rica",
+    "bandera": "🇨🇷",
+    "color": "#002B7F",
+    "subtitulo": "Puestos de Bolsa SUGEVAL · BNV + BCCR · CRC/USD · Hub financiero Centroamérica",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. La SUGEVAL (Superintendencia General de Valores) bajo el CONASSIF regula todos los intermediarios de valores en Costa Rica. La Bolsa Nacional de Valores (BNV) es el mercado organizado. Verifique siempre el registro en SUGEVAL antes de invertir.",
+    "stats": [
+      {
+        "val": "SUGEVAL",
+        "lbl": "Regulador mercado valores"
+      },
+      {
+        "val": "BNV",
+        "lbl": "Bolsa Nacional de Valores"
+      },
+      {
+        "val": "CONASSIF",
+        "lbl": "Consejo Supervisor del Sistema Financiero"
+      },
+      {
+        "val": "BCCR",
+        "lbl": "Banco Central de Costa Rica"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "puestos",
+        "nombre": "PUESTOS DE BOLSA — Regulados SUGEVAL / BNV Costa Rica"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Costarricenses"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "CR001",
+      "nombre": "BCR Valores (Banco de Costa Rica)",
+      "tipo": "Puesto de Bolsa — SUGEVAL — Banca Estatal",
+      "seccion": "puestos",
+      "pais": "Costa Rica",
+      "region": "Costa Rica (BNV) + Internacional",
+      "calificacion": 8.2,
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "Desde USD 50 — accesible para retail"
+      },
+      "modelo_costos": "Comisión por operación según instrumento. Fondos de inversión: fee de gestión",
+      "apalancamiento": {
+        "max": "No aplica (renta fija y variable real)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SUGEVAL",
+        "BNV (Bolsa Nacional de Valores)",
+        "CONASSIF",
+        "Banco Central de Costa Rica"
+      ],
+      "instrumentos": {
+        "forex": "Sí — divisas (colones/dólares)",
+        "acciones": "BNV + títulos internacionales via SIC CR",
+        "indices": "Vía fondos",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "ETFs",
+        "renta_fija": "Bonos del Estado CR, Eurobonos, tasa básica, fondos RF — completo",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "BCR en Línea (plataforma digital)",
+        "App BCR Móvil",
+        "Sucursales BCR en todo CR"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta BCR Valores",
+          "min": "USD 50",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Fondos de inversión",
+          "min": "₡50,000",
+          "tarifa": "Fee de gestión"
+        }
+      ],
+      "pros": [
+        "Respaldo del Banco de Costa Rica (estatal)",
+        "Acceso completo a BNV",
+        "Red de sucursales en todo el país",
+        "Desde USD 50 — accesible para retail",
+        "Fondos de inversión regulados SUGEVAL",
+        "Bonos del Estado CR con tasas atractivas"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Sin Forex trading activo (solo cambio de divisas)",
+        "Plataforma digital menos moderna que fintechs",
+        "Comisiones pueden ser altas para montos pequeños"
+      ],
+      "nota": "BCR Valores es el puesto de bolsa del Banco de Costa Rica — uno de los 3 bancos estatales del país. Desde USD 50. Acceso completo a BNV y bonos del estado.",
+      "presencia": "San José + toda la red BCR en Costa Rica"
+    },
+    {
+      "id": "CR002",
+      "nombre": "INS Valores (Instituto Nacional de Seguros)",
+      "tipo": "Puesto de Bolsa — SUGEVAL — Institución Estatal",
+      "seccion": "puestos",
+      "pais": "Costa Rica",
+      "region": "Costa Rica (BNV)",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CRC/USD",
+        "nota": "Variable según instrumento"
+      },
+      "modelo_costos": "Comisión por operación. Fondos: fee de gestión",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SUGEVAL",
+        "BNV",
+        "CONASSIF",
+        "INS (Instituto Nacional de Seguros)"
+      ],
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "acciones": "BNV",
+        "indices": "Vía fondos",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "ETFs básicos",
+        "renta_fija": "Bonos gubernamentales, títulos de renta fija CR",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "INS en Línea",
+        "Sucursales INS"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta INS Valores",
+          "min": "Variable",
+          "tarifa": "Comisión por operación"
+        }
+      ],
+      "pros": [
+        "Parte del INS — institución estatal de máxima solidez",
+        "Acceso a BNV",
+        "Renta fija gubernamental de calidad",
+        "Respaldo estatal sólido"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma digital básica",
+        "Foco en clientes del INS",
+        "Sin acceso a mercados internacionales amplios"
+      ],
+      "nota": "Puesto de bolsa del Instituto Nacional de Seguros (INS). Institución estatal con sólida trayectoria. Foco en renta fija y clientes del INS.",
+      "presencia": "San José + red INS en Costa Rica"
+    },
+    {
+      "id": "CR003",
+      "nombre": "Mutual Valores",
+      "tipo": "Puesto de Bolsa — SUGEVAL — Especialista Retail",
+      "seccion": "puestos",
+      "pais": "Costa Rica",
+      "region": "Costa Rica (BNV)",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD",
+        "nota": "Desde USD 50 o ₡25,000 CRC"
+      },
+      "modelo_costos": "Comisión por operación. Fondos: fee de gestión",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SUGEVAL",
+        "BNV",
+        "CONASSIF"
+      ],
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "acciones": "BNV",
+        "indices": "Vía fondos",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "ETFs",
+        "renta_fija": "Bonos, fondos RF — especialidad en renta fija CR",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Mutual Valores Online",
+        "Asesoría presencial"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Mutual",
+          "min": "USD 50 / ₡25,000",
+          "tarifa": "Comisión por operación"
+        }
+      ],
+      "pros": [
+        "Especialista en servicio retail accesible",
+        "Desde USD 50 o ₡25,000 — muy accesible",
+        "Buen servicio de asesoría personalizada",
+        "Fondos de inversión a corto y mediano plazo"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Sin instrumentos globales",
+        "Plataforma digital básica"
+      ],
+      "nota": "Puesto de bolsa orientado a clientes retail con mínimos muy accesibles. Desde USD 50 o ₡25,000. Especialista en fondos de inversión a corto y mediano plazo.",
+      "presencia": "San José — Costa Rica"
+    },
+    {
+      "id": "CR004",
+      "nombre": "BAC Valores Costa Rica",
+      "tipo": "Puesto de Bolsa — SUGEVAL — Grupo BAC Credomatic",
+      "seccion": "puestos",
+      "pais": "Costa Rica",
+      "region": "Costa Rica + Centroamérica",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD/CRC",
+        "nota": "Variable — clientes BAC preferentes"
+      },
+      "modelo_costos": "Comisión por operación según instrumento. Gestión patrimonial: fee AUM",
+      "apalancamiento": {
+        "max": "Disponible",
+        "nota": "Regulado SUGEVAL"
+      },
+      "regulacion": [
+        "SUGEVAL",
+        "BNV",
+        "CONASSIF",
+        "Grupo BAC Credomatic (Centroamérica)"
+      ],
+      "instrumentos": {
+        "forex": "Sí",
+        "acciones": "BNV + títulos internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Limitado",
+        "etfs": "Sí",
+        "renta_fija": "Completo — bonos CR y del exterior",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "BAC en Línea (banca + inversiones integradas)",
+        "App BAC",
+        "Asesoría en sucursales BAC"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta BAC Valores",
+          "min": "Variable",
+          "tarifa": "Comisión"
+        },
+        {
+          "nombre": "Wealth Management",
+          "min": "USD 100K+",
+          "tarifa": "Fee AUM"
+        }
+      ],
+      "pros": [
+        "Parte de Grupo BAC Credomatic — mayor banco privado de CA",
+        "Integración con banca BAC para toda Centroamérica",
+        "Acceso a BNV y títulos internacionales",
+        "Red centroamericana completa: CR, SV, GT, HN, NI, PA",
+        "Wealth management para altos patrimonios"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Comisiones pueden ser altas para cuentas pequeñas",
+        "Proceso burocrático de grandes bancos"
+      ],
+      "nota": "BAC Credomatic es el mayor banco privado de Centroamérica con operaciones en 6 países. BAC Valores da acceso integrado a inversiones y banca en toda la región centroamericana.",
+      "presencia": "San José + toda Centroamérica (CR, SV, GT, HN, NI, PA)"
+    },
+    {
+      "id": "CR005",
+      "nombre": "Pepperstone Costa Rica (Intl)",
+      "tipo": "Broker Internacional CFD/Forex",
+      "seccion": "intl",
+      "pais": "Australia",
+      "region": "Global / Costa Rica",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD",
+        "nota": "USD 200 recomendado"
+      },
+      "modelo_costos": "Standard: spreads desde 0.9 pips. Razor ECN: 0.0 pips + USD 3.5/lote",
+      "apalancamiento": {
+        "max": "1:30 (ASIC) / 1:500 (offshore)",
+        "nota": "SCB Bahamas para Costa Rica"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FCA UK",
+        "CySEC",
+        "BaFIN Alemania",
+        "SCB Bahamas (CR)"
+      ],
+      "instrumentos": {
+        "forex": "62+ pares incluyendo USD/CRC referencial",
+        "acciones": "2,000+ CFD",
+        "indices": "Principales mundiales",
+        "criptomonedas": "27+ cryptos",
+        "materias_primas": "Oro, plata, petróleo",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "MT4",
+        "MT5",
+        "cTrader",
+        "TradingView",
+        "Pepperstone App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 200",
+          "tarifa": "0.9 pips"
+        },
+        {
+          "nombre": "Razor ECN",
+          "min": "USD 200",
+          "tarifa": "0.0 pips + USD 3.5/lote"
+        }
+      ],
+      "pros": [
+        "Triple regulación Tier 1 (ASIC+FCA+BaFIN)",
+        "Ejecución ultrarrápida <40ms",
+        "Mejor para Forex desde Costa Rica según rankings",
+        "Acepta depósitos locales",
+        "Soporte en español"
+      ],
+      "contras": [
+        "SCB Bahamas para CR (offshore)",
+        "Sin licencia SUGEVAL local",
+        "Sin acceso a BNV"
+      ],
+      "nota": "Mejor broker internacional para Forex/CFD desde Costa Rica. SUGEVAL advierte sobre operaciones Forex no reguladas localmente. SCB Bahamas aplica para residentes CR.",
+      "presencia": "Sin oficina — remoto"
+    },
+    {
+      "id": "CR006",
+      "nombre": "XTB Costa Rica (Intl)",
+      "tipo": "Broker Internacional CFD",
+      "seccion": "intl",
+      "pais": "Polonia",
+      "region": "Global / Costa Rica",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "0% comisión acciones/ETFs hasta EUR 100K/mes. CFDs: spread incluido",
+      "apalancamiento": {
+        "max": "1:30 FCA / 1:200 LATAM",
+        "nota": "IFSC Belice para CR"
+      },
+      "regulacion": [
+        "FCA UK",
+        "KNF Polonia",
+        "CySEC"
+      ],
+      "instrumentos": {
+        "forex": "57+ pares",
+        "acciones": "5,800 inst.",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí acciones reales",
+        "renta_fija": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "xStation 5",
+        "MT4",
+        "XTB App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 0",
+          "tarifa": "0% acciones/ETFs"
+        }
+      ],
+      "pros": [
+        "Sin depósito mínimo",
+        "0% comisión acciones/ETFs",
+        "Academia gratuita en español",
+        "5,800+ instrumentos"
+      ],
+      "contras": [
+        "IFSC Belice para CR",
+        "Sin licencia SUGEVAL",
+        "Sin acceso a BNV"
+      ],
+      "nota": "Muy popular en LATAM. IFSC Belice aplica para residentes costarricenses. Sin acceso a BNV pero sí a miles de acciones globales.",
+      "presencia": "Sin oficina en Costa Rica"
+    }
+  ]
+}
