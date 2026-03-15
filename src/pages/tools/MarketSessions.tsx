@@ -816,9 +816,9 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
     if (!config.enabled || sessionVolume.loading || alertedRef.current) return;
     if (sessionVolume.avgDailyRange >= config.thresholdPips && sessionVolume.avgDailyRange > 0) {
       alertedRef.current = true;
-      toast.warning(`⚡ ${session.name}: Rango diario ${sessionVolume.avgDailyRange.toFixed(1)} pips supera umbral de ${config.thresholdPips} pips`, {
+      toast.warning(`⚡ ${session.name}: ${t('ms_alert_daily_range')} ${sessionVolume.avgDailyRange.toFixed(1)} pips > ${config.thresholdPips} pips`, {
         duration: 8000,
-        description: `Volatilidad elevada en la sesión de ${session.name}`,
+        description: `${t('ms_alert_high_volatility')} ${session.name}`,
       });
     }
   }, [config.enabled, config.thresholdPips, sessionVolume.avgDailyRange, sessionVolume.loading, session.name]);
