@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
+import { isNativePlatform, setupNativePushListeners } from "@/utils/nativePushNotifications";
 import { Toaster } from "@/components/ui/toaster";
 import { SubscriptionGate } from "@/components/subscriptions/SubscriptionGate";
 import { Toaster as Sonner } from "@/components/ui/sonner";
