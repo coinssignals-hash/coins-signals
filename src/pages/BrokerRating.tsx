@@ -1264,7 +1264,7 @@ export default function BrokerRating() {
                   transition={{ duration: 0.35, delay: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="px-5">
                   <Button className="w-full bg-primary hover:bg-primary/90 h-11 text-sm font-semibold">{t('broker_open_account')}</Button>
-                </div>
+                </motion.div>
               </div>
             )}
           </ScrollArea>
