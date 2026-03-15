@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart } from 'lucide-react';
@@ -1068,7 +1069,11 @@ export default function BrokerRating() {
             {selectedBroker && (
               <div className="pb-6">
                 {/* Hero header */}
-                <div className="relative px-5 pt-6 pb-4" style={{ background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)' }}>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="relative px-5 pt-6 pb-4" style={{ background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)' }}>
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0">
                       <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
@@ -1090,15 +1095,23 @@ export default function BrokerRating() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Description */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.08 }}
+                  className="px-5 mb-4">
                   <p className="text-xs text-muted-foreground leading-relaxed">{selectedBroker.description}</p>
-                </div>
+                </motion.div>
 
                 {/* Key stats grid */}
-                <div className="grid grid-cols-4 gap-px bg-border/50 mx-5 rounded-xl overflow-hidden mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.35, delay: 0.15 }}
+                  className="grid grid-cols-4 gap-px bg-border/50 mx-5 rounded-xl overflow-hidden mb-4">
                   <div className="bg-card p-2.5 text-center">
                     <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_deposit')}</span>
                     <span className="text-xs font-bold text-accent">{selectedBroker.depositMin}</span>
@@ -1115,10 +1128,14 @@ export default function BrokerRating() {
                     <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_leverage')}</span>
                     <span className="text-xs font-bold text-accent">{selectedBroker.leverage.scb}</span>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Pros & Cons */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.22 }}
+                  className="px-5 mb-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
                       <h4 className="text-xs font-semibold text-primary mb-2 flex items-center gap-1">
@@ -1147,10 +1164,14 @@ export default function BrokerRating() {
                       </ul>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Regulations */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.29 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_regulatory_bodies')}</h4>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedBroker.allRegulations.map((reg, i) => (
@@ -1159,10 +1180,14 @@ export default function BrokerRating() {
                       </span>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Instruments */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_available_instruments')}</h4>
                   <div className="grid grid-cols-2 gap-1.5">
                     {selectedBroker.instrumentTypes.map((inst, i) => (
@@ -1172,10 +1197,14 @@ export default function BrokerRating() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Platforms */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_trading_platforms')}</h4>
                   <div className="space-y-1.5">
                     {selectedBroker.platforms.map((plat, i) => (
@@ -1188,10 +1217,14 @@ export default function BrokerRating() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Account Types */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.45 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_account_types')}</h4>
                   <div className="space-y-1.5">
                     {selectedBroker.accountTypes.map((acc, i) => (
@@ -1204,10 +1237,14 @@ export default function BrokerRating() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Region info */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  className="px-5 mb-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-secondary/50 rounded-lg p-2.5">
                       <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_main_region')}</span>
@@ -1218,12 +1255,16 @@ export default function BrokerRating() {
                       <span className="text-[11px] font-medium text-foreground">{selectedBroker.operatingCountries}</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* CTA */}
-                <div className="px-5">
+                <motion.div
+                  initial={{ opacity: 0, y: 16, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.35, delay: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="px-5">
                   <Button className="w-full bg-primary hover:bg-primary/90 h-11 text-sm font-semibold">{t('broker_open_account')}</Button>
-                </div>
+                </motion.div>
               </div>
             )}
           </ScrollArea>
