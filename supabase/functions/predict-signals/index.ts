@@ -30,7 +30,19 @@ async function logUsage(model: string, status: number, latencyMs: number, usage?
   } catch { /* fire-and-forget */ }
 }
 
+const _quoteCache = new Map<string, { data: any; ts: number }>();
+const QUOTE_CACHE_TTL = 60_000;
+
 async function fetchLiveQuote(symbol: string): Promise<{ price?: number; bid?: number; ask?: number; change?: string; volume?: string; spread?: string; timestamp?: string } | null> {
+  const cached = _quoteCache.get(symbol);
+  if (cached && Date.now() - cached.ts < QUOTE_CACHE_TTL) return cached.data;
+
+  const result = await _fetchLiveQuoteUncached(symbol);
+  if (result) _quoteCache.set(symbol, { data: result, ts: Date.now() });
+  return result;
+}
+
+async function _fetchLiveQuoteUncached(symbol: string): Promise<{ price?: number; bid?: number; ask?: number; change?: string; volume?: string; spread?: string; timestamp?: string } | null> {
   const parts = symbol.replace("C:", "").replace("_", "/").split("/");
   const isForex = parts.length === 2 && parts[0].length <= 4 && parts[1].length <= 4;
 
