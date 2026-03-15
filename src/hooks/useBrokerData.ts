@@ -315,3 +315,70 @@ export function useBrokerData(regionKey: string) {
 
   return { brokers, loading, error };
 }
+
+/** Search across ALL regions at once. Only triggers when query is non-empty. */
+export function useGlobalBrokerSearch(query: string) {
+  const [results, setResults] = useState<(NormalizedBroker & { regionLabel: string })[]>([]);
+  const [loading, setLoading] = useState(false);
+  const searchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!query || query.length < 2) {
+      setResults([]);
+      searchedRef.current = false;
+      return;
+    }
+
+    let cancelled = false;
+    const doSearch = async () => {
+      setLoading(true);
+
+      // Load all regions in parallel (uses cache when available)
+      const promises = BROKER_REGIONS.map(async (region) => {
+        if (cache.has(region.key)) return { brokers: cache.get(region.key)!, label: region.label };
+        try {
+          const res = await fetch(`/data/brokers/${region.file}`);
+          if (!res.ok) return { brokers: [], label: region.label };
+          const data = await res.json();
+          const normalized = normalizeJsonData(data, region.key);
+          cache.set(region.key, normalized);
+          return { brokers: normalized, label: region.label };
+        } catch {
+          return { brokers: [], label: region.label };
+        }
+      });
+
+      const allRegions = await Promise.all(promises);
+      if (cancelled) return;
+
+      const lower = query.toLowerCase();
+      const matched: (NormalizedBroker & { regionLabel: string })[] = [];
+      const seen = new Set<string>();
+
+      for (const { brokers, label } of allRegions) {
+        for (const b of brokers) {
+          if (seen.has(b.name.toLowerCase())) continue;
+          if (
+            b.name.toLowerCase().includes(lower) ||
+            b.central.toLowerCase().includes(lower) ||
+            b.regulations.some(r => r.toLowerCase().includes(lower)) ||
+            b.instruments.some(i => i.toLowerCase().includes(lower))
+          ) {
+            seen.add(b.name.toLowerCase());
+            matched.push({ ...b, regionLabel: label });
+          }
+        }
+      }
+
+      matched.sort((a, b) => b.rating - a.rating);
+      setResults(matched);
+      searchedRef.current = true;
+      setLoading(false);
+    };
+
+    const timer = setTimeout(doSearch, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [query]);
+
+  return { results, loading, searched: searchedRef.current };
+}

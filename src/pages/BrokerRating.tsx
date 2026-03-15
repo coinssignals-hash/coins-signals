@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, useTransform, useMotionValue } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart, Loader2, Building2, Coins, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart, Loader2, Building2, Coins, ShieldCheck, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { useBrokerData, BROKER_REGIONS, NormalizedBroker } from '@/hooks/useBrokerData';
+import { useBrokerData, BROKER_REGIONS, NormalizedBroker, useGlobalBrokerSearch } from '@/hooks/useBrokerData';
 import { getBrokerLogo } from '@/lib/brokerLogos';
 import { LazyImage } from '@/components/ui/lazy-image';
 
@@ -64,6 +64,8 @@ export default function BrokerRating() {
   const categories = getCategoriesTranslated(t);
   const [selectedRegion, setSelectedRegion] = useState('intl');
   const [searchTerm, setSearchTerm] = useState('');
+  const [globalSearchTerm, setGlobalSearchTerm] = useState('');
+  const [isGlobalSearch, setIsGlobalSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState<NormalizedBroker | null>(null);
@@ -73,6 +75,7 @@ export default function BrokerRating() {
   const [sortBy, setSortBy] = useState<SortOption | ''>('');
 
   const { brokers, loading, error } = useBrokerData(selectedRegion);
+  const { results: globalResults, loading: globalLoading } = useGlobalBrokerSearch(isGlobalSearch ? globalSearchTerm : '');
 
   // Parallax
   const scrollY = useMotionValue(0);
@@ -209,15 +212,38 @@ export default function BrokerRating() {
 
         <Card className="mb-4">
           <CardContent className="p-4">
-            <h2 className="text-base font-semibold text-foreground mb-3">{t('broker_search')}</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground">{t('broker_search')}</h2>
+              <button
+                onClick={() => { setIsGlobalSearch(!isGlobalSearch); setGlobalSearchTerm(''); setSearchTerm(''); }}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium transition-all ${
+                  isGlobalSearch
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+                }`}
+              >
+                <Globe className="w-3 h-3" />
+                {isGlobalSearch ? 'Global ON' : 'Buscar global'}
+              </button>
+            </div>
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder={t('broker_search_placeholder')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-secondary border-border"
-              />
+              {isGlobalSearch ? (
+                <Input
+                  placeholder="Buscar en todas las regiones..."
+                  value={globalSearchTerm}
+                  onChange={(e) => setGlobalSearchTerm(e.target.value)}
+                  className="pl-10 bg-secondary border-primary/30 ring-1 ring-primary/20"
+                  autoFocus
+                />
+              ) : (
+                <Input
+                  placeholder={t('broker_search_placeholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-secondary border-border"
+                />
+              )}
             </div>
 
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1">
@@ -261,6 +287,89 @@ export default function BrokerRating() {
           </CardContent>
         </Card>
 
+        {/* Global search results or regional view */}
+        {isGlobalSearch && globalSearchTerm.length >= 2 ? (
+          <>
+            <div className="flex items-center justify-between mb-4 gap-2">
+              <p className="text-xs text-muted-foreground flex-1">
+                {globalLoading ? 'Buscando en todas las regiones...' : `${globalResults.length} resultados globales`}
+              </p>
+            </div>
+            {globalLoading && (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              </div>
+            )}
+            {!globalLoading && globalResults.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground">
+                <Globe className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                <p className="text-sm">No se encontraron brokers para "{globalSearchTerm}"</p>
+              </div>
+            )}
+            {!globalLoading && globalResults.length > 0 && (
+              <div className="space-y-3">
+                {globalResults.map((broker) => (
+                  <Card
+                    key={broker.id}
+                    className="overflow-hidden transition-all active:scale-[0.99]"
+                    onClick={() => setSelectedBroker(broker)}
+                  >
+                    <CardContent className="p-0">
+                      <div className="flex items-center gap-3 p-3 pb-2">
+                        <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0 overflow-hidden text-lg">
+                          {getBrokerLogo(broker.name) ? (
+                            <LazyImage src={getBrokerLogo(broker.name)} alt={broker.name} className="w-full h-full object-contain p-1" />
+                          ) : (
+                            broker.countryFlag
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-bold text-foreground truncate">{broker.name}</h3>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <Globe className="w-3 h-3 text-primary shrink-0" />
+                            <span className="text-[10px] text-primary font-medium truncate">{broker.regionLabel}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end shrink-0">
+                          <div className="flex items-center gap-0.5">
+                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            <span className="text-sm font-bold text-foreground">{broker.rating}</span>
+                          </div>
+                          <span className="text-[9px] text-muted-foreground">/5.0</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-px bg-border/50 mx-3 rounded-lg overflow-hidden mb-2">
+                        <div className="bg-card p-2 text-center">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_initial_deposit')}</span>
+                          <span className="text-xs font-semibold text-accent">{broker.depositMin}</span>
+                        </div>
+                        <div className="bg-card p-2 text-center">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_spreads')}</span>
+                          <span className="text-[10px] font-semibold text-accent truncate block">{broker.spreads || 'Variable'}</span>
+                        </div>
+                        <div className="bg-card p-2 text-center">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_leverage')}</span>
+                          <span className="text-[10px] font-semibold text-accent truncate block">{broker.leverage || 'N/A'}</span>
+                        </div>
+                      </div>
+                      <div className="px-3 pb-2">
+                        <div className="flex flex-wrap gap-1">
+                          {broker.regulations.slice(0, 2).map(r => (
+                            <span key={r} className="text-[10px] px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-medium">{r.split(' (')[0]}</span>
+                          ))}
+                          {broker.instruments.slice(0, 2).map(i => (
+                            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground">{i}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+        <>
         <div className="flex items-center justify-between mb-4 gap-2">
           <p className="text-xs text-muted-foreground flex-1">
             {loading ? t('broker_loading') || 'Cargando...' : `${filteredBrokers.length} brokers · ${currentRegion?.label || ''}`}
@@ -423,10 +532,12 @@ export default function BrokerRating() {
           </div>
         )}
 
-        {!loading && !error && filteredBrokers.length === 0 && (
+        {!loading && !error && filteredBrokers.length === 0 && !isGlobalSearch && (
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-sm">{t('bk_no_brokers_found')}</p>
           </div>
+        )}
+        </>
         )}
       </main>
 
