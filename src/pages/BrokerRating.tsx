@@ -163,14 +163,14 @@ export default function BrokerRating() {
                 const name = region.label.split(' ').slice(1).join(' ');
                 const count = regionCounts[region.key];
                 return (
-                  <SelectItem key={region.key} value={region.key}>
-                    <span className="flex items-center gap-2 w-full">
-                      <span className="text-lg">{flag}</span>
-                      <span className="flex-1">{name}</span>
+                  <SelectItem key={region.key} value={region.key} className="py-2.5 pl-9 pr-3">
+                    <div className="flex items-center gap-3 w-full">
+                      <span className="text-2xl leading-none shrink-0">{flag}</span>
+                      <span className="flex-1 font-medium">{name}</span>
                       {count != null && (
-                        <Badge variant="secondary" className="ml-auto text-[9px] px-1.5 py-0">{count}</Badge>
+                        <Badge variant="secondary" className="ml-auto text-[10px] px-2 py-0.5 font-bold">{count}</Badge>
                       )}
-                    </span>
+                    </div>
                   </SelectItem>
                 );
               })}
