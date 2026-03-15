@@ -35,12 +35,12 @@ interface InstitutionalData {
   levels: OrderLevel[];
 }
 
-const ALL_PAIRS: Record<string, string[]> = {
-  'Majors': ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD'],
-  'Crosses': ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/AUD', 'EUR/CAD', 'EUR/CHF', 'GBP/AUD', 'GBP/CAD', 'AUD/JPY', 'CAD/JPY', 'NZD/JPY', 'AUD/NZD', 'AUD/CAD'],
-  'Exóticos': ['USD/MXN', 'USD/TRY', 'USD/ZAR', 'USD/SGD', 'USD/HKD', 'USD/NOK', 'USD/SEK', 'USD/DKK', 'EUR/NOK', 'EUR/SEK', 'EUR/TRY', 'EUR/PLN', 'EUR/HUF', 'EUR/CZK'],
-  'Commodities': ['XAU/USD', 'XAG/USD'],
-  'Crypto': ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD', 'BNB/USD', 'ADA/USD', 'DOGE/USD', 'DOT/USD', 'AVAX/USD', 'LINK/USD'],
+const ALL_PAIRS_DATA: Record<string, { key: string; pairs: string[] }> = {
+  'Majors': { key: 'of_cat_majors', pairs: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD'] },
+  'Crosses': { key: 'of_cat_crosses', pairs: ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/AUD', 'EUR/CAD', 'EUR/CHF', 'GBP/AUD', 'GBP/CAD', 'AUD/JPY', 'CAD/JPY', 'NZD/JPY', 'AUD/NZD', 'AUD/CAD'] },
+  'Exóticos': { key: 'of_cat_exotics', pairs: ['USD/MXN', 'USD/TRY', 'USD/ZAR', 'USD/SGD', 'USD/HKD', 'USD/NOK', 'USD/SEK', 'USD/DKK', 'EUR/NOK', 'EUR/SEK', 'EUR/TRY', 'EUR/PLN', 'EUR/HUF', 'EUR/CZK'] },
+  'Commodities': { key: 'of_cat_commodities', pairs: ['XAU/USD', 'XAG/USD'] },
+  'Crypto': { key: 'of_cat_crypto', pairs: ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD', 'BNB/USD', 'ADA/USD', 'DOGE/USD', 'DOT/USD', 'AVAX/USD', 'LINK/USD'] },
 };
 
 const VISIBLE_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'XAU/USD', 'AUD/USD'];
