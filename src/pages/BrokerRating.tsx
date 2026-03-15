@@ -1164,10 +1164,14 @@ export default function BrokerRating() {
                       </ul>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Regulations */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.29 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_regulatory_bodies')}</h4>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedBroker.allRegulations.map((reg, i) => (
