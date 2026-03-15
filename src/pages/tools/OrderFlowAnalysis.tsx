@@ -35,12 +35,36 @@ interface InstitutionalData {
   levels: OrderLevel[];
 }
 
-const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'XAU/USD', 'AUD/USD', 'USD/CAD'];
+const ALL_PAIRS: Record<string, string[]> = {
+  'Majors': ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD'],
+  'Crosses': ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/AUD', 'EUR/CAD', 'EUR/CHF', 'GBP/AUD', 'GBP/CAD', 'AUD/JPY', 'CAD/JPY', 'NZD/JPY', 'AUD/NZD', 'AUD/CAD'],
+  'Exóticos': ['USD/MXN', 'USD/TRY', 'USD/ZAR', 'USD/SGD', 'USD/HKD', 'USD/NOK', 'USD/SEK', 'USD/DKK', 'EUR/NOK', 'EUR/SEK', 'EUR/TRY', 'EUR/PLN', 'EUR/HUF', 'EUR/CZK'],
+  'Commodities': ['XAU/USD', 'XAG/USD'],
+  'Crypto': ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD', 'BNB/USD', 'ADA/USD', 'DOGE/USD', 'DOT/USD', 'AVAX/USD', 'LINK/USD'],
+};
 
-function generateOrderBook(basePrice: number, isJpy: boolean): OrderLevel[] {
+const VISIBLE_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'XAU/USD', 'AUD/USD'];
+
+const BASE_PRICES: Record<string, number> = {
+  'EUR/USD': 1.085, 'GBP/USD': 1.265, 'USD/JPY': 149.5, 'USD/CHF': 0.882, 'AUD/USD': 0.665,
+  'USD/CAD': 1.365, 'NZD/USD': 0.612, 'EUR/GBP': 0.858, 'EUR/JPY': 162.2, 'GBP/JPY': 189.1,
+  'EUR/AUD': 1.632, 'EUR/CAD': 1.481, 'EUR/CHF': 0.957, 'GBP/AUD': 1.902, 'GBP/CAD': 1.726,
+  'AUD/JPY': 99.4, 'CAD/JPY': 109.5, 'NZD/JPY': 91.5, 'AUD/NZD': 1.087, 'AUD/CAD': 0.908,
+  'USD/MXN': 17.15, 'USD/TRY': 32.5, 'USD/ZAR': 18.6, 'USD/SGD': 1.345, 'USD/HKD': 7.82,
+  'USD/NOK': 10.85, 'USD/SEK': 10.52, 'USD/DKK': 6.88, 'EUR/NOK': 11.77, 'EUR/SEK': 11.42,
+  'EUR/TRY': 35.3, 'EUR/PLN': 4.32, 'EUR/HUF': 392.5, 'EUR/CZK': 25.2,
+  'XAU/USD': 2340, 'XAG/USD': 29.5,
+  'BTC/USD': 67500, 'ETH/USD': 3450, 'SOL/USD': 148, 'XRP/USD': 0.52, 'BNB/USD': 580,
+  'ADA/USD': 0.45, 'DOGE/USD': 0.155, 'DOT/USD': 7.2, 'AVAX/USD': 35.5, 'LINK/USD': 14.8,
+};
+
+function generateOrderBook(basePrice: number, pair: string): OrderLevel[] {
   const levels: OrderLevel[] = [];
-  const decimals = isJpy ? 3 : 5;
-  const step = isJpy ? 0.05 : 0.0005;
+  const isJpy = pair.includes('JPY') || pair.includes('HUF');
+  const isCrypto = ['BTC', 'ETH', 'SOL', 'BNB', 'AVAX', 'LINK', 'DOT'].some(c => pair.includes(c));
+  const isExotic = basePrice > 5 && !isCrypto;
+  const decimals = isJpy ? 3 : isCrypto ? 2 : isExotic ? 4 : 5;
+  const step = isJpy ? 0.05 : isCrypto ? basePrice * 0.001 : isExotic ? 0.005 : 0.0005;
 
   for (let i = -10; i <= 10; i++) {
     const price = +(basePrice + i * step).toFixed(decimals);
@@ -51,34 +75,35 @@ function generateOrderBook(basePrice: number, isJpy: boolean): OrderLevel[] {
   return levels;
 }
 
-function generateData(): InstitutionalData[] {
-  const bases: Record<string, number> = {
-    'EUR/USD': 1.085, 'GBP/USD': 1.265, 'USD/JPY': 149.5,
-    'XAU/USD': 2340, 'AUD/USD': 0.665, 'USD/CAD': 1.365,
+function generateDataForPair(pair: string): InstitutionalData {
+  const longPct = Math.floor(Math.random() * 40 + 30);
+  return {
+    pair,
+    longPercent: longPct,
+    shortPercent: 100 - longPct,
+    netPosition: longPct > 50 ? 'long' : 'short',
+    change: +(Math.random() * 10 - 5).toFixed(1),
+    levels: generateOrderBook(BASE_PRICES[pair] || 1, pair),
   };
+}
 
-  return PAIRS.map(pair => {
-    const longPct = Math.floor(Math.random() * 40 + 30);
-    return {
-      pair,
-      longPercent: longPct,
-      shortPercent: 100 - longPct,
-      netPosition: longPct > 50 ? 'long' : 'short',
-      change: +(Math.random() * 10 - 5).toFixed(1),
-      levels: generateOrderBook(bases[pair] || 1, pair.includes('JPY')),
-    };
-  });
+const ALL_PAIR_LIST = Object.values(ALL_PAIRS).flat();
+
+function generateAllData(): InstitutionalData[] {
+  return ALL_PAIR_LIST.map(generateDataForPair);
 }
 
 export default function OrderFlowAnalysis() {
   const { t } = useTranslation();
-  const [data, setData] = useState(() => generateData());
+  const [data, setData] = useState(() => generateAllData());
   const [loading, setLoading] = useState(false);
   const [selectedPair, setSelectedPair] = useState('EUR/USD');
+  const [pairSearch, setPairSearch] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const refresh = () => {
     setLoading(true);
-    setTimeout(() => { setData(generateData()); setLoading(false); }, 600);
+    setTimeout(() => { setData(generateAllData()); setLoading(false); }, 600);
   };
 
   const selected = data.find(d => d.pair === selectedPair)!;
