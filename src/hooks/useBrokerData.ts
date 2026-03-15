@@ -290,6 +290,8 @@ export function useBrokerData(regionKey: string) {
     try {
       const res = await fetch(`/data/brokers/${region.file}`, { signal: controller.signal });
       if (!res.ok) throw new Error(`Failed to load ${region.file}`);
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) throw new Error(`Invalid response for ${region.file}`);
       const data = await res.json();
       const normalized = normalizeJsonData(data, key);
       cache.set(key, normalized);
