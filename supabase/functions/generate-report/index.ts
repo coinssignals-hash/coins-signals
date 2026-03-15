@@ -28,9 +28,14 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { signal, patterns, marketContext, symbol, candles, indicators } = body;
+    const { signal, patterns, marketContext, symbol, candles, indicators, language, detailLevel } = body;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    const lang = language || "es";
+    const detail = detailLevel || "standard";
+    const langInstruction = lang === "es" ? "Responde en español." : lang === "en" ? "Respond in English." : lang === "pt" ? "Responda em português." : lang === "fr" ? "Réponds en français." : lang === "it" ? "Rispondi in italiano." : lang === "de" ? "Antworte auf Deutsch." : lang === "nl" ? "Antwoord in het Nederlands." : lang === "ar" ? "أجب باللغة العربية." : lang === "mt" ? "Wieġeb bil-Malti." : "Responde en español.";
+    const detailInstruction = detail === "concise" ? "Sé muy breve y directo, máximo 2-3 líneas por sección." : detail === "detailed" ? "Proporciona un análisis extenso y profundo con múltiples escenarios." : "Sé conciso pero completo.";
 
     let prompt: string;
 
