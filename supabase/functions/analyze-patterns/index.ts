@@ -23,54 +23,77 @@ serve(async (req) => {
   }
 
   try {
-    const { patterns, symbol, lastPrice, support, resistance, rsi, macdHistogram, model, language, detailLevel } = await req.json();
+    const { patterns, symbol, lastPrice, support, resistance, rsi, macdHistogram, model, language, detailLevel, timeframe, trend, volume } = await req.json();
 
-    const lang = language || "es";
+    const lang = language || "en";
     const detail = detailLevel || "standard";
     const aiModel = model || "google/gemini-3-flash-preview";
 
-    const langInstruction = lang === "es" ? "Responde en español." : lang === "en" ? "Respond in English." : lang === "pt" ? "Responda em português." : lang === "fr" ? "Réponds en français." : "Responde en español.";
-    const detailInstruction = detail === "concise" ? "Sé muy breve y directo, máximo 3-4 líneas por sección." : detail === "detailed" ? "Proporciona un análisis extenso y profundo con múltiples escenarios." : "Sé conciso pero completo.";
+    const langMap: Record<string, string> = {
+      en: "Respond in English.",
+      es: "Respond in Spanish.",
+      pt: "Respond in Portuguese.",
+      fr: "Respond in French.",
+      it: "Respond in Italian.",
+      de: "Respond in German.",
+      nl: "Respond in Dutch.",
+      ar: "Respond in Arabic.",
+      mt: "Respond in Maltese.",
+    };
+    const langInstruction = langMap[lang] || langMap.en;
+
+    const detailMap: Record<string, string> = {
+      concise: "Be very brief and direct, 2-3 lines max per section.",
+      standard: "Be concise but thorough.",
+      detailed: "Provide an extensive, in-depth analysis with multiple scenarios and detailed reasoning.",
+    };
+    const detailInstruction = detailMap[detail] || detailMap.standard;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     if (!patterns || patterns.length === 0) {
       return new Response(
-        JSON.stringify({ analysis: "No se detectaron patrones de velas recientes para analizar." }),
+        JSON.stringify({ analysis: "No recent candlestick patterns were detected for analysis." }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const patternList = patterns
-      .map((p: any) => `- **${p.name}** (${p.type}, fiabilidad: ${p.reliability}): ${p.description}`)
+      .map((p: any) => `- **${p.name}** (${p.type}, reliability: ${p.reliability}) — ${p.description}`)
       .join("\n");
 
     const contextLines = [
-      `Par: ${symbol}`,
-      `Precio actual: ${lastPrice}`,
-      support ? `Soporte 24h: ${support}` : null,
-      resistance ? `Resistencia 24h: ${resistance}` : null,
+      `Symbol: ${symbol}`,
+      `Price: ${lastPrice}`,
+      timeframe ? `Timeframe: ${timeframe}` : null,
+      trend ? `Trend: ${trend}` : null,
+      volume !== undefined ? `Volume: ${volume}` : null,
+      support ? `Support: ${support}` : null,
+      resistance ? `Resistance: ${resistance}` : null,
       rsi !== undefined ? `RSI(14): ${rsi.toFixed(1)}` : null,
-      macdHistogram !== undefined ? `MACD Histograma: ${macdHistogram > 0 ? "positivo" : "negativo"}` : null,
+      macdHistogram !== undefined ? `MACD Histogram: ${macdHistogram > 0 ? "positive" : "negative"}` : null,
     ].filter(Boolean).join(" | ");
 
-    const prompt = `Eres un analista técnico de Forex profesional. Analiza los siguientes patrones de velas detectados algorítmicamente y proporciona un análisis contextualizado.
+    const prompt = `Act as a professional Forex technical analyst.
 
-**Contexto del mercado:**
+**Market data**
 ${contextLines}
 
-**Patrones detectados (últimas 20 velas):**
+**Detected candlestick patterns (last 20 candles)**
 ${patternList}
 
-Responde con:
-1. **Resumen** (2-3 líneas): ¿Qué dicen los patrones en conjunto?
-2. **Sesgo** (Alcista / Bajista / Neutral): ¿Hacia dónde apuntan?
-3. **Confluencias**: ¿Los patrones se alinean con los indicadores (RSI, MACD, S/R)?
-4. **Acción sugerida**: ¿Qué debería hacer un trader? (Esperar confirmación / Entrar / Salir)
-5. **Riesgo**: Nivel de confianza (Alto/Medio/Bajo) y qué invalidaría el escenario.
+Analyze the patterns and answer:
 
-${langInstruction} ${detailInstruction} Formato markdown.`;
+1. **Pattern summary** (2–3 lines)
+2. **Market bias** (Bullish / Bearish / Neutral)
+3. **Indicator confluence** (RSI, MACD, S/R)
+4. **Suggested trader action** (Wait / Enter / Exit)
+5. **Confidence level and invalidation factors**
+
+${langInstruction} ${detailInstruction}
+
+Markdown format.`;
 
     const startTime = Date.now();
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -82,7 +105,7 @@ ${langInstruction} ${detailInstruction} Formato markdown.`;
       body: JSON.stringify({
         model: aiModel,
         messages: [
-          { role: "system", content: `Eres un analista técnico de Forex experto. ${langInstruction} Sé preciso y profesional.` },
+          { role: "system", content: `You are an expert Forex technical analyst. ${langInstruction} Be precise and professional.` },
           { role: "user", content: prompt },
         ],
         stream: false,
@@ -106,24 +129,24 @@ ${langInstruction} ${detailInstruction} Formato markdown.`;
       } catch (_) {}
 
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Límite de solicitudes alcanzado." }), {
+        return new Response(JSON.stringify({ error: "Rate limit reached. Please try again later." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos agotados." }), {
+        return new Response(JSON.stringify({ error: "Credits exhausted." }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Error del gateway de IA" }), {
+      return new Response(JSON.stringify({ error: "AI gateway error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const data = await response.json();
-    const analysis = data.choices?.[0]?.message?.content || "No se pudo generar el análisis.";
+    const analysis = data.choices?.[0]?.message?.content || "Unable to generate analysis.";
     const usage = data.usage;
 
     try {
