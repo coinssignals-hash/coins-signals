@@ -78,6 +78,7 @@ export default function BrokerRating() {
 
   const { brokers, loading, error } = useBrokerData(selectedRegion);
   const { results: globalResults, loading: globalLoading } = useGlobalBrokerSearch(isGlobalSearch ? globalSearchTerm : '');
+  const regionCounts = useRegionCounts();
 
   // Parallax
   const scrollY = useMotionValue(0);
