@@ -105,18 +105,18 @@ export default function MultiTFScreener() {
             </Link>
             <div className="flex items-center gap-2">
               <ScanSearch className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Multi-Timeframe</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('mtf_title')}</h1>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {data.length > 0 && (
               <span className="flex items-center gap-1 text-[9px] text-emerald-400">
-                <Wifi className="w-3 h-3" /> Live
+                <Wifi className="w-3 h-3" /> {t('mtf_live')}
               </span>
             )}
             {error && (
               <span className="flex items-center gap-1 text-[9px] text-amber-400">
-                <WifiOff className="w-3 h-3" /> Offline
+                <WifiOff className="w-3 h-3" /> {t('mtf_offline')}
               </span>
             )}
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -197,7 +197,7 @@ export default function MultiTFScreener() {
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-primary" />
-                <p className="text-xs font-bold text-foreground">Currency Strength</p>
+                <p className="text-xs font-bold text-foreground">{t('mtf_currency_strength')}</p>
               </div>
               <div className="space-y-2">
                 {currencyStrength.map(cs => (
@@ -284,7 +284,7 @@ export default function MultiTFScreener() {
                       <table className="w-full mt-3">
                         <thead>
                           <tr>
-                            <th className="text-[9px] text-muted-foreground text-left pb-2 w-16">TF</th>
+                            <th className="text-[9px] text-muted-foreground text-left pb-2 w-16">{t('mtf_tf')}</th>
                             {INDICATORS_KEYS.map(ind => (
                               <th key={ind} className="text-[9px] text-muted-foreground text-center pb-2">{ind === 'mtf_trend' ? t('mtf_trend') : ind}</th>
                             ))}

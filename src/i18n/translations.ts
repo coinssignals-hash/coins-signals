@@ -2195,6 +2195,30 @@ export type TranslationKeys = {
   of_cat_exotics: string;
   of_cat_commodities: string;
   of_cat_crypto: string;
+  // Additional tool translations
+  bt_title: string;
+  bt_avg_rr: string;
+  tool_stop_loss: string;
+  tool_take_profit: string;
+  rr_lot_standard: string;
+  rr_lot_mini: string;
+  rr_lot_micro: string;
+  rr_100k_units: string;
+  rr_10k_units: string;
+  rr_1k_units: string;
+  swap_long_buy: string;
+  swap_short_sell: string;
+  mtf_live: string;
+  mtf_offline: string;
+  mtf_currency_strength: string;
+  mtf_tf: string;
+  ec_low: string;
+  inst_prev: string;
+  inst_cons: string;
+  inst_act: string;
+  rm_title: string;
+  rm_main_account: string;
+  rm_demo_account: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

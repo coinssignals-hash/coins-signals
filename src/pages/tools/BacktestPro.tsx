@@ -145,7 +145,7 @@ export default function BacktestPro() {
             </Link>
             <div className="flex items-center gap-2">
               <Workflow className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Backtesting Pro</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('bt_title')}</h1>
             </div>
           </div>
           {strategies.length < 4 && (
@@ -193,7 +193,7 @@ export default function BacktestPro() {
                   <Input type="number" value={strat.winRate} onChange={e => updateStrategy(strat.id, 'winRate', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Avg R:R</Label>
+                  <Label className="text-[10px] text-muted-foreground">{t('bt_avg_rr')}</Label>
                   <Input type="number" step="0.1" value={strat.avgRR} onChange={e => updateStrategy(strat.id, 'avgRR', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
@@ -257,7 +257,7 @@ export default function BacktestPro() {
                         { label: t('tp_max_drawdown'), key: 'maxDrawdown', fmt: (v: number) => `${v.toFixed(1)}%`, good: (v: number) => v < 20 },
                         { label: t('tp_sharpe_ratio'), key: 'sharpeRatio', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1 },
                         { label: t('tp_profit_factor'), key: 'profitFactor', fmt: (v: number) => v.toFixed(2), good: (v: number) => v > 1.5 },
-                        { label: 'Win Rate', key: 'winningTrades', fmt: (v: number, r: BacktestResult) => `${((r.winningTrades / r.totalTrades) * 100).toFixed(1)}%`, good: (v: number) => v > 50 },
+                        { label: t('tp_win_rate'), key: 'winningTrades', fmt: (v: number, r: BacktestResult) => `${((r.winningTrades / r.totalTrades) * 100).toFixed(1)}%`, good: (v: number) => v > 50 },
                         { label: t('tp_total_trades'), key: 'totalTrades', fmt: (v: number) => v.toString(), good: () => true },
                       ].map(metric => (
                         <tr key={metric.label} className="border-t border-border/20">

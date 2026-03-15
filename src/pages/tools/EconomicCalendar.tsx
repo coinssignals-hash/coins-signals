@@ -65,7 +65,7 @@ export default function EconomicCalendar() {
   const IMPACT_CONFIG_LOCAL: Record<string, { color: string; label: string; bg: string; icon: typeof Zap }> = useMemo(() => ({
     High: { color: 'text-rose-400', label: t('ec_high'), bg: 'bg-rose-500/15 border-rose-500/30', icon: Zap },
     Medium: { color: 'text-amber-400', label: t('ec_medium'), bg: 'bg-amber-500/15 border-amber-500/30', icon: AlertTriangle },
-    Low: { color: 'text-emerald-400', label: 'Low', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: Minus },
+    Low: { color: 'text-emerald-400', label: t('ec_low'), bg: 'bg-emerald-500/15 border-emerald-500/30', icon: Minus },
   }), [t]);
 
   const targetDate = useMemo(() => {
