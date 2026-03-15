@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
@@ -53,7 +53,7 @@ const TOTAL_STEPS = 3;
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, updateProfile } = useAuth();
+  const { user, profile, updateProfile } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
@@ -73,6 +73,21 @@ export default function Onboarding() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Pre-fill from existing profile data
+  useEffect(() => {
+    if (profile) {
+      const raw = profile as any;
+      if (profile.first_name) setFirstName(profile.first_name);
+      if (profile.last_name) setLastName(profile.last_name);
+      if (profile.avatar_url) setAvatarUrl(profile.avatar_url);
+      if (profile.country) setCountry(profile.country);
+      if (profile.timezone) setTimezone(profile.timezone);
+      if (raw.phone) setPhone(raw.phone);
+      if (raw.address) setAddress(raw.address);
+      if (raw.date_of_birth) setDateOfBirth(new Date(raw.date_of_birth));
+    }
+  }, [profile]);
 
   const goNext = () => { setDirection(1); setStep(s => Math.min(s + 1, TOTAL_STEPS - 1)); };
   const goBack = () => { setDirection(-1); setStep(s => Math.max(s - 1, 0)); };
