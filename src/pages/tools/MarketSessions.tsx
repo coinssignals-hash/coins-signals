@@ -1033,12 +1033,12 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
               color: status.isOpen ? 'hsl(var(--bullish))' : 'hsl(var(--muted-foreground))',
               border: `1px solid ${status.isOpen ? 'hsl(var(--bullish) / 0.25)' : 'hsl(var(--border))'}`,
             }}>
-              {status.isOpen ? '● OPEN' : 'CLOSED'}
+              {status.isOpen ? `● ${t('ms_open')}` : t('ms_closed')}
             </span>
             <span className="text-xs font-mono font-bold tabular-nums" style={{
               color: status.isOpen ? `hsl(${session.color})` : 'hsl(var(--muted-foreground))',
             }}>
-              {status.isOpen ? `${status.timeRemaining} left` : `opens ${status.timeRemaining}`}
+              {status.isOpen ? `${status.timeRemaining} ${t('ms_time_left')}` : `${t('ms_opens_in')} ${status.timeRemaining}`}
             </span>
           </div>
         </div>
