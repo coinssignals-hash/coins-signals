@@ -181,7 +181,7 @@ export default function OrderFlowAnalysis() {
                 </div>
               </div>
               <ScrollArea className="h-64">
-                {Object.entries(ALL_PAIRS).map(([group, pairs]) => {
+                {Object.entries(ALL_PAIRS_DATA).map(([group, { key, pairs }]) => {
                   const filtered = pairs.filter(p => 
                     p.toLowerCase().includes(pairSearch.toLowerCase())
                   );
@@ -189,7 +189,7 @@ export default function OrderFlowAnalysis() {
                   return (
                     <div key={group}>
                       <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {group}
+                        {t(key)}
                       </DropdownMenuLabel>
                       {filtered.map(p => (
                         <DropdownMenuItem
