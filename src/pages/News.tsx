@@ -685,6 +685,10 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
           <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">{news.title}</h2>
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold mt-0.5" style={{ color: sentimentColor }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: sentimentColor }} />
+            {sentimentLabel}
+          </span>
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 text-sm text-cyan-300/60">
               <Rss className="w-3 h-3 text-cyan-400" />
