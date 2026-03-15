@@ -451,11 +451,11 @@ function PipsGauge({ range, color, liveSpread, t }: { range: [number, number]; c
   );
 }
 
-function LevelBadge({ level }: { level: 'low' | 'moderate' | 'high' }) {
-  const config = LEVEL_COLORS[level];
+function LevelBadge({ level, t }: { level: 'low' | 'moderate' | 'high'; t: (k: string) => string }) {
+  const config = LEVEL_KEYS[level];
   return (
     <span className={cn('px-2 py-0.5 rounded text-[11px] font-bold uppercase', config.bg, config.text)}>
-      {config.label}
+      {t(config.labelKey)}
     </span>
   );
 }
