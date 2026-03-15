@@ -16,6 +16,8 @@ const MAX_MODELS = 3;
 interface Props {
   settings: AIModelSettings;
   onChange: (settings: AIModelSettings) => void;
+  detailLevel: DetailLevel;
+  onDetailLevelChange: (level: DetailLevel) => void;
 }
 
 export function AIModelConfig({ settings, onChange }: Props) {
