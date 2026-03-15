@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { TradingSignal } from '@/hooks/useSignals';
 import { TrendingUp, TrendingDown, Heart, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';

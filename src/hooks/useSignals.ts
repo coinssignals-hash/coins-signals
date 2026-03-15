@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { startOfDay, endOfDay, isBefore } from 'date-fns';
 
@@ -74,103 +75,98 @@ const mapDbSignalToTradingSignal = (dbSignal: DbSignal): TradingSignal => ({
   source: (dbSignal.source as TradingSignal['source']) ?? 'server',
 });
 
+async function fetchSignals(selectedDate?: string): Promise<TradingSignal[]> {
+  let query = supabase
+    .from('trading_signals')
+    .select('*')
+    .order('datetime', { ascending: false });
+
+  if (selectedDate) {
+    const dateStart = startOfDay(new Date(selectedDate)).toISOString();
+    const dateEnd = endOfDay(new Date(selectedDate)).toISOString();
+    query = query.gte('datetime', dateStart).lte('datetime', dateEnd);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  const mappedSignals = (data || []).map(mapDbSignalToTradingSignal);
+
+  // Auto-deactivate signals from previous days that are still active/pending
+  const today = startOfDay(new Date());
+  const signalsToDeactivate = mappedSignals.filter(
+    (s) => (s.status === 'active' || s.status === 'pending') && isBefore(new Date(s.datetime), today)
+  );
+
+  if (signalsToDeactivate.length > 0) {
+    const ids = signalsToDeactivate.map((s) => s.id);
+    await supabase
+      .from('trading_signals')
+      .update({ status: 'completed' })
+      .in('id', ids);
+
+    const deactivatedIds = new Set(ids);
+    return mappedSignals.map((s) =>
+      deactivatedIds.has(s.id) ? { ...s, status: 'completed' as const } : s
+    );
+  }
+
+  return mappedSignals;
+}
+
+export const signalKeys = {
+  all: ['signals'] as const,
+  list: (date?: string) => [...signalKeys.all, 'list', date] as const,
+};
+
 export function useSignals(selectedDate?: string) {
-  const [signals, setSignals] = useState<TradingSignal[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
+  const { data: signals = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: signalKeys.list(selectedDate),
+    queryFn: () => fetchSignals(selectedDate),
+    staleTime: 2 * 60 * 1000, // 2 min
+    gcTime: 15 * 60 * 1000,   // 15 min
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev, // keepPreviousData
+  });
+
+  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Error al cargar señales') : null;
+
+  // Realtime subscription for live updates
   useEffect(() => {
-    const fetchSignals = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        let query = supabase
-          .from('trading_signals')
-          .select('*')
-          .order('datetime', { ascending: false });
-
-        if (selectedDate) {
-          const dateStart = startOfDay(new Date(selectedDate)).toISOString();
-          const dateEnd = endOfDay(new Date(selectedDate)).toISOString();
-          query = query.gte('datetime', dateStart).lte('datetime', dateEnd);
-        }
-
-        const { data, error: fetchError } = await query;
-
-        if (fetchError) {
-          throw fetchError;
-        }
-
-        const mappedSignals = (data || []).map(mapDbSignalToTradingSignal);
-        
-        // Auto-deactivate signals from previous days that are still active/pending
-        const today = startOfDay(new Date());
-        const signalsToDeactivate = mappedSignals.filter(
-          (s) => (s.status === 'active' || s.status === 'pending') && isBefore(new Date(s.datetime), today)
-        );
-        
-        if (signalsToDeactivate.length > 0) {
-          const ids = signalsToDeactivate.map((s) => s.id);
-          await supabase
-            .from('trading_signals')
-            .update({ status: 'completed' })
-            .in('id', ids);
-          
-          // Update local state with deactivated status
-          const deactivatedIds = new Set(ids);
-          const updatedSignals = mappedSignals.map((s) =>
-            deactivatedIds.has(s.id) ? { ...s, status: 'completed' as const } : s
-          );
-          setSignals(updatedSignals);
-        } else {
-          setSignals(mappedSignals);
-        }
-      } catch (err) {
-        console.error('Error fetching signals:', err);
-        setError(err instanceof Error ? err.message : 'Error al cargar señales');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSignals();
-
-    // Set up realtime subscription
     const channel = supabase
       .channel('trading-signals-changes')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'trading_signals',
-        },
+        { event: '*', schema: 'public', table: 'trading_signals' },
         (payload) => {
           console.log('Realtime update:', payload);
 
-          if (payload.eventType === 'INSERT') {
-            const newSignal = mapDbSignalToTradingSignal(payload.new as DbSignal);
-            setSignals((prev) => [newSignal, ...prev]);
-          } else if (payload.eventType === 'UPDATE') {
-            const updatedSignal = mapDbSignalToTradingSignal(payload.new as DbSignal);
-            setSignals((prev) =>
-              prev.map((signal) =>
-                signal.id === updatedSignal.id ? updatedSignal : signal
-              )
-            );
-          } else if (payload.eventType === 'DELETE') {
-            const deletedId = (payload.old as { id: string }).id;
-            setSignals((prev) => prev.filter((signal) => signal.id !== deletedId));
-          }
+          queryClient.setQueryData<TradingSignal[]>(
+            signalKeys.list(selectedDate),
+            (old) => {
+              if (!old) return old;
+
+              if (payload.eventType === 'INSERT') {
+                const newSignal = mapDbSignalToTradingSignal(payload.new as DbSignal);
+                return [newSignal, ...old];
+              } else if (payload.eventType === 'UPDATE') {
+                const updatedSignal = mapDbSignalToTradingSignal(payload.new as DbSignal);
+                return old.map((s) => s.id === updatedSignal.id ? updatedSignal : s);
+              } else if (payload.eventType === 'DELETE') {
+                const deletedId = (payload.old as { id: string }).id;
+                return old.filter((s) => s.id !== deletedId);
+              }
+              return old;
+            }
+          );
         }
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [selectedDate]);
+    return () => { supabase.removeChannel(channel); };
+  }, [selectedDate, queryClient]);
 
   return { signals, loading, error };
 }
