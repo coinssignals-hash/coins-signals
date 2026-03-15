@@ -1237,10 +1237,14 @@ export default function BrokerRating() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Region info */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  className="px-5 mb-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-secondary/50 rounded-lg p-2.5">
                       <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_main_region')}</span>
