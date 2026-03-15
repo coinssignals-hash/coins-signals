@@ -410,17 +410,18 @@ function getSessionStatus(session: SessionData) {
   return { isOpen, progressPercent, timeRemaining };
 }
 
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+/* Day names are now translated via t() in components */
 
-const LEVEL_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  low: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Low' },
-  moderate: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Moderate' },
-  high: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'High' },
+/* Level colors — labels are now translated via t() */
+const LEVEL_KEYS: Record<string, { bg: string; text: string; labelKey: string }> = {
+  low: { bg: 'bg-green-500/20', text: 'text-green-400', labelKey: 'ms_low' },
+  moderate: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', labelKey: 'ms_moderate' },
+  high: { bg: 'bg-red-500/20', text: 'text-red-400', labelKey: 'ms_high' },
 };
 
 /* ─────────── Components ─────────── */
 
-function PipsGauge({ range, color, liveSpread }: { range: [number, number]; color: string; liveSpread?: number }) {
+function PipsGauge({ range, color, liveSpread, t }: { range: [number, number]; color: string; liveSpread?: number; t: (k: string) => string }) {
   const avg = liveSpread != null && liveSpread > 0 ? Math.round(liveSpread) : Math.round((range[0] + range[1]) / 2);
   const maxPips = 200;
   const percent = Math.min((avg / maxPips) * 100, 100);
@@ -428,7 +429,7 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
 
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Average Pips</span>
+      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t('ms_avg_pips')}</span>
       <div className="relative w-20 h-12 overflow-hidden">
         <svg viewBox="0 0 100 55" className="w-full h-full">
           <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="hsl(var(--muted) / 0.3)" strokeWidth="6" strokeLinecap="round" />
@@ -443,18 +444,18 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
       </div>
       <div className="flex items-center gap-1">
         <span className="text-sm font-bold" style={{ color: `hsl(${color})` }}>{avg}</span>
-        <span className="text-[11px] text-muted-foreground">Pips</span>
+        <span className="text-[11px] text-muted-foreground">{t('ms_pips')}</span>
       </div>
       <span className="text-[10px] text-muted-foreground">{range[0]} - {range[1]}</span>
     </div>
   );
 }
 
-function LevelBadge({ level }: { level: 'low' | 'moderate' | 'high' }) {
-  const config = LEVEL_COLORS[level];
+function LevelBadge({ level, t }: { level: 'low' | 'moderate' | 'high'; t: (k: string) => string }) {
+  const config = LEVEL_KEYS[level];
   return (
     <span className={cn('px-2 py-0.5 rounded text-[11px] font-bold uppercase', config.bg, config.text)}>
-      {config.label}
+      {t(config.labelKey)}
     </span>
   );
 }
@@ -465,6 +466,7 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
   color: string;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -487,10 +489,10 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
             <WifiOff className="w-3 h-3 text-yellow-500" />
           )}
           <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: isConnected ? 'hsl(140 60% 50%)' : 'hsl(45 80% 55%)' }}>
-            {isConnected ? 'LIVE' : 'OFFLINE'}
+            {isConnected ? t('ms_live') : t('ms_offline')}
           </span>
           <span className="text-[10px] text-muted-foreground">
-            Spread avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{avgSpread.toFixed(1)}p</span>
+            {t('ms_spread_avg')}: <span className="font-bold" style={{ color: `hsl(${color})` }}>{avgSpread.toFixed(1)}p</span>
           </span>
         </div>
         <button
@@ -506,10 +508,10 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
       <div className="rounded-lg border overflow-hidden" style={{ borderColor: `hsl(${color} / 0.15)` }}>
         {/* Table header */}
         <div className="grid grid-cols-4 gap-0 px-2 py-1" style={{ background: `hsl(${color} / 0.08)` }}>
-          <span className="text-[10px] font-bold text-muted-foreground uppercase">Par</span>
-          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Bid</span>
-          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Ask</span>
-          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Spread</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase">{t('ms_pair')}</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_bid')}</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_ask')}</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_spread')}</span>
         </div>
         {quotes.map((q, i) => (
           <div
@@ -561,12 +563,13 @@ function formatVolume(vol: number): string {
 }
 
 function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolume; color: string }) {
+  const { t } = useTranslation();
   if (sessionVolume.loading) {
     return (
       <div className="rounded-lg border p-3 space-y-2" style={{ borderColor: `hsl(${color} / 0.15)` }}>
         <div className="flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
-          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('ms_volume_range')}</span>
         </div>
         <div className="flex items-center justify-center py-3">
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
@@ -583,15 +586,15 @@ function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolum
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
-          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('ms_volume_range')}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground">
-            Total: <span className="font-bold" style={{ color: `hsl(${color})` }}>{formatVolume(sessionVolume.totalVolume)}</span>
+            {t('ms_total')}: <span className="font-bold" style={{ color: `hsl(${color})` }}>{formatVolume(sessionVolume.totalVolume)}</span>
           </span>
           {sessionVolume.avgDailyRange > 0 && (
             <span className="text-[10px] text-muted-foreground">
-              Avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{sessionVolume.avgDailyRange.toFixed(0)}p</span>
+              {t('ms_avg')}: <span className="font-bold" style={{ color: `hsl(${color})` }}>{sessionVolume.avgDailyRange.toFixed(0)}p</span>
             </span>
           )}
         </div>
@@ -702,14 +705,16 @@ function WeeklyChart({ session, color }: {
   session: SessionData;
   color: string;
 }) {
+  const { t } = useTranslation();
   const { weeklyData, loading } = useWeeklyVolume(session);
+  const DAYS_KEYS = ['ms_day_mon', 'ms_day_tue', 'ms_day_wed', 'ms_day_thu', 'ms_day_fri'];
 
   // Fallback to static data if API didn't return results
   const hasRealData = weeklyData.length > 0;
 
   const displayData = hasRealData
     ? weeklyData
-    : DAYS.map((d, i) => ({ day: d, volume: session.weeklyVolatility[i] * 1000, range: session.weeklyLiquidity[i] }));
+    : DAYS_KEYS.map((dk, i) => ({ day: t(dk), volume: session.weeklyVolatility[i] * 1000, range: session.weeklyLiquidity[i] }));
 
   const maxVol = Math.max(...displayData.map(d => d.volume), 1);
   const maxRange = Math.max(...displayData.map(d => d.range), 1);
@@ -719,11 +724,11 @@ function WeeklyChart({ session, color }: {
     <div className="mt-3">
       <div className="flex items-center justify-between mb-1 px-1">
         <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-          {hasRealData ? '📊 Vol. Semanal Real' : '📊 Vol. Semanal'}
+          {hasRealData ? t('ms_weekly_vol_real') : t('ms_weekly_vol')}
         </span>
         {loading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
         {hasRealData && !loading && (
-          <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>LIVE</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: `hsl(${color} / 0.15)`, color: `hsl(${color})` }}>{t('ms_live')}</span>
         )}
       </div>
       <div className="flex items-end gap-1 justify-between h-24 px-1">
@@ -763,11 +768,11 @@ function WeeklyChart({ session, color }: {
       <div className="flex items-center gap-3 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: `hsl(${color})` }} />
-          <span className="text-[10px] text-muted-foreground">{hasRealData ? 'Volume' : 'Volatility'}</span>
+          <span className="text-[10px] text-muted-foreground">{hasRealData ? t('ms_volume') : t('ms_volatility_label')}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: 'hsl(45 80% 55%)' }} />
-          <span className="text-[10px] text-muted-foreground">{hasRealData ? 'Range (pips)' : 'Liquidity'}</span>
+          <span className="text-[10px] text-muted-foreground">{hasRealData ? `${t('ms_range')} (pips)` : t('ms_liquidity')}</span>
         </div>
       </div>
     </div>
@@ -798,6 +803,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
   sessionVolume: SessionVolume;
   color: string;
 }) {
+  const { t } = useTranslation();
   const [config, setConfig] = useState<VolatilityAlertConfig>(() => getAlertConfig(session.id));
   const [showSettings, setShowSettings] = useState(false);
   const alertedRef = useRef(false);
@@ -810,9 +816,9 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
     if (!config.enabled || sessionVolume.loading || alertedRef.current) return;
     if (sessionVolume.avgDailyRange >= config.thresholdPips && sessionVolume.avgDailyRange > 0) {
       alertedRef.current = true;
-      toast.warning(`⚡ ${session.name}: Rango diario ${sessionVolume.avgDailyRange.toFixed(1)} pips supera umbral de ${config.thresholdPips} pips`, {
+      toast.warning(`⚡ ${session.name}: ${t('ms_alert_daily_range')} ${sessionVolume.avgDailyRange.toFixed(1)} pips > ${config.thresholdPips} pips`, {
         duration: 8000,
-        description: `Volatilidad elevada en la sesión de ${session.name}`,
+        description: `${t('ms_alert_high_volatility')} ${session.name}`,
       });
     }
   }, [config.enabled, config.thresholdPips, sessionVolume.avgDailyRange, sessionVolume.loading, session.name]);
@@ -823,7 +829,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
     saveAlertConfig(session.id, next);
     alertedRef.current = false;
     if (next.enabled) {
-      toast.success(`Alerta activada para ${session.name} (${next.thresholdPips} pips)`);
+      toast.success(`${t('ms_alert_activated')} ${session.name} (${next.thresholdPips} pips)`);
     }
   };
 
@@ -847,7 +853,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px]">🔔</span>
-          <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Alerta Volatilidad</span>
+          <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t('ms_alert_volatility')}</span>
           {isTriggered && (
             <motion.span
               className="text-[9px] px-1.5 py-0.5 rounded-full font-bold"
@@ -855,7 +861,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
               animate={{ opacity: [1, 0.5, 1] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
             >
-              TRIGGERED
+              {t('ms_triggered')}
             </motion.span>
           )}
         </div>
@@ -881,10 +887,10 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
       {/* Current status */}
       <div className="flex items-center justify-between">
         <span className="text-[11px] text-muted-foreground">
-          Rango actual: <span className="font-bold text-foreground">{sessionVolume.loading ? '...' : `${sessionVolume.avgDailyRange.toFixed(1)} pips`}</span>
+          {t('ms_current_range')}: <span className="font-bold text-foreground">{sessionVolume.loading ? '...' : `${sessionVolume.avgDailyRange.toFixed(1)} pips`}</span>
         </span>
         <span className="text-[11px] text-muted-foreground">
-          Umbral: <span className="font-bold" style={{ color: config.enabled ? `hsl(${color})` : undefined }}>{config.thresholdPips} pips</span>
+          {t('ms_threshold')}: <span className="font-bold" style={{ color: config.enabled ? `hsl(${color})` : undefined }}>{config.thresholdPips} pips</span>
         </span>
       </div>
 
@@ -922,7 +928,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
             className="overflow-hidden"
           >
             <div className="mt-2 pt-2 border-t" style={{ borderColor: `hsl(${color} / 0.1)` }}>
-              <label className="text-[11px] text-muted-foreground font-medium block mb-1.5">Umbral de pips</label>
+              <label className="text-[11px] text-muted-foreground font-medium block mb-1.5">{t('ms_threshold_pips')}</label>
               <div className="flex items-center gap-2">
                 <input
                   type="range"
@@ -969,9 +975,10 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
 }
 
 function SessionCard({ session, isActive, highlightPair }: { session: SessionData; isActive: boolean; highlightPair?: string | null }) {
+  const { t } = useTranslation();
   const [, setTick] = useState(0);
   useEffect(() => {
-    const iv = setInterval(() => setTick(t => t + 1), 60_000);
+    const iv = setInterval(() => setTick(n => n + 1), 60_000);
     return () => clearInterval(iv);
   }, []);
 
@@ -1026,12 +1033,12 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
               color: status.isOpen ? 'hsl(var(--bullish))' : 'hsl(var(--muted-foreground))',
               border: `1px solid ${status.isOpen ? 'hsl(var(--bullish) / 0.25)' : 'hsl(var(--border))'}`,
             }}>
-              {status.isOpen ? '● OPEN' : 'CLOSED'}
+              {status.isOpen ? `● ${t('ms_open')}` : t('ms_closed')}
             </span>
             <span className="text-xs font-mono font-bold tabular-nums" style={{
               color: status.isOpen ? `hsl(${session.color})` : 'hsl(var(--muted-foreground))',
             }}>
-              {status.isOpen ? `${status.timeRemaining} left` : `opens ${status.timeRemaining}`}
+              {status.isOpen ? `${status.timeRemaining} ${t('ms_time_left')}` : `${t('ms_opens_in')} ${status.timeRemaining}`}
             </span>
           </div>
         </div>
@@ -1123,9 +1130,9 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
         {/* ── Stats Row ── */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Volatilidad', value: session.volatility },
-            { label: 'Liquidez', value: session.liquidity },
-            { label: 'Rango Pips', value: null, custom: `${session.avgPipsRange[0]}–${session.avgPipsRange[1]}` },
+            { label: t('ms_volatility_label'), value: session.volatility },
+            { label: t('ms_liquidity'), value: session.liquidity },
+            { label: t('ms_range_pips_label'), value: null, custom: `${session.avgPipsRange[0]}–${session.avgPipsRange[1]}` },
           ].map((stat, idx) => (
             <div key={idx} className="rounded-xl p-2.5 text-center" style={{
               background: 'hsl(var(--card) / 0.6)',
@@ -1133,7 +1140,7 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
             }}>
               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
               {stat.value ? (
-                <LevelBadge level={stat.value} />
+                <LevelBadge level={stat.value} t={t} />
               ) : (
                 <span className="text-sm font-bold tabular-nums" style={{ color: `hsl(${session.color})` }}>{stat.custom}</span>
               )}
@@ -1150,8 +1157,8 @@ function SessionCard({ session, isActive, highlightPair }: { session: SessionDat
             background: `hsl(${session.color} / 0.06)`,
             borderBottom: '1px solid hsl(var(--border) / 0.3)',
           }}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Pares</span>
-            <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t('ms_pairs')}</span>
+            <PipsGauge range={session.avgPipsRange} color={session.color} liveSpread={liveAvgSpread} t={t} />
           </div>
           <div className="grid grid-cols-4 gap-px" style={{ background: 'hsl(var(--border) / 0.15)' }}>
             {session.currencies.map(c => {
@@ -1232,6 +1239,7 @@ function MiniSparkline({ data, color, width = 36, height = 14 }: { data: number[
 }
 
 function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number; onSelect: (i: number) => void }) {
+  const { t } = useTranslation();
   const [tick, setTick] = useState(0);
   const [flashIdx, setFlashIdx] = useState<number | null>(null);
 
@@ -1317,16 +1325,16 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
       {/* Title */}
       <div className="px-3 py-2 flex items-center gap-1.5" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Comparativa de sesiones</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('ms_session_comparison')}</span>
       </div>
 
       {/* Header row */}
       <div className="grid grid-cols-[1fr_40px_50px_60px_50px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase">Sesión</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-center">Trend</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Spread</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Rango</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase">{t('ms_session')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-center">{t('ms_trend')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_spread')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_volume')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_range')}</span>
       </div>
 
       {/* Rows */}

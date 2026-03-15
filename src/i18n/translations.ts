@@ -2139,6 +2139,50 @@ export type TranslationKeys = {
   // PersonalInfo timezones
   tz_new_york: string; tz_mexico_city: string; tz_london: string; tz_paris: string;
   tz_berlin: string; tz_tokyo: string; tz_shanghai: string; tz_los_angeles: string;
+  // Market Sessions
+  ms_avg_pips: string;
+  ms_pips: string;
+  ms_live: string;
+  ms_offline: string;
+  ms_spread_avg: string;
+  ms_pair: string;
+  ms_bid: string;
+  ms_ask: string;
+  ms_spread: string;
+  ms_volume_range: string;
+  ms_total: string;
+  ms_avg: string;
+  ms_weekly_vol_real: string;
+  ms_weekly_vol: string;
+  ms_volume: string;
+  ms_volatility_label: string;
+  ms_range_pips_label: string;
+  ms_liquidity: string;
+  ms_low: string;
+  ms_moderate: string;
+  ms_high: string;
+  ms_alert_volatility: string;
+  ms_triggered: string;
+  ms_current_range: string;
+  ms_threshold: string;
+  ms_threshold_pips: string;
+  ms_alert_activated: string;
+  ms_alert_daily_range: string;
+  ms_alert_high_volatility: string;
+  ms_open: string;
+  ms_closed: string;
+  ms_time_left: string;
+  ms_opens_in: string;
+  ms_pairs: string;
+  ms_session_comparison: string;
+  ms_session: string;
+  ms_trend: string;
+  ms_range: string;
+  ms_day_mon: string;
+  ms_day_tue: string;
+  ms_day_wed: string;
+  ms_day_thu: string;
+  ms_day_fri: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime
