@@ -341,6 +341,8 @@ export function useGlobalBrokerSearch(query: string) {
         try {
           const res = await fetch(`/data/brokers/${region.file}`);
           if (!res.ok) return { brokers: [], label: region.label };
+          const ct = res.headers.get('content-type') || '';
+          if (!ct.includes('application/json')) return { brokers: [], label: region.label };
           const data = await res.json();
           const normalized = normalizeJsonData(data, region.key);
           cache.set(region.key, normalized);
