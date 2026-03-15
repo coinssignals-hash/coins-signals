@@ -2066,6 +2066,17 @@ const es: TranslationKeys = {
   ms_day_wed: 'Mié',
   ms_day_thu: 'Jue',
   ms_day_fri: 'Vie',
+  of_more: 'Más',
+  of_search_pair: 'Buscar par...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Compra',
+  of_ask: 'Venta',
+  of_cat_majors: 'Principales',
+  of_cat_crosses: 'Cruces',
+  of_cat_exotics: 'Exóticos',
+  of_cat_commodities: 'Materias Primas',
+  of_cat_crypto: 'Cripto',
 };
 
 export default es;

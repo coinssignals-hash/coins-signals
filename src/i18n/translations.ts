@@ -2183,6 +2183,18 @@ export type TranslationKeys = {
   ms_day_wed: string;
   ms_day_thu: string;
   ms_day_fri: string;
+  // Order Flow
+  of_more: string;
+  of_search_pair: string;
+  of_long: string;
+  of_short: string;
+  of_bid: string;
+  of_ask: string;
+  of_cat_majors: string;
+  of_cat_crosses: string;
+  of_cat_exotics: string;
+  of_cat_commodities: string;
+  of_cat_crypto: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime

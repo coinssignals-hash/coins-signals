@@ -2060,6 +2060,17 @@ const mt: TranslationKeys = {
   ms_day_wed: 'Erb',
   ms_day_thu: 'Ħam',
   ms_day_fri: 'Ġim',
+  of_more: 'Aktar',
+  of_search_pair: 'Fittex par...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Offerta',
+  of_ask: 'Domanda',
+  of_cat_majors: 'Prinċipali',
+  of_cat_crosses: 'Inċroċi',
+  of_cat_exotics: 'Eżotiċi',
+  of_cat_commodities: 'Materja Prima',
+  of_cat_crypto: 'Kripto',
 };
 
 export default mt;
