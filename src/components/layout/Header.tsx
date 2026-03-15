@@ -62,7 +62,7 @@ export function Header() {
             <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
               <BookOpen className="w-4 h-4" />
             </Button>
-            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_journal') || 'Diario'}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('journal')}</span>
           </Link>
           <Link to="/tools" className="flex flex-col items-center gap-0.5">
             <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
@@ -72,11 +72,11 @@ export function Header() {
           </Link>
           <div className="flex flex-col items-center gap-0.5">
             <NotificationToggle />
-            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_alerts') || 'Alertas'}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('alerts')}</span>
           </div>
           <div className="flex flex-col items-center gap-0.5">
             <LanguageQuickSelect />
-            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_language') || 'Idioma'}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('language')}</span>
           </div>
         </div>
 
