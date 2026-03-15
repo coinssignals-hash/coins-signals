@@ -172,7 +172,7 @@ export default function OrderFlowAnalysis() {
                 <div className="relative">
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                   <Input
-                    placeholder="Buscar par..."
+                    placeholder={t('of_search_pair')}
                     value={pairSearch}
                     onChange={(e) => setPairSearch(e.target.value)}
                     className="h-8 pl-7 text-xs"
