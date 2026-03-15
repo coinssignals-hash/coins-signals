@@ -410,12 +410,13 @@ function getSessionStatus(session: SessionData) {
   return { isOpen, progressPercent, timeRemaining };
 }
 
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+/* Day names are now translated via t() in components */
 
-const LEVEL_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  low: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Low' },
-  moderate: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Moderate' },
-  high: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'High' },
+/* Level colors — labels are now translated via t() */
+const LEVEL_KEYS: Record<string, { bg: string; text: string; labelKey: string }> = {
+  low: { bg: 'bg-green-500/20', text: 'text-green-400', labelKey: 'ms_low' },
+  moderate: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', labelKey: 'ms_moderate' },
+  high: { bg: 'bg-red-500/20', text: 'text-red-400', labelKey: 'ms_high' },
 };
 
 /* ─────────── Components ─────────── */
