@@ -57,19 +57,27 @@ export function Header() {
         </div>
 
         {/* Secondary row: quick action icons */}
-        <div className="flex items-center justify-center gap-3 px-3 pb-2">
-          <Link to="/tools/trading-journal">
+        <div className="flex items-center justify-center gap-4 px-3 pb-2">
+          <Link to="/tools/trading-journal" className="flex flex-col items-center gap-0.5">
             <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
               <BookOpen className="w-4 h-4" />
             </Button>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_journal') || 'Diario'}</span>
           </Link>
-          <Link to="/tools">
+          <Link to="/tools" className="flex flex-col items-center gap-0.5">
             <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
               <BarChart3 className="w-4 h-4" />
             </Button>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
           </Link>
-          <NotificationToggle />
-          <LanguageQuickSelect />
+          <div className="flex flex-col items-center gap-0.5">
+            <NotificationToggle />
+            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_alerts') || 'Alertas'}</span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <LanguageQuickSelect />
+            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_language') || 'Idioma'}</span>
+          </div>
         </div>
 
         {/* Gradient divider */}
