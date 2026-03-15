@@ -68,15 +68,15 @@ export default function RiskRewardCalculator() {
     const riskPct = parseFloat(riskPercent);
 
     if (!entry || !sl || !tp) {
-      toast.error(t('rr_fill_prices') || 'Completa Entry, Stop Loss y Take Profit');
+      if (!silent) toast.error(t('rr_fill_prices') || 'Completa Entry, Stop Loss y Take Profit');
       return;
     }
     if (!balance || balance <= 0) {
-      toast.error(t('rr_invalid_balance') || 'Ingresa un balance válido');
+      if (!silent) toast.error(t('rr_invalid_balance') || 'Ingresa un balance válido');
       return;
     }
     if (!riskPct || riskPct <= 0) {
-      toast.error(t('rr_invalid_risk') || 'Ingresa un % de riesgo válido');
+      if (!silent) toast.error(t('rr_invalid_risk') || 'Ingresa un % de riesgo válido');
       return;
     }
 
