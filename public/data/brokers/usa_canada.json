@@ -1,0 +1,3275 @@
+{
+  "metadata": {
+    "titulo": "Empresas de Inversión — Estados Unidos y Canadá",
+    "subtitulo": "Brokers, Bancos de Inversión, Apps Fintech, Robo-Advisors, Asset Managers y Exchanges Cripto",
+    "fecha": "15/03/2026",
+    "total_entidades": 45,
+    "paises": [
+      "Estados Unidos (USA)",
+      "Canadá (Canada)"
+    ],
+    "reguladores_usa": [
+      "SEC — Securities and Exchange Commission",
+      "FINRA — Financial Industry Regulatory Authority",
+      "CFTC — Commodity Futures Trading Commission",
+      "SIPC — Securities Investor Protection Corporation (protección USD 500K)",
+      "OCC — Office of the Comptroller of the Currency",
+      "FDIC — Federal Deposit Insurance Corporation (depósitos bancarios hasta USD 250K)"
+    ],
+    "reguladores_canada": [
+      "IIROC — Investment Industry Regulatory Organization of Canada",
+      "MFDA — Mutual Fund Dealers Association",
+      "OSC — Ontario Securities Commission",
+      "AMF — Autorité des marchés financiers (Quebec)",
+      "CIPF — Canadian Investor Protection Fund (protección CAD 1M)",
+      "CDIC — Canada Deposit Insurance Corporation (depósitos hasta CAD 100K)"
+    ],
+    "aviso_legal": "Solo fines informativos. Todos los datos de comisiones y condiciones corresponden a la información pública disponible a marzo 2026 y pueden cambiar sin previo aviso. Invertir conlleva riesgos. Consulte a un asesor financiero antes de tomar decisiones de inversión."
+  },
+  "secciones": [
+    {
+      "key": "broker_usa",
+      "nombre": "🇺🇸 BROKERS ONLINE — Estados Unidos",
+      "color": "#1B3A6B"
+    },
+    {
+      "key": "fintech_usa",
+      "nombre": "🇺🇸 APPS FINTECH & PLATAFORMAS DIGITALES — Estados Unidos",
+      "color": "#0077B6"
+    },
+    {
+      "key": "opciones_usa",
+      "nombre": "🇺🇸 PLATAFORMAS DE OPCIONES Y FUTUROS — Estados Unidos",
+      "color": "#C0392B"
+    },
+    {
+      "key": "banco_inv_usa",
+      "nombre": "🇺🇸 BANCOS DE INVERSIÓN — Wall Street",
+      "color": "#212121"
+    },
+    {
+      "key": "robo_usa",
+      "nombre": "🇺🇸 ROBO-ADVISORS & GESTIÓN AUTOMATIZADA — Estados Unidos",
+      "color": "#4A148C"
+    },
+    {
+      "key": "asset_usa",
+      "nombre": "🇺🇸 GESTORAS DE ACTIVOS (ASSET MANAGERS) — Estados Unidos",
+      "color": "#004D40"
+    },
+    {
+      "key": "cripto_usa",
+      "nombre": "🇺🇸 EXCHANGES CRIPTO — Estados Unidos",
+      "color": "#37474F"
+    },
+    {
+      "key": "broker_ca",
+      "nombre": "🇨🇦 BROKERS DE DESCUENTO — Canadá",
+      "color": "#D80621"
+    },
+    {
+      "key": "bank_ca",
+      "nombre": "🇨🇦 BIG SIX BANKS BROKERS — Canadá",
+      "color": "#003580"
+    },
+    {
+      "key": "fintech_ca",
+      "nombre": "🇨🇦 FINTECH & ROBO-ADVISORS — Canadá",
+      "color": "#D80621"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "US001",
+      "nombre": "Fidelity Investments",
+      "tipo": "Broker Online — Full Service",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 1946,
+      "sede": "Boston, MA",
+      "score": 9.5,
+      "aum_usd": "14.1T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC (USD 500K)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — una de sus mayores ventajas competitivas"
+      },
+      "comisiones": {
+        "acciones_etfs_online": "$0",
+        "opciones": "$0 + $0.65/contrato",
+        "fondos_mutuos_ntf": "$0 (3,300+ fondos sin transacción)",
+        "fondos_propios_fidelity": "0% expense ratio (FZROX, FZILX, etc.)",
+        "futuros": "$0.85/contrato",
+        "forex": "Disponible",
+        "broker_asistido": "$32.95",
+        "margen": "Desde 8.575% (saldo <$25K) hasta 4.0% (>$1M)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Brokerage",
+          "minimo": 0,
+          "tipo": "Cuenta de corretaje estándar"
+        },
+        {
+          "nombre": "Roth IRA / Traditional IRA",
+          "minimo": 0,
+          "tipo": "Jubilación — con ventajas fiscales"
+        },
+        {
+          "nombre": "401(k)",
+          "minimo": 0,
+          "tipo": "Plan de jubilación empresarial"
+        },
+        {
+          "nombre": "Fidelity Go (Robo)",
+          "minimo": 0,
+          "tipo": "Gestión automatizada — 0% fee <$25K"
+        },
+        {
+          "nombre": "Fidelity Managed Accounts",
+          "minimo": 50000,
+          "tipo": "Gestión activa profesional — fee 0.5%"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cds": true,
+        "cripto": "ETFs Bitcoin/Ethereum (no spot)",
+        "forex": true,
+        "ipos": true,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Fidelity.com (web)",
+        "Active Trader Pro (desktop)",
+        "Fidelity App (iOS/Android)",
+        "API para algo trading"
+      ],
+      "proteccion_cliente": {
+        "sipc": "USD 500,000 (inc. USD 250K cash)",
+        "seguro_adicional": "Lloyd's of London — cobertura extra ilimitada"
+      },
+      "caracteristica_unica": "Fondos propios con 0% expense ratio (FZROX). Mejor broker USA 2025 según Motley Fool, Bankrate y múltiples rankings. Investigación más completa del sector",
+      "pros": [
+        "0% comisiones acciones/ETFs",
+        "Fondos 0% expense ratio — únicos",
+        "Mejor atención al cliente del sector",
+        "Herramientas de investigación institucionales",
+        "Sin mínimo de depósito",
+        "Acciones fraccionarias desde $1"
+      ],
+      "contras": [
+        "Sin trading de cripto spot",
+        "Active Trader Pro solo disponible en desktop",
+        "Interfaz web puede ser compleja para principiantes"
+      ]
+    },
+    {
+      "id": "US002",
+      "nombre": "Charles Schwab",
+      "tipo": "Broker Online — Full Service + Banca",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 1971,
+      "sede": "Westlake, TX",
+      "score": 9.4,
+      "aum_usd": "9.9T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC (USD 500K)",
+        "OCC (banco)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo. Stock Slices (acciones fraccionarias del S&P500) desde $5"
+      },
+      "comisiones": {
+        "acciones_etfs_online": "$0",
+        "opciones": "$0 + $0.65/contrato",
+        "fondos_mutuos_ntf": "$0 (4,000+ fondos)",
+        "futuros": "$1.50/contrato",
+        "forex": "Disponible via filial",
+        "broker_asistido": "$25",
+        "margen": "Desde 13.575% (<$25K) hasta 7.825% ($1M+)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual/Joint Brokerage",
+          "minimo": 0,
+          "tipo": "Cuenta estándar"
+        },
+        {
+          "nombre": "Roth/Traditional IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Schwab Intelligent Portfolios (Robo)",
+          "minimo": 5000,
+          "tipo": "Robo-advisor 0% fee"
+        },
+        {
+          "nombre": "Schwab Intelligent Portfolios Premium",
+          "minimo": 25000,
+          "tipo": "Robo + asesor humano — $30/mes"
+        },
+        {
+          "nombre": "Schwab Private Client",
+          "minimo": 1000000,
+          "tipo": "Servicio ultra-premium"
+        },
+        {
+          "nombre": "Schwab Checking Account",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria integrada — FDIC"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cds": true,
+        "cripto": "ETFs Bitcoin (no spot)",
+        "forex": true,
+        "ipos": true,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Schwab.com (web)",
+        "thinkorswim (ex-TD Ameritrade — plataforma más poderosa del sector)",
+        "Schwab App",
+        "StreetSmart Edge"
+      ],
+      "proteccion_cliente": {
+        "sipc": "USD 500,000",
+        "seguro_adicional": "London insurers — cobertura adicional"
+      },
+      "caracteristica_unica": "thinkorswim — la plataforma de análisis más poderosa del mercado (adquirida con TD Ameritrade en 2020). 300+ sucursales físicas en EE.UU. Integración bancaria completa",
+      "pros": [
+        "thinkorswim — mejor plataforma avanzada del mercado",
+        "300+ sucursales físicas",
+        "Integración bancaria completa",
+        "4,000+ fondos sin transacción",
+        "Mejor broker 2026 según StockBrokers.com"
+      ],
+      "contras": [
+        "Sin cripto spot",
+        "Acciones fraccionarias limitadas al S&P500 (Stock Slices)",
+        "Tasas de margen más altas que IBKR"
+      ]
+    },
+    {
+      "id": "US003",
+      "nombre": "Interactive Brokers (IBKR)",
+      "tipo": "Broker Global — Institucional y Profesional",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 1978,
+      "sede": "Greenwich, CT — Cotizado NASDAQ (IBKR)",
+      "score": 9.3,
+      "aum_usd": "500B+",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC (USD 500K)",
+        "FCA UK",
+        "ASIC Australia",
+        "MAS Singapur",
+        "SFC Hong Kong"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "IBKR Lite: $0. IBKR Pro: recomendado $10,000+"
+      },
+      "comisiones": {
+        "acciones_etfs_lite": "$0 (IBKR Lite)",
+        "acciones_etfs_pro": "$0.005/acción (mín $1/orden)",
+        "opciones": "$0.65/contrato (Lite) / $0.15-0.65/contrato (Pro)",
+        "futuros": "$0.85/contrato",
+        "forex": "$2 por $100K negociados (0.002%)",
+        "bonos": "$1/bono (mín $1)",
+        "cripto": "0.12-0.18% sobre valor",
+        "margen": "Desde 5.83% (>$100K) — las más bajas del sector",
+        "intereses_saldo_usd": "4.33% anual (IBKR Pro >$10K)"
+      },
+      "cuentas": [
+        {
+          "nombre": "IBKR Lite",
+          "minimo": 0,
+          "tipo": "0% comisiones acciones USA — retail"
+        },
+        {
+          "nombre": "IBKR Pro",
+          "minimo": 0,
+          "tipo": "Precios institucionales — bajo volumen"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Hedge Fund / Institutional",
+          "minimo": 0,
+          "tipo": "Para fondos e institucionales"
+        },
+        {
+          "nombre": "Family Office",
+          "minimo": 0,
+          "tipo": "Gestión multi-cuenta — family offices"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cds": true,
+        "cripto": true,
+        "forex": true,
+        "warrants": true,
+        "acciones_fraccionarias": true,
+        "mercados_globales": "150+ bolsas en 33 países"
+      },
+      "plataformas": [
+        "TWS — Trader Workstation (desktop)",
+        "IBKR Mobile",
+        "Client Portal (web)",
+        "IBKR GlobalTrader (app simplificada)",
+        "API FIX/REST/WebSocket"
+      ],
+      "proteccion_cliente": {
+        "sipc": "USD 500,000",
+        "seguro_adicional": "Lloyd's — hasta USD 30M por cliente (parte de fondo total de $150M)"
+      },
+      "caracteristica_unica": "4.33% interés anual sobre saldo USD en cuenta. Las tasas de margen más bajas del sector. Acceso a 150+ bolsas en 33 países. Paper Trading ilimitado gratuito",
+      "pros": [
+        "Tasas de margen más bajas del mercado",
+        "4.33% a.a. sobre saldo USD",
+        "150+ bolsas globales",
+        "Paper trading ilimitado",
+        "API más completa del sector"
+      ],
+      "contras": [
+        "Plataforma TWS muy compleja para principiantes",
+        "IBKR Lite: order flow payment (peor ejecución)",
+        "Sin sucursales físicas"
+      ]
+    },
+    {
+      "id": "US004",
+      "nombre": "E*TRADE from Morgan Stanley",
+      "tipo": "Broker Online — División de Morgan Stanley",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 1982,
+      "sede": "Arlington, VA (Morgan Stanley: New York, NY)",
+      "score": 8.9,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo para cuenta estándar"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 + $0.65/contrato (>30 trades/trim: $0.50)",
+        "futuros": "$1.50/contrato",
+        "fondos_mutuos": "$0 (NTF) o $19.99/transacción",
+        "bonos": "$1/bono",
+        "broker_asistido": "$25",
+        "margen": "Desde 14.2% (<$10K)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard Brokerage",
+          "minimo": 0,
+          "tipo": "Cuenta de corretaje"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Core Portfolios (Robo)",
+          "minimo": 500,
+          "tipo": "Robo-advisor — 0.30% fee anual"
+        },
+        {
+          "nombre": "Blend Portfolios",
+          "minimo": 25000,
+          "tipo": "Robo + gestor humano"
+        },
+        {
+          "nombre": "Morgan Stanley Wealth Mgmt",
+          "minimo": 250000,
+          "tipo": "Gestión discrecional premium — integrada con MS"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cds": true,
+        "cripto": "ETFs Bitcoin",
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "E*TRADE Web",
+        "Power E*TRADE (opciones/futuros avanzado)",
+        "E*TRADE App",
+        "E*TRADE Pro (desktop)"
+      ],
+      "caracteristica_unica": "Integración con Morgan Stanley Wealth Management — el mejor sistema de gestión patrimonial privada del mundo. Power E*TRADE es una de las mejores plataformas de opciones del sector",
+      "pros": [
+        "Integración Morgan Stanley Wealth Management",
+        "Power E*TRADE excelente para opciones",
+        "Recursos educativos muy completos",
+        "Descuento opciones con 30+ trades/trimestre"
+      ],
+      "contras": [
+        "Sin cripto spot",
+        "Tasas de margen altas para balances bajos",
+        "Core Portfolios requiere $500 mínimo"
+      ]
+    },
+    {
+      "id": "US005",
+      "nombre": "Merrill Edge (Bank of America)",
+      "tipo": "Broker Online — División Bank of America",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 2010,
+      "sede": "Charlotte, NC (BofA)",
+      "score": 8.7,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC",
+        "FDIC (bancario)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo. Preferred Rewards: mayores beneficios con $20K+ en BofA"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 + $0.65/contrato",
+        "fondos_mutuos_ntf": "$0 (2,600+)",
+        "broker_asistido": "$29.95",
+        "margen": "Desde 13.825%",
+        "preferred_rewards": "Hasta 100 trades gratis/mes con Platinum Honors ($100K+ BofA)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual / Joint Brokerage",
+          "minimo": 0,
+          "tipo": "Estándar"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Merrill Guided Investing (Robo)",
+          "minimo": 1000,
+          "tipo": "0.45% fee anual"
+        },
+        {
+          "nombre": "Merrill Guided + Advisor",
+          "minimo": 20000,
+          "tipo": "0.85% fee anual con asesor"
+        },
+        {
+          "nombre": "Merrill Lynch Wealth Management",
+          "minimo": 250000,
+          "tipo": "Servicio premium completo"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cds": true,
+        "cripto": "No",
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Merrill Edge Web",
+        "MarketPro (plataforma avanzada)",
+        "Merrill App",
+        "Integración Bank of America Online"
+      ],
+      "caracteristica_unica": "Integración total con Bank of America — el mayor banco de EE.UU. por activos de consumo. Preferred Rewards: hasta 100 trades GRATIS/mes para clientes BofA con $100K+",
+      "pros": [
+        "Integración perfecta con Bank of America",
+        "Preferred Rewards — hasta 100 trades gratis/mes",
+        "Investigación Bank of America Global Research",
+        "Sin mínimo"
+      ],
+      "contras": [
+        "Sin cripto spot",
+        "Sin futuros",
+        "Las mejores condiciones requieren $100K+ en BofA"
+      ]
+    },
+    {
+      "id": "US006",
+      "nombre": "Vanguard",
+      "tipo": "Gestora de Activos + Broker — Fondo mutuo sin fines de lucro",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 1975,
+      "sede": "Malvern, PA",
+      "score": 9.0,
+      "aum_usd": "9.3T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "ETFs: desde $1 (fraccionarios). Fondos mutuos: desde $1,000 (Admiral: $3,000)"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$1/contrato",
+        "fondos_vanguard": "0% transacción — expense ratios más bajos del mercado (0.03-0.10%)",
+        "fondos_externos": "$0-$20/transacción",
+        "broker_asistido": "$25",
+        "margen": "Desde 13.75%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Brokerage",
+          "minimo": 0,
+          "tipo": "Cuenta estándar"
+        },
+        {
+          "nombre": "IRA / Roth IRA / SEP-IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Vanguard Digital Advisor (Robo)",
+          "minimo": 100,
+          "tipo": "0.15% fee anual"
+        },
+        {
+          "nombre": "Vanguard Personal Advisor Services",
+          "minimo": 50000,
+          "tipo": "0.30% fee anual con asesor humano"
+        },
+        {
+          "nombre": "Vanguard Personal Advisor Wealth Mgmt",
+          "minimo": 500000,
+          "tipo": "0.20% fee — ultra premium"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cds": true,
+        "cripto": "No",
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Vanguard.com (web)",
+        "Vanguard App (iOS/Android)"
+      ],
+      "caracteristica_unica": "La única gestora de activos propiedad de sus propios fondos (sin accionistas externos). Inventó los fondos indexados para retail. Expense ratios más bajos del sector. $9.3T AUM",
+      "pros": [
+        "Expense ratios más bajos de la industria",
+        "Propiedad de sus fondos — sin conflicto de interés",
+        "Referente mundial en inversión pasiva de largo plazo",
+        "$9.3T AUM — solidez máxima"
+      ],
+      "contras": [
+        "Plataforma web desactualizada vs. Fidelity/Schwab",
+        "Sin trading de cripto",
+        "Tasas de margen altas",
+        "Opciones limitadas — no diseñado para traders activos"
+      ]
+    },
+    {
+      "id": "US007",
+      "nombre": "J.P. Morgan Self-Directed Investing",
+      "tipo": "Broker Online — División JPMorgan Chase",
+      "seccion": "broker_usa",
+      "pais": "USA",
+      "fundacion": 2019,
+      "sede": "New York, NY",
+      "score": 8.5,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC",
+        "OCC (JPMorgan Chase Bank)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo. Chase Private Client: $150,000+"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 + $0.65/contrato",
+        "fondos_mutuos": "$0 (JPMorgan) / $19.99 (externos)",
+        "broker_asistido": "$25"
+      },
+      "cuentas": [
+        {
+          "nombre": "Self-Directed Investing",
+          "minimo": 0,
+          "tipo": "DIY trading — acciones y ETFs"
+        },
+        {
+          "nombre": "Automated Investing (Robo)",
+          "minimo": 500,
+          "tipo": "0.35% fee anual"
+        },
+        {
+          "nombre": "Chase Private Client",
+          "minimo": 150000,
+          "tipo": "Asesoría integral + banking premium"
+        },
+        {
+          "nombre": "J.P. Morgan Wealth Advisor",
+          "minimo": 250000,
+          "tipo": "Asesoría personalizada con banquero"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cripto": "No",
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Chase.com + J.P. Morgan App (integrada con banca)",
+        "Web platform J.P. Morgan Investing"
+      ],
+      "caracteristica_unica": "Integración total con Chase Bank — el mayor banco de EE.UU. por activos totales ($4T+). Research de J.P. Morgan de calidad institucional disponible",
+      "pros": [
+        "Integración perfecta con Chase Bank",
+        "Research J.P. Morgan de clase institucional",
+        "Sin mínimo",
+        "Acciones fraccionarias desde $1"
+      ],
+      "contras": [
+        "Sin cripto spot",
+        "Plataforma menos avanzada que Fidelity/Schwab",
+        "Sin futuros",
+        "Opciones más limitadas que competidores"
+      ]
+    },
+    {
+      "id": "US008",
+      "nombre": "Robinhood",
+      "tipo": "App Fintech — Pionero comisión 0%",
+      "seccion": "fintech_usa",
+      "pais": "USA",
+      "fundacion": 2013,
+      "sede": "Menlo Park, CA — Cotizado NASDAQ (HOOD)",
+      "score": 8.4,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo. Robinhood Gold: $5/mes (o gratis con $50+ en cuenta)"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 (sin comisión por contrato — diferencial clave)",
+        "cripto": "Spread incluido (~1-1.5%)",
+        "futuros": "$0.50/contrato (desde 2024)",
+        "margen": "Robinhood Gold: 6.75% anual",
+        "robinhood_gold": "$5/mes — APY 4% sobre cash, datos de mercado, margen a 6.75%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Brokerage Standard",
+          "minimo": 0,
+          "tipo": "Trading acciones, ETFs, opciones, cripto"
+        },
+        {
+          "nombre": "Robinhood Gold",
+          "minimo": 0,
+          "costo": "$5/mes",
+          "tipo": "Margen, más datos, APY 4%"
+        },
+        {
+          "nombre": "Robinhood IRA",
+          "minimo": 0,
+          "tipo": "IRA con match 1% (Gold: 3%) en contribuciones"
+        },
+        {
+          "nombre": "Robinhood Crypto",
+          "minimo": 0,
+          "tipo": "Cripto spot integrado en la app"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Robinhood App (iOS/Android)",
+        "Robinhood Web",
+        "Robinhood Legend (plataforma avanzada, 90+ indicadores técnicos)"
+      ],
+      "caracteristica_unica": "Inventó el modelo de 0% comisiones en EE.UU. (2013). 0% comisión en opciones (sin cargo por contrato). IRA con match de hasta 3%. Trading 24 horas en días de semana",
+      "pros": [
+        "0% opciones sin cargo por contrato — único en el mercado",
+        "IRA con 1-3% match",
+        "Trading 24 horas (días laborables)",
+        "La mejor UX/UI del mercado",
+        "Cripto y acciones fraccionarias en una sola app"
+      ],
+      "contras": [
+        "Sin fondos mutuos ni bonos individuales",
+        "Sin futuros de commodities",
+        "PFOF (payment for order flow) — calidad ejecución inferior",
+        "Soporte al cliente limitado",
+        "Sin cuentas corporativas ni custodiales"
+      ]
+    },
+    {
+      "id": "US009",
+      "nombre": "Webull",
+      "tipo": "App Fintech — Análisis técnico avanzado",
+      "seccion": "fintech_usa",
+      "pais": "USA",
+      "fundacion": 2017,
+      "sede": "New York, NY (operaciones) / Hua'an, China (propietario)",
+      "score": 8.3,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 (sin cargo por contrato)",
+        "cripto": "Spread incluido",
+        "margen": "Desde 6.99% anual",
+        "opciones_broker": "$0"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Brokerage",
+          "minimo": 0,
+          "tipo": "Trading estándar"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Webull Paper Trading",
+          "minimo": 0,
+          "tipo": "Trading simulado gratuito"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Webull App (iOS/Android)",
+        "Webull Web",
+        "Webull Desktop (análisis técnico avanzado)"
+      ],
+      "caracteristica_unica": "La mejor plataforma de análisis técnico entre las apps fintech — 50+ indicadores técnicos, pantallas de stock scanner, herramientas de opciones avanzadas. Datos en tiempo real gratuitos",
+      "pros": [
+        "Mejor análisis técnico de las apps fintech",
+        "Datos en tiempo real gratuitos",
+        "Paper trading gratuito ilimitado",
+        "0% opciones sin cargo por contrato",
+        "Screeners de acciones muy completos"
+      ],
+      "contras": [
+        "Propietario chino — cuestionamientos de privacidad",
+        "Sin fondos mutuos",
+        "Sin futuros de commodities",
+        "Recursos educativos limitados",
+        "Soporte al cliente deficiente"
+      ]
+    },
+    {
+      "id": "US010",
+      "nombre": "SoFi Invest",
+      "tipo": "App Fintech — Ecosistema financiero completo",
+      "seccion": "fintech_usa",
+      "pais": "USA",
+      "fundacion": 2011,
+      "sede": "San Francisco, CA — Cotizado NASDAQ (SOFI)",
+      "score": 8.2,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC",
+        "OCC (SoFi Bank)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Desde $5 para acciones fraccionarias"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "No disponible",
+        "cripto": "1-1.25% spread",
+        "gestion_automatizada": "0% management fee"
+      },
+      "cuentas": [
+        {
+          "nombre": "Active Investing",
+          "minimo": 0,
+          "tipo": "Auto-dirigido — acciones y ETFs"
+        },
+        {
+          "nombre": "Automated Investing (Robo)",
+          "minimo": 1,
+          "tipo": "0% fee — portafolios automatizados"
+        },
+        {
+          "nombre": "SoFi Crypto",
+          "minimo": 0,
+          "tipo": "Cripto spot integrado"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "SoFi Checking & Savings",
+          "minimo": 0,
+          "tipo": "Bancario integrado — 4.50% APY (con direct deposit)"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": false,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "SoFi App (iOS/Android)",
+        "SoFi Web"
+      ],
+      "caracteristica_unica": "Ecosistema financiero completo: inversiones + préstamos estudiantiles + hipotecas + seguros + tarjetas de crédito + cuenta bancaria (4.50% APY) — todo en una app. Robo-advisor 0% fee",
+      "pros": [
+        "Ecosistema financiero todo-en-uno",
+        "Robo-advisor 0% fee — el mejor precio del sector",
+        "4.50% APY en cuenta bancaria",
+        "Sin mínimo",
+        "Recursos educativos excelentes para principiantes"
+      ],
+      "contras": [
+        "Sin opciones de trading",
+        "Sin futuros",
+        "Sin fondos mutuos individuales",
+        "Limitado para traders activos o avanzados"
+      ]
+    },
+    {
+      "id": "US011",
+      "nombre": "Public.com",
+      "tipo": "App Fintech — Inversión social + alternativas",
+      "seccion": "fintech_usa",
+      "pais": "USA",
+      "fundacion": 2019,
+      "sede": "New York, NY",
+      "score": 8.0,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 (sin cargo por contrato)",
+        "cripto": "Spread incluido (~2%)",
+        "bonos_tesoro": "$0 — acceso directo a Treasury bills",
+        "bonos_corporativos": "Spread incluido",
+        "public_premium": "$10/mes — análisis IA avanzado"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Brokerage",
+          "minimo": 0,
+          "tipo": "Acciones, ETFs, opciones, cripto"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "High-Yield Cash Account",
+          "minimo": 0,
+          "tipo": "5.1% APY — rendimiento en efectivo"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "cripto": true,
+        "bonos_tesoro": true,
+        "bonos_corporativos": true,
+        "arte": true,
+        "coleccionables": true,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Public App (iOS/Android)",
+        "Public Web"
+      ],
+      "caracteristica_unica": "Única plataforma con acceso directo a Treasury Bills (Bonos del Tesoro USA) desde $100, arte de inversión, coleccionables. Herramienta de IA 'Alpha' para análisis fundamental. Social investing feed",
+      "pros": [
+        "Treasury Bills directos desde $100",
+        "Arte y coleccionables como clase de activo",
+        "Herramienta IA Alpha para análisis",
+        "5.1% APY en cuenta cash",
+        "Social feed para ideas de inversión"
+      ],
+      "contras": [
+        "Premium $10/mes para funciones avanzadas",
+        "Cripto spread alto (2%)",
+        "Sin futuros",
+        "Menos herramientas técnicas que Webull"
+      ]
+    },
+    {
+      "id": "US012",
+      "nombre": "Moomoo (Futu Securities)",
+      "tipo": "App Fintech — Análisis avanzado + Global",
+      "seccion": "fintech_usa",
+      "pais": "USA/Hong Kong",
+      "fundacion": 2018,
+      "sede": "Palo Alto, CA (EE.UU.) / Hong Kong (Futu Holdings — Cotizado NASDAQ)",
+      "score": 8.1,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC",
+        "SFC Hong Kong",
+        "MAS Singapur"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 + $0.65/contrato",
+        "fondos": "$0",
+        "margen": "Desde 6.8%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Brokerage",
+          "minimo": 0,
+          "tipo": "EE.UU. + Hong Kong + China A-shares"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "cripto": false,
+        "fondos_mutuos": true,
+        "acciones_fraccionarias": true,
+        "acciones_hong_kong": true,
+        "china_a_shares": true
+      },
+      "plataformas": [
+        "Moomoo App (iOS/Android)",
+        "Moomoo Web",
+        "Moomoo Desktop"
+      ],
+      "caracteristica_unica": "100+ indicadores técnicos — la plataforma de análisis técnico más avanzada del sector fintech. Acceso único a Hong Kong y China A-shares para inversores US. Paper trading gratuito. Datos Level 2 gratuitos por tiempo limitado",
+      "pros": [
+        "100+ indicadores técnicos — mejor análisis técnico del sector",
+        "Acceso a Hong Kong y China A-shares",
+        "Level 2 datos gratuitos (por tiempo)",
+        "Paper trading ilimitado",
+        "Sin mínimo"
+      ],
+      "contras": [
+        "Propietario de Hong Kong/China — dudas privacidad",
+        "Sin cripto",
+        "Comunidad de usuarios menor que Robinhood/Webull"
+      ]
+    },
+    {
+      "id": "US013",
+      "nombre": "M1 Finance",
+      "tipo": "App Fintech — Inversión automatizada en Pies",
+      "seccion": "fintech_usa",
+      "pais": "USA",
+      "fundacion": 2015,
+      "sede": "Chicago, IL",
+      "score": 8.2,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "IRA: $500 mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "gestion": "$0 para cuentas estándar",
+        "m1_premium": "$3/mes — trading ventana extra, cash inteligente",
+        "margen": "M1 Borrow: desde 7.25% anual (portafolio como colateral)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Brokerage",
+          "minimo": 100,
+          "tipo": "Inversión automatizada en 'Pies'"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 500,
+          "tipo": "Jubilación automatizada"
+        },
+        {
+          "nombre": "Trust Account",
+          "minimo": 5000,
+          "tipo": "Cuenta fiduciaria"
+        },
+        {
+          "nombre": "M1 Borrow",
+          "minimo": 2000,
+          "tipo": "Préstamo sobre portafolio — hasta 40% del valor"
+        },
+        {
+          "nombre": "M1 Checking + Savings",
+          "minimo": 0,
+          "tipo": "Bancario integrado"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": false,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "M1 App (iOS/Android)",
+        "M1 Web"
+      ],
+      "caracteristica_unica": "Sistema de 'Pies': carteras personalizadas que se rebalancean automáticamente en cada depósito. M1 Borrow: préstamo inmediato hasta 40% del portafolio desde 7.25%. Inversión totalmente automatizada",
+      "pros": [
+        "Rebalanceo automático con cada depósito",
+        "M1 Borrow — préstamo inmediato sin solicitud",
+        "Carteras 'Pies' totalmente personalizables",
+        "Excelente para inversión de largo plazo automatizada"
+      ],
+      "contras": [
+        "Sin opciones de trading",
+        "Solo una ventana de trading diaria (sin Premium)",
+        "Sin futuros",
+        "Sin fondos mutuos tradicionales",
+        "Menos flexible para trading activo"
+      ]
+    },
+    {
+      "id": "US014",
+      "nombre": "Firstrade",
+      "tipo": "Broker Online — 0% opciones sin mínimo",
+      "seccion": "fintech_usa",
+      "pais": "USA",
+      "fundacion": 1985,
+      "sede": "Flushing, NY",
+      "score": 8.0,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — apertura instantánea"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0 (sin comisión por contrato — igual que Robinhood)",
+        "fondos_mutuos": "$0 (11,000+ NTF)",
+        "bonos_tesoro": "$0",
+        "margen": "Desde 9.5%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual / Joint Brokerage",
+          "minimo": 0,
+          "tipo": "Estándar"
+        },
+        {
+          "nombre": "IRA / Roth IRA / SEP-IRA",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "Cuenta Corporativa",
+          "minimo": 0,
+          "tipo": "Empresas"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cripto": false,
+        "acciones_fraccionarias": false
+      },
+      "plataformas": [
+        "Firstrade.com (web)",
+        "Firstrade App",
+        "Firstrade Desktop"
+      ],
+      "caracteristica_unica": "11,000+ fondos mutuos sin comisión. 0% opciones sin cargo por contrato. Cuenta en inglés y chino mandarín — popular entre comunidad asiático-americana. Sin mínimo de depósito",
+      "pros": [
+        "0% opciones sin cargo por contrato",
+        "11,000+ fondos mutuos NTF — mayor cantidad",
+        "Sin mínimo de depósito",
+        "Sin inactividad",
+        "Soporte en inglés y chino mandarín"
+      ],
+      "contras": [
+        "Sin cripto",
+        "Sin acciones fraccionarias",
+        "Plataforma menos moderna que Robinhood/Webull",
+        "Investigación menos profunda"
+      ]
+    },
+    {
+      "id": "US015",
+      "nombre": "tastytrade",
+      "tipo": "Broker Especialista en Opciones y Futuros",
+      "seccion": "opciones_usa",
+      "pais": "USA",
+      "fundacion": 2011,
+      "sede": "Chicago, IL",
+      "score": 9.0,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC",
+        "NFA (futuros)",
+        "CFTC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo. Futures: recomendado $2,000+"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones_apertura": "$1/contrato (máx $10 por leg — CAP ÚNICO en el sector)",
+        "opciones_cierre": "$0 (gratis cerrar — diferencial clave)",
+        "futuros": "$1.25/contrato",
+        "futuros_micro": "$0.25/contrato",
+        "cripto": "0% comisión (spread incluido)",
+        "margen": "Desde 9%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual / Joint Brokerage",
+          "minimo": 0,
+          "tipo": "Acciones, opciones, futuros, cripto"
+        },
+        {
+          "nombre": "IRA / Roth IRA",
+          "minimo": 0,
+          "tipo": "Jubilación con opciones"
+        },
+        {
+          "nombre": "IRA con opciones",
+          "minimo": 0,
+          "tipo": "Único broker con opciones complejas en IRA"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "futuros_micro": true,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "tastytrade App (iOS/Android)",
+        "tastytrade Desktop",
+        "tastytrade Web"
+      ],
+      "caracteristica_unica": "El ÚNICO broker que cobra $0 al CERRAR opciones. Cap de $10/leg en opciones (no importa el tamaño). Diseñado específicamente para traders de opciones. Tasty Networks: contenido educativo en video 24/5",
+      "pros": [
+        "$0 para cerrar opciones — único en el mercado",
+        "Cap $10/leg en opciones — ideal para alto volumen",
+        "Mejor plataforma diseñada para opciones",
+        "Micro-futuros desde $0.25/contrato",
+        "Tasty Networks: educación en vivo 24/5"
+      ],
+      "contras": [
+        "Sin fondos mutuos",
+        "Sin bonos individuales",
+        "No ideal para inversión pasiva de largo plazo",
+        "Plataforma puede ser compleja para principiantes"
+      ]
+    },
+    {
+      "id": "US016",
+      "nombre": "TradeStation",
+      "tipo": "Broker Especialista — Trading Activo y Algorítmico",
+      "seccion": "opciones_usa",
+      "pais": "USA",
+      "fundacion": 1982,
+      "sede": "Plantation, FL",
+      "score": 8.7,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC",
+        "CFTC",
+        "NFA"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "TradeStation Equities: sin mínimo. Futuros: $500+"
+      },
+      "comisiones": {
+        "acciones_etfs_ts_go": "$0",
+        "acciones_etfs_ts_select": "$0 + $0.005/acción",
+        "opciones_ts_go": "$0.60/contrato",
+        "opciones_ts_select": "$0.60/contrato",
+        "futuros": "$1.50/contrato",
+        "futuros_micro": "$0.50/contrato",
+        "margen": "Desde 9.5%"
+      },
+      "cuentas": [
+        {
+          "nombre": "TradeStation Go",
+          "minimo": 0,
+          "tipo": "$0 comisiones — para la mayoría de inversores"
+        },
+        {
+          "nombre": "TradeStation Select",
+          "minimo": 2000,
+          "tipo": "Precios por acción — activos de alto volumen"
+        },
+        {
+          "nombre": "TS Crypto",
+          "minimo": 0,
+          "tipo": "Cripto spot y futuros"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "futuros_micro": true,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": false
+      },
+      "plataformas": [
+        "TradeStation Desktop (la más poderosa del sector para algo trading)",
+        "TradeStation Web",
+        "TradeStation App",
+        "EasyLanguage (lenguaje propio para bots)"
+      ],
+      "caracteristica_unica": "EasyLanguage — lenguaje de programación propio para automatización de estrategias. La plataforma más potente para trading algorítmico en EE.UU. Backtesting integrado. 50+ años en el mercado",
+      "pros": [
+        "EasyLanguage — el mejor entorno para trading algorítmico",
+        "Backtesting completo integrado",
+        "50+ años de historia — solidez",
+        "Excelente para scalping y day trading",
+        "Futuros micro accesibles"
+      ],
+      "contras": [
+        "Sin fondos mutuos",
+        "Sin acciones fraccionarias",
+        "Plataforma desktop muy compleja para principiantes",
+        "Sin opciones gratuitas al cerrar (vs. tastytrade)"
+      ]
+    },
+    {
+      "id": "US017",
+      "nombre": "NinjaTrader",
+      "tipo": "Plataforma de Trading — Futuros y Forex",
+      "seccion": "opciones_usa",
+      "pais": "USA",
+      "fundacion": 2003,
+      "sede": "Denver, CO",
+      "score": 8.5,
+      "regulacion": [
+        "CFTC",
+        "NFA"
+      ],
+      "deposito_minimo": {
+        "valor": 400,
+        "moneda": "USD",
+        "nota": "Futuros micro desde $400. Standard: desde $1,000"
+      },
+      "comisiones": {
+        "futuros_es": "$0.53-1.29/contrato",
+        "futuros_mes": "$0.09/contrato",
+        "futuros_cl": "$0.53/contrato",
+        "forex": "Variable por spread",
+        "plataforma_free": "Gratis para datos diferidos",
+        "plataforma_lease": "$135/trimestre (sin contrato)",
+        "plataforma_lifetime": "$1,499 pago único",
+        "broker_asistido": "Según instrumento"
+      },
+      "cuentas": [
+        {
+          "nombre": "Futures Account",
+          "minimo": 400,
+          "tipo": "Futuros — micro y estándar"
+        },
+        {
+          "nombre": "Forex Account",
+          "minimo": 400,
+          "tipo": "Pares de divisas"
+        }
+      ],
+      "instrumentos": {
+        "acciones": false,
+        "etfs": false,
+        "opciones": false,
+        "futuros": true,
+        "futuros_micro": true,
+        "cripto": "Bitcoin futuros",
+        "fondos_mutuos": false,
+        "forex": true
+      },
+      "plataformas": [
+        "NinjaTrader 8 (desktop — el estándar del sector futuros)",
+        "NinjaTrader Cloud",
+        "Conexión con múltiples brokers de futuros"
+      ],
+      "caracteristica_unica": "La plataforma estándar de la industria para trading de futuros. Compatible con 100+ brokers. Marketplace de 1,000+ estrategias y add-ons. Backtesting institucional. Datos históricos completos",
+      "pros": [
+        "Estándar de la industria para futuros",
+        "Marketplace 1,000+ estrategias y add-ons",
+        "Comisiones más bajas para futuros micro (MES: $0.09)",
+        "Compatible con 100+ brokers",
+        "Licencia de por vida disponible"
+      ],
+      "contras": [
+        "Solo futuros y Forex — sin acciones",
+        "Plataforma de pago (o lease)",
+        "Curva de aprendizaje alta",
+        "Sin opciones de renta variable"
+      ]
+    },
+    {
+      "id": "US018",
+      "nombre": "Goldman Sachs",
+      "tipo": "Banco de Inversión — Tier 1 Global",
+      "seccion": "banco_inv_usa",
+      "pais": "USA",
+      "fundacion": 1869,
+      "sede": "New York, NY — Cotizado NYSE (GS)",
+      "score": 9.5,
+      "aum_usd": "2.8T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "FRB",
+        "OCC",
+        "SIPC",
+        "FCA UK",
+        "regulaciones globales"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Marcus (retail): desde $0. Private Wealth: USD $10M+"
+      },
+      "segmentos": [
+        {
+          "nombre": "Investment Banking",
+          "descripcion": "M&A, OPAs, IPOs, emisiones de deuda. El #1 mundial en muchas categorías"
+        },
+        {
+          "nombre": "Global Markets",
+          "descripcion": "Trading institucional de acciones, renta fija, divisas, commodities"
+        },
+        {
+          "nombre": "Asset Management",
+          "descripcion": "USD 2.8T AUM — fondos mutuos, ETFs, alternativos, private equity"
+        },
+        {
+          "nombre": "Consumer & Wealth Mgmt",
+          "descripcion": "Goldman Sachs Personal Financial Management — a partir de $1M"
+        },
+        {
+          "nombre": "Marcus by Goldman Sachs",
+          "descripcion": "Banco digital retail — high-yield savings, préstamos personales"
+        },
+        {
+          "nombre": "Ayco",
+          "descripcion": "Planificación financiera corporativa para empleados de Fortune 500"
+        }
+      ],
+      "productos_retail": {
+        "marcus_savings_apy": "4.40% APY",
+        "marcus_cd": "Desde 4.25% APY (12 meses)",
+        "marcus_personal_loan": "$3,500-$40,000 — 6.99-28.99% APR"
+      },
+      "plataformas": [
+        "Goldman Sachs Platform (institucional)",
+        "Marcus App",
+        "GS Private Banking Portal"
+      ],
+      "caracteristica_unica": "El banco de inversión más prestigioso del mundo. Cada año maneja los mayores IPOs y M&A globales. Marcus ofrece tasas de ahorro entre las más altas del sector retail",
+      "pros": [
+        "El banco de inversión más reconocido del mundo",
+        "Research de Goldman Sachs — estándar de la industria",
+        "Marcus — high-yield savings competitivos",
+        "Private equity y alternativos de clase institucional"
+      ],
+      "contras": [
+        "Servicios retail limitados vs. Fidelity/Schwab",
+        "Private Wealth Management requiere $10M+",
+        "Exposición a riesgos sistémicos y regulatorios"
+      ]
+    },
+    {
+      "id": "US019",
+      "nombre": "JPMorgan Chase / J.P. Morgan",
+      "tipo": "Banco Universal + Banco de Inversión — #1 EE.UU.",
+      "seccion": "banco_inv_usa",
+      "pais": "USA",
+      "fundacion": 1799,
+      "sede": "New York, NY — Cotizado NYSE (JPM)",
+      "score": 9.4,
+      "aum_usd": "4.0T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "FRB",
+        "OCC",
+        "FDIC",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Chase: sin mínimo. J.P. Morgan Private Bank: $10M+"
+      },
+      "segmentos": [
+        {
+          "nombre": "J.P. Morgan Investment Banking",
+          "descripcion": "M&A, IPOs, deuda soberana — #1 por ingresos globales en muchos años"
+        },
+        {
+          "nombre": "J.P. Morgan Securities",
+          "descripcion": "Brokerage institucional, prime brokerage para hedge funds"
+        },
+        {
+          "nombre": "J.P. Morgan Asset Management",
+          "descripcion": "$3.4T AUM — fondos mutuos, ETFs (JPMorgan ETFs), alternativos"
+        },
+        {
+          "nombre": "J.P. Morgan Private Bank",
+          "descripcion": "Gestión patrimonial ultra-premium — desde $10M"
+        },
+        {
+          "nombre": "J.P. Morgan Wealth Management",
+          "descripcion": "Chase Private Client desde $150K, J.P. Morgan Advisors"
+        },
+        {
+          "nombre": "Chase Bank",
+          "descripcion": "Banco retail — el mayor de EE.UU. por activos ($4T). 4,700+ sucursales"
+        }
+      ],
+      "plataformas": [
+        "J.P. Morgan Markets (institucional)",
+        "Chase App + Self-Directed Investing",
+        "J.P. Morgan Portfolio (clientes privados)"
+      ],
+      "caracteristica_unica": "El banco más grande de EE.UU. ($4T+ en activos). Integración única entre banca retail masiva (Chase) y banca de inversión global (J.P. Morgan). 4,700+ sucursales físicas",
+      "pros": [
+        "Mayor banco de EE.UU. — máxima solidez",
+        "4,700+ sucursales Chase",
+        "J.P. Morgan Research — análisis de clase mundial",
+        "Integración banca-inversión insuperable"
+      ],
+      "contras": [
+        "Private Bank requiere $10M+ mínimo",
+        "Menos competitivo en comisiones vs. discount brokers",
+        "Complejidad burocrática corporativa"
+      ]
+    },
+    {
+      "id": "US020",
+      "nombre": "Morgan Stanley",
+      "tipo": "Banco de Inversión + Wealth Management",
+      "seccion": "banco_inv_usa",
+      "pais": "USA",
+      "fundacion": 1935,
+      "sede": "New York, NY — Cotizado NYSE (MS)",
+      "score": 9.3,
+      "aum_usd": "5.5T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "FRB",
+        "SIPC",
+        "FCA UK"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "E*TRADE (filial): sin mínimo. MS Wealth: $250,000+"
+      },
+      "segmentos": [
+        {
+          "nombre": "Institutional Securities",
+          "descripcion": "Investment banking, sales & trading, research institucional"
+        },
+        {
+          "nombre": "Wealth Management",
+          "descripcion": "$5.5T AUM — el mayor de EE.UU. 15,000+ asesores financieros"
+        },
+        {
+          "nombre": "Investment Management",
+          "descripcion": "Fondos mutuos, ETFs, private equity, real assets"
+        },
+        {
+          "nombre": "E*TRADE (filial)",
+          "descripcion": "Broker online retail — adquirido 2020 por $13B"
+        },
+        {
+          "nombre": "MS Access Investing",
+          "descripcion": "Robo-advisor — desde $5,000"
+        }
+      ],
+      "plataformas": [
+        "Morgan Stanley Online",
+        "E*TRADE (plataforma retail separada)",
+        "MS Wealth Management Portal",
+        "Gorilla Platform (institucional)"
+      ],
+      "caracteristica_unica": "Wealth Management con $5.5T AUM — el mayor del mundo. 15,000+ asesores financieros. Integración con E*TRADE para clientes de todos los niveles",
+      "pros": [
+        "Mayor Wealth Management del mundo ($5.5T)",
+        "Acceso a IPOs de alta calidad",
+        "15,000+ asesores financieros",
+        "E*TRADE para clientes retail"
+      ],
+      "contras": [
+        "Servicios premium requieren $250K+",
+        "Las mejores condiciones para clientes institucionales"
+      ]
+    },
+    {
+      "id": "US021",
+      "nombre": "Bank of America / Merrill Lynch",
+      "tipo": "Banco Universal + Banco de Inversión",
+      "seccion": "banco_inv_usa",
+      "pais": "USA",
+      "fundacion": 1904,
+      "sede": "Charlotte, NC — Cotizado NYSE (BAC)",
+      "score": 9.1,
+      "aum_usd": "3.5T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "FRB",
+        "OCC",
+        "FDIC",
+        "SIPC"
+      ],
+      "segmentos": [
+        {
+          "nombre": "BofA Securities (Investment Banking)",
+          "descripcion": "M&A, IPOs, ECM, DCM — Top 5 global"
+        },
+        {
+          "nombre": "Global Markets",
+          "descripcion": "Sales & trading de renta variable, fija, FX, commodities"
+        },
+        {
+          "nombre": "Merrill Lynch Wealth Management",
+          "descripcion": "$3.5T AUM, 19,000+ asesores financieros"
+        },
+        {
+          "nombre": "Merrill Edge (retail)",
+          "descripcion": "Broker online para inversores DIY — 0% comisiones"
+        },
+        {
+          "nombre": "Bank of America (retail)",
+          "descripcion": "Banco retail — 68M clientes, 3,800+ sucursales"
+        }
+      ],
+      "caracteristica_unica": "Preferred Rewards: programa que vincula BofA Bank con Merrill Edge — hasta 100 trades gratis/mes con $100K en BofA. Global Research Merrill Lynch — uno de los mejores del mundo",
+      "pros": [
+        "Preferred Rewards — 100 trades gratis con $100K+",
+        "Merrill Lynch Research — de clase mundial",
+        "19,000+ asesores financieros",
+        "Integración bancaria completa"
+      ],
+      "contras": [
+        "Las mejores condiciones requieren $100K+ en BofA",
+        "Merrill Lynch Wealth requiere $250K+"
+      ]
+    },
+    {
+      "id": "US022",
+      "nombre": "Wells Fargo Advisors / WellsTrade",
+      "tipo": "Banco Universal + Brokerage",
+      "seccion": "banco_inv_usa",
+      "pais": "USA",
+      "fundacion": 1852,
+      "sede": "San Francisco, CA — Cotizado NYSE (WFC)",
+      "score": 8.5,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "OCC",
+        "FDIC",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "WellsTrade: sin mínimo. Premier: $250K+"
+      },
+      "comisiones": {
+        "acciones_etfs_wellstrade": "$0",
+        "opciones": "$0 + $0.65/contrato",
+        "wellstrade_premier": "$0 acciones hasta 100 trades/mes con $250K+ en Wells"
+      },
+      "plataformas": [
+        "Wells Fargo Online Banking + WellsTrade",
+        "Wells Fargo App"
+      ],
+      "caracteristica_unica": "4,500+ sucursales físicas — la mayor red bancaria de EE.UU. WellsTrade Premier: 0% acciones hasta 100 trades/mes con $250K en Wells Fargo",
+      "pros": [
+        "4,500+ sucursales — mayor red en EE.UU.",
+        "WellsTrade Premier gratuito con $250K+",
+        "Integración bancaria completa"
+      ],
+      "contras": [
+        "Historial de escándalos de cumplimiento (2016-2020)",
+        "WellsTrade menos avanzado que Fidelity/Schwab"
+      ]
+    },
+    {
+      "id": "US023",
+      "nombre": "Citigroup / Citi Wealth",
+      "tipo": "Banco Universal + Banca Privada Global",
+      "seccion": "banco_inv_usa",
+      "pais": "USA",
+      "fundacion": 1812,
+      "sede": "New York, NY — Cotizado NYSE (C)",
+      "score": 8.8,
+      "aum_usd": "2.5T",
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "FRB",
+        "OCC",
+        "FDIC",
+        "SIPC"
+      ],
+      "segmentos": [
+        {
+          "nombre": "Citi Institutional Clients Group",
+          "descripcion": "Investment banking, markets, securities services"
+        },
+        {
+          "nombre": "Citi Private Bank",
+          "descripcion": "Ultra high net worth — desde USD $25M"
+        },
+        {
+          "nombre": "Citi Wealth",
+          "descripcion": "Wealth management desde USD $1M"
+        },
+        {
+          "nombre": "Citi Personal Wealth Management",
+          "descripcion": "Desde USD $50,000"
+        },
+        {
+          "nombre": "Citi Retail Banking",
+          "descripcion": "200 países — el banco con mayor presencia global"
+        }
+      ],
+      "caracteristica_unica": "El banco con mayor presencia internacional — operaciones en 200+ países. Citi Private Bank es uno de los más exclusivos del mundo (mínimo $25M). Líder en mercados de divisas",
+      "pros": [
+        "Presencia en 200+ países — única global",
+        "Líder mundial en mercados FX y treasuries",
+        "Citi Private Bank de clase mundial",
+        "Innovación en pagos digitales (Citi Token Services)"
+      ],
+      "contras": [
+        "Servicios retail limitados en EE.UU. vs. JPMorgan/BofA",
+        "Private Bank requiere $25M+",
+        "Reestructuración corporativa en curso (2024-2025)"
+      ]
+    },
+    {
+      "id": "US024",
+      "nombre": "Betterment",
+      "tipo": "Robo-Advisor — Pionero del sector",
+      "seccion": "robo_usa",
+      "pais": "USA",
+      "fundacion": 2010,
+      "sede": "New York, NY",
+      "score": 8.8,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo para cuenta digital. Premium: $100,000"
+      },
+      "comisiones": {
+        "digital": "0.25% anual sobre AUM",
+        "premium": "0.40% anual — con acceso ilimitado a CFP (Certified Financial Planner)",
+        "cash_reserve": "4.75% APY",
+        "cripto": "0.15% anual (cripto portfolios)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Betterment Digital",
+          "minimo": 0,
+          "tipo": "Robo-advisor 0.25% fee"
+        },
+        {
+          "nombre": "Betterment Premium",
+          "minimo": 100000,
+          "tipo": "0.40% + CFP ilimitado"
+        },
+        {
+          "nombre": "Cash Reserve",
+          "minimo": 0,
+          "tipo": "4.75% APY — cuenta de ahorro de alto rendimiento"
+        },
+        {
+          "nombre": "Checking Account",
+          "minimo": 0,
+          "tipo": "Sin fees + reembolso ATMs globales"
+        },
+        {
+          "nombre": "Crypto Portfolios",
+          "minimo": 0,
+          "tipo": "Carteras diversificadas en cripto — 0.15% fee"
+        },
+        {
+          "nombre": "IRA / Roth IRA / SEP-IRA",
+          "minimo": 0,
+          "tipo": "Jubilación automatizada"
+        }
+      ],
+      "instrumentos": {
+        "etfs": true,
+        "cripto": true,
+        "acciones": false,
+        "fondos_mutuos": false,
+        "bonos": "Via ETFs"
+      },
+      "plataformas": [
+        "Betterment App (iOS/Android)",
+        "Betterment Web"
+      ],
+      "caracteristica_unica": "Pionero del robo-advising (2010). Tax-Loss Harvesting automático. Smart Saver para mover cash automáticamente entre cuentas. Betterment 401(k) para empresas",
+      "pros": [
+        "Tax-loss harvesting automático",
+        "Cash Reserve 4.75% APY",
+        "Sin mínimo de inversión",
+        "CFP ilimitado en Premium",
+        "Cripto portfolios diversificados"
+      ],
+      "contras": [
+        "Solo ETFs — sin acciones individuales",
+        "0.25% fee puede ser alto para carteras grandes",
+        "Premium requiere $100K+"
+      ]
+    },
+    {
+      "id": "US025",
+      "nombre": "Wealthfront",
+      "tipo": "Robo-Advisor — El más sofisticado",
+      "seccion": "robo_usa",
+      "pais": "USA",
+      "fundacion": 2008,
+      "sede": "Palo Alto, CA",
+      "score": 8.9,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 500,
+        "moneda": "USD",
+        "nota": "$500 mínimo para inversión. Cash Account: sin mínimo"
+      },
+      "comisiones": {
+        "gestion": "0.25% anual",
+        "cash_account": "4.00% APY",
+        "direct_indexing": "Disponible con $100K+"
+      },
+      "cuentas": [
+        {
+          "nombre": "Investment Account",
+          "minimo": 500,
+          "tipo": "Robo-advisor 0.25% fee"
+        },
+        {
+          "nombre": "IRA / Roth IRA / SEP-IRA",
+          "minimo": 500,
+          "tipo": "Jubilación automatizada"
+        },
+        {
+          "nombre": "Cash Account",
+          "minimo": 1,
+          "tipo": "4.00% APY — 32 bancos de respaldo FDIC"
+        },
+        {
+          "nombre": "529 College Savings",
+          "minimo": 500,
+          "tipo": "Ahorro para universidad"
+        },
+        {
+          "nombre": "Direct Indexing",
+          "minimo": 100000,
+          "tipo": "Tax-loss harvesting de acciones individuales"
+        }
+      ],
+      "instrumentos": {
+        "etfs": true,
+        "acciones_individuales": "Direct Indexing ($100K+)",
+        "cripto": false,
+        "bonos": "Via ETFs"
+      },
+      "plataformas": [
+        "Wealthfront App (iOS/Android)",
+        "Wealthfront Web"
+      ],
+      "caracteristica_unica": "Direct Indexing desde $100K — réplica directa de índices con acciones individuales para tax-loss harvesting máximo. Cash Account respaldado por 32 bancos (cobertura FDIC $8M). Path — software de planificación financiera gratuito",
+      "pros": [
+        "Direct Indexing — tax-loss harvesting máximo ($100K+)",
+        "Cash Account con $8M cobertura FDIC",
+        "Path — planificación financiera más avanzada del sector",
+        "529 College Savings disponible"
+      ],
+      "contras": [
+        "Sin cripto",
+        "$500 mínimo para inversión",
+        "Sin acceso a asesor humano en plan estándar"
+      ]
+    },
+    {
+      "id": "US026",
+      "nombre": "Acorns",
+      "tipo": "Fintech Micro-Inversión — Redondeo automático",
+      "seccion": "robo_usa",
+      "pais": "USA",
+      "fundacion": 2012,
+      "sede": "Long Beach, CA",
+      "score": 7.8,
+      "regulacion": [
+        "SEC",
+        "FINRA",
+        "SIPC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — desde centavos"
+      },
+      "comisiones": {
+        "acorns_lite_bronze": "$3/mes — inversión + cuenta bancaria",
+        "acorns_silver": "$6/mes — + IRA",
+        "acorns_gold": "$12/mes — familia, 4+ cuentas, 25% match en contribuciones IRA"
+      },
+      "cuentas": [
+        {
+          "nombre": "Acorns Invest",
+          "minimo": 0,
+          "tipo": "Inversión en ETFs con redondeo"
+        },
+        {
+          "nombre": "Acorns Later (IRA)",
+          "minimo": 0,
+          "tipo": "IRA automatizado"
+        },
+        {
+          "nombre": "Acorns Checking",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria + tarjeta de débito"
+        },
+        {
+          "nombre": "Acorns Early",
+          "minimo": 0,
+          "tipo": "Cuenta de custodia para hijos"
+        },
+        {
+          "nombre": "Acorns Gold Family",
+          "minimo": 0,
+          "tipo": "Hasta 4 cuentas Early para hijos — $12/mes"
+        }
+      ],
+      "instrumentos": {
+        "etfs": true,
+        "acciones": false,
+        "cripto": false
+      },
+      "plataformas": [
+        "Acorns App (iOS/Android)"
+      ],
+      "caracteristica_unica": "Round-Ups: redondea cada compra al dólar más cercano e invierte la diferencia automáticamente. Found Money: marcas que invierten en tu cuenta (10-15% cashback como inversión). Para principiantes absolutos",
+      "pros": [
+        "Round-Ups — micro-inversión automática y pasiva",
+        "Found Money — cashback de marcas",
+        "Ideal para principiantes que no saben por dónde empezar",
+        "Cuenta familiar disponible"
+      ],
+      "contras": [
+        "$3-12/mes puede ser alto para carteras pequeñas",
+        "Sin opciones ni acciones individuales",
+        "No apto para inversores activos o con mayor capital"
+      ]
+    },
+    {
+      "id": "US027",
+      "nombre": "BlackRock / iShares",
+      "tipo": "Gestora de Activos — La más grande del mundo",
+      "seccion": "asset_usa",
+      "pais": "USA",
+      "fundacion": 1988,
+      "sede": "New York, NY — Cotizado NYSE (BLK)",
+      "score": 9.5,
+      "aum_usd": "10.5T",
+      "regulacion": [
+        "SEC",
+        "FCA",
+        "múltiples regulaciones globales"
+      ],
+      "productos_destacados": [
+        {
+          "nombre": "iShares Core S&P 500 ETF (IVV)",
+          "tipo": "ETF",
+          "expense_ratio": "0.03%",
+          "aum_usd": "540B+",
+          "descripcion": "ETF más grande del mundo"
+        },
+        {
+          "nombre": "iShares Core MSCI EAFE ETF (IEFA)",
+          "tipo": "ETF",
+          "expense_ratio": "0.07%"
+        },
+        {
+          "nombre": "iShares Bitcoin Trust (IBIT)",
+          "tipo": "ETF Bitcoin",
+          "aum_usd": "50B+",
+          "descripcion": "Primer y mayor ETF spot de Bitcoin en EE.UU."
+        },
+        {
+          "nombre": "BlackRock Multi-Asset Strategies",
+          "tipo": "Fondos activos",
+          "descripcion": "Gestión activa institucional"
+        },
+        {
+          "nombre": "Aladdin Platform",
+          "tipo": "Tecnología",
+          "descripcion": "Sistema de gestión de riesgos más usado del mundo — $22T en activos gestionados"
+        }
+      ],
+      "caracteristica_unica": "La gestora de activos más grande del mundo con $10.5T AUM. Aladdin procesa el riesgo de $22T en activos globales. iShares es la mayor familia de ETFs del mundo. IBIT es el mayor ETF de Bitcoin del mundo",
+      "pros": [
+        "$10.5T AUM — la más grande del mundo",
+        "iShares: mayor familia ETFs globales",
+        "IBIT: mayor ETF Bitcoin ($50B+)",
+        "Aladdin: la infraestructura de riesgo del mundo financiero"
+      ],
+      "contras": [
+        "No es un broker retail directo — acceso via plataformas",
+        "Influencia sistémica cuestionada por reguladores",
+        "Fees activos más altos que vehículos pasivos"
+      ]
+    },
+    {
+      "id": "US028",
+      "nombre": "Vanguard (Asset Manager)",
+      "tipo": "Gestora de Activos — Inversión Pasiva",
+      "seccion": "asset_usa",
+      "pais": "USA",
+      "fundacion": 1975,
+      "sede": "Malvern, PA",
+      "score": 9.3,
+      "aum_usd": "9.3T",
+      "productos_destacados": [
+        {
+          "nombre": "Vanguard S&P 500 ETF (VOO)",
+          "expense_ratio": "0.03%",
+          "aum_usd": "580B+"
+        },
+        {
+          "nombre": "Vanguard Total Stock Market ETF (VTI)",
+          "expense_ratio": "0.03%",
+          "aum_usd": "430B+"
+        },
+        {
+          "nombre": "Vanguard Total Bond Market ETF (BND)",
+          "expense_ratio": "0.03%"
+        },
+        {
+          "nombre": "Vanguard Target Retirement Funds",
+          "tipo": "Fondos fecha-objetivo",
+          "descripcion": "Fondos de jubilación con rebalanceo automático"
+        }
+      ],
+      "caracteristica_unica": "Estructura de propiedad única: los fondos son propiedad de sus inversionistas. Sin accionistas externos = sin conflicto de interés. Inventó los fondos indexados para retail (John Bogle, 1976)",
+      "pros": [
+        "Estructura sin conflicto de interés",
+        "Expense ratios más bajos de la industria",
+        "Inventó la inversión indexada",
+        "VOO: mayor ETF de S&P 500 del mundo"
+      ],
+      "contras": [
+        "Plataforma tecnológica rezagada",
+        "Sin ETFs de activos alternativos sofisticados"
+      ]
+    },
+    {
+      "id": "US029",
+      "nombre": "State Street SPDR",
+      "tipo": "Gestora de Activos — ETFs SPDR",
+      "seccion": "asset_usa",
+      "pais": "USA",
+      "fundacion": 1792,
+      "sede": "Boston, MA — Cotizado NYSE (STT)",
+      "score": 9.0,
+      "aum_usd": "4.4T",
+      "productos_destacados": [
+        {
+          "nombre": "SPDR S&P 500 ETF Trust (SPY)",
+          "expense_ratio": "0.0945%",
+          "aum_usd": "600B+",
+          "descripcion": "El ETF más antiguo y más negociado del mundo (1993)"
+        },
+        {
+          "nombre": "SPDR Gold Shares (GLD)",
+          "expense_ratio": "0.40%",
+          "aum_usd": "60B+"
+        },
+        {
+          "nombre": "SPDR Bloomberg Barclays Bond ETFs",
+          "tipo": "Renta fija"
+        },
+        {
+          "nombre": "SPDR Select Sector ETFs (XLF, XLK, XLE, etc.)",
+          "tipo": "ETFs sectoriales"
+        }
+      ],
+      "caracteristica_unica": "SPY (lanzado en 1993) fue el primer ETF listado en EE.UU. y sigue siendo el más negociado del mundo. $600B+ AUM. SPDR es la marca de ETF más reconocida globalmente",
+      "pros": [
+        "SPY: ETF más negociado del mundo",
+        "GLD: referente global en oro via ETF",
+        "ETFs sectoriales SPDR: estándar de la industria",
+        "Liquidez insuperable en SPY"
+      ],
+      "contras": [
+        "Expense ratio de SPY (0.0945%) más alto que IVV/VOO (0.03%)",
+        "Plataforma de gestión institucional — no retail"
+      ]
+    },
+    {
+      "id": "US030",
+      "nombre": "Coinbase",
+      "tipo": "Exchange Cripto — El más regulado de EE.UU.",
+      "seccion": "cripto_usa",
+      "pais": "USA",
+      "fundacion": 2012,
+      "sede": "San Francisco, CA — Cotizado NASDAQ (COIN)",
+      "score": 8.8,
+      "regulacion": [
+        "FinCEN (MSB)",
+        "SEC (en proceso de regulación)",
+        "NYDFS BitLicense",
+        "Regulaciones estatales múltiples",
+        "MiFID II (Europa)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "coinbase_simple": "Spread 0.5% + fee plana según monto",
+        "coinbase_advanced": "0.40-0.60% maker / 0.60-0.80% taker (decrece con volumen)",
+        "coinbase_one": "$29.99/mes — 0% fees hasta $10K/mes",
+        "staking": "Yield variable según crypto",
+        "cbbtc_bitcoin_defi": "0.02% mint/redeem"
+      },
+      "cuentas": [
+        {
+          "nombre": "Coinbase Consumer",
+          "minimo": 0,
+          "tipo": "Compra/venta de cripto — la más popular"
+        },
+        {
+          "nombre": "Coinbase Advanced Trade",
+          "minimo": 0,
+          "tipo": "Trading con libros de órdenes — fees bajos"
+        },
+        {
+          "nombre": "Coinbase One",
+          "costo": "$29.99/mes",
+          "tipo": "0% fees hasta $10K/mes"
+        },
+        {
+          "nombre": "Coinbase Prime",
+          "minimo": 0,
+          "tipo": "Para institucionales — gestión de custodia"
+        },
+        {
+          "nombre": "Coinbase Wallet",
+          "minimo": 0,
+          "tipo": "Self-custody wallet — DeFi"
+        }
+      ],
+      "instrumentos": {
+        "cripto": true,
+        "btc": true,
+        "eth": true,
+        "cantidad_activos": "250+ activos"
+      },
+      "plataformas": [
+        "Coinbase App (iOS/Android)",
+        "Coinbase Web",
+        "Coinbase Advanced Trade",
+        "Coinbase Prime (institucional)"
+      ],
+      "caracteristica_unica": "El exchange cripto más regulado y transparente de EE.UU. Cotizado en NASDAQ (COIN). Reservas verificables. Base para cbBTC (Bitcoin wrapped para DeFi). Custodio de los ETFs de Bitcoin de BlackRock (IBIT)",
+      "pros": [
+        "El más regulado de EE.UU. — máxima confianza",
+        "Cotizado NASDAQ — máxima transparencia",
+        "Custodio de IBIT (BlackRock)",
+        "Coinbase One: 0% fees hasta $10K/mes",
+        "250+ activos disponibles"
+      ],
+      "contras": [
+        "Fees más altos que Binance o Kraken",
+        "Interfaz simple de Coinbase con spreads altos",
+        "Historia de problemas con clientes (cierres de cuenta)"
+      ]
+    },
+    {
+      "id": "US031",
+      "nombre": "Kraken",
+      "tipo": "Exchange Cripto — El más seguro históricamente",
+      "seccion": "cripto_usa",
+      "pais": "USA",
+      "fundacion": 2011,
+      "sede": "San Francisco, CA",
+      "score": 8.7,
+      "regulacion": [
+        "FinCEN",
+        "NYDFS BitLicense",
+        "Kraken Bank (Wyoming — primer banco cripto regulado)",
+        "FCA UK",
+        "Regulaciones globales"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo. Kraken Pro: sin mínimo"
+      },
+      "comisiones": {
+        "spot_maker": "0.16% (decrece a 0% con alto volumen)",
+        "spot_taker": "0.26% (decrece a 0.10%)",
+        "kraken_pro_maker": "0.16%",
+        "kraken_pro_taker": "0.26%",
+        "futuros": "0.02% maker / 0.05% taker",
+        "staking": "Yield variable según activo (hasta 17% ETH staking)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Kraken Standard",
+          "minimo": 0,
+          "tipo": "Compra/venta cripto"
+        },
+        {
+          "nombre": "Kraken Pro",
+          "minimo": 0,
+          "tipo": "Trading avanzado con libros de órdenes"
+        },
+        {
+          "nombre": "Kraken Futures",
+          "minimo": 0,
+          "tipo": "Futuros y perpetuos sobre cripto"
+        },
+        {
+          "nombre": "Kraken Institutional",
+          "minimo": 0,
+          "tipo": "OTC, custody, prime services"
+        },
+        {
+          "nombre": "Kraken Bank (Wyoming)",
+          "minimo": 0,
+          "tipo": "Primer banco cripto regulado en EE.UU."
+        }
+      ],
+      "instrumentos": {
+        "cripto": true,
+        "cantidad_activos": "200+ activos",
+        "futuros_cripto": true,
+        "staking": true
+      },
+      "plataformas": [
+        "Kraken App (iOS/Android)",
+        "Kraken Pro (web)",
+        "Kraken Terminal (desktop)",
+        "API"
+      ],
+      "caracteristica_unica": "NUNCA ha sido hackeado en sus 13 años de historia — el exchange cripto más seguro del sector. Kraken Bank: primer banco con licencia bancaria cripto en EE.UU. Staking de ETH hasta 17% anual",
+      "pros": [
+        "NUNCA hackeado en 13 años — líder en seguridad",
+        "Kraken Bank — único banco cripto licenciado EE.UU.",
+        "Staking con rendimientos competitivos",
+        "Futuros cripto disponibles",
+        "Fees competitivos con alto volumen"
+      ],
+      "contras": [
+        "Fees estándar más altos que Binance",
+        "Interfaz menos amigable que Coinbase para principiantes",
+        "Menor variedad de DeFi vs. exchange descentralizados"
+      ]
+    },
+    {
+      "id": "US032",
+      "nombre": "Gemini",
+      "tipo": "Exchange Cripto — Regulado en EE.UU.",
+      "seccion": "cripto_usa",
+      "pais": "USA",
+      "fundacion": 2014,
+      "sede": "New York, NY",
+      "score": 8.2,
+      "regulacion": [
+        "NYDFS (licencia Trust Company)",
+        "FinCEN",
+        "Estado de NY — la regulación más estricta de EE.UU."
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "gemini_basic": "Spread 0.5% + fee plana",
+        "gemini_active_trader": "0.2% maker / 0.4% taker",
+        "gemini_earn": "Rendimientos en staking (variable)"
+      },
+      "instrumentos": {
+        "cripto": true,
+        "cantidad_activos": "100+ activos"
+      },
+      "plataformas": [
+        "Gemini App",
+        "Gemini Web",
+        "Gemini ActiveTrader",
+        "Gemini Custody (institucional)"
+      ],
+      "caracteristica_unica": "La licencia Trust Company de NYDFS más estricta del sector. Gemini Earn (staking). Gemini fue el primer exchange en obtener licencia SOC 2 Type 2. Fundado por Tyler y Cameron Winklevoss",
+      "pros": [
+        "La regulación más estricta de EE.UU. (NYDFS Trust)",
+        "SOC 2 Type 2 certificado",
+        "Gemini Earn para rendimientos",
+        "Interfaz limpia y sencilla"
+      ],
+      "contras": [
+        "Fees más altos que competidores",
+        "Menos variedad de activos (100+ vs. 250+ Coinbase)",
+        "Gemini Earn pausado en el pasado"
+      ]
+    },
+    {
+      "id": "CA001",
+      "nombre": "Questrade",
+      "tipo": "Discount Broker — #1 Canadá 2025",
+      "seccion": "broker_ca",
+      "pais": "Canadá",
+      "fundacion": 1999,
+      "sede": "Toronto, ON",
+      "score": 9.1,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M protección)",
+        "FINTRAC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo desde febrero 2025 (antes $1,000). Sin comisiones desde feb 2025"
+      },
+      "comisiones": {
+        "acciones_etfs_canada": "$0 (desde febrero 2025 — eliminó todas las comisiones)",
+        "acciones_etfs_usa": "$0",
+        "opciones": "$0 + $0.99/contrato",
+        "fondos_mutuos": "$9.95/transacción",
+        "forex_conversion": "1.5-2% spread CAD/USD",
+        "questrade_pro": "$11.95/mes — herramientas avanzadas, análisis IA",
+        "margen": "Prime rate + 3.25-4.25%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual Non-Registered",
+          "minimo": 0,
+          "tipo": "Trading estándar"
+        },
+        {
+          "nombre": "TFSA (Tax-Free Savings Account)",
+          "minimo": 0,
+          "tipo": "Ahorro libre de impuestos — max CAD $7,000/año (2025)"
+        },
+        {
+          "nombre": "RRSP (Registered Retirement Savings Plan)",
+          "minimo": 0,
+          "tipo": "Jubilación — deducible de impuestos"
+        },
+        {
+          "nombre": "RESP (Registered Education Savings Plan)",
+          "minimo": 0,
+          "tipo": "Ahorro educación hijos"
+        },
+        {
+          "nombre": "FHSA (First Home Savings Account)",
+          "minimo": 0,
+          "tipo": "Ahorro primera vivienda — max CAD $8,000/año"
+        },
+        {
+          "nombre": "LIRA / LIF",
+          "minimo": 0,
+          "tipo": "Fondos de jubilación bloqueados"
+        },
+        {
+          "nombre": "Margin Account",
+          "minimo": 0,
+          "tipo": "Cuenta de margen"
+        },
+        {
+          "nombre": "Corporate Account",
+          "minimo": 0,
+          "tipo": "Cuenta corporativa"
+        },
+        {
+          "nombre": "Questwealth Portfolios",
+          "minimo": 1000,
+          "tipo": "Robo-advisor — 0.20-0.25% fee anual"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true,
+        "ipos": true,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Questrade Trading (web)",
+        "Questrade App (iOS/Android)",
+        "Questrade Pro ($11.95/mes)",
+        "IQ Edge (desktop avanzado)"
+      ],
+      "caracteristica_unica": "#1 broker de descuento en Canadá. Sin comisiones desde febrero 2025. Questrade Pro con análisis IA. Acciones fraccionarias. Transfer-in: hasta $150 en fees cubiertos. TFSA+RRSP+FHSA todos disponibles",
+      "pros": [
+        "$0 comisiones acciones/ETFs (desde feb 2025)",
+        "Mayor variedad de tipos de cuenta del mercado CA",
+        "Acciones fraccionarias",
+        "Transfer-in con reembolso hasta $150",
+        "Questwealth Portfolios 0.20% fee — muy competitivo"
+      ],
+      "contras": [
+        "Comisión de opciones $0.99/contrato (vs $0 en USA)",
+        "$9.95 fondos mutuos",
+        "Atención al cliente con demoras reportadas",
+        "$11.95/mes para herramientas pro",
+        "Conversión CAD/USD al 1.5-2%"
+      ]
+    },
+    {
+      "id": "CA002",
+      "nombre": "Wealthsimple Trade / Invest",
+      "tipo": "Fintech App — Ecosistema Financiero Completo CA",
+      "seccion": "fintech_ca",
+      "pais": "Canadá",
+      "fundacion": 2014,
+      "sede": "Toronto, ON",
+      "score": 9.0,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "FINTRAC",
+        "FCA UK (expansión UK)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo en ninguna cuenta"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0",
+        "opciones": "$0",
+        "cripto": "0-2.5% spread",
+        "fondos_mutuos": "Solo ETFs propios",
+        "wealthsimple_plus": "$10/mes (gratis con $100K+ en cuentas Wealthsimple) — cuenta USD directa",
+        "wealthsimple_premium": "$50K+ — gestor personal, tarjeta exclusiva",
+        "wealthsimple_generation": "$500K+ — planificador certificado",
+        "forex_conversion": "1.5% (sin Plus) / evitar con Plus",
+        "robo_advisor_fee": "0.40-0.50% anual"
+      },
+      "cuentas": [
+        {
+          "nombre": "Wealthsimple Trade",
+          "minimo": 0,
+          "tipo": "Trading acciones, ETFs, opciones — $0"
+        },
+        {
+          "nombre": "TFSA",
+          "minimo": 0,
+          "tipo": "Tax-Free Savings Account"
+        },
+        {
+          "nombre": "RRSP",
+          "minimo": 0,
+          "tipo": "Registered Retirement Savings Plan"
+        },
+        {
+          "nombre": "FHSA",
+          "minimo": 0,
+          "tipo": "First Home Savings Account"
+        },
+        {
+          "nombre": "RESP",
+          "minimo": 0,
+          "tipo": "Educación hijos"
+        },
+        {
+          "nombre": "Wealthsimple Invest (Robo)",
+          "minimo": 1,
+          "tipo": "Gestión automatizada — 0.40-0.50% fee"
+        },
+        {
+          "nombre": "Wealthsimple Cash",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria + tarjeta Visa"
+        },
+        {
+          "nombre": "Wealthsimple Crypto",
+          "minimo": 0,
+          "tipo": "Cripto spot — el líder cripto de Canadá"
+        },
+        {
+          "nombre": "Wealthsimple Mortgages",
+          "minimo": 0,
+          "tipo": "Hipotecas via Wealthsimple"
+        },
+        {
+          "nombre": "Wealthsimple Tax",
+          "minimo": 0,
+          "tipo": "Software de impuestos (SimpleTax)"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "cripto": true,
+        "fondos_mutuos": false,
+        "bonos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Wealthsimple App (iOS/Android)",
+        "Wealthsimple Web"
+      ],
+      "caracteristica_unica": "El ecosistema financiero todo-en-uno más completo de Canadá: inversiones + robo-advisor + banco + cripto + hipotecas + impuestos — todo en una app. El líder cripto en Canadá (wallet cripto incluida)",
+      "pros": [
+        "Ecosistema financiero completo (invierte + banco + cripto + hipotecas + impuestos)",
+        "$0 comisiones acciones/ETFs/opciones",
+        "Líder cripto en Canadá",
+        "Wealthsimple Tax (software impuestos gratuito)",
+        "Mejor diseño UX del mercado canadiense"
+      ],
+      "contras": [
+        "1.5% conversión CAD/USD (sin Plus)",
+        "Plataforma desktop calificada 18% — muy limitada",
+        "Robo-advisor fee 0.40-0.50% vs. 0.20% Questrade",
+        "Plus $10/mes necesario para evitar conversión"
+      ]
+    },
+    {
+      "id": "CA003",
+      "nombre": "Qtrade Direct Investing",
+      "tipo": "Discount Broker — #1 en Plataforma Desktop CA",
+      "seccion": "broker_ca",
+      "pais": "Canadá",
+      "fundacion": 2000,
+      "sede": "Vancouver, BC",
+      "score": 8.7,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "Aviso Wealth"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Cuota admin: $25/trim si <$25K (evitable con $300 contrib. mensual)"
+      },
+      "comisiones": {
+        "acciones_etfs_standard": "$8.75/operación",
+        "acciones_etfs_activo": "$6.95 (150+ trades/trim o $500K+ portafolio)",
+        "opciones": "$8.75 + $1.25/contrato",
+        "fondos_mutuos": "$8.75 (o gratis para fondos seleccionados)",
+        "etfs_comision_libre": "100 ETFs gratuitos — compra Y venta",
+        "bonos_gics": "$0",
+        "margen": "Prime + 1.25-1.55%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Non-Registered Account",
+          "minimo": 0,
+          "tipo": "Estándar"
+        },
+        {
+          "nombre": "TFSA",
+          "minimo": 0,
+          "tipo": "Tax-Free Savings Account"
+        },
+        {
+          "nombre": "RRSP / RRIF",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "RESP",
+          "minimo": 0,
+          "tipo": "Educación"
+        },
+        {
+          "nombre": "FHSA",
+          "minimo": 0,
+          "tipo": "Primera vivienda"
+        },
+        {
+          "nombre": "Margin Account",
+          "minimo": 0,
+          "tipo": "Margen"
+        },
+        {
+          "nombre": "Corporate / Trust Account",
+          "minimo": 0,
+          "tipo": "Empresas y fideicomisos"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true,
+        "acciones_fraccionarias": false
+      },
+      "plataformas": [
+        "Qtrade.ca (web — calificada 86% en desktop — #1 Canadá)",
+        "Qtrade App",
+        "Qtrade Advanced Dashboard"
+      ],
+      "caracteristica_unica": "La mejor plataforma desktop de Canadá (#1 Surviscor 2025 con 86%). Portfolio Analytics: Portfolio Score, Portfolio Simulator, Portfolio Creator — las mejores herramientas de análisis de cartera de Canadá. 100 ETFs gratis (compra Y venta)",
+      "pros": [
+        "#1 plataforma desktop en Canadá (Surviscor 2025)",
+        "Portfolio Analytics — herramientas de cartera más avanzadas",
+        "100 ETFs gratuitos (buy + sell)",
+        "Atención al cliente #1 en Canadá",
+        "Tasas de margen bajas (Prime + 1.25%)"
+      ],
+      "contras": [
+        "$8.75 por trade (más caro que Questrade/Wealthsimple)",
+        "$25/trim cuota admin para cuentas <$25K",
+        "Sin acciones fraccionarias",
+        "Sin cripto"
+      ]
+    },
+    {
+      "id": "CA004",
+      "nombre": "TD Direct Investing",
+      "tipo": "Big Bank Broker — #2 Plataforma Desktop CA",
+      "seccion": "bank_ca",
+      "pais": "Canadá",
+      "fundacion": 1984,
+      "sede": "Toronto, ON (TD Bank Group)",
+      "score": 8.5,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "OSFI (como banco)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Cuota trimestral: $25 (exenta con $15K+ o 2+ trades/trim)"
+      },
+      "comisiones": {
+        "acciones_etfs": "$9.99/operación",
+        "activos_traders": "$7.00 (150+ trades/trimestre)",
+        "opciones": "$9.99 + $1.25/contrato",
+        "fondos_mutuos": "$0 para fondos TD",
+        "td_easy_trade": "50 trades gratis/año (acciones y ETFs via app separada)",
+        "margen": "Prime + 1.5-4%"
+      },
+      "cuentas": [
+        {
+          "nombre": "TD Direct Investing",
+          "minimo": 0,
+          "tipo": "Plataforma completa"
+        },
+        {
+          "nombre": "TD EasyTrade",
+          "minimo": 0,
+          "tipo": "App simplificada — 50 trades gratis/año"
+        },
+        {
+          "nombre": "TFSA",
+          "minimo": 0,
+          "tipo": "Tax-Free Savings"
+        },
+        {
+          "nombre": "RRSP / RRIF / RESP",
+          "minimo": 0,
+          "tipo": "Cuentas registradas"
+        },
+        {
+          "nombre": "FHSA",
+          "minimo": 0,
+          "tipo": "Primera vivienda"
+        },
+        {
+          "nombre": "TD GoalAssist (Robo)",
+          "minimo": 0,
+          "tipo": "Robo-advisor integrado"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true,
+        "acciones_parciales": true
+      },
+      "plataformas": [
+        "WebBroker (web — calificado 85% Surviscor #2)",
+        "TD App",
+        "Advanced Dashboard (opciones)",
+        "TD EasyTrade App (simple)",
+        "thinkorswim (via Schwab, próximamente)"
+      ],
+      "caracteristica_unica": "#2 plataforma desktop en Canadá. TD EasyTrade: 50 trades gratis/año en app separada. Mejor educación del sector para principiantes (cursos, videos, webinars). Partial shares disponibles",
+      "pros": [
+        "#2 plataforma desktop (Surviscor 2025)",
+        "TD EasyTrade 50 trades gratis/año",
+        "Mejor educación e investigación del sector",
+        "Acciones parciales disponibles",
+        "Red TD Bank — 1,100+ sucursales Canadá"
+      ],
+      "contras": [
+        "$9.99 por trade (uno de los más altos)",
+        "Cuota trimestral $25 (<$15K)",
+        "TD Easy Trade limitado (50 trades/año cap)"
+      ]
+    },
+    {
+      "id": "CA005",
+      "nombre": "RBC Direct Investing",
+      "tipo": "Big Bank Broker — Royal Bank of Canada",
+      "seccion": "bank_ca",
+      "pais": "Canadá",
+      "fundacion": 1994,
+      "sede": "Toronto, ON (Royal Bank of Canada)",
+      "score": 8.3,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "OSFI"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Cuota admin: $25/trim si <$15K (exenta con $300/trim aporte)"
+      },
+      "comisiones": {
+        "acciones_etfs": "$9.95/operación",
+        "activos": "$6.95 (150+ trades/trim)",
+        "opciones": "$9.95 + $1.25/contrato (asignación: $43+ mínimo)",
+        "fondos_rbc": "$0 (fondos RBC)",
+        "conversion_forex": "1.60-1.80% spread CAD/USD",
+        "margen": "Prime + 1.5-4%"
+      },
+      "cuentas": [
+        {
+          "nombre": "RBC Direct Investing",
+          "minimo": 0,
+          "tipo": "Plataforma completa"
+        },
+        {
+          "nombre": "TFSA / RRSP / RESP / FHSA",
+          "minimo": 0,
+          "tipo": "Cuentas registradas"
+        },
+        {
+          "nombre": "RBC InvestEase (Robo)",
+          "minimo": 100,
+          "tipo": "Robo-advisor — 0.50% fee"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true,
+        "acciones_fraccionarias": "Próximamente"
+      },
+      "plataformas": [
+        "RBC DI Web (recientemente renovado)",
+        "RBC Mobile App",
+        "Portfolio Analyzer"
+      ],
+      "caracteristica_unica": "Integración con Royal Bank of Canada — el mayor banco de Canadá por capitalización de mercado. Portfolio Analyzer mejorado recientemente. RBC Research de clase institucional",
+      "pros": [
+        "Mayor banco de Canadá — máxima solidez",
+        "Renovación de plataforma web (2024-2025)",
+        "RBC Research institucional",
+        "Portfolio Analyzer mejorado",
+        "Integración total con banca RBC"
+      ],
+      "contras": [
+        "$9.95 por trade (más alto del sector)",
+        "Fees de asignación de opciones muy altos ($43+)",
+        "Conversión CAD/USD cara (1.60%)",
+        "Sin cripto"
+      ]
+    },
+    {
+      "id": "CA006",
+      "nombre": "BMO InvestorLine Self-Directed",
+      "tipo": "Big Bank Broker — Bank of Montreal",
+      "seccion": "bank_ca",
+      "pais": "Canadá",
+      "fundacion": 1995,
+      "sede": "Toronto, ON (Bank of Montreal)",
+      "score": 8.2,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "OSFI"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Cuota admin: puede aplicar para cuentas <$15K"
+      },
+      "comisiones": {
+        "acciones_etfs": "$9.95/operación",
+        "activos": "$7.00 (150+ trades/trim)",
+        "opciones": "$9.95 + $1.25/contrato",
+        "etfs_comision_libre": "108 ETFs gratuitos (BMO, iShares, Vanguard) — compra Y venta",
+        "fondos_mutuos": "$0 BMO / $9.95 externos",
+        "margen": "Prime + 1.25-4%"
+      },
+      "cuentas": [
+        {
+          "nombre": "BMO InvestorLine Self-Directed",
+          "minimo": 0,
+          "tipo": "Plataforma completa"
+        },
+        {
+          "nombre": "BMO InvestorLine adviceDirect",
+          "minimo": 10000,
+          "tipo": "Asesoría básica + algo-recomendaciones — 0.25-0.75% fee"
+        },
+        {
+          "nombre": "TFSA / RRSP / RESP / FHSA",
+          "minimo": 0,
+          "tipo": "Cuentas registradas"
+        },
+        {
+          "nombre": "BMO SmartFolio (Robo)",
+          "minimo": 1000,
+          "tipo": "Robo-advisor — 0.40-0.70% fee"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true
+      },
+      "plataformas": [
+        "BMO InvestorLine (web)",
+        "BMO Wealth App"
+      ],
+      "caracteristica_unica": "108 ETFs gratuitos (compra Y venta) incluyendo Vanguard — el mayor catálogo ETF gratuito entre los big bank brokers. adviceDirect para pequeños inversores que quieren algo de guía sin fee alto",
+      "pros": [
+        "108 ETFs gratuitos (buy + sell)",
+        "adviceDirect — asesoría básica accesible",
+        "Tasas margen bajas (Prime + 1.25%)",
+        "Solidez BMO Group"
+      ],
+      "contras": [
+        "$9.95 por trade",
+        "Plataforma web calificada como estancada",
+        "Sin cripto",
+        "Proceso de apertura más lento"
+      ]
+    },
+    {
+      "id": "CA007",
+      "nombre": "Scotia iTRADE",
+      "tipo": "Big Bank Broker — Scotiabank",
+      "seccion": "bank_ca",
+      "pais": "Canadá",
+      "fundacion": 1983,
+      "sede": "Toronto, ON (Scotiabank)",
+      "score": 8.1,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "OSFI"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. $24.99 cuota trim (<$25K)"
+      },
+      "comisiones": {
+        "acciones_etfs": "$9.99/operación",
+        "activos": "$4.99 (150+ trades/trim — más barato de big banks)",
+        "opciones": "$9.99 + $1.25/contrato",
+        "etfs_scotia": "104 ETFs gratuitos",
+        "margen": "Prime + 1.5-4%"
+      },
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true
+      },
+      "plataformas": [
+        "Scotia iTRADE Web (calificado 83% Surviscor)",
+        "Scotia iTRADE App",
+        "Scotia Online integrado"
+      ],
+      "caracteristica_unica": "$4.99 con 150+ trades/trimestre — el precio más bajo para traders activos entre los Big 5 banks. 104 ETFs gratuitos. Scotia iTRADE es parte del mayor banco de Canadá por activos internacionales",
+      "pros": [
+        "$4.99/trade para activos — más bajo Big 5",
+        "104 ETFs gratuitos",
+        "Integración Scotiabank",
+        "Scotia iTRADE calificado 83% desktop"
+      ],
+      "contras": [
+        "$9.99 para no-activos — caro",
+        "$24.99 cuota trim <$25K",
+        "Sin cripto",
+        "Menos innovación vs. Questrade/Wealthsimple"
+      ]
+    },
+    {
+      "id": "CA008",
+      "nombre": "CIBC Investor's Edge",
+      "tipo": "Big Bank Broker — CIBC",
+      "seccion": "bank_ca",
+      "pais": "Canadá",
+      "fundacion": 2000,
+      "sede": "Toronto, ON (CIBC)",
+      "score": 8.0,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "OSFI"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Cuota trim: $100/año (<$25K)"
+      },
+      "comisiones": {
+        "acciones_etfs": "$6.95/operación — MÁS BAJO de los Big 5 banks",
+        "activos": "$4.95 (150+ trades/trim)",
+        "opciones": "$6.95 + $1.25/contrato",
+        "fondos_mutuos": "$0 CIBC",
+        "cibc_smart_start": "0% para inversores <25 años",
+        "cibc_smart_students": "0% para estudiantes",
+        "margen": "Prime + 1.75-4%"
+      },
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true
+      },
+      "plataformas": [
+        "CIBC Investor's Edge Web",
+        "CIBC Mobile Wealth App",
+        "Trading Central (análisis técnico)"
+      ],
+      "caracteristica_unica": "$6.95/trade — el más barato de los Big 5 Banks. CIBC Smart Start/Students: 0% para menores de 25 años y estudiantes — el broker de los big banks para jóvenes. Trading Central integrado para análisis técnico",
+      "pros": [
+        "$6.95/trade — más barato Big 5",
+        "0% para menores de 25 y estudiantes",
+        "Trading Central integrado gratis",
+        "Solidez CIBC Group"
+      ],
+      "contras": [
+        "$100/año cuota admin <$25K",
+        "Plataforma menos innovadora que Questrade",
+        "Sin cripto",
+        "Sin acciones fraccionarias"
+      ]
+    },
+    {
+      "id": "CA009",
+      "nombre": "National Bank Direct Brokerage (NBDB)",
+      "tipo": "Discount Broker — Big 6 Bank CA",
+      "seccion": "broker_ca",
+      "pais": "Canadá",
+      "fundacion": 2000,
+      "sede": "Montreal, QC (National Bank of Canada)",
+      "score": 8.4,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "AMF Quebec"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Sin cuota administrativa en ninguna cuenta"
+      },
+      "comisiones": {
+        "acciones_etfs": "$0 — sin comisiones en acciones y ETFs",
+        "opciones": "$0 + $0.75/contrato — más bajo del sector Big 6",
+        "fondos_mutuos": "$0",
+        "bonos_gics": "$0",
+        "conversion_forex": "Competitivo",
+        "margen": "Prime + 1.25-3.5%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta No Registrada",
+          "minimo": 0,
+          "tipo": "Trading estándar"
+        },
+        {
+          "nombre": "TFSA / RRSP / RESP / FHSA",
+          "minimo": 0,
+          "tipo": "Cuentas registradas"
+        },
+        {
+          "nombre": "Margin Account",
+          "minimo": 0,
+          "tipo": "Cuenta de margen"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true
+      },
+      "plataformas": [
+        "NBDB Web (renovada 2024)",
+        "NBDB App (nueva 2024)"
+      ],
+      "caracteristica_unica": "0% comisiones acciones/ETFs (sin mínimo). $0.75/contrato opciones — el más bajo del sector Big 6. Sin cuota administrativa. National Bank: el #6 del sistema bancario canadiense. Fuerte presencia en Quebec",
+      "pros": [
+        "$0 acciones/ETFs",
+        "$0.75/contrato opciones — más bajo Big 6",
+        "Sin cuota administrativa",
+        "Plataforma web y app renovadas (2024)",
+        "Ideal para Quebec — AMF regulado"
+      ],
+      "contras": [
+        "Menor cobertura fuera de Quebec",
+        "Plataforma desktop calificada 64% (menos profunda)",
+        "Red sucursales menor que Big 5"
+      ]
+    },
+    {
+      "id": "CA010",
+      "nombre": "Desjardins Online Brokerage (Disnat)",
+      "tipo": "Discount Broker — Cooperative Desjardins",
+      "seccion": "broker_ca",
+      "pais": "Canadá",
+      "fundacion": 1985,
+      "sede": "Montreal, QC (Mouvement Desjardins)",
+      "score": 8.3,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "AMF Quebec"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs": "$6.95/operación (Disnat Classic) / $0 (Disnat Direct — solo ETFs)",
+        "opciones": "$6.95 + $1.25/contrato",
+        "fondos_mutuos": "$0 fondos Desjardins",
+        "disnat_direct": "0% para ETFs — cuenta especializada",
+        "margen": "Prime + 1.25-4%"
+      },
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "gics": true
+      },
+      "plataformas": [
+        "Disnat Web",
+        "Disnat App",
+        "Puissance Trader (plataforma avanzada)"
+      ],
+      "caracteristica_unica": "Desjardins es la mayor cooperativa financiera de Norteamérica ($400B+ en activos). Disnat Direct: 0% para ETFs. Puissance Trader: plataforma avanzada de análisis. Fuerte en Quebec — integración con Caisse Desjardins",
+      "pros": [
+        "Mayor cooperativa financiera de Norteamérica",
+        "Disnat Direct: 0% ETFs",
+        "Puissance Trader — plataforma avanzada",
+        "AMF Quebec — regulación local",
+        "$6.95 más bajo que algunos Big 5"
+      ],
+      "contras": [
+        "Principalmente para Quebec (francés)",
+        "Plataforma en inglés limitada",
+        "Sin cripto"
+      ]
+    },
+    {
+      "id": "CA011",
+      "nombre": "Interactive Brokers Canadá",
+      "tipo": "Broker Global — División Canadá",
+      "seccion": "broker_ca",
+      "pais": "Canadá/USA",
+      "fundacion": 1978,
+      "sede": "Toronto, ON (filial canadiense)",
+      "score": 9.0,
+      "regulacion": [
+        "IIROC",
+        "CIPF (CAD 1M)",
+        "SIPC USA",
+        "SEC",
+        "FINRA"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CAD",
+        "nota": "Sin mínimo. Recomendado $10,000+ para IBKR Pro"
+      },
+      "comisiones": {
+        "acciones_canada": "$0.008/acción (mín $1)",
+        "acciones_usa": "$0 IBKR Lite / $0.005/acción Pro",
+        "opciones_canada": "$1.25/contrato",
+        "opciones_usa": "$0.65/contrato",
+        "forex": "0.2 basis points — las más bajas",
+        "futuros": "$0.85/contrato",
+        "margen": "Desde 5.83% — más bajas de Canadá"
+      },
+      "cuentas": [
+        {
+          "nombre": "Individual / Joint",
+          "minimo": 0,
+          "tipo": "Trading completo"
+        },
+        {
+          "nombre": "TFSA",
+          "minimo": 0,
+          "tipo": "Tax-Free"
+        },
+        {
+          "nombre": "RRSP / RRIF",
+          "minimo": 0,
+          "tipo": "Jubilación"
+        },
+        {
+          "nombre": "RESP",
+          "minimo": 0,
+          "tipo": "Educación"
+        },
+        {
+          "nombre": "FHSA",
+          "minimo": 0,
+          "tipo": "Primera vivienda"
+        },
+        {
+          "nombre": "Corporate / Trust",
+          "minimo": 0,
+          "tipo": "Corporativo"
+        }
+      ],
+      "instrumentos": {
+        "acciones_canada": true,
+        "acciones_usa": true,
+        "acciones_globales": "150+ bolsas",
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "forex": true,
+        "bonos": true,
+        "cripto": true
+      },
+      "plataformas": [
+        "TWS (Trader Workstation)",
+        "IBKR Mobile",
+        "Client Portal",
+        "IBKR GlobalTrader",
+        "API"
+      ],
+      "caracteristica_unica": "Las tasas de margen más bajas de Canadá. Único broker con acceso a 150+ bolsas globales desde cuenta canadiense (TFSA, RRSP incluidos). Intereses sobre saldo en CAD y USD",
+      "pros": [
+        "Tasas de margen más bajas de Canadá",
+        "150+ bolsas en 33 países desde TFSA/RRSP",
+        "Intereses sobre saldo en CAD/USD",
+        "IIROC + CIPF + SIPC — triple protección",
+        "Paper trading ilimitado"
+      ],
+      "contras": [
+        "Plataforma TWS muy compleja",
+        "Sin atención al cliente en francés",
+        "Inactividad ($10/mes en cuentas pequeñas)"
+      ]
+    }
+  ]
+}

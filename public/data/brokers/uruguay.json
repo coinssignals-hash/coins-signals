@@ -1,0 +1,543 @@
+{
+  "metadata": {
+    "pais": "Uruguay",
+    "bandera": "🇺🇾",
+    "color": "#00529B",
+    "subtitulo": "Corredores de Bolsa BCU · BVM + BEVSA · Secreto bancario · Hub financiero Cono Sur · Grado de inversión",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. Uruguay tiene grado de inversión internacional y es considerado el sistema financiero más sólido de LATAM junto a Chile. Verifique con el BCU (Banco Central del Uruguay) — regulador del mercado de valores — antes de invertir. Sistema de AFAP para jubilación obligatoria. COPAB protege depósitos bancarios.",
+    "stats": [
+      {
+        "val": "BCU",
+        "lbl": "Banco Central — Regula mercado valores"
+      },
+      {
+        "val": "BVM + BEVSA",
+        "lbl": "Dos bolsas de valores activas"
+      },
+      {
+        "val": "Grado Inv.",
+        "lbl": "Calificación crediticia soberana"
+      },
+      {
+        "val": "AFAP",
+        "lbl": "Sistema de pensiones privadas"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "corr",
+        "nombre": "CORREDORES DE BOLSA — Regulados BCU / BVM"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Uruguayos"
+      },
+      {
+        "key": "banca",
+        "nombre": "BANCA E INVERSIÓN INSTITUCIONAL — Uruguay"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "UY001",
+      "nombre": "Nobilis Corredor de Bolsa",
+      "tipo": "Corredor de Bolsa — BCU Uruguay — 100 años",
+      "seccion": "corr",
+      "pais": "Uruguay",
+      "region": "Uruguay (BVM + BEVSA) + Internacional",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — adaptado a cada cliente"
+      },
+      "modelo_costos": "Comisión por operación según instrumento. Gestión patrimonial: fee sobre AUM",
+      "apalancamiento": {
+        "max": "Disponible — derivados y futuros con garantías",
+        "nota": "Regulado BCU"
+      },
+      "regulacion": [
+        "BCU (Banco Central del Uruguay)",
+        "BVM (Bolsa de Valores de Montevideo)",
+        "BEVSA (Bolsa Electrónica de Valores del Uruguay)"
+      ],
+      "instrumentos": {
+        "forex": "Sí — divisas y forwards",
+        "acciones": "BVM + mercados internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No directo",
+        "materias_primas": "Sí",
+        "etfs": "ETFs internacionales",
+        "renta_fija": "Bonos UY, LRM, Notas del Tesoro, UI, USD — completo",
+        "opciones": "Sí — opciones y derivados"
+      },
+      "plataformas": [
+        "Nobilis Digital (plataforma online)",
+        "Nobilis App",
+        "Asesoría personalizada en Montevideo",
+        "Nobilis Digital — primeros pasos"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Nobilis Individual",
+          "min": "USD 0",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Gestión Patrimonial",
+          "min": "USD 50,000+",
+          "tarifa": "Fee sobre AUM"
+        },
+        {
+          "nombre": "Institutional",
+          "min": "Negociable",
+          "tarifa": "Negociable"
+        }
+      ],
+      "pros": [
+        "100+ años de trayectoria — fusión de 4 corredores históricos",
+        "Líder del mercado uruguayo de capitales",
+        "Acceso completo: BVM + BEVSA + mercados internacionales",
+        "Educación financiera de calidad — blog y simulador",
+        "Plataforma 'Primeros pasos' para iniciantes",
+        "Asesoría M&A y estructuración de deuda corporativa",
+        "Sin mínimo de cuenta — democrático"
+      ],
+      "contras": [
+        "Sin criptomonedas directas",
+        "Foco principal en mercado local — menos global que IBKR",
+        "Comisiones pueden ser más altas que brokers online"
+      ],
+      "nota": "Nobilis (2017) nació de la fusión de 4 casas de bolsa con más de 100 años de historia: Pollio Hnos., Comas, Rospide y Merfin. Es el corredor de bolsa líder en Uruguay. Acceso a BVM, BEVSA y mercados internacionales.",
+      "presencia": "Montevideo (centro) — Rincón 477 Piso 3"
+    },
+    {
+      "id": "UY002",
+      "nombre": "Gastón Bengochea Corredor de Bolsa",
+      "tipo": "Corredor de Bolsa — BCU Uruguay — Desde 1967",
+      "seccion": "corr",
+      "pais": "Uruguay",
+      "region": "Uruguay (BVM) + Internacional vía acuerdos",
+      "calificacion": 8.2,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — para todos los inversores"
+      },
+      "modelo_costos": "Comisión por operación. Sin mínimo de inversión",
+      "apalancamiento": {
+        "max": "Disponible — productos específicos",
+        "nota": "Regulado BCU"
+      },
+      "regulacion": [
+        "BCU",
+        "BVM"
+      ],
+      "instrumentos": {
+        "forex": "Sí",
+        "acciones": "BVM + internacionales vía acuerdos",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí — ETFs internacionales",
+        "renta_fija": "LRM, Bonos UY, Notas Tesoro, bonos corporativos, UI",
+        "opciones": "Disponible"
+      },
+      "plataformas": [
+        "Plataforma Gastón Bengochea Online",
+        "App",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Individual",
+          "min": "USD 0",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Institucional",
+          "min": "Negociable",
+          "tarifa": "Negociable"
+        }
+      ],
+      "pros": [
+        "Sin mínimo de cuenta — el más accesible de Uruguay",
+        "Pionero en fondos mutuos en Uruguay (años 80)",
+        "Educación financiera activa — talleres y reuniones",
+        "Referente para inversores retail con bajo capital",
+        "Desde 1967 — sólida trayectoria",
+        "Asesoría personalizada para todos los montos"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma digital menos moderna que Nobilis o Gletir",
+        "Menos instrumentos globales que IBKR",
+        "Foco en mercado local uruguayo"
+      ],
+      "nota": "Pionero en fondos mutuos en Uruguay. Sin mínimo de inversión — el más accesible para inversores retail. Muy reconocido por su enfoque educativo. Certificado BVM.",
+      "presencia": "Montevideo (Luis A. de Herrera 1248)"
+    },
+    {
+      "id": "UY003",
+      "nombre": "Gletir Corredor de Bolsa",
+      "tipo": "Corredor de Bolsa — BCU — Perfil Moderno",
+      "seccion": "corr",
+      "pais": "Uruguay",
+      "region": "Uruguay + Regional Cono Sur + Internacional",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — Gletir Global sin mínimo"
+      },
+      "modelo_costos": "Comisión por operación. Gletir Global: sin mínimo de cuenta para mercados globales",
+      "apalancamiento": {
+        "max": "Disponible — incluye Forex vía FXCM (broker introductorio)",
+        "nota": "Regulado BCU"
+      },
+      "regulacion": [
+        "BCU Uruguay",
+        "BVM",
+        "BEVSA"
+      ],
+      "instrumentos": {
+        "forex": "Sí — como broker introductorio FXCM (desde USD 500)",
+        "acciones": "BVM + acciones globales vía Gletir Global",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí — internacionales",
+        "renta_fija": "Bonos UY, LRM, bonos corporativos, UI completo",
+        "opciones": "Sí — opciones y futuros"
+      },
+      "plataformas": [
+        "Gletir Online",
+        "Gletir Global (mercados globales sin mínimo)",
+        "Plataforma FXCM (Forex)",
+        "Acuerdos con bancos y brokers internacionales tier 1"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Gletir",
+          "min": "USD 0",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Gletir Global",
+          "min": "USD 0",
+          "tarifa": "Sin mínimo — mercados globales"
+        },
+        {
+          "nombre": "Forex vía FXCM",
+          "min": "USD 500",
+          "tarifa": "Spread FXCM"
+        }
+      ],
+      "pros": [
+        "Perfil más moderno e innovador del mercado uruguayo",
+        "Gletir Global: acceso a mercados globales sin mínimo — único",
+        "Broker introductorio FXCM para Forex",
+        "Acuerdos globales con bancos de primera línea",
+        "Presencia regional en Cono Sur",
+        "Custodio internacional: Bank of New York Mellon (BONY)"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Forex disponible pero via tercero (FXCM)",
+        "Menos historia que Nobilis o Bengochea"
+      ],
+      "nota": "El corredor de bolsa con perfil más moderno de Uruguay. Gletir Global es único: acceso a mercados globales sin mínimo de cuenta. Custodia internacional con Bank of New York Mellon. Acuerdos con bancos y brokers tier 1.",
+      "presencia": "Montevideo + Cono Sur — presencia regional"
+    },
+    {
+      "id": "UY004",
+      "nombre": "SURA Corredor de Bolsa Uruguay",
+      "tipo": "Corredor de Bolsa — BCU + Gestora Fondos — Red LATAM",
+      "seccion": "corr",
+      "pais": "Uruguay / Colombia",
+      "region": "Uruguay + LATAM (6 países)",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 250000,
+        "moneda": "USD",
+        "nota": "USD 250,000 mínimo — orientado a alta renta"
+      },
+      "modelo_costos": "Fee de gestión + comisión por operación. Cuenta mínima alta (broker introductorio Pershing)",
+      "apalancamiento": {
+        "max": "Disponible — fondos y productos estructurados",
+        "nota": "Regulado BCU"
+      },
+      "regulacion": [
+        "BCU Uruguay",
+        "BVM",
+        "BEVSA",
+        "IFC (Grupo Banco Mundial es accionista)"
+      ],
+      "instrumentos": {
+        "forex": "Sí",
+        "acciones": "BVM + mercados internacionales vía Pershing",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí — fondos y ETFs globales",
+        "renta_fija": "Fondos propios SURA + bonos locales e internacionales",
+        "opciones": "Sí — derivados"
+      },
+      "plataformas": [
+        "SURA Inversiones Online",
+        "Plataforma Pershing (acceso internacional)",
+        "AFISA SURA (5 fondos de inversión)",
+        "App SURA"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta SURA Standard",
+          "min": "USD 250,000",
+          "tarifa": "Fee AUM"
+        },
+        {
+          "nombre": "SURA Institucional",
+          "min": "Negociable",
+          "tarifa": "Institucional"
+        }
+      ],
+      "pros": [
+        "Red LATAM en 6 países — Colombia, Chile, México, Perú, El Salvador, Uruguay",
+        "Accionistas: IFC (Banco Mundial), JPMorgan, General Atlantic, Bancolombia, Grupo Bolívar",
+        "Acceso global vía Pershing (broker custodio de clase mundial)",
+        "5 fondos propios regulados BCU (AFISA SURA)",
+        "135+ billones en AUM global — escala institucional"
+      ],
+      "contras": [
+        "Mínimo muy alto USD 250,000 — excluyente para retail",
+        "Sin criptomonedas",
+        "Foco en alta renta y clientes institucionales",
+        "Proceso de apertura complejo"
+      ],
+      "nota": "SURA Asset Management es el mayor gestor de inversiones de LATAM. Uruguay es parte de su red en 6 países. Custodia vía Pershing — clase mundial. Accionistas de primer nivel: IFC (Banco Mundial), JPMorgan, General Atlantic.",
+      "presencia": "Montevideo (WTC Torre III) + 6 países LATAM"
+    },
+    {
+      "id": "UY005",
+      "nombre": "Interactive Brokers Uruguay (Intl)",
+      "tipo": "Broker Global — El más recomendado para Uruguay",
+      "seccion": "intl",
+      "pais": "EE.UU.",
+      "region": "150+ mercados / 33 países",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo formal (rec. USD 10,000+). Alternativa: IBKR vía Gletir Global sin mínimo"
+      },
+      "modelo_costos": "IBKR Lite: 0% acciones USA. IBKR Pro: USD 0.005/acción. 4.33% a.a. sobre saldo USD",
+      "apalancamiento": {
+        "max": "Hasta 1:50 Forex / variable por producto",
+        "nota": "SEC/FINRA EE.UU."
+      },
+      "regulacion": [
+        "SEC EE.UU.",
+        "FINRA",
+        "SIPC (USD 500K)",
+        "FCA UK",
+        "ASIC"
+      ],
+      "instrumentos": {
+        "forex": "100+ pares Forex real",
+        "acciones": "150+ bolsas / 33 países REALES",
+        "indices": "Futuros sobre índices globales",
+        "criptomonedas": "Sí — spot",
+        "materias_primas": "Futuros y CFD completos",
+        "etfs": "Miles ETFs globales reales",
+        "renta_fija": "Bonds globales",
+        "opciones": "Sí — opciones REALES CBOE/Euronext"
+      },
+      "plataformas": [
+        "TWS (Trader Workstation)",
+        "IBKR Mobile",
+        "Client Portal Web",
+        "API FIX/REST para algorítmico"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "IBKR Lite",
+          "min": "USD 0",
+          "tarifa": "0% acciones USA"
+        },
+        {
+          "nombre": "IBKR Pro",
+          "min": "USD 0",
+          "tarifa": "USD 0.005/acción"
+        },
+        {
+          "nombre": "Institutional",
+          "min": "USD 100K+",
+          "tarifa": "Negociable"
+        }
+      ],
+      "pros": [
+        "150+ bolsas en 33 países — acceso global máximo",
+        "Opciones reales: CBOE, Euronext y otras bolsas",
+        "4.33% a.a. sobre saldo USD parado — rentabilidad adicional",
+        "Sin comisión de custodia",
+        "API para trading algorítmico",
+        "SIPC USD 500K — protección sólida",
+        "Uruguay: sin cepo cambiario — fondeo irrestricto"
+      ],
+      "contras": [
+        "Plataforma TWS muy compleja — no para principiantes",
+        "Sin soporte en español de calidad",
+        "Sin acceso a mercado local uruguayo (BVM)",
+        "KYC estricto"
+      ],
+      "nota": "Interactive Brokers es referenciado por los propios corredores uruguayos como complemento para acceso global. Gletir lo ofrece sin mínimo. Uruguay SIN cepo cambiario — fondeo irrestricto a diferencia de Argentina.",
+      "presencia": "Sin oficina en Uruguay — opera remotamente"
+    },
+    {
+      "id": "UY006",
+      "nombre": "BROU (Banco República Oriental del Uruguay)",
+      "tipo": "Banco Estatal + Inversiones — BCU",
+      "seccion": "banca",
+      "pais": "Uruguay",
+      "region": "Uruguay",
+      "calificacion": 7.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "UYU/USD",
+        "nota": "Sin mínimo para cuenta corriente. Plazos fijos desde UYU 1"
+      },
+      "modelo_costos": "Plazos fijos en UI: hasta 1.30% a.a. Depósitos en USD: fee + tasas de mercado",
+      "apalancamiento": {
+        "max": "No aplica (productos bancarios)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "BCU (Banco Central del Uruguay)",
+        "COPAB (protección depósitos)"
+      ],
+      "instrumentos": {
+        "forex": "Sí — cambio de divisas",
+        "acciones": "No (directo)",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Plazos fijos en UYU, USD y UI (Unidades Indexadas) — tasas líderes",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "e-BROU (banco digital)",
+        "App BROU",
+        "Sucursales en todo Uruguay"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Caja de ahorro",
+          "min": "UYU 0",
+          "tarifa": "Sin comisión"
+        },
+        {
+          "nombre": "Plazo fijo en UI",
+          "min": "UI 1,500 (~USD 40)",
+          "tarifa": "Tasa 1.30% a.a."
+        },
+        {
+          "nombre": "Plazo fijo USD",
+          "min": "USD 100",
+          "tarifa": "Tasa de mercado"
+        }
+      ],
+      "pros": [
+        "Mayor banco de Uruguay — red más grande del país",
+        "Plazos fijos en UI: líder con 1.30% a.a. (contratación digital)",
+        "Garantía estatal + COPAB protección depósitos",
+        "e-BROU: banca digital moderna",
+        "Depósitos en UI exentos de IRPF (vs 7% en USD)",
+        "Confianza del Estado uruguayo — 0% riesgo de quiebra"
+      ],
+      "contras": [
+        "Sin acceso a bolsa de valores",
+        "Sin ETFs ni acciones",
+        "Para bonos y LRM necesitas corredor de bolsa",
+        "Tasas de plazo fijo en USD por debajo de corredores especializados",
+        "Plataforma digital menos ágil que fintechs"
+      ],
+      "nota": "El banco más grande y confiable de Uruguay. Líder en plazos fijos en UI (1.30% a.a. digital). Las Unidades Indexadas (UI) protegen contra la inflación y están exentas de IRPF. Para acceder a bonos/LRM usar corredores BCU.",
+      "presencia": "Montevideo + todo Uruguay — 500+ sucursales"
+    },
+    {
+      "id": "UY007",
+      "nombre": "Itaú Uruguay — Inversiones",
+      "tipo": "Banco Internacional + Inversiones — BCU",
+      "seccion": "banca",
+      "pais": "Uruguay / Brasil",
+      "region": "Uruguay + LATAM",
+      "calificacion": 7.9,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "UYU/USD",
+        "nota": "Variable según producto"
+      },
+      "modelo_costos": "Plazos fijos en UI: ~0.75% a.a. Fondos de inversión: fee de gestión variable",
+      "apalancamiento": {
+        "max": "No aplica (productos bancarios)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "BCU",
+        "BACEN Brasil",
+        "SBP Panamá (regional)"
+      ],
+      "instrumentos": {
+        "forex": "Sí — cambio de divisas",
+        "acciones": "No (directo)",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Plazos fijos en UYU, USD y UI. Fondos de inversión",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Itaú Uruguay",
+        "Portal digital Itaú",
+        "Sucursales Montevideo y ciudades principales"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Itaú",
+          "min": "UYU 0",
+          "tarifa": "Sin comisión básica"
+        },
+        {
+          "nombre": "Plazo fijo en UI",
+          "min": "UI 1,500",
+          "tarifa": "~0.75% a.a."
+        },
+        {
+          "nombre": "Itaú Private Banking",
+          "min": "USD 500K+",
+          "tarifa": "Fee AUM"
+        }
+      ],
+      "pros": [
+        "Parte del mayor banco privado de LATAM (Itaú Unibanco)",
+        "Plazos fijos en UI disponibles",
+        "Amplia red en Montevideo",
+        "Banca privada para grandes patrimonios",
+        "Conocimiento de mercado regional LATAM",
+        "Fondos de inversión disponibles"
+      ],
+      "contras": [
+        "Tasa UI (0.75%) por debajo del BROU (1.30%)",
+        "Sin acceso a bolsa de valores directamente",
+        "Sin ETFs ni acciones",
+        "No permite cancelación anticipada de plazos fijos"
+      ],
+      "nota": "Banco privado con mayor presencia en Uruguay. Parte del ecosistema Itaú Unibanco — mayor banco privado de LATAM. Plazos fijos en UI disponibles aunque con tasas menores al BROU. Banca privada para patrimonios altos.",
+      "presencia": "Montevideo + ciudades principales de Uruguay"
+    }
+  ]
+}

@@ -1,0 +1,2567 @@
+{
+  "metadata": {
+    "titulo": "Auditoría de Brokers e Inversiones en Colombia",
+    "subtitulo": "Análisis completo de plataformas de inversión disponibles para Colombia",
+    "fecha_generacion": "14 de March de 2026",
+    "version": "1.0",
+    "total_entidades": 35,
+    "cobertura": "Colombia 2025–2026",
+    "instrumentos_analizados": [
+      "Forex 60+ pares",
+      "CFD Acciones 2000+",
+      "Índices",
+      "Criptomonedas",
+      "Materias Primas",
+      "ETFs",
+      "Opciones"
+    ],
+    "reguladores_principales": [
+      "SFC Colombia",
+      "FCA Reino Unido",
+      "ASIC Australia",
+      "SEC EE.UU.",
+      "CySEC Chipre",
+      "FINMA Suiza"
+    ]
+  },
+  "brokers": [
+    {
+      "id": "B001",
+      "nombre": "Pepperstone",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Australia",
+      "region_operacion": "Global / LATAM",
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (cuenta Razor) / Solo spreads (cuenta Standard)",
+      "spread_eurusd": "0.0 pips (Razor) / 0.9 pips (Standard)",
+      "comision_por_lote": "USD 3.5 / lote en cuenta Razor",
+      "apalancamiento": {
+        "maximo": "1:30 (ASIC retail) / 1:500 (offshore)",
+        "notas": "Variable según instrumento"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FCA Reino Unido",
+        "CySEC Chipre",
+        "BaFIN Alemania",
+        "DFSA Dubai",
+        "CMA Kenia",
+        "SCB Bahamas"
+      ],
+      "regulacion_colombia": "SCB Bahamas (offshore para clientes LATAM)",
+      "instrumentos": {
+        "forex": "62+ pares de divisas",
+        "cfd_acciones": "2,000+ CFDs sobre acciones globales",
+        "indices": "Sí — principales índices mundiales",
+        "criptomonedas": "Sí — BTC, ETH, LTC y 27+ más",
+        "materias_primas": "Sí — oro, plata, petróleo, gas",
+        "etfs": "Sí — CFDs sobre ETFs",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "MetaTrader 4 (MT4)",
+        "MetaTrader 5 (MT5)",
+        "cTrader",
+        "TradingView",
+        "Pepperstone App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 200",
+          "spread": "Desde 0.9 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Razor (ECN)",
+          "deposito_min": "USD 200",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 3.5/lote"
+        }
+      ],
+      "pros": [
+        "Ejecución ultra-rápida < 40ms",
+        "Triple regulación de primer nivel (ASIC, FCA, BaFIN)",
+        "Mejor para scalping y trading de alto volumen",
+        "Organiza eventos educativos en Bogotá",
+        "Sin comisión por inactividad ni depósito mínimo fijo"
+      ],
+      "contras": [
+        "Sin oficina física en Colombia",
+        "Regulación aplicable para Colombia es offshore (SCB Bahamas)",
+        "Sin opciones sobre índices",
+        "Investigación de mercado limitada vs. competidores"
+      ],
+      "calificacion": 9.1,
+      "presencia_colombia": "Sin oficina local — acepta clientes colombianos"
+    },
+    {
+      "id": "B002",
+      "nombre": "IC Markets",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Australia",
+      "region_operacion": "Global / LATAM",
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (Raw) / Solo spreads (Standard)",
+      "spread_eurusd": "0.0 pips (Raw) / 0.6 pips (Standard)",
+      "comision_por_lote": "USD 3.5 / lote (Raw)",
+      "apalancamiento": {
+        "maximo": "1:30 (ASIC) / 1:500 (Seychelles)",
+        "notas": "Según entidad reguladora"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "CySEC Chipre",
+        "FSA Seychelles"
+      ],
+      "regulacion_colombia": "FSA Seychelles (offshore)",
+      "instrumentos": {
+        "forex": "61+ pares",
+        "cfd_acciones": "2,100+ CFDs",
+        "indices": "Sí",
+        "criptomonedas": "Sí — 13+ cryptos",
+        "materias_primas": "Sí",
+        "etfs": "Sí (CFD)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 200",
+          "spread": "Desde 0.6 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Raw Spread",
+          "deposito_min": "USD 200",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 3.5/lote"
+        },
+        {
+          "nombre": "cTrader Raw",
+          "deposito_min": "USD 200",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 3.0/lote"
+        }
+      ],
+      "pros": [
+        "Spreads más bajos del mercado en pares mayores",
+        "Ideal para scalping y trading algorítmico",
+        "Gran popularidad en LATAM",
+        "Liquidez profunda institucional"
+      ],
+      "contras": [
+        "Sin opciones de ningún tipo",
+        "Regulación Colombia = FSA Seychelles (offshore)",
+        "Sin oficina en Colombia",
+        "Plataformas solo MT4/MT5/cTrader (sin propietaria)"
+      ],
+      "calificacion": 9.0,
+      "presencia_colombia": "Sin oficina local"
+    },
+    {
+      "id": "B003",
+      "nombre": "IG Markets",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Reino Unido (fundado 1974)",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 300,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads (sin comisión fija)",
+      "spread_eurusd": "0.6 pips",
+      "comision_por_lote": "Sin comisión separada (spread-only)",
+      "apalancamiento": {
+        "maximo": "1:30 (FCA retail) / 1:200 (offshore)",
+        "notas": "Según regulación aplicable"
+      },
+      "regulacion": [
+        "FCA Reino Unido",
+        "ASIC Australia",
+        "MAS Singapur",
+        "FSCA Sudáfrica"
+      ],
+      "regulacion_colombia": "Filial offshore",
+      "instrumentos": {
+        "forex": "84+ pares — mayor selección del mercado",
+        "cfd_acciones": "13,000–17,000 CFDs — la mayor oferta del mercado",
+        "indices": "Sí — 80+ índices mundiales",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "SÍ — opciones vanilla sobre índices y forex"
+      },
+      "plataformas": [
+        "Plataforma propia IG",
+        "MetaTrader 4",
+        "L2 Dealer (institucional)",
+        "ProRealTime"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "CFD Account",
+          "deposito_min": "USD 300",
+          "spread": "Desde 0.6 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Share Dealing",
+          "deposito_min": "USD 300",
+          "spread": "Variable",
+          "comision": "Según bolsa"
+        },
+        {
+          "nombre": "Professional",
+          "deposito_min": "Negociable",
+          "spread": "Mejorado",
+          "comision": "Según volumen"
+        }
+      ],
+      "pros": [
+        "Mayor selección de instrumentos del mercado (17,000+)",
+        "Único con opciones vanilla reales sobre índices y forex",
+        "Broker más antiguo del sector (desde 1974)",
+        "L2 Dealer para acceso directo a mercado institucional"
+      ],
+      "contras": [
+        "Depósito mínimo más alto (USD 300)",
+        "Spreads no son los más bajos en pares principales",
+        "Sin oficina en Colombia",
+        "Plataforma propia tiene curva de aprendizaje"
+      ],
+      "calificacion": 9.0,
+      "presencia_colombia": "Sin oficina local"
+    },
+    {
+      "id": "B004",
+      "nombre": "XTB",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Polonia (cotiza en bolsa)",
+      "region_operacion": "Europa / LATAM",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "notas": "Sin mínimo formal"
+      },
+      "modelo_costos": "0% comisión en acciones/ETFs hasta EUR 100,000/mes; luego 0.2%",
+      "spread_eurusd": "0.5 pips",
+      "comision_por_lote": "Sin comisión en CFDs (spread incluido)",
+      "apalancamiento": {
+        "maximo": "1:30 (FCA) / 1:200 (LATAM)",
+        "notas": "IFSC Belice para Colombia"
+      },
+      "regulacion": [
+        "FCA Reino Unido",
+        "KNF Polonia",
+        "CySEC Chipre",
+        "DFSA Dubai",
+        "IFSC Belice"
+      ],
+      "regulacion_colombia": "IFSC Belice (entidad para LATAM)",
+      "instrumentos": {
+        "forex": "57+ pares",
+        "cfd_acciones": "5,800 instrumentos (acciones reales + CFD)",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí — acciones reales en LATAM",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "xStation 5 (propia)",
+        "MetaTrader 4"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Básica",
+          "deposito_min": "USD 0",
+          "spread": "Desde 0.5 pips",
+          "comision": "0% acciones/ETFs hasta EUR 100K/mes"
+        },
+        {
+          "nombre": "Pro",
+          "deposito_min": "USD 0",
+          "spread": "Desde 0.28 pips",
+          "comision": "Sin comisión"
+        }
+      ],
+      "pros": [
+        "OFICINA LOCAL EN COLOMBIA (Bogotá)",
+        "0% comisión en acciones y ETFs hasta EUR 100K/mes",
+        "Academia gratuita xStation en español",
+        "Cotiza en bolsa — mayor transparencia",
+        "Soporte presencial en español"
+      ],
+      "contras": [
+        "Sin opciones de trading",
+        "Regulación Colombia = IFSC Belice (menor protección)",
+        "xStation 5 no compatible con EAs/robots",
+        "Retiros solo a cuenta bancaria (no e-wallets)"
+      ],
+      "calificacion": 8.8,
+      "presencia_colombia": "OFICINA LOCAL — Presente en Colombia"
+    },
+    {
+      "id": "B005",
+      "nombre": "Capital.com",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Chipre / Reino Unido",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 20,
+        "moneda": "USD"
+      },
+      "modelo_costos": "0% comisión — costos incluidos en spread",
+      "spread_eurusd": "0.6 pips",
+      "comision_por_lote": "Sin comisión",
+      "apalancamiento": {
+        "maximo": "1:30 (FCA) / 1:500 (offshore)",
+        "notas": "SCB Bahamas para Colombia"
+      },
+      "regulacion": [
+        "FCA Reino Unido",
+        "CySEC Chipre",
+        "ASIC Australia",
+        "SCB Bahamas",
+        "SCA Emiratos"
+      ],
+      "regulacion_colombia": "SCB Bahamas — autorizado para publicidad en Colombia",
+      "instrumentos": {
+        "forex": "70+ pares",
+        "cfd_acciones": "3,000+ CFDs globales",
+        "indices": "Sí — 20+ índices",
+        "criptomonedas": "Sí — 200+ cryptos",
+        "materias_primas": "Sí",
+        "etfs": "Sí (CFD)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Capital.com App (propia con IA)",
+        "MetaTrader 4",
+        "TradingView"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 20",
+          "spread": "Desde 0.6 pips",
+          "comision": "0%"
+        },
+        {
+          "nombre": "Plus",
+          "deposito_min": "USD 3,000",
+          "spread": "Mejorado",
+          "comision": "0%"
+        },
+        {
+          "nombre": "Premier",
+          "deposito_min": "USD 10,000",
+          "spread": "Mejor disponible",
+          "comision": "0%"
+        }
+      ],
+      "pros": [
+        "0% comisión en TODAS las operaciones",
+        "Plataforma propia con IA analítica del comportamiento",
+        "Depósito mínimo muy bajo (USD 20)",
+        "Autorizado para publicidad en Colombia",
+        "6,000+ instrumentos en total"
+      ],
+      "contras": [
+        "Solo CFDs — sin activos reales",
+        "Sin opciones",
+        "79.58% cuentas retail pierden dinero (dato propio)",
+        "Sin oficina física en Colombia"
+      ],
+      "calificacion": 8.7,
+      "presencia_colombia": "Autorizado para publicidad SFC — sin oficina física"
+    },
+    {
+      "id": "B006",
+      "nombre": "eToro",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Israel / Reino Unido",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads (sin comisión en acciones y ETFs sin apalancamiento)",
+      "spread_eurusd": "1.0 pip",
+      "comision_por_lote": "Sin comisión en acciones reales sin apalancamiento; 1% en cripto",
+      "apalancamiento": {
+        "maximo": "1:30 (FCA) / sin apalancamiento en activos reales",
+        "notas": "FSA Seychelles para Colombia"
+      },
+      "regulacion": [
+        "FCA Reino Unido",
+        "CySEC Chipre",
+        "ASIC Australia",
+        "FINRA EE.UU."
+      ],
+      "regulacion_colombia": "FSA Seychelles — autorizado para publicidad Crypto y CFDs en Colombia (2026)",
+      "instrumentos": {
+        "forex": "49 pares",
+        "cfd_acciones": "3,000+ (reales y CFD)",
+        "indices": "Sí",
+        "criptomonedas": "Sí — 80+ cryptos",
+        "materias_primas": "Sí",
+        "etfs": "Sí — acciones reales",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "eToro Platform (propia)",
+        "eToro App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "deposito_min": "USD 50",
+          "spread": "1.0 pip EUR/USD",
+          "comision": "0% en acciones sin apalancamiento"
+        },
+        {
+          "nombre": "Professional",
+          "deposito_min": "Negociable",
+          "spread": "Mejorado",
+          "comision": "Reducida"
+        }
+      ],
+      "pros": [
+        "Social trading y CopyTrader — copiar traders exitosos",
+        "0% comisión en acciones reales y ETFs (sin apalancamiento)",
+        "Autorizado para publicidad Crypto y CFDs en Colombia 2026",
+        "80+ criptomonedas disponibles",
+        "Ideal para principiantes e intermedios"
+      ],
+      "contras": [
+        "Spreads más altos que competidores (1 pip EUR/USD)",
+        "No apto para scalping por spreads amplios",
+        "Sin opciones",
+        "Sin soporte MT4/MT5",
+        "Regulación Colombia = Seychelles"
+      ],
+      "calificacion": 8.3,
+      "presencia_colombia": "Autorizado publicidad Colombia 2026 — sin oficina física"
+    },
+    {
+      "id": "B007",
+      "nombre": "Interactive Brokers",
+      "tipo": "Broker Internacional / Institucional",
+      "pais_origen": "Estados Unidos (fundado 1978)",
+      "region_operacion": "Global — 150 mercados / 33 países",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "notas": "Recomendado USD 10,000+"
+      },
+      "modelo_costos": "Comisión por operación (no spread)",
+      "spread_eurusd": "Comisión desde USD 2/operación Forex",
+      "comision_por_lote": "USD 0.005 por acción / USD 2 por operación Forex",
+      "apalancamiento": {
+        "maximo": "Variable según producto y regulación",
+        "notas": "Hasta 1:50 para forex retail en EE.UU."
+      },
+      "regulacion": [
+        "SEC EE.UU.",
+        "FINRA",
+        "FCA Reino Unido",
+        "ASIC Australia",
+        "MAS Singapur",
+        "IIROC Canadá"
+      ],
+      "regulacion_colombia": "FINRA/SEC EE.UU. — mayor regulación del mercado",
+      "instrumentos": {
+        "forex": "100+ pares — Spot Forex REAL (no CFD)",
+        "cfd_acciones": "Acciones REALES en 150 mercados globales",
+        "indices": "Sí — futuros y ETFs",
+        "criptomonedas": "Sí — spot y CFD",
+        "materias_primas": "Sí — futuros y CFD",
+        "etfs": "Sí — miles de ETFs reales globales",
+        "opciones": "SÍ COMPLETO — opciones listadas reales en bolsa"
+      },
+      "plataformas": [
+        "TWS (Trader Workstation)",
+        "IBKR Mobile",
+        "Client Portal Web",
+        "API FIX/REST completa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "IBKR Lite",
+          "deposito_min": "USD 0",
+          "spread": "0% comisión acciones USA",
+          "comision": "Sin comisión en acciones USA"
+        },
+        {
+          "nombre": "IBKR Pro",
+          "deposito_min": "USD 0",
+          "spread": "Muy bajas",
+          "comision": "USD 0.005/acción"
+        },
+        {
+          "nombre": "Institucional",
+          "deposito_min": "USD 100,000+",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        },
+        {
+          "nombre": "Prime Brokerage",
+          "deposito_min": "USD 1,000,000+",
+          "spread": "Prime",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Acceso REAL (no CFD) a 150 bolsas en 33 países",
+        "Opciones reales listadas completas (CBOE, Euronext, etc.)",
+        "Regulación SEC/FINRA — la más sólida del mercado",
+        "API avanzada para trading algorítmico",
+        "Prime Brokerage para institucionales",
+        "Comisiones más bajas para alto volumen"
+      ],
+      "contras": [
+        "NO para principiantes — curva de aprendizaje muy alta",
+        "Plataforma TWS muy compleja",
+        "Sin oficina en Colombia",
+        "Depósito recomendado alto (USD 10,000+)",
+        "Sin soporte en español de calidad"
+      ],
+      "calificacion": 9.0,
+      "presencia_colombia": "Sin oficina — acepta clientes colombianos bajo regulación EE.UU."
+    },
+    {
+      "id": "B008",
+      "nombre": "FP Markets",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Australia (2005)",
+      "region_operacion": "Global / LATAM",
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (Raw) / Solo spreads (Standard)",
+      "spread_eurusd": "0.0 pips (Raw) / 1.0–1.2 pips (Standard)",
+      "comision_por_lote": "USD 3.0/lote en cuenta Raw",
+      "apalancamiento": {
+        "maximo": "1:30 (ASIC) / 1:500 (Seychelles)",
+        "notas": "SVG para Colombia"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "CySEC Chipre",
+        "FSA Seychelles",
+        "FSCA Sudáfrica",
+        "SCB Bahamas"
+      ],
+      "regulacion_colombia": "SVG (sin regulación formal) — entidad FP Markets LLC",
+      "instrumentos": {
+        "forex": "70+ pares",
+        "cfd_acciones": "10,000+ instrumentos",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí (CFD)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "IRESS (acciones reales Australia)",
+        "Mottai"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 100",
+          "spread": "Desde 1.0 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Raw",
+          "deposito_min": "USD 100",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 3.0/lote"
+        }
+      ],
+      "pros": [
+        "10,000+ instrumentos — amplia diversificación",
+        "5 plataformas disponibles incluyendo IRESS",
+        "Spreads muy competitivos en cuenta Raw",
+        "Recursos educativos amplios"
+      ],
+      "contras": [
+        "Entidad para Colombia = SVG sin regulación formal",
+        "Sin oficina en Colombia",
+        "Sin opciones",
+        "IRESS solo disponible para acciones australianas"
+      ],
+      "calificacion": 8.5,
+      "presencia_colombia": "Sin oficina local"
+    },
+    {
+      "id": "B009",
+      "nombre": "BlackBull Markets",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Nueva Zelanda",
+      "region_operacion": "Global / LATAM",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (ECN) / Solo spreads (Standard)",
+      "spread_eurusd": "0.0 pips (ECN) / 0.8 pips (Standard)",
+      "comision_por_lote": "USD 6/lote ida y vuelta en cuenta ECN",
+      "apalancamiento": {
+        "maximo": "1:500",
+        "notas": "FSA Seychelles para Colombia"
+      },
+      "regulacion": [
+        "FMA Nueva Zelanda",
+        "FSA Seychelles"
+      ],
+      "regulacion_colombia": "FSA Seychelles",
+      "instrumentos": {
+        "forex": "60+ pares",
+        "cfd_acciones": "23,000+ CFDs — una de las mayores coberturas",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí (CFD)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "TradingView"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 0",
+          "spread": "Desde 0.8 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Prime",
+          "deposito_min": "USD 2,000",
+          "spread": "Desde 0.1 pips",
+          "comision": "USD 6/lote"
+        },
+        {
+          "nombre": "Institutional",
+          "deposito_min": "USD 20,000",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "23,000+ CFDs — mayor cobertura de acciones del mercado",
+        "Ejecución ECN/NDD ultra-rápida",
+        "Sin depósito mínimo en cuenta Standard",
+        "TradingView integrado"
+      ],
+      "contras": [
+        "Regulación principal FMA NZ (no Tier 1 en todos los rankings)",
+        "Sin opciones",
+        "Sin oficina en Colombia",
+        "Comisión ECN relativamente alta (USD 6/lote)"
+      ],
+      "calificacion": 8.2,
+      "presencia_colombia": "Sin oficina local"
+    },
+    {
+      "id": "B010",
+      "nombre": "AvaTrade",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Irlanda (fundado 2006)",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads (sin comisión)",
+      "spread_eurusd": "0.9 pips",
+      "comision_por_lote": "Sin comisión separada",
+      "apalancamiento": {
+        "maximo": "1:30 (CBI Irlanda) / 1:400 (BVI FSC)",
+        "notas": "FSC BVI para Colombia"
+      },
+      "regulacion": [
+        "CBI Irlanda",
+        "ASIC Australia",
+        "FSCA Sudáfrica",
+        "FSC BVI",
+        "FSA Japón",
+        "ADGM Abu Dhabi"
+      ],
+      "regulacion_colombia": "FSC BVI + Aprobación SFC Colombia (2025) — oficina de representación",
+      "instrumentos": {
+        "forex": "60+ pares",
+        "cfd_acciones": "1,000+ CFDs",
+        "indices": "Sí — 20+ índices",
+        "criptomonedas": "Sí — 13 cryptos",
+        "materias_primas": "Sí",
+        "etfs": "59 ETFs (CFD)",
+        "opciones": "SÍ — 55 opciones vanilla en AvaOptions (único en su clase)"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "AvaOptions (exclusivo)",
+        "AvaSocial",
+        "DupliTrade",
+        "AvaTradeGO App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail Standard",
+          "deposito_min": "USD 100",
+          "spread": "Desde 0.9 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Professional",
+          "deposito_min": "Negociable",
+          "spread": "Desde 0.6 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Islamic (Swap-Free)",
+          "deposito_min": "USD 100",
+          "spread": "Ajustado",
+          "comision": "Sin swap"
+        }
+      ],
+      "pros": [
+        "ÚNICO con opciones vanilla forex/acciones (AvaOptions)",
+        "Aprobación SFC Colombia 2025 — mayor protección local",
+        "AvaProtect: herramienta única de gestión de riesgo",
+        "Academia SharpTrader incluida",
+        "Copy trading vía AvaSocial y DupliTrade",
+        "Best Broker for Beginners 2026"
+      ],
+      "contras": [
+        "Spreads más altos que competidores ECN (0.9 pips)",
+        "AvaOptions tiene interfaz desactualizada",
+        "Blog de investigación poco actualizado",
+        "Tarifa de inactividad (USD 50/trimestre tras 3 meses)"
+      ],
+      "calificacion": 8.6,
+      "presencia_colombia": "Oficina de representación SFC Colombia 2025"
+    },
+    {
+      "id": "B011",
+      "nombre": "Plus500",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Israel (2008) — cotiza Bolsa de Londres FTSE 250",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads (0% comisión)",
+      "spread_eurusd": "0.8 pips",
+      "comision_por_lote": "Sin comisión — modelo spread-only",
+      "apalancamiento": {
+        "maximo": "1:30 (FCA) / 1:5 (Colombia retail) / 1:300 (offshore)",
+        "notas": "Plus500SEY para Colombia"
+      },
+      "regulacion": [
+        "FCA Reino Unido",
+        "ASIC Australia",
+        "CySEC Chipre",
+        "MAS Singapur",
+        "FSA Seychelles",
+        "SCB Bahamas"
+      ],
+      "regulacion_colombia": "Plus500SEY (Seychelles FSA) + Oficina representación SFC Colombia (agosto 2025)",
+      "instrumentos": {
+        "forex": "70+ pares",
+        "cfd_acciones": "1,500+ CFDs (NYSE, NASDAQ, LSE)",
+        "indices": "Sí — principales mundiales",
+        "criptomonedas": "Sí — BTC, ETH, LTC y más",
+        "materias_primas": "22+ (oro, café, petróleo, gas)",
+        "etfs": "Sí (CFD sobre ETFs)",
+        "opciones": "Sí — CFD Call y Put Options"
+      },
+      "plataformas": [
+        "Plus500 WebTrader (plataforma propia exclusiva)",
+        "Plus500 App iOS/Android"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "deposito_min": "USD 100",
+          "spread": "Desde 0.8 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Professional",
+          "deposito_min": "Negociable",
+          "spread": "Mejorado",
+          "comision": "Sin comisión"
+        }
+      ],
+      "pros": [
+        "0% comisión en todas las operaciones",
+        "Oficina SFC Colombia 2025 — primera expansión LATAM",
+        "Plataforma +Insights con IA analítica",
+        "2,800+ instrumentos en una sola plataforma",
+        "Interface muy intuitiva para principiantes"
+      ],
+      "contras": [
+        "NO soporta MT4/MT5 ni EAs/robots",
+        "Plataforma no personalizable",
+        "Apalancamiento máximo 1:5 para retail Colombia",
+        "Tarifa alta por inactividad",
+        "Sin research propio"
+      ],
+      "calificacion": 8.4,
+      "presencia_colombia": "Oficina de representación SFC Colombia (agosto 2025)"
+    },
+    {
+      "id": "B012",
+      "nombre": "ACY Securities",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Australia (2009) — Grupo ACYLogix",
+      "region_operacion": "Global / LATAM (oficina Bogotá)",
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (ProZero/Bespoke) / Solo spreads (Standard)",
+      "spread_eurusd": "0.0 pips (ProZero) / 1.0 pips (Standard)",
+      "comision_por_lote": "USD 5 por lote ida y vuelta (ProZero)",
+      "apalancamiento": {
+        "maximo": "1:500 (SVG offshore)",
+        "notas": "ASIC para clientes australianos"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FSCA Sudáfrica"
+      ],
+      "regulacion_colombia": "SVG (Saint Vincent y Granadinas — sin regulación formal) + Oficina Bogotá (agosto 2025)",
+      "instrumentos": {
+        "forex": "50+ pares principales",
+        "cfd_acciones": "2,300+ CFDs globales",
+        "indices": "50+ índices y ETFs CFD",
+        "criptomonedas": "Sí — BTC, ETH y principales",
+        "materias_primas": "Sí — oro, plata, petróleo",
+        "etfs": "50+ ETFs (CFD)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "ACY Trading Platform (propia)",
+        "LogixTrader",
+        "VPS gratuito",
+        "Capitalise.ai"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 50",
+          "spread": "Desde 1.0 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "ProZero",
+          "deposito_min": "USD 50",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 2.5/lado"
+        },
+        {
+          "nombre": "Bespoke",
+          "deposito_min": "USD 50",
+          "spread": "Variable",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Primera oficina LATAM en Bogotá (agosto 2025)",
+        "Webinars diarios en español para Colombia y LATAM",
+        "Ejecución ultra-rápida ~30ms",
+        "Copy trading vía Signal Start (TradingCup)",
+        "Capitalise.ai para estrategias automatizadas sin código"
+      ],
+      "contras": [
+        "Regulación Colombia = SVG (la más débil de esta lista)",
+        "Sin opciones",
+        "Menor reconocimiento de marca vs. competidores",
+        "Retiros pueden demorar según reportes de usuarios"
+      ],
+      "calificacion": 8.1,
+      "presencia_colombia": "Oficina Bogotá (agosto 2025)"
+    },
+    {
+      "id": "B013",
+      "nombre": "ZERO Markets",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Australia — regulación dual ASIC + FMA NZ",
+      "region_operacion": "Global / LATAM",
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (Super ZERO) / Solo spreads (Zero Standard)",
+      "spread_eurusd": "0.0 pips (Super ZERO) / 1.0 pips (Zero Standard)",
+      "comision_por_lote": "USD 5 ida y vuelta (USD 2.5 por lado en Super ZERO)",
+      "apalancamiento": {
+        "maximo": "1:500 (offshore)",
+        "notas": "Regulación ASIC para Australia"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FMA Nueva Zelanda"
+      ],
+      "regulacion_colombia": "Entidad ASIC — sin oficina local",
+      "instrumentos": {
+        "forex": "60+ pares (mayores, menores, exóticos)",
+        "cfd_acciones": "CFDs sobre acciones globales",
+        "indices": "Nasdaq, S&P 500, Dow Jones y principales",
+        "criptomonedas": "Sí — BTC, ETH, principales altcoins 24/7",
+        "materias_primas": "Oro, plata, petróleo, gas",
+        "etfs": "Sí (CFD sobre ETFs)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "BlackArrow (plataforma propia)",
+        "ZERO App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Zero Standard",
+          "deposito_min": "USD 10",
+          "spread": "Desde 1.0 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Super ZERO (ECN)",
+          "deposito_min": "USD 10",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 5/lote ida y vuelta"
+        }
+      ],
+      "pros": [
+        "Depósito mínimo más bajo del mercado (USD 10)",
+        "Acepta Nequi Visa y tarjetas colombianas",
+        "Regulación dual ASIC + FMA de primer nivel",
+        "BlackArrow: plataforma exclusiva avanzada",
+        "Bono 100% hasta USD 200 en primer depósito",
+        "Comunidad fuerte en Colombia sin oficina local"
+      ],
+      "contras": [
+        "Sin oficina en Colombia",
+        "Sin opciones",
+        "Menor variedad de instrumentos vs. competidores",
+        "Bono sujeto a condiciones de volumen"
+      ],
+      "calificacion": 8.3,
+      "presencia_colombia": "Sin oficina — acepta clientes colombianos"
+    },
+    {
+      "id": "B014",
+      "nombre": "XM Group",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Chipre (2009) — 4 entidades globales",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 5,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads (sin comisión en cuentas Standard/Ultra Low)",
+      "spread_eurusd": "0.6 pips (Ultra Low) / 1.6 pips (Standard)",
+      "comision_por_lote": "Sin comisión en cuentas Standard y Ultra Low",
+      "apalancamiento": {
+        "maximo": "1:30 (CySEC) / 1:1000 (offshore)",
+        "notas": "FSC Mauricio o IFSC Belice para Colombia"
+      },
+      "regulacion": [
+        "CySEC Chipre",
+        "ASIC Australia",
+        "DFSA Dubai",
+        "FSC Mauricio"
+      ],
+      "regulacion_colombia": "FSC Mauricio o IFSC Belice",
+      "instrumentos": {
+        "forex": "57+ pares",
+        "cfd_acciones": "1,380+ CFDs",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí — metales, energías, agrícolas",
+        "etfs": "Sí (CFD)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "XM App",
+        "MT4 Multiterminal (para gestores de cuentas)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Micro",
+          "deposito_min": "USD 5",
+          "spread": "Desde 1.6 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 5",
+          "spread": "Desde 1.6 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Ultra Low",
+          "deposito_min": "USD 50",
+          "spread": "Desde 0.6 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "XM Zero",
+          "deposito_min": "USD 100",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 3.5/lote"
+        }
+      ],
+      "pros": [
+        "Depósito mínimo muy bajo (USD 5)",
+        "99.35% ejecución instantánea — sin requotes garantizado",
+        "MT4 Multiterminal para gestores de múltiples cuentas (PAMM)",
+        "Sin comisión en depósitos ni retiros",
+        "Research diario y webinars educativos en español"
+      ],
+      "contras": [
+        "Sin opciones",
+        "Regulación Colombia offshore (FSC Mauricio)",
+        "Spreads Standard relativamente altos (1.6 pips)",
+        "Plataformas solo MT4/MT5 — sin propietaria moderna"
+      ],
+      "calificacion": 8.3,
+      "presencia_colombia": "Sin oficina local"
+    },
+    {
+      "id": "B015",
+      "nombre": "Exness",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Chipre (2008) — sede Limassol",
+      "region_operacion": "Global",
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads (Standard/Pro) / Spreads + Comisión (Raw/Zero)",
+      "spread_eurusd": "0.0 pips (Zero) / 0.1 pips (Raw) / 0.7 pips (Standard)",
+      "comision_por_lote": "USD 3.5/lote en Raw Spread / USD 0 en Standard y Pro",
+      "apalancamiento": {
+        "maximo": "1:2000 (offshore) / 1:30 (FCA)",
+        "notas": "FSA Seychelles para Colombia"
+      },
+      "regulacion": [
+        "FCA Reino Unido",
+        "CySEC Chipre",
+        "FSCA Sudáfrica",
+        "CMA Kenia",
+        "FSA Seychelles"
+      ],
+      "regulacion_colombia": "FSA Seychelles",
+      "instrumentos": {
+        "forex": "100+ pares — incluyendo USD/COP",
+        "cfd_acciones": "CFDs sobre acciones principales",
+        "indices": "Sí",
+        "criptomonedas": "Sí — BTC, ETH y principales",
+        "materias_primas": "Sí — oro, plata, petróleo, gas",
+        "etfs": "No (directo)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "Exness Terminal (web)",
+        "Exness Trade App",
+        "VPS gratuito"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard Cent",
+          "deposito_min": "USD 10",
+          "spread": "Micro-lotes, spread fijo",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Standard",
+          "deposito_min": "USD 10",
+          "spread": "Desde 0.7 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Pro",
+          "deposito_min": "USD 10",
+          "spread": "Desde 0.1 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Raw Spread",
+          "deposito_min": "USD 10",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 3.5/lote"
+        },
+        {
+          "nombre": "Zero",
+          "deposito_min": "USD 10",
+          "spread": "0.0 pips en pares mayores",
+          "comision": "USD 3.5/lote"
+        }
+      ],
+      "pros": [
+        "98%+ retiros procesados automáticamente — el más rápido",
+        "Apalancamiento hasta 1:2000",
+        "5 tipos de cuenta para todos los perfiles",
+        "Exness Terminal con Trading Central integrado",
+        "100+ pares incluyendo USD/COP",
+        "VPS gratuito"
+      ],
+      "contras": [
+        "Sin ETFs directos",
+        "Sin opciones",
+        "Regulación Colombia = FSA Seychelles",
+        "Sin oficina en Colombia",
+        "Sin acciones reales"
+      ],
+      "calificacion": 8.7,
+      "presencia_colombia": "Sin oficina — acepta clientes colombianos"
+    },
+    {
+      "id": "B016",
+      "nombre": "RoboForex",
+      "tipo": "Broker Internacional",
+      "pais_origen": "Belice (2009)",
+      "region_operacion": "Global (excluye EE.UU., Canadá, Japón, Australia, Rusia)",
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD"
+      },
+      "modelo_costos": "Spreads + Comisión (ECN/R Prime) / Solo spreads (otros)",
+      "spread_eurusd": "0.0 pips (ECN) / 1.3 pips (Prime)",
+      "comision_por_lote": "USD 20/millón en ECN",
+      "apalancamiento": {
+        "maximo": "1:2000",
+        "notas": "IFSC Belice — menor regulación"
+      },
+      "regulacion": [
+        "IFSC Belice (Tier 3)"
+      ],
+      "regulacion_colombia": "IFSC Belice — regulación mínima",
+      "instrumentos": {
+        "forex": "40+ pares",
+        "cfd_acciones": "12,000+ ACCIONES REALES vía R StocksTrader (no CFD)",
+        "indices": "Sí",
+        "criptomonedas": "Sí — 16+ cryptos CFD",
+        "materias_primas": "Sí",
+        "etfs": "Sí — ETFs reales en R StocksTrader",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "R StocksTrader (12,000+ acciones reales)",
+        "VPS gratuito",
+        "Strategy Builder sin código"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Pro",
+          "deposito_min": "USD 10",
+          "spread": "Desde 1.3 pips",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "ECN",
+          "deposito_min": "USD 10",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 20/millón"
+        },
+        {
+          "nombre": "R Prime",
+          "deposito_min": "USD 10",
+          "spread": "Desde 0.0 pips",
+          "comision": "USD 15/millón"
+        },
+        {
+          "nombre": "CopyFX",
+          "deposito_min": "USD 100",
+          "spread": "Variable",
+          "comision": "Variable"
+        }
+      ],
+      "pros": [
+        "12,000+ acciones REALES vía R StocksTrader",
+        "VPS gratuito para trading algorítmico",
+        "Strategy Builder sin necesidad de programar",
+        "EUR 2.5M en seguro de fondos",
+        "Depósito mínimo bajo (USD 10)"
+      ],
+      "contras": [
+        "ALERTA: Solo IFSC Belice — regulación Tier 3 mínima",
+        "NO recomendado para uso institucional",
+        "Excluido de EE.UU., Canadá, Japón, Australia",
+        "Sin opciones",
+        "Bonos frecuentes pueden ser señal de prácticas cuestionables"
+      ],
+      "calificacion": 7.1,
+      "presencia_colombia": "Sin oficina — acepta clientes colombianos (regulación mínima)"
+    },
+    {
+      "id": "B017",
+      "nombre": "Saxo Bank",
+      "tipo": "Broker Internacional / Banco",
+      "pais_origen": "Dinamarca (1992)",
+      "region_operacion": "Global — regulado en 15 países",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "notas": "Classic: sin mínimo / Platinum: USD 250,000 / VIP: USD 1,000,000"
+      },
+      "modelo_costos": "Comisión por operación (la más baja del mercado desde 2024)",
+      "spread_eurusd": "0.4 pips (Classic) / 0.2 pips (VIP)",
+      "comision_por_lote": "0.08% (Classic) / 0.05% (Platinum) / 0.03% (VIP)",
+      "apalancamiento": {
+        "maximo": "1:30 máximo regulado",
+        "notas": "Banco regulado con límites estrictos"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FCA Reino Unido",
+        "JFSA Japón",
+        "MAS Singapur",
+        "DFSA Dubai",
+        "FINMA Suiza",
+        "FSA Dinamarca"
+      ],
+      "regulacion_colombia": "Sin entidad offshore — usa filiales reguladas de primer nivel. Nueva propiedad: J. Safra Sarasin 70% (marzo 2025)",
+      "instrumentos": {
+        "forex": "200+ pares (FX Spot, Options, Forwards, Swaps, NDF, DMA/Prime)",
+        "cfd_acciones": "23,500+ acciones REALES en bolsas globales",
+        "indices": "60+ índices (futuros + ETFs)",
+        "criptomonedas": "Sí — crypto ETPs y spot",
+        "materias_primas": "Sí — futuros y CFDs",
+        "etfs": "Miles de ETFs, ETNs, ETCs y crypto ETPs",
+        "opciones": "SÍ COMPLETO — opciones reales sobre acciones, índices, forex, futuros, intereses"
+      },
+      "plataformas": [
+        "SaxoTraderGO (web/móvil)",
+        "SaxoTraderPRO (desktop institucional)",
+        "API REST/FIX completa",
+        "SaxoInvestor (principiantes)",
+        "SaxoSelect (robo-advisor)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Classic",
+          "deposito_min": "USD 0",
+          "spread": "Comisión 0.08%",
+          "comision": "Min USD 1/operación"
+        },
+        {
+          "nombre": "Platinum",
+          "deposito_min": "USD 250,000",
+          "spread": "Comisión 0.05%",
+          "comision": "30% descuento"
+        },
+        {
+          "nombre": "VIP",
+          "deposito_min": "USD 1,000,000",
+          "spread": "Comisión 0.03%",
+          "comision": "Mejor disponible + asesor personal"
+        },
+        {
+          "nombre": "Corporate",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        },
+        {
+          "nombre": "SaxoSelect",
+          "deposito_min": "USD 20,000",
+          "spread": "Gestión 0.5–1%/año",
+          "comision": "Robo-advisor"
+        }
+      ],
+      "pros": [
+        "71,000+ instrumentos — la oferta más amplia del mercado",
+        "Banco danés con calificación S&P A- (2025)",
+        "Nueva propiedad J. Safra Sarasin (banco suizo privado) — 70%",
+        "Cuenta corporativa dedicada con soporte especializado",
+        "Opciones reales en CBOE, Euronext y otras bolsas",
+        "FX DMA/Prime para instituciones",
+        "Sin comisión de custodia (eliminada feb 2025)",
+        "Protección fondos hasta EUR 100,000 (Fondo Garantía Danés)"
+      ],
+      "contras": [
+        "Sin presencia local en Colombia",
+        "Plataforma compleja para principiantes",
+        "Depósito recomendado alto para aprovechar condiciones",
+        "Sin soporte en español 24/7",
+        "Comisiones VIP requieren USD 1M+"
+      ],
+      "calificacion": 9.2,
+      "presencia_colombia": "Sin oficina — acepta clientes colombianos bajo regulación internacional"
+    },
+    {
+      "id": "B018",
+      "nombre": "Swissquote",
+      "tipo": "Broker Internacional / Banco Suizo",
+      "pais_origen": "Suiza (1996) — cotiza SQN.SW",
+      "region_operacion": "Global — CHF 76 billones en activos (2024)",
+      "deposito_minimo": {
+        "valor": 1000,
+        "moneda": "CHF",
+        "notas": "Recomendado CHF 5,000+ para corporativo"
+      },
+      "modelo_costos": "Comisión flat-rate por operación",
+      "spread_eurusd": "Variable — desde 1 pip en Forex",
+      "comision_por_lote": "0.03%–0.08% según cuenta (acciones) / Variable Forex",
+      "apalancamiento": {
+        "maximo": "Limitado por FINMA",
+        "notas": "Banco suizo — regulación más estricta"
+      },
+      "regulacion": [
+        "FINMA Suiza",
+        "FCA Reino Unido",
+        "MAS Singapur",
+        "SFC Hong Kong",
+        "CSSF Luxemburgo"
+      ],
+      "regulacion_colombia": "Sin entidad offshore — usa licencias bancarias de primer nivel",
+      "instrumentos": {
+        "forex": "FX Spot, Forwards, Options — todas las variantes",
+        "cfd_acciones": "60,000+ acciones en 60+ bolsas mundiales",
+        "indices": "Sí — CFDs y ETFs",
+        "criptomonedas": "Sí — spot + CFD + cripto ETPs (353% crecimiento 2024)",
+        "materias_primas": "Sí — ETCs, futuros, CFDs",
+        "etfs": "Miles — con fractional trading disponible",
+        "opciones": "SÍ — opciones listadas reales en bolsas internacionales"
+      },
+      "plataformas": [
+        "Swissquote Advanced Trader",
+        "SQ eTrading App",
+        "MetaTrader (disponible)",
+        "Soluciones corporativas API"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Basic",
+          "deposito_min": "CHF 1,000",
+          "spread": "Comisión standard",
+          "comision": "Variable"
+        },
+        {
+          "nombre": "Premium",
+          "deposito_min": "CHF 10,000",
+          "spread": "Reducida",
+          "comision": "Reducida"
+        },
+        {
+          "nombre": "Corporate / Business",
+          "deposito_min": "CHF 5,000+",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        },
+        {
+          "nombre": "Invest Easy",
+          "deposito_min": "CHF 1,000",
+          "spread": "Gestión automática",
+          "comision": "Fee de gestión"
+        }
+      ],
+      "pros": [
+        "ÚNICO banco suizo completo de esta auditoría",
+        "All-in-one: banca + inversión + tesorería + cobertura cambiaria",
+        "CHF 76B en activos de clientes — solidez excepcional",
+        "Fractional trading en acciones y ETFs",
+        "Ingresos record CHF 661M en 2024 (+24.4%)",
+        "Cuenta corriente, tarjeta y transfers integradas",
+        "Pensión 3a y productos bancarios completos"
+      ],
+      "contras": [
+        "El más caro de la lista para operaciones pequeñas",
+        "Sin presencia en Colombia — requiere cuenta en el extranjero",
+        "Interfaz menos intuitiva que competidores modernos",
+        "Sin soporte en español",
+        "Proceso de apertura de cuenta más largo"
+      ],
+      "calificacion": 9.0,
+      "presencia_colombia": "Sin oficina — requiere apertura de cuenta en Suiza"
+    },
+    {
+      "id": "L001",
+      "nombre": "Valores Bancolombia",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Bancolombia",
+      "region_operacion": "Colombia + Mercado Global Colombiano (MGC)",
+      "deposito_minimo": {
+        "valor": 500000,
+        "moneda": "COP",
+        "notas": "Aprox. USD 120"
+      },
+      "modelo_costos": "Comisión por operación",
+      "spread_eurusd": "No aplica directamente",
+      "comision_por_lote": "0.2% + IVA / operación (mínimo COP 20,000 + IVA)",
+      "apalancamiento": {
+        "maximo": "No aplica (acciones reales)",
+        "notas": "Sin apalancamiento en acciones reales"
+      },
+      "regulacion": [
+        "SFC (Superintendencia Financiera Colombia)",
+        "BVC (Bolsa de Valores Colombia)",
+        "AMV (Autorregulador del Mercado de Valores)"
+      ],
+      "regulacion_colombia": "Regulado directamente por SFC — máxima protección local",
+      "instrumentos": {
+        "forex": "Sí — divisas vía tipo de cambio",
+        "cfd_acciones": "Acciones REALES BVC + Mercado Global Colombiano (NYSE/NASDAQ vía MGC) + Chile + Perú",
+        "indices": "ETFs que replican índices (ICOLCAP, MSCI, S&P 500, etc.)",
+        "criptomonedas": "No directo — disponible en fondos vía Fiduciaria",
+        "materias_primas": "Limitado",
+        "etfs": "37+ ETFs BlackRock en BVC — en pesos colombianos sin cuenta exterior",
+        "opciones": "No (retail) — disponible en banca privada"
+      },
+      "plataformas": [
+        "Bancolombia eTrading (web)",
+        "App Personas Bancolombia",
+        "Invesbot (robo-advisor local)",
+        "Sucursal Virtual"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "e-Trading Personas",
+          "deposito_min": "COP 500,000",
+          "spread": "0.2%+IVA",
+          "comision": "Por operación"
+        },
+        {
+          "nombre": "Bancolombia Capital (Wealth)",
+          "deposito_min": "Negociable",
+          "spread": "Variable",
+          "comision": "Gestión profesional"
+        },
+        {
+          "nombre": "Invesbot (Robo-advisor)",
+          "deposito_min": "COP 500,000",
+          "spread": "Fee de gestión anual",
+          "comision": "Automático"
+        }
+      ],
+      "pros": [
+        "ÚNICA entidad con 37+ ETFs BlackRock en pesos colombianos (BVC)",
+        "Alianza Bancolombia Capital + BlackRock + Patria Investments",
+        "Invesbot: primer robo-advisor local colombiano",
+        "18+ gestores internacionales (PIMCO, BlackRock, JPMorgan)",
+        "Regulación SFC — mayor protección al inversor colombiano",
+        "Integración total con Bancolombia (banco + inversión)"
+      ],
+      "contras": [
+        "Sin Forex activo ni CFDs",
+        "Sin criptomonedas directas",
+        "Comisión 0.2%+IVA puede ser alta para operaciones frecuentes",
+        "Tope de inversión en eTrading básico",
+        "Sin opciones ni futuros para retail"
+      ],
+      "calificacion": 8.2,
+      "presencia_colombia": "Oficinas en todo Colombia — sede Medellín"
+    },
+    {
+      "id": "L002",
+      "nombre": "Davivienda Corredores",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Bolívar",
+      "region_operacion": "Colombia — AUM COP 30 billones",
+      "deposito_minimo": {
+        "valor": 60000,
+        "moneda": "COP",
+        "notas": "Comisión mínima por operación"
+      },
+      "modelo_costos": "Comisión por operación según monto",
+      "spread_eurusd": "No aplica directamente",
+      "comision_por_lote": "Mínimo COP 60,000+IVA (<COP 20M) / 0.3%+IVA (COP 20M-50M) / 0.2%+IVA (>COP 50M)",
+      "apalancamiento": {
+        "maximo": "No aplica (acciones reales)",
+        "notas": "Derivados disponibles con garantías"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia — Top 3 por patrimonio (COP 138 mil millones)",
+      "instrumentos": {
+        "forex": "Sí — divisas y derivados cambiarios",
+        "cfd_acciones": "Acciones BVC + algunos internacionales",
+        "indices": "Sí (BVC)",
+        "criptomonedas": "No",
+        "materias_primas": "Sí — commodities básicos",
+        "etfs": "Sí — ICOLCAP y algunos internacionales",
+        "opciones": "Limitado — derivados disponibles"
+      },
+      "plataformas": [
+        "Homebroker Davivienda",
+        "App Inversiones Davivienda",
+        "DaviPlata Inversiones",
+        "Portal Web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas Naturales",
+          "deposito_min": "Variable",
+          "spread": "Comisión escalonada",
+          "comision": "Según monto operación"
+        },
+        {
+          "nombre": "Compañías / Empresas",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        },
+        {
+          "nombre": "Entidades Estatales",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Top 3 SCB por patrimonio en Colombia (COP 138 mil millones)",
+        "COP 30 billones en activos bajo administración",
+        "Homebroker: plataforma de trading más reconocida localmente",
+        "Integración con DaviPlata para pequeños inversores",
+        "Respaldo Grupo Bolívar — uno de los más sólidos de Colombia",
+        "Atención a personas, empresas y entidades estatales"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Comisión mínima alta para operaciones pequeñas (COP 60,000+IVA)",
+        "Acceso internacional limitado vs. brokers internacionales",
+        "Sin productos CFD ni apalancamiento activo"
+      ],
+      "calificacion": 7.8,
+      "presencia_colombia": "Oficinas en Bogotá y principales ciudades"
+    },
+    {
+      "id": "L003",
+      "nombre": "Credicorp Capital Colombia",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — filial Credicorp Ltd. (Perú)",
+      "region_operacion": "Colombia + Perú + Chile (red regional)",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Variable según servicio"
+      },
+      "modelo_costos": "Comisión e-trading + gestión en fondos",
+      "spread_eurusd": "Variable",
+      "comision_por_lote": "Variable según tipo de operación y monto",
+      "apalancamiento": {
+        "maximo": "Disponible en derivados con garantías",
+        "notas": "Regulado SFC"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia — banca de inversión completa",
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "cfd_acciones": "BVC + mercados internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "Sí — futuros y opciones sobre derivados"
+      },
+      "plataformas": [
+        "Plataforma Credicorp Capital",
+        "Tyba (app retail)",
+        "Portal institucional"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail e-trading",
+          "deposito_min": "Variable",
+          "spread": "Comisión",
+          "comision": "Por operación"
+        },
+        {
+          "nombre": "Banca Privada",
+          "deposito_min": "USD 100,000+",
+          "spread": "Institucional",
+          "comision": "Gestión %"
+        },
+        {
+          "nombre": "Institucional / Empresas",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Mayor broker local para inversión compleja (CFD, bonos, futuros, opciones)",
+        "Red regional Colombia + Perú + Chile",
+        "Tyba app para inversión retail digitalizada",
+        "Banca de inversión completa con acceso internacional",
+        "Regulación SFC directa"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Comisiones más altas que plataformas digitales",
+        "Plataformas menos modernas que competidores internacionales",
+        "Mínimos altos en banca privada"
+      ],
+      "calificacion": 8.0,
+      "presencia_colombia": "Bogotá, Medellín y ciudades principales"
+    },
+    {
+      "id": "L004",
+      "nombre": "Global Securities Colombia",
+      "tipo": "Comisionista de Bolsa Local — SFC + SEC EE.UU.",
+      "pais_origen": "Colombia",
+      "region_operacion": "Colombia + acceso mercados internacionales",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Negociable"
+      },
+      "modelo_costos": "Comisión variable",
+      "spread_eurusd": "Variable",
+      "comision_por_lote": "Variable según operación",
+      "apalancamiento": {
+        "maximo": "Regulado SFC",
+        "notas": "Sin apalancamiento significativo en retail"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV",
+        "SEC EE.UU."
+      ],
+      "regulacion_colombia": "SFC Colombia + SEC USA — doble regulación única en el mercado local",
+      "instrumentos": {
+        "forex": "Sí",
+        "cfd_acciones": "BVC + NYSE/NASDAQ (ADRs)",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "Plataforma Global Securities",
+        "Portal web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas Naturales",
+          "deposito_min": "Negociable",
+          "spread": "Comisión",
+          "comision": "Variable"
+        },
+        {
+          "nombre": "Institucional",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "ÚNICA comisionista local con regulación SEC de EE.UU.",
+        "Acceso a NYSE y NASDAQ vía ADRs",
+        "Doble regulación SFC + SEC",
+        "Mayor acceso internacional vs. otras SCB locales"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma poco conocida",
+        "Menor oferta educativa vs. competidores",
+        "Sin presencia en redes sociales activa"
+      ],
+      "calificacion": 7.3,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L005",
+      "nombre": "Scotia Securities Colombia",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Scotiabank (Canadá)",
+      "region_operacion": "Colombia",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Negociable"
+      },
+      "modelo_costos": "Comisión variable",
+      "spread_eurusd": "Variable",
+      "comision_por_lote": "Variable según operación",
+      "apalancamiento": {
+        "maximo": "Regulado SFC",
+        "notas": "Sin apalancamiento significativo en retail"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC"
+      ],
+      "regulacion_colombia": "SFC Colombia",
+      "instrumentos": {
+        "forex": "Sí",
+        "cfd_acciones": "BVC + algunos internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Portal ScotiaConnect",
+        "App Scotia"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas Naturales",
+          "deposito_min": "Negociable",
+          "spread": "Comisión",
+          "comision": "Variable"
+        },
+        {
+          "nombre": "Wealth Management",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Respaldo red global Scotiabank",
+        "Acceso a mercados internacionales vía red canadiense",
+        "Wealth management integrado con banca Scotiabank"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma digital menos desarrollada",
+        "Enfoque más en banca que en trading activo",
+        "Sin opciones retail"
+      ],
+      "calificacion": 7.2,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L006",
+      "nombre": "BBVA Valores Colombia",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo BBVA (España)",
+      "region_operacion": "Colombia",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Integrado con cuenta BBVA"
+      },
+      "modelo_costos": "Comisión por operación",
+      "spread_eurusd": "Variable",
+      "comision_por_lote": "0.20%–0.60% + IVA por operación",
+      "apalancamiento": {
+        "maximo": "No aplica acciones reales",
+        "notas": "SFC Colombia"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia",
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "cfd_acciones": "BVC principalmente",
+        "indices": "Sí (BVC)",
+        "criptomonedas": "No",
+        "materias_primas": "Limitado",
+        "etfs": "Sí — fondos BBVA Asset Management",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Portal BBVA Net Cash",
+        "App BBVA Colombia"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas",
+          "deposito_min": "Sin mínimo (cuenta BBVA)",
+          "spread": "0.20%–0.60%+IVA",
+          "comision": "Por operación"
+        },
+        {
+          "nombre": "Empresas",
+          "deposito_min": "Sin mínimo",
+          "spread": "Variable",
+          "comision": "Variable"
+        }
+      ],
+      "pros": [
+        "Integración directa con cuenta bancaria BBVA",
+        "Asesoría incluida en algunos perfiles",
+        "Acceso a fondos globales BBVA Asset Management",
+        "Estabilidad de marca internacional"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma digital menos avanzada",
+        "Comisiones en rango medio-alto",
+        "Sin opciones ni derivados activos para retail"
+      ],
+      "calificacion": 7.3,
+      "presencia_colombia": "Bogotá y ciudades principales"
+    },
+    {
+      "id": "L007",
+      "nombre": "BTG Pactual Colombia",
+      "tipo": "Comisionista de Bolsa / Banca de Inversión — SFC Colombia",
+      "pais_origen": "Colombia — Grupo BTG Pactual (Brasil)",
+      "region_operacion": "Colombia + red LATAM BTG Pactual",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Perfil wealth — negociable"
+      },
+      "modelo_costos": "Fee de gestión / Comisión institucional",
+      "spread_eurusd": "Variable institucional",
+      "comision_por_lote": "Variable según servicio",
+      "apalancamiento": {
+        "maximo": "Productos estructurados disponibles",
+        "notas": "Regulado SFC"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia — mayor banco de inversión de LATAM",
+      "instrumentos": {
+        "forex": "Sí — divisas institucional",
+        "cfd_acciones": "BVC + internacionales via fondos",
+        "indices": "Sí",
+        "criptomonedas": "No directo — Sí vía fondos",
+        "materias_primas": "Sí",
+        "etfs": "Sí — administra fondos en BVC",
+        "opciones": "Sí — productos estructurados"
+      },
+      "plataformas": [
+        "Plataforma BTG Colombia",
+        "WhatsApp para asesores",
+        "Portal web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Wealth Management",
+          "deposito_min": "Negociable",
+          "spread": "Fee gestión",
+          "comision": "% AUM"
+        },
+        {
+          "nombre": "Institucional",
+          "deposito_min": "USD 100,000+",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        },
+        {
+          "nombre": "Family Office",
+          "deposito_min": "USD 500,000+",
+          "spread": "Premium",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Mayor banco de inversión de LATAM",
+        "Acceso a private equity, infraestructura y activos alternativos",
+        "Red de distribución de fondos en toda Colombia",
+        "Administra fondos BVC de alta demanda",
+        "Productos estructurados con cobertura cambiaria"
+      ],
+      "contras": [
+        "Sin criptomonedas directas",
+        "Orientado a clientes de alto patrimonio",
+        "No accesible para retail básico",
+        "Menos plataforma digital vs. brokers internacionales"
+      ],
+      "calificacion": 7.8,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L008",
+      "nombre": "Itaú Colombia (Comisionista)",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Itaú Unibanco (Brasil)",
+      "region_operacion": "Colombia + red Itaú LATAM",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Perfil institucional"
+      },
+      "modelo_costos": "Comisión / Fee de gestión",
+      "spread_eurusd": "Variable institucional",
+      "comision_por_lote": "Variable",
+      "apalancamiento": {
+        "maximo": "No aplica retail",
+        "notas": "SFC Colombia"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia",
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "cfd_acciones": "BVC + internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí — fondos colectivos",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "App Itaú Colombia",
+        "Portal inversiones web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas Naturales",
+          "deposito_min": "Negociable",
+          "spread": "Variable",
+          "comision": "Variable"
+        },
+        {
+          "nombre": "Banca Privada",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "% AUM"
+        }
+      ],
+      "pros": [
+        "Respaldo del mayor banco privado de LATAM",
+        "Acceso al ecosistema financiero latinoamericano Itaú",
+        "Administra fondos colectivos de alta calidad"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma digital menos desarrollada para trading",
+        "Más orientado a banca que a trading activo",
+        "Menor visibilidad en el mercado retail colombiano"
+      ],
+      "calificacion": 7.5,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L009",
+      "nombre": "Caja Social BCSC Inversiones",
+      "tipo": "Banco / Ahorro popular — SFC Colombia",
+      "pais_origen": "Colombia — Fundación Social",
+      "region_operacion": "Colombia",
+      "deposito_minimo": {
+        "valor": 50000,
+        "moneda": "COP",
+        "notas": "CDTs y fondos básicos"
+      },
+      "modelo_costos": "Rendimiento según instrumento (CDT, fondo)",
+      "spread_eurusd": "No aplica",
+      "comision_por_lote": "Tarifa de administración del fondo",
+      "apalancamiento": {
+        "maximo": "No aplica",
+        "notas": "Entidad de ahorro, no trading"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia — orientado a bancarización popular",
+      "instrumentos": {
+        "forex": "No (solo divisas para viajes)",
+        "cfd_acciones": "No",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No (fondos de inversión básicos similares)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Banca Virtual Caja Social",
+        "App móvil",
+        "Sucursales físicas"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "CDT",
+          "deposito_min": "COP 50,000",
+          "spread": "Tasa fija",
+          "comision": "Sin comisión"
+        },
+        {
+          "nombre": "Fondo de Inversión Básico",
+          "deposito_min": "COP 50,000",
+          "spread": "Rendimiento variable",
+          "comision": "Fee administración"
+        },
+        {
+          "nombre": "Cuenta de Ahorros",
+          "deposito_min": "COP 0",
+          "spread": "Tasa de ahorro",
+          "comision": "Sin comisión"
+        }
+      ],
+      "pros": [
+        "Accesible para todos los niveles de ingreso",
+        "CDTs con tasas competitivas",
+        "Regulado SFC — total seguridad de depósitos",
+        "Red de sucursales amplia en Colombia"
+      ],
+      "contras": [
+        "NO ofrece trading de ningún tipo de mercado de capitales",
+        "Sin acciones, CFDs, Forex, ni ningún instrumento activo",
+        "Solo para ahorro conservador, no para inversión activa",
+        "Sin plataforma de trading"
+      ],
+      "calificacion": 6.5,
+      "presencia_colombia": "Todo Colombia — enfoque popular y microfinanzas"
+    },
+    {
+      "id": "L010",
+      "nombre": "Alianza Valores",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Bolívar",
+      "region_operacion": "Colombia",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Variable según perfil"
+      },
+      "modelo_costos": "Comisión por operación",
+      "spread_eurusd": "No aplica directamente",
+      "comision_por_lote": "~0.4% + IVA por operación (estimado)",
+      "apalancamiento": {
+        "maximo": "No aplica acciones reales",
+        "notas": "SFC Colombia"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia",
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "cfd_acciones": "BVC + algunos internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Portal Alianza Valores",
+        "App móvil"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas",
+          "deposito_min": "Variable",
+          "spread": "~0.4%+IVA",
+          "comision": "Por operación"
+        },
+        {
+          "nombre": "Institucional",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Respaldo Grupo Bolívar",
+        "Acceso a BVC y mercados internacionales básicos",
+        "Asesoría financiera personalizada"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Comisión ~0.4% más alta que plataformas digitales",
+        "Plataforma menos tecnológica vs. trii o eTrading",
+        "Sin opciones"
+      ],
+      "calificacion": 7.5,
+      "presencia_colombia": "Bogotá y ciudades principales"
+    },
+    {
+      "id": "L011",
+      "nombre": "Renta 4 Colombia",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Bolívar / Red Renta 4 (España)",
+      "region_operacion": "Colombia + 10 países LATAM",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Variable según perfil"
+      },
+      "modelo_costos": "Comisión variable",
+      "spread_eurusd": "Variable",
+      "comision_por_lote": "Variable según operación e instrumento",
+      "apalancamiento": {
+        "maximo": "Limitado — regulado SFC",
+        "notas": "Derivados disponibles"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia",
+      "instrumentos": {
+        "forex": "Sí",
+        "cfd_acciones": "BVC + Colombia + Chile + Perú + internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "Renta 4 Colombia plataforma web",
+        "App móvil"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "deposito_min": "Variable",
+          "spread": "Comisión variable",
+          "comision": "Por operación"
+        },
+        {
+          "nombre": "Pensiones voluntarias",
+          "deposito_min": "Variable",
+          "spread": "Fee gestión",
+          "comision": "% AUM"
+        },
+        {
+          "nombre": "Institucional",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Red LATAM en 10 países — la más amplia entre SCB locales",
+        "Renta 4 Gestora con fondos propios internacionales",
+        "Acceso al mercado MILA (Colombia, Chile, Perú)",
+        "Desde 2011 en Colombia — experiencia consolidada",
+        "Renta 4 Pensiones también disponible"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma menos moderna vs. internacionales",
+        "Sin soporte para trading algorítmico",
+        "Menor liquidez en algunos mercados"
+      ],
+      "calificacion": 7.6,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L012",
+      "nombre": "Acciones & Valores SCB",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia (60+ años de operación)",
+      "region_operacion": "Colombia — aliada tecnológica de Trii",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Sin mínimo vía Trii"
+      },
+      "modelo_costos": "Comisión por operación",
+      "spread_eurusd": "No aplica directamente",
+      "comision_por_lote": "0.25%+IVA (vía Trii) / Variable en cuenta directa",
+      "apalancamiento": {
+        "maximo": "No aplica acciones reales",
+        "notas": "SFC Colombia"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV",
+        "Deceval",
+        "CRCC"
+      ],
+      "regulacion_colombia": "SFC Colombia — 60+ años de trayectoria",
+      "instrumentos": {
+        "forex": "Sí — divisas",
+        "cfd_acciones": "BVC + Mercado Global Colombiano (vía Trii)",
+        "indices": "ETFs sobre índices",
+        "criptomonedas": "No",
+        "materias_primas": "Limitado",
+        "etfs": "Sí — BVC + ETFs internacionales MGC",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma propia e-trading",
+        "Trii App (alianza)",
+        "Portal web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Vía Trii App",
+          "deposito_min": "COP 0 (mínimo inversión COP 14,750)",
+          "spread": "0.25%+IVA",
+          "comision": "Desde COP 6,900"
+        },
+        {
+          "nombre": "Cuenta directa",
+          "deposito_min": "Negociable",
+          "spread": "Variable",
+          "comision": "Variable"
+        }
+      ],
+      "pros": [
+        "60+ años en el mercado bursátil colombiano",
+        "Aliada tecnológica de Trii — acceso sin monto mínimo",
+        "Inscrita en Deceval y CRCC — máxima infraestructura local",
+        "Asesoría por profesionales certificados AMV incluida"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma propia menos conocida que Bancolombia o Davivienda",
+        "Tope COP 56.9M por operación vía Trii",
+        "Sin opciones ni derivados activos"
+      ],
+      "calificacion": 7.7,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L013",
+      "nombre": "Larraín Vial Colombia",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Grupo Larraín Vial (Chile)",
+      "region_operacion": "Colombia + Chile + Perú (MILA)",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Perfil wealth / institucional"
+      },
+      "modelo_costos": "Comisión / Fee gestión",
+      "spread_eurusd": "Variable institucional",
+      "comision_por_lote": "Variable institucional",
+      "apalancamiento": {
+        "maximo": "Limitado — SFC",
+        "notas": "Regulado"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia + red MILA",
+      "instrumentos": {
+        "forex": "Sí",
+        "cfd_acciones": "BVC + Chile + Perú + internacionales",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "LV Connect plataforma web",
+        "App móvil"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Banca Privada",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Gestión %"
+        },
+        {
+          "nombre": "Institucional",
+          "deposito_min": "Negociable",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Acceso al mercado MILA: Colombia + Chile + Perú",
+        "Una de las mayores firmas de inversión de LATAM",
+        "Expertise en renta variable regional"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Enfocado en wealth management — no accesible para retail básico",
+        "Plataforma menos conocida localmente"
+      ],
+      "calificacion": 7.4,
+      "presencia_colombia": "Bogotá"
+    },
+    {
+      "id": "L014",
+      "nombre": "Citivalores",
+      "tipo": "Comisionista de Bolsa Institucional — SFC Colombia",
+      "pais_origen": "Colombia — Citibank N.A. (EE.UU.)",
+      "region_operacion": "Colombia — exclusivo institucional",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Solo clientes institucionales"
+      },
+      "modelo_costos": "Comisión institucional negociable",
+      "spread_eurusd": "Variable institucional",
+      "comision_por_lote": "Negociable institucional",
+      "apalancamiento": {
+        "maximo": "Disponible para institucionales",
+        "notas": "SFC Colombia"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia + respaldo red Citi global",
+      "instrumentos": {
+        "forex": "Sí — institutional FX completo",
+        "cfd_acciones": "BVC + internacionales vía red Citi global",
+        "indices": "Sí",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí",
+        "opciones": "Sí — opciones institucionales"
+      },
+      "plataformas": [
+        "Plataforma institucional Citi",
+        "API institucional",
+        "Portal web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Solo Institucional/Corporativo",
+          "deposito_min": "Negociable alto",
+          "spread": "Institucional",
+          "comision": "Negociable"
+        }
+      ],
+      "pros": [
+        "Acceso a red global Citi para multinationales en Colombia",
+        "FX corporativo y treasury management completo",
+        "Opciones institucionales disponibles",
+        "Único Citibank en Colombia — red global excepcional"
+      ],
+      "contras": [
+        "NO atiende clientes retail — solo institucional/empresas",
+        "Sin criptomonedas",
+        "Proceso de onboarding complejo",
+        "Sin plataforma retail moderna"
+      ],
+      "calificacion": 7.3,
+      "presencia_colombia": "Bogotá — exclusivo institucional"
+    },
+    {
+      "id": "F001",
+      "nombre": "Trii",
+      "tipo": "App Fintech / Comisionista Digital — SFC Colombia",
+      "pais_origen": "Colombia (2019) — FinTech",
+      "region_operacion": "Colombia + Perú + Chile",
+      "deposito_minimo": {
+        "valor": 14750,
+        "moneda": "COP",
+        "notas": "Mínimo inversión; Apertura COP 0"
+      },
+      "modelo_costos": "Comisión fija por operación",
+      "spread_eurusd": "No aplica (acciones reales)",
+      "comision_por_lote": "COP 6,900–9,900 por operación (<COP 5M) / 0.25%+IVA (>COP 5M)",
+      "apalancamiento": {
+        "maximo": "No aplica (acciones reales)",
+        "notas": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SFC Colombia (vía Acciones & Valores SCB)",
+        "AMV",
+        "BVC"
+      ],
+      "regulacion_colombia": "Única app fintech regulada SFC Colombia directamente",
+      "instrumentos": {
+        "forex": "No",
+        "cfd_acciones": "Acciones BVC + Mercado Global Colombiano (NYSE/NASDAQ)",
+        "indices": "ETFs que replican índices",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "Sí — BVC + ETFs internacionales (ICOLCAP, SPY, QQQ, etc.)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Trii iOS",
+        "App Trii Android",
+        "Web (beta)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Trii / Acciones & Valores",
+          "deposito_min": "COP 0",
+          "spread": "Comisión fija",
+          "comision": "Desde COP 6,900"
+        }
+      ],
+      "pros": [
+        "ÚNICA app fintech colombiana con regulación SFC directa",
+        "Sin monto mínimo de inversión",
+        "Respaldo Bancolombia + Y Combinator + Harvard (USD 10M)",
+        "100% digital — apertura en minutos",
+        "Día Trii: sin comisiones el 29 de abril",
+        "Asesoría por profesional certificado AMV incluida",
+        "Disponible en Colombia, Perú y Chile"
+      ],
+      "contras": [
+        "Solo colombianos con cédula",
+        "Tope COP 56.9M por operación en app (superar = cuenta directa)",
+        "Sin Forex, CFD, cripto ni materias primas",
+        "Sin herramientas de análisis técnico avanzado"
+      ],
+      "calificacion": 8.0,
+      "presencia_colombia": "100% digital — Colombia, Perú, Chile"
+    },
+    {
+      "id": "F002",
+      "nombre": "Hapi",
+      "tipo": "App Fintech — Regulada SEC/FINRA EE.UU.",
+      "pais_origen": "EE.UU. — Hapi Securities LLC (para LATAM)",
+      "region_operacion": "LATAM — Colombia, México, Argentina y más",
+      "deposito_minimo": {
+        "valor": 5,
+        "moneda": "USD"
+      },
+      "modelo_costos": "0% comisión de broker en acciones y ETFs USA",
+      "spread_eurusd": "No aplica (acciones reales)",
+      "comision_por_lote": "USD 0 en acciones y ETFs / 1% en cripto (vía Bakkt)",
+      "apalancamiento": {
+        "maximo": "No aplica (acciones reales)",
+        "notas": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SEC EE.UU.",
+        "FINRA",
+        "SIPC (hasta USD 500,000)"
+      ],
+      "regulacion_colombia": "SEC/FINRA EE.UU. — NO regulada por SFC Colombia",
+      "instrumentos": {
+        "forex": "No",
+        "cfd_acciones": "12,000+ acciones reales USA (NYSE, NASDAQ, AMEX) — fraccionadas",
+        "indices": "ETFs sobre índices (SPY, QQQ, IWM, etc.)",
+        "criptomonedas": "Sí — vía Bakkt (NO cubierto por SIPC)",
+        "materias_primas": "No",
+        "etfs": "Miles de ETFs USA sin comisión",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Hapi iOS",
+        "App Hapi Android",
+        "Web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Hapi Securities",
+          "deposito_min": "USD 5",
+          "spread": "0% comisión acciones/ETFs",
+          "comision": "0% (solo tarifas regulatorias mínimas)"
+        }
+      ],
+      "pros": [
+        "0% comisión en acciones y ETFs USA",
+        "Acciones fraccionadas desde USD 5",
+        "Protección SIPC hasta USD 500,000 (acciones/ETFs)",
+        "Custodia vía Apex Clearing — infraestructura EE.UU.",
+        "12,000+ activos en español",
+        "Sin requisito de residencia en Colombia"
+      ],
+      "contras": [
+        "NO regulada por SFC Colombia",
+        "Sin mercado colombiano (BVC)",
+        "Cripto via Bakkt NO cubierto por SIPC",
+        "Sin Forex, materias primas ni opciones",
+        "Sin análisis técnico avanzado"
+      ],
+      "calificacion": 7.8,
+      "presencia_colombia": "100% digital — disponible para colombianos"
+    },
+    {
+      "id": "B019",
+      "nombre": "GNB Sudameris (Servivalores)",
+      "tipo": "Comisionista de Bolsa Local — SFC Colombia",
+      "pais_origen": "Colombia — Banco GNB Sudameris",
+      "region_operacion": "Colombia",
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "COP",
+        "notas": "Monto negociable institucional"
+      },
+      "modelo_costos": "Comisión variable",
+      "spread_eurusd": "Variable",
+      "comision_por_lote": "Variable según operación",
+      "apalancamiento": {
+        "maximo": "No aplica retail",
+        "notas": "SFC Colombia"
+      },
+      "regulacion": [
+        "SFC Colombia",
+        "BVC",
+        "AMV"
+      ],
+      "regulacion_colombia": "SFC Colombia",
+      "instrumentos": {
+        "forex": "Sí",
+        "cfd_acciones": "BVC principalmente",
+        "indices": "Sí (BVC)",
+        "criptomonedas": "No",
+        "materias_primas": "Sí",
+        "etfs": "Sí — fondos colectivos",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Portal Servivalores web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Personas / Empresas",
+          "deposito_min": "Negociable",
+          "spread": "Variable",
+          "comision": "Variable"
+        }
+      ],
+      "pros": [
+        "Casa de Bolsa del Banco GNB Sudameris",
+        "Especializado en fondos de inversión colectiva",
+        "Atención a clientes institucionales y corporativos"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Plataforma web básica",
+        "Menor variedad de instrumentos internacionales",
+        "Sin opciones"
+      ],
+      "calificacion": 7.2,
+      "presencia_colombia": "Bogotá"
+    }
+  ]
+}

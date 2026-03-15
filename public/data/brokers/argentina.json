@@ -1,0 +1,506 @@
+{
+  "metadata": {
+    "pais": "Argentina",
+    "bandera": "🇦🇷",
+    "color": "#003DA5",
+    "subtitulo": "ALyCs (Brokers) · CEDEARs · Bonos · Dólar MEP/Blue · Fintech · CNV",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. Argentina tiene cepo cambiario (cupo USD 200/mes). Verifique con la CNV (Comisión Nacional de Valores) y el BCRA. Los CEDEARs son el instrumento clave para dolarización. Riesgo político y cambiario muy alto.",
+    "stats": [
+      {
+        "val": "CNV",
+        "lbl": "Regulador — Comisión Nacional de Valores"
+      },
+      {
+        "val": "MERVAL",
+        "lbl": "Índice bursátil principal"
+      },
+      {
+        "val": "CEDEARs",
+        "lbl": "Instrumento clave para dolarización"
+      },
+      {
+        "val": "USD MEP",
+        "lbl": "Dólar alternativo al oficial"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "alyce",
+        "nombre": "ALyCs (AGENTES DE LIQUIDACIÓN Y COMPENSACIÓN) — Regulados CNV"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Argentinos"
+      },
+      {
+        "key": "banca",
+        "nombre": "BANCA DE INVERSIÓN — Argentina"
+      },
+      {
+        "key": "fintech",
+        "nombre": "APPS FINTECH Y PLATAFORMAS DIGITALES"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "AR001",
+      "nombre": "Balanz Capital",
+      "tipo": "ALyC — Sociedad de Bolsa — CNV Argentina",
+      "seccion": "alyce",
+      "pais": "Argentina",
+      "region": "Argentina (BYMA + MAE) + Internacional",
+      "calificacion": 8.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "ARS",
+        "nota": "Sin mínimo formal"
+      },
+      "modelo_costos": "Comisiones negociables. Fondos: fee de gestión",
+      "apalancamiento": {
+        "max": "Disponible — Caución Bursátil y Futuros",
+        "nota": "Regulado CNV"
+      },
+      "regulacion": [
+        "CNV (Comisión Nacional de Valores)",
+        "BYMA (Bolsas y Mercados Argentinos)",
+        "MAE (Mercado Abierto Electrónico)"
+      ],
+      "instrumentos": {
+        "acciones": "Todas las acciones del MERVAL",
+        "renta_fija": "Bonos soberanos (AL30, GD35, Bopreales), ONs, Letras (LEDES, LECER, LECAP)",
+        "fondos": "Fondos propios (Balanz FCI) + plataforma abierta — una de las más completas de Argentina",
+        "etfs": "CEDEARs (Apple, Tesla, Amazon, Microsoft, Coca Cola, Disney, etc.)",
+        "indices": "S&P MERVAL vía fondos",
+        "materias_primas": "Futuros agrícolas (MATba-ROFEX)",
+        "forex": "Dólar MEP, Cable, Oficial (según regulación BCRA)",
+        "criptomonedas": "No directo (CEDEARs de empresas cripto disponibles)",
+        "opciones": "Sí — opciones sobre acciones"
+      },
+      "plataformas": [
+        "Balanz App (iOS/Android)",
+        "Balanz Web",
+        "Mesa de operaciones"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Balanz Individual",
+          "min": "ARS 0",
+          "tarifa": "Comisión negociable"
+        },
+        {
+          "nombre": "Balanz Plus (R$ 250K+)",
+          "min": "ARS 250K",
+          "tarifa": "Reducida"
+        },
+        {
+          "nombre": "Balanz Institutional",
+          "min": "Negociable",
+          "tarifa": "Institucional"
+        }
+      ],
+      "pros": [
+        "Uno de los ALyCs más completos de Argentina",
+        "200,000+ clientes",
+        "20 años de trayectoria",
+        "Fondos propios (Balanz FCI) de alta calidad",
+        "Acceso completo a CEDEARs para dolarización",
+        "Caución bursátil disponible",
+        "Expertos en activos argentinos (AL30, GD35)"
+      ],
+      "contras": [
+        "Solo mercado argentino — sin acceso a bolsas externas directas",
+        "Sin criptomonedas directas",
+        "Riesgo político y cambiario de Argentina",
+        "Cepo cambiario limita envíos al exterior"
+      ],
+      "nota": "El ALyC más reconocido de Argentina para el inversor sofisticado. Martin Sánchez Bazán (Director de Individuos) es referente del mercado. Especialistas en bonos soberanos, ONs y fondos. CEDEARs como herramienta de dolarización.",
+      "presencia": "Buenos Aires (CABA) — oficinas en Buenos Aires, Córdoba, Rosario"
+    },
+    {
+      "id": "AR002",
+      "nombre": "IOL InvertirOnline",
+      "tipo": "ALyC Digital — 25 Años de Trayectoria",
+      "seccion": "alyce",
+      "pais": "Argentina",
+      "region": "Argentina",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "ARS",
+        "nota": "Desde ARS 100"
+      },
+      "modelo_costos": "Portafolio mensual desde ARS 100. Comisiones competitivas",
+      "apalancamiento": {
+        "max": "Disponible — opciones y caución",
+        "nota": "Regulado CNV"
+      },
+      "regulacion": [
+        "CNV",
+        "BYMA",
+        "MAE"
+      ],
+      "instrumentos": {
+        "acciones": "MERVAL completo — acciones líderes argentinas",
+        "renta_fija": "Bonos soberanos (GD35 — rendimiento 16.5% USD a.a.), TZXD6 (CER+30%), BONCAP",
+        "fondos": "Portafolios sugeridos mensuales — mixto, conservador, agresivo",
+        "etfs": "CEDEARs completos",
+        "indices": "MERVAL y ADRs",
+        "materias_primas": "Futuros (MATba)",
+        "forex": "Dólar MEP vía bonos",
+        "criptomonedas": "No directo",
+        "opciones": "Sí — opciones sobre acciones"
+      },
+      "plataformas": [
+        "IOL App (iOS/Android)",
+        "IOL Web (home broker)",
+        "Portafolio Sugerido mensual"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta IOL",
+          "min": "ARS 0",
+          "tarifa": "Comisiones competitivas"
+        },
+        {
+          "nombre": "Portafolio Sugerido",
+          "min": "ARS 100",
+          "tarifa": "Fee de gestión"
+        }
+      ],
+      "pros": [
+        "25+ años de trayectoria — pionero digital en Argentina",
+        "Portafolios sugeridos mensuales con rendimientos publicados",
+        "Conservador: +28.2% últimos 12 meses / Agresivo: +52.5%",
+        "Análisis profundo de bonos argentinos",
+        "Desde ARS 100 de inversión"
+      ],
+      "contras": [
+        "Solo mercado argentino",
+        "Sin criptomonedas directas",
+        "Riesgo político y cambiario de Argentina"
+      ],
+      "nota": "Pionero del corretaje digital en Argentina. Sus portafolios sugeridos son referencia del mercado. GD35 y TZXD6 entre sus análisis más profundos. Conservador +28.2% y Agresivo +52.5% en últimos 12 meses.",
+      "presencia": "Buenos Aires (CABA) — 100% digital"
+    },
+    {
+      "id": "AR003",
+      "nombre": "Cocos Capital",
+      "tipo": "ALyC — Enfoque en Simplicidad y Retail",
+      "seccion": "alyce",
+      "pais": "Argentina",
+      "region": "Argentina",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "ARS",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "0% comisión en muchos instrumentos. Spreads transparentes",
+      "apalancamiento": {
+        "max": "Disponible",
+        "nota": "Regulado CNV"
+      },
+      "regulacion": [
+        "CNV",
+        "BYMA",
+        "MAE"
+      ],
+      "instrumentos": {
+        "acciones": "MERVAL completo",
+        "renta_fija": "Bonos, LECAP, LECER, ONs",
+        "fondos": "FCIs propios: Cocos Daruma (pesos), Cocos Ahorro Dólares",
+        "etfs": "CEDEARs completos",
+        "indices": "Sí",
+        "materias_primas": "Limitado",
+        "forex": "Dólar MEP",
+        "criptomonedas": "No",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "Cocos App (iOS/Android) — interfaz muy moderna",
+        "Cocos Web",
+        "Cocos Daruma (FCI como medio de pago 24/7)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Cocos",
+          "min": "ARS 0",
+          "tarifa": "0% en la mayoría"
+        }
+      ],
+      "pros": [
+        "La interfaz más moderna del mercado argentino",
+        "Cocos Daruma: FCI que funciona 24/7 como medio de pago",
+        "0% comisión en muchos instrumentos",
+        "Perfil innovador con miras al futuro",
+        "Especialista en FCIs de liquidez",
+        "Fermín López (PM) — referente del mercado"
+      ],
+      "contras": [
+        "Plataforma más nueva — menor trayectoria que Balanz o IOL",
+        "Sin criptomonedas directas",
+        "Menos variedad de FCIs propios vs. Balanz",
+        "Enfocado en perfiles más conservadores a moderados"
+      ],
+      "nota": "El ALyC más innovador de Argentina. Cocos Daruma es el primer FCI que funciona como medio de pago 24/7 en Argentina. Interfaz más limpia e intuitiva del mercado. Fermín López (Portfolio Manager) es referente.",
+      "presencia": "Buenos Aires (CABA) — 100% digital"
+    },
+    {
+      "id": "AR004",
+      "nombre": "Bull Market Brokers",
+      "tipo": "ALyC — CNV Argentina",
+      "seccion": "alyce",
+      "pais": "Argentina",
+      "region": "Argentina",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "ARS",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "Comisiones competitivas, transparencia en tarifas",
+      "apalancamiento": {
+        "max": "Disponible",
+        "nota": "Regulado CNV"
+      },
+      "regulacion": [
+        "CNV",
+        "BYMA",
+        "MAE"
+      ],
+      "instrumentos": {
+        "acciones": "MERVAL completo",
+        "renta_fija": "Bonos, Letras, ONs",
+        "fondos": "FCIs",
+        "etfs": "CEDEARs",
+        "indices": "Sí",
+        "materias_primas": "Sí",
+        "forex": "Dólar MEP",
+        "criptomonedas": "No",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "Bull Market App",
+        "Bull Market Web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Bull Market",
+          "min": "ARS 0",
+          "tarifa": "Competitiva"
+        }
+      ],
+      "pros": [
+        "Regulación CNV sólida",
+        "Herramientas educativas de calidad",
+        "Análisis de mercado propio",
+        "Atención al cliente reconocida",
+        "Comisiones competitivas"
+      ],
+      "contras": [
+        "Menor escala que Balanz o IOL",
+        "Sin criptomonedas",
+        "Menos innovación digital"
+      ],
+      "nota": "ALyC tradicional argentino regulado por CNV. Buena reputación en el mercado minorista. Research propio de calidad sobre mercado argentino.",
+      "presencia": "Buenos Aires (CABA)"
+    },
+    {
+      "id": "AR005",
+      "nombre": "Interactive Brokers Argentina (Intl)",
+      "tipo": "Broker Global — Para residentes argentinos",
+      "seccion": "intl",
+      "pais": "EE.UU.",
+      "region": "150+ mercados globales",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo (recomendado USD 10K+). Cepo: cupo USD 200/mes"
+      },
+      "modelo_costos": "IBKR Lite: 0% acciones USA. IBKR Pro: USD 0.005/acción",
+      "apalancamiento": {
+        "max": "Hasta 1:50 Forex / variable por producto",
+        "nota": "SEC/FINRA EE.UU."
+      },
+      "regulacion": [
+        "SEC EE.UU.",
+        "FINRA",
+        "SIPC",
+        "FCA UK",
+        "ASIC"
+      ],
+      "instrumentos": {
+        "forex": "100+ pares Forex real (no CFD)",
+        "acciones": "Acciones REALES en 150+ bolsas / 33 países",
+        "indices": "Futuros sobre índices",
+        "criptomonedas": "Sí (spot y CFD)",
+        "materias_primas": "Futuros y CFD completos",
+        "etfs": "Miles de ETFs globales reales",
+        "opciones": "SÍ — opciones REALES (CBOE, Euronext, etc.)",
+        "renta_fija": "Bonds globales"
+      },
+      "plataformas": [
+        "TWS (Trader Workstation)",
+        "IBKR Mobile",
+        "Client Portal",
+        "API FIX/REST"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "IBKR Lite",
+          "min": "USD 0",
+          "tarifa": "0% acciones USA"
+        },
+        {
+          "nombre": "IBKR Pro",
+          "min": "USD 0",
+          "tarifa": "USD 0.005/acción"
+        },
+        {
+          "nombre": "Institutional",
+          "min": "USD 100K+",
+          "tarifa": "Negociable"
+        }
+      ],
+      "pros": [
+        "Acceso a 150+ bolsas en 33 países",
+        "Opciones reales listadas en bolsas mundiales",
+        "Ideal para argentinos que quieren salir del riesgo local",
+        "Sin comisión de custodia",
+        "API avanzada para trading algorítmico"
+      ],
+      "contras": [
+        "Cepo cambiario: solo USD 200/mes para compra oficial desde Argentina",
+        "Proceso KYC complejo desde Argentina",
+        "Sin soporte en español de calidad",
+        "Plataforma muy técnica",
+        "Sin acceso al mercado argentino (BYMA)"
+      ],
+      "nota": "IMPORTANTE para Argentina: El cepo cambiario (BCRA) limita la compra de USD al cupo oficial de USD 200/mes. Para depositar más, se puede usar USD MEP/Cable comprado a través de ALyC local. Interactive Brokers es la puerta al mundo para el inversor argentino avanzado.",
+      "presencia": "Sin oficina en Argentina — opera remotamente"
+    },
+    {
+      "id": "AR006",
+      "nombre": "Mercado Pago Inversiones",
+      "tipo": "Fintech — Mayor plataforma de pagos LATAM",
+      "seccion": "fintech",
+      "pais": "Argentina (Mercado Libre)",
+      "region": "Argentina + LATAM",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "ARS",
+        "nota": "Sin mínimo — desde ARS 1"
+      },
+      "modelo_costos": "Rendimiento sobre saldo: 100% tasa de referencia BCRA. Fondos: fee de gestión",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "BCRA (Banco Central)",
+        "CNV (fondos)",
+        "FGC"
+      ],
+      "instrumentos": {
+        "acciones": "No (directo)",
+        "renta_fija": "Fondo de liquidez inmediata (tasa BCRA)",
+        "fondos": "Fondos básicos",
+        "etfs": "No",
+        "indices": "No",
+        "materias_primas": "No",
+        "forex": "USD MEP vía fondo",
+        "criptomonedas": "Sí (BTC, ETH y otros)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Mercado Pago (Android/iOS) — integrada con Mercado Libre"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Mercado Pago",
+          "min": "ARS 0",
+          "tarifa": "100% tasa BCRA auto"
+        }
+      ],
+      "pros": [
+        "40M+ usuarios en LATAM — acceso masivo",
+        "100% de tasa de referencia BCRA automáticamente",
+        "Integración con Mercado Libre — mayor e-commerce LATAM",
+        "Criptomonedas disponibles",
+        "Cero costos de mantenimiento",
+        "Pago con fondos de inversión (Cocos Daruma estilo)"
+      ],
+      "contras": [
+        "Portafolio de inversión muy básico",
+        "Sin acceso al MERVAL directamente",
+        "Sin CEDEARs directos",
+        "No es un ALyC completo"
+      ],
+      "nota": "Brazo financiero de Mercado Libre. 40M+ usuarios en LATAM. El saldo en cuenta rinde automáticamente 100% de la tasa de referencia BCRA. Criptomonedas disponibles. Para inversión avanzada en MERVAL/bonos usar ALyCs como Balanz o IOL.",
+      "presencia": "Buenos Aires + LATAM completo — 100% digital"
+    },
+    {
+      "id": "AR007",
+      "nombre": "Naranja X",
+      "tipo": "Banco Digital — Inversiones básicas",
+      "seccion": "fintech",
+      "pais": "Argentina",
+      "region": "Argentina",
+      "calificacion": 7.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "ARS",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "FCI de liquidez con rendimiento diario. Sin comisión en operaciones básicas",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "BCRA",
+        "CNV (fondos de inversión)"
+      ],
+      "instrumentos": {
+        "acciones": "No",
+        "renta_fija": "FCI pesos con liquidez diaria",
+        "fondos": "Fondos básicos de liquidez",
+        "etfs": "No",
+        "indices": "No",
+        "materias_primas": "No",
+        "forex": "Sí — compra de USD (dentro del cepo)",
+        "criptomonedas": "Sí — básico",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Naranja X (iOS/Android)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Naranja X",
+          "min": "ARS 0",
+          "tarifa": "Sin comisión básica"
+        }
+      ],
+      "pros": [
+        "Accesible para todos los argentinos",
+        "Rendimiento diario en fondos de liquidez",
+        "Cripto básica disponible",
+        "Sin comisiones en operaciones básicas",
+        "App muy intuitiva"
+      ],
+      "contras": [
+        "Sin acceso al MERVAL ni CEDEARs",
+        "Portafolio muy limitado",
+        "Solo para inversión básica/ahorro",
+        "Cepo cambiario limita USD"
+      ],
+      "nota": "Banco digital con enfoque en inclusión financiera. FCI de liquidez diaria como ahorro inteligente. Para inversión en acciones, bonos o CEDEARs usar ALyCs regulados.",
+      "presencia": "Buenos Aires + todo Argentina — 100% digital"
+    }
+  ]
+}

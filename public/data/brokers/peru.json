@@ -1,0 +1,576 @@
+{
+  "metadata": {
+    "pais": "Perú",
+    "bandera": "🇵🇪",
+    "color": "#8B0000",
+    "subtitulo": "SABs · Brokers Internacionales · Banca de Inversión · Apps Fintech",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. Forex no regulado por SMV. Verifique siempre con la SMV, SBS y BCRP antes de invertir. Las inversiones conllevan riesgo de pérdida de capital.",
+    "stats": [
+      {
+        "val": "BVL",
+        "lbl": "Bolsa de Valores de Lima"
+      },
+      {
+        "val": "SMV",
+        "lbl": "Regulador principal valores"
+      },
+      {
+        "val": "SBS",
+        "lbl": "Regulador bancos y seguros"
+      },
+      {
+        "val": "CAVALI",
+        "lbl": "Depósito central valores"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "sab",
+        "nombre": "SOCIEDADES AGENTES DE BOLSA (SAB) — Reguladas SMV"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Peruanos"
+      },
+      {
+        "key": "banca",
+        "nombre": "BANCA DE INVERSIÓN — Perú"
+      },
+      {
+        "key": "fintech",
+        "nombre": "APPS FINTECH Y PLATAFORMAS DIGITALES"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "PE001",
+      "nombre": "Kallpa SAB",
+      "tipo": "Sociedad Agente de Bolsa — SMV Perú",
+      "seccion": "sab",
+      "pais": "Perú",
+      "region": "Perú (BVL) + Internacional",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 10000,
+        "moneda": "USD",
+        "nota": "Inversión mínima recomendada"
+      },
+      "modelo_costos": "Comisión negociable según volumen y tipo de operación",
+      "apalancamiento": {
+        "max": "No aplica (acciones reales)",
+        "nota": "Sin apalancamiento estándar"
+      },
+      "regulacion": [
+        "SMV (Superintendencia del Mercado de Valores)",
+        "CAVALI",
+        "BVL"
+      ],
+      "instrumentos": {
+        "acciones": "BVL + acciones internacionales vía BDRs",
+        "renta_fija": "Bonos, Letras del Tesoro, Renta Fija corporativa",
+        "fondos": "Fondos mutuos y de inversión",
+        "etfs": "ETFs locales e internacionales",
+        "indices": "Índices BVL",
+        "materias_primas": "Limitado",
+        "forex": "Sí (divisas)",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Kallpa Online (plataforma web)",
+        "App Kallpa",
+        "Trii (plataforma aliada para retail)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Kallpa Standard",
+          "min": "USD 10,000",
+          "tarifa": "Comisión negociable"
+        },
+        {
+          "nombre": "Cuenta Trii (retail)",
+          "min": "S/ 0",
+          "tarifa": "Baja comisión"
+        }
+      ],
+      "pros": [
+        "Aliada estratégica de Trii para democratizar inversión retail",
+        "Acceso completo a BVL (500+ empresas)",
+        "Research propio de calidad",
+        "Equipo dirigido por Alberto Arispe",
+        "Plataforma online moderna"
+      ],
+      "contras": [
+        "Mínimo USD 10K para cuenta directa",
+        "Sin opciones ni derivados avanzados",
+        "Sin criptomonedas",
+        "Forex limitado"
+      ],
+      "nota": "La SAB más reconocida del Perú para retail. Aliada de Trii (Y Combinator) para democratizar inversión. Acceso a toda la BVL. USD 10K mínimo para cuenta directa — vía Trii sin mínimo.",
+      "presencia": "Lima (sede) — oficinas principales Miraflores"
+    },
+    {
+      "id": "PE002",
+      "nombre": "Renta 4 SAB Perú",
+      "tipo": "Sociedad Agente de Bolsa — SMV Perú",
+      "seccion": "sab",
+      "pais": "Perú",
+      "region": "Perú + Red Renta 4 LATAM",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "PEN",
+        "nota": "Sin mínimo formal"
+      },
+      "modelo_costos": "Comisión por operación según tarifario",
+      "apalancamiento": {
+        "max": "No aplica (acciones reales)",
+        "nota": "Regulado SMV"
+      },
+      "regulacion": [
+        "SMV Perú",
+        "BVL",
+        "CAVALI",
+        "CMF Chile (casa matriz)"
+      ],
+      "instrumentos": {
+        "acciones": "BVL + mercados internacionales",
+        "renta_fija": "Bonos locales e internacionales",
+        "fondos": "Fondos mutuos",
+        "etfs": "ETFs locales",
+        "indices": "Sí",
+        "materias_primas": "Limitado",
+        "forex": "Sí",
+        "criptomonedas": "No",
+        "opciones": "Limitado"
+      },
+      "plataformas": [
+        "Renta 4 Online Perú",
+        "App Renta 4",
+        "Broker Electrónico"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Renta 4 Perú",
+          "min": "S/ 0",
+          "tarifa": "Comisión por operación"
+        }
+      ],
+      "pros": [
+        "Asesor personal incluido",
+        "Contratación 24h",
+        "Tarifas competitivas",
+        "Acceso a mercados internacionales",
+        "Cursos gratuitos de formación",
+        "Parte de red LATAM en 10+ países"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Opciones limitadas",
+        "Interface menos moderna que fintechs"
+      ],
+      "nota": "Filial peruana del grupo español Renta 4. Regulada directamente por la SMV. Asesor personal es su diferencial clave. Parte de red latinoamericana MILA.",
+      "presencia": "Lima (Miraflores)"
+    },
+    {
+      "id": "PE003",
+      "nombre": "Credicorp Capital SAB Perú",
+      "tipo": "SAB + Banca de Inversión — SMV Perú",
+      "seccion": "sab",
+      "pais": "Perú",
+      "region": "Perú + Colombia + Chile",
+      "calificacion": 8.7,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Variable según servicio"
+      },
+      "modelo_costos": "Comisión e institucional — negociable",
+      "apalancamiento": {
+        "max": "Disponible en derivativos con garantías",
+        "nota": "Regulado SMV"
+      },
+      "regulacion": [
+        "SMV Perú",
+        "SBS Perú",
+        "BVL",
+        "CAVALI"
+      ],
+      "instrumentos": {
+        "acciones": "BVL + mercados internacionales",
+        "renta_fija": "Bonos, TES, Renta Fija completa",
+        "fondos": "Fondos propios + distribución",
+        "etfs": "ETFs",
+        "indices": "Sí",
+        "materias_primas": "Sí",
+        "forex": "Sí",
+        "criptomonedas": "No",
+        "opciones": "Sí — opciones y derivativos"
+      },
+      "plataformas": [
+        "Credicorp Capital Online",
+        "App Credicorp Capital",
+        "Tyba (app retail)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "min": "S/ 0 vía Tyba",
+          "tarifa": "Comisión"
+        },
+        {
+          "nombre": "Banca Privada",
+          "min": "USD 100K+",
+          "tarifa": "Fee AUM"
+        },
+        {
+          "nombre": "Institucional",
+          "min": "Negociable",
+          "tarifa": "Institucional"
+        }
+      ],
+      "pros": [
+        "Mayor grupo financiero de Perú (Credicorp Ltd.)",
+        "Red regional Colombia + Chile + Perú",
+        "Tyba app para retail digital",
+        "Banca privada completa",
+        "Research propio de alta calidad"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Mínimos altos en banca privada",
+        "Menos tecnológico que fintechs puras"
+      ],
+      "nota": "Brazo de inversión de Credicorp Ltd. (mayor holding financiero del Perú). Acceso completo BVL + mercados internacionales. Tyba es su app fintech para democratizar inversión.",
+      "presencia": "Lima (San Isidro) + Medellín + Santiago"
+    },
+    {
+      "id": "PE004",
+      "nombre": "BTG Pactual Perú",
+      "tipo": "Banca de Inversión — LATAM",
+      "seccion": "banca",
+      "pais": "Perú",
+      "region": "Perú + LATAM global",
+      "calificacion": 8.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Institucional — negociable"
+      },
+      "modelo_costos": "Fee institucional negociable por servicio",
+      "apalancamiento": {
+        "max": "Disponible en productos estructurados",
+        "nota": "Gestión de riesgo institucional"
+      },
+      "regulacion": [
+        "SBS Perú",
+        "SMV",
+        "BACEN Brasil",
+        "SEC EUA"
+      ],
+      "instrumentos": {
+        "acciones": "BVL + mercados globales",
+        "renta_fija": "Deuda local e internacional",
+        "fondos": "Fondos propios y gestión",
+        "etfs": "ETFs",
+        "indices": "Sí",
+        "materias_primas": "Sí",
+        "forex": "Sí",
+        "criptomonedas": "Limitado",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "BTG Pactual Peru Platform",
+        "BTG Digital (institucional)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Corporate",
+          "min": "USD 100K+",
+          "tarifa": "Institucional"
+        },
+        {
+          "nombre": "Private Banking",
+          "min": "USD 1M+",
+          "tarifa": "Fee AUM"
+        }
+      ],
+      "pros": [
+        "Mayor banco de inversión de LATAM presente en Perú",
+        "Research regional de clase mundial",
+        "Acceso a mercados globales",
+        "Gestión de activos alternativos"
+      ],
+      "contras": [
+        "Solo grandes clientes — sin retail",
+        "Proceso de onboarding complejo",
+        "Sin plataforma digital retail"
+      ],
+      "nota": "BTG Pactual es el mayor banco de inversión de LATAM con presencia en Perú. Foco institucional y corporativo. Sin oferta retail directa.",
+      "presencia": "Lima (San Isidro)"
+    },
+    {
+      "id": "PE005",
+      "nombre": "Pepperstone Perú (Intl)",
+      "tipo": "Broker Internacional CFD/Forex",
+      "seccion": "intl",
+      "pais": "Australia",
+      "region": "Global / Perú",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 200,
+        "moneda": "USD",
+        "nota": "Sin mínimo formal"
+      },
+      "modelo_costos": "Spreads + Comisión (Razor) / Solo spreads (Standard). Soles disponibles vía conversión",
+      "apalancamiento": {
+        "max": "1:30 (ASIC) / 1:500 (offshore)",
+        "nota": "SCB Bahamas para Perú"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FCA UK",
+        "CySEC",
+        "BaFIN",
+        "SCB Bahamas (para Perú)"
+      ],
+      "instrumentos": {
+        "forex": "62+ pares incluyendo USD/PEN",
+        "acciones": "2,000+ CFD",
+        "indices": "Principales mundiales",
+        "criptomonedas": "27+ cryptos",
+        "materias_primas": "Oro, plata, petróleo, gas",
+        "etfs": "Sí (CFD)",
+        "opciones": "Limitado",
+        "renta_fija": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "TradingView",
+        "Pepperstone App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 200",
+          "tarifa": "Spreads desde 0.9 pips"
+        },
+        {
+          "nombre": "Razor (ECN)",
+          "min": "USD 200",
+          "tarifa": "0.0 pips + USD 3.5/lote"
+        }
+      ],
+      "pros": [
+        "Ejecución <40ms — la más rápida",
+        "Triple regulación Tier 1 (ASIC, FCA, BaFIN)",
+        "Bootcamps educativos en LATAM",
+        "Spreads competitivos",
+        "Acepta depósitos locales"
+      ],
+      "contras": [
+        "Regulación Perú = SCB Bahamas (offshore)",
+        "Sin licencia SMV local",
+        "Sin opciones vanilla",
+        "Soporte en español puede variar"
+      ],
+      "nota": "Mejor broker internacional para Forex/CFD desde Perú. Regulación principal ASIC/FCA aunque para residentes peruanos aplica entidad SCB Bahamas. Forex no está regulado por SMV.",
+      "presencia": "Sin oficina en Perú — atiende clientes remotamente"
+    },
+    {
+      "id": "PE006",
+      "nombre": "Trii (app fintech)",
+      "tipo": "App Fintech — Acceso BVL desde S/0",
+      "seccion": "fintech",
+      "pais": "Colombia/Perú",
+      "region": "Perú + Colombia + Chile",
+      "calificacion": 8.2,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "PEN",
+        "nota": "Sin mínimo — desde S/15 regalo"
+      },
+      "modelo_costos": "Comisión baja por operación. S/15 regalo inicial al registrarse",
+      "apalancamiento": {
+        "max": "No aplica (acciones reales)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SMV Perú (vía Kallpa SAB)",
+        "CAVALI",
+        "BVL"
+      ],
+      "instrumentos": {
+        "acciones": "500+ empresas BVL + acciones internacionales",
+        "renta_fija": "Instrumentos básicos",
+        "fondos": "Fondos mutuos básicos",
+        "etfs": "ETFs BVL",
+        "indices": "Vía ETFs",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Trii App (iOS/Android)",
+        "Web beta"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Trii",
+          "min": "S/ 0",
+          "tarifa": "Comisión baja por operación"
+        }
+      ],
+      "pros": [
+        "Acceso BVL desde S/ 0 sin mínimo",
+        "S/15 de regalo al registrarse",
+        "App en español muy intuitiva",
+        "Aliada Kallpa SAB (regulada SMV)",
+        "Acelerada por Y Combinator",
+        "Disponible en Perú, Colombia y Chile"
+      ],
+      "contras": [
+        "Solo mercado local peruano (BVL)",
+        "Sin Forex, CFD ni criptos",
+        "Sin herramientas avanzadas de análisis",
+        "Tope de inversión por operación"
+      ],
+      "nota": "La app fintech más popular para invertir en la BVL desde Perú. Aliada de Kallpa SAB que aporta el respaldo regulatorio SMV. Ideal para inversores principiantes peruanos.",
+      "presencia": "Lima (Miraflores) + Bogotá + Santiago"
+    },
+    {
+      "id": "PE007",
+      "nombre": "Hapi (fintech)",
+      "tipo": "Fintech EE.UU. — Acceso Mercado Americano",
+      "seccion": "fintech",
+      "pais": "EE.UU.",
+      "region": "EE.UU. — para clientes LATAM",
+      "calificacion": 7.9,
+      "deposito_minimo": {
+        "valor": 5,
+        "moneda": "USD",
+        "nota": "Desde USD 5"
+      },
+      "modelo_costos": "0% comisión broker en acciones/ETFs EUA. Spreads en cripto (vía Bakkt)",
+      "apalancamiento": {
+        "max": "No aplica (acciones reales)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SEC EE.UU.",
+        "FINRA",
+        "SIPC (hasta USD 500K)"
+      ],
+      "instrumentos": {
+        "acciones": "12,000+ acciones EE.UU. (NYSE, NASDAQ, AMEX)",
+        "renta_fijaNo": "Sí — Bonds básicos",
+        "fondos": "No directo",
+        "etfs": "Miles de ETFs USA",
+        "indices": "Vía ETFs",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "Sí vía Bakkt (no SIPC)",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Hapi App (iOS/Android)",
+        "Hapi Web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Hapi",
+          "min": "USD 5",
+          "tarifa": "0% acciones/ETFs"
+        }
+      ],
+      "pros": [
+        "0% comisión en acciones y ETFs EUA",
+        "SIPC USD 500K protección",
+        "Acciones fraccionadas desde USD 5",
+        "Fundada por peruanos para LATAM",
+        "Soporte en español"
+      ],
+      "contras": [
+        "Solo mercado americano — sin BVL",
+        "No regulada por SMV Perú",
+        "Cripto no cubierta por SIPC",
+        "Sin opciones ni derivados"
+      ],
+      "nota": "Fintech fundada por peruanos y registrada en EE.UU. para democratizar el acceso al mercado americano desde LATAM. Regulada por SEC/FINRA. Para acceder a BVL preferir Trii o SABs locales.",
+      "presencia": "Nueva York (sede) — digital para LATAM"
+    },
+    {
+      "id": "PE008",
+      "nombre": "XTB Perú (Intl)",
+      "tipo": "Broker Internacional CFD",
+      "seccion": "intl",
+      "pais": "Polonia",
+      "region": "Global / Perú",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "0% comisión acciones/ETFs hasta EUR 100K/mes. CFDs: spread incluido",
+      "apalancamiento": {
+        "max": "1:30 (FCA) / 1:200 (LATAM IFSC)",
+        "nota": "IFSC Belice para Perú"
+      },
+      "regulacion": [
+        "FCA UK",
+        "KNF Polonia",
+        "CySEC",
+        "DFSA",
+        "IFSC Belice (para Perú)"
+      ],
+      "instrumentos": {
+        "forex": "57+ pares",
+        "acciones": "5,800 instrumentos (acciones reales + CFD)",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí (acciones reales en LATAM)",
+        "opciones": "No",
+        "renta_fija": "No"
+      },
+      "plataformas": [
+        "xStation 5 (propia)",
+        "MetaTrader 4",
+        "XTB App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Standard",
+          "min": "USD 0",
+          "tarifa": "0% acciones hasta EUR 100K/mes"
+        },
+        {
+          "nombre": "Cuenta Pro",
+          "min": "USD 0",
+          "tarifa": "Spread mejorado"
+        }
+      ],
+      "pros": [
+        "0% comisión acciones/ETFs hasta EUR 100K/mes",
+        "Sin depósito mínimo",
+        "Academia gratuita en español",
+        "xStation 5 muy intuitiva",
+        "5,800+ instrumentos"
+      ],
+      "contras": [
+        "Sin opciones vanilla",
+        "IFSC Belice para Perú (menor protección)",
+        "Sin presencia local",
+        "Retiros solo a cuenta bancaria"
+      ],
+      "nota": "Broker polaco cotizado en bolsa. Muy popular en LATAM. Para clientes peruanos aplica entidad IFSC Belice. Acciones reales (no solo CFD) disponibles en LATAM.",
+      "presencia": "Sin oficina en Perú — opera remotamente"
+    }
+  ]
+}

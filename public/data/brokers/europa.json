@@ -1,0 +1,3665 @@
+{
+  "metadata": {
+    "titulo": "Empresas de Inversión Europa — Auditoría Completa 2025-2026",
+    "subtitulo": "Brokers · Fintech · Bancos de Inversión · Apps · Plataformas digitales — 35+ países europeos",
+    "fecha": "15/03/2026",
+    "total_entidades": 55,
+    "marco_regulatorio": {
+      "ue_mifid2": "MiFID II — Markets in Financial Instruments Directive II (vigente desde 2018). Regula la protección al inversor, transparencia y clasificación minorista/profesional en toda la UE",
+      "esma": "ESMA — European Securities and Markets Authority. Coordinador de reguladores nacionales. Limita apalancamiento retail: 1:30 Forex, 1:20 acciones, 1:10 índices volátiles, 1:5 acciones individuales, 1:2 cripto",
+      "mica": "MiCA — Markets in Crypto-Assets (en vigor 2024-2025). Primer marco regulatorio cripto unificado del mundo. Pasaporte cripto europeo",
+      "fcs_uk": "FCA — Financial Conduct Authority (UK). Regulación post-Brexit. FSCS protege hasta GBP 85,000",
+      "reguladores_pais": "BaFin (DE) · CNMV (ES) · AMF (FR) · AFM (NL) · Consob (IT) · CMVM (PT) · FINMA (CH) · FI (SE) · FSA (FI) · CySEC (CY) · FMA (AT) · KNF (PL) · ČNB (CZ) · CNB (HU) · PFSA (PL)",
+      "fondo_garantia": "ICF (Investor Compensation Fund) — protección hasta €20,000 por cliente en la mayoría de países UE. Depósitos bancarios: €100,000 vía SGD/DGS (Deposit Guarantee Scheme)",
+      "pfof_ban": "Prohibición PFOF (Payment for Order Flow) en UE — aprobada 2023, plena vigencia junio 2026. Afecta a Trade Republic y otros"
+    },
+    "aviso_legal": "Solo fines informativos. MiFID II limita apalancamiento retail y exige clasificación de riesgo. Invertir conlleva riesgo de pérdida. Verifique regulación en ESMA o en el regulador de su país antes de operar."
+  },
+  "secciones": [
+    {
+      "key": "fintech_eu",
+      "nombre": "🇪🇺 BROKERS FINTECH PAN-EUROPEOS — Operan en toda la UE"
+    },
+    {
+      "key": "brokers_uk",
+      "nombre": "🇬🇧 BROKERS Y PLATAFORMAS — Reino Unido"
+    },
+    {
+      "key": "bancos_inv_eu",
+      "nombre": "🏦 BANCOS DE INVERSIÓN EUROPEOS — Grandes Grupos"
+    },
+    {
+      "key": "es",
+      "nombre": "🇪🇸 ESPAÑA — Brokers, Neobancos y Plataformas Locales"
+    },
+    {
+      "key": "de",
+      "nombre": "🇩🇪 ALEMANIA — Brokers y Bancos de Inversión"
+    },
+    {
+      "key": "fr",
+      "nombre": "🇫🇷 FRANCIA — Plataformas y Bancos"
+    },
+    {
+      "key": "nl",
+      "nombre": "🇳🇱 PAÍSES BAJOS — Brokers y Fintech"
+    },
+    {
+      "key": "it",
+      "nombre": "🇮🇹 ITALIA — Brokers y Banca de Inversión"
+    },
+    {
+      "key": "pt",
+      "nombre": "🇵🇹 PORTUGAL — Plataformas de Inversión"
+    },
+    {
+      "key": "suiza",
+      "nombre": "🇨🇭 SUIZA — Banca Privada y Brokers"
+    },
+    {
+      "key": "nordicos",
+      "nombre": "🇸🇪🇳🇴🇩🇰🇫🇮 PAÍSES NÓRDICOS — Brokers y Bancos"
+    },
+    {
+      "key": "este",
+      "nombre": "🇵🇱🇨🇿🇭🇺🇷🇴 EUROPA DEL ESTE — Brokers en Expansión"
+    },
+    {
+      "key": "balticos",
+      "nombre": "🇪🇪🇱🇻🇱🇹 PAÍSES BÁLTICOS — Fintech Líderes"
+    },
+    {
+      "key": "otros",
+      "nombre": "🇦🇹🇧🇪🇮🇪🇬🇷 AUSTRIA, BÉLGICA, IRLANDA, GRECIA Y OTROS"
+    },
+    {
+      "key": "cripto_eu",
+      "nombre": "₿ EXCHANGES CRIPTO REGULADOS — Europa (MiCA)"
+    }
+  ],
+  "entidades": [
+    {
+      "id": "EU001",
+      "nombre": "Trade Republic",
+      "tipo": "Neobroker + Banco — Licencia bancaria BCE",
+      "seccion": "fintech_eu",
+      "pais": "Alemania (pan-europeo)",
+      "fundacion": 2015,
+      "sede": "Berlín, Alemania",
+      "score": 9.2,
+      "clientes": "8M+",
+      "aum_eur": "100B+",
+      "regulacion": [
+        "BaFin Alemania",
+        "Bundesbank",
+        "BCE (Banco Central Europeo) — licencia bancaria completa",
+        "IBAN español desde junio 2025"
+      ],
+      "deposito_minimo": {
+        "valor": 1,
+        "moneda": "EUR",
+        "nota": "Desde 1€. Sin mínimo para planes de ahorro"
+      },
+      "comisiones": {
+        "acciones_etfs": "€1/operación (coste de liquidación externo — comisión propia = €0)",
+        "opciones": "€1/contrato",
+        "bonos_gubernamentales": "€0",
+        "criptomonedas": "1% spread",
+        "planes_ahorro_etfs": "€0",
+        "planes_ahorro_acciones": "€1",
+        "tarjeta_saveback": "1% de cada compra va al plan de ahorro elegido",
+        "inactividad": "€0",
+        "retiro": "€0 (€1 si <€100 retirado)",
+        "deposito_tarjeta": "0.7% a partir del 2do depósito"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta de Inversión",
+          "minimo": 1,
+          "tipo": "Acciones, ETFs, bonos, cripto desde €1"
+        },
+        {
+          "nombre": "Cuenta Remunerada",
+          "minimo": 0,
+          "tipo": "2.00% anual sobre saldo EUR (acumulado diario, pagado mensual)"
+        },
+        {
+          "nombre": "Cuenta Infantil",
+          "minimo": 1,
+          "tipo": "Para menores — apertura por padres, planes de ahorro para hijos"
+        },
+        {
+          "nombre": "Plan de Ahorro Automático",
+          "minimo": 1,
+          "tipo": "Inversión automática en acciones/ETFs — semanal, quincenal, mensual"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "bonos_gubernamentales": true,
+        "criptomonedas": "10+ activos",
+        "fondos_private_equity": true,
+        "acciones_fraccionarias": true,
+        "bolsas_acceso": "Xetra, NYSE, NASDAQ, Euronext y más"
+      },
+      "plataformas": [
+        "Trade Republic App (iOS/Android)",
+        "Trade Republic Web"
+      ],
+      "interes_efectivo": "2.00% anual sobre efectivo (depositado en Deutsche Bank, JPMorgan SE, HSBC Continental, Citibank Europe — €100K cobertura DGS cada uno)",
+      "presencia": "17+ países europeos — España, Alemania, Francia, Italia, Portugal, Países Bajos, Austria, Bélgica, Grecia, Polonia, Suecia y más",
+      "caracteristica_unica": "Banco completo con licencia BCE (el único neobroker con licencia bancaria en Europa). Cashback SaveBack del 1% en compras va directo a inversión. PFOF representa 1/3 de ingresos (en transición por ley UE)",
+      "pros": [
+        "€1/operación — el más barato de Europa",
+        "Licencia bancaria BCE — máxima protección",
+        "2% anual sobre efectivo",
+        "Cuenta infantil para hijos",
+        "Planes de ahorro automatizados desde €1",
+        "IBAN español desde junio 2025"
+      ],
+      "contras": [
+        "PFOF (Payment for Order Flow) — prohibición UE 2026 afectará ingresos",
+        "Solo app móvil (sin plataforma desktop avanzada)",
+        "Sin cuentas empresariales",
+        "Soporte al cliente reportado como lento"
+      ]
+    },
+    {
+      "id": "EU002",
+      "nombre": "DEGIRO",
+      "tipo": "Broker de Acciones — Modelo comisiones ultra-bajas",
+      "seccion": "fintech_eu",
+      "pais": "Países Bajos (pan-europeo)",
+      "fundacion": 2013,
+      "sede": "Ámsterdam, Países Bajos",
+      "score": 8.9,
+      "clientes": "3M+",
+      "regulacion": [
+        "BaFin Alemania (flatexDEGIRO Bank AG)",
+        "AFM Países Bajos",
+        "CNMV España (inscrito)",
+        "MiFID II — pasaporte europeo"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo. Solo requiere fondos para realizar operaciones"
+      },
+      "comisiones": {
+        "acciones_eu": "€1.75/operación + €1.00 gestión externa (total ≈€2.75)",
+        "acciones_usa": "€0.50 + €1.00 gestión = €1.50",
+        "etfs_core_selection": "€0 (selección de +200 ETFs gratuitos — compra Y venta)",
+        "opciones": "€0.75/contrato",
+        "futuros": "€0.75/contrato",
+        "fondos": "€7.50/transacción",
+        "conectividad_bolsa": "€2.50 anuales por bolsa (máx €10/año)",
+        "inactividad": "€0",
+        "retiro": "€0",
+        "divisas": "0.25% conversión FX"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta Básica",
+          "minimo": 0,
+          "tipo": "Trading acciones, ETFs, opciones, bonos"
+        },
+        {
+          "nombre": "Cuenta Activa",
+          "minimo": 0,
+          "tipo": "Sin comisiones de conectividad con volumen activo"
+        },
+        {
+          "nombre": "Cuenta Trader",
+          "minimo": 0,
+          "tipo": "Herramientas avanzadas para traders activos"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "bonos": true,
+        "fondos_mutuos": true,
+        "cripto": false,
+        "acciones_fraccionarias": false,
+        "bolsas_acceso": "50 bolsas / 30+ países"
+      },
+      "plataformas": [
+        "DEGIRO Web Trader",
+        "DEGIRO App (iOS/Android)"
+      ],
+      "presencia": "18 países europeos — Alemania (regulador principal), España, Francia, Italia, Portugal, Países Bajos, Austria, Bélgica, Suiza, Polonia, Dinamarca, Finlandia, Irlanda, Noruega, Suecia, Grecia, Hungría, República Checa",
+      "caracteristica_unica": "Adquirido por flatex Bank (Alemania) en 2019 — ahora operan bajo flatexDEGIRO Bank AG con licencia bancaria. 200+ ETFs Core Selection GRATIS (compra y venta). La mayor variedad de mercados del sector (50 bolsas/30+ países) para retail europeo",
+      "pros": [
+        "€1.50-2.75/operación — de las más bajas del sector",
+        "200+ ETFs Core Selection gratuitos (buy + sell)",
+        "50 bolsas / 30+ países — mayor variedad",
+        "Sin mínimo de depósito",
+        "Opciones y futuros disponibles desde €0.75"
+      ],
+      "contras": [
+        "Sin cripto",
+        "Sin acciones fraccionarias",
+        "€2.50/año por bolsa (máx €10)",
+        "Sin cuenta demo",
+        "Atención al cliente con demoras"
+      ]
+    },
+    {
+      "id": "EU003",
+      "nombre": "Scalable Capital",
+      "tipo": "Broker + Robo-Advisor — Flat-fee trading",
+      "seccion": "fintech_eu",
+      "pais": "Alemania (pan-europeo)",
+      "fundacion": 2014,
+      "sede": "Múnich, Alemania",
+      "score": 8.7,
+      "clientes": "2M+",
+      "aum_eur": "20B+",
+      "regulacion": [
+        "BaFin Alemania",
+        "Bundesbank",
+        "MiFID II — pasaporte europeo"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo. Robo-advisor: desde €1"
+      },
+      "comisiones": {
+        "scalable_free": "€0.99/operación — plan gratuito",
+        "scalable_prime_broker": "€4.99/mes — trades ilimitados sin comisión adicional",
+        "scalable_prime_plus": "€9.99/mes — 5.05% anual sobre efectivo + trades ilimitados",
+        "etfs_planes_ahorro": "€0",
+        "margen": "Disponible"
+      },
+      "cuentas": [
+        {
+          "nombre": "Broker Free",
+          "minimo": 0,
+          "tipo": "€0.99/operación — para inversores ocasionales"
+        },
+        {
+          "nombre": "Broker Prime (€4.99/mes)",
+          "minimo": 0,
+          "tipo": "Trades ilimitados sin comisión adicional"
+        },
+        {
+          "nombre": "Broker Prime+ (€9.99/mes)",
+          "minimo": 0,
+          "tipo": "Trades ilimitados + 5.05% sobre efectivo"
+        },
+        {
+          "nombre": "Robo-Advisor",
+          "minimo": 1,
+          "tipo": "Gestión automática — 0.75% fee anual"
+        },
+        {
+          "nombre": "ETF Sparplan (Plan Ahorro)",
+          "minimo": 1,
+          "tipo": "Planes de ahorro automáticos en ETFs — gratuito"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos": true,
+        "cripto": "ETFs cripto",
+        "acciones_fraccionarias": true,
+        "bonos": true
+      },
+      "plataformas": [
+        "Scalable Capital App (iOS/Android)",
+        "Scalable Capital Web"
+      ],
+      "presencia": "Alemania, Austria, Países Bajos, Francia, Italia, España, Suiza, UK (limitado)",
+      "caracteristica_unica": "Modelo flat-fee único en Europa: Prime Broker a €4.99/mes permite trades ilimitados. Prime+ paga 5.05% anual sobre efectivo. Líder europeo en ETF savings plans. Robo-advisor con BlackRock como partner estratégico",
+      "pros": [
+        "Prime Broker €4.99/mes — trades ilimitados (ideal para activos)",
+        "5.05% sobre efectivo (Prime+)",
+        "Robo-advisor con BlackRock",
+        "ETF plans de ahorro gratuitos",
+        "Plataforma muy intuitiva"
+      ],
+      "contras": [
+        "Sin opciones ni futuros",
+        "0.75% fee robo-advisor puede ser alto",
+        "Sin acceso a todas las bolsas (vs DEGIRO)",
+        "Sin cuenta demo"
+      ]
+    },
+    {
+      "id": "EU004",
+      "nombre": "Trading 212",
+      "tipo": "App Fintech — 0% comisiones en acciones reales",
+      "seccion": "fintech_eu",
+      "pais": "Bulgaria / UK (pan-europeo)",
+      "fundacion": 2004,
+      "sede": "Londres, UK / Sofía, Bulgaria",
+      "score": 8.6,
+      "clientes": "3M+",
+      "regulacion": [
+        "FCA UK (No. 609146)",
+        "FSC Bulgaria",
+        "CNMV España (inscrito)",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 1,
+        "moneda": "EUR",
+        "nota": "Desde €1"
+      },
+      "comisiones": {
+        "acciones_etfs": "€0 — cero comisiones en acciones reales y ETFs",
+        "cfds_spread": "Variable (cuenta CFD separada)",
+        "cripto_spread": "0.15% spread",
+        "divisas": "0.15% FX conversion",
+        "inactividad": "€0",
+        "deposito": "€0",
+        "retiro": "€0",
+        "intereses_efectivo": "4.2% APR en EUR (Invest account)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Invest Account",
+          "minimo": 1,
+          "tipo": "Acciones y ETFs reales — €0 comisión"
+        },
+        {
+          "nombre": "CFD Account",
+          "minimo": 1,
+          "tipo": "CFDs con apalancamiento — separada del Invest"
+        },
+        {
+          "nombre": "ISA (UK only)",
+          "minimo": 1,
+          "tipo": "Individual Savings Account libre de impuestos (solo UK)"
+        },
+        {
+          "nombre": "Pies (carteras personalizadas)",
+          "minimo": 1,
+          "tipo": "Portafolios temáticos con rebalanceo automático"
+        },
+        {
+          "nombre": "AutoInvest",
+          "minimo": 1,
+          "tipo": "Inversión automática periódica en Pies"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "cfds": true,
+        "cripto": "1,500+ activos cripto",
+        "acciones_fraccionarias": true,
+        "bolsas_acceso": "NYSE, NASDAQ, LSE, Euronext, Xetra, Borsa Italiana y más"
+      },
+      "plataformas": [
+        "Trading 212 App (iOS/Android)",
+        "Trading 212 Web"
+      ],
+      "presencia": "Europa (UE + UK) — 30+ países. Líder en Rumania y Bulgaria. Fuerte en UK, España, Francia, Italia",
+      "caracteristica_unica": "1,500+ activos cripto — la mayor variedad del sector de brokers regulados europeos. Sistema de 'Pies' para carteras temáticas con rebalanceo. 4.2% APR sobre efectivo EUR. €0 en acciones y ETFs reales",
+      "pros": [
+        "€0 acciones y ETFs reales",
+        "1,500+ activos cripto — mayor variedad europeos",
+        "4.2% APR sobre efectivo EUR",
+        "Pies: carteras personalizadas con rebalanceo",
+        "Sin comisión de retiro ni inactividad",
+        "Acciones fraccionarias"
+      ],
+      "contras": [
+        "FCA UK + FSC Bulgaria (no regulador UE principal)",
+        "Separación cuenta Invest/CFD puede ser confusa",
+        "Soporte al cliente limitado",
+        "Sin opciones de renta fija"
+      ]
+    },
+    {
+      "id": "EU005",
+      "nombre": "eToro Europa",
+      "tipo": "Social Trading — Acciones y ETFs reales + Copy Trading",
+      "seccion": "fintech_eu",
+      "pais": "Israel / Chipre (pan-europeo)",
+      "fundacion": 2007,
+      "sede": "Limassol, Chipre (Europa)",
+      "score": 8.5,
+      "clientes": "38M+ (global)",
+      "cotizado": "NASDAQ 2025 — USD 4.8B capitalización",
+      "regulacion": [
+        "CySEC Chipre (No. 109/10)",
+        "FCA UK (No. 583263)",
+        "ASIC Australia",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 50,
+        "moneda": "EUR",
+        "nota": "€50 en Europa (€200 en algunos países)"
+      },
+      "comisiones": {
+        "acciones_etfs_reales": "€0 — sin comisión en acciones y ETFs reales en Europa",
+        "cfds_spread": "Variable (1.0 pips EUR/USD)",
+        "cripto_spread": "1% — 1.5%",
+        "conversion_fiat": "0.5% al depositar/retirar (convertir a USD)",
+        "retiro": "€5 por retiro",
+        "inactividad": "€10/mes tras 12 meses sin login"
+      },
+      "cuentas": [
+        {
+          "nombre": "eToro Invest (Acciones reales)",
+          "minimo": 50,
+          "tipo": "Acciones y ETFs reales — €0 comisión"
+        },
+        {
+          "nombre": "eToro CFD Trading",
+          "minimo": 50,
+          "tipo": "CFDs con apalancamiento 1:5-1:30"
+        },
+        {
+          "nombre": "eToro Crypto",
+          "minimo": 10,
+          "tipo": "Cripto spot (no CFD en UE)"
+        },
+        {
+          "nombre": "CopyTrader",
+          "minimo": 200,
+          "tipo": "Copia automática de traders exitosos"
+        },
+        {
+          "nombre": "Smart Portfolios",
+          "minimo": 500,
+          "tipo": "Carteras temáticas gestionadas por eToro"
+        },
+        {
+          "nombre": "eToro Money",
+          "minimo": 0,
+          "tipo": "App bancaria — tarjeta Visa cripto"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "cfds": true,
+        "cripto": "800+",
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "eToro Platform (web)",
+        "eToro App (iOS/Android)"
+      ],
+      "presencia": "75+ países. En Europa: todos los países UE + UK. Cotizado en NASDAQ mayo 2025",
+      "caracteristica_unica": "El inventor del copy trading (2010). 38M+ usuarios globales. Cotizado NASDAQ mayo 2025. En Europa, acciones reales (no CFD) disponibles sin comisión. Popular Investors ganan comisiones al ser copiados",
+      "pros": [
+        "Inventor del copy trading",
+        "€0 acciones y ETFs reales en Europa",
+        "38M+ usuarios — red social inversora",
+        "Cotizado NASDAQ — máxima transparencia",
+        "800+ cripto disponibles"
+      ],
+      "contras": [
+        "€5 comisión por retiro",
+        "€10/mes por inactividad tras 12 meses",
+        "Spreads cripto altos (1-1.5%)",
+        "Conversión USD al depositar (+0.5% spread)",
+        "CySEC Chipre (no BaFin)"
+      ]
+    },
+    {
+      "id": "EU006",
+      "nombre": "Revolut (Revolut Securities)",
+      "tipo": "Neobank + Broker — Ecosistema financiero completo",
+      "seccion": "fintech_eu",
+      "pais": "UK / Lituania (pan-europeo)",
+      "fundacion": 2015,
+      "sede": "Londres, UK",
+      "score": 8.4,
+      "clientes": "50M+",
+      "valoracion": "USD 45B (2024)",
+      "regulacion": [
+        "FCA UK (No. 900562)",
+        "Banco de Lituania (Revolut Bank UAB — licencia bancaria UE)",
+        "CySEC Chipre (securities)",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "revolut_standard": "1 trade gratis/mes en acciones — luego €1/operación",
+        "revolut_plus": "3€/mes — 3 trades gratis/mes",
+        "revolut_premium": "10€/mes — trades ilimitados + sin comisión FX hasta €10K/mes",
+        "revolut_metal": "16€/mes — todas las ventajas + cashback 0.1-1%",
+        "cripto": "2.99% (Standard) / 1.49% (Premium/Metal)",
+        "fondos_mutuos": "0.25% anual",
+        "intereses_efectivo": "Variable según plan y moneda"
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard (gratis)",
+          "minimo": 0,
+          "tipo": "1 trade gratis/mes — funciones básicas"
+        },
+        {
+          "nombre": "Plus (€3/mes)",
+          "minimo": 0,
+          "tipo": "3 trades gratis + seguro de compra"
+        },
+        {
+          "nombre": "Premium (€10/mes)",
+          "minimo": 0,
+          "tipo": "Trades ilimitados + cambio divisas sin fee hasta €10K/mes"
+        },
+        {
+          "nombre": "Metal (€16/mes)",
+          "minimo": 0,
+          "tipo": "Todo Premium + cashback 0.1-1% + seguro viaje"
+        },
+        {
+          "nombre": "Ultra (€55/mes)",
+          "minimo": 0,
+          "tipo": "Viajes, seguros premium, concierge"
+        },
+        {
+          "nombre": "Revolut <18",
+          "minimo": 0,
+          "tipo": "Cuenta para menores — tarjeta de débito + inversión"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "cripto": "200+",
+        "metales_preciosos": true,
+        "acciones_fraccionarias": true,
+        "commodities": "Via ETC"
+      },
+      "plataformas": [
+        "Revolut App (iOS/Android)",
+        "Revolut Web"
+      ],
+      "presencia": "38+ países (EE.UU., UE, UK, LATAM, Asia). Licencia bancaria UE vía Revolut Bank UAB (Lituania)",
+      "caracteristica_unica": "El neobank más valorado de Europa (USD 45B). 50M+ usuarios. Ecosistema financiero completo: banca + inversión + cripto + seguros + viajes + cambio divisas — todo en una app. Cuenta para menores (<18)",
+      "pros": [
+        "50M+ usuarios — el neobank más grande del mundo",
+        "Cambio divisas sin comisión hasta €10K/mes (Premium)",
+        "Cuenta para menores",
+        "Banca + inversión + cripto + seguros en 1 app",
+        "Préstamo personal hasta €35K (5.99% APR)"
+      ],
+      "contras": [
+        "Comisiones cripto muy altas en Standard (2.99%)",
+        "Solo 1 trade gratis/mes en Standard",
+        "Trades premium requieren suscripción €10/mes",
+        "Regulación distribuida entre múltiples entidades"
+      ]
+    },
+    {
+      "id": "EU007",
+      "nombre": "Lightyear",
+      "tipo": "Broker Fintech — Acciones reales pan-europeo",
+      "seccion": "fintech_eu",
+      "pais": "Estonia (pan-europeo / UK)",
+      "fundacion": 2020,
+      "sede": "Tallinn, Estonia / Londres, UK",
+      "score": 8.3,
+      "clientes": "500K+",
+      "regulacion": [
+        "FCA UK (No. 960082)",
+        "Finantsinspektsioon Estonia — ISIN europeo",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 1,
+        "moneda": "EUR",
+        "nota": "Desde €1"
+      },
+      "comisiones": {
+        "acciones_etfs_eu": "€0",
+        "acciones_usa": "€1/operación",
+        "etfs_usa": "€1/operación",
+        "divisas_conversion": "0.35% (las más bajas del sector para FX)",
+        "inactividad": "€0",
+        "retiro": "€0",
+        "deposito": "€0",
+        "intereses_efectivo": "4.0% APR en EUR (Cash account)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta de Inversión",
+          "minimo": 1,
+          "tipo": "Acciones y ETFs — €0 EU, €1 USA"
+        },
+        {
+          "nombre": "Cash Account",
+          "minimo": 1,
+          "tipo": "4.0% APR sobre efectivo EUR"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "bonos_tesoro_usa": false,
+        "cripto": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Lightyear App (iOS/Android)",
+        "Lightyear Web"
+      ],
+      "presencia": "UK, Estonia, Letonia, Lituania, Alemania, Países Bajos, Finlandia, Suecia, España, Francia, Bélgica, Italia",
+      "caracteristica_unica": "0.35% de conversión FX — la más baja del sector (vs. 1.5% Revolut, 1.5% Wealthsimple). €0 en acciones europeas. 4.0% APR sobre efectivo. Fundado por ex-empleados de TransferWise (Wise)",
+      "pros": [
+        "0.35% FX — el más bajo del sector",
+        "€0 acciones europeas",
+        "4.0% APR sobre efectivo EUR",
+        "Sin comisión de retiro ni inactividad",
+        "Aplicación muy intuitiva",
+        "Fundado por ex-Wise (experiencia FX)"
+      ],
+      "contras": [
+        "€1 por operación en acciones/ETFs USA",
+        "Sin cripto",
+        "Sin opciones ni futuros",
+        "Selección de activos limitada vs. DEGIRO/IBKR",
+        "Sin cuenta demo"
+      ]
+    },
+    {
+      "id": "EU008",
+      "nombre": "Freedom24 (Freedom Holding)",
+      "tipo": "Broker — Acceso global desde Europa",
+      "seccion": "fintech_eu",
+      "pais": "EE.UU./Chipre (pan-europeo)",
+      "fundacion": 2010,
+      "sede": "Limassol, Chipre (Europa)",
+      "score": 8.2,
+      "cotizado": "NASDAQ (FRHC)",
+      "regulacion": [
+        "CySEC Chipre (No. 275/15)",
+        "SEC EE.UU. (Freedom Holding Corp)",
+        "ASIC Australia",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo formal"
+      },
+      "comisiones": {
+        "acciones_eu": "€0.02/acción + €2/orden",
+        "acciones_usa": "$0.02/acción + $2/orden",
+        "etfs": "Igual que acciones",
+        "ipos_acceso": "Acceso a IPOs de EE.UU. — diferencial único",
+        "intereses_efectivo": "6.5-7% APR en USD / 3.5% en EUR (Freedom Savings)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Smart Account",
+          "minimo": 0,
+          "tipo": "Trading estándar"
+        },
+        {
+          "nombre": "Freedom Savings",
+          "minimo": 0,
+          "tipo": "6.5-7% APR en USD — la más alta del mercado europeo"
+        },
+        {
+          "nombre": "IPO Participation",
+          "minimo": 2000,
+          "tipo": "Acceso a IPOs de Wall Street desde Europa"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "bonos": true,
+        "opciones": true,
+        "futuros": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "Freedom24 Web",
+        "Freedom24 App",
+        "Freedom24 Terminal (avanzado)"
+      ],
+      "presencia": "Toda la UE + EE.UU., Israel, Kazakhstán y otros",
+      "caracteristica_unica": "COTIZADO en NASDAQ (FRHC) — máxima transparencia. ÚNICO broker europeo con acceso directo a IPOs de Wall Street para retail. Freedom Savings: 6.5-7% APR en USD — la más alta de Europa",
+      "pros": [
+        "Cotizado NASDAQ — transparencia institucional",
+        "Acceso a IPOs de Wall Street — único para retail EU",
+        "6.5-7% APR en USD (Freedom Savings)",
+        "Acciones, opciones, futuros y bonos disponibles"
+      ],
+      "contras": [
+        "Sin cripto",
+        "Comisiones más altas que DEGIRO/Trade Republic",
+        "CySEC Chipre como regulador principal",
+        "Interfaz menos amigable para principiantes"
+      ]
+    },
+    {
+      "id": "EU009",
+      "nombre": "XTB Europa",
+      "tipo": "Broker — Acciones reales y CFDs — Oficina España",
+      "seccion": "fintech_eu",
+      "pais": "Polonia (pan-europeo)",
+      "fundacion": 2002,
+      "sede": "Varsovia, Polonia — Cotizado Bolsa de Varsovia",
+      "score": 8.8,
+      "clientes": "1M+",
+      "regulacion": [
+        "KNF Polonia (cotizado bolsa polaca)",
+        "FCA UK (No. 522157)",
+        "CySEC Chipre",
+        "CNMV España",
+        "BaFin Alemania",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin depósito mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs_reales": "€0 hasta €100K/mes — luego 0.2% (mín. €10)",
+        "cfds_spread": "Variable (0.9 pips EUR/USD)",
+        "cripto": "Spread incluido",
+        "inactividad": "€10/mes tras 12 meses sin operar",
+        "retiro": "€0",
+        "deposito": "€0",
+        "intereses_efectivo": "Disponible según país"
+      },
+      "cuentas": [
+        {
+          "nombre": "Standard",
+          "minimo": 0,
+          "tipo": "Acciones reales + CFDs — €0 hasta €100K/mes"
+        },
+        {
+          "nombre": "Pro",
+          "minimo": 0,
+          "tipo": "Spreads ajustados para traders avanzados"
+        },
+        {
+          "nombre": "Cuenta ISA (UK)",
+          "minimo": 0,
+          "tipo": "Libre de impuestos UK"
+        }
+      ],
+      "instrumentos": {
+        "acciones_reales": true,
+        "etfs_reales": true,
+        "cfds": true,
+        "forex": true,
+        "cripto": "40+",
+        "materias_primas": true,
+        "indices": true,
+        "acciones_fraccionarias": true,
+        "bolsas_acceso": "16+ bolsas europeas y globales"
+      },
+      "plataformas": [
+        "xStation 5 (propia — premiada)",
+        "MetaTrader 4 (algunos países)",
+        "XTB App"
+      ],
+      "presencia": "13 países UE + UK. Oficina física en Santiago de Chile (única en LATAM). Fuerte en España, Polonia, UK, Alemania",
+      "caracteristica_unica": "€0 en acciones y ETFs reales hasta €100K/mes — ideal para inversión de largo plazo. xStation 5 fue elegida la mejor plataforma del sector para retail europeo. Academia xStation con cursos gratuitos en español",
+      "pros": [
+        "€0 acciones/ETFs reales hasta €100K/mes",
+        "xStation 5 — mejor plataforma valorada por retail",
+        "Academia gratuita en múltiples idiomas",
+        "Sin mínimo de depósito",
+        "Cotizado bolsa polaca — transparencia corporativa"
+      ],
+      "contras": [
+        "€10/mes inactividad tras 12 meses",
+        "Sin opciones de renta fija directa",
+        "CNMV/CySEC según país (no siempre BaFin)",
+        "Spreads CFD menos competitivos que Pepperstone"
+      ]
+    },
+    {
+      "id": "EU010",
+      "nombre": "Bitpanda",
+      "tipo": "Fintech — Cripto + Acciones + Metales bajo MiCA",
+      "seccion": "fintech_eu",
+      "pais": "Austria (pan-europeo)",
+      "fundacion": 2014,
+      "sede": "Viena, Austria",
+      "score": 8.4,
+      "clientes": "5M+",
+      "regulacion": [
+        "FMA Austria",
+        "AMF Francia",
+        "BaFin Alemania",
+        "CNMV España",
+        "MiCA (pasaporte cripto europeo)",
+        "VASP República Checa"
+      ],
+      "deposito_minimo": {
+        "valor": 1,
+        "moneda": "EUR",
+        "nota": "Desde €1 en cualquier activo"
+      },
+      "comisiones": {
+        "cripto_compra_venta": "1.49% spread",
+        "acciones_etfs": "1€/operación (Bitpanda Stocks)",
+        "metales_preciosos": "1.49% spread",
+        "planes_ahorro": "€0 — planes de ahorro automáticos sin comisión",
+        "inactividad": "€0",
+        "deposito": "€0",
+        "retiro": "€0"
+      },
+      "cuentas": [
+        {
+          "nombre": "Bitpanda Standard",
+          "minimo": 1,
+          "tipo": "Cripto, acciones, ETFs, metales"
+        },
+        {
+          "nombre": "Bitpanda Pro",
+          "minimo": 1,
+          "tipo": "Precio maker/taker más bajo para traders activos"
+        },
+        {
+          "nombre": "Bitpanda Savings Plan",
+          "minimo": 1,
+          "tipo": "Planes automáticos semanales/mensuales en cualquier activo"
+        },
+        {
+          "nombre": "Bitpanda Card (Visa Cripto)",
+          "minimo": 0,
+          "tipo": "Tarjeta Visa — pagar con cualquier activo"
+        }
+      ],
+      "instrumentos": {
+        "cripto": "400+ activos",
+        "acciones": true,
+        "etfs": true,
+        "metales_preciosos": "Oro, plata, platino, paladio — fraccionados",
+        "fondos_indices": true,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Bitpanda App (iOS/Android)",
+        "Bitpanda Web",
+        "Bitpanda Pro"
+      ],
+      "presencia": "30+ países europeos. Partner banco: Deutsche Bank y LBBW (desde 2025) para servicios en España",
+      "caracteristica_unica": "El broker europeo más completo bajo MiCA. 400+ cripto + acciones + metales preciosos fraccionados + ETFs — todo en una app. Pasaporte cripto europeo MiCA. Planes de ahorro en cripto gratuitos. Partner Deutsche Bank",
+      "pros": [
+        "400+ cripto bajo regulación MiCA",
+        "Metales preciosos fraccionados desde €1",
+        "Planes de ahorro gratuitos en cripto",
+        "Pasaporte cripto europeo MiCA — única plataforma",
+        "Partner Deutsche Bank (desde 2025)"
+      ],
+      "contras": [
+        "1.49% spread cripto — más alto que exchanges puros",
+        "Sin opciones ni futuros",
+        "Menos adecuado para Forex",
+        "1% comisión acciones puede ser alto"
+      ]
+    },
+    {
+      "id": "UK001",
+      "nombre": "Hargreaves Lansdown",
+      "tipo": "Plataforma Inversión — #1 Reino Unido",
+      "seccion": "brokers_uk",
+      "pais": "Reino Unido",
+      "fundacion": 1981,
+      "sede": "Bristol, UK — Cotizado LSE",
+      "score": 9.0,
+      "clientes": "1.9M+",
+      "aum_gbp": "155B+",
+      "regulacion": [
+        "FCA UK (No. 115248)",
+        "FSCS (GBP 85K protección)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "GBP",
+        "nota": "Sin mínimo. Fondos: £100 (o £25/mes)"
+      },
+      "comisiones": {
+        "acciones_uk": "0.11% (mín £11.95, máx £0 con 10+ trades/mes previo)",
+        "acciones_usa_eu": "£11.95 (0-9 trades/mes), £8.95 (10-19), £5.95 (20+)",
+        "etfs": "Igual que acciones",
+        "fondos_mutuos": "0.45% anual AUM (cap: £45 fondos / £200 acciones)",
+        "isa_sipp_anual": "0.25-0.45% AUM (cap máx £45-200)",
+        "opciones": "£11.95",
+        "margen": "Disponible"
+      },
+      "cuentas": [
+        {
+          "nombre": "Fund & Share Account",
+          "minimo": 0,
+          "tipo": "Cuenta de inversión estándar — sin ventajas fiscales"
+        },
+        {
+          "nombre": "Stocks & Shares ISA",
+          "minimo": 0,
+          "tipo": "Hasta GBP 20K/año libre de impuestos"
+        },
+        {
+          "nombre": "Lifetime ISA (LISA)",
+          "minimo": 0,
+          "tipo": "Hasta GBP 4K/año + 25% bono gobierno (primera vivienda o jubilación)"
+        },
+        {
+          "nombre": "SIPP (Pensiones)",
+          "minimo": 0,
+          "tipo": "Self-Invested Personal Pension — con deducción fiscal"
+        },
+        {
+          "nombre": "Junior ISA",
+          "minimo": 25,
+          "tipo": "Ahorro para menores (hasta GBP 9K/año)"
+        },
+        {
+          "nombre": "Cuenta Empresarial",
+          "minimo": 0,
+          "tipo": "Para empresas"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "opciones": true,
+        "cfd": false,
+        "cripto": "ETFs Bitcoin",
+        "acciones_fraccionarias": false,
+        "bolsas": "UK, USA, Europa, Asia"
+      },
+      "plataformas": [
+        "HL Web",
+        "HL App (iOS/Android)",
+        "HL Active Savings (depósitos)"
+      ],
+      "caracteristica_unica": "La mayor plataforma de inversión del Reino Unido (1.9M clientes, £155B AUM). HL Active Savings: cuenta de ahorro integrada con tasas entre las mejores del mercado. Lifetime ISA con bono gobierno del 25%. Research de primera calidad",
+      "pros": [
+        "#1 plataforma inversión UK — máxima confianza",
+        "Lifetime ISA con 25% bono gobierno",
+        "Active Savings — las mejores tasas de ahorro",
+        "Mejor investigación y análisis del sector UK",
+        "SIPP (pensiones) completo"
+      ],
+      "contras": [
+        "Comisiones de fondos altas (0.45% AUM)",
+        "Sin acciones fraccionarias",
+        "Sin CFDs",
+        "£11.95 mínimo por trade para activos — caro para cuentas pequeñas"
+      ]
+    },
+    {
+      "id": "UK002",
+      "nombre": "AJ Bell Youinvest",
+      "tipo": "Broker Online — UK — Bajo coste",
+      "seccion": "brokers_uk",
+      "pais": "Reino Unido",
+      "fundacion": 1995,
+      "sede": "Manchester, UK — Cotizado LSE",
+      "score": 8.5,
+      "clientes": "530K+",
+      "aum_gbp": "86B+",
+      "regulacion": [
+        "FCA UK",
+        "FSCS (GBP 85K)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "GBP",
+        "nota": "Sin mínimo. Fondos: £25/mes o £500 una vez"
+      },
+      "comisiones": {
+        "acciones_etfs": "£5.00/operación (5+ trades/mes previo: £3.50)",
+        "fondos_mutuos": "0.25% AUM (cap £3.50/mes — máximo £42/año)",
+        "isa_anual": "0.25% (cap £3.50/mes acciones)",
+        "sipp_anual": "0.25% (cap £10/mes acciones)",
+        "opciones": "£9.95"
+      },
+      "cuentas": [
+        {
+          "nombre": "ISA (Stocks & Shares)",
+          "minimo": 0,
+          "tipo": "Libre de impuestos GBP 20K/año"
+        },
+        {
+          "nombre": "SIPP (Pensiones)",
+          "minimo": 0,
+          "tipo": "Pension autodirigida"
+        },
+        {
+          "nombre": "Dealing Account",
+          "minimo": 0,
+          "tipo": "Cuenta estándar sin ventajas fiscales"
+        },
+        {
+          "nombre": "Lifetime ISA",
+          "minimo": 0,
+          "tipo": "Bono gobierno 25% — primera vivienda o jubilación"
+        },
+        {
+          "nombre": "Junior ISA / Junior SIPP",
+          "minimo": 0,
+          "tipo": "Para menores"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "opciones": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "AJ Bell Web",
+        "AJ Bell App"
+      ],
+      "caracteristica_unica": "Una de las mejores opciones precio-calidad del UK. Cap en fondos de £42/año — ideal para grandes carteras. £5/trade para acciones — más barato que Hargreaves para activos frecuentes. Cotizado en LSE",
+      "pros": [
+        "Cap £42/año en fondos — ideal para grandes carteras",
+        "£5/trade — más barato que Hargreaves",
+        "Junior SIPP disponible",
+        "Plataforma bien diseñada"
+      ],
+      "contras": [
+        "Sin cripto",
+        "Sin acciones fraccionarias",
+        "Menor investigación vs. Hargreaves",
+        "£9.95 opciones relativamente caro"
+      ]
+    },
+    {
+      "id": "UK003",
+      "nombre": "InvestEngine",
+      "tipo": "App Fintech — ETFs Gratuitos UK",
+      "seccion": "brokers_uk",
+      "pais": "Reino Unido",
+      "fundacion": 2019,
+      "sede": "Londres, UK",
+      "score": 8.4,
+      "regulacion": [
+        "FCA UK (No. 837229)",
+        "FSCS (GBP 85K)"
+      ],
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "GBP",
+        "nota": "Managed: £100. DIY: £1"
+      },
+      "comisiones": {
+        "etfs_diy": "€0 — cero comisiones en todos los ETFs",
+        "etfs_managed": "0.25% anual AUM — gestión automatizada",
+        "isa_anual": "€0",
+        "sipp_anual": "€0"
+      },
+      "cuentas": [
+        {
+          "nombre": "DIY Portfolio",
+          "minimo": 1,
+          "tipo": "ETFs sin comisión — autogestionado"
+        },
+        {
+          "nombre": "Managed Portfolio",
+          "minimo": 100,
+          "tipo": "Gestión automatizada — 0.25% anual"
+        },
+        {
+          "nombre": "Stocks & Shares ISA",
+          "minimo": 1,
+          "tipo": "Libre de impuestos"
+        },
+        {
+          "nombre": "Business Account",
+          "minimo": 1,
+          "tipo": "Para empresas"
+        }
+      ],
+      "instrumentos": {
+        "etfs": "900+ ETFs incluyendo iShares, Vanguard, SPDR",
+        "acciones": false,
+        "cripto": false,
+        "fondos_mutuos": false
+      },
+      "plataformas": [
+        "InvestEngine App",
+        "InvestEngine Web"
+      ],
+      "caracteristica_unica": "El broker de ETFs más barato del UK. €0 en TODOS los ETFs (900+ ETFs). Sin comisión de plataforma para DIY. Ideal para inversores pasivos de largo plazo. Cash ISA disponible con tasas competitivas",
+      "pros": [
+        "€0 en 900+ ETFs — el más barato de UK",
+        "Sin comisión de plataforma DIY",
+        "0.25% managed — muy competitivo vs. Nutmeg (0.75%)",
+        "Business Account disponible",
+        "Ideal para carteras de ETFs de bajo coste"
+      ],
+      "contras": [
+        "Solo ETFs — sin acciones individuales",
+        "Sin cripto",
+        "Sin SIPP propio (solo ISA)",
+        "Sin opciones ni bonos"
+      ]
+    },
+    {
+      "id": "UK004",
+      "nombre": "Freetrade",
+      "tipo": "App Fintech — Broker Simplificado UK",
+      "seccion": "brokers_uk",
+      "pais": "Reino Unido",
+      "fundacion": 2016,
+      "sede": "Londres, UK",
+      "score": 8.1,
+      "regulacion": [
+        "FCA UK (No. 756063)",
+        "FSCS (GBP 85K)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "GBP",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs_basica": "€0 — trades gratuitos en plan Basic",
+        "plan_standard": "£5.99/mes — ISA incluido + tasas de interés sobre efectivo",
+        "plan_plus": "£11.99/mes — todo Plus + 5% anual sobre efectivo",
+        "inactividad": "€0",
+        "retiro": "€0",
+        "conversion_fx": "0.99%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Basic Account (gratis)",
+          "minimo": 0,
+          "tipo": "Trades gratis — sin ISA"
+        },
+        {
+          "nombre": "Standard (£5.99/mes)",
+          "minimo": 0,
+          "tipo": "Trades gratis + ISA + 3% sobre efectivo"
+        },
+        {
+          "nombre": "Plus (£11.99/mes)",
+          "minimo": 0,
+          "tipo": "Todo Standard + 5% sobre efectivo + mejores condiciones"
+        },
+        {
+          "nombre": "Stocks & Shares ISA",
+          "minimo": 0,
+          "tipo": "Con plan Standard o Plus"
+        },
+        {
+          "nombre": "SIPP",
+          "minimo": 0,
+          "tipo": "Pensiones autodirigidas (Solo/Junior SIPP)"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "cripto": false,
+        "fondos_mutuos": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Freetrade App (iOS/Android)"
+      ],
+      "caracteristica_unica": "Plataforma 100% móvil con diseño muy simple. Acciones fraccionarias desde £2. 5% APY sobre efectivo con plan Plus. Muy popular entre millennials y Gen Z en UK",
+      "pros": [
+        "Trades gratis en plan Basic",
+        "5% APY sobre efectivo (Plus)",
+        "Acciones fraccionarias desde £2",
+        "Diseño simple y atractivo para principiantes"
+      ],
+      "contras": [
+        "Solo app móvil — sin versión web",
+        "ISA requiere suscripción de pago",
+        "Sin cripto",
+        "Sin análisis técnico avanzado"
+      ]
+    },
+    {
+      "id": "BNK001",
+      "nombre": "BNP Paribas",
+      "tipo": "Banco Universal — #1 Eurozona por activos",
+      "seccion": "bancos_inv_eu",
+      "pais": "Francia",
+      "fundacion": 2000,
+      "sede": "París, Francia — Cotizado Euronext",
+      "score": 9.3,
+      "aum_eur": "1.2T",
+      "activos_totales": "EUR 3.1T",
+      "regulacion": [
+        "ACPR Francia",
+        "ECB (BCE)",
+        "FCA UK",
+        "BaFin Alemania",
+        "MiFID II",
+        "Basilea III"
+      ],
+      "segmentos": [
+        {
+          "nombre": "Corporate & Institutional Banking (CIB)",
+          "descripcion": "Investment banking, mercados de capitales, M&A, finanzas estructuradas — Top 5 europeo"
+        },
+        {
+          "nombre": "BNP Paribas Securities Services",
+          "descripcion": "Custodia global, clearing, settlement — €14T en activos bajo custodia"
+        },
+        {
+          "nombre": "Wealth Management",
+          "descripcion": "€500B+ AUM — banca privada en 20+ países"
+        },
+        {
+          "nombre": "Asset Management (BNP Paribas AM)",
+          "descripcion": "€550B AUM — fondos de inversión, ETFs, alternativos"
+        },
+        {
+          "nombre": "Retail Banking",
+          "descripcion": "BNP Paribas Retail France + Cetelem (crédito) + Nickel (neobank 3M+ clientes)"
+        },
+        {
+          "nombre": "Insurance & Real Estate",
+          "descripcion": "Cardif (seguros) + BNP Paribas Real Estate"
+        }
+      ],
+      "caracteristica_unica": "El mayor banco de la eurozona. Nickel: neobank de BNP con 3M+ clientes. Líder europeo en bonos verdes y ESG. Custodio de €14T en activos institucionales. Presente en 65+ países",
+      "pros": [
+        "#1 eurozona por activos totales",
+        "Nickel neobank accesible (€20/año)",
+        "Líder ESG/bonos verdes en Europa",
+        "€14T bajo custodia institucional",
+        "Solidez crediticia AA-"
+      ],
+      "contras": [
+        "Retail banking con comisiones altas",
+        "Private banking requiere €1M+",
+        "Reestructuración organizacional continua"
+      ]
+    },
+    {
+      "id": "BNK002",
+      "nombre": "Deutsche Bank",
+      "tipo": "Banco de Inversión — Principal banco alemán",
+      "seccion": "bancos_inv_eu",
+      "pais": "Alemania",
+      "fundacion": 1870,
+      "sede": "Fráncfort, Alemania — Cotizado DAX",
+      "score": 8.8,
+      "activos_totales": "EUR 1.6T",
+      "regulacion": [
+        "BaFin Alemania",
+        "Bundesbank",
+        "BCE",
+        "FCA UK",
+        "SEC EE.UU."
+      ],
+      "segmentos": [
+        {
+          "nombre": "Investment Bank",
+          "descripcion": "Banca de inversión, sales & trading de RF, FX y equity — Top 10 global"
+        },
+        {
+          "nombre": "Corporate Bank",
+          "descripcion": "Financiación corporativa, cash management, trade finance"
+        },
+        {
+          "nombre": "Private Bank",
+          "descripcion": "Deutsche Bank Private Banking + Postbank (retail alemán)"
+        },
+        {
+          "nombre": "Asset Management (DWS)",
+          "descripcion": "DWS Group (cotizado, 60% DB) — €1T AUM, ETFs Xtrackers"
+        },
+        {
+          "nombre": "Postbank",
+          "descripcion": "Banco retail para clientes de patrimonio medio en Alemania"
+        }
+      ],
+      "caracteristica_unica": "Primer emisor de ETFs en Europa vía DWS Xtrackers. Líder en trading de derivados. Partner bancario de Trade Republic y Bitpanda (desde 2025). Postbank: mayor base retail alemana",
+      "pros": [
+        "Xtrackers (DWS) — de las mayores familias de ETFs de Europa",
+        "Líder en derivados y trading de RF en Europa",
+        "Partner estratégico de Trade Republic y Bitpanda"
+      ],
+      "contras": [
+        "Historia de sanciones regulatorias y escándalos",
+        "Menor solidez crediticia que Barclays/HSBC",
+        "Rentabilidad históricamente menor que pares"
+      ]
+    },
+    {
+      "id": "BNK003",
+      "nombre": "Société Générale",
+      "tipo": "Banco de Inversión — Francia",
+      "seccion": "bancos_inv_eu",
+      "pais": "Francia",
+      "fundacion": 1864,
+      "sede": "París, Francia — Cotizado Euronext CAC 40",
+      "score": 8.7,
+      "activos_totales": "EUR 1.7T",
+      "regulacion": [
+        "ACPR Francia",
+        "BCE",
+        "FCA UK",
+        "BaFin"
+      ],
+      "segmentos": [
+        {
+          "nombre": "Global Banking & Investor Solutions",
+          "descripcion": "Banca de inversión, mercados de capitales, gestión de activos"
+        },
+        {
+          "nombre": "Boursorama (Boursobank)",
+          "descripcion": "Neobank #1 Francia — 7M+ clientes, el mayor banco online de Francia"
+        },
+        {
+          "nombre": "Lyxor Asset Management",
+          "descripcion": "Fusionada con Amundi (2022) — era líder europeo ETFs"
+        },
+        {
+          "nombre": "Retail Banking",
+          "descripcion": "Red francesa + 25 países"
+        }
+      ],
+      "caracteristica_unica": "Boursorama (Boursobank) — el neobank más grande de Francia (7M+ clientes). Cotizado en CAC 40. Top 5 en derivados de renta variable a nivel global",
+      "pros": [
+        "Boursobank — neobank con mejor relación calidad/precio de Francia",
+        "Líder europeo en derivados de acciones",
+        "Solidez histórica francesa"
+      ],
+      "contras": [
+        "Escándalo Jerome Kerviel (2008) — riesgo reputacional histórico",
+        "Boursobank limitado a Francia",
+        "Menor presencia global que BNP o Deutsche"
+      ]
+    },
+    {
+      "id": "BNK004",
+      "nombre": "UBS",
+      "tipo": "Banco Privado + Banco de Inversión — Suiza",
+      "seccion": "bancos_inv_eu",
+      "pais": "Suiza",
+      "fundacion": 1998,
+      "sede": "Zúrich, Suiza — Cotizado SIX",
+      "score": 9.4,
+      "aum_usd": "5.7T",
+      "regulacion": [
+        "FINMA Suiza",
+        "FCA UK",
+        "SEC EE.UU.",
+        "MAS Singapur"
+      ],
+      "segmentos": [
+        {
+          "nombre": "Global Wealth Management",
+          "descripcion": "USD 3.8T AUM — el mayor wealth manager privado del mundo. Desde USD $2M"
+        },
+        {
+          "nombre": "Asset Management",
+          "descripcion": "USD 1.9T AUM — fondos institucionales, ETFs, alternativos"
+        },
+        {
+          "nombre": "Investment Bank",
+          "descripcion": "Equity, FICC, advisory — fuerte en M&A Europa y Asia"
+        },
+        {
+          "nombre": "Personal & Corporate (Suiza)",
+          "descripcion": "Banca retail y corporativa para el mercado suizo"
+        },
+        {
+          "nombre": "Credit Suisse (adquirido 2023)",
+          "descripcion": "Absorbió Credit Suisse en marzo 2023 — mayor consolidación bancaria europea reciente"
+        }
+      ],
+      "caracteristica_unica": "El mayor wealth manager privado del mundo (USD 3.8T). Adquirió Credit Suisse en 2023 (rescate forzado) — reforzando posición de liderazgo absoluto en banca privada global. FINMA = la regulación bancaria más sólida del mundo",
+      "pros": [
+        "Wealth management #1 del mundo (USD 3.8T)",
+        "FINMA — regulación suiza más sólida",
+        "Integración de Credit Suisse consolidó liderazgo",
+        "Fuerte en Asia-Pacífico y LATAM"
+      ],
+      "contras": [
+        "Wealth management requiere USD $2M+",
+        "Presión regulatoria post-Credit Suisse",
+        "Altas comisiones para clientes no-UHNW"
+      ]
+    },
+    {
+      "id": "BNK005",
+      "nombre": "BBVA",
+      "tipo": "Banco Universal — España / Global Digital",
+      "seccion": "bancos_inv_eu",
+      "pais": "España",
+      "fundacion": 1857,
+      "sede": "Bilbao, España — Cotizado IBEX 35",
+      "score": 9.0,
+      "activos_totales": "EUR 826B",
+      "regulacion": [
+        "BdE Banco de España",
+        "CNMV",
+        "BCE",
+        "FCA UK",
+        "regulaciones en 25+ países"
+      ],
+      "segmentos": [
+        {
+          "nombre": "España",
+          "descripcion": "Retail + CIB + BBVA Trader + BBVA Valora (bróker online)"
+        },
+        {
+          "nombre": "México (bancomer)",
+          "descripcion": "El mayor banco privado de México — 30M+ clientes"
+        },
+        {
+          "nombre": "Turquía (Garanti BBVA)",
+          "descripcion": "El mayor banco privado de Turquía"
+        },
+        {
+          "nombre": "América del Sur",
+          "descripcion": "Argentina, Colombia, Perú — presencia significativa"
+        },
+        {
+          "nombre": "BBVA CIB",
+          "descripcion": "Banca de inversión, mercados, M&A, financiación estructurada"
+        },
+        {
+          "nombre": "BBVA Open Platform",
+          "descripcion": "Infraestructura bancaria-as-a-service para fintechs"
+        },
+        {
+          "nombre": "BBVA Trader",
+          "descripcion": "Broker online integrado con banca BBVA España — CNMV"
+        }
+      ],
+      "caracteristica_unica": "El banco más digital del mundo (nombrado por múltiples medios). 94% de ventas digitales. OPA hostil sobre Banco Sabadell (2024-2025). Líder en México (mayor economía del banco) y Turquía. API banking vía Open Platform",
+      "pros": [
+        "Banco más digital del mundo — UX líder",
+        "Liderazgo en México y Turquía",
+        "BBVA Trader: broker integrado con banca",
+        "Fuerte en LATAM y Turquía"
+      ],
+      "contras": [
+        "OPA sobre Sabadell genera incertidumbre",
+        "Exposición a mercados emergentes (riesgo cambiario)",
+        "BBVA Trader menos avanzado que brokers especializados"
+      ]
+    },
+    {
+      "id": "BNK006",
+      "nombre": "Santander",
+      "tipo": "Banco Universal — España / Global",
+      "seccion": "bancos_inv_eu",
+      "pais": "España",
+      "fundacion": 1857,
+      "sede": "Santander, España — Cotizado IBEX 35",
+      "score": 8.9,
+      "activos_totales": "EUR 1.9T",
+      "regulacion": [
+        "BdE Banco de España",
+        "BCE",
+        "FCA UK",
+        "Federal Reserve EE.UU.",
+        "BCB Brasil",
+        "regulaciones en 40+ países"
+      ],
+      "segmentos": [
+        {
+          "nombre": "Santander CIB (Banca Inversión)",
+          "descripcion": "Fuerte en LATAM: el mayor banco de inversión europeo en Brasil y México"
+        },
+        {
+          "nombre": "Santander España",
+          "descripcion": "Openbank (neobank 2M+ clientes), Santander Broker (acciones)"
+        },
+        {
+          "nombre": "Openbank",
+          "descripcion": "Neobank de Santander — expansión a EE.UU., LATAM y Europa"
+        },
+        {
+          "nombre": "Brasil",
+          "descripcion": "Santander Brasil — cotizado B3 — tercer mayor banco privado de Brasil"
+        },
+        {
+          "nombre": "UK",
+          "descripcion": "Santander UK — uno de los mayores bancos hipotecarios"
+        },
+        {
+          "nombre": "Santander Asset Management",
+          "descripcion": "USD 180B+ AUM — fondos para clientes retail e institucionales"
+        }
+      ],
+      "caracteristica_unica": "El banco privado europeo con mayor presencia en LATAM. Openbank: neobank en expansión global (EE.UU., LATAM 2025). Cotizado en 4 bolsas (Madrid, NYSE, Brasil, Londres)",
+      "pros": [
+        "Mayor presencia bancaria europea en LATAM",
+        "Openbank — el neobank de un gran banco con más credibilidad",
+        "Cotizado en 4 bolsas — transparencia máxima",
+        "Fuerte en retail hipotecario UK y España"
+      ],
+      "contras": [
+        "Openbank limitado vs. Revolut/N26 en funciones fintech",
+        "CIB menos especializado que Goldman/JPMorgan",
+        "Exposición cambiaria LATAM"
+      ]
+    },
+    {
+      "id": "BNK007",
+      "nombre": "Crédit Agricole / Amundi",
+      "tipo": "Banco Cooperativo + Mayor Gestor de Activos Europa",
+      "seccion": "bancos_inv_eu",
+      "pais": "Francia",
+      "fundacion": 1894,
+      "sede": "París, Francia — Cotizado Euronext",
+      "score": 9.1,
+      "aum_eur_amundi": "2.1T",
+      "regulacion": [
+        "ACPR Francia",
+        "BCE",
+        "AMF Francia",
+        "FCA UK"
+      ],
+      "segmentos": [
+        {
+          "nombre": "Amundi (filial cotizada)",
+          "descripcion": "€2.1T AUM — el mayor gestor de activos de Europa y #10 mundial. ETFs Amundi/Lyxor"
+        },
+        {
+          "nombre": "Crédit Agricole CIB",
+          "descripcion": "Banca de inversión institucional — líder en financiación de proyectos"
+        },
+        {
+          "nombre": "LCL (Le Crédit Lyonnais)",
+          "descripcion": "Retail Francia — red de distribución de fondos Amundi"
+        },
+        {
+          "nombre": "Crédit Agricole Retail France",
+          "descripcion": "Banca cooperativa — 10M+ miembros cooperativistas"
+        },
+        {
+          "nombre": "Indosuez Wealth Management",
+          "descripcion": "Banca privada — desde €250K"
+        }
+      ],
+      "caracteristica_unica": "Amundi es el mayor gestor de activos de Europa (€2.1T AUM). Adquirió Lyxor (ETFs) de SocGen en 2022 — consolidando liderazgo en ETFs europeos. La estructura cooperativa garantiza enfoque en cliente",
+      "pros": [
+        "Amundi: #1 gestor de activos Europa (€2.1T)",
+        "ETFs Amundi: los más baratos del mercado europeo (algunos desde 0.05% TER)",
+        "Estructura cooperativa — orientada al cliente",
+        "Fortaleza en financiación de proyectos de infraestructura"
+      ],
+      "contras": [
+        "Retail banking con comisiones altas vs. neobanks",
+        "Private banking requiere €250K+",
+        "Menor reconocimiento global fuera de Europa"
+      ]
+    },
+    {
+      "id": "BNK008",
+      "nombre": "ING Group",
+      "tipo": "Banco Universal — Países Bajos — Líder Digital",
+      "seccion": "bancos_inv_eu",
+      "pais": "Países Bajos",
+      "fundacion": 1991,
+      "sede": "Ámsterdam — Cotizado Euronext AEX",
+      "score": 8.8,
+      "activos_totales": "EUR 1.0T",
+      "clientes": "38M+",
+      "regulacion": [
+        "DNB Países Bajos",
+        "BCE",
+        "FCA UK",
+        "BaFin Alemania",
+        "MiFID II"
+      ],
+      "segmentos": [
+        {
+          "nombre": "ING Retail Banking",
+          "descripcion": "38M+ clientes en 40+ países. ING Direct — modelo de banca online pionero (1997)"
+        },
+        {
+          "nombre": "Wholesale Banking",
+          "descripcion": "Financiación corporativa, mercados de capitales, transaccional"
+        },
+        {
+          "nombre": "ING Beleggingen (Investing)",
+          "descripcion": "Plataforma de inversión en ETFs para clientes ING Países Bajos"
+        },
+        {
+          "nombre": "ING Germany DiBa",
+          "descripcion": "El mayor banco online de Alemania — 9M+ clientes"
+        }
+      ],
+      "caracteristica_unica": "Pionero en banca 100% online (ING Direct 1997). ING DiBa: el mayor banco online de Alemania (9M+ clientes). Modelo 'sin sucursales' que inspiraría a todos los neobanks. 38M+ clientes en 40+ países",
+      "pros": [
+        "Pionero de la banca online (1997)",
+        "ING DiBa: líder banca online Alemania",
+        "38M+ clientes — escala masiva",
+        "Plataforma inversión integrada con cuenta bancaria"
+      ],
+      "contras": [
+        "Plataforma de inversión menos sofisticada vs. brokers especializados",
+        "Comisiones de inversión más altas que DEGIRO/Trade Republic",
+        "Menor presencia en banca privada"
+      ]
+    },
+    {
+      "id": "ES001",
+      "nombre": "MyInvestor",
+      "tipo": "Neobanco + Broker — CNMV España",
+      "seccion": "es",
+      "pais": "España",
+      "fundacion": 2017,
+      "sede": "Madrid, España",
+      "score": 8.8,
+      "regulacion": [
+        "BdE Banco de España (licencia bancaria n.º 1544)",
+        "CNMV",
+        "FGD hasta €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo. Fondos: desde €10. Roboadvisor: desde €1"
+      },
+      "comisiones": {
+        "acciones_etfs": "€0 — cero comisiones en acciones y ETFs europeos/USA",
+        "fondos_indexados": "0% (MyInvestor Indexado S&P500, MSCI World — TER 0.06%)",
+        "roboadvisor": "0.15-0.25% anual sobre AUM",
+        "hipotecas": "Tipo fijo competitivo + sin comisiones",
+        "depositos": "3-4% TAE en depósitos a plazo (2025)",
+        "inactividad": "€0"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta MyInvestor",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria con IBAN español — 2.5% TAE sobre efectivo"
+        },
+        {
+          "nombre": "Acciones/ETFs",
+          "minimo": 0,
+          "tipo": "Trading 0% comisión"
+        },
+        {
+          "nombre": "Fondos Indexados Propios",
+          "minimo": 10,
+          "tipo": "Los fondos más baratos de España (0.06-0.15% TER)"
+        },
+        {
+          "nombre": "Roboadvisor",
+          "minimo": 1,
+          "tipo": "0.15-0.25% anual — gestión automatizada"
+        },
+        {
+          "nombre": "Hipoteca MyInvestor",
+          "minimo": 0,
+          "tipo": "Hipotecas competitivas con financiación hasta 95%"
+        },
+        {
+          "nombre": "Plan de Pensiones",
+          "minimo": 1,
+          "tipo": "Planes de pensiones indexados — 0.30% comisión gestión"
+        },
+        {
+          "nombre": "Cuenta Naranja Niños",
+          "minimo": 0,
+          "tipo": "Para menores — 2.5% TAE"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_indexados": true,
+        "fondos_mutuos": "3,000+",
+        "roboadvisor": true,
+        "planes_de_pensiones": true,
+        "depositos": true,
+        "hipotecas": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "MyInvestor App (iOS/Android)",
+        "MyInvestor Web"
+      ],
+      "caracteristica_unica": "Neobanco español con los fondos indexados más baratos del mercado español (0.06% TER). Licencia bancaria BdE — protección FGD €100K. Hipotecas + inversión + banca en una sola app. Cuenta para niños con 2.5% TAE",
+      "pros": [
+        "Fondos indexados más baratos de España (0.06% TER)",
+        "Licencia bancaria — FGD €100K",
+        "€0 en acciones y ETFs",
+        "2.5% TAE sobre efectivo",
+        "Hipotecas competitivas",
+        "Roboadvisor 0.15-0.25%"
+      ],
+      "contras": [
+        "Sin trading de cripto",
+        "Sin opciones ni futuros",
+        "Menor selección de acciones vs. DEGIRO",
+        "Plataforma menos visual que eToro/Trading212"
+      ]
+    },
+    {
+      "id": "ES002",
+      "nombre": "Renta 4 Banco",
+      "tipo": "Banco de Valores — CNMV — Red presencial España",
+      "seccion": "es",
+      "pais": "España",
+      "fundacion": 1987,
+      "sede": "Madrid, España — Cotizado BME",
+      "score": 8.5,
+      "regulacion": [
+        "CNMV",
+        "BdE (licencia bancaria)",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo para cuenta estándar"
+      },
+      "comisiones": {
+        "acciones_espana": "0.30% (mín €6)",
+        "acciones_usa": "0.25% (mín USD 5)",
+        "etfs": "0.25% (mín €5)",
+        "opciones": "0.75€/contrato IBEX",
+        "fondos_mutuos": "0% en fondos propios",
+        "custodia": "Variable (puede ser 0 con actividad)",
+        "margen": "Disponible"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta Valores",
+          "minimo": 0,
+          "tipo": "Trading acciones, ETFs, derivados"
+        },
+        {
+          "nombre": "Cuenta Ahorro",
+          "minimo": 0,
+          "tipo": "Depósitos y renta fija"
+        },
+        {
+          "nombre": "Cuenta Fondos",
+          "minimo": 0,
+          "tipo": "10,000+ fondos de inversión"
+        },
+        {
+          "nombre": "Plan de Pensiones",
+          "minimo": 0,
+          "tipo": "Planes de pensiones propios e indexados"
+        },
+        {
+          "nombre": "Cartera Gestionada",
+          "minimo": 10000,
+          "tipo": "Gestión discrecional personalizada"
+        },
+        {
+          "nombre": "Renta 4 LATAM",
+          "minimo": 0,
+          "tipo": "Acceso a bolsas MILA (Chile, Perú, Colombia)"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "futuros": true,
+        "bonos": true,
+        "planes_pensiones": true,
+        "warrants": true,
+        "bolsas_latam": true
+      },
+      "plataformas": [
+        "Renta 4 Web",
+        "Renta 4 App",
+        "R4 Trader (plataforma avanzada)"
+      ],
+      "caracteristica_unica": "Red presencial en toda España + LATAM (Chile, Perú, Colombia, México, Argentina — 10 países). El broker español con mayor red en LATAM. Acceso a MILA (Mercado Integrado Latinoamericano) desde España",
+      "pros": [
+        "Red presencial en 10 países LATAM + España",
+        "Acceso MILA desde España — único",
+        "10,000+ fondos disponibles",
+        "Opciones y futuros en derivados MEIL/IBEX",
+        "Banco regulado BdE — seguridad máxima"
+      ],
+      "contras": [
+        "Comisiones más altas que neobrókers",
+        "Comisión de custodia puede aplicar",
+        "Plataforma menos moderna que Trade Republic/Trading212"
+      ]
+    },
+    {
+      "id": "ES003",
+      "nombre": "iBroker (Self Bank)",
+      "tipo": "Broker Online — CNMV España",
+      "seccion": "es",
+      "pais": "España",
+      "fundacion": 2016,
+      "sede": "Madrid, España",
+      "score": 8.1,
+      "regulacion": [
+        "CNMV",
+        "BdE (Self Bank — propiedad)",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_espana": "€3/operación (0-4 ops/mes) / €0 (>4 ops/mes hasta 20) / €0 indefinido (>20 ops/mes)",
+        "acciones_usa": "USD 4/operación",
+        "etfs": "€3 (o gratis con condiciones)",
+        "opciones": "€2/contrato + €0.30/prima (IBEX)",
+        "futuros": "€3/contrato",
+        "cfds": "Spread incluido",
+        "datos_tiempo_real": "€9.99/mes (opcionales)"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "cfds": true,
+        "fondos_mutuos": true,
+        "warrants": true
+      },
+      "plataformas": [
+        "iBroker Web",
+        "iBroker App",
+        "iBroker Pro (herramientas avanzadas)"
+      ],
+      "caracteristica_unica": "La plataforma de opciones y futuros más completa para retail en España. €0 en acciones españolas con >4 operaciones/mes. Propiedad de Self Bank (Grupo Warburg Pincus)",
+      "pros": [
+        "€0 acciones españolas con actividad moderada",
+        "Mejor plataforma de opciones y derivados en España",
+        "Futuros sobre IBEX35 disponibles",
+        "Datos en tiempo real opcionales"
+      ],
+      "contras": [
+        "€3 si <4 ops/mes",
+        "Sin cripto",
+        "Datos RT de pago (€9.99/mes)",
+        "Interfaz menos moderna"
+      ]
+    },
+    {
+      "id": "ES004",
+      "nombre": "HeyTrade",
+      "tipo": "App Fintech — Broker Moderno CNMV",
+      "seccion": "es",
+      "pais": "España",
+      "fundacion": 2021,
+      "sede": "Madrid, España",
+      "score": 8.2,
+      "regulacion": [
+        "CNMV",
+        "FOGAIN hasta €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs": "€0 — cero comisiones",
+        "planes_ahorro": "€0",
+        "inactividad": "€0"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos": false,
+        "cripto": false,
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "HeyTrade App (iOS/Android)",
+        "HeyTrade Web"
+      ],
+      "caracteristica_unica": "El broker más moderno y sencillo de España. FOGAIN hasta €100K. 2,000+ acciones y ETFs. Diseñado para millennials y Gen Z españoles. Acciones fraccionarias. Sin comisiones",
+      "pros": [
+        "€0 comisiones — el más accesible de España",
+        "FOGAIN €100K protección",
+        "Diseño moderno muy intuitivo",
+        "Acciones fraccionarias",
+        "Sin inactividad"
+      ],
+      "contras": [
+        "Sin cripto",
+        "Sin opciones ni futuros",
+        "Selección de activos más limitada vs. DEGIRO",
+        "Plataforma joven — menos herramientas"
+      ]
+    },
+    {
+      "id": "DE001",
+      "nombre": "N26",
+      "tipo": "Neobank + Inversión — Alemania",
+      "seccion": "de",
+      "pais": "Alemania (pan-europeo)",
+      "fundacion": 2013,
+      "sede": "Berlín, Alemania",
+      "score": 8.3,
+      "clientes": "8M+",
+      "valoracion": "USD 9B",
+      "regulacion": [
+        "BaFin Alemania",
+        "Bundesbank",
+        "BCE (licencia bancaria completa)",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "plan_standard": "€0/mes — cuenta bancaria básica",
+        "plan_smart": "€4.90/mes — tarjeta física + funciones extras",
+        "plan_you": "€9.90/mes — seguro de viaje incluido",
+        "plan_metal": "€16.90/mes — tarjeta metal + seguros premium",
+        "acciones_etfs": "Via N26 Invest (Vanguard ETFs) — €0.99-4.90/mes según plan",
+        "cripto": "1.5-2.5% spread via Bitpanda",
+        "conversions_fx": "0% (Standard) hasta 0% ilimitado (Metal)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta N26 (gratis)",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria con IBAN alemán"
+        },
+        {
+          "nombre": "N26 Smart / You / Metal",
+          "minimo": 0,
+          "tipo": "Planes con más beneficios"
+        },
+        {
+          "nombre": "N26 Savings",
+          "minimo": 0,
+          "tipo": "Hasta 4.0% APY en cuenta de ahorro (Flexible)"
+        },
+        {
+          "nombre": "N26 Invest (ETF Savings)",
+          "minimo": 0,
+          "tipo": "Planes de ahorro en ETFs Vanguard"
+        },
+        {
+          "nombre": "N26 Crypto (via Bitpanda)",
+          "minimo": 0,
+          "tipo": "Cripto integrado en la app"
+        }
+      ],
+      "instrumentos": {
+        "etfs_vanguard": true,
+        "cripto": "Via Bitpanda — 200+",
+        "acciones": false,
+        "bonos": false
+      },
+      "plataformas": [
+        "N26 App (iOS/Android)",
+        "N26 Web"
+      ],
+      "presencia": "24 países europeos + EE.UU. (solo app). Salió de UK (post-Brexit)",
+      "caracteristica_unica": "Valorado en USD 9B — el neobank más valioso de Alemania. N26 Savings hasta 4.0% APY. Licencia bancaria BCE — DGS €100K. Cripto via Bitpanda integrado. 8M+ clientes en 24 países",
+      "pros": [
+        "Licencia bancaria BCE — DGS €100K",
+        "Hasta 4.0% APY en ahorro",
+        "Cripto via Bitpanda integrado",
+        "IBAN alemán en 8 minutos",
+        "8M+ usuarios en 24 países"
+      ],
+      "contras": [
+        "Inversión limitada (ETFs Vanguard básicos)",
+        "Sin acciones individuales",
+        "Salió de UK (post-Brexit)",
+        "Competencia fuerte de Revolut"
+      ]
+    },
+    {
+      "id": "DE002",
+      "nombre": "Comdirect (Commerzbank)",
+      "tipo": "Broker Online — Alemania — Parte del Grupo Commerzbank",
+      "seccion": "de",
+      "pais": "Alemania",
+      "fundacion": 1994,
+      "sede": "Quickborn, Alemania",
+      "score": 8.4,
+      "regulacion": [
+        "BaFin Alemania",
+        "Bundesbank",
+        "BCE",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_xetra": "€3.90/operación + 0.26% (mín €3.90, máx €12.90)",
+        "acciones_usa": "€12.90/operación",
+        "etfs_comision_libre": "Selección gratuita (200+ ETFs)",
+        "planes_ahorro_etfs": "€0 — planes gratuitos en 600+ ETFs",
+        "fondos_mutuos": "0% en fondos Commerzbank",
+        "opciones_futuros": "€3.90/contrato",
+        "margen": "Disponible"
+      },
+      "cuentas": [
+        {
+          "nombre": "comdirect Depot",
+          "minimo": 0,
+          "tipo": "Cuenta de valores — acciones, ETFs, fondos"
+        },
+        {
+          "nombre": "comdirect Bankkonto (Girokonto)",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria con IBAN alemán"
+        },
+        {
+          "nombre": "Tagesgeld (ahorro)",
+          "minimo": 0,
+          "tipo": "Cuenta de ahorro con tasa variable"
+        },
+        {
+          "nombre": "ETF-Sparplan",
+          "minimo": 25,
+          "tipo": "Planes de ahorro en ETFs — desde €25/mes"
+        },
+        {
+          "nombre": "Depot Riester/Rürup",
+          "minimo": 0,
+          "tipo": "Planes de pensiones con ventajas fiscales alemanas"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "futuros": true,
+        "bonos": true,
+        "certificados": true,
+        "planes_ahorro": true
+      },
+      "plataformas": [
+        "comdirect.de (web)",
+        "comdirect App",
+        "Brokerage Platform avanzada"
+      ],
+      "caracteristica_unica": "Parte del Grupo Commerzbank (segundo mayor banco alemán). 200+ ETFs gratuitos + 600+ en planes de ahorro. Certificados y warrants alemanes — instrumentos únicos en el mercado europeo. Riester/Rürup (pensiones fiscales alemanas)",
+      "pros": [
+        "Solidez Commerzbank (banco regulado BCE)",
+        "600+ ETFs en planes de ahorro gratuitos",
+        "Certificados y warrants alemanes",
+        "Riester/Rürup planes fiscales alemanes",
+        "Cuenta bancaria integrada"
+      ],
+      "contras": [
+        "Comisiones de acciones más altas vs. Trade Republic/DEGIRO",
+        "Sin acciones fraccionarias",
+        "Interfaz más compleja para principiantes"
+      ]
+    },
+    {
+      "id": "FR001",
+      "nombre": "Boursorama (Boursobank)",
+      "tipo": "Neobank + Broker — #1 Banca Online Francia",
+      "seccion": "fr",
+      "pais": "Francia",
+      "fundacion": 1995,
+      "sede": "Boulogne-Billancourt, Francia",
+      "score": 8.9,
+      "clientes": "7M+",
+      "regulacion": [
+        "ACPR Francia",
+        "BCE",
+        "AMF (valores)",
+        "FGD €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "plan_essentiel": "€0/mes — 0 cotizaciones en tiempo real",
+        "plan_welcome": "€0/mes (condicionado) — básico",
+        "plan_ultim": "€0/mes (con depósito >€300/mes) — sin comisión FX hasta €500/mes",
+        "acciones_france": "€1.99/operación (plan Ultim) — 0% si ETF seleccionado",
+        "etfs_gratuitos": "200+ ETFs sin comisión",
+        "fondos_mutuos": "0% en Amundi y otros socios",
+        "pea": "Sin comisión de mantenimiento (plan Ultim)"
+      },
+      "cuentas": [
+        {
+          "nombre": "Compte Courant",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria IBAN francés"
+        },
+        {
+          "nombre": "Compte Titre Ordinaire (CTO)",
+          "minimo": 0,
+          "tipo": "Cuenta de valores estándar"
+        },
+        {
+          "nombre": "PEA (Plan d'Épargne en Actions)",
+          "minimo": 0,
+          "tipo": "PLAN DE AHORRO EN ACCIONES: hasta €150K exento de impuestos sobre ganancias tras 5 años — el instrumento fiscal más poderoso de Francia"
+        },
+        {
+          "nombre": "Livret A",
+          "minimo": 0,
+          "tipo": "Cuenta de ahorro estatal — 3% TAE exento de impuestos"
+        },
+        {
+          "nombre": "Assurance Vie",
+          "minimo": 0,
+          "tipo": "Seguro de vida-inversión — el instrumento de patrimonio más popular de Francia"
+        },
+        {
+          "nombre": "PEA-PME",
+          "minimo": 0,
+          "tipo": "PEA para pequeñas empresas — hasta €225K exento"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "warrants": true,
+        "acciones_fraccionarias": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "Boursobank App",
+        "Boursobank Web",
+        "Boursomarkets (trading)"
+      ],
+      "caracteristica_unica": "PEA: el instrumento fiscal más poderoso de Europa — €150K exento de impuestos sobre plusvalías después de 5 años. #1 neobank de Francia (7M+ clientes). Filial de Société Générale. Assurance Vie: patrimonio exento de herencia",
+      "pros": [
+        "PEA — hasta €150K exento de impuestos tras 5 años",
+        "#1 neobank de Francia (7M+ clientes)",
+        "Livret A 3% TAE exento de impuestos",
+        "Assurance Vie para planificación patrimonial",
+        "200+ ETFs gratuitos"
+      ],
+      "contras": [
+        "PEA solo disponible para residentes fiscales Francia",
+        "Plan Ultim requiere depósito mensual",
+        "Comisión de €1.99/operación en plan básico"
+      ]
+    },
+    {
+      "id": "FR002",
+      "nombre": "Fortuneo Banque",
+      "tipo": "Broker Online — Francia — Filial Crédit Mutuel Arkéa",
+      "seccion": "fr",
+      "pais": "Francia",
+      "fundacion": 2000,
+      "sede": "Brest, Francia",
+      "score": 8.3,
+      "regulacion": [
+        "ACPR Francia",
+        "AMF",
+        "BCE"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_france": "€1.95 (<€500) / 0.50% (€500-€2K) / €6.90 (>€2K)",
+        "etfs": "Igual que acciones",
+        "fondos": "0% Arkéa / variable externos",
+        "pea": "Mantenimiento €0",
+        "opciones": "€1.95/contrato"
+      },
+      "cuentas": [
+        {
+          "nombre": "Compte Courant",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria"
+        },
+        {
+          "nombre": "PEA",
+          "minimo": 0,
+          "tipo": "Plan d'Épargne en Actions — exento impuestos 5 años"
+        },
+        {
+          "nombre": "Compte Titre",
+          "minimo": 0,
+          "tipo": "Cuenta valores estándar"
+        },
+        {
+          "nombre": "Assurance Vie",
+          "minimo": 0,
+          "tipo": "Seguro de vida-inversión"
+        },
+        {
+          "nombre": "Livret A",
+          "minimo": 0,
+          "tipo": "Ahorro estatal 3% TAE"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "warrants": true
+      },
+      "plataformas": [
+        "Fortuneo Web",
+        "Fortuneo App"
+      ],
+      "caracteristica_unica": "Filial de Crédit Mutuel Arkéa — banco cooperativo regional francés. €1.95 por operación — de las más competitivas para acciones francesas. PEA disponible. Livret A exento de impuestos",
+      "pros": [
+        "€1.95/operación — muy competitivo para Francia",
+        "PEA para exención fiscal",
+        "Filial banco cooperativo — solidez",
+        "Livret A disponible"
+      ],
+      "contras": [
+        "Solo disponible en Francia",
+        "Sin cripto",
+        "Selección de ETFs menor vs. Boursobank"
+      ]
+    },
+    {
+      "id": "NL001",
+      "nombre": "DEGIRO (Holanda)",
+      "tipo": "Broker Origen — Países Bajos",
+      "seccion": "nl",
+      "pais": "Países Bajos",
+      "fundacion": 2013,
+      "sede": "Ámsterdam",
+      "score": 8.9,
+      "nota": "Ver ficha completa EU002 — origen en Países Bajos, ya detallado en sección fintech pan-europeo",
+      "regulacion": [
+        "AFM Países Bajos",
+        "BaFin Alemania (flatexDEGIRO Bank)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_eu": "€1.75 + €1.00 gestión",
+        "etfs_core": "€0"
+      },
+      "pros": [
+        "Más barato del mercado",
+        "50 bolsas/30 países"
+      ],
+      "contras": [
+        "Sin cripto",
+        "Sin acciones fraccionarias"
+      ]
+    },
+    {
+      "id": "NL002",
+      "nombre": "ABN AMRO MeesPierson / Self Invest",
+      "tipo": "Banco Inversión + Broker Online — Países Bajos",
+      "seccion": "nl",
+      "pais": "Países Bajos",
+      "fundacion": 1824,
+      "sede": "Ámsterdam — Cotizado Euronext AEX",
+      "score": 8.5,
+      "regulacion": [
+        "DNB Países Bajos",
+        "BCE",
+        "AFM",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo para Self Invest"
+      },
+      "comisiones": {
+        "acciones_nl": "€6.95/operación (Self Invest)",
+        "etfs_gratuitos": "Selección ETFs gratuitos",
+        "fondos": "0% en fondos ABN",
+        "private_banking": "Fee AUM 0.5-1%"
+      },
+      "cuentas": [
+        {
+          "nombre": "Self Invest (broker online)",
+          "minimo": 0,
+          "tipo": "Acciones, ETFs, opciones"
+        },
+        {
+          "nombre": "MeesPierson Private Banking",
+          "minimo": 1000000,
+          "tipo": "Banca privada desde €1M"
+        },
+        {
+          "nombre": "Tikkie (pagos P2P)",
+          "minimo": 0,
+          "tipo": "App de pagos — más usada de Países Bajos"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "ABN AMRO App",
+        "Self Invest Web"
+      ],
+      "caracteristica_unica": "MeesPierson es la rama de banca privada histórica más antigua de Europa (fundada 1720). Tikkie: la app de pagos P2P dominante en Países Bajos. Self Invest: broker integrado con banca ABN AMRO",
+      "pros": [
+        "MeesPierson — historia bancaria de 300 años",
+        "Tikkie — la app de pagos más popular de NL",
+        "Self Invest integrado con banca",
+        "MiFID II y DNB regulación"
+      ],
+      "contras": [
+        "Self Invest €6.95/operación — más caro que DEGIRO",
+        "Sin cripto",
+        "Private Banking requiere €1M+"
+      ]
+    },
+    {
+      "id": "IT001",
+      "nombre": "FinecoBank",
+      "tipo": "Banco + Broker Online — #1 Italia",
+      "seccion": "it",
+      "pais": "Italia",
+      "fundacion": 1999,
+      "sede": "Milán, Italia — Cotizado Borsa Italiana (FBK)",
+      "score": 9.1,
+      "clientes": "1.6M+",
+      "aum_eur": "120B+",
+      "regulacion": [
+        "Banca d'Italia",
+        "Consob",
+        "BCE",
+        "FCA UK (filial UK)",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_italia": "€3.95/operación (primeros 10 trades del mes)",
+        "acciones_usa": "USD 3.95/operación",
+        "etfs_mensual": "€2.95 si >10 operaciones/mes",
+        "fondos_mutuos": "0% en fondos propios",
+        "opciones": "€1.95/contrato",
+        "futuros": "€3.95/contrato",
+        "forex": "Spread incluido",
+        "cuenta_corriente": "€0 si ≥1 op. mes / €3.95 si sin actividad"
+      },
+      "cuentas": [
+        {
+          "nombre": "Conto Corrente (Cuenta)",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria + IBAN italiano"
+        },
+        {
+          "nombre": "Conto Deposito Vincolato",
+          "minimo": 0,
+          "tipo": "Depósitos a plazo — tasas competitivas"
+        },
+        {
+          "nombre": "Dossier Titoli (Valores)",
+          "minimo": 0,
+          "tipo": "Acciones, ETFs, fondos, opciones, futuros"
+        },
+        {
+          "nombre": "Conto Corrente USA",
+          "minimo": 0,
+          "tipo": "Cuenta en dólares — único en banca italiana"
+        },
+        {
+          "nombre": "FinecoBank UK",
+          "minimo": 0,
+          "tipo": "Filial regulada FCA para residentes UK"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "futuros": true,
+        "forex": true,
+        "bonos": true,
+        "cfds": true,
+        "cripto": "ETPs Bitcoin",
+        "acciones_fraccionarias": false
+      },
+      "plataformas": [
+        "Fineco App (iOS/Android)",
+        "PowerDesk (desktop — muy avanzado)",
+        "Fineco Web"
+      ],
+      "caracteristica_unica": "El broker más completo de Italia — banco + broker + inversiones + forex + opciones + futuros todo en uno. Filial FCA UK para residentes británicos. PowerDesk es la plataforma de trading más avanzada disponible en Italia",
+      "pros": [
+        "El broker más completo de Italia (banco + trading + todo)",
+        "PowerDesk — plataforma avanzada para profesionales",
+        "Filial FCA UK — también para clientes UK",
+        "Cuenta en USD — único en banca italiana",
+        "Cotizado Borsa Italiana — transparencia"
+      ],
+      "contras": [
+        "€3.95/operación — no gratuito",
+        "Sin acciones fraccionarias",
+        "Comisión mensual si sin actividad",
+        "Más complejo para principiantes"
+      ]
+    },
+    {
+      "id": "IT002",
+      "nombre": "Directa SIM",
+      "tipo": "Broker Especialista — Italia — Derivados",
+      "seccion": "it",
+      "pais": "Italia",
+      "fundacion": 1994,
+      "sede": "Turín, Italia — Cotizado Borsa Italiana",
+      "score": 8.3,
+      "regulacion": [
+        "Consob Italia",
+        "Banca d'Italia",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_italia": "€2.50/operación",
+        "acciones_eu": "€4.00/operación",
+        "etfs": "€2.50/operación",
+        "opciones_idem": "€1.50/contrato",
+        "futuros_ftse_mib": "€2.50/contrato",
+        "cfds": "Spread incluido"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "cfds": true,
+        "warrants": true,
+        "etns": true
+      },
+      "plataformas": [
+        "Directa Web",
+        "Directa App",
+        "Darwin (plataforma profesional)"
+      ],
+      "caracteristica_unica": "Cotizado en Borsa Italiana. Darwin: plataforma de trading profesional. Especialista en derivados italianos (IDEM — Italian Derivatives Market). €2.50/operación — de las más competitivas en Italia",
+      "pros": [
+        "€2.50/operación — competitivo para Italia",
+        "Darwin plataforma profesional",
+        "Cotizado en Borsa Italiana",
+        "Especialista en IDEM (opciones/futuros italianos)"
+      ],
+      "contras": [
+        "Sin fondos mutuos",
+        "Interfaz menos moderna",
+        "Menor reconocimiento fuera de Italia"
+      ]
+    },
+    {
+      "id": "PT001",
+      "nombre": "ActivoBank (Millennium BCP)",
+      "tipo": "Neobank + Broker — Portugal",
+      "seccion": "pt",
+      "pais": "Portugal",
+      "fundacion": 2000,
+      "sede": "Lisboa, Portugal",
+      "score": 8.2,
+      "regulacion": [
+        "Banco de Portugal",
+        "CMVM",
+        "BCE",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_portugal": "0.10% (mín €8)",
+        "acciones_eu": "0.10% (mín €10)",
+        "acciones_usa": "USD 15/operación",
+        "etfs": "Igual que acciones",
+        "fondos_mutuos": "0% en fondos BCP"
+      },
+      "cuentas": [
+        {
+          "nombre": "Conta ActivoBank",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria + IBAN portugués"
+        },
+        {
+          "nombre": "Conta Poupança (Ahorro)",
+          "minimo": 0,
+          "tipo": "Depósitos a plazo — tasas competitivas"
+        },
+        {
+          "nombre": "Conta de Instrumentos Financeiros",
+          "minimo": 0,
+          "tipo": "Valores — acciones, ETFs, fondos"
+        },
+        {
+          "nombre": "Conta Poupança PPR",
+          "minimo": 0,
+          "tipo": "Plano Poupança Reforma — fondo de pensiones con deducción fiscal"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "ppr": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "ActivoBank App",
+        "ActivoBank Web"
+      ],
+      "caracteristica_unica": "Filial digital de Millennium BCP — el segundo mayor banco privado de Portugal. PPR (Plano Poupança Reforma): planes de pensiones con deducción fiscal portugués. El neobank bancario más completo de Portugal",
+      "pros": [
+        "Filial BCP — solidez bancaria",
+        "PPR con ventajas fiscales portuguesas",
+        "IBAN portugués",
+        "Sin comisión de cuenta"
+      ],
+      "contras": [
+        "Comisiones de trading más altas vs. DEGIRO",
+        "Sin cripto",
+        "Sin opciones ni futuros",
+        "Interfaz menos moderna vs. neobanks"
+      ]
+    },
+    {
+      "id": "PT002",
+      "nombre": "BEST — Banco Electrónico de Serviço Total",
+      "tipo": "Broker Online — Portugal",
+      "seccion": "pt",
+      "pais": "Portugal",
+      "fundacion": 2001,
+      "sede": "Lisboa, Portugal",
+      "score": 8.0,
+      "regulacion": [
+        "Banco de Portugal",
+        "CMVM",
+        "BCE",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_euronext_pt": "€5.90/operación",
+        "acciones_eu": "€8.90/operación",
+        "etfs": "€3.90-8.90",
+        "fondos": "0% en fondos BPI/CTT",
+        "depositos_best": "Tasas competitivas en BEST Deposits"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": "5,000+",
+        "bonos": true,
+        "ppr": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "BEST App",
+        "BEST Web"
+      ],
+      "caracteristica_unica": "5,000+ fondos disponibles — mayor selección de fondos de Portugal. BEST Deposits: tasas entre las más competitivas del mercado portugués. Filial digital del Grupo BPI (CaixaBank)",
+      "pros": [
+        "5,000+ fondos — mayor selección en Portugal",
+        "BEST Deposits con tasas competitivas",
+        "Filial BPI/CaixaBank — solvencia",
+        "PPR disponible"
+      ],
+      "contras": [
+        "€5.90-8.90/operación — caro para acciones",
+        "Sin cripto",
+        "Sin opciones ni futuros",
+        "Plataforma menos moderna"
+      ]
+    },
+    {
+      "id": "CH001",
+      "nombre": "Swissquote Bank",
+      "tipo": "Banco + Broker — Suiza — Cotizado SIX",
+      "seccion": "suiza",
+      "pais": "Suiza",
+      "fundacion": 1996,
+      "sede": "Gland, Vaud — Cotizado SIX Swiss Exchange",
+      "score": 9.0,
+      "aum_chf": "76B+",
+      "regulacion": [
+        "FINMA Suiza (licencia bancaria)",
+        "FCA UK",
+        "DFSA Dubai",
+        "MAS Singapur"
+      ],
+      "deposito_minimo": {
+        "valor": 1000,
+        "moneda": "CHF",
+        "nota": "CHF 1,000 (≈€1,100). Recomendado CHF 10,000+"
+      },
+      "comisiones": {
+        "acciones_swiss": "CHF 9/operación (estándar)",
+        "acciones_eu": "€15/operación",
+        "acciones_usa": "USD 10/operación",
+        "etfs": "Igual que acciones",
+        "forex_spread": "0.5-2.5 pips",
+        "cripto_compra": "0.5-1% spread",
+        "opciones": "CHF 3/contrato",
+        "intereses_efectivo": "Variable según moneda"
+      },
+      "cuentas": [
+        {
+          "nombre": "Cuenta Standard",
+          "minimo": 1000,
+          "tipo": "Trading + bancario completo"
+        },
+        {
+          "nombre": "Cuenta Premium",
+          "minimo": 50000,
+          "tipo": "Comisiones reducidas"
+        },
+        {
+          "nombre": "Cuenta Elite",
+          "minimo": 500000,
+          "tipo": "Precios institucionales"
+        },
+        {
+          "nombre": "Cuenta Corporativa",
+          "minimo": 1000,
+          "tipo": "Para empresas y tesorerías — diferencial clave"
+        },
+        {
+          "nombre": "ePension",
+          "minimo": 0,
+          "tipo": "Cuenta de pensiones 3a con ventajas fiscales suizas"
+        },
+        {
+          "nombre": "Cuenta Hipotecas",
+          "minimo": 0,
+          "tipo": "Hipotecas en CHF, EUR, USD"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos": true,
+        "opciones": true,
+        "futuros": true,
+        "forex": true,
+        "cripto": "200+ incluyendo ETF Bitcoin",
+        "bonos": true,
+        "acciones_fraccionarias": false
+      },
+      "plataformas": [
+        "Advanced Trader (web propia)",
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "Swissquote App"
+      ],
+      "caracteristica_unica": "BANCO SUIZO con licencia FINMA — la regulación más estricta del mundo. CHF 76B en AUM. Cripto como compra real (no CFD). Cuenta corporativa para tesorerías empresariales LATAM. ePension: cuenta de pensiones con ventajas fiscales suizas",
+      "pros": [
+        "FINMA — la regulación bancaria más sólida del mundo",
+        "Cripto como compra real (no CFD)",
+        "Cuenta corporativa para empresas LATAM",
+        "CHF 76B AUM — solidez máxima",
+        "ePension — pensiones suizas"
+      ],
+      "contras": [
+        "CHF 9-15€ por operación — no apto para bajo capital",
+        "Interfaz menos intuitiva vs. fintechs",
+        "Soporte en español limitado"
+      ]
+    },
+    {
+      "id": "CH002",
+      "nombre": "PostFinance",
+      "tipo": "Banco Postal + Broker — Suiza",
+      "seccion": "suiza",
+      "pais": "Suiza",
+      "fundacion": 1906,
+      "sede": "Berna, Suiza",
+      "score": 7.9,
+      "regulacion": [
+        "FINMA Suiza",
+        "Postcom — propiedad estatal suiza"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CHF",
+        "nota": "Sin mínimo para cuenta bancaria"
+      },
+      "comisiones": {
+        "acciones_swiss": "CHF 9/operación",
+        "etfs_gratuitos": "Selección de ETFs gratuitos",
+        "planes_ahorro": "CHF 0 en planes de ahorro periódicos"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "PostFinance App",
+        "e-finance Web"
+      ],
+      "caracteristica_unica": "Propiedad de Swiss Post (correos suizos) — institución de máxima confianza. La cuenta bancaria más usada en Suiza. Acceso universal independientemente del historial crediticio",
+      "pros": [
+        "Máxima confianza (propiedad estatal)",
+        "Cuenta accesible para todos los residentes suizos",
+        "Planes de ahorro en ETFs gratuitos"
+      ],
+      "contras": [
+        "Comisiones de trading altas",
+        "Sin cripto",
+        "Interfaz bancaria tradicional"
+      ]
+    },
+    {
+      "id": "NORD001",
+      "nombre": "Nordnet",
+      "tipo": "Broker Online — Líder Nórdico",
+      "seccion": "nordicos",
+      "pais": "Suecia / Nórdico",
+      "fundacion": 1996,
+      "sede": "Estocolmo, Suecia — Cotizado Nasdaq Stockholm",
+      "score": 9.0,
+      "clientes": "1.8M+",
+      "aum_eur": "100B+",
+      "regulacion": [
+        "FI Suecia (Finansinspektionen)",
+        "FSA Noruega",
+        "FSA Dinamarca",
+        "FIN-FSA Finlandia",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "SEK/NOK/DKK/EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_suecia": "SEK 49/operación (Courtage Free: SEK 0 para ETF plans)",
+        "acciones_dinamarca": "DKK 69/operación",
+        "acciones_noruega": "NOK 69/operación",
+        "etfs_planes_ahorro": "SEK 0 — planes de ahorro gratuitos",
+        "opciones": "SEK 39/contrato",
+        "futuros": "SEK 49/contrato",
+        "hipotecas": "Disponible via Nordnet Bank",
+        "crypto": "Via Valour ETPs"
+      },
+      "cuentas": [
+        {
+          "nombre": "Investeringskonto (Suecia)",
+          "minimo": 0,
+          "tipo": "Cuenta de valores estándar"
+        },
+        {
+          "nombre": "ISK — Investeringssparkonto",
+          "minimo": 0,
+          "tipo": "Cuenta fiscal especial sueca — impuesto fijo bajo (~0.375% anual del capital)"
+        },
+        {
+          "nombre": "IPS — Individuell Pensionssparande",
+          "minimo": 0,
+          "tipo": "Plan pensiones individual nórdico con deducción fiscal"
+        },
+        {
+          "nombre": "Kapitalforsikring (Dinamarca)",
+          "minimo": 0,
+          "tipo": "Seguro de vida-inversión danés"
+        },
+        {
+          "nombre": "Nordnet Bank (préstamos)",
+          "minimo": 0,
+          "tipo": "Préstamos con cartera como colateral"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "futuros": true,
+        "bonos": true,
+        "certificados": true,
+        "cripto": "Via ETPs (Valour, WisdomTree)",
+        "acciones_fraccionarias": true,
+        "bolsas_nordicas": "Nasdaq Stockholm, Oslo Bors, Nasdaq Copenhagen, Helsinki"
+      },
+      "plataformas": [
+        "Nordnet Web",
+        "Nordnet App",
+        "Superlånet (préstamos portfolio)"
+      ],
+      "presencia": "Suecia, Noruega, Dinamarca, Finlandia — los 4 países nórdicos",
+      "caracteristica_unica": "ISK (Investeringssparkonto): la cuenta fiscal más favorable del mundo para inversión pasiva — impuesto fijo ~0.375% anual sobre capital en lugar de impuesto sobre ganancias. #1 broker en todos los países nórdicos. Superlånet: préstamo inmediato con portfolio como colateral",
+      "pros": [
+        "ISK — la cuenta fiscal más favorable del mundo (0.375% anual fijo)",
+        "#1 broker en los 4 países nórdicos",
+        "Superlånet — préstamo con portfolio como colateral",
+        "Acciones fraccionarias",
+        "Planes ahorro ETF gratuitos"
+      ],
+      "contras": [
+        "Comisiones de trading altas vs. Trade Republic/DEGIRO",
+        "ISK solo disponible para residentes suecos",
+        "Menor cobertura fuera de Nórdicos"
+      ]
+    },
+    {
+      "id": "NORD002",
+      "nombre": "Avanza Bank",
+      "tipo": "Neobank + Broker — Suecia",
+      "seccion": "nordicos",
+      "pais": "Suecia",
+      "fundacion": 1999,
+      "sede": "Estocolmo, Suecia — Cotizado Nasdaq Stockholm",
+      "score": 8.8,
+      "clientes": "1.8M+",
+      "regulacion": [
+        "FI Suecia",
+        "DGS (sueco)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "SEK",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_min_zero": "SEK 0 hasta SEK 50K/mes en acciones suecas (plan Mini)",
+        "planes_fondos": "SEK 0",
+        "etfs": "SEK 0 en selección"
+      },
+      "cuentas": [
+        {
+          "nombre": "Courtagefri (sin comisión)",
+          "minimo": 0,
+          "tipo": "Acciones suecas sin comisión hasta SEK 50K/mes"
+        },
+        {
+          "nombre": "ISK",
+          "minimo": 0,
+          "tipo": "Investeringssparkonto — impuesto fijo bajo"
+        },
+        {
+          "nombre": "IPS Pensiones",
+          "minimo": 0,
+          "tipo": "Plan pensiones con deducción fiscal sueca"
+        },
+        {
+          "nombre": "Bolån (hipoteca)",
+          "minimo": 0,
+          "tipo": "Hipotecas via Avanza Bank"
+        },
+        {
+          "nombre": "Sparkonto (ahorro)",
+          "minimo": 0,
+          "tipo": "Cuenta de ahorro con tasas competitivas"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "certificados": true,
+        "cripto": "Via ETPs",
+        "acciones_fraccionarias": true
+      },
+      "plataformas": [
+        "Avanza App (iOS/Android)",
+        "Avanza Web"
+      ],
+      "caracteristica_unica": "El broker más popular de Suecia. Plan Mini: SEK 0 en acciones suecas hasta SEK 50K/mes. ISK disponible. Hipotecas integradas. Cotizado en Nasdaq Stockholm",
+      "pros": [
+        "SEK 0 acciones suecas (plan Mini)",
+        "ISK disponible — impuesto fijo favorable",
+        "Hipotecas integradas",
+        "Cotizado en Nasdaq Stockholm",
+        "La app más usada de Suecia"
+      ],
+      "contras": [
+        "Solo disponible en Suecia",
+        "Menos útil para no-residentes suecos",
+        "Sin acceso a bolsas globales avanzado"
+      ]
+    },
+    {
+      "id": "EE001",
+      "nombre": "XTB Polonia (KNF)",
+      "tipo": "Broker Cotizado — Polonia — Sede regulatoria",
+      "seccion": "este",
+      "pais": "Polonia",
+      "fundacion": 2002,
+      "sede": "Varsovia, Polonia — Cotizado Bolsa de Varsovia",
+      "score": 8.8,
+      "nota": "Ver ficha completa EU009 — cotizado en Bolsa de Varsovia. KNF Polonia es el regulador de más alto nivel del broker. También opera en España, UK, Alemania y 13 países UE.",
+      "regulacion": [
+        "KNF Polonia (regulador primario)",
+        "FCA UK",
+        "CNMV España",
+        "CySEC"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_etfs_reales": "€0 hasta €100K/mes"
+      },
+      "caracteristica_unica": "El broker europeo con mayor presencia en Europa Central — cotizado en Bolsa de Varsovia",
+      "pros": [
+        "KNF Polonia — regulación Tier 1",
+        "Cotizado bolsa polaca — transparencia",
+        "€0 acciones/ETFs hasta €100K/mes"
+      ],
+      "contras": [
+        "€10/mes inactividad tras 12 meses"
+      ]
+    },
+    {
+      "id": "EE002",
+      "nombre": "LYNX Broker",
+      "tipo": "Broker — Europa Central y del Este vía IBKR",
+      "seccion": "este",
+      "pais": "Países Bajos / Europa Central",
+      "fundacion": 2006,
+      "sede": "Ámsterdam",
+      "score": 8.3,
+      "regulacion": [
+        "AFM Países Bajos",
+        "BaFin Alemania",
+        "FCA UK (subbróker IBKR)",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 3000,
+        "moneda": "EUR",
+        "nota": "€3,000 mínimo"
+      },
+      "comisiones": {
+        "acciones_eu": "€5.80/operación",
+        "acciones_usa": "USD 6/operación",
+        "opciones": "€2/contrato",
+        "futuros": "€2/contrato"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "opciones": true,
+        "futuros": true,
+        "forex": true,
+        "cfds": true,
+        "cripto": true
+      },
+      "plataformas": [
+        "TWS (via IBKR)",
+        "LYNX Trader",
+        "LYNX App"
+      ],
+      "presencia": "Países Bajos, Alemania, Austria, Bélgica, Chequia, Hungría, Polonia, Eslovaquia",
+      "caracteristica_unica": "Subbróker autorizado de Interactive Brokers — acceso a todos los mercados IBKR (150+ bolsas) con soporte local en idiomas de Europa Central. Popular en Chequia, Hungría y Polonia",
+      "pros": [
+        "Acceso a 150+ bolsas via IBKR",
+        "Soporte en idiomas Europa Central",
+        "Opciones y futuros completos",
+        "Regulado AFM Países Bajos"
+      ],
+      "contras": [
+        "€3,000 mínimo — alto para principiantes",
+        "€5.80/operación — no gratuito",
+        "Interfaz TWS muy compleja"
+      ]
+    },
+    {
+      "id": "BAL001",
+      "nombre": "Lightyear (Estonia)",
+      "tipo": "Fintech — Bálticos — Broker Pan-Europeo",
+      "seccion": "balticos",
+      "pais": "Estonia",
+      "fundacion": 2020,
+      "sede": "Tallinn, Estonia",
+      "score": 8.3,
+      "nota": "Ver ficha completa EU007. Fundado en Estonia (regulación Finantsinspektsioon). Líder en los países Bálticos y Gran Bretaña.",
+      "regulacion": [
+        "FCA UK",
+        "Finantsinspektsioon Estonia"
+      ],
+      "deposito_minimo": {
+        "valor": 1,
+        "moneda": "EUR",
+        "nota": "Desde €1"
+      },
+      "comisiones": {
+        "acciones_etfs_eu": "€0",
+        "acciones_usa": "€1",
+        "fx": "0.35%"
+      },
+      "pros": [
+        "0.35% FX — el más bajo",
+        "€0 EU",
+        "4.0% APY efectivo"
+      ],
+      "contras": [
+        "€1 para acciones USA",
+        "Sin cripto"
+      ]
+    },
+    {
+      "id": "BAL002",
+      "nombre": "LHV Bank (Estonia)",
+      "tipo": "Banco + Broker — Estonia / Bálticos",
+      "seccion": "balticos",
+      "pais": "Estonia",
+      "fundacion": 1999,
+      "sede": "Tallinn, Estonia — Cotizado Nasdaq Tallinn",
+      "score": 8.4,
+      "regulacion": [
+        "Finantsinspektsioon Estonia",
+        "ECB",
+        "FCA UK (LHV UK)",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo para cuenta bancaria"
+      },
+      "comisiones": {
+        "acciones_nasdaq_tallinn": "0.15% (mín €3)",
+        "acciones_eu": "0.30% (mín €9)",
+        "acciones_usa": "0.20% (mín USD 9)",
+        "etfs": "Igual que acciones",
+        "fondos_lhv": "0%",
+        "crypto": "Via plataforma separada"
+      },
+      "cuentas": [
+        {
+          "nombre": "LHV Pangakonto",
+          "minimo": 0,
+          "tipo": "Cuenta bancaria estándar + IBAN"
+        },
+        {
+          "nombre": "LHV Investeerimiskonto",
+          "minimo": 0,
+          "tipo": "Cuenta de inversión con ventajas fiscales (Estonia)"
+        },
+        {
+          "nombre": "LHV Pensionifond",
+          "minimo": 0,
+          "tipo": "Fondos de pensiones — II y III pilar estonio"
+        },
+        {
+          "nombre": "LHV UK Broker",
+          "minimo": 0,
+          "tipo": "Filial FCA UK — acciones globales"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos": true,
+        "bonos": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "LHV App",
+        "LHV Web",
+        "LHV Trader"
+      ],
+      "presencia": "Estonia, Letonia, Lituania. LHV UK (Londres) para mercados globales",
+      "caracteristica_unica": "El mayor banco privado de Estonia — cotizado en Nasdaq Tallinn. Sistema de pensiones II y III pilar estonio. LHV UK: filial FCA para acceso global. Sólido dentro del ecosistema fintech báltico (TransferWise, Bolt, etc.)",
+      "pros": [
+        "El mayor banco privado de Estonia",
+        "Cotizado Nasdaq Tallinn",
+        "Filial FCA UK para mercados globales",
+        "Pensiones I, II y III pilar estonios",
+        "DGS €100K"
+      ],
+      "contras": [
+        "Comisiones altas vs. DEGIRO/Trade Republic",
+        "Sin cripto directo",
+        "Limitado fuera de los países bálticos"
+      ]
+    },
+    {
+      "id": "BAL003",
+      "nombre": "Wise (TransferWise) Investments",
+      "tipo": "Fintech Global — Transferencias + Inversión",
+      "seccion": "balticos",
+      "pais": "Estonia / UK",
+      "fundacion": 2011,
+      "sede": "Londres, UK / Tallinn, Estonia — Cotizado LSE",
+      "score": 8.5,
+      "clientes": "16M+",
+      "cotizado": "LSE 2021",
+      "regulacion": [
+        "FCA UK (No. 900507)",
+        "Finantsinspektsioon Estonia",
+        "BCE (Wise Europe SA)",
+        "FinCEN EE.UU.",
+        "múltiples regulaciones globales"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "Multi-moneda",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "transferencias_internacionales": "0.41-3% según moneda (las más bajas del mercado)",
+        "cuenta_multicurrency": "€0 mantenimiento — tarifa por recibir en algunas monedas",
+        "tarjeta_wise": "€7-9 por tarjeta física (cargos a coste real de cambio)",
+        "acciones_wise_assets": "0.55% anual (Wise Assets — fondos BlackRock en EUR/USD/GBP)",
+        "cripto": "No disponible"
+      },
+      "cuentas": [
+        {
+          "nombre": "Wise Personal",
+          "minimo": 0,
+          "tipo": "Cuenta multicurrency — 40+ monedas con IBAN real"
+        },
+        {
+          "nombre": "Wise Business",
+          "minimo": 0,
+          "tipo": "Cuenta para empresas — pagos internacionales a coste real"
+        },
+        {
+          "nombre": "Wise Assets",
+          "minimo": 0,
+          "tipo": "Inversión en fondos BlackRock money market — 3-5% APY en EUR/USD/GBP"
+        }
+      ],
+      "instrumentos": {
+        "fondos_money_market": true,
+        "cripto": false,
+        "acciones": false,
+        "etfs": false
+      },
+      "plataformas": [
+        "Wise App (iOS/Android)",
+        "Wise Web"
+      ],
+      "presencia": "80+ países. Fundada en Estonia — el corazón del ecosistema fintech europeo",
+      "caracteristica_unica": "El estándar global de transferencias internacionales — tipo de cambio interbancario real (vs. bancos que cobran 3-8% de margen). Wise Assets: fondos BlackRock con 3-5% APY. Cotizado en LSE 2021. Fundado por estonios (Taavet Hinrikus, Kristo Käärmann)",
+      "pros": [
+        "Las transferencias internacionales más baratas del mundo",
+        "Tipo de cambio interbancario real — sin margen bancario",
+        "40+ monedas con IBAN real",
+        "Wise Assets 3-5% APY (fondos BlackRock)",
+        "Cotizado LSE — transparencia"
+      ],
+      "contras": [
+        "No es un broker completo (sin acciones individuales)",
+        "Wise Assets limitado a fondos money market",
+        "Tarifa al recibir en algunas monedas",
+        "Sin cripto"
+      ]
+    },
+    {
+      "id": "OTH001",
+      "nombre": "Easybank (Austria)",
+      "tipo": "Neobank + Broker — Austria",
+      "seccion": "otros",
+      "pais": "Austria",
+      "fundacion": 2007,
+      "sede": "Viena, Austria",
+      "score": 7.8,
+      "regulacion": [
+        "FMA Austria",
+        "BCE",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_at": "€7.50/operación",
+        "etfs_gratuitos": "Selección ETFs gratuitos",
+        "planes_ahorro": "€0"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "Easybank App",
+        "Easybank Web"
+      ],
+      "caracteristica_unica": "El neobanco más popular de Austria (propiedad BAWAG Group). Planes de ahorro en ETFs gratuitos. Tasas de ahorro competitivas. FMA Austria — regulación sólida",
+      "pros": [
+        "FMA Austria",
+        "ETF plans gratuitos",
+        "Sin comisión de mantenimiento"
+      ],
+      "contras": [
+        "€7.50/operación — caro",
+        "Sin cripto",
+        "Solo Austria"
+      ]
+    },
+    {
+      "id": "OTH002",
+      "nombre": "Bolero (KBC — Bélgica)",
+      "tipo": "Broker Online — Bélgica",
+      "seccion": "otros",
+      "pais": "Bélgica",
+      "fundacion": 1999,
+      "sede": "Bruselas, Bélgica",
+      "score": 8.2,
+      "regulacion": [
+        "FSMA Bélgica",
+        "BCE",
+        "NBB",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "acciones_belgica": "€7.50/operación",
+        "etfs_gratuitos": "Selección ETFs gratuitos",
+        "fondos": "0% en fondos KBC"
+      },
+      "cuentas": [
+        {
+          "nombre": "Rekening Bolero",
+          "minimo": 0,
+          "tipo": "Cuenta de valores"
+        },
+        {
+          "nombre": "Spaarrekening",
+          "minimo": 0,
+          "tipo": "Cuenta ahorro regulada belga"
+        },
+        {
+          "nombre": "TAK21/TAK23",
+          "minimo": 0,
+          "tipo": "Seguros de vida-inversión con ventajas fiscales belgas"
+        }
+      ],
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "opciones": true,
+        "bonos": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "Bolero App",
+        "Bolero Web"
+      ],
+      "caracteristica_unica": "Filial inversora del Grupo KBC — el mayor banco cotizado de Bélgica. TAK21/TAK23: instrumentos de inversión-seguro con ventajas fiscales únicas del sistema belga. Euronext Brussels accesible directamente",
+      "pros": [
+        "Filial KBC — el mayor banco cotizado belga",
+        "TAK21/TAK23 — ventajas fiscales únicas Bélgica",
+        "Euronext Brussels acceso directo",
+        "FSMA + BCE — doble regulación"
+      ],
+      "contras": [
+        "€7.50/operación — caro vs. neobrokers",
+        "Sin cripto",
+        "Solo disponible en Bélgica"
+      ]
+    },
+    {
+      "id": "OTH003",
+      "nombre": "Davy (Irlanda)",
+      "tipo": "Broker + Gestión Patrimonial — Irlanda",
+      "seccion": "otros",
+      "pais": "Irlanda",
+      "fundacion": 1926,
+      "sede": "Dublín, Irlanda",
+      "score": 8.3,
+      "regulacion": [
+        "CBI Central Bank of Ireland",
+        "FCA UK",
+        "FSCS/Irlanda",
+        "MiFID II"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Self-Directed: sin mínimo. Managed: €10K+"
+      },
+      "comisiones": {
+        "acciones_irlanda": "0.50% (mín €14)",
+        "acciones_uk": "0.50% (mín GBP 14)",
+        "fondos": "0.25-0.75% AUM",
+        "gestion_discrecional": "1.0-1.5% AUM"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "opciones": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "Davy Select Web",
+        "Davy App"
+      ],
+      "caracteristica_unica": "El broker y gestor patrimonial más grande de Irlanda (100 años de historia). Acceso a Euronext Dublin y LSE. PRSA (Personal Retirement Savings Account) — plan de pensiones irlandés accesible",
+      "pros": [
+        "100 años de historia en Irlanda",
+        "El mayor broker/gestor de Irlanda",
+        "PRSA pensiones irlandesas",
+        "Central Bank of Ireland — regulación sólida"
+      ],
+      "contras": [
+        "Comisiones altas vs. neobrokers",
+        "Sin cripto",
+        "Principalmente para residentes irlandeses"
+      ]
+    },
+    {
+      "id": "OTH004",
+      "nombre": "Piraeus Wealth Management (Grecia)",
+      "tipo": "Banco + Gestión Inversión — Grecia",
+      "seccion": "otros",
+      "pais": "Grecia",
+      "fundacion": 1916,
+      "sede": "Atenas, Grecia — Cotizado Athex",
+      "score": 7.8,
+      "regulacion": [
+        "HCMC Grecia (Hellenic Capital Market Commission)",
+        "BCE",
+        "DGS €100K"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Cuenta bancaria sin mínimo. Gestión patrimonial: €50K+"
+      },
+      "comisiones": {
+        "acciones_athex": "0.30% (mín €10)",
+        "etfs": "0.30%",
+        "fondos": "0% en fondos propios"
+      },
+      "instrumentos": {
+        "acciones": true,
+        "etfs": true,
+        "fondos_mutuos": true,
+        "bonos": true,
+        "cripto": false
+      },
+      "plataformas": [
+        "Piraeus e-banking",
+        "Piraeus Winbank App"
+      ],
+      "caracteristica_unica": "Uno de los cuatro grandes bancos sistémicos griegos. Winbank: plataforma digital líder en Grecia. Acceso a Athex (Athens Stock Exchange). Renta fija griega tras la recuperación post-crisis",
+      "pros": [
+        "Mayor banco privado de Grecia",
+        "Acceso a Athex directamente",
+        "BCE supervisado",
+        "Renta fija griega disponible (rendimientos competitivos post-crisis)"
+      ],
+      "contras": [
+        "Comisiones más altas vs. pan-europeos",
+        "Sin cripto",
+        "Plataforma digital menos avanzada",
+        "Historial crisis bancaria griega"
+      ]
+    },
+    {
+      "id": "CE001",
+      "nombre": "Kraken Europa",
+      "tipo": "Exchange Cripto — Regulado MiCA + FCA",
+      "seccion": "cripto_eu",
+      "pais": "EE.UU. / Irlanda (Europa)",
+      "fundacion": 2011,
+      "sede": "San Francisco + Dublín (UE)",
+      "score": 8.7,
+      "regulacion": [
+        "VASP Irlanda (regulación UE)",
+        "FCA UK",
+        "FinCEN EE.UU.",
+        "Kraken Bank Wyoming",
+        "MiCA (en proceso)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "spot_maker": "0.16% (decrece a 0% con volumen alto)",
+        "spot_taker": "0.26% (decrece a 0.10%)",
+        "futuros": "0.02% maker / 0.05% taker",
+        "staking": "Hasta 17% APY en ETH staking",
+        "conversion_sepa": "€0.09 fijo para transferencias SEPA"
+      },
+      "instrumentos": {
+        "cripto": "200+ activos",
+        "futuros_cripto": true,
+        "staking": true,
+        "nft": false
+      },
+      "plataformas": [
+        "Kraken App",
+        "Kraken Pro (web)",
+        "Kraken Terminal"
+      ],
+      "presencia": "Europa — todos los países UE + UK. Regulación VASP Irlanda",
+      "caracteristica_unica": "NUNCA hackeado en 13 años. Primer banco cripto con licencia bancaria en EE.UU. (Wyoming). €0.09 para depósitos SEPA. Staking ETH hasta 17% APY. El exchange cripto más seguro históricamente",
+      "pros": [
+        "NUNCA hackeado — líder absoluto en seguridad",
+        "€0.09 depósito SEPA",
+        "Staking ETH hasta 17% APY",
+        "VASP Irlanda — cumplimiento MiCA",
+        "200+ activos"
+      ],
+      "contras": [
+        "Fees estándar más altos que Binance",
+        "Menos funcionalidades DeFi",
+        "Interfaz menos amigable para principiantes"
+      ]
+    },
+    {
+      "id": "CE002",
+      "nombre": "Coinbase Europa",
+      "tipo": "Exchange Cripto — Cotizado NASDAQ — Regulado MiCA",
+      "seccion": "cripto_eu",
+      "pais": "EE.UU. / Irlanda (Europa)",
+      "fundacion": 2012,
+      "sede": "San Francisco + Dublín",
+      "score": 8.8,
+      "regulacion": [
+        "CBI Irlanda (para UE)",
+        "FCA UK",
+        "MiCA (cumplimiento completo 2025)",
+        "VASP múltiples países UE"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "coinbase_standard": "Spread 0.5% + fee plana según monto",
+        "coinbase_advanced": "0.40% maker / 0.60% taker — decrece con volumen",
+        "coinbase_one_eu": "€29.99/mes — 0% fees hasta €10K/mes",
+        "sepa_deposit": "€0",
+        "sepa_withdrawal": "€0.15"
+      },
+      "instrumentos": {
+        "cripto": "250+ activos",
+        "staking": true,
+        "defi": true
+      },
+      "plataformas": [
+        "Coinbase App",
+        "Coinbase Advanced Trade",
+        "Coinbase Prime (institucional)",
+        "Coinbase Wallet (self-custody)"
+      ],
+      "presencia": "Todos los países UE + UK. MiCA cumplimiento líder en Europa",
+      "caracteristica_unica": "El exchange cripto más regulado del mundo. Cotizado en NASDAQ (COIN). Custodio del mayor ETF Bitcoin del mundo (IBIT de BlackRock). Coinbase One EU: 0% fees hasta €10K/mes. El único exchange MiCA-compliant líder en Europa",
+      "pros": [
+        "Cotizado NASDAQ — máxima transparencia",
+        "Custodio IBIT (BlackRock) — confianza institucional",
+        "MiCA cumplimiento completo — referente",
+        "SEPA gratuito",
+        "0% fees hasta €10K/mes (One EU)"
+      ],
+      "contras": [
+        "Fees más altos que Binance",
+        "Coinbase Simple con spreads altos",
+        "Historia de problemas con clientes corporativos"
+      ]
+    },
+    {
+      "id": "CE003",
+      "nombre": "Bitvavo",
+      "tipo": "Exchange Cripto — Europa — Regulado DNB",
+      "seccion": "cripto_eu",
+      "pais": "Países Bajos",
+      "fundacion": 2018,
+      "sede": "Ámsterdam",
+      "score": 8.5,
+      "regulacion": [
+        "DNB Países Bajos (registrado)",
+        "AFM",
+        "MiCA",
+        "BaFin Alemania (en proceso)"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "spot_taker": "0.15% — una de las más bajas de Europa",
+        "spot_maker": "0.03%",
+        "staking": "Variable — hasta 8% APY",
+        "sepa_deposit": "€0",
+        "retiro_eur": "€0"
+      },
+      "instrumentos": {
+        "cripto": "200+ activos",
+        "staking": true,
+        "earn_cripto": true
+      },
+      "plataformas": [
+        "Bitvavo App",
+        "Bitvavo Web"
+      ],
+      "presencia": "Todos los países UE. Muy popular en Países Bajos, Bélgica, Alemania",
+      "caracteristica_unica": "0.15% fee — de las más bajas de Europa. DNB Países Bajos — el regulador más estricto de Europa para cripto. €0 depósitos y retiros en EUR. Staking hasta 8% APY. El exchange cripto más popular en el Benelux",
+      "pros": [
+        "0.15% fee — de las más bajas de Europa",
+        "DNB — regulación más estricta de cripto Europa",
+        "€0 depósitos/retiros SEPA",
+        "Staking hasta 8% APY",
+        "Interfaz muy limpia e intuitiva"
+      ],
+      "contras": [
+        "Menor variedad de activos vs. Binance/Coinbase",
+        "Sin futuros cripto",
+        "Limitado fuera de Benelux"
+      ]
+    },
+    {
+      "id": "CE004",
+      "nombre": "Binance Europa (entidad Chipre)",
+      "tipo": "Exchange Cripto — Mayor volumen mundial",
+      "seccion": "cripto_eu",
+      "pais": "Chipre (Europa)",
+      "fundacion": 2017,
+      "sede": "Chipre (Europa) / Global",
+      "score": 8.1,
+      "regulacion": [
+        "CySEC Chipre — Binance Cyprus Limited (registro MiCA en proceso)",
+        "VASP múltiples países EU",
+        "Regulación en evolución continua"
+      ],
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "EUR",
+        "nota": "Sin mínimo"
+      },
+      "comisiones": {
+        "spot_taker": "0.10% (descuento 25% con BNB)",
+        "futuros_maker": "0.02% / taker 0.05%",
+        "p2p": "0% comisión Binance",
+        "conversion_cripto": "0.5% spread",
+        "sepa_deposit": "€0"
+      },
+      "instrumentos": {
+        "cripto": "350+ activos",
+        "futuros_perpetuos": true,
+        "opciones_cripto": true,
+        "staking": true,
+        "nft": true,
+        "defi": true,
+        "p2p": true
+      },
+      "plataformas": [
+        "Binance App",
+        "Binance Web",
+        "Binance Pro",
+        "Binance P2P"
+      ],
+      "presencia": "50+ países EU. Operación reducida en algunos países. CySEC Chipre como entidad europea",
+      "caracteristica_unica": "El exchange de mayor volumen del mundo. 350+ activos. Futuros, opciones, P2P, NFT, DeFi — el ecosistema cripto más completo. Binance P2P: 0% comisión. BNB descuento 25%. El más usado en LATAM también",
+      "pros": [
+        "Mayor volumen cripto del mundo",
+        "0.10% fee — de las más bajas",
+        "350+ activos — mayor variedad",
+        "P2P sin comisión",
+        "Ecosistema cripto más completo (futuros, opciones, DeFi, NFT)"
+      ],
+      "contras": [
+        "Historia de problemas regulatorios globales",
+        "CySEC Chipre — no la entidad más fuerte de Europa",
+        "CEO cambio frecuente — incertidumbre",
+        "Restricciones en varios países europeos"
+      ]
+    }
+  ]
+}

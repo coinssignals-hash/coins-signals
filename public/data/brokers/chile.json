@@ -1,0 +1,603 @@
+{
+  "metadata": {
+    "pais": "Chile",
+    "bandera": "🇨🇱",
+    "color": "#D52B1E",
+    "subtitulo": "Corredoras de Bolsa · Brokers Internacionales · Banca de Inversión · Fintechs · CMF",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. Verifique siempre con la CMF (Comisión para el Mercado Financiero), la Bolsa de Comercio de Santiago y el Banco Central de Chile antes de invertir.",
+    "stats": [
+      {
+        "val": "CMF",
+        "lbl": "Comisión para el Mercado Financiero"
+      },
+      {
+        "val": "30",
+        "lbl": "Corredoras autorizadas CMF"
+      },
+      {
+        "val": "BCS",
+        "lbl": "Bolsa de Comercio de Santiago"
+      },
+      {
+        "val": "CLP",
+        "lbl": "Peso chileno — moneda oficial"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "corr",
+        "nombre": "CORREDORAS DE BOLSA — Reguladas CMF Chile"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Chilenos"
+      },
+      {
+        "key": "banca",
+        "nombre": "BANCA DE INVERSIÓN — Chile"
+      },
+      {
+        "key": "fintech",
+        "nombre": "APPS FINTECH Y PLATAFORMAS DIGITALES"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "CL001",
+      "nombre": "LarrainVial Corredora de Bolsa",
+      "tipo": "Corredora de Bolsa — Líder Chile — 85+ años",
+      "seccion": "corr",
+      "pais": "Chile",
+      "region": "Chile (BCS, BCE) + LATAM + EE.UU.",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Sin costo de mantención. Mínimo según instrumento"
+      },
+      "modelo_costos": "Comisión según instrumento (sin costo de mantención). Acciones: comisión negociable",
+      "apalancamiento": {
+        "max": "Disponible — préstamo de valores y derivados",
+        "nota": "Regulado CMF"
+      },
+      "regulacion": [
+        "CMF Chile",
+        "Bolsa de Comercio de Santiago (BCS)",
+        "Bolsa Electrónica de Chile (BEC)",
+        "DCV (Depósito Central de Valores)"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BCS + internacionales + ADRs",
+        "renta_fija": "Bonos corporativos, soberanos (BCU, BCP), depósitos",
+        "fondos": "Fondos mutuos propios + gestión patrimonial",
+        "etfs": "ETFs locales e internacionales",
+        "indices": "IPSA y mundiales",
+        "materias_primas": "Sí — cobre y otros",
+        "forex": "Compraventa de divisas (Circular 1046 CMF)",
+        "criptomonedas": "No directo",
+        "opciones": "Sí — opciones sobre acciones e índices"
+      },
+      "plataformas": [
+        "LarrainVial Online",
+        "App LarrainVial",
+        "Plataforma Gestión Patrimonial",
+        "LarrainVial Securities US LLC (para inversión en EE.UU.)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Retail",
+          "min": "CLP 0 mantención",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Gestión Patrimonial",
+          "min": "USD 100K+",
+          "tarifa": "Fee sobre AUM"
+        },
+        {
+          "nombre": "Institucional",
+          "min": "Negociable",
+          "tarifa": "Institucional"
+        }
+      ],
+      "pros": [
+        "LÍDER de volumen en Bolsa de Santiago — 85+ años",
+        "800 profesionales — la más grande de Chile",
+        "Red LATAM: Colombia, Perú, Argentina, México, EE.UU.",
+        "LarrainVial Securities US LLC para acceso a Wall Street",
+        "Research propio de alta calidad",
+        "Sin costo de mantención en cuentas de inversión",
+        "DCV custodia — activos fuera del balance de la corredora"
+      ],
+      "contras": [
+        "Comisiones superiores al mercado digital",
+        "Menos accesible para principiantes con bajo capital",
+        "Plataforma menos intuitiva que fintechs",
+        "Sin criptomonedas directas"
+      ],
+      "nota": "La corredora de bolsa más grande e importante de Chile. Fundada en 1934. Líder en volumen BCS. 800 profesionales. Acceso a Wall Street vía LarrainVial Securities US LLC. Red LATAM en 10+ países.",
+      "presencia": "Santiago (El Bosque Norte) + Lima + Bogotá + Miami"
+    },
+    {
+      "id": "CL002",
+      "nombre": "BCI Corredor de Bolsa",
+      "tipo": "Corredora de Bolsa — Grupo BCI",
+      "seccion": "corr",
+      "pais": "Chile",
+      "region": "Chile + Internacional",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Variable según instrumento"
+      },
+      "modelo_costos": "Comisión por operación (estructura poco publicada). Fondos: fee de gestión",
+      "apalancamiento": {
+        "max": "Disponible — financiamiento bursátil",
+        "nota": "Regulado CMF"
+      },
+      "regulacion": [
+        "CMF Chile",
+        "BCS",
+        "BEC",
+        "DCV"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BCS + acciones internacionales",
+        "renta_fija": "Bonos, Depósitos a Plazo, Renta Fija corporativa",
+        "fondos": "BCI Asset Management (fondos propios + terceros)",
+        "etfs": "ETFs locales e internacionales",
+        "indices": "IPSA y mundiales",
+        "materias_primas": "Sí",
+        "forex": "Sí — divisas",
+        "criptomonedas": "No",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "BCI Inversiones plataforma web",
+        "App BCI",
+        "Asesoría digital",
+        "BCI+ (banca integrada)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta BCI Corredor",
+          "min": "CLP 0",
+          "tarifa": "Comisión"
+        },
+        {
+          "nombre": "Banca Privada BCI",
+          "min": "CLP 100M+",
+          "tarifa": "Fee AUM"
+        },
+        {
+          "nombre": "Institucional",
+          "min": "Negociable",
+          "tarifa": "Negociable"
+        }
+      ],
+      "pros": [
+        "Parte del 3er mayor grupo bancario de Chile",
+        "Integración completa con banca BCI",
+        "Alianzas internacionales (Allaria Argentina, Seminario Perú, Banorte México, Valores Bancolombia)",
+        "BCI Asset Management con fondos de calidad",
+        "Asesoría digital moderna",
+        "Acceso a mercados internacionales via alianzas"
+      ],
+      "contras": [
+        "Estructura de comisiones poco transparente",
+        "Orientado a clientes del banco BCI",
+        "Sin criptomonedas",
+        "Interface menos moderna que fintechs"
+      ],
+      "nota": "Corredora del Grupo BCI — 3er mayor banco de Chile. Alianzas regionales únicas: Allaria (AR), Seminario SAB (PE), Banorte (MX), Valores Bancolombia (CO). Acceso a LATAM via red de socios.",
+      "presencia": "Santiago + ciudades principales de Chile"
+    },
+    {
+      "id": "CL003",
+      "nombre": "Banchile Corredores de Bolsa (Banco de Chile)",
+      "tipo": "Corredora de Bolsa — Mayor banco privado de Chile",
+      "seccion": "corr",
+      "pais": "Chile",
+      "region": "Chile + Internacional",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Variable según instrumento"
+      },
+      "modelo_costos": "Comisión por operación. Fondos: fee de gestión",
+      "apalancamiento": {
+        "max": "Disponible",
+        "nota": "Regulado CMF"
+      },
+      "regulacion": [
+        "CMF Chile",
+        "BCS",
+        "BEC",
+        "DCV"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BCS completo + internacionales",
+        "renta_fija": "Bonos, Depósitos a Plazo, Renta Fija completa",
+        "fondos": "Fondos Banchile + terceros",
+        "etfs": "ETFs locales",
+        "indices": "IPSA y principales",
+        "materias_primas": "Sí",
+        "forex": "Sí — divisas",
+        "criptomonedas": "No",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "Banchile en Línea",
+        "App Banco de Chile",
+        "Inversiones digitales Banco de Chile"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Banchile",
+          "min": "CLP 0",
+          "tarifa": "Comisión"
+        },
+        {
+          "nombre": "Banca Privada",
+          "min": "CLP 200M+",
+          "tarifa": "Fee AUM"
+        },
+        {
+          "nombre": "Select",
+          "min": "CLP 20M+",
+          "tarifa": "Preferencial"
+        }
+      ],
+      "pros": [
+        "Mayor banco privado de Chile (Grupo Luksic)",
+        "Atención personalizada en toda la red",
+        "Lider en volumen de acciones BCS",
+        "Fondos Banchile de alta calidad",
+        "Integración banca completa"
+      ],
+      "contras": [
+        "Comisiones más altas que fintechs",
+        "Sin criptomonedas",
+        "Menos innovación digital",
+        "Orientado a clientes del banco"
+      ],
+      "nota": "Corredora del Banco de Chile (mayor banco privado del país). Lider en volumen de acciones en BCS. Respaldo del Grupo Luksic. Atención personalizada en red de sucursales.",
+      "presencia": "Santiago + toda la red Banco de Chile"
+    },
+    {
+      "id": "CL004",
+      "nombre": "BTG Pactual Chile Corredores",
+      "tipo": "Banco de Inversión + Corredora — LATAM",
+      "seccion": "banca",
+      "pais": "Chile / Brasil",
+      "region": "Chile + LATAM global",
+      "calificacion": 8.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Institutional — negociable"
+      },
+      "modelo_costos": "Fee institucional + comisión por operación",
+      "apalancamiento": {
+        "max": "Disponible — productos estructurados",
+        "nota": "Regulado CMF"
+      },
+      "regulacion": [
+        "CMF Chile",
+        "BCS",
+        "BACEN Brasil",
+        "SEC EE.UU."
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BCS + globales",
+        "renta_fija": "Bonos corporativos y soberanos locales e internacionales",
+        "fondos": "Fondos propios BTG Chile + gestión",
+        "etfs": "ETFs",
+        "indices": "IPSA y mundiales",
+        "materias_primas": "Sí",
+        "forex": "Sí — divisas",
+        "criptomonedas": "Limitado",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "BTG Pactual Chile Platform",
+        "BTG Digital Institucional"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Corporate",
+          "min": "USD 100K+",
+          "tarifa": "Institucional"
+        },
+        {
+          "nombre": "Private Banking",
+          "min": "USD 1M+",
+          "tarifa": "Fee AUM"
+        }
+      ],
+      "pros": [
+        "Mayor banco de inversión de LATAM en Chile",
+        "Research de clase mundial",
+        "Acceso a mercados globales",
+        "Lideres en volumen acciones junto con LarrainVial y JP Morgan",
+        "Gestión de activos alternativos"
+      ],
+      "contras": [
+        "Solo grandes clientes — sin retail directo",
+        "Proceso de onboarding complejo",
+        "Sin plataforma digital retail en Chile"
+      ],
+      "nota": "BTG Pactual es líder en volumen de acciones en BCS junto con LarrainVial y JP Morgan. Banco de inversión de clase mundial presente en Chile. Foco institucional y corporate.",
+      "presencia": "Santiago (Vitacura)"
+    },
+    {
+      "id": "CL005",
+      "nombre": "Fintual",
+      "tipo": "Gestora de Fondos Digital — CMF Chile",
+      "seccion": "fintech",
+      "pais": "Chile / México",
+      "region": "Chile + México",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Desde CLP 1 (sin mínimo práctico)"
+      },
+      "modelo_costos": "Fee de gestión anual: 0.49%–1.19% según fondo. Sin comisión de entrada/salida",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Fondos de inversión pasivos"
+      },
+      "regulacion": [
+        "CMF Chile",
+        "Bolsa de Comercio de Santiago (fondos ETF)"
+      ],
+      "instrumentos": {
+        "acciones": "Via fondos — exposure a acciones globales (S&P500, etc.)",
+        "renta_fija": "Via fondos — bonos globales",
+        "fondos": "Risky Norris, Moderate Clooney, Conservative Streep, Very Conservative Moe — portfolios por objetivo",
+        "etfs": "Inversión vía ETFs internacionales",
+        "indices": "S&P500, MSCI World via fondos",
+        "materias_primas": "No",
+        "forex": "Via fondos en USD",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Fintual App (iOS/Android)",
+        "Fintual Web",
+        "Gestión automatizada"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Fintual",
+          "min": "CLP 0",
+          "tarifa": "0.49–1.19% anual"
+        }
+      ],
+      "pros": [
+        "La fintech de inversión más popular de Chile",
+        "Fondos con nombres creativos por perfil de riesgo (Norris, Clooney, Streep, Moe)",
+        "Sin comisión de entrada/salida",
+        "Fee muy bajo (0.49–1.19% anual)",
+        "Proceso 100% digital y sencillo",
+        "Regulada CMF — máxima seguridad local",
+        "Expandida a México"
+      ],
+      "contras": [
+        "Sin acceso directo a BCS (no compra acciones individuales)",
+        "Solo fondos propios — sin diversificación de gestoras",
+        "Sin criptomonedas",
+        "Sin opciones ni derivados"
+      ],
+      "nota": "La fintech de inversión más reconocida de Chile. Fondos indexados pasivos con nombres creativos. Fee muy bajo. Acelerada por Y Combinator. Regulada CMF. Expandida a México. Ideal para inversores principiantes que quieren exposición global.",
+      "presencia": "Santiago + Ciudad de México — 100% digital"
+    },
+    {
+      "id": "CL006",
+      "nombre": "Trii Chile",
+      "tipo": "App Fintech — Acceso BCS",
+      "seccion": "fintech",
+      "pais": "Colombia / Chile",
+      "region": "Chile + Colombia + Perú",
+      "calificacion": 8.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "Comisión baja por operación",
+      "apalancamiento": {
+        "max": "No aplica (acciones reales)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "CMF Chile (vía corredora aliada)",
+        "BCS"
+      ],
+      "instrumentos": {
+        "acciones": "Acciones BCS + acciones internacionales",
+        "renta_fija": "Instrumentos básicos",
+        "fondos": "Fondos mutuos básicos",
+        "etfs": "ETFs BCS",
+        "indices": "Vía ETFs",
+        "materias_primas": "No",
+        "forex": "No",
+        "criptomonedas": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Trii App Chile (iOS/Android)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Trii Chile",
+          "min": "CLP 0",
+          "tarifa": "Comisión baja"
+        }
+      ],
+      "pros": [
+        "Acceso BCS desde CLP 0 sin mínimo",
+        "App en español muy intuitiva",
+        "Aliada con corredora local regulada CMF",
+        "Disponible en Chile, Colombia y Perú",
+        "Acelerada por Y Combinator + Banco Bancolombia"
+      ],
+      "contras": [
+        "Solo mercado local chileno (BCS)",
+        "Sin Forex, CFD ni criptos",
+        "Sin herramientas avanzadas",
+        "Tope de inversión por operación"
+      ],
+      "nota": "App fintech para democratizar el acceso a la Bolsa de Comercio de Santiago. Aliada de Vector Capital (corredora CMF). Misma plataforma que opera en Colombia y Perú. Ideal para principiantes.",
+      "presencia": "Santiago (Chile) + Bogotá + Lima — 100% digital"
+    },
+    {
+      "id": "CL007",
+      "nombre": "XTB Chile (Intl)",
+      "tipo": "Broker Internacional CFD — Oficina en Chile",
+      "seccion": "intl",
+      "pais": "Polonia / Chile",
+      "region": "Chile + LATAM global",
+      "calificacion": 8.6,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "0% comisión acciones/ETFs hasta EUR 100K/mes. CFDs: spread incluido",
+      "apalancamiento": {
+        "max": "1:30 FCA / 1:200 LATAM",
+        "nota": "Licencia KNF Polonia / IFSC para Chile"
+      },
+      "regulacion": [
+        "FCA UK",
+        "KNF Polonia",
+        "CySEC",
+        "DFSA",
+        "IFSC Belice (Chile)"
+      ],
+      "instrumentos": {
+        "forex": "57+ pares",
+        "acciones": "5,800 instrumentos (acciones reales + CFD)",
+        "indices": "Sí",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí",
+        "etfs": "Sí acciones reales",
+        "opciones": "No",
+        "renta_fija": "No"
+      },
+      "plataformas": [
+        "xStation 5 (propia)",
+        "MT4",
+        "XTB App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "CLP 0",
+          "tarifa": "0% acciones/ETFs"
+        },
+        {
+          "nombre": "Pro",
+          "min": "CLP 0",
+          "tarifa": "Spread reducido"
+        }
+      ],
+      "pros": [
+        "OFICINA LOCAL EN CHILE — soporte presencial en español",
+        "0% comisión acciones/ETFs hasta EUR 100K/mes",
+        "Sin depósito mínimo",
+        "Academia gratuita xStation",
+        "5,800+ instrumentos",
+        "Licencia KNF + FCA solida"
+      ],
+      "contras": [
+        "Sin acceso directo a BCS (bolsa chilena)",
+        "IFSC Belice para clientes retail Chile",
+        "Sin opciones vanilla",
+        "Solo retiros a cuenta bancaria"
+      ],
+      "nota": "XTB tiene licencia en Chile, siendo uno de los pocos brokers internacionales con presencia oficial. Ofrece soporte local en español y eventos presenciales. No da acceso a BCS pero sí a miles de acciones globales.",
+      "presencia": "Santiago de Chile (oficina local) + digital"
+    },
+    {
+      "id": "CL008",
+      "nombre": "Credicorp Capital Chile",
+      "tipo": "Banca de Inversión + Corredora — CMF Chile",
+      "seccion": "banca",
+      "pais": "Chile / Perú",
+      "region": "Chile + Perú + Colombia",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "CLP",
+        "nota": "Variable según perfil"
+      },
+      "modelo_costos": "Comisión por operación. Gestión patrimonial: fee sobre AUM",
+      "apalancamiento": {
+        "max": "Disponible — derivados con garantías",
+        "nota": "Regulado CMF"
+      },
+      "regulacion": [
+        "CMF Chile",
+        "BCS",
+        "BEC",
+        "SMV Perú",
+        "SFC Colombia"
+      ],
+      "instrumentos": {
+        "acciones": "BCS + internacionales",
+        "renta_fija": "Bonos locales e internacionales completos",
+        "fondos": "Fondos propios + distribución",
+        "etfs": "ETFs locales",
+        "indices": "IPSA y mundiales",
+        "materias_primas": "Sí — cobre (commodity clave Chile)",
+        "forex": "Sí — divisas",
+        "criptomonedas": "No",
+        "opciones": "Sí"
+      },
+      "plataformas": [
+        "Credicorp Capital Chile Online",
+        "App Credicorp",
+        "Plataforma Gestión Patrimonial"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "min": "CLP 0",
+          "tarifa": "Comisión"
+        },
+        {
+          "nombre": "Banca Privada",
+          "min": "USD 100K+",
+          "tarifa": "Fee AUM"
+        },
+        {
+          "nombre": "Institucional",
+          "min": "Negociable",
+          "tarifa": "Institucional"
+        }
+      ],
+      "pros": [
+        "Red MILA: Chile + Perú + Colombia en una sola cuenta",
+        "Acceso al mayor holding financiero de Perú (Credicorp)",
+        "Research regional profundo",
+        "Lider en MILA (mercado integrado latinoamericano)",
+        "Gestión patrimonial completa"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Mínimos altos en banca privada",
+        "Menos conocida que LarrainVial o BCI en Chile",
+        "Sin plataforma digital muy avanzada para retail"
+      ],
+      "nota": "La mejor opción para inversores chilenos que quieren acceso al bloque MILA (Chile + Perú + Colombia) en una sola cuenta. Parte de Credicorp Ltd. — mayor grupo financiero del Perú.",
+      "presencia": "Santiago (Providencia) + Lima + Bogotá"
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "metadata": {
+    "pais": "El Salvador",
+    "bandera": "🇸🇻",
+    "color": "#0F47AF",
+    "subtitulo": "Casas Corredoras BVES · Bolsa de Valores El Salvador · USD + Bitcoin legal · Primera nación con BTC moneda de curso legal",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. El Salvador es el PRIMER país del mundo en adoptar Bitcoin como moneda de curso legal (Ley Bitcoin 2021). Dolarizado desde 2001. La SSF (Superintendencia del Sistema Financiero) regula el mercado de valores. La BVES (Bolsa de Valores de El Salvador) creció 14% en 2025 y fue la primera bolsa en LATAM en agregar instrumento de deuda internacional.",
+    "stats": [
+      {
+        "val": "BVES",
+        "lbl": "Primera bolsa LATAM con deuda intl. 2025"
+      },
+      {
+        "val": "USD+BTC",
+        "lbl": "Dos monedas de curso legal"
+      },
+      {
+        "val": "SSF",
+        "lbl": "Regulador del sistema financiero"
+      },
+      {
+        "val": "+14%",
+        "lbl": "Crecimiento BVES en 2025"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "casas",
+        "nombre": "CASAS DE CORREDORES DE BOLSA — Reguladas SSF / BVES El Salvador"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Salvadoreños"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "SV001",
+      "nombre": "SGB — Servicios Generales Bursátiles",
+      "tipo": "Casa de Corredores — BVES El Salvador — Fundada 1992",
+      "seccion": "casas",
+      "pais": "El Salvador",
+      "region": "El Salvador (BVES) + Mercados integrados LATAM",
+      "calificacion": 8.2,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Variable — desde montos accesibles"
+      },
+      "modelo_costos": "Comisión por operación bursátil. Sin mínimo publicado",
+      "apalancamiento": {
+        "max": "No aplica (valores reales)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SSF (Superintendencia del Sistema Financiero)",
+        "BVES (Bolsa de Valores de El Salvador)",
+        "CEDEVAL (Central de Depósitos)"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BVES — acciones salvadoreñas",
+        "indices": "No",
+        "criptomonedas": "No directo (Bitcoin legal en SV pero no vía BVES)",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Bonos del Estado SV, títulos de deuda corporativa, fondos",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma SGB Online",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta SGB",
+          "min": "USD variable",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Fondos de inversión",
+          "min": "USD variable",
+          "tarifa": "Fee de gestión"
+        }
+      ],
+      "pros": [
+        "Miembro fundador del Mercado de Valores desde 1992",
+        "Premio 2024: Mayor volumen en mercados integrados",
+        "Operaciones bursátiles, estructuración de emisiones y fondos",
+        "Independiente — mayor objetividad en asesoría",
+        "33 años de trayectoria verificable"
+      ],
+      "contras": [
+        "Sin criptomonedas (a pesar de Bitcoin legal en SV)",
+        "Sin acceso a mercados internacionales amplios",
+        "Mercado BVES pequeño — liquidez limitada",
+        "Sin plataforma digital avanzada"
+      ],
+      "nota": "SGB es miembro fundador de la BVES desde 1992 — una de las instituciones más veteranas. Premio 2024 como mayor volumen en mercados integrados. Independiente y altamente recomendada en El Salvador.",
+      "presencia": "San Salvador (Colonia Escalón, 57 Av. Norte 130)"
+    },
+    {
+      "id": "SV002",
+      "nombre": "Acobo Bursátil El Salvador",
+      "tipo": "Casa de Corredores — Grupo Financiero Regional",
+      "seccion": "casas",
+      "pais": "El Salvador",
+      "region": "El Salvador + Centroamérica (Costa Rica, GT, HN)",
+      "calificacion": 7.9,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Variable — negociable"
+      },
+      "modelo_costos": "Comisión por operación. Gestión de portafolios disponible",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SSF El Salvador",
+        "BVES",
+        "CEDEVAL"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BVES + mercados integrados CA",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Renta fija local y regional",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma Acobo Online",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Acobo",
+          "min": "USD variable",
+          "tarifa": "Comisión"
+        }
+      ],
+      "pros": [
+        "Grupo financiero con presencia regional en CA",
+        "Acceso a mercados integrados centroamericanos",
+        "Servicio de asesoría personalizada",
+        "Trayectoria verificable en la región"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Sin acceso a mercados globales amplios",
+        "Mercado local pequeño",
+        "Sin herramientas digitales avanzadas"
+      ],
+      "nota": "Casa de corredores con presencia regional en Centroamérica. Acceso a mercados integrados de la región centroamericana.",
+      "presencia": "San Salvador + presencia centroamericana"
+    },
+    {
+      "id": "SV003",
+      "nombre": "AvaTrade El Salvador (Intl)",
+      "tipo": "Broker Internacional CFD/Forex",
+      "seccion": "intl",
+      "pais": "Irlanda",
+      "region": "Global / El Salvador",
+      "calificacion": 8.7,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100"
+      },
+      "modelo_costos": "Spreads fijos. EUR/USD: 0.9 pips. VENTAJA SV: operaciones en USD sin conversión",
+      "apalancamiento": {
+        "max": "1:30 regulado / 1:400 offshore",
+        "nota": "FSC BVI para El Salvador"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "CySEC",
+        "FSC BVI (El Salvador)",
+        "FSCA Sudáfrica"
+      ],
+      "instrumentos": {
+        "forex": "55 pares — USD/CRC, USD/GTQ y más",
+        "acciones": "2,000+ CFD",
+        "indices": "Principales",
+        "criptomonedas": "14+ incluyendo BTC (moneda legal en SV)",
+        "materias_primas": "Completa",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "Sí — AvaOptions (vanilla)"
+      },
+      "plataformas": [
+        "AvaTradeGO",
+        "MT4",
+        "MT5",
+        "DupliTrade"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail",
+          "min": "USD 100",
+          "tarifa": "0.9 pips EUR/USD"
+        }
+      ],
+      "pros": [
+        "VENTAJA SV: Economía dolarizada — sin conversión",
+        "Bitcoin legal en SV — cripto más familiar culturalmente",
+        "Copy trading disponible",
+        "AvaOptions — opciones vanilla sobre Forex",
+        "Soporte en español",
+        "Acepta depósitos locales"
+      ],
+      "contras": [
+        "FSC BVI para SV (offshore)",
+        "Sin licencia SSF local",
+        "Sin acceso a BVES"
+      ],
+      "nota": "VENTAJA ESPECIAL EL SALVADOR: País dolarizado + Bitcoin como moneda legal. AvaTrade acepta BTC para fondeo — único contexto en LATAM donde esto es totalmente mainstream.",
+      "presencia": "Sin oficina — remoto"
+    },
+    {
+      "id": "SV004",
+      "nombre": "Exness El Salvador (Intl)",
+      "tipo": "Broker Internacional ECN/Forex — Acepta Bitcoin",
+      "seccion": "intl",
+      "pais": "Chipre / Seychelles",
+      "region": "Global / El Salvador",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 10,
+        "moneda": "USD",
+        "nota": "Desde USD 10 — muy accesible"
+      },
+      "modelo_costos": "Spreads desde 0.0 pips (Pro). Standard: spreads variables. Sin comisión de retiro",
+      "apalancamiento": {
+        "max": "Hasta 1:2000 (offshore)",
+        "nota": "FSA Seychelles para El Salvador"
+      },
+      "regulacion": [
+        "CySEC",
+        "FCA UK",
+        "ASIC",
+        "FSA Seychelles (El Salvador)"
+      ],
+      "instrumentos": {
+        "forex": "80+ pares incluyendo USD/CRC",
+        "acciones": "CFD acciones",
+        "indices": "Principales mundiales",
+        "criptomonedas": "Sí — BTC, ETH y más (moneda legal local)",
+        "materias_primas": "Sí",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MT4",
+        "MT5",
+        "Exness Terminal",
+        "Exness App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 10",
+          "tarifa": "Variable spreads"
+        },
+        {
+          "nombre": "Pro",
+          "min": "USD 200",
+          "tarifa": "0.0 pips + comisión"
+        }
+      ],
+      "pros": [
+        "Dep. mínimo USD 10 — muy accesible para salvadoreños",
+        "ACEPTA Bitcoin para fondeo — coherente con marco legal SV",
+        "98% retiros automáticos — rapidez destacada",
+        "Sin comisión de retiro",
+        "Acepta billeteras Bitcoin como depósito"
+      ],
+      "contras": [
+        "FSA Seychelles para SV — offshore",
+        "Sin licencia SSF local",
+        "Sin acceso a BVES"
+      ],
+      "nota": "CONTEXTO ESPECIAL SV: Exness acepta Bitcoin como método de depósito — completamente coherente con el marco legal de El Salvador que reconoce Bitcoin como moneda de curso legal.",
+      "presencia": "Sin oficina — remoto"
+    }
+  ]
+}

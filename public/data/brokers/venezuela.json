@@ -1,0 +1,509 @@
+{
+  "metadata": {
+    "pais": "Venezuela",
+    "bandera": "🇻🇪",
+    "color": "#CF142B",
+    "subtitulo": "Casas de Bolsa BVC · Brokers Internacionales · Cripto · Contexto especial: control de cambio",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "AVISO ESPECIAL: Venezuela atraviesa una crisis económica severa con control de cambio (SUDEBAN/BCV). Los brokers internacionales son la única opción real para Forex/CFD — no existe regulación local para ello. Sanciones internacionales afectan el acceso a algunos servicios. Verifique siempre la situación regulatoria actual antes de operar.",
+    "stats": [
+      {
+        "val": "BVC",
+        "lbl": "Bolsa de Valores de Caracas"
+      },
+      {
+        "val": "SUNAVAL",
+        "lbl": "Superintendencia Nacional de Valores"
+      },
+      {
+        "val": "USD/Bs.",
+        "lbl": "Economía bimonetaria (oficial)"
+      },
+      {
+        "val": "Cripto",
+        "lbl": "Uso masivo como reserva de valor"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "local",
+        "nombre": "CASAS DE BOLSA LOCALES — Bolsa de Valores de Caracas (BVC) — Reguladas SUNAVAL"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Venezolanos"
+      },
+      {
+        "key": "cripto",
+        "nombre": "CRIPTOMONEDAS Y PLATAFORMAS ALTERNATIVAS — Contexto Venezuela"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "VE001",
+      "nombre": "Per Capital Casa de Bolsa",
+      "tipo": "Casa de Bolsa — SUNAVAL Venezuela",
+      "seccion": "local",
+      "pais": "Venezuela",
+      "region": "Venezuela (BVC)",
+      "calificacion": 7.2,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "VES/USD",
+        "nota": "Desde montos bajos — Pago Móvil disponible"
+      },
+      "modelo_costos": "Comisión por operación en bolívares y dólares. Sin mínimo publicado",
+      "apalancamiento": {
+        "max": "No aplica (acciones reales)",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SUNAVAL (Superintendencia Nacional de Valores)",
+        "BCV (Banco Central de Venezuela)",
+        "BVC (Bolsa de Valores de Caracas)",
+        "CVV (Caja Venezolana de Valores)"
+      ],
+      "instrumentos": {
+        "forex": "No (control de cambio)",
+        "acciones": "Acciones BVC — mercado local",
+        "indices": "Índice BVC",
+        "criptomonedas": "No directo",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Bonos nacionales, papeles comerciales",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "App Per Capital (iOS/Android)",
+        "Web Portal",
+        "Fondeo: Pago Móvil, transferencia bancaria, afiliación de cuenta"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Corretaje y Custodia",
+          "min": "VES/USD variable",
+          "tarifa": "Comisión por operación"
+        }
+      ],
+      "pros": [
+        "Regulada SUNAVAL + BCV + BVC + CVV — completo",
+        "App moderna para Venezuela",
+        "Fondeo vía Pago Móvil (método popular en VE)",
+        "Proceso de apertura digital rápido",
+        "Custodia en CVV — seguridad de activos"
+      ],
+      "contras": [
+        "Solo mercado venezolano (BVC) — muy reducido",
+        "Control de cambio limita acceso a USD oficial",
+        "Incertidumbre macroeconómica severa",
+        "Sanciones internacionales afectan operaciones",
+        "Sin Forex ni instrumentos internacionales"
+      ],
+      "nota": "Una de las casas de bolsa locales más modernas de Venezuela. Regulada por los 4 organismos principales (SUNAVAL, BCV, BVC, CVV). App con Pago Móvil facilita fondeo. Limitada al mercado local muy pequeño.",
+      "presencia": "Caracas (Venezuela)"
+    },
+    {
+      "id": "VE002",
+      "nombre": "Solfin Casa de Bolsa",
+      "tipo": "Casa de Bolsa — Mercado Primario y Secundario",
+      "seccion": "local",
+      "pais": "Venezuela",
+      "region": "Venezuela (BVC) + Internacional limitado",
+      "calificacion": 7.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "VES/USD",
+        "nota": "Variable según instrumento"
+      },
+      "modelo_costos": "Comisión por intermediación en mercado primario y secundario",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Instrumentos reales"
+      },
+      "regulacion": [
+        "SUNAVAL",
+        "BVC",
+        "CVV"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BVC + mercados internacionales (limitado)",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Bonos, Papeles Comerciales — mercado primario",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma Solfin",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Solfin",
+          "min": "Variable",
+          "tarifa": "Comisión de intermediación"
+        }
+      ],
+      "pros": [
+        "Especialista en mercado primario venezolano",
+        "Acceso a emisiones primarias de bonos",
+        "Presencia en mercados nacionales e internacionales (limitado)",
+        "Experiencia institucional reconocida"
+      ],
+      "contras": [
+        "Mercado local muy limitado por la crisis",
+        "Sin acceso a Forex ni ETFs internacionales",
+        "Sanciones internacionales afectan operatoria global",
+        "Contexto económico adverso"
+      ],
+      "nota": "Casa de bolsa especializada en intermediación en mercado primario y secundario venezolano. Servicios a nivel nacional e internacional aunque muy limitados por el contexto actual.",
+      "presencia": "Caracas"
+    },
+    {
+      "id": "VE003",
+      "nombre": "Ratio Casa de Bolsa",
+      "tipo": "Casa de Bolsa — Banca de Inversión Local",
+      "seccion": "local",
+      "pais": "Venezuela",
+      "region": "Venezuela",
+      "calificacion": 6.8,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "VES",
+        "nota": "Variable"
+      },
+      "modelo_costos": "Comisión por estructuración y emisión de valores",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "SUNAVAL",
+        "BVC",
+        "CVV (Caja Venezolana de Valores)"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BVC",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "Papeles comerciales, obligaciones quirografarias — especialidad",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Plataforma interna",
+        "Asesoría directa"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta institucional",
+          "min": "Variable",
+          "tarifa": "Fee estructuración"
+        }
+      ],
+      "pros": [
+        "Especialista en estructuración de emisiones de valores",
+        "Emisiones de papeles comerciales y obligaciones",
+        "Experiencia en finanzas corporativas",
+        "Miembro BVC y registrado en CVV"
+      ],
+      "contras": [
+        "Foco principalmente institucional",
+        "Sin servicios retail modernos",
+        "Afectado por la crisis económica",
+        "Acceso limitado para pequeños inversores"
+      ],
+      "nota": "Especialista en estructuración de emisiones para el mercado regulado venezolano. Experiencia en papeles comerciales y obligaciones quirografarias. Perfil principalmente corporativo e institucional.",
+      "presencia": "Caracas"
+    },
+    {
+      "id": "VE004",
+      "nombre": "AvaTrade Venezuela (Intl)",
+      "tipo": "Broker Internacional CFD/Forex",
+      "seccion": "intl",
+      "pais": "Irlanda",
+      "region": "Global / Venezuela",
+      "calificacion": 8.6,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100 mínimo"
+      },
+      "modelo_costos": "Spreads desde 0.9 pips EUR/USD (fijo). Sin comisión por operación. Inactividad: $50/mes tras 3 meses sin login",
+      "apalancamiento": {
+        "max": "1:30 (regulado) / 1:400 (offshore para VE)",
+        "nota": "FSC Islas Vírgenes Británicas para Venezuela"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "FSC BVI (aplica para Venezuela)",
+        "CySEC",
+        "FSCA Sudáfrica"
+      ],
+      "instrumentos": {
+        "forex": "55 pares + USD/VES (cambio informal)",
+        "acciones": "2,000+ CFD",
+        "indices": "Principales mundiales",
+        "criptomonedas": "14+ cryptos incluido BTC",
+        "materias_primas": "Oro, plata, petróleo",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "Si — AvaOptions (55 pares vanilla)"
+      },
+      "plataformas": [
+        "AvaTradeGO (app propia)",
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "DupliTrade (copy trading)",
+        "SharpTrader (educación)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Retail (Standard)",
+          "min": "USD 100",
+          "tarifa": "Spread fijo desde 0.9 pips"
+        },
+        {
+          "nombre": "Professional",
+          "min": "USD 1,000",
+          "tarifa": "Spread reducido"
+        }
+      ],
+      "pros": [
+        "Acepta residentes venezolanos — confirmado",
+        "Soporte en español incluyendo WhatsApp",
+        "Depósitos vía criptomonedas — clave para Venezuela",
+        "Spreads fijos — predictibilidad de costos",
+        "AvaOptions: opciones vanilla sobre Forex",
+        "SharpTrader: academia educativa de calidad",
+        "Protección de saldo negativo"
+      ],
+      "contras": [
+        "Entidad que aplica para Venezuela: FSC BVI (menor protección que ASIC/FCA)",
+        "Comisión de inactividad $50/mes",
+        "Control de cambio VE dificulta fondeo bancario directo",
+        "Retiros pueden ser lentos"
+      ],
+      "nota": "CLAVE PARA VENEZUELA: AvaTrade acepta depósitos en criptomonedas — la forma más práctica para venezolanos dada la restricción cambiaria. Soporte en español vía WhatsApp. FSC BVI es regulación offshore.",
+      "presencia": "Sin oficina en Venezuela — opera remotamente"
+    },
+    {
+      "id": "VE005",
+      "nombre": "XM Venezuela (Intl)",
+      "tipo": "Broker Internacional CFD/Forex — Líder LATAM educación",
+      "seccion": "intl",
+      "pais": "Chipre/Belice",
+      "region": "Global / Venezuela",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 5,
+        "moneda": "USD",
+        "nota": "Desde USD 5 — más bajo del mercado"
+      },
+      "modelo_costos": "Spread desde 1.6 pips (Standard) / 0.6 pips (Ultra Low). Sin comisión de depósito. Inactividad: $15/trimestre",
+      "apalancamiento": {
+        "max": "1:30 (CySEC) / 1:1000 (offshore)",
+        "nota": "IFSC Belice para Venezuela"
+      },
+      "regulacion": [
+        "CySEC Chipre",
+        "ASIC Australia",
+        "FCA UK",
+        "IFSC Belice (aplica para Venezuela)"
+      ],
+      "instrumentos": {
+        "forex": "55+ pares",
+        "acciones": "1,300+ CFD acciones",
+        "indices": "Principales mundiales",
+        "criptomonedas": "15+ cryptos",
+        "materias_primas": "Oro, plata, petróleo, gas",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "XM WebTrader",
+        "XM App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Micro",
+          "min": "USD 5",
+          "tarifa": "1.6 pips (Standard)"
+        },
+        {
+          "nombre": "Standard",
+          "min": "USD 5",
+          "tarifa": "1.6 pips"
+        },
+        {
+          "nombre": "Ultra Low",
+          "min": "USD 50",
+          "tarifa": "0.6 pips"
+        },
+        {
+          "nombre": "XM Zero",
+          "min": "USD 100",
+          "tarifa": "0.0 pips + $3.5/lote"
+        }
+      ],
+      "pros": [
+        "Depósito mínimo USD 5 — el más bajo para Venezuela",
+        "Acepta múltiples métodos de depósito incluyendo cripto",
+        "Academia XM en español muy completa (webinars)",
+        "100+ premios internacionales",
+        "Sin comisión de depósito ni retiro",
+        "30+ años de experiencia"
+      ],
+      "contras": [
+        "IFSC Belice para Venezuela — baja protección",
+        "Spreads más altos en cuenta Micro",
+        "Inactividad: $15 cada 90 días",
+        "Sin opciones vanilla"
+      ],
+      "nota": "XM tiene el depósito mínimo más bajo (USD 5) siendo el broker más accesible para venezolanos. Academia educativa en español de primera calidad. IFSC Belice aplica para VE.",
+      "presencia": "Sin oficina en Venezuela — opera remotamente"
+    },
+    {
+      "id": "VE006",
+      "nombre": "FP Markets Venezuela (Intl)",
+      "tipo": "Broker Internacional ECN/Forex",
+      "seccion": "intl",
+      "pais": "Australia",
+      "region": "Global / Venezuela",
+      "calificacion": 8.7,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "USD",
+        "nota": "USD 100 mínimo"
+      },
+      "modelo_costos": "ECN Raw: 0.0 pips + $3.0/lote. Standard: desde 1.0 pip sin comisión",
+      "apalancamiento": {
+        "max": "1:30 (ASIC) / 1:500 (SCB Bahamas para VE)",
+        "nota": "SCB Bahamas para Venezuela"
+      },
+      "regulacion": [
+        "ASIC Australia",
+        "CySEC",
+        "SCB Bahamas (Venezuela)",
+        "FSA Seychelles"
+      ],
+      "instrumentos": {
+        "forex": "70+ pares",
+        "acciones": "10,000+ CFD de múltiples mercados",
+        "indices": "Todos los principales",
+        "criptomonedas": "Si",
+        "materias_primas": "Amplia gama",
+        "etfs": "Sí (CFD)",
+        "renta_fija": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "MetaTrader 4",
+        "MetaTrader 5",
+        "cTrader",
+        "Iress (acciones directas)",
+        "FP Markets App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "USD 100",
+          "tarifa": "1.0+ pips sin comisión"
+        },
+        {
+          "nombre": "Raw (ECN)",
+          "min": "USD 100",
+          "tarifa": "0.0 pips + $3.0/lote"
+        }
+      ],
+      "pros": [
+        "Mejor broker ECN para Venezuela según rankings 2025",
+        "10,000+ instrumentos — mayor diversidad",
+        "Múltiples plataformas incluyendo Iress para acciones reales",
+        "Acepta cripto para fondeo — clave VE",
+        "Spreads muy bajos en Raw (0.0 pips)"
+      ],
+      "contras": [
+        "SCB Bahamas para Venezuela (offshore)",
+        "Sin licencia local venezolana",
+        "Fondeo bancario limitado por restricciones VE",
+        "Plataforma Iress compleja para principiantes"
+      ],
+      "nota": "Mejor valorado como broker ECN para Venezuela en 2025. 10,000+ instrumentos, múltiples plataformas. Acepta criptomonedas para fondeo siendo clave en el contexto venezolano.",
+      "presencia": "Sin oficina en Venezuela"
+    },
+    {
+      "id": "VE007",
+      "nombre": "Bitcoin/Criptomonedas — Ecosistema VE",
+      "tipo": "Plataformas Cripto — Reserva de valor y remesas",
+      "seccion": "cripto",
+      "pais": "Global",
+      "region": "Venezuela",
+      "calificacion": 7.5,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo — desde fracciones"
+      },
+      "modelo_costos": "Fee de exchange 0.1–0.5% por transacción. P2P disponible sin comisión fija",
+      "apalancamiento": {
+        "max": "Sin apalancamiento (spot) / Derivados disponibles en grandes exchanges",
+        "nota": "Spot recomendado para Venezuela"
+      },
+      "regulacion": [
+        "Sin regulación específica en Venezuela — SUNAVAL y SUDEBAN supervisión limitada",
+        "Exchange internacionales: SEC/FinCEN (Binance, Coinbase)"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "No",
+        "indices": "No",
+        "criptomonedas": "BTC, ETH, USDT, BNB, ADA y 100+ altcoins",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "No",
+        "opciones": "Sí en grandes exchanges (derivados)"
+      },
+      "plataformas": [
+        "Binance (principal exchange global)",
+        "Kraken",
+        "Coinbase (limitado para VE)",
+        "LocalBitcoins (P2P)",
+        "Paxful (P2P)",
+        "Reserve (USDT en Venezuela)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Exchange",
+          "min": "USD 0",
+          "tarifa": "0.1–0.5% por transacción"
+        }
+      ],
+      "pros": [
+        "Criptomonedas = principal reserva de valor para venezolanos",
+        "USDT (Tether) masivamente usado como dólar digital en VE",
+        "P2P evita restricciones bancarias — fondeo más fácil",
+        "BTC como protección contra hiperinflación",
+        "Remesas internacionales más baratas via cripto",
+        "Acceso 24/7 sin dependencia de sistema bancario"
+      ],
+      "contras": [
+        "Sin regulación local protectora para inversores",
+        "Alta volatilidad (excepto stablecoins)",
+        "Riesgo de hackeos y scams muy alto en VE",
+        "Sanciones pueden limitar acceso a algunos exchanges",
+        "Sunacrip fracasó — antecedente estatal negativo"
+      ],
+      "nota": "CONTEXTO ÚNICO VENEZUELA: Las criptomonedas (especialmente USDT) son la herramienta de protección financiera más usada por venezolanos. La app Reserve popularizó USDT como medio de pago. Bitcoin como reserva de valor. El programa Petro del gobierno fracasó completamente.",
+      "presencia": "Global — accesible desde Venezuela"
+    }
+  ]
+}

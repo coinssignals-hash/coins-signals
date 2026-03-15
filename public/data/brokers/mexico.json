@@ -1,0 +1,571 @@
+{
+  "metadata": {
+    "pais": "México",
+    "bandera": "🇲🇽",
+    "color": "#006847",
+    "subtitulo": "Casas de Bolsa CNBV · BMV + BIVA · GBM+ · CETES Directo · Hub financiero LATAM",
+    "fecha": "14 de March de 2026",
+    "aviso_legal": "Solo fines informativos. México tiene dos bolsas: BMV (Bolsa Mexicana de Valores) y BIVA. La CNBV regula todas las casas de bolsa. El SIC permite invertir en acciones internacionales desde casas de bolsa mexicanas. Moneda: Peso Mexicano (MXN).",
+    "stats": [
+      {
+        "val": "CNBV",
+        "lbl": "Regulador principal"
+      },
+      {
+        "val": "BMV+BIVA",
+        "lbl": "Dos bolsas activas"
+      },
+      {
+        "val": "GBM",
+        "lbl": "Líder con 12.5M cuentas"
+      },
+      {
+        "val": "CETES",
+        "lbl": "Instrumento gubernamental clave"
+      }
+    ],
+    "secciones": [
+      {
+        "key": "casas",
+        "nombre": "CASAS DE BOLSA — Reguladas CNBV México"
+      },
+      {
+        "key": "digital",
+        "nombre": "PLATAFORMAS DIGITALES E INVERSIÓN FINTECH — México"
+      },
+      {
+        "key": "intl",
+        "nombre": "BROKERS INTERNACIONALES — Para Residentes Mexicanos"
+      }
+    ]
+  },
+  "entidades": [
+    {
+      "id": "MX001",
+      "nombre": "GBM (Grupo Bursátil Mexicano) / GBM+",
+      "tipo": "Casa de Bolsa — CNBV — Líder México",
+      "seccion": "casas",
+      "pais": "México",
+      "region": "México (BMV + BIVA) + Internacional (SIC)",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "MXN",
+        "nota": "Desde $100 MXN"
+      },
+      "modelo_costos": "Plan Smart (largo plazo): sin comisión acciones. Plan Trading: comisión por operación. Cambio USD para SIC: comisión variable",
+      "apalancamiento": {
+        "max": "Disponible — GBM Trading con margen",
+        "nota": "Regulado CNBV"
+      },
+      "regulacion": [
+        "CNBV (Calificación 100/100)",
+        "BMV",
+        "BIVA",
+        "AMIB"
+      ],
+      "instrumentos": {
+        "forex": "No (solo SIC — divisas en USD)",
+        "acciones": "BMV + BIVA + 6,000+ internacionales via SIC (acciones fraccionadas)",
+        "indices": "ETFs de índices",
+        "criptomonedas": "ETFs de Bitcoin en Trading Global",
+        "materias_primas": "ETFs",
+        "etfs": "Amplia gama BMV + SIC",
+        "renta_fija": "CETES, bonos, fondos de renta fija",
+        "opciones": "Si — GBM Trading"
+      },
+      "plataformas": [
+        "GBM+ App (iOS/Android)",
+        "GBM Web",
+        "GBM Trading (platform avanzada)",
+        "GBM Trading Global"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "GBM Smart (largo plazo)",
+          "min": "$100 MXN",
+          "tarifa": "Sin comisión acciones"
+        },
+        {
+          "nombre": "GBM Trading (activo)",
+          "min": "$100 MXN",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "GBM Trading Global",
+          "min": "$100 MXN",
+          "tarifa": "Plan internacional"
+        }
+      ],
+      "pros": [
+        "LÍDER en México — 12.5 MILLONES de cuentas",
+        "Calificación CNBV 100/100 — máxima",
+        "6,000+ acciones internacionales fraccionadas via SIC",
+        "ETFs de Bitcoin disponibles",
+        "Plan Smart sin comisión para largo plazo",
+        "Tecnología Webull para plataforma avanzada",
+        "Plataforma intuitiva — mejor UX del mercado MX"
+      ],
+      "contras": [
+        "Atención al cliente reportada como deficiente",
+        "No apto para acceso directo a Forex",
+        "Comisiones en plan Trading pueden ser altas",
+        "Proceso de apertura puede tardar"
+      ],
+      "nota": "GBM es el broker más popular de México con 12.5 millones de cuentas. Calificación CNBV 100/100. 6,000+ acciones internacionales fraccionadas via SIC. ETFs de Bitcoin. Plan Smart (sin comisión para largo plazo) es su producto estrella.",
+      "presencia": "Ciudad de México + 100% digital — todo México"
+    },
+    {
+      "id": "MX002",
+      "nombre": "Actinver / Bursanet",
+      "tipo": "Casa de Bolsa — CNBV — Grupo Financiero Actinver",
+      "seccion": "casas",
+      "pais": "México",
+      "region": "México (BMV + BIVA + SIC)",
+      "calificacion": 8.4,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "MXN",
+        "nota": "Sin mínimo formal para cuenta. Anualidad $1,250 MXN+IVA (asesorado)"
+      },
+      "modelo_costos": "Comisiones de administración y por transacción: 0.10–0.25% del monto invertido. Anualidad en plan asesorado",
+      "apalancamiento": {
+        "max": "Disponible",
+        "nota": "Regulado CNBV"
+      },
+      "regulacion": [
+        "CNBV (Calificación 86/100)",
+        "BMV",
+        "BIVA",
+        "AMIB",
+        "IPAB (depósitos hasta 400K UDIs ≈ $3M MXN)"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BMV + BIVA + SIC (acciones internacionales)",
+        "indices": "ETFs",
+        "criptomonedas": "No",
+        "materias_primas": "ETFs",
+        "etfs": "Amplia gama",
+        "renta_fija": "CETES, bonos, fondos RF completa",
+        "opciones": "Disponible"
+      },
+      "plataformas": [
+        "Bursanet (plataforma web de inversión)",
+        "App Actinver",
+        "Asesoría presencial en sucursales"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Bursanet (digital)",
+          "min": "Sin mínimo",
+          "tarifa": "Comisión por operación"
+        },
+        {
+          "nombre": "Cuenta Asesorada",
+          "min": "Variable",
+          "tarifa": "Anualidad $1,250 MXN+IVA"
+        },
+        {
+          "nombre": "Actinver Private",
+          "min": "$3M MXN+",
+          "tarifa": "Fee AUM"
+        }
+      ],
+      "pros": [
+        "25+ años de experiencia — solidez institucional",
+        "IPAB protege depósitos hasta $3M MXN",
+        "Asesoría patrimonial completa",
+        "Amplio catálogo de fondos de inversión",
+        "Presencia en sucursales físicas",
+        "Acceso a SIC para acciones internacionales"
+      ],
+      "contras": [
+        "Calificación CNBV 86/100 — inferior a GBM/Kuspit",
+        "Comisiones más altas que brokers digitales",
+        "Proceso de apertura más burocrático",
+        "App móvil menos intuitiva que GBM+"
+      ],
+      "nota": "25+ años de trayectoria. Parte del Grupo Financiero Actinver. Bursanet es su plataforma digital. IPAB protege hasta $3M MXN. Calificación CNBV 86/100.",
+      "presencia": "Ciudad de México + sucursales nacionales"
+    },
+    {
+      "id": "MX003",
+      "nombre": "BBVA Trader (BBVA México)",
+      "tipo": "Casa de Bolsa — CNBV — Grupo BBVA",
+      "seccion": "casas",
+      "pais": "México",
+      "region": "México (BMV + BIVA + SIC)",
+      "calificacion": 8.2,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "MXN",
+        "nota": "Solo para clientes BBVA México"
+      },
+      "modelo_costos": "Tarifas escalonadas — a mayor volumen, menor comisión. Comisiones competitivas",
+      "apalancamiento": {
+        "max": "Disponible — acceso al SIC y renta variable",
+        "nota": "Regulado CNBV"
+      },
+      "regulacion": [
+        "CNBV",
+        "BMV",
+        "BIVA",
+        "AMIB",
+        "Regulación BBVA global"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BMV + BIVA + SIC (internacionales)",
+        "indices": "ETFs",
+        "criptomonedas": "No",
+        "materias_primas": "ETFs",
+        "etfs": "ETFs locales e internacionales",
+        "renta_fija": "Deuda y fondos",
+        "opciones": "No directamente"
+      },
+      "plataformas": [
+        "BBVA Trader (web y tablet)",
+        "App BBVA México (integrada)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "BBVA Trader",
+          "min": "0 (cliente BBVA existente)",
+          "tarifa": "Tarifas escalonadas"
+        }
+      ],
+      "pros": [
+        "Integración perfecta con banca BBVA",
+        "Regulación CNBV como casa de bolsa",
+        "Tarifas escalonadas — menor costo a mayor volumen",
+        "Respaldo del grupo financiero más grande de México por activos",
+        "Información en tiempo real",
+        "Acceso a BMV, BIVA y SIC"
+      ],
+      "contras": [
+        "SOLO para clientes BBVA — sin apertura abierta",
+        "Sin criptomonedas",
+        "Sin acceso a Forex",
+        "Menos instrumentos que GBM o Actinver"
+      ],
+      "nota": "Plataforma de inversión exclusiva para clientes BBVA México. Regulada CNBV. Integración con banca digital. Tarifas escalonadas. BBVA es el mayor banco de México por activos.",
+      "presencia": "Todo México via BBVA — digital + red de sucursales"
+    },
+    {
+      "id": "MX004",
+      "nombre": "Kuspit Casa de Bolsa",
+      "tipo": "Casa de Bolsa Digital — CNBV — Desde 2011",
+      "seccion": "digital",
+      "pais": "México",
+      "region": "México (BMV + BIVA + SIC)",
+      "calificacion": 8.7,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "MXN",
+        "nota": "Desde $100 MXN — inversión mínima más accesible"
+      },
+      "modelo_costos": "Sin comisión para fondos de inversión. Comisión baja por acciones. Educación financiera incluida",
+      "apalancamiento": {
+        "max": "Disponible en renta variable",
+        "nota": "Regulado CNBV"
+      },
+      "regulacion": [
+        "CNBV (Calificación 100/100 — igual que GBM)",
+        "BMV",
+        "BIVA",
+        "AMIB"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "BMV + BIVA + SIC",
+        "indices": "ETFs",
+        "criptomonedas": "No",
+        "materias_primas": "ETFs",
+        "etfs": "ETFs locales e internacionales — FIBRAs",
+        "renta_fija": "CETES, bonos, fondos RF",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Kuspit App (iOS/Android)",
+        "Kuspit Web — educación + inversión integradas"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Kuspit",
+          "min": "$100 MXN",
+          "tarifa": "Sin comisión fondos / baja comisión acciones"
+        }
+      ],
+      "pros": [
+        "Calificación CNBV 100/100 — misma que GBM",
+        "Desde $100 MXN — más democrático",
+        "Plataforma educativa integrada — aprender invirtiendo",
+        "Sin comisión para fondos de inversión",
+        "100% digital — apertura en minutos",
+        "FIBRAs (REITs mexicanos) disponibles"
+      ],
+      "contras": [
+        "Sin criptomonedas",
+        "Sin Forex",
+        "Menos instrumentos que GBM en acciones fraccionadas",
+        "Menor reconocimiento de marca que GBM o BBVA"
+      ],
+      "nota": "Kuspit desde 2011 con calificación CNBV 100/100 (igual que GBM). Democratiza inversión desde $100 MXN. Plataforma con fuerte componente educativo. Sin comisión en fondos.",
+      "presencia": "100% digital — todo México"
+    },
+    {
+      "id": "MX005",
+      "nombre": "CETES Directo (Banco de México)",
+      "tipo": "Plataforma Gobierno — Valores Gubernamentales",
+      "seccion": "digital",
+      "pais": "México",
+      "region": "México",
+      "calificacion": 8.5,
+      "deposito_minimo": {
+        "valor": 100,
+        "moneda": "MXN",
+        "nota": "Desde $100 MXN — mínimo accesible"
+      },
+      "modelo_costos": "0% comisión — inversión directa sin intermediarios. Solo impuesto sobre rendimientos",
+      "apalancamiento": {
+        "max": "No aplica",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "Banco de México (Banxico)",
+        "SHCP (Secretaría de Hacienda)",
+        "Sin riesgo de crédito — respaldo soberano MX"
+      ],
+      "instrumentos": {
+        "forex": "No",
+        "acciones": "No",
+        "indices": "No",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "No",
+        "renta_fija": "CETES, Bonos, BONDES, UDIBONOS, BONDES D — todos los títulos gubernamentales MX",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "cetesdirecto.com (web)",
+        "App CETES Directo (iOS/Android)"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta CETES",
+          "min": "$100 MXN",
+          "tarifa": "0% comisión"
+        }
+      ],
+      "pros": [
+        "0% COMISIÓN — única plataforma sin costo en México",
+        "Respaldo soberano del gobierno mexicano — riesgo cero de quiebra",
+        "Desde $100 MXN — más democrático del mercado",
+        "CETES — la inversión más popular de México",
+        "Rendimientos actualizados diariamente",
+        "Digital 100%"
+      ],
+      "contras": [
+        "Solo valores gubernamentales mexicanos — sin diversificación",
+        "Sin acceso a acciones, ETFs, ni instrumentos internacionales",
+        "Rendimientos atados a política monetaria Banxico",
+        "Sin asesoría de inversión"
+      ],
+      "nota": "La plataforma de inversión más popular de México. 0% comisión. Desde $100 MXN. Respaldo soberano del Gobierno de México. Ideal como primer paso en inversión o como complemento conservador.",
+      "presencia": "100% digital — todo México (cetesdirecto.com)"
+    },
+    {
+      "id": "MX006",
+      "nombre": "Fintual México",
+      "tipo": "Gestora Digital de Fondos — CNBV México",
+      "seccion": "digital",
+      "pais": "México / Chile",
+      "region": "México + Chile",
+      "calificacion": 8.3,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "MXN",
+        "nota": "Sin mínimo práctico"
+      },
+      "modelo_costos": "Fee anual: 0.49%–1.19% según fondo. Sin comisión de entrada/salida",
+      "apalancamiento": {
+        "max": "No aplica — fondos indexados pasivos",
+        "nota": "Sin apalancamiento"
+      },
+      "regulacion": [
+        "CNBV México",
+        "CMF Chile"
+      ],
+      "instrumentos": {
+        "forex": "Via fondos — exposición a USD",
+        "acciones": "Via fondos (S&P500, MSCI World)",
+        "indices": "Via fondos ETFs",
+        "criptomonedas": "No",
+        "materias_primas": "No",
+        "etfs": "Via ETFs internacionales dentro de fondos",
+        "renta_fija": "Via fondos conservadores",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "Fintual App (iOS/Android)",
+        "Fintual Web"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Cuenta Fintual MX",
+          "min": "Sin mínimo",
+          "tarifa": "0.49–1.19% anual"
+        }
+      ],
+      "pros": [
+        "Fondos indexados globales desde México",
+        "Fee muy bajo (0.49–1.19% anual)",
+        "Sin comisión de entrada/salida",
+        "Regulada CNBV y CMF Chile",
+        "Expansión desde Chile — ya probado en mercado regional"
+      ],
+      "contras": [
+        "Sin acceso directo a BMV ni BMV acciones individuales",
+        "Solo fondos propios",
+        "Sin criptomonedas",
+        "Menor reconocimiento en México vs. Chile"
+      ],
+      "nota": "Fintual se expandió de Chile a México. Fondos indexados globales desde $0 MXN. Fee muy bajo. Regulada CNBV México. Ideal para exposición pasiva a mercados globales desde México.",
+      "presencia": "Ciudad de México + digital — para todo México"
+    },
+    {
+      "id": "MX007",
+      "nombre": "XTB México (Intl)",
+      "tipo": "Broker Internacional CFD — Oficina en LATAM",
+      "seccion": "intl",
+      "pais": "Polonia",
+      "region": "Global / México",
+      "calificacion": 8.6,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "MXN",
+        "nota": "Sin mínimo"
+      },
+      "modelo_costos": "0% comisión acciones/ETFs hasta EUR 100K/mes. CFDs: spread incluido. Divisas disponibles",
+      "apalancamiento": {
+        "max": "1:30 (FCA/CNMV) / 1:200 (LATAM IFSC)",
+        "nota": "IFSC Belice para México"
+      },
+      "regulacion": [
+        "FCA UK",
+        "KNF Polonia",
+        "CySEC",
+        "CNMV España"
+      ],
+      "instrumentos": {
+        "forex": "57+ pares incluyendo USD/MXN",
+        "acciones": "5,800 instrumentos (acciones reales + CFD)",
+        "indices": "Principales mundiales",
+        "criptomonedas": "Sí",
+        "materias_primas": "Sí — oro, plata, petróleo",
+        "etfs": "Sí — acciones reales en LATAM",
+        "renta_fija": "No",
+        "opciones": "No"
+      },
+      "plataformas": [
+        "xStation 5 (propia — muy intuitiva)",
+        "MT4",
+        "XTB App"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "Standard",
+          "min": "$0 MXN",
+          "tarifa": "0% acciones/ETFs hasta EUR 100K"
+        },
+        {
+          "nombre": "Pro",
+          "min": "$0 MXN",
+          "tarifa": "Spread reducido"
+        }
+      ],
+      "pros": [
+        "0% comisión acciones/ETFs hasta EUR 100K/mes",
+        "Sin depósito mínimo",
+        "Academia gratuita xStation muy completa",
+        "5,800+ instrumentos incluyendo USD/MXN",
+        "Presencia fuerte en LATAM (oficina en Chile)"
+      ],
+      "contras": [
+        "IFSC Belice para México — menor protección",
+        "Sin acceso a BMV directamente",
+        "Sin opciones vanilla"
+      ],
+      "nota": "XTB es el broker más popular para traders activos en México. 0% comisión acciones. Academia gratuita en español. IFSC Belice aplica para residentes mexicanos.",
+      "presencia": "Sin oficina en México — atención desde oficina Chile"
+    },
+    {
+      "id": "MX008",
+      "nombre": "Interactive Brokers México (Intl)",
+      "tipo": "Broker Global — Traders Profesionales MX",
+      "seccion": "intl",
+      "pais": "EE.UU.",
+      "region": "150+ mercados / 33 países",
+      "calificacion": 9.0,
+      "deposito_minimo": {
+        "valor": 0,
+        "moneda": "USD",
+        "nota": "Sin mínimo formal (rec. USD 10,000)"
+      },
+      "modelo_costos": "IBKR Lite: 0% acciones USA. IBKR Pro: USD 0.005/acción. 4.33% a.a. sobre saldo USD",
+      "apalancamiento": {
+        "max": "Hasta 1:50 Forex / variable por producto",
+        "nota": "SEC/FINRA EE.UU."
+      },
+      "regulacion": [
+        "SEC EE.UU.",
+        "FINRA",
+        "SIPC (USD 500K)",
+        "FCA UK",
+        "ASIC"
+      ],
+      "instrumentos": {
+        "forex": "100+ pares Forex REAL",
+        "acciones": "150+ bolsas / 33 países REALES",
+        "indices": "Futuros globales",
+        "criptomonedas": "Sí — spot",
+        "materias_primas": "Futuros y CFD",
+        "etfs": "Miles ETFs globales reales",
+        "renta_fija": "Bonds globales",
+        "opciones": "Sí — REALES CBOE/Euronext"
+      },
+      "plataformas": [
+        "TWS (Trader Workstation)",
+        "IBKR Mobile",
+        "API FIX/REST"
+      ],
+      "tipos_cuenta": [
+        {
+          "nombre": "IBKR Lite",
+          "min": "USD 0",
+          "tarifa": "0% acciones USA"
+        },
+        {
+          "nombre": "IBKR Pro",
+          "min": "USD 0",
+          "tarifa": "USD 0.005/acción"
+        }
+      ],
+      "pros": [
+        "150+ bolsas en 33 países — mayor diversidad global",
+        "Opciones reales en bolsas mundiales (CBOE)",
+        "Sin comisión de custodia",
+        "4.33% a.a. sobre saldo USD parado",
+        "API para trading algorítmico"
+      ],
+      "contras": [
+        "Plataforma TWS muy compleja para principiantes",
+        "Sin soporte en español de calidad",
+        "Sin acceso directo a BMV"
+      ],
+      "nota": "Interactive Brokers es el broker global más recomendado para traders avanzados en México. Sin comisión de custodia. API para algorítmico. Mejor valorado para acceso internacional.",
+      "presencia": "Sin oficina en México — opera remotamente"
+    }
+  ]
+}
