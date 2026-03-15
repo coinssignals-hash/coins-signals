@@ -35,6 +35,9 @@ interface Result {
   isGoodRatio: boolean;
   isAcceptable: boolean;
   verdict: string;
+  optimalLots: string;
+  miniLots: string;
+  microLots: string;
 }
 
 export default function RiskRewardCalculator() {
