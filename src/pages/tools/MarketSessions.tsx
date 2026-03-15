@@ -421,7 +421,7 @@ const LEVEL_KEYS: Record<string, { bg: string; text: string; labelKey: string }>
 
 /* ─────────── Components ─────────── */
 
-function PipsGauge({ range, color, liveSpread }: { range: [number, number]; color: string; liveSpread?: number }) {
+function PipsGauge({ range, color, liveSpread, t }: { range: [number, number]; color: string; liveSpread?: number; t: (k: string) => string }) {
   const avg = liveSpread != null && liveSpread > 0 ? Math.round(liveSpread) : Math.round((range[0] + range[1]) / 2);
   const maxPips = 200;
   const percent = Math.min((avg / maxPips) * 100, 100);
@@ -429,7 +429,7 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
 
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Average Pips</span>
+      <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t('ms_avg_pips')}</span>
       <div className="relative w-20 h-12 overflow-hidden">
         <svg viewBox="0 0 100 55" className="w-full h-full">
           <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="hsl(var(--muted) / 0.3)" strokeWidth="6" strokeLinecap="round" />
@@ -444,7 +444,7 @@ function PipsGauge({ range, color, liveSpread }: { range: [number, number]; colo
       </div>
       <div className="flex items-center gap-1">
         <span className="text-sm font-bold" style={{ color: `hsl(${color})` }}>{avg}</span>
-        <span className="text-[11px] text-muted-foreground">Pips</span>
+        <span className="text-[11px] text-muted-foreground">{t('ms_pips')}</span>
       </div>
       <span className="text-[10px] text-muted-foreground">{range[0]} - {range[1]}</span>
     </div>
