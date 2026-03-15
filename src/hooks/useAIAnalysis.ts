@@ -60,7 +60,7 @@ export function useAIAnalysis() {
 
       // Run synthesize-analysis with previous results
       const { data, error: fnError } = await supabase.functions.invoke('synthesize-analysis', {
-        body: { symbol, candles, indicators, previousResults: allResults },
+        body: { symbol, candles, indicators, previousResults: allResults, language },
       });
       if (fnError) throw fnError;
       allResults['synthesize-analysis'] = { module: 'synthesize-analysis', data, timestamp: new Date().toISOString() };
