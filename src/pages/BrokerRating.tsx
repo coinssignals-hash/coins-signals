@@ -1069,7 +1069,11 @@ export default function BrokerRating() {
             {selectedBroker && (
               <div className="pb-6">
                 {/* Hero header */}
-                <div className="relative px-5 pt-6 pb-4" style={{ background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)' }}>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="relative px-5 pt-6 pb-4" style={{ background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)' }}>
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0">
                       <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
