@@ -158,7 +158,7 @@ export default function InstitutionalCalendar() {
                           <span>{t('inst_cons')} {evt.consensus}</span>
                           {evt.actual !== null && (
                             <span className={cn('font-bold', evt.surpriseDirection === 'above' ? 'text-emerald-400' : evt.surpriseDirection === 'below' ? 'text-rose-400' : 'text-foreground')}>
-                              Act: {evt.actual}
+                              {t('inst_act')} {evt.actual}
                             </span>
                           )}
                         </div>

@@ -55,8 +55,8 @@ function generateSamplePositions(): Position[] {
 export default function RiskManagerAdvanced() {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<Account[]>([
-    { id: '1', name: 'Main Account', balance: 25000, maxRiskPercent: 2, openPositions: generateSamplePositions() },
-    { id: '2', name: 'Demo Account', balance: 50000, maxRiskPercent: 3, openPositions: generateSamplePositions() },
+    { id: '1', name: t('rm_main_account'), balance: 25000, maxRiskPercent: 2, openPositions: generateSamplePositions() },
+    { id: '2', name: t('rm_demo_account'), balance: 50000, maxRiskPercent: 3, openPositions: generateSamplePositions() },
   ]);
   const [dailyMaxLoss, setDailyMaxLoss] = useState(5);
   const [weeklyMaxLoss, setWeeklyMaxLoss] = useState(10);
