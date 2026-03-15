@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import {
   ChevronDown, Copy, Check, Sparkles,
   TrendingUp, AlertTriangle, Lightbulb, Target,
-  Shield, BarChart3, ArrowRight
+  Shield, BarChart3, ArrowRight, Wifi, WifiOff
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AIAnalysisResult } from '@/hooks/useAIAnalysis';
@@ -14,6 +14,18 @@ import { StreamingCursor } from './StreamingCursor';
 interface Props {
   result: AIAnalysisResult;
   title: string;
+}
+
+/* ── Extract live quote status from edge function response ── */
+function extractLiveQuote(data: unknown): { hasLiveData: boolean; price?: number; timestamp?: string } {
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    const lq = obj.liveQuote as Record<string, unknown> | undefined;
+    if (lq && typeof lq === 'object' && lq.price) {
+      return { hasLiveData: true, price: lq.price as number, timestamp: lq.timestamp as string | undefined };
+    }
+  }
+  return { hasLiveData: false };
 }
 
 /* ── Extract text content from edge function response ── */
@@ -303,6 +315,7 @@ export function AIResultPanel({ result, title }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const rawContent = useMemo(() => extractContent(result.data), [result.data]);
+  const liveQuoteInfo = useMemo(() => extractLiveQuote(result.data), [result.data]);
   const blocks = useMemo(() => parseContent(rawContent), [rawContent]);
   const isStructured = blocks.some(b =>
     b.type === 'heading' || b.type === 'subheading' || b.type === 'bullet' || b.type === 'emoji-heading'
@@ -439,11 +452,42 @@ export function AIResultPanel({ result, title }: Props) {
                 background: 'hsl(210, 80%, 4%)',
               }}
             >
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: isStreaming ? 'hsl(45, 90%, 55%)' : 'hsl(160, 70%, 50%)' }} />
-                <span className="text-[10px] text-slate-600">
-                  {isStreaming ? 'Streaming…' : t('ai_center_generated_by')}
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: isStreaming ? 'hsl(45, 90%, 55%)' : 'hsl(160, 70%, 50%)' }} />
+                  <span className="text-[10px] text-slate-600">
+                    {isStreaming ? 'Streaming…' : t('ai_center_generated_by')}
+                  </span>
+                </div>
+                {!isStreaming && (
+                  <div
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-full"
+                    style={liveQuoteInfo.hasLiveData ? {
+                      background: 'hsla(160, 70%, 50%, 0.1)',
+                      border: '1px solid hsla(160, 70%, 50%, 0.25)',
+                    } : {
+                      background: 'hsla(45, 80%, 50%, 0.1)',
+                      border: '1px solid hsla(45, 80%, 50%, 0.25)',
+                    }}
+                  >
+                    {liveQuoteInfo.hasLiveData ? (
+                      <>
+                        <Wifi className="w-3 h-3" style={{ color: 'hsl(160, 70%, 55%)' }} />
+                        <span className="text-[9px] font-bold" style={{ color: 'hsl(160, 70%, 55%)' }}>Live</span>
+                        {liveQuoteInfo.price && (
+                          <span className="text-[9px] font-mono" style={{ color: 'hsl(160, 50%, 45%)' }}>
+                            {liveQuoteInfo.price.toFixed(liveQuoteInfo.price > 100 ? 2 : 5)}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <WifiOff className="w-3 h-3" style={{ color: 'hsl(45, 80%, 55%)' }} />
+                        <span className="text-[9px] font-bold" style={{ color: 'hsl(45, 80%, 55%)' }}>Offline</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
               <span className="text-[10px] font-mono text-slate-600">
                 {rawContent.length.toLocaleString()} chars
