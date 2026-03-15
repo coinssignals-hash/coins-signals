@@ -1239,7 +1239,7 @@ function MiniSparkline({ data, color, width = 36, height = 14 }: { data: number[
 }
 
 function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number; onSelect: (i: number) => void }) {
-  const [tick, setTick] = useState(0);
+  const { t } = useTranslation();
   const [flashIdx, setFlashIdx] = useState<number | null>(null);
 
   const handleSelect = (i: number) => {
