@@ -1104,10 +1104,14 @@ export default function BrokerRating() {
                   transition={{ duration: 0.3, delay: 0.08 }}
                   className="px-5 mb-4">
                   <p className="text-xs text-muted-foreground leading-relaxed">{selectedBroker.description}</p>
-                </div>
+                </motion.div>
 
                 {/* Key stats grid */}
-                <div className="grid grid-cols-4 gap-px bg-border/50 mx-5 rounded-xl overflow-hidden mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.35, delay: 0.15 }}
+                  className="grid grid-cols-4 gap-px bg-border/50 mx-5 rounded-xl overflow-hidden mb-4">
                   <div className="bg-card p-2.5 text-center">
                     <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_deposit')}</span>
                     <span className="text-xs font-bold text-accent">{selectedBroker.depositMin}</span>
