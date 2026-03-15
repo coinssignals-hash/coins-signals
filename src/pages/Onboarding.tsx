@@ -317,6 +317,11 @@ export default function Onboarding() {
                       </span>
                     </div>
                   )}
+                  {!canFinish && (
+                    <p className="text-xs text-destructive/80 text-center mt-1">
+                      {!firstName.trim() && !country ? 'El nombre y país son obligatorios' : !firstName.trim() ? 'El nombre es obligatorio' : 'El país es obligatorio'}
+                    </p>
+                  )}
                 </div>
               )}
             </motion.div>
