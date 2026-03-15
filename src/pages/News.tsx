@@ -386,7 +386,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
     return { pos: 30, neg: 25, neu: 45 };
   }, [news.sentiment]);
 
-  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
+  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(var(--bullish))' : news.sentiment === 'bearish' ? 'hsl(var(--bearish))' : 'hsl(var(--neutral))';
   const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const SentimentIcon = news.sentiment === 'bullish' ? TrendingUp : news.sentiment === 'bearish' ? TrendingDown : Minus;
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
@@ -572,9 +572,9 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
             </div>
             <div className="flex gap-0.5 h-1 rounded-full overflow-hidden">
-              <div className="rounded-l-full transition-all duration-500" style={{ width: `${sentimentBreakdown.pos}%`, background: 'hsl(135, 70%, 50%)' }} />
-              <div className="transition-all duration-500" style={{ width: `${sentimentBreakdown.neu}%`, background: 'hsl(45, 80%, 55%)' }} />
-              <div className="rounded-r-full transition-all duration-500" style={{ width: `${sentimentBreakdown.neg}%`, background: 'hsl(0, 70%, 55%)' }} />
+              <div className="rounded-l-full transition-all duration-500 bg-bullish" style={{ width: `${sentimentBreakdown.pos}%` }} />
+              <div className="transition-all duration-500 bg-neutral" style={{ width: `${sentimentBreakdown.neu}%` }} />
+              <div className="rounded-r-full transition-all duration-500 bg-bearish" style={{ width: `${sentimentBreakdown.neg}%` }} />
             </div>
           </div>
           {/* Volatility */}
@@ -624,7 +624,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
     }));
   }, [news.affected_currencies]);
 
-  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
+  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(var(--bullish))' : news.sentiment === 'bearish' ? 'hsl(var(--bearish))' : 'hsl(var(--neutral))';
   const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
