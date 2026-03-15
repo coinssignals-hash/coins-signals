@@ -44,7 +44,7 @@ const FlagIcon = ({ currency, size = 'sm' }: { currency: string; size?: 'sm' | '
   );
 };
 
-export function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite, onExpand }: SignalCardCompactProps) {
+export const SignalCardCompact = memo(function SignalCardCompact({ signal, isFavorite = false, onToggleFavorite, onExpand }: SignalCardCompactProps) {
   const isBuy = signal.action === 'BUY';
   const formattedTime = format(new Date(signal.datetime), "HH:mm", { locale: es });
   const [base, quote] = signal.currencyPair.split('/');
