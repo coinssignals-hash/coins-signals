@@ -39,7 +39,7 @@ export function useAIAnalysis() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [language]);
 
   const runFullAnalysis = useCallback(async (symbol: string, candles: unknown[], indicators: unknown) => {
     setLoading(true);
