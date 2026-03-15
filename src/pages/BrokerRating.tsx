@@ -146,19 +146,34 @@ export default function BrokerRating() {
         </div>
 
         {/* Region Selector */}
-        <div className="mb-4">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="text-3xl leading-none">{currentRegion?.label.split(' ')[0]}</span>
           <Select value={selectedRegion} onValueChange={(val) => { setSelectedRegion(val); setSearchTerm(''); setSelectedCategory(null); }}>
-            <SelectTrigger className="w-full bg-secondary border-border h-10">
+            <SelectTrigger className="flex-1 bg-secondary border-border h-10">
               <SelectValue>
-                {currentRegion?.label || 'Seleccionar región'}
+                {currentRegion?.label.split(' ').slice(1).join(' ') || 'Seleccionar región'}
+                {regionCounts[selectedRegion] != null && (
+                  <span className="ml-1.5 text-[10px] text-muted-foreground">({regionCounts[selectedRegion]})</span>
+                )}
               </SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-72">
-              {BROKER_REGIONS.map((region) => (
-                <SelectItem key={region.key} value={region.key}>
-                  {region.label}
-                </SelectItem>
-              ))}
+              {BROKER_REGIONS.map((region) => {
+                const flag = region.label.split(' ')[0];
+                const name = region.label.split(' ').slice(1).join(' ');
+                const count = regionCounts[region.key];
+                return (
+                  <SelectItem key={region.key} value={region.key}>
+                    <span className="flex items-center gap-2 w-full">
+                      <span className="text-lg">{flag}</span>
+                      <span className="flex-1">{name}</span>
+                      {count != null && (
+                        <Badge variant="secondary" className="ml-auto text-[9px] px-1.5 py-0">{count}</Badge>
+                      )}
+                    </span>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
