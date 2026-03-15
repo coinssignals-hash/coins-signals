@@ -87,7 +87,7 @@ function generateDataForPair(pair: string): InstitutionalData {
   };
 }
 
-const ALL_PAIR_LIST = Object.values(ALL_PAIRS).flat();
+const ALL_PAIR_LIST = Object.values(ALL_PAIRS_DATA).flatMap(g => g.pairs);
 
 function generateAllData(): InstitutionalData[] {
   return ALL_PAIR_LIST.map(generateDataForPair);
