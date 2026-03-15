@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
-import { Settings2, Cpu, Zap, Brain, Check } from 'lucide-react';
+import { Settings2, Cpu, Zap, Brain, Check, FileText, AlignLeft, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import type { DetailLevel } from '@/hooks/useAIAnalysis';
 
 export interface AIModelSettings {
   models: string[];
