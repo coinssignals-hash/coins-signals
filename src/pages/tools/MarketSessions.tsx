@@ -705,14 +705,16 @@ function WeeklyChart({ session, color }: {
   session: SessionData;
   color: string;
 }) {
+  const { t } = useTranslation();
   const { weeklyData, loading } = useWeeklyVolume(session);
+  const DAYS_KEYS = ['ms_day_mon', 'ms_day_tue', 'ms_day_wed', 'ms_day_thu', 'ms_day_fri'];
 
   // Fallback to static data if API didn't return results
   const hasRealData = weeklyData.length > 0;
 
   const displayData = hasRealData
     ? weeklyData
-    : DAYS.map((d, i) => ({ day: d, volume: session.weeklyVolatility[i] * 1000, range: session.weeklyLiquidity[i] }));
+    : DAYS_KEYS.map((dk, i) => ({ day: t(dk), volume: session.weeklyVolatility[i] * 1000, range: session.weeklyLiquidity[i] }));
 
   const maxVol = Math.max(...displayData.map(d => d.volume), 1);
   const maxRange = Math.max(...displayData.map(d => d.range), 1);
