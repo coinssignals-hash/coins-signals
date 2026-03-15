@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import {
   ChevronDown, Copy, Check, Sparkles,
   TrendingUp, AlertTriangle, Lightbulb, Target,
-  Shield, BarChart3, ArrowRight
+  Shield, BarChart3, ArrowRight, Wifi, WifiOff
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AIAnalysisResult } from '@/hooks/useAIAnalysis';
