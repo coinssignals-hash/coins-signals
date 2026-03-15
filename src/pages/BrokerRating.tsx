@@ -16,7 +16,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { useBrokerData, BROKER_REGIONS, NormalizedBroker, useGlobalBrokerSearch } from '@/hooks/useBrokerData';
+import { useBrokerData, BROKER_REGIONS, NormalizedBroker, useGlobalBrokerSearch, useRegionCounts } from '@/hooks/useBrokerData';
 import { getBrokerLogo } from '@/lib/brokerLogos';
 import { LazyImage } from '@/components/ui/lazy-image';
 
