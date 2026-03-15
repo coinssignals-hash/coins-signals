@@ -212,15 +212,38 @@ export default function BrokerRating() {
 
         <Card className="mb-4">
           <CardContent className="p-4">
-            <h2 className="text-base font-semibold text-foreground mb-3">{t('broker_search')}</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-semibold text-foreground">{t('broker_search')}</h2>
+              <button
+                onClick={() => { setIsGlobalSearch(!isGlobalSearch); setGlobalSearchTerm(''); setSearchTerm(''); }}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium transition-all ${
+                  isGlobalSearch
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+                }`}
+              >
+                <Globe className="w-3 h-3" />
+                {isGlobalSearch ? 'Global ON' : 'Buscar global'}
+              </button>
+            </div>
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder={t('broker_search_placeholder')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-secondary border-border"
-              />
+              {isGlobalSearch ? (
+                <Input
+                  placeholder="Buscar en todas las regiones..."
+                  value={globalSearchTerm}
+                  onChange={(e) => setGlobalSearchTerm(e.target.value)}
+                  className="pl-10 bg-secondary border-primary/30 ring-1 ring-primary/20"
+                  autoFocus
+                />
+              ) : (
+                <Input
+                  placeholder={t('broker_search_placeholder')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-secondary border-border"
+                />
+              )}
             </div>
 
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1">
