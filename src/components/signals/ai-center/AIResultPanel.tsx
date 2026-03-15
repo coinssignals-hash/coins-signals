@@ -315,6 +315,7 @@ export function AIResultPanel({ result, title }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const rawContent = useMemo(() => extractContent(result.data), [result.data]);
+  const liveQuoteInfo = useMemo(() => extractLiveQuote(result.data), [result.data]);
   const blocks = useMemo(() => parseContent(rawContent), [rawContent]);
   const isStructured = blocks.some(b =>
     b.type === 'heading' || b.type === 'subheading' || b.type === 'bullet' || b.type === 'emoji-heading'
