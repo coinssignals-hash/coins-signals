@@ -46,7 +46,7 @@ export function AICenter({ onClose }: Props) {
   const { favorites } = useFavoriteSymbols();
 
   const { data: forexData, loading: forexLoading, error: forexError, fetchData } = useForexData();
-  const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis } = useAIAnalysis();
+  const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis, detailLevel, setDetailLevel } = useAIAnalysis();
 
   const activeSymbol = customSymbol || symbol;
 
