@@ -28,51 +28,73 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { signal, patterns, marketContext, symbol, candles, indicators, language, detailLevel } = body;
+    const { signal, patterns, marketContext, symbol, candles, indicators, language, detailLevel, timeframe, volume, atr } = body;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const lang = language || "es";
+    const lang = language || "en";
     const detail = detailLevel || "standard";
-    const langInstruction = lang === "es" ? "Responde en español." : lang === "en" ? "Respond in English." : lang === "pt" ? "Responda em português." : lang === "fr" ? "Réponds en français." : lang === "it" ? "Rispondi in italiano." : lang === "de" ? "Antworte auf Deutsch." : lang === "nl" ? "Antwoord in het Nederlands." : lang === "ar" ? "أجب باللغة العربية." : lang === "mt" ? "Wieġeb bil-Malti." : "Responde en español.";
-    const detailInstruction = detail === "concise" ? "Sé muy breve y directo, máximo 2-3 líneas por sección." : detail === "detailed" ? "Proporciona un análisis extenso y profundo con múltiples escenarios." : "Sé conciso pero completo.";
+
+    const langMap: Record<string, string> = {
+      en: "Respond in English.", es: "Respond in Spanish.", pt: "Respond in Portuguese.",
+      fr: "Respond in French.", it: "Respond in Italian.", de: "Respond in German.",
+      nl: "Respond in Dutch.", ar: "Respond in Arabic.", mt: "Respond in Maltese.",
+    };
+    const langInstruction = langMap[lang] || langMap.en;
+
+    const detailMap: Record<string, string> = {
+      concise: "Be very brief and direct, 2-3 lines max per section.",
+      standard: "Be concise but thorough.",
+      detailed: "Provide an extensive, in-depth analysis with multiple scenarios and detailed reasoning.",
+    };
+    const detailInstruction = detailMap[detail] || detailMap.standard;
 
     let prompt: string;
 
     if (signal) {
       // Legacy mode: called with a specific signal object
-      const patternList = (patterns || []).map((p: any) => `- ${p.name} (${p.type}, ${p.reliability})`).join("\n") || "Ninguno relevante";
+      const patternList = (patterns || []).map((p: any) => `- ${p.name} (${p.type}, reliability: ${p.reliability})`).join("\n") || "None relevant";
 
-      prompt = `Eres un analista técnico profesional de Forex. Genera un reporte detallado de la siguiente señal de trading.
+      const reasonsList = (signal.reasons || []).map((r: string) => `- ${r}`).join("\n") || "None provided";
 
-**Señal:** ${signal.direction} ${symbol}
-**Entry:** ${signal.entry}
-**Stop Loss:** ${signal.stopLoss} (${signal.pipsRisk?.toFixed(1) || 'N/A'} pips)
-**Take Profit:** ${signal.takeProfit} (${signal.pipsReward?.toFixed(1) || 'N/A'} pips)
-**Risk/Reward:** 1:${signal.riskReward?.toFixed(2) || 'N/A'}
-**Confianza:** ${signal.confidence}%
-**Fuerza:** ${signal.strength}
+      prompt = `Act as a professional Forex analyst.
 
-**Contexto del mercado:**
-- Tendencia: ${marketContext?.trend || 'N/A'}
-- Volatilidad: ${marketContext?.volatility || 'N/A'}
-${marketContext?.rsi !== undefined ? `- RSI(14): ${marketContext.rsi.toFixed(1)}` : ""}
-${marketContext?.macdBias ? `- MACD Sesgo: ${marketContext.macdBias}` : ""}
+**Signal**
+${signal.direction} ${symbol}
+Entry: ${signal.entry}
+SL: ${signal.stopLoss}${signal.pipsRisk ? ` (${signal.pipsRisk.toFixed(1)} pips)` : ''}
+TP: ${signal.takeProfit}${signal.pipsReward ? ` (${signal.pipsReward.toFixed(1)} pips)` : ''}
+Risk/Reward: 1:${signal.riskReward?.toFixed(2) || 'N/A'}
+Confidence: ${signal.confidence}%
 
-**Razones de la señal:**
-${(signal.reasons || []).map((r: string) => `- ${r}`).join("\n")}
+**Market context**
+Timeframe: ${timeframe || marketContext?.timeframe || 'N/A'}
+Trend: ${marketContext?.trend || 'N/A'}
+Volatility: ${marketContext?.volatility || 'N/A'}
+Support: ${marketContext?.support || signal.support || 'N/A'}
+Resistance: ${marketContext?.resistance || signal.resistance || 'N/A'}
+Volume: ${volume || 'N/A'}
+ATR: ${atr || 'N/A'}
+${marketContext?.rsi !== undefined ? `RSI: ${marketContext.rsi.toFixed(1)}` : ''}
+${marketContext?.macdBias ? `MACD: ${marketContext.macdBias}` : ''}
 
-**Patrones de velas:**
+**Reasons**
+${reasonsList}
+
+**Candlestick patterns**
 ${patternList}
 
-Genera un reporte profesional en español con:
-1. **📊 Análisis de la señal**: Validez y contexto
-2. **🎯 Niveles clave**: Confirma o ajusta Entry/SL/TP
-3. **⚠️ Riesgos**: Factores que podrían invalidar la señal
-4. **📈 Escenarios**: Mejor caso, caso base, peor caso
-5. **✅ Recomendación**: Ejecutar / Esperar / Evitar + gestión de posición sugerida
+Provide:
 
-Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa markdown.`;
+• **Signal validation**
+• **Key levels confirmation or adjustment** (Entry / SL / TP)
+• **Risk factors** that could invalidate the trade
+• **Best / base / worst market scenario**
+• **Final recommendation** (Execute / Wait / Avoid) with position management guidance
+
+${langInstruction} ${detailInstruction}
+
+Markdown format.`;
     } else if (candles && Array.isArray(candles)) {
       // AI Center mode: called with raw candles + indicators
       const recent = candles.slice(-30);
@@ -83,8 +105,8 @@ Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa 
 
       const patternList = (indicators?.patterns || [])
         .slice(0, 10)
-        .map((p: any) => `- ${p.name} (${p.type}, fiabilidad: ${p.reliability})`)
-        .join("\n") || "Ninguno detectado";
+        .map((p: any) => `- ${p.name} (${p.type}, reliability: ${p.reliability})`)
+        .join("\n") || "None detected";
 
       const rsi = indicators?.rsi;
       const lastRsi = Array.isArray(rsi) ? rsi[rsi.length - 1] : rsi;
@@ -93,31 +115,33 @@ Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa 
       const ema50 = indicators?.ema50;
       const lastEma50 = Array.isArray(ema50) ? ema50[ema50.length - 1] : ema50;
 
-      prompt = `Eres un analista técnico profesional de Forex. Genera un reporte técnico completo del activo ${symbol || 'desconocido'}.
+      prompt = `Act as a professional Forex analyst.
 
-**Datos del mercado:**
-- Precio actual: ${lastPrice}
-- Máximo reciente: ${high24}
-- Mínimo reciente: ${low24}
-- Velas analizadas: ${candles.length}
+**Market data**
+Symbol: ${symbol || 'Unknown'} | Price: ${lastPrice}
+24h High: ${high24} | 24h Low: ${low24}
+Candles analyzed: ${candles.length}
 
-**Indicadores técnicos:**
-${lastRsi !== undefined ? `- RSI(14): ${typeof lastRsi === 'number' ? lastRsi.toFixed(1) : lastRsi}` : '- RSI: N/A'}
-${lastEma20 !== undefined ? `- EMA(20): ${typeof lastEma20 === 'number' ? lastEma20.toFixed(5) : lastEma20}` : ''}
-${lastEma50 !== undefined ? `- EMA(50): ${typeof lastEma50 === 'number' ? lastEma50.toFixed(5) : lastEma50}` : ''}
+**Indicators**
+${lastRsi !== undefined ? `RSI(14): ${typeof lastRsi === 'number' ? lastRsi.toFixed(1) : lastRsi}` : 'RSI: N/A'}
+${lastEma20 !== undefined ? `EMA(20): ${typeof lastEma20 === 'number' ? lastEma20.toFixed(5) : lastEma20}` : ''}
+${lastEma50 !== undefined ? `EMA(50): ${typeof lastEma50 === 'number' ? lastEma50.toFixed(5) : lastEma50}` : ''}
 
-**Patrones de velas detectados:**
+**Candlestick patterns**
 ${patternList}
 
-Genera un reporte profesional en español con:
-1. **📊 Resumen del mercado**: Estado actual, tendencia dominante y momentum
-2. **🎯 Niveles clave**: Soporte, resistencia, y zonas de interés
-3. **📈 Análisis técnico**: Interpretación de indicadores y patrones
-4. **⚠️ Riesgos**: Factores a vigilar que podrían cambiar el escenario
-5. **📈 Escenarios**: Mejor caso (alcista), caso base (neutral), peor caso (bajista) con probabilidades
-6. **✅ Recomendación**: Sesgo operativo (COMPRA / VENTA / ESPERAR) con niveles sugeridos de entrada, SL y TP
+Provide:
 
-Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa markdown.`;
+• **Market summary**: Current state, dominant trend, and momentum
+• **Key levels**: Support, resistance, and zones of interest
+• **Technical analysis**: Indicator and pattern interpretation
+• **Risk factors**: What could change the scenario
+• **Scenarios**: Best case (bullish), base case (neutral), worst case (bearish) with probabilities
+• **Final recommendation**: Bias (BUY / SELL / WAIT) with suggested Entry, SL, and TP levels
+
+${langInstruction} ${detailInstruction}
+
+Markdown format.`;
     } else {
       return new Response(JSON.stringify({ error: "No signal or candles provided" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -129,7 +153,7 @@ Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa 
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: `Eres un analista de trading Forex profesional. ${langInstruction} Genera reportes concisos y accionables.` },
+          { role: "system", content: `You are a professional Forex trading analyst. ${langInstruction} Generate concise and actionable reports.` },
           { role: "user", content: prompt },
         ],
         stream: false,
@@ -139,20 +163,20 @@ Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa 
 
     if (!response.ok) {
       logUsage(response.status, latency, undefined, { symbol });
-      if (response.status === 429) return new Response(JSON.stringify({ error: "Límite de solicitudes alcanzado." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (response.status === 402) return new Response(JSON.stringify({ error: "Créditos agotados." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (response.status === 429) return new Response(JSON.stringify({ error: "Rate limit reached." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (response.status === 402) return new Response(JSON.stringify({ error: "Credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Error del gateway de IA" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: "AI gateway error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const data = await response.json();
     logUsage(200, latency, data.usage, { symbol });
 
-    const report = data.choices?.[0]?.message?.content || "No se pudo generar el reporte.";
+    const report = data.choices?.[0]?.message?.content || "Unable to generate report.";
     return new Response(JSON.stringify({ report }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("generate-report error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Error desconocido" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
