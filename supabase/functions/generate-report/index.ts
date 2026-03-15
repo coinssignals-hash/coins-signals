@@ -23,6 +23,54 @@ async function logUsage(status: number, latencyMs: number, usage?: any, meta?: R
   } catch { /* fire-and-forget */ }
 }
 
+async function fetchLiveQuote(symbol: string): Promise<{ price?: number; bid?: number; ask?: number; change?: string; volume?: string; spread?: string; timestamp?: string } | null> {
+  const parts = symbol.replace("C:", "").replace("_", "/").split("/");
+  const isForex = parts.length === 2 && parts[0].length <= 4 && parts[1].length <= 4;
+
+  if (isForex) {
+    try {
+      const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY");
+      if (FINNHUB_KEY) {
+        const fhSymbol = `OANDA:${parts[0]}_${parts[1]}`;
+        const now = Math.floor(Date.now() / 1000);
+        const res = await fetch(`https://finnhub.io/api/v1/forex/candle?symbol=${fhSymbol}&resolution=1&from=${now - 300}&to=${now}&token=${FINNHUB_KEY}`);
+        const data = await res.json();
+        if (data.s === "ok" && data.c?.length > 0) {
+          const idx = data.c.length - 1;
+          return { price: data.c[idx], volume: data.v?.[idx] ? String(Math.round(data.v[idx])) : undefined, timestamp: new Date(data.t[idx] * 1000).toISOString() };
+        }
+      }
+    } catch { /* fallback */ }
+
+    try {
+      const AV_KEY = Deno.env.get("ALPHA_VANTAGE_API_KEY");
+      if (AV_KEY) {
+        const res = await fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${parts[0]}&to_currency=${parts[1]}&apikey=${AV_KEY}`);
+        const data = await res.json();
+        const rate = data["Realtime Currency Exchange Rate"];
+        if (rate) {
+          const bid = parseFloat(rate["8. Bid Price"]);
+          const ask = parseFloat(rate["9. Ask Price"]);
+          return { price: parseFloat(rate["5. Exchange Rate"]), bid, ask, spread: (ask - bid > 0) ? (ask - bid).toFixed(5) : undefined, timestamp: rate["6. Last Refreshed"] };
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  if (!isForex) {
+    try {
+      const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY");
+      if (FINNHUB_KEY) {
+        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol.replace("/", "")}&token=${FINNHUB_KEY}`);
+        const data = await res.json();
+        if (data.c) return { price: data.c, change: `${data.dp?.toFixed(2)}%`, volume: data.v ? String(data.v) : undefined };
+      }
+    } catch { /* ignore */ }
+  }
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -49,12 +97,17 @@ serve(async (req) => {
     };
     const detailInstruction = detailMap[detail] || detailMap.standard;
 
+    // Fetch real-time data
+    const liveQuote = await fetchLiveQuote(symbol || "EUR/USD");
+
+    const liveSection = liveQuote
+      ? `\n**Real-Time Market Data**\nLive Price: ${liveQuote.price}${liveQuote.bid ? ` | Bid: ${liveQuote.bid} | Ask: ${liveQuote.ask}` : ''}${liveQuote.spread ? ` | Spread: ${liveQuote.spread}` : ''}${liveQuote.change ? ` | Change: ${liveQuote.change}` : ''}${liveQuote.volume ? ` | Live Volume: ${liveQuote.volume}` : ''}${liveQuote.timestamp ? `\nLast Update: ${liveQuote.timestamp}` : ''}\n`
+      : '';
+
     let prompt: string;
 
     if (signal) {
-      // Legacy mode: called with a specific signal object
       const patternList = (patterns || []).map((p: any) => `- ${p.name} (${p.type}, reliability: ${p.reliability})`).join("\n") || "None relevant";
-
       const reasonsList = (signal.reasons || []).map((r: string) => `- ${r}`).join("\n") || "None provided";
 
       prompt = `Act as a professional Forex analyst.
@@ -77,7 +130,7 @@ Volume: ${volume || 'N/A'}
 ATR: ${atr || 'N/A'}
 ${marketContext?.rsi !== undefined ? `RSI: ${marketContext.rsi.toFixed(1)}` : ''}
 ${marketContext?.macdBias ? `MACD: ${marketContext.macdBias}` : ''}
-
+${liveSection}
 **Reasons**
 ${reasonsList}
 
@@ -96,10 +149,9 @@ ${langInstruction} ${detailInstruction}
 
 Markdown format.`;
     } else if (candles && Array.isArray(candles)) {
-      // AI Center mode: called with raw candles + indicators
       const recent = candles.slice(-30);
       const lastCandle = recent[recent.length - 1];
-      const lastPrice = lastCandle?.close || lastCandle?.open || 'N/A';
+      const lastPrice = liveQuote?.price || lastCandle?.close || lastCandle?.open || 'N/A';
       const high24 = Math.max(...recent.map((c: any) => c.high || c.close || 0));
       const low24 = Math.min(...recent.map((c: any) => c.low || c.close || Infinity));
 
@@ -121,7 +173,7 @@ Markdown format.`;
 Symbol: ${symbol || 'Unknown'} | Price: ${lastPrice}
 24h High: ${high24} | 24h Low: ${low24}
 Candles analyzed: ${candles.length}
-
+${liveSection}
 **Indicators**
 ${lastRsi !== undefined ? `RSI(14): ${typeof lastRsi === 'number' ? lastRsi.toFixed(1) : lastRsi}` : 'RSI: N/A'}
 ${lastEma20 !== undefined ? `EMA(20): ${typeof lastEma20 === 'number' ? lastEma20.toFixed(5) : lastEma20}` : ''}
@@ -162,7 +214,7 @@ Markdown format.`;
     const latency = Date.now() - t0;
 
     if (!response.ok) {
-      logUsage(response.status, latency, undefined, { symbol });
+      logUsage(response.status, latency, undefined, { symbol, hasLiveData: !!liveQuote });
       if (response.status === 429) return new Response(JSON.stringify({ error: "Rate limit reached." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       if (response.status === 402) return new Response(JSON.stringify({ error: "Credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
@@ -171,10 +223,10 @@ Markdown format.`;
     }
 
     const data = await response.json();
-    logUsage(200, latency, data.usage, { symbol });
+    logUsage(200, latency, data.usage, { symbol, hasLiveData: !!liveQuote });
 
     const report = data.choices?.[0]?.message?.content || "Unable to generate report.";
-    return new Response(JSON.stringify({ report }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ report, liveQuote }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("generate-report error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });

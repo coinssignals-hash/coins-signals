@@ -6,6 +6,54 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function fetchLiveQuote(symbol: string): Promise<{ price?: number; bid?: number; ask?: number; change?: string; volume?: string; spread?: string; timestamp?: string } | null> {
+  const parts = symbol.replace("C:", "").replace("_", "/").split("/");
+  const isForex = parts.length === 2 && parts[0].length <= 4 && parts[1].length <= 4;
+
+  if (isForex) {
+    try {
+      const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY");
+      if (FINNHUB_KEY) {
+        const fhSymbol = `OANDA:${parts[0]}_${parts[1]}`;
+        const now = Math.floor(Date.now() / 1000);
+        const res = await fetch(`https://finnhub.io/api/v1/forex/candle?symbol=${fhSymbol}&resolution=1&from=${now - 300}&to=${now}&token=${FINNHUB_KEY}`);
+        const data = await res.json();
+        if (data.s === "ok" && data.c?.length > 0) {
+          const idx = data.c.length - 1;
+          return { price: data.c[idx], volume: data.v?.[idx] ? String(Math.round(data.v[idx])) : undefined, timestamp: new Date(data.t[idx] * 1000).toISOString() };
+        }
+      }
+    } catch { /* fallback */ }
+
+    try {
+      const AV_KEY = Deno.env.get("ALPHA_VANTAGE_API_KEY");
+      if (AV_KEY) {
+        const res = await fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${parts[0]}&to_currency=${parts[1]}&apikey=${AV_KEY}`);
+        const data = await res.json();
+        const rate = data["Realtime Currency Exchange Rate"];
+        if (rate) {
+          const bid = parseFloat(rate["8. Bid Price"]);
+          const ask = parseFloat(rate["9. Ask Price"]);
+          return { price: parseFloat(rate["5. Exchange Rate"]), bid, ask, spread: (ask - bid > 0) ? (ask - bid).toFixed(5) : undefined, timestamp: rate["6. Last Refreshed"] };
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  if (!isForex) {
+    try {
+      const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY");
+      if (FINNHUB_KEY) {
+        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol.replace("/", "")}&token=${FINNHUB_KEY}`);
+        const data = await res.json();
+        if (data.c) return { price: data.c, change: `${data.dp?.toFixed(2)}%`, volume: data.v ? String(data.v) : undefined };
+      }
+    } catch { /* ignore */ }
+  }
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -35,6 +83,9 @@ serve(async (req) => {
     };
     const detailInstruction = detailMap[detail] || detailMap.standard;
 
+    // Fetch real-time data
+    const liveQuote = await fetchLiveQuote(symbol || "EUR/USD");
+
     // Collect all analysis blocks
     const parts: string[] = [];
 
@@ -55,10 +106,10 @@ serve(async (req) => {
     }
 
     // Extract market context
-    let lastPrice = "N/A";
+    let lastPrice = liveQuote?.price?.toString() || "N/A";
     if (candles && Array.isArray(candles) && candles.length > 0) {
       const lastCandle = candles[candles.length - 1];
-      lastPrice = lastCandle?.close?.toString() || "N/A";
+      if (!liveQuote?.price) lastPrice = lastCandle?.close?.toString() || "N/A";
 
       if (parts.length === 0) {
         const patternList = (indicators?.patterns || []).slice(0, 5).map((p: any) => `${p.name} (${p.type})`).join(", ") || "None";
@@ -75,6 +126,10 @@ serve(async (req) => {
 
     const analysisBlocks = parts.join("\n\n---\n\n");
 
+    const liveSection = liveQuote
+      ? `\n**Real-Time Market Data**\nLive Price: ${liveQuote.price}${liveQuote.bid ? ` | Bid: ${liveQuote.bid} | Ask: ${liveQuote.ask}` : ''}${liveQuote.spread ? ` | Spread: ${liveQuote.spread}` : ''}${liveQuote.volume ? ` | Live Volume: ${liveQuote.volume}` : ''}${liveQuote.timestamp ? `\nLast Update: ${liveQuote.timestamp}` : ''}\n`
+      : '';
+
     const prompt = `Act as an elite Forex meta-analyst.
 
 **Asset:** ${symbol || "Unknown"}
@@ -84,7 +139,7 @@ Timeframe: ${timeframe || "N/A"}
 Price: ${lastPrice}
 Trend: ${trend || "N/A"}
 Volatility: ${volatility || "N/A"}
-
+${liveSection}
 **AI Analyses**
 
 ${analysisBlocks}
@@ -133,7 +188,7 @@ Markdown format.`;
     const data = await response.json();
     const synthesis = data.choices?.[0]?.message?.content || "Unable to generate synthesis.";
 
-    return new Response(JSON.stringify({ synthesis }), {
+    return new Response(JSON.stringify({ synthesis, liveQuote }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

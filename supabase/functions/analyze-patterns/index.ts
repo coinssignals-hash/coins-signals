@@ -17,6 +17,68 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function fetchLiveQuote(symbol: string): Promise<{ price?: number; bid?: number; ask?: number; change?: string; volume?: string; spread?: string; timestamp?: string } | null> {
+  const parts = symbol.replace("C:", "").replace("_", "/").split("/");
+  const isForex = parts.length === 2 && parts[0].length <= 4 && parts[1].length <= 4;
+
+  // Try Finnhub first for forex
+  if (isForex) {
+    try {
+      const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY");
+      if (FINNHUB_KEY) {
+        const fhSymbol = `OANDA:${parts[0]}_${parts[1]}`;
+        const now = Math.floor(Date.now() / 1000);
+        const res = await fetch(`https://finnhub.io/api/v1/forex/candle?symbol=${fhSymbol}&resolution=1&from=${now - 300}&to=${now}&token=${FINNHUB_KEY}`);
+        const data = await res.json();
+        if (data.s === "ok" && data.c?.length > 0) {
+          const idx = data.c.length - 1;
+          return {
+            price: data.c[idx],
+            volume: data.v?.[idx] ? String(Math.round(data.v[idx])) : undefined,
+            timestamp: new Date(data.t[idx] * 1000).toISOString(),
+          };
+        }
+      }
+    } catch { /* fallback */ }
+  }
+
+  // Alpha Vantage fallback for forex
+  if (isForex) {
+    try {
+      const AV_KEY = Deno.env.get("ALPHA_VANTAGE_API_KEY");
+      if (AV_KEY) {
+        const res = await fetch(`https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${parts[0]}&to_currency=${parts[1]}&apikey=${AV_KEY}`);
+        const data = await res.json();
+        const rate = data["Realtime Currency Exchange Rate"];
+        if (rate) {
+          const bid = parseFloat(rate["8. Bid Price"]);
+          const ask = parseFloat(rate["9. Ask Price"]);
+          return {
+            price: parseFloat(rate["5. Exchange Rate"]),
+            bid, ask,
+            spread: (ask - bid > 0) ? (ask - bid).toFixed(5) : undefined,
+            timestamp: rate["6. Last Refreshed"],
+          };
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  // Finnhub for stocks/indices
+  if (!isForex) {
+    try {
+      const FINNHUB_KEY = Deno.env.get("FINNHUB_API_KEY");
+      if (FINNHUB_KEY) {
+        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol.replace("/", "")}&token=${FINNHUB_KEY}`);
+        const data = await res.json();
+        if (data.c) return { price: data.c, change: `${data.dp?.toFixed(2)}%`, volume: data.v ? String(data.v) : undefined };
+      }
+    } catch { /* ignore */ }
+  }
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -30,15 +92,9 @@ serve(async (req) => {
     const aiModel = model || "google/gemini-3-flash-preview";
 
     const langMap: Record<string, string> = {
-      en: "Respond in English.",
-      es: "Respond in Spanish.",
-      pt: "Respond in Portuguese.",
-      fr: "Respond in French.",
-      it: "Respond in Italian.",
-      de: "Respond in German.",
-      nl: "Respond in Dutch.",
-      ar: "Respond in Arabic.",
-      mt: "Respond in Maltese.",
+      en: "Respond in English.", es: "Respond in Spanish.", pt: "Respond in Portuguese.",
+      fr: "Respond in French.", it: "Respond in Italian.", de: "Respond in German.",
+      nl: "Respond in Dutch.", ar: "Respond in Arabic.", mt: "Respond in Maltese.",
     };
     const langInstruction = langMap[lang] || langMap.en;
 
@@ -59,13 +115,21 @@ serve(async (req) => {
       );
     }
 
+    // Fetch real-time data
+    const liveQuote = await fetchLiveQuote(symbol || "EUR/USD");
+
     const patternList = patterns
       .map((p: any) => `- **${p.name}** (${p.type}, reliability: ${p.reliability}) — ${p.description}`)
       .join("\n");
 
+    const livePrice = liveQuote?.price || lastPrice;
+    const liveSection = liveQuote
+      ? `\n**Live Market Data (Real-Time)**\nPrice: ${liveQuote.price}${liveQuote.bid ? ` | Bid: ${liveQuote.bid} | Ask: ${liveQuote.ask}` : ''}${liveQuote.spread ? ` | Spread: ${liveQuote.spread}` : ''}${liveQuote.change ? ` | Change: ${liveQuote.change}` : ''}${liveQuote.volume ? ` | Volume: ${liveQuote.volume}` : ''}${liveQuote.timestamp ? `\nTimestamp: ${liveQuote.timestamp}` : ''}\n`
+      : '';
+
     const contextLines = [
       `Symbol: ${symbol}`,
-      `Price: ${lastPrice}`,
+      `Price: ${livePrice}`,
       timeframe ? `Timeframe: ${timeframe}` : null,
       trend ? `Trend: ${trend}` : null,
       volume !== undefined ? `Volume: ${volume}` : null,
@@ -79,7 +143,7 @@ serve(async (req) => {
 
 **Market data**
 ${contextLines}
-
+${liveSection}
 **Detected candlestick patterns (last 20 candles)**
 ${patternList}
 
@@ -124,25 +188,15 @@ Markdown format.`;
         await supabase.from('api_usage_logs').insert({
           provider: 'lovable_ai', function_name: 'analyze-patterns', model: aiModel,
           response_status: response.status, latency_ms: latencyMs,
-          metadata: { symbol, patternCount: patterns.length },
+          metadata: { symbol, patternCount: patterns.length, hasLiveData: !!liveQuote },
         });
       } catch (_) {}
 
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit reached. Please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Credits exhausted." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      if (response.status === 429) return new Response(JSON.stringify({ error: "Rate limit reached." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (response.status === 402) return new Response(JSON.stringify({ error: "Credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI gateway error" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(JSON.stringify({ error: "AI gateway error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const data = await response.json();
@@ -157,17 +211,17 @@ Markdown format.`;
         tokens_total: usage?.total_tokens || 0,
         estimated_cost: estimateAICost(aiModel, usage?.prompt_tokens || 0, usage?.completion_tokens || 0),
         response_status: 200, latency_ms: latencyMs,
-        metadata: { symbol, patternCount: patterns.length },
+        metadata: { symbol, patternCount: patterns.length, hasLiveData: !!liveQuote },
       });
     } catch (_) {}
 
-    return new Response(JSON.stringify({ analysis, patternCount: patterns.length }), {
+    return new Response(JSON.stringify({ analysis, patternCount: patterns.length, liveQuote }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("analyze-patterns error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Error desconocido" }),
+      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
