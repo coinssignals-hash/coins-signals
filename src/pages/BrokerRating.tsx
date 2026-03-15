@@ -482,7 +482,11 @@ export default function BrokerRating() {
                       className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0 text-2xl"
                       style={{ translateY: logoParallaxY }}
                     >
-                      {selectedBroker.countryFlag}
+                      {getBrokerLogo(selectedBroker.name) ? (
+                        <img src={getBrokerLogo(selectedBroker.name)} alt={selectedBroker.name} className="w-full h-full object-contain" />
+                      ) : (
+                        selectedBroker.countryFlag
+                      )}
                     </motion.div>
                     <div className="flex-1 min-w-0">
                       <DialogHeader className="space-y-0">
