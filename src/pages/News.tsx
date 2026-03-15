@@ -470,11 +470,17 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <h3 className="font-semibold text-[15px] text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-snug">
             {displayTitle}
           </h3>
-          {isTranslated &&
-          <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
-              <Languages className="w-2.5 h-2.5" /> {t('news_translated')}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold" style={{ color: sentimentColor }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: sentimentColor }} />
+              {sentimentLabel}
             </span>
-          }
+            {isTranslated &&
+            <span className="text-[9px] text-purple-400 inline-flex items-center gap-0.5">
+                <Languages className="w-2.5 h-2.5" /> {t('news_translated')}
+              </span>
+            }
+          </div>
         </Link>
 
         {/* Summary snippet */}
