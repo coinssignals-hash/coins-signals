@@ -36,6 +36,24 @@ const getCategoriesTranslated = (t: (key: string) => string) => [
 
 type SortOption = 'rating' | 'deposit' | 'spreads';
 
+const REGION_METADATA: Record<string, { flag: string; country: string; regulator: string; exchange: string; currency: string; note: string }> = {
+  eu: { flag: '🇪🇺', country: 'Europa', regulator: 'ESMA / FCA / BaFin', exchange: 'Euronext / LSE / XETRA', currency: 'EUR / GBP', note: 'Regulación unificada MiFID II' },
+  us: { flag: '🇺🇸', country: 'USA / Canadá', regulator: 'SEC / FINRA / IIROC', exchange: 'NYSE / NASDAQ / TSX', currency: 'USD / CAD', note: 'Mercado más líquido del mundo' },
+  mx: { flag: '🇲🇽', country: 'México', regulator: 'CNBV', exchange: 'BMV', currency: 'MXN', note: 'Forex no regulado localmente' },
+  co: { flag: '🇨🇴', country: 'Colombia', regulator: 'SFC', exchange: 'BVC', currency: 'COP', note: 'Mercado en crecimiento' },
+  ar: { flag: '🇦🇷', country: 'Argentina', regulator: 'CNV', exchange: 'BCBA / BYMA', currency: 'ARS', note: 'Control cambiario vigente' },
+  br: { flag: '🇧🇷', country: 'Brasil', regulator: 'CVM', exchange: 'B3', currency: 'BRL', note: 'Mayor mercado de LATAM' },
+  cl: { flag: '🇨🇱', country: 'Chile', regulator: 'CMF', exchange: 'Bolsa de Santiago', currency: 'CLP', note: 'Mercado estable y regulado' },
+  pe: { flag: '🇵🇪', country: 'Perú', regulator: 'SMV', exchange: 'BVL', currency: 'PEN', note: 'Economía dolarizada parcial' },
+  ec: { flag: '🇪🇨', country: 'Ecuador', regulator: 'Supercias', exchange: 'BVQ / BVG', currency: 'USD', note: 'Economía dolarizada' },
+  cr: { flag: '🇨🇷', country: 'Costa Rica', regulator: 'SUGEVAL', exchange: 'BNV', currency: 'CRC', note: 'Sistema financiero estable' },
+  pa: { flag: '🇵🇦', country: 'Panamá', regulator: 'SMV', exchange: 'BVP', currency: 'USD / PAB', note: 'Centro financiero regional' },
+  sv: { flag: '🇸🇻', country: 'El Salvador', regulator: 'SSF', exchange: 'BVES', currency: 'USD', note: 'Economía dolarizada' },
+  ni: { flag: '🇳🇮', country: 'Nicaragua', regulator: 'SIBOIF', exchange: 'BVDN', currency: 'NIO', note: 'Mercado emergente' },
+  ve: { flag: '🇻🇪', country: 'Venezuela', regulator: 'SUNAVAL', exchange: 'BVC', currency: 'VES', note: 'Restricciones cambiarias' },
+  uy: { flag: '🇺🇾', country: 'Uruguay', regulator: 'BCU', exchange: 'BVM', currency: 'UYU', note: 'Plaza financiera estable' },
+};
+
 const parseNumeric = (val: string): number => {
   const num = parseFloat(val.replace(/[^0-9.]/g, ''));
   return isNaN(num) ? 0 : num;
