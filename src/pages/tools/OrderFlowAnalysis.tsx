@@ -163,7 +163,7 @@ export default function OrderFlowAnalysis() {
                     : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
                 )}
               >
-                {!VISIBLE_PAIRS.includes(selectedPair) ? selectedPair : 'Más'}
+                {!VISIBLE_PAIRS.includes(selectedPair) ? selectedPair : t('of_more')}
                 <ChevronDown className="w-3 h-3" />
               </button>
             </DropdownMenuTrigger>
