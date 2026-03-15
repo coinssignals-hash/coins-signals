@@ -803,6 +803,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
   sessionVolume: SessionVolume;
   color: string;
 }) {
+  const { t } = useTranslation();
   const [config, setConfig] = useState<VolatilityAlertConfig>(() => getAlertConfig(session.id));
   const [showSettings, setShowSettings] = useState(false);
   const alertedRef = useRef(false);
