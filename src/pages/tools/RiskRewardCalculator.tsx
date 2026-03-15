@@ -82,6 +82,11 @@ export default function RiskRewardCalculator() {
     const isGoodRatio = ratio >= 2;
     const isAcceptable = ratio >= 1 && ratio < 2;
 
+    // Lot size calculation: riskAmount / (riskPips * pipValue)
+    const standardLots = riskPips > 0 ? riskAmount / (riskPips * pairData.pipValue) : 0;
+    const miniLots = standardLots * 10;
+    const microLots = standardLots * 100;
+
     setResult({
       riskPips: riskPips.toFixed(1),
       rewardPips: rewardPips.toFixed(1),
@@ -91,6 +96,9 @@ export default function RiskRewardCalculator() {
       isGoodRatio,
       isAcceptable,
       verdict: isGoodRatio ? (t('rr_excellent') || 'Excelente') : isAcceptable ? (t('rr_acceptable') || 'Aceptable') : (t('rr_not_recommended') || 'No recomendado'),
+      optimalLots: standardLots.toFixed(2),
+      miniLots: miniLots.toFixed(2),
+      microLots: microLots.toFixed(2),
     });
 
     toast.success(t('rr_calculated') || 'Resultado calculado');
