@@ -624,7 +624,7 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
     }));
   }, [news.affected_currencies]);
 
-  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(135, 70%, 50%)' : news.sentiment === 'bearish' ? 'hsl(0, 70%, 55%)' : 'hsl(45, 80%, 55%)';
+  const sentimentColor = news.sentiment === 'bullish' ? 'hsl(var(--bullish))' : news.sentiment === 'bearish' ? 'hsl(var(--bearish))' : 'hsl(var(--neutral))';
   const sentimentLabel = news.sentiment === 'bullish' ? t('news_sentiment_bullish') : news.sentiment === 'bearish' ? t('news_sentiment_bearish') : t('news_sentiment_neutral');
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
