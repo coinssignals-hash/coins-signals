@@ -72,7 +72,7 @@ Genera un reporte profesional en español con:
 4. **📈 Escenarios**: Mejor caso, caso base, peor caso
 5. **✅ Recomendación**: Ejecutar / Esperar / Evitar + gestión de posición sugerida
 
-Sé conciso, profesional y directo. Usa markdown.`;
+Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa markdown.`;
     } else if (candles && Array.isArray(candles)) {
       // AI Center mode: called with raw candles + indicators
       const recent = candles.slice(-30);
