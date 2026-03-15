@@ -642,22 +642,44 @@ export default function BrokerRating() {
               <p className="text-xs text-muted-foreground flex-1">{t('broker_tip')}</p>
             </div>
 
-            <div className="flex justify-between gap-2 overflow-x-auto pb-2">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1">
               {categories.map((cat) => {
                 const Icon = cat.icon;
                 const isSelected = selectedCategory === cat.label;
+                const color = CATEGORY_COLORS[cat.colorKey] || 'hsl(200, 90%, 50%)';
                 return (
                   <button
                     key={cat.label}
                     onClick={() => setSelectedCategory(isSelected ? null : cat.label)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg min-w-[60px] transition-colors ${
-                      isSelected ? 'bg-primary/20 border border-primary' : 'bg-secondary'
-                    }`}
+                    className="flex flex-col items-center gap-1.5 min-w-[64px] py-2.5 px-2 rounded-xl transition-all duration-200 active:scale-95"
+                    style={isSelected ? {
+                      background: `linear-gradient(180deg, ${color}18, ${color}08)`,
+                      border: `1px solid ${color}40`,
+                      boxShadow: `0 4px 12px -4px ${color}30`,
+                    } : {
+                      background: 'hsl(var(--secondary))',
+                      border: '1px solid transparent',
+                    }}
                   >
-                    <Icon className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-primary'}`} />
-                    <span className="text-[10px] text-foreground text-center">{cat.label}</span>
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                      style={isSelected ? {
+                        background: `linear-gradient(135deg, ${color}30, ${color}10)`,
+                        boxShadow: `0 0 10px -3px ${color}40`,
+                      } : {
+                        background: 'hsl(var(--muted))',
+                      }}
+                    >
+                      <Icon
+                        className="w-5 h-5 transition-colors"
+                        style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }}
+                      />
+                    </div>
+                    <span className={`text-[10px] font-bold text-center leading-tight ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {cat.label}
+                    </span>
                     {cat.sublabel && (
-                      <span className="text-[8px] text-muted-foreground text-center">{cat.sublabel}</span>
+                      <span className="text-[8px] text-muted-foreground text-center leading-tight -mt-0.5">{cat.sublabel}</span>
                     )}
                   </button>
                 );
