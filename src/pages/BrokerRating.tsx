@@ -532,10 +532,12 @@ export default function BrokerRating() {
           </div>
         )}
 
-        {!loading && !error && filteredBrokers.length === 0 && (
+        {!loading && !error && filteredBrokers.length === 0 && !isGlobalSearch && (
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-sm">{t('bk_no_brokers_found')}</p>
           </div>
+        )}
+        </>
         )}
       </main>
 
