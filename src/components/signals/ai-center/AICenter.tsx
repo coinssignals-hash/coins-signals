@@ -12,7 +12,7 @@ import { AISignalCreator } from './AISignalCreator';
 import { AISymbolSearch, INSTRUMENT_TABS } from './AISymbolSearch';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
 import { useForexData } from '@/hooks/useForexData';
-import { useAIAnalysis, AIModule } from '@/hooks/useAIAnalysis';
+import { useAIAnalysis, AIModule, DetailLevel } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
 import { detectCandlePatterns } from '@/lib/candle-patterns';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
@@ -46,7 +46,7 @@ export function AICenter({ onClose }: Props) {
   const { favorites } = useFavoriteSymbols();
 
   const { data: forexData, loading: forexLoading, error: forexError, fetchData } = useForexData();
-  const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis } = useAIAnalysis();
+  const { results, loading: aiLoading, error: aiError, runModule, runFullAnalysis, detailLevel, setDetailLevel } = useAIAnalysis();
 
   const activeSymbol = customSymbol || symbol;
 
@@ -191,7 +191,7 @@ export function AICenter({ onClose }: Props) {
       <div className="rounded-xl border border-cyan-800/30 overflow-hidden"
       style={{ background: 'radial-gradient(ellipse at top center, hsl(200,100%,12%) 0%, hsl(210,100%,6%) 100%)' }}>
           <div className="p-4">
-            <AIModelConfig settings={modelSettings} onChange={setModelSettings} />
+            <AIModelConfig settings={modelSettings} onChange={setModelSettings} detailLevel={detailLevel} onDetailLevelChange={setDetailLevel} />
           </div>
         </div>
       }

@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
-import { Settings2, Cpu, Zap, Brain, Check } from 'lucide-react';
+import { Settings2, Cpu, Zap, Brain, Check, FileText, AlignLeft, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+import type { DetailLevel } from '@/hooks/useAIAnalysis';
 
 export interface AIModelSettings {
   models: string[];
@@ -15,9 +16,11 @@ const MAX_MODELS = 3;
 interface Props {
   settings: AIModelSettings;
   onChange: (settings: AIModelSettings) => void;
+  detailLevel: DetailLevel;
+  onDetailLevelChange: (level: DetailLevel) => void;
 }
 
-export function AIModelConfig({ settings, onChange }: Props) {
+export function AIModelConfig({ settings, onChange, detailLevel, onDetailLevelChange }: Props) {
   const { t } = useTranslation();
   const selected = settings.models;
 
@@ -102,6 +105,39 @@ export function AIModelConfig({ settings, onChange }: Props) {
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-1">OpenAI GPT</div>
         <div className="grid gap-1.5">
           {openaiModels.map(renderModel)}
+        </div>
+      </div>
+
+      {/* Detail Level */}
+      <div className="space-y-2">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-1">
+          {t('ai_center_detail_level') || 'Nivel de detalle'}
+        </div>
+        <div className="grid grid-cols-3 gap-1.5">
+          {([
+            { id: 'concise' as DetailLevel, label: t('ai_center_detail_concise') || 'Conciso', icon: FileText, desc: t('ai_center_detail_concise_desc') || '2-3 líneas' },
+            { id: 'standard' as DetailLevel, label: t('ai_center_detail_standard') || 'Estándar', icon: AlignLeft, desc: t('ai_center_detail_standard_desc') || 'Equilibrado' },
+            { id: 'detailed' as DetailLevel, label: t('ai_center_detail_detailed') || 'Detallado', icon: BookOpen, desc: t('ai_center_detail_detailed_desc') || 'Profundo' },
+          ]).map((opt) => {
+            const Icon = opt.icon;
+            const isActive = detailLevel === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => onDetailLevelChange(opt.id)}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-all text-center",
+                  isActive
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border bg-card hover:bg-secondary/50 text-muted-foreground"
+                )}
+              >
+                <Icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-muted-foreground")} />
+                <span className="text-[11px] font-semibold">{opt.label}</span>
+                <span className="text-[9px] text-muted-foreground leading-tight">{opt.desc}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
