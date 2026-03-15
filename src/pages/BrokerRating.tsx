@@ -161,6 +161,52 @@ export default function BrokerRating() {
           </div>
         </div>
 
+        {/* Region metadata header */}
+        {selectedRegion !== 'intl' && REGION_METADATA[selectedRegion] && (() => {
+          const meta = REGION_METADATA[selectedRegion];
+          return (
+            <motion.div
+              key={selectedRegion}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mb-4 rounded-xl border border-border/60 overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--secondary) / 0.8), hsl(var(--secondary) / 0.4))' }}
+            >
+              <div className="px-4 py-3 flex items-center gap-3">
+                <span className="text-2xl">{meta.flag}</span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-bold text-foreground">{meta.country}</h3>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{meta.note}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-px bg-border/40">
+                <div className="bg-card px-3 py-2.5 flex items-center gap-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">Regulador</span>
+                    <span className="text-[10px] font-semibold text-foreground truncate block">{meta.regulator}</span>
+                  </div>
+                </div>
+                <div className="bg-card px-3 py-2.5 flex items-center gap-2">
+                  <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">Bolsa</span>
+                    <span className="text-[10px] font-semibold text-foreground truncate block">{meta.exchange}</span>
+                  </div>
+                </div>
+                <div className="bg-card px-3 py-2.5 flex items-center gap-2">
+                  <Coins className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">Moneda</span>
+                    <span className="text-[10px] font-semibold text-foreground truncate block">{meta.currency}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+
         <Card className="mb-4">
           <CardContent className="p-4">
             <h2 className="text-base font-semibold text-foreground mb-3">{t('broker_search')}</h2>
