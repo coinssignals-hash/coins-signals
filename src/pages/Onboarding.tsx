@@ -109,7 +109,10 @@ export default function Onboarding() {
     finally { setUploadingAvatar(false); }
   };
 
+  const canFinish = firstName.trim().length > 0 && country.length > 0;
+
   const handleFinish = async () => {
+    if (!canFinish) return;
     setSaving(true);
     try {
       const updateData: Record<string, unknown> = {
