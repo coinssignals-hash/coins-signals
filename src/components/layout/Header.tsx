@@ -4,7 +4,7 @@ import logoImg from '@/assets/g174-2.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, BookOpen, Bell,
-  BarChart3, Wallet, BarChart2 } from
+  BarChart3, Wallet, BarChart2, Clock } from
 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -60,7 +60,7 @@ export function Header() {
         <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
         {/* Secondary row: quick action icons — evenly distributed */}
-        <div className="grid grid-cols-4 gap-2 w-full px-3 py-2">
+        <div className="grid grid-cols-5 gap-2 w-full px-3 py-2">
           <Link to="/tools/trading-journal" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
               <BookOpen className="w-[18px] h-[18px]" />
@@ -72,6 +72,12 @@ export function Header() {
               <BarChart3 className="w-[18px] h-[18px]" />
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
+          </Link>
+          <Link to="/tools/market-sessions" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
+            <div className="flex items-center justify-center h-8 w-full rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-colors">
+              <Clock className="w-[18px] h-[18px]" />
+            </div>
+            <span className="text-[10px] font-medium text-muted-foreground leading-none">Sessions</span>
           </Link>
           <div className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-colors">
