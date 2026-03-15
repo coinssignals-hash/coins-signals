@@ -563,12 +563,13 @@ function formatVolume(vol: number): string {
 }
 
 function VolumeIndicator({ sessionVolume, color }: { sessionVolume: SessionVolume; color: string }) {
+  const { t } = useTranslation();
   if (sessionVolume.loading) {
     return (
       <div className="rounded-lg border p-3 space-y-2" style={{ borderColor: `hsl(${color} / 0.15)` }}>
         <div className="flex items-center gap-1.5">
           <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
-          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Volume & Range</span>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('ms_volume_range')}</span>
         </div>
         <div className="flex items-center justify-center py-3">
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
