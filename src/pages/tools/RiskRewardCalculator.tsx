@@ -269,6 +269,38 @@ export default function RiskRewardCalculator() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Optimal Lot Size */}
+            <Card className="bg-card border-primary/20">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2 justify-center">
+                  <Layers className="w-4 h-4 text-primary" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {t('rr_lot_size') || 'Tamaño de Lote Óptimo'}
+                  </p>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground mb-1">Standard</p>
+                    <p className="text-lg font-bold text-primary tabular-nums">{result.optimalLots}</p>
+                    <p className="text-[9px] text-muted-foreground">100K units</p>
+                  </div>
+                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground mb-1">Mini</p>
+                    <p className="text-lg font-bold text-primary tabular-nums">{result.miniLots}</p>
+                    <p className="text-[9px] text-muted-foreground">10K units</p>
+                  </div>
+                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground mb-1">Micro</p>
+                    <p className="text-lg font-bold text-primary tabular-nums">{result.microLots}</p>
+                    <p className="text-[9px] text-muted-foreground">1K units</p>
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center">
+                  {t('rr_lot_info') || `Basado en ${riskPercent}% de riesgo ($${result.riskAmount}) sobre ${result.riskPips} pips de SL`}
+                </p>
+              </CardContent>
+            </Card>
           </>
           );
         })()}
