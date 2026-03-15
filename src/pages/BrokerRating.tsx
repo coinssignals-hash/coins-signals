@@ -15,6 +15,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useBrokerData, BROKER_REGIONS, NormalizedBroker } from '@/hooks/useBrokerData';
+import { getBrokerLogo } from '@/lib/brokerLogos';
+import { LazyImage } from '@/components/ui/lazy-image';
 
 const CATEGORY_COLORS: Record<string, string> = {
   forex: 'hsl(200, 90%, 50%)',
