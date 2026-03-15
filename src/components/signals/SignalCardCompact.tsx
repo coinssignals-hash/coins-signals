@@ -258,4 +258,4 @@ export const SignalCardCompact = memo(function SignalCardCompact({ signal, isFav
       )}
     </div>
   );
-}
+});
