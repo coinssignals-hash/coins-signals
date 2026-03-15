@@ -562,7 +562,7 @@ export default function BrokerRating() {
                           <div className="flex items-center gap-1 flex-wrap">
                             <CandlestickChart className="w-3 h-3 text-muted-foreground shrink-0" />
                             {broker.platforms.slice(0, 3).map(p => (
-                              <span key={p} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/80 text-foreground font-medium border border-border/30">{p}</span>
+                              <span key={p.name} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/80 text-foreground font-medium border border-border/30">{p.name}</span>
                             ))}
                             {broker.platforms.length > 3 && (
                               <span className="text-[10px] text-muted-foreground">+{broker.platforms.length - 3}</span>
