@@ -159,7 +159,14 @@ export default function RiskRewardCalculator() {
           </CardContent>
         </Card>
 
-        {result && (
+        {result && (() => {
+          const riskVal = parseFloat(result.riskPips);
+          const rewardVal = parseFloat(result.rewardPips);
+          const total = riskVal + rewardVal;
+          const riskPct = total > 0 ? (riskVal / total) * 100 : 50;
+          const rewardPct = total > 0 ? (rewardVal / total) * 100 : 50;
+
+          return (
           <>
             <Card className={cn('border',
               result.isGoodRatio ? 'bg-emerald-500/5 border-emerald-500/20' :
@@ -175,6 +182,59 @@ export default function RiskRewardCalculator() {
                 )}>{result.verdict}</span>
               </CardContent>
             </Card>
+
+            {/* Visual bar chart */}
+            <Card className="bg-card border-border">
+              <CardContent className="p-4 space-y-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                  {t('rr_visual') || 'Proporción Visual'}
+                </p>
+                <div className="flex items-end gap-4 justify-center h-36">
+                  {/* Risk bar */}
+                  <div className="flex flex-col items-center gap-1.5 flex-1 max-w-[120px]">
+                    <span className="text-xs font-bold text-rose-400 tabular-nums">{result.riskPips} pips</span>
+                    <div className="w-full bg-rose-500/10 rounded-t-lg overflow-hidden flex flex-col justify-end" style={{ height: '100%' }}>
+                      <div
+                        className="w-full bg-gradient-to-t from-rose-500 to-rose-400 rounded-t-lg transition-all duration-700 ease-out"
+                        style={{ height: `${riskPct}%`, minHeight: '12px' }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                      <span className="text-[11px] font-semibold text-rose-400">{t('rr_risk') || 'Riesgo'}</span>
+                    </div>
+                    <span className="text-[10px] text-rose-400/70 tabular-nums">${result.riskAmount}</span>
+                  </div>
+                  {/* Reward bar */}
+                  <div className="flex flex-col items-center gap-1.5 flex-1 max-w-[120px]">
+                    <span className="text-xs font-bold text-emerald-400 tabular-nums">{result.rewardPips} pips</span>
+                    <div className="w-full bg-emerald-500/10 rounded-t-lg overflow-hidden flex flex-col justify-end" style={{ height: '100%' }}>
+                      <div
+                        className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-lg transition-all duration-700 ease-out"
+                        style={{ height: `${rewardPct}%`, minHeight: '12px' }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Target className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-[11px] font-semibold text-emerald-400">{t('rr_reward') || 'Recompensa'}</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-400/70 tabular-nums">${result.potentialProfit}</span>
+                  </div>
+                </div>
+                {/* Horizontal proportion bar */}
+                <div className="space-y-1">
+                  <div className="flex w-full h-3 rounded-full overflow-hidden">
+                    <div className="bg-rose-500 transition-all duration-700" style={{ width: `${riskPct}%` }} />
+                    <div className="bg-emerald-500 transition-all duration-700" style={{ width: `${rewardPct}%` }} />
+                  </div>
+                  <div className="flex justify-between text-[10px] tabular-nums text-muted-foreground">
+                    <span>{riskPct.toFixed(0)}% {t('rr_risk') || 'Riesgo'}</span>
+                    <span>{rewardPct.toFixed(0)}% {t('rr_reward') || 'Recompensa'}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <div className="grid grid-cols-2 gap-3">
               <Card className="bg-card border-border">
                 <CardContent className="p-3 text-center">
@@ -194,7 +254,8 @@ export default function RiskRewardCalculator() {
               </Card>
             </div>
           </>
-        )}
+          );
+        })()}
 
         <Card className="bg-card border-border">
           <CardContent className="p-3">
