@@ -248,8 +248,8 @@ export default function OrderFlowAnalysis() {
                   <XAxis type="number" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis dataKey="price" type="category" tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} width={60} />
                   <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
-                  <Bar dataKey="bid" fill="hsl(142 71% 45% / 0.6)" name="Bid" />
-                  <Bar dataKey="ask" fill="hsl(0 84% 60% / 0.6)" name="Ask" />
+                  <Bar dataKey="bid" fill="hsl(142 71% 45% / 0.6)" name={t('of_bid')} />
+                  <Bar dataKey="ask" fill="hsl(0 84% 60% / 0.6)" name={t('of_ask')} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
