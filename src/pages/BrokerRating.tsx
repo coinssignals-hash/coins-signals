@@ -260,7 +260,7 @@ export default function BrokerRating() {
               )}
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1">
+            <div className="grid grid-cols-5 gap-1.5">
               {categories.map((cat) => {
                 const Icon = cat.icon;
                 const isSelected = selectedCategory === cat.matchKey;
@@ -269,29 +269,31 @@ export default function BrokerRating() {
                   <button
                     key={cat.matchKey}
                     onClick={() => setSelectedCategory(isSelected ? null : cat.matchKey)}
-                    className="flex flex-col items-center gap-1.5 min-w-[64px] py-2.5 px-2 rounded-xl transition-all duration-200 active:scale-95"
-                    style={isSelected ? {
-                      background: `linear-gradient(180deg, ${color}18, ${color}08)`,
-                      border: `1px solid ${color}40`,
-                      boxShadow: `0 4px 12px -4px ${color}30`,
-                    } : {
-                      background: 'hsl(var(--secondary))',
-                      border: '1px solid transparent',
+                    className="relative flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all duration-200 active:scale-95 overflow-hidden"
+                    style={{
+                      background: isSelected
+                        ? `linear-gradient(160deg, ${color}20, ${color}08)`
+                        : 'hsl(var(--secondary) / 0.6)',
+                      boxShadow: isSelected ? `inset 0 0 0 1px ${color}60` : undefined,
                     }}
                   >
+                    {isSelected && (
+                      <div className="absolute inset-0 opacity-20" style={{
+                        background: `radial-gradient(circle at 50% 0%, ${color}, transparent 70%)`,
+                      }} />
+                    )}
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
-                      style={isSelected ? {
-                        background: `linear-gradient(135deg, ${color}30, ${color}10)`,
-                        boxShadow: `0 0 10px -3px ${color}40`,
-                      } : {
-                        background: 'hsl(var(--muted))',
+                      className="relative w-8 h-8 rounded-lg flex items-center justify-center"
+                      style={{
+                        background: isSelected ? `${color}25` : 'hsl(var(--muted))',
                       }}
                     >
-                      <Icon size={20} strokeWidth={1.8} className="transition-colors flex-shrink-0"
-                        style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))', width: 20, height: 20 }} />
+                      <Icon size={16} strokeWidth={2} className="transition-colors"
+                        style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }} />
                     </div>
-                    <span className={`text-[10px] font-bold text-center leading-tight ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    <span className={`relative text-[9px] font-semibold text-center leading-tight ${
+                      isSelected ? 'text-foreground' : 'text-muted-foreground'
+                    }`}>
                       {cat.label}
                     </span>
                   </button>
