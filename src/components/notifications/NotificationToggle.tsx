@@ -11,28 +11,39 @@ import {
   getExistingSubscription,
   unsubscribeFromPush,
 } from '@/utils/pushNotifications';
+import {
+  isNativePlatform,
+  registerNativePush,
+  unregisterNativePush,
+  checkNativePushPermission,
+} from '@/utils/nativePushNotifications';
 
 export function NotificationToggle() {
   const { t } = useTranslation();
   const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const isNative = isNativePlatform();
 
   useEffect(() => {
     const checkStatus = async () => {
-      const supported = isPushSupported();
-      setIsSupported(supported);
-
-      if (supported) {
-        const subscription = await getExistingSubscription();
-        setIsSubscribed(!!subscription);
+      if (isNative) {
+        setIsSupported(true);
+        const granted = await checkNativePushPermission();
+        setIsSubscribed(granted);
+      } else {
+        const supported = isPushSupported();
+        setIsSupported(supported);
+        if (supported) {
+          const subscription = await getExistingSubscription();
+          setIsSubscribed(!!subscription);
+        }
       }
-
       setIsLoading(false);
     };
 
     checkStatus();
-  }, []);
+  }, [isNative]);
 
   const handleToggle = async () => {
     if (!isSupported) {
@@ -42,28 +53,42 @@ export function NotificationToggle() {
     setIsLoading(true);
     try {
       if (isSubscribed) {
-        await unsubscribeFromPush();
+        if (isNative) {
+          await unregisterNativePush();
+        } else {
+          await unsubscribeFromPush();
+        }
         setIsSubscribed(false);
         toast.success(t('nt_disabled'));
       } else {
-        const permission = await requestNotificationPermission();
-        if (permission !== 'granted') {
-          toast.error(t('nt_permission_required'));
-          setIsLoading(false);
-          return;
-        }
-        const registration = await registerServiceWorker();
-        if (!registration) {
-          toast.error(t('nt_sw_error'));
-          setIsLoading(false);
-          return;
-        }
-        const subscription = await subscribeToPush(registration);
-        if (subscription) {
-          setIsSubscribed(true);
-          toast.success(t('nt_enabled'));
+        if (isNative) {
+          const token = await registerNativePush();
+          if (token) {
+            setIsSubscribed(true);
+            toast.success(t('nt_enabled'));
+          } else {
+            toast.error(t('nt_permission_required'));
+          }
         } else {
-          toast.error(t('nt_enable_error'));
+          const permission = await requestNotificationPermission();
+          if (permission !== 'granted') {
+            toast.error(t('nt_permission_required'));
+            setIsLoading(false);
+            return;
+          }
+          const registration = await registerServiceWorker();
+          if (!registration) {
+            toast.error(t('nt_sw_error'));
+            setIsLoading(false);
+            return;
+          }
+          const subscription = await subscribeToPush(registration);
+          if (subscription) {
+            setIsSubscribed(true);
+            toast.success(t('nt_enabled'));
+          } else {
+            toast.error(t('nt_enable_error'));
+          }
         }
       }
     } catch (error) {
