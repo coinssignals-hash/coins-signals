@@ -33,6 +33,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'notifications', label: 'Notificaciones', icon: Bell },
   { id: 'analytics', label: 'Métricas', icon: BarChart3 },
   { id: 'api-usage', label: 'Consumo APIs/IA', icon: Activity },
+  { id: 'health-check', label: 'Health Check', icon: HeartPulse },
   { id: 'tables', label: 'Base de Datos', icon: Database },
   { id: 'audit', label: 'Auditoría', icon: ScrollText },
   { id: 'documents', label: 'Documentos', icon: FileText },
