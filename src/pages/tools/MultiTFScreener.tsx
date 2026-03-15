@@ -105,7 +105,7 @@ export default function MultiTFScreener() {
             </Link>
             <div className="flex items-center gap-2">
               <ScanSearch className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Multi-Timeframe</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('mtf_title')}</h1>
             </div>
           </div>
           <div className="flex items-center gap-2">
