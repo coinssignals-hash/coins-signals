@@ -1128,10 +1128,14 @@ export default function BrokerRating() {
                     <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_leverage')}</span>
                     <span className="text-xs font-bold text-accent">{selectedBroker.leverage.scb}</span>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Pros & Cons */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.22 }}
+                  className="px-5 mb-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
                       <h4 className="text-xs font-semibold text-primary mb-2 flex items-center gap-1">
