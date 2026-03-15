@@ -835,72 +835,94 @@ export default function BrokerRating() {
           </Card>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {filteredBrokers.map((broker) => {
             const isSelectedForCompare = brokersToCompare.some(b => b.id === broker.id);
             return (
-              <Card key={broker.id} className={`overflow-hidden transition-all ${isSelectedForCompare ? 'ring-2 ring-primary' : ''}`}>
-                <CardContent className="p-4">
-                  <div className="flex gap-4">
+              <Card 
+                key={broker.id} 
+                className={`overflow-hidden transition-all active:scale-[0.99] ${isSelectedForCompare ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => !compareMode && setSelectedBroker(broker)}
+              >
+                <CardContent className="p-0">
+                  {/* Header row */}
+                  <div className="flex items-center gap-3 p-3 pb-2">
                     {compareMode && (
-                      <div className="flex items-start pt-1">
-                        <Checkbox checked={isSelectedForCompare} onCheckedChange={() => toggleBrokerCompare(broker)} className="border-primary data-[state=checked]:bg-primary" />
-                      </div>
+                      <Checkbox 
+                        checked={isSelectedForCompare} 
+                        onCheckedChange={(e) => { e && toggleBrokerCompare(broker); }} 
+                        onClick={(e) => e.stopPropagation()}
+                        className="border-primary data-[state=checked]:bg-primary" 
+                      />
                     )}
-                    <div className="flex flex-col items-center">
-                      <div className="w-20 h-20 bg-secondary rounded-lg flex items-center justify-center mb-2">
-                        <span className="text-2xl font-bold text-foreground">{broker.logo}</span>
-                      </div>
-                      <p className="text-xs text-foreground">{t('broker_headquarters')}: <span className="text-primary">{broker.central}</span></p>
-                      <p className="text-xs text-primary">{broker.regions}</p>
+                    <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0">
+                      <span className="text-sm font-bold text-foreground">{broker.logo}</span>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-bold text-foreground">{broker.name}</h3>
-                        <Badge variant="outline" className="text-primary border-primary text-xs">{broker.level}</Badge>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-foreground truncate">{broker.name}</h3>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-primary border-primary/40 shrink-0">{broker.level}</Badge>
                       </div>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-2">
-                        <div>
-                          <span className="text-primary">{t('broker_initial_deposit')}</span>
-                          <p className="text-amber-400">{broker.depositMin}</p>
-                        </div>
-                        <div>
-                          <span className="text-primary">{t('broker_commission')}</span> / <span className="text-primary">{t('broker_spreads')}</span>
-                          <p><span className="text-amber-400">{broker.commission}</span> <span className="text-primary ml-2">{broker.spreads}</span></p>
-                        </div>
-                        <div>
-                          <span className="text-primary">{t('broker_platform')}</span>
-                          <p className="text-foreground">{broker.platform.join(', ')}</p>
-                        </div>
-                        <div>
-                          <span className="text-primary">{t('broker_leverage')}</span>
-                          <p className="text-foreground">{broker.leverage.scb} (SCB)<br />{broker.leverage.fca} (FCA)</p>
-                        </div>
-                        <div>
-                          <span className="text-primary">{t('broker_regulations')}</span>
-                          <p className="text-foreground">{broker.regulations.join(', ')}</p>
-                        </div>
-                        <div>
-                          <span className="text-primary">{t('broker_instruments')}</span>
-                          <p className="text-foreground">{broker.instruments.join(', ')}</p>
-                        </div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <Landmark className="w-3 h-3 text-muted-foreground shrink-0" />
+                        <span className="text-[10px] text-muted-foreground truncate">{broker.central} · {broker.regions}</span>
                       </div>
-                      <div className="flex items-center justify-between mt-3">
-                        <div>
-                          {renderStars(broker.rating)}
-                          <span className="text-xs text-muted-foreground ml-2">{t('broker_comments')}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          {compareMode && (
-                            <Button size="sm" variant={isSelectedForCompare ? "secondary" : "outline"} className="text-xs" onClick={() => toggleBrokerCompare(broker)}>
-                              {isSelectedForCompare ? t('broker_remove') : t('broker_add')}
-                            </Button>
-                          )}
-                          <Button size="sm" className="bg-primary hover:bg-primary/90 text-xs" onClick={() => setSelectedBroker(broker)}>
-                            {t('broker_view_details')}
-                          </Button>
-                        </div>
+                    </div>
+                    <div className="flex flex-col items-end shrink-0">
+                      <div className="flex items-center gap-0.5">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <span className="text-sm font-bold text-foreground">{broker.rating}</span>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Stats grid */}
+                  <div className="grid grid-cols-3 gap-px bg-border/50 mx-3 rounded-lg overflow-hidden mb-2">
+                    <div className="bg-card p-2 text-center">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_initial_deposit')}</span>
+                      <span className="text-xs font-semibold text-accent">{broker.depositMin}</span>
+                    </div>
+                    <div className="bg-card p-2 text-center">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_spreads')}</span>
+                      <span className="text-xs font-semibold text-accent">{broker.spreads}</span>
+                    </div>
+                    <div className="bg-card p-2 text-center">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_commission')}</span>
+                      <span className="text-xs font-semibold text-accent">{broker.commission === '0.0' ? '$0' : `$${broker.commission}`}</span>
+                    </div>
+                  </div>
+
+                  {/* Tags row */}
+                  <div className="px-3 pb-2">
+                    <div className="flex flex-wrap gap-1">
+                      {broker.platform.map(p => (
+                        <span key={p} className="text-[10px] px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-medium">{p}</span>
+                      ))}
+                      {broker.regulations.slice(0, 3).map(r => (
+                        <span key={r} className="text-[10px] px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground">{r}</span>
+                      ))}
+                      {broker.regulations.length > 3 && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground">+{broker.regulations.length - 3}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between px-3 py-2 border-t border-border/50 bg-secondary/30">
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <span>{t('broker_leverage')}: <span className="text-foreground font-medium">{broker.leverage.scb}</span></span>
+                      <span className="mx-1">·</span>
+                      <span>{broker.instruments.slice(0, 2).join(', ')}{broker.instruments.length > 2 ? ' +' : ''}</span>
+                    </div>
+                    <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                      {compareMode && (
+                        <Button size="sm" variant={isSelectedForCompare ? "secondary" : "outline"} className="text-[10px] h-7 px-2" onClick={() => toggleBrokerCompare(broker)}>
+                          {isSelectedForCompare ? t('broker_remove') : t('broker_add')}
+                        </Button>
+                      )}
+                      <Button size="sm" className="bg-primary hover:bg-primary/90 text-[10px] h-7 px-3" onClick={() => setSelectedBroker(broker)}>
+                        {t('broker_view_details')}
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
