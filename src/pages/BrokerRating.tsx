@@ -879,8 +879,8 @@ export default function BrokerRating() {
                         className="border-primary data-[state=checked]:bg-primary" 
                       />
                     )}
-                    <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0">
-                      <span className="text-sm font-bold text-foreground">{broker.logo}</span>
+                    <div className="w-11 h-11 bg-white rounded-xl flex items-center justify-center shrink-0 overflow-hidden p-1">
+                      <img src={BROKER_LOGOS[broker.id]} alt={broker.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
