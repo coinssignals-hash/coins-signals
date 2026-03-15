@@ -386,3 +386,42 @@ export function useGlobalBrokerSearch(query: string) {
 
   return { results, loading, searched: searchedRef.current };
 }
+
+/** Preload broker counts for all regions (lazy, fires once). */
+export function useRegionCounts() {
+  const [counts, setCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      const results: Record<string, number> = {};
+      await Promise.all(
+        BROKER_REGIONS.map(async (region) => {
+          if (cache.has(region.key)) {
+            results[region.key] = cache.get(region.key)!.length;
+            return;
+          }
+          try {
+            const res = await fetch(`/data/brokers/${region.file}`);
+            if (!res.ok) { results[region.key] = 0; return; }
+            const ct = res.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) { results[region.key] = 0; return; }
+            const data = await res.json();
+            const normalized = normalizeJsonData(data, region.key);
+            cache.set(region.key, normalized);
+            results[region.key] = normalized.length;
+          } catch {
+            results[region.key] = 0;
+          }
+        })
+      );
+      if (!cancelled) setCounts(results);
+    };
+
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  return counts;
+}
