@@ -47,26 +47,29 @@ export function Header() {
             </span>
           </div>
 
-          {/* Center: logo — sized for mobile */}
+          {/* Center: logo */}
           <Link to="/" className="flex items-center" onMouseEnter={onMouseEnter('/')}>
             <img src={logoImg} alt="Coins Signals" className="h-16 w-auto" />
           </Link>
 
-          {/* Right: compact icons */}
-          <div className="flex items-center gap-1.5">
-            <Link to="/tools/trading-journal">
-              <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
-                <BookOpen className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link to="/tools">
-              <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
-                <BarChart3 className="w-4 h-4" />
-              </Button>
-            </Link>
-            <NotificationToggle />
-            <LanguageQuickSelect />
-          </div>
+          {/* Right: placeholder for balance */}
+          <div className="w-10" />
+        </div>
+
+        {/* Secondary row: quick action icons */}
+        <div className="flex items-center justify-center gap-3 px-3 pb-2">
+          <Link to="/tools/trading-journal">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
+              <BookOpen className="w-4 h-4" />
+            </Button>
+          </Link>
+          <Link to="/tools">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
+              <BarChart3 className="w-4 h-4" />
+            </Button>
+          </Link>
+          <NotificationToggle />
+          <LanguageQuickSelect />
         </div>
 
         {/* Gradient divider */}
