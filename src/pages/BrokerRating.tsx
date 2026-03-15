@@ -671,8 +671,10 @@ export default function BrokerRating() {
                       }}
                     >
                       <Icon
-                        className="w-5 h-5 transition-colors"
-                        style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }}
+                        size={20}
+                        strokeWidth={1.8}
+                        className="transition-colors flex-shrink-0"
+                        style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))', width: 20, height: 20 }}
                       />
                     </div>
                     <span className={`text-[10px] font-bold text-center leading-tight ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
