@@ -200,48 +200,6 @@ function FeaturedHistoricalChart({
 }
 
 
-// Sentiment circle indicator (mirrors SignalCardV2 price circle)
-function SentimentCircle({ sentiment, relevance }: {sentiment: 'bullish' | 'bearish' | 'neutral';relevance: number;}) {
-  const circlePercent = Math.min(100, relevance);
-  const isBullish = sentiment === 'bullish';
-  const isBearish = sentiment === 'bearish';
-  const gradId = `sent-${Math.random().toString(36).slice(2, 8)}`;
-  const SentIcon = isBullish ? TrendingUp : isBearish ? TrendingDown : Minus;
-  const label = isBullish ? 'Bull' : isBearish ? 'Bear' : 'Neutral';
-  const textColor = isBullish ? 'text-green-400' : isBearish ? 'text-red-400' : 'text-cyan-300';
-  const radius = 16;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (circlePercent / 100) * circumference;
-  const c1 = isBullish ? '#22c55e' : isBearish ? '#ef4444' : '#22d3ee';
-  const c2 = isBullish ? '#16a34a' : isBearish ? '#dc2626' : '#06b6d4';
-
-  return (
-    <div className="relative flex flex-col items-center">
-      <svg width="44" height="44" viewBox="0 0 44 44">
-        <circle cx="22" cy="22" r={radius} fill="none" stroke="hsla(210,30%,20%,0.6)" strokeWidth="3" />
-        <defs>
-          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={c1} />
-            <stop offset="100%" stopColor={c2} />
-          </linearGradient>
-        </defs>
-        <circle
-          cx="22" cy="22" r={radius}
-          fill="none"
-          stroke={`url(#${gradId})`}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          transform="rotate(-90 22 22)"
-        />
-      </svg>
-      <SentIcon className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5", textColor)} />
-      <span className={cn("text-[8px] font-bold mt-0.5", textColor)}>{label}</span>
-    </div>
-  );
-}
-
 // Currency impact bar (matches SignalCardV2 ImpactBar)
 function NewsImpactBar({ label, value, color }: {label: string;value: number;color: string;}) {
   return (
