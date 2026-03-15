@@ -12,7 +12,7 @@ import { AISignalCreator } from './AISignalCreator';
 import { AISymbolSearch, INSTRUMENT_TABS } from './AISymbolSearch';
 import { useFavoriteSymbols } from '@/hooks/useFavoriteSymbols';
 import { useForexData } from '@/hooks/useForexData';
-import { useAIAnalysis, AIModule } from '@/hooks/useAIAnalysis';
+import { useAIAnalysis, AIModule, DetailLevel } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
 import { detectCandlePatterns } from '@/lib/candle-patterns';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
