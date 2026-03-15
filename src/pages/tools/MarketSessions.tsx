@@ -1325,16 +1325,16 @@ function SessionComparisonTable({ activeIndex, onSelect }: { activeIndex: number
       {/* Title */}
       <div className="px-3 py-2 flex items-center gap-1.5" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Comparativa de sesiones</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('ms_session_comparison')}</span>
       </div>
 
       {/* Header row */}
       <div className="grid grid-cols-[1fr_40px_50px_60px_50px] gap-0 px-3 py-1.5" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase">Sesión</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-center">Trend</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Spread</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Volumen</span>
-        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">Rango</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase">{t('ms_session')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-center">{t('ms_trend')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_spread')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_volume')}</span>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase text-right">{t('ms_range')}</span>
       </div>
 
       {/* Rows */}
