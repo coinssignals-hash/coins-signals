@@ -29,7 +29,6 @@ export default function Settings() {
       items: [
         { icon: Bell, label: t('settings_notifications'), href: '/settings/notifications', description: t('settings_notifications_desc') },
         { icon: Palette, label: t('settings_appearance'), href: '/settings/appearance', description: t('settings_appearance_desc') },
-        { icon: Globe, label: t('settings_language_tz'), href: '/settings/language', description: t('settings_language_tz_desc') },
       ]
     }
   ];
