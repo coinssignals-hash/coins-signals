@@ -28,9 +28,14 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { signal, patterns, marketContext, symbol, candles, indicators } = body;
+    const { signal, patterns, marketContext, symbol, candles, indicators, language, detailLevel } = body;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    const lang = language || "es";
+    const detail = detailLevel || "standard";
+    const langInstruction = lang === "es" ? "Responde en español." : lang === "en" ? "Respond in English." : lang === "pt" ? "Responda em português." : lang === "fr" ? "Réponds en français." : lang === "it" ? "Rispondi in italiano." : lang === "de" ? "Antworte auf Deutsch." : lang === "nl" ? "Antwoord in het Nederlands." : lang === "ar" ? "أجب باللغة العربية." : lang === "mt" ? "Wieġeb bil-Malti." : "Responde en español.";
+    const detailInstruction = detail === "concise" ? "Sé muy breve y directo, máximo 2-3 líneas por sección." : detail === "detailed" ? "Proporciona un análisis extenso y profundo con múltiples escenarios." : "Sé conciso pero completo.";
 
     let prompt: string;
 
@@ -67,7 +72,7 @@ Genera un reporte profesional en español con:
 4. **📈 Escenarios**: Mejor caso, caso base, peor caso
 5. **✅ Recomendación**: Ejecutar / Esperar / Evitar + gestión de posición sugerida
 
-Sé conciso, profesional y directo. Usa markdown.`;
+Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa markdown.`;
     } else if (candles && Array.isArray(candles)) {
       // AI Center mode: called with raw candles + indicators
       const recent = candles.slice(-30);
@@ -112,7 +117,7 @@ Genera un reporte profesional en español con:
 5. **📈 Escenarios**: Mejor caso (alcista), caso base (neutral), peor caso (bajista) con probabilidades
 6. **✅ Recomendación**: Sesgo operativo (COMPRA / VENTA / ESPERAR) con niveles sugeridos de entrada, SL y TP
 
-Sé conciso, profesional y directo. Usa markdown.`;
+Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa markdown.`;
     } else {
       return new Response(JSON.stringify({ error: "No signal or candles provided" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -124,7 +129,7 @@ Sé conciso, profesional y directo. Usa markdown.`;
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: "Eres un analista de trading Forex profesional. Respondes siempre en español con reportes concisos y accionables." },
+          { role: "system", content: `Eres un analista de trading Forex profesional. ${langInstruction} Genera reportes concisos y accionables.` },
           { role: "user", content: prompt },
         ],
         stream: false,
