@@ -56,8 +56,11 @@ export function Header() {
           <div className="w-10" />
         </div>
 
-        {/* Secondary row: quick action icons */}
-        <div className="flex items-center justify-center gap-4 px-3 pb-2">
+        {/* Gradient divider */}
+        <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
+
+        {/* Secondary row: quick action icons — below the divider */}
+        <div className="flex items-center justify-center gap-4 px-3 py-2">
           <Link to="/tools/trading-journal" className="flex flex-col items-center gap-0.5">
             <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
               <BookOpen className="w-4 h-4" />
@@ -79,9 +82,6 @@ export function Header() {
             <span className="text-[10px] text-muted-foreground leading-none">{t('language')}</span>
           </div>
         </div>
-
-        {/* Gradient divider */}
-        <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
         {/* Navigation tabs — scrollable on small screens */}
         
