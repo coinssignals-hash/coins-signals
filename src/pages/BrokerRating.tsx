@@ -15,6 +15,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useBrokerData, BROKER_REGIONS, NormalizedBroker } from '@/hooks/useBrokerData';
+import { getBrokerLogo } from '@/lib/brokerLogos';
+import { LazyImage } from '@/components/ui/lazy-image';
 
 const CATEGORY_COLORS: Record<string, string> = {
   forex: 'hsl(200, 90%, 50%)',
@@ -284,7 +286,11 @@ export default function BrokerRating() {
                         />
                       )}
                       <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0 overflow-hidden text-lg">
-                        {broker.countryFlag}
+                        {getBrokerLogo(broker.name) ? (
+                          <LazyImage src={getBrokerLogo(broker.name)} alt={broker.name} className="w-full h-full object-contain p-1" />
+                        ) : (
+                          broker.countryFlag
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -476,7 +482,11 @@ export default function BrokerRating() {
                       className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0 text-2xl"
                       style={{ translateY: logoParallaxY }}
                     >
-                      {selectedBroker.countryFlag}
+                      {getBrokerLogo(selectedBroker.name) ? (
+                        <img src={getBrokerLogo(selectedBroker.name)} alt={selectedBroker.name} className="w-full h-full object-contain" />
+                      ) : (
+                        selectedBroker.countryFlag
+                      )}
                     </motion.div>
                     <div className="flex-1 min-w-0">
                       <DialogHeader className="space-y-0">
