@@ -346,8 +346,8 @@ export default function Onboarding() {
           ) : (
             <button
               onClick={handleFinish}
-              disabled={saving}
-              className="flex items-center gap-1.5 px-6 py-3 rounded-xl text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/25 transition-all active:scale-[0.97] disabled:opacity-60"
+              disabled={saving || !canFinish}
+              className="flex items-center gap-1.5 px-6 py-3 rounded-xl text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/25 transition-all active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {saving ? 'Guardando...' : 'Comenzar'}
