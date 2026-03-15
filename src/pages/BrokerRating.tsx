@@ -14,12 +14,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
 
+const CATEGORY_COLORS: Record<string, string> = {
+  forex: 'hsl(200, 90%, 50%)',
+  stocks: 'hsl(270, 70%, 55%)',
+  commodities: 'hsl(45, 90%, 55%)',
+  futures: 'hsl(160, 70%, 50%)',
+  crypto: 'hsl(25, 90%, 55%)',
+};
+
 const getCategoriesTranslated = (t: (key: string) => string) => [
-  { icon: TrendingUp, label: t('broker_cat_forex'), sublabel: t('broker_cat_forex_sub') },
-  { icon: BarChart3, label: t('broker_cat_stocks'), sublabel: t('broker_cat_stocks_sub') },
-  { icon: Gem, label: t('broker_cat_commodities'), sublabel: t('broker_cat_commodities_sub') },
-  { icon: LineChart, label: t('broker_cat_futures'), sublabel: t('broker_cat_futures_sub') },
-  { icon: Bitcoin, label: t('broker_cat_crypto'), sublabel: '' },
+  { icon: CandlestickChart, label: t('broker_cat_forex'), sublabel: t('broker_cat_forex_sub'), colorKey: 'forex' },
+  { icon: BarChart3, label: t('broker_cat_stocks'), sublabel: t('broker_cat_stocks_sub'), colorKey: 'stocks' },
+  { icon: Gem, label: t('broker_cat_commodities'), sublabel: t('broker_cat_commodities_sub'), colorKey: 'commodities' },
+  { icon: TrendingUp, label: t('broker_cat_futures'), sublabel: t('broker_cat_futures_sub'), colorKey: 'futures' },
+  { icon: Bitcoin, label: t('broker_cat_crypto'), sublabel: '', colorKey: 'crypto' },
 ];
 
 const brokers = [
