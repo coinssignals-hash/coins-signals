@@ -75,7 +75,6 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       items: [
         { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
         { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
-        { icon: Globe, label: t('drawer_language_tz'), href: '/settings/language' },
         { icon: Download, label: t('drawer_install_app'), href: '/install' },
       ],
     },
