@@ -16,6 +16,18 @@ interface Props {
   title: string;
 }
 
+/* ── Extract live quote status from edge function response ── */
+function extractLiveQuote(data: unknown): { hasLiveData: boolean; price?: number; timestamp?: string } {
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    const lq = obj.liveQuote as Record<string, unknown> | undefined;
+    if (lq && typeof lq === 'object' && lq.price) {
+      return { hasLiveData: true, price: lq.price as number, timestamp: lq.timestamp as string | undefined };
+    }
+  }
+  return { hasLiveData: false };
+}
+
 /* ── Extract text content from edge function response ── */
 function extractContent(data: unknown): string {
   if (typeof data === 'string') return data;
