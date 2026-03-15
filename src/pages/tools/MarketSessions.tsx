@@ -489,10 +489,10 @@ function LiveDataPanel({ quotes, isConnected, color, onRefresh }: {
             <WifiOff className="w-3 h-3 text-yellow-500" />
           )}
           <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: isConnected ? 'hsl(140 60% 50%)' : 'hsl(45 80% 55%)' }}>
-            {isConnected ? 'LIVE' : 'OFFLINE'}
+            {isConnected ? t('ms_live') : t('ms_offline')}
           </span>
           <span className="text-[10px] text-muted-foreground">
-            Spread avg: <span className="font-bold" style={{ color: `hsl(${color})` }}>{avgSpread.toFixed(1)}p</span>
+            {t('ms_spread_avg')}: <span className="font-bold" style={{ color: `hsl(${color})` }}>{avgSpread.toFixed(1)}p</span>
           </span>
         </div>
         <button
