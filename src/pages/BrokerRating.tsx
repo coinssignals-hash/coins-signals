@@ -831,9 +831,91 @@ export default function BrokerRating() {
                   </div>
                 </motion.div>
 
+                {/* User Reviews */}
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.52 }} className="px-5 mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                      {t('broker_reviews') || 'Reseñas de usuarios'}
+                    </h4>
+                    <span className="text-[10px] text-muted-foreground">
+                      {(() => {
+                        const seed = selectedBroker.name.length;
+                        return `${120 + seed * 7} ${t('broker_reviews_count') || 'reseñas'}`;
+                      })()}
+                    </span>
+                  </div>
+
+                  {/* Rating breakdown */}
+                  {(() => {
+                    const r = selectedBroker.rating;
+                    const distribution = [
+                      Math.round(r * 14),
+                      Math.round(r * 6),
+                      Math.round((5 - r) * 8),
+                      Math.round((5 - r) * 3),
+                      Math.round((5 - r) * 1.5),
+                    ];
+                    const total = distribution.reduce((a, b) => a + b, 0);
+                    return (
+                      <div className="bg-secondary/50 rounded-xl p-3 mb-3">
+                        <div className="flex items-center gap-3 mb-2.5">
+                          <div className="text-center">
+                            <span className="text-2xl font-bold text-foreground">{r}</span>
+                            <div className="flex gap-0.5 mt-0.5">
+                              {[1, 2, 3, 4, 5].map(s => (
+                                <Star key={s} className={`w-2.5 h-2.5 ${s <= Math.round(r) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`} />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            {distribution.map((count, i) => (
+                              <div key={i} className="flex items-center gap-1.5">
+                                <span className="text-[9px] text-muted-foreground w-3 text-right">{5 - i}</span>
+                                <Progress value={total > 0 ? (count / total) * 100 : 0} className="h-1.5 flex-1" />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Individual reviews */}
+                  <div className="space-y-2.5">
+                    {[
+                      { name: 'Carlos M.', initials: 'CM', rating: 5, date: '2 sem', text: `Excelente plataforma. ${selectedBroker.name} ofrece spreads competitivos y la ejecución es rápida.`, helpful: 12 },
+                      { name: 'Ana R.', initials: 'AR', rating: 4, date: '1 mes', text: 'Buena experiencia en general. El soporte al cliente es responsivo y las herramientas de análisis son completas.', helpful: 8 },
+                      { name: 'Miguel S.', initials: 'MS', rating: 4, date: '3 sem', text: 'Me gusta la variedad de instrumentos disponibles. La app móvil funciona bien aunque podría mejorar la interfaz.', helpful: 5 },
+                    ].map((review, i) => (
+                      <div key={i} className="bg-secondary/30 rounded-xl p-3 border border-border/50">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <Avatar className="w-6 h-6">
+                            <AvatarFallback className="text-[9px] font-bold bg-primary/10 text-primary">{review.initials}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[11px] font-semibold text-foreground">{review.name}</span>
+                            <span className="text-[9px] text-muted-foreground ml-2">{review.date}</span>
+                          </div>
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <Star key={s} className={`w-2.5 h-2.5 ${s <= review.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`} />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">{review.text}</p>
+                        <div className="flex items-center gap-1 mt-1.5">
+                          <ThumbsUp className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-[9px] text-muted-foreground">{review.helpful} útil</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
                 {/* CTA */}
                 <motion.div initial={{ opacity: 0, y: 16, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.35, delay: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }} className="px-5">
+                  transition={{ duration: 0.35, delay: 0.58, ease: [0.25, 0.46, 0.45, 0.94] }} className="px-5">
                   <Button className="w-full bg-primary hover:bg-primary/90 h-11 text-sm font-semibold">{t('broker_open_account')}</Button>
                 </motion.div>
               </div>
