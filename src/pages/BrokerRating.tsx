@@ -285,7 +285,7 @@ export default function BrokerRating() {
                       }} />
                     )}
                     <div
-                      className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300"
+                      className="relative w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300"
                       style={{
                         background: isSelected
                           ? `linear-gradient(135deg, ${color}30, ${color}15)`
@@ -293,14 +293,9 @@ export default function BrokerRating() {
                         boxShadow: isSelected ? `0 0 12px -4px ${color}40` : undefined,
                       }}
                     >
-                      <Icon size={17} strokeWidth={isSelected ? 2.2 : 1.8} className="transition-all duration-300"
+                      <Icon size={24} strokeWidth={isSelected ? 2.2 : 1.8} className="transition-all duration-300"
                         style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }} />
                     </div>
-                    <span className={`relative text-[9px] font-bold text-center leading-tight tracking-wide uppercase transition-colors duration-300 ${
-                      isSelected ? 'text-foreground' : 'text-muted-foreground/70'
-                    }`}>
-                      {cat.label}
-                    </span>
                     {isSelected && (
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: color }} />
                     )}
