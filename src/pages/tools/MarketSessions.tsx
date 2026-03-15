@@ -768,11 +768,11 @@ function WeeklyChart({ session, color }: {
       <div className="flex items-center gap-3 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: `hsl(${color})` }} />
-          <span className="text-[10px] text-muted-foreground">{hasRealData ? 'Volume' : 'Volatility'}</span>
+          <span className="text-[10px] text-muted-foreground">{hasRealData ? t('ms_volume') : t('ms_volatility_label')}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm" style={{ background: 'hsl(45 80% 55%)' }} />
-          <span className="text-[10px] text-muted-foreground">{hasRealData ? 'Range (pips)' : 'Liquidity'}</span>
+          <span className="text-[10px] text-muted-foreground">{hasRealData ? `${t('ms_range')} (pips)` : t('ms_liquidity')}</span>
         </div>
       </div>
     </div>
