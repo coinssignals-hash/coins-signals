@@ -829,7 +829,7 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
     saveAlertConfig(session.id, next);
     alertedRef.current = false;
     if (next.enabled) {
-      toast.success(`Alerta activada para ${session.name} (${next.thresholdPips} pips)`);
+      toast.success(`${t('ms_alert_activated')} ${session.name} (${next.thresholdPips} pips)`);
     }
   };
 
