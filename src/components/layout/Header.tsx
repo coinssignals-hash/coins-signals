@@ -72,7 +72,7 @@ export function Header() {
           </Link>
           <div className="flex flex-col items-center gap-0.5">
             <NotificationToggle />
-            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_alerts') || 'Alertas'}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('alerts')}</span>
           </div>
           <div className="flex flex-col items-center gap-0.5">
             <LanguageQuickSelect />
