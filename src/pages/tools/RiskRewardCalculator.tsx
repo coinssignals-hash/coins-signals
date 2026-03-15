@@ -8,17 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Scale, Target, ShieldAlert, Info, Calculator } from 'lucide-react';
+import { ArrowLeft, Scale, Target, ShieldAlert, Info, Calculator, Layers } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 
 const PAIRS = [
-  { symbol: 'EUR/USD', pipSize: 0.0001 }, { symbol: 'GBP/USD', pipSize: 0.0001 },
-  { symbol: 'USD/JPY', pipSize: 0.01 }, { symbol: 'USD/CHF', pipSize: 0.0001 },
-  { symbol: 'AUD/USD', pipSize: 0.0001 }, { symbol: 'NZD/USD', pipSize: 0.0001 },
-  { symbol: 'USD/CAD', pipSize: 0.0001 }, { symbol: 'EUR/GBP', pipSize: 0.0001 },
-  { symbol: 'EUR/JPY', pipSize: 0.01 }, { symbol: 'GBP/JPY', pipSize: 0.01 },
-  { symbol: 'XAU/USD', pipSize: 0.01 },
+  { symbol: 'EUR/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'GBP/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'USD/JPY', pipSize: 0.01, pipValue: 6.7 },
+  { symbol: 'USD/CHF', pipSize: 0.0001, pipValue: 10.3 },
+  { symbol: 'AUD/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'NZD/USD', pipSize: 0.0001, pipValue: 10 },
+  { symbol: 'USD/CAD', pipSize: 0.0001, pipValue: 7.4 },
+  { symbol: 'EUR/GBP', pipSize: 0.0001, pipValue: 12.7 },
+  { symbol: 'EUR/JPY', pipSize: 0.01, pipValue: 6.7 },
+  { symbol: 'GBP/JPY', pipSize: 0.01, pipValue: 6.7 },
+  { symbol: 'XAU/USD', pipSize: 0.01, pipValue: 1 },
 ];
 
 interface Result {
@@ -30,6 +35,9 @@ interface Result {
   isGoodRatio: boolean;
   isAcceptable: boolean;
   verdict: string;
+  optimalLots: string;
+  miniLots: string;
+  microLots: string;
 }
 
 export default function RiskRewardCalculator() {
@@ -74,6 +82,11 @@ export default function RiskRewardCalculator() {
     const isGoodRatio = ratio >= 2;
     const isAcceptable = ratio >= 1 && ratio < 2;
 
+    // Lot size calculation: riskAmount / (riskPips * pipValue)
+    const standardLots = riskPips > 0 ? riskAmount / (riskPips * pairData.pipValue) : 0;
+    const miniLots = standardLots * 10;
+    const microLots = standardLots * 100;
+
     setResult({
       riskPips: riskPips.toFixed(1),
       rewardPips: rewardPips.toFixed(1),
@@ -83,6 +96,9 @@ export default function RiskRewardCalculator() {
       isGoodRatio,
       isAcceptable,
       verdict: isGoodRatio ? (t('rr_excellent') || 'Excelente') : isAcceptable ? (t('rr_acceptable') || 'Aceptable') : (t('rr_not_recommended') || 'No recomendado'),
+      optimalLots: standardLots.toFixed(2),
+      miniLots: miniLots.toFixed(2),
+      microLots: microLots.toFixed(2),
     });
 
     toast.success(t('rr_calculated') || 'Resultado calculado');
@@ -253,6 +269,38 @@ export default function RiskRewardCalculator() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Optimal Lot Size */}
+            <Card className="bg-card border-primary/20">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2 justify-center">
+                  <Layers className="w-4 h-4 text-primary" />
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {t('rr_lot_size') || 'Tamaño de Lote Óptimo'}
+                  </p>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground mb-1">Standard</p>
+                    <p className="text-lg font-bold text-primary tabular-nums">{result.optimalLots}</p>
+                    <p className="text-[9px] text-muted-foreground">100K units</p>
+                  </div>
+                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground mb-1">Mini</p>
+                    <p className="text-lg font-bold text-primary tabular-nums">{result.miniLots}</p>
+                    <p className="text-[9px] text-muted-foreground">10K units</p>
+                  </div>
+                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
+                    <p className="text-[10px] text-muted-foreground mb-1">Micro</p>
+                    <p className="text-lg font-bold text-primary tabular-nums">{result.microLots}</p>
+                    <p className="text-[9px] text-muted-foreground">1K units</p>
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center">
+                  {t('rr_lot_info') || `Basado en ${riskPercent}% de riesgo ($${result.riskAmount}) sobre ${result.riskPips} pips de SL`}
+                </p>
+              </CardContent>
+            </Card>
           </>
           );
         })()}
