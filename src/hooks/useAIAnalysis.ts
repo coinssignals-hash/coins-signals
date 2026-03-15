@@ -74,7 +74,7 @@ export function useAIAnalysis() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [language]);
 
   return { results, loading, error, runModule, runFullAnalysis };
 }
