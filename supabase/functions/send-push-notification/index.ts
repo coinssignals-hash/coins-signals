@@ -53,6 +53,51 @@ async function generateVapidAuthorizationHeader(
   return `vapid t=${unsignedToken}.${signatureB64}, k=${publicKey}`;
 }
 
+/**
+ * Send a push notification via Firebase Cloud Messaging (FCM) HTTP v1 API
+ */
+async function sendFCMNotification(
+  fcmToken: string,
+  title: string,
+  body: string,
+  data: Record<string, string>,
+  fcmServerKey: string
+): Promise<boolean> {
+  const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `key=${fcmServerKey}`,
+    },
+    body: JSON.stringify({
+      to: fcmToken,
+      notification: { title, body, sound: 'default', click_action: 'FCM_PLUGIN_ACTIVITY' },
+      data,
+      priority: 'high',
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('FCM error:', response.status, errorText);
+    return false;
+  }
+
+  const result = await response.json();
+  console.log('FCM result:', JSON.stringify(result));
+
+  // Check for invalid tokens
+  if (result.failure > 0 && result.results) {
+    for (const r of result.results) {
+      if (r.error === 'NotRegistered' || r.error === 'InvalidRegistration') {
+        return false; // Token is stale
+      }
+    }
+  }
+
+  return result.success > 0;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -92,10 +137,7 @@ serve(async (req) => {
 
     const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
     const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
-    if (!vapidPublicKey || !vapidPrivateKey) {
-      return new Response(JSON.stringify({ error: 'VAPID keys not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-    }
+    const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
 
     // Build filtered user_id list if segmented
     let targetUserIds: string[] | null = null;
@@ -111,12 +153,12 @@ serve(async (req) => {
       }
 
       if (targetUserIds && targetUserIds.length === 0) {
-        return new Response(JSON.stringify({ success: true, results: { success: 0, failed: 0, errors: ['No users match filter'] } }),
+        return new Response(JSON.stringify({ success: true, results: { web: { success: 0, failed: 0 }, native: { success: 0, failed: 0 }, errors: ['No users match filter'] } }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
     }
 
-    // Get subscriptions (filtered or all)
+    // Get all subscriptions
     let query = supabase.from('push_subscriptions').select('*');
     if (targetUserIds) {
       query = query.in('user_id', targetUserIds);
@@ -128,19 +170,32 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    console.log(`Found ${subscriptions?.length || 0} subscriptions (filter: ${payload.filter?.type || 'none'})`);
+    const webSubs = (subscriptions || []).filter(s => s.platform === 'web' || (!s.platform && s.endpoint));
+    const nativeSubs = (subscriptions || []).filter(s => s.platform === 'android' || s.platform === 'ios');
 
-    const notificationPayload = JSON.stringify({
+    console.log(`Found ${webSubs.length} web + ${nativeSubs.length} native subscriptions`);
+
+    const notificationData = {
+      url: payload.url || '/',
+      signalId: payload.signalId || '',
+      tag: payload.tag || 'trading-signal',
+    };
+
+    const results = {
+      web: { success: 0, failed: 0 },
+      native: { success: 0, failed: 0 },
+      errors: [] as string[],
+    };
+
+    // ── Web Push ──
+    const webNotificationPayload = JSON.stringify({
       title: payload.title,
       body: payload.body,
-      url: payload.url || '/',
-      signalId: payload.signalId,
-      tag: payload.tag || 'trading-signal',
+      ...notificationData,
     });
 
-    const results = { success: 0, failed: 0, errors: [] as string[] };
-
-    for (const subscription of subscriptions || []) {
+    for (const subscription of webSubs) {
+      if (!subscription.endpoint) continue;
       try {
         const endpoint = new URL(subscription.endpoint);
         const audience = `${endpoint.protocol}//${endpoint.host}`;
@@ -149,33 +204,65 @@ serve(async (req) => {
           'TTL': '86400',
         };
 
-        try {
-          headers['Authorization'] = await generateVapidAuthorizationHeader(
-            audience, 'mailto:notifications@coinssignals.app', vapidPublicKey, vapidPrivateKey
-          );
-        } catch { /* send without auth */ }
+        if (vapidPublicKey && vapidPrivateKey) {
+          try {
+            headers['Authorization'] = await generateVapidAuthorizationHeader(
+              audience, 'mailto:notifications@coinssignals.app', vapidPublicKey, vapidPrivateKey
+            );
+          } catch { /* send without auth */ }
+        }
 
         const response = await fetch(subscription.endpoint, {
-          method: 'POST', headers, body: notificationPayload,
+          method: 'POST', headers, body: webNotificationPayload,
         });
 
         if (response.ok) {
-          results.success++;
+          results.web.success++;
         } else {
-          results.failed++;
+          results.web.failed++;
           const errorText = await response.text();
-          results.errors.push(`${response.status}: ${errorText}`);
+          results.errors.push(`Web ${response.status}: ${errorText}`);
           if (response.status === 410 || response.status === 404) {
             await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint);
           }
         }
       } catch (error: unknown) {
-        results.failed++;
-        results.errors.push(error instanceof Error ? error.message : 'Unknown error');
+        results.web.failed++;
+        results.errors.push(error instanceof Error ? error.message : 'Unknown web error');
       }
     }
 
-    console.log('Notification results:', results);
+    // ── Native FCM Push ──
+    if (fcmServerKey && nativeSubs.length > 0) {
+      for (const subscription of nativeSubs) {
+        if (!subscription.fcm_token) continue;
+        try {
+          const sent = await sendFCMNotification(
+            subscription.fcm_token,
+            payload.title,
+            payload.body,
+            notificationData,
+            fcmServerKey
+          );
+
+          if (sent) {
+            results.native.success++;
+          } else {
+            results.native.failed++;
+            // Remove stale token
+            await supabase.from('push_subscriptions').delete().eq('id', subscription.id);
+            results.errors.push('FCM: token invalidated and removed');
+          }
+        } catch (error: unknown) {
+          results.native.failed++;
+          results.errors.push(error instanceof Error ? error.message : 'Unknown FCM error');
+        }
+      }
+    } else if (!fcmServerKey && nativeSubs.length > 0) {
+      results.errors.push('FCM_SERVER_KEY not configured — skipped native notifications');
+    }
+
+    console.log('Notification results:', JSON.stringify(results));
     return new Response(JSON.stringify({ success: true, results }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
