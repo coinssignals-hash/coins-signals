@@ -1063,150 +1063,167 @@ export default function BrokerRating() {
 
       {/* Broker Detail Dialog */}
       <Dialog open={!!selectedBroker} onOpenChange={() => setSelectedBroker(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] p-0 bg-card">
+        <DialogContent className="max-w-lg max-h-[90vh] p-0 bg-card border-border">
           <ScrollArea className="max-h-[90vh]">
             {selectedBroker && (
-              <div className="p-6">
-                <DialogHeader className="mb-4">
-                  <div className="flex justify-between items-start">
-                    <DialogTitle className="text-2xl font-bold text-foreground">{selectedBroker.name}</DialogTitle>
-                    <Badge variant="outline" className="text-primary border-primary">{selectedBroker.level}</Badge>
-                  </div>
-                </DialogHeader>
-                <div className="flex gap-4 mb-6">
-                  <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden p-3">
-                    <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      <span className="text-primary font-semibold">{t('broker_basic_info')}:</span> {selectedBroker.description}
-                    </p>
+              <div className="pb-6">
+                {/* Hero header */}
+                <div className="relative px-5 pt-6 pb-4" style={{ background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)' }}>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0">
+                      <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <DialogHeader className="space-y-0">
+                        <DialogTitle className="text-xl font-bold text-foreground">{selectedBroker.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-primary border-primary/40">{selectedBroker.level}</Badge>
+                        <div className="flex items-center gap-0.5">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span className="text-sm font-bold text-foreground">{selectedBroker.rating}</span>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                        <Landmark className="w-3 h-3" />
+                        {selectedBroker.central} · {selectedBroker.regions}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <Card>
-                    <CardContent className="p-3">
-                      <div className="flex justify-between mb-1">
-                        <span className="text-primary text-sm">{t('broker_deposit')}</span>
-                        <span className="text-primary text-sm">{t('broker_commission')}</span>
-                      </div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-foreground text-sm">{selectedBroker.depositMin}</span>
-                        <span className="text-amber-400 text-sm">{selectedBroker.commission} $</span>
-                      </div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-primary text-sm">{t('broker_withdrawals')}</span>
-                        <span className="text-primary text-sm">{t('broker_spreads')}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-foreground text-sm">{t('broker_no_limits')}</span>
-                        <span className="text-primary text-sm">{selectedBroker.spreads}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-3">
-                      <span className="text-primary text-sm block mb-2">{t('broker_leverages')}</span>
-                      <p className="text-foreground text-sm">{selectedBroker.leverage.scb} (SCB)</p>
-                      <p className="text-foreground text-sm">{selectedBroker.leverage.fca} (FCA)</p>
-                    </CardContent>
-                  </Card>
+
+                {/* Description */}
+                <div className="px-5 mb-4">
+                  <p className="text-xs text-muted-foreground leading-relaxed">{selectedBroker.description}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <Card>
-                    <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">{t('broker_pro')}</h4>
-                      <ul className="space-y-1">
+
+                {/* Key stats grid */}
+                <div className="grid grid-cols-4 gap-px bg-border/50 mx-5 rounded-xl overflow-hidden mb-4">
+                  <div className="bg-card p-2.5 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_deposit')}</span>
+                    <span className="text-xs font-bold text-accent">{selectedBroker.depositMin}</span>
+                  </div>
+                  <div className="bg-card p-2.5 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_spreads')}</span>
+                    <span className="text-xs font-bold text-accent">{selectedBroker.spreads}</span>
+                  </div>
+                  <div className="bg-card p-2.5 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_commission')}</span>
+                    <span className="text-xs font-bold text-accent">{selectedBroker.commission === '0.0' || selectedBroker.commission === '0' ? '$0' : `$${selectedBroker.commission}`}</span>
+                  </div>
+                  <div className="bg-card p-2.5 text-center">
+                    <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_leverage')}</span>
+                    <span className="text-xs font-bold text-accent">{selectedBroker.leverage.scb}</span>
+                  </div>
+                </div>
+
+                {/* Pros & Cons */}
+                <div className="px-5 mb-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
+                      <h4 className="text-xs font-semibold text-primary mb-2 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> {t('broker_pro')}
+                      </h4>
+                      <ul className="space-y-1.5">
                         {selectedBroker.pros.map((pro, i) => (
-                          <li key={i} className="flex items-start gap-2 text-xs text-foreground">
-                            <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />{pro}
+                          <li key={i} className="text-[11px] text-foreground flex items-start gap-1.5">
+                            <Check className="w-3 h-3 text-primary shrink-0 mt-0.5" />
+                            <span>{pro}</span>
                           </li>
                         ))}
                       </ul>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-3">
-                      <h4 className="text-red-400 font-semibold mb-2">{t('broker_cons')}</h4>
-                      <ul className="space-y-1">
+                    </div>
+                    <div className="bg-destructive/5 rounded-xl p-3 border border-destructive/10">
+                      <h4 className="text-xs font-semibold text-destructive mb-2 flex items-center gap-1">
+                        <XCircle className="w-3.5 h-3.5" /> {t('broker_cons')}
+                      </h4>
+                      <ul className="space-y-1.5">
                         {selectedBroker.cons.map((con, i) => (
-                          <li key={i} className="flex items-start gap-2 text-xs text-foreground">
-                            <X className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />{con}
+                          <li key={i} className="text-[11px] text-foreground flex items-start gap-1.5">
+                            <X className="w-3 h-3 text-destructive shrink-0 mt-0.5" />
+                            <span>{con}</span>
                           </li>
                         ))}
                       </ul>
-                      <div className="mt-4">
-                        <h4 className="text-primary font-semibold mb-1">{t('broker_main_region')}</h4>
-                        <p className="text-xs text-foreground">{selectedBroker.mainRegion}</p>
-                        <h4 className="text-primary font-semibold mt-2 mb-1">{t('broker_operating_countries')}</h4>
-                        <p className="text-xs text-foreground">{selectedBroker.operatingCountries}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Regulations */}
+                <div className="px-5 mb-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_regulatory_bodies')}</h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedBroker.allRegulations.map((reg, i) => (
+                      <span key={i} className="text-[10px] px-2 py-1 rounded-lg bg-secondary text-foreground font-medium" title={reg.desc}>
+                        {reg.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Instruments */}
+                <div className="px-5 mb-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_available_instruments')}</h4>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {selectedBroker.instrumentTypes.map((inst, i) => (
+                      <div key={i} className="bg-secondary/50 rounded-lg p-2">
+                        <span className="text-[10px] font-semibold text-primary block">{inst.name}</span>
+                        <span className="text-[10px] text-muted-foreground">{inst.desc}</span>
                       </div>
-                    </CardContent>
-                  </Card>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <Card>
-                    <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">{t('broker_regulatory_bodies')}</h4>
-                      <ul className="space-y-1">
-                        {selectedBroker.allRegulations.map((reg, i) => (
-                          <li key={i}>
-                            <span className="text-primary text-sm font-medium">{reg.name}</span>
-                            <p className="text-[10px] text-muted-foreground">{reg.desc}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">{t('broker_available_instruments')}</h4>
-                      <ul className="space-y-1">
-                        {selectedBroker.instrumentTypes.map((inst, i) => (
-                          <li key={i}>
-                            <span className="text-primary text-sm font-medium">{inst.name}</span>
-                            <p className="text-[10px] text-muted-foreground">{inst.desc}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
+
+                {/* Platforms */}
+                <div className="px-5 mb-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_trading_platforms')}</h4>
+                  <div className="space-y-1.5">
+                    {selectedBroker.platforms.map((plat, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-secondary/50 rounded-lg p-2">
+                        <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <span className="text-[11px] font-medium text-foreground block">{plat.name}</span>
+                          <span className="text-[10px] text-muted-foreground">{plat.desc}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Card>
-                    <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">{t('broker_trading_platforms')}</h4>
-                      <ul className="space-y-1">
-                        {selectedBroker.platforms.map((plat, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <Check className="w-3 h-3 text-green-500 flex-shrink-0 mt-1" />
-                            <div>
-                              <span className="text-foreground text-sm">{plat.name}</span>
-                              <p className="text-[10px] text-muted-foreground">{plat.desc}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-3">
-                      <h4 className="text-primary font-semibold mb-2">{t('broker_account_types')}</h4>
-                      <ul className="space-y-1">
-                        {selectedBroker.accountTypes.map((acc, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <Check className="w-3 h-3 text-green-500 flex-shrink-0 mt-1" />
-                            <div>
-                              <span className="text-foreground text-sm">{acc.name}</span>
-                              <p className="text-[10px] text-muted-foreground">{acc.desc}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
+
+                {/* Account Types */}
+                <div className="px-5 mb-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_account_types')}</h4>
+                  <div className="space-y-1.5">
+                    {selectedBroker.accountTypes.map((acc, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-secondary/50 rounded-lg p-2">
+                        <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <span className="text-[11px] font-medium text-foreground block">{acc.name}</span>
+                          <span className="text-[10px] text-muted-foreground">{acc.desc}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <Button className="w-full mt-6 bg-primary hover:bg-primary/90">{t('broker_open_account')}</Button>
+
+                {/* Region info */}
+                <div className="px-5 mb-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-secondary/50 rounded-lg p-2.5">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_main_region')}</span>
+                      <span className="text-[11px] font-medium text-foreground">{selectedBroker.mainRegion}</span>
+                    </div>
+                    <div className="bg-secondary/50 rounded-lg p-2.5">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-0.5">{t('broker_operating_countries')}</span>
+                      <span className="text-[11px] font-medium text-foreground">{selectedBroker.operatingCountries}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="px-5">
+                  <Button className="w-full bg-primary hover:bg-primary/90 h-11 text-sm font-semibold">{t('broker_open_account')}</Button>
+                </div>
               </div>
             )}
           </ScrollArea>
