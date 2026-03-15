@@ -52,7 +52,7 @@ export function useAIAnalysis() {
       // Run first 3 modules sequentially
       for (const mod of initialModules) {
         const { data, error: fnError } = await supabase.functions.invoke(mod, {
-          body: { symbol, candles, indicators },
+          body: { symbol, candles, indicators, language },
         });
         if (fnError) throw fnError;
         allResults[mod] = { module: mod, data, timestamp: new Date().toISOString() };
