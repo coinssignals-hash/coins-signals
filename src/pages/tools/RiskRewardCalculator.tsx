@@ -158,7 +158,7 @@ export default function RiskRewardCalculator() {
                 <Input type="number" step="0.00001" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="1.08500" className="bg-secondary border-border text-foreground" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Stop Loss</Label>
+                <Label className="text-xs text-muted-foreground">{t('tool_stop_loss')}</Label>
                 <Input type="number" step="0.00001" value={stopLoss} onChange={e => setStopLoss(e.target.value)} placeholder="1.08200" className="bg-secondary border-border text-foreground" />
               </div>
               <div className="space-y-1.5">
