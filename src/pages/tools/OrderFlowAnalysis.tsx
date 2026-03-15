@@ -286,7 +286,7 @@ export default function OrderFlowAnalysis() {
         <Card className="bg-card border-border">
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_multi_pair_summary')}</h3>
-            {data.map(d => (
+            {data.slice(0, 10).map(d => (
               <div key={d.pair} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
                 <span className="text-xs font-medium text-foreground">{d.pair}</span>
                 <div className="flex items-center gap-3">
