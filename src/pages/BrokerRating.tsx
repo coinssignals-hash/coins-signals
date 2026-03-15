@@ -144,26 +144,22 @@ export default function BrokerRating() {
           </div>
         </div>
 
-        {/* Region Tabs */}
-        <div className="mb-4 -mx-4 px-4">
-          <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
-            {BROKER_REGIONS.map((region) => {
-              const isActive = selectedRegion === region.key;
-              return (
-                <button
-                  key={region.key}
-                  onClick={() => { setSelectedRegion(region.key); setSearchTerm(''); setSelectedCategory(null); }}
-                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
-                  }`}
-                >
+        {/* Region Selector */}
+        <div className="mb-4">
+          <Select value={selectedRegion} onValueChange={(val) => { setSelectedRegion(val); setSearchTerm(''); setSelectedCategory(null); }}>
+            <SelectTrigger className="w-full bg-secondary border-border h-10">
+              <SelectValue>
+                {currentRegion?.label || 'Seleccionar región'}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              {BROKER_REGIONS.map((region) => (
+                <SelectItem key={region.key} value={region.key}>
                   {region.label}
-                </button>
-              );
-            })}
-          </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Region metadata header */}
