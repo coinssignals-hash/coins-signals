@@ -260,7 +260,7 @@ export default function BrokerRating() {
               )}
             </div>
 
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-5 gap-2">
               {categories.map((cat) => {
                 const Icon = cat.icon;
                 const isSelected = selectedCategory === cat.matchKey;
@@ -269,33 +269,41 @@ export default function BrokerRating() {
                   <button
                     key={cat.matchKey}
                     onClick={() => setSelectedCategory(isSelected ? null : cat.matchKey)}
-                    className="relative flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all duration-200 active:scale-95 overflow-hidden"
+                    className="group relative flex flex-col items-center gap-1.5 py-3 px-1.5 rounded-2xl transition-all duration-300 active:scale-[0.92] overflow-hidden"
                     style={{
                       background: isSelected
-                        ? `linear-gradient(160deg, ${color}20, ${color}08)`
-                        : 'hsl(var(--secondary) / 0.6)',
-                      boxShadow: isSelected ? `inset 0 0 0 1px ${color}60` : undefined,
+                        ? `linear-gradient(145deg, ${color}22, ${color}0a)`
+                        : 'hsl(var(--secondary) / 0.5)',
+                      boxShadow: isSelected
+                        ? `inset 0 0 0 1.5px ${color}50, 0 4px 16px -6px ${color}35`
+                        : 'inset 0 0 0 1px hsl(var(--border) / 0.3)',
                     }}
                   >
                     {isSelected && (
-                      <div className="absolute inset-0 opacity-20" style={{
-                        background: `radial-gradient(circle at 50% 0%, ${color}, transparent 70%)`,
+                      <div className="absolute inset-0 opacity-[0.15]" style={{
+                        background: `radial-gradient(ellipse at 50% -20%, ${color}, transparent 65%)`,
                       }} />
                     )}
                     <div
-                      className="relative w-8 h-8 rounded-lg flex items-center justify-center"
+                      className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300"
                       style={{
-                        background: isSelected ? `${color}25` : 'hsl(var(--muted))',
+                        background: isSelected
+                          ? `linear-gradient(135deg, ${color}30, ${color}15)`
+                          : 'hsl(var(--muted) / 0.7)',
+                        boxShadow: isSelected ? `0 0 12px -4px ${color}40` : undefined,
                       }}
                     >
-                      <Icon size={16} strokeWidth={2} className="transition-colors"
+                      <Icon size={17} strokeWidth={isSelected ? 2.2 : 1.8} className="transition-all duration-300"
                         style={{ color: isSelected ? color : 'hsl(var(--muted-foreground))' }} />
                     </div>
-                    <span className={`relative text-[9px] font-semibold text-center leading-tight ${
-                      isSelected ? 'text-foreground' : 'text-muted-foreground'
+                    <span className={`relative text-[9px] font-bold text-center leading-tight tracking-wide uppercase transition-colors duration-300 ${
+                      isSelected ? 'text-foreground' : 'text-muted-foreground/70'
                     }`}>
                       {cat.label}
                     </span>
+                    {isSelected && (
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: color }} />
+                    )}
                   </button>
                 );
               })}
