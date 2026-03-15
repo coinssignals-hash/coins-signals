@@ -74,8 +74,8 @@ export function Header() {
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
           </Link>
           <div className="flex flex-col items-center gap-1 active:scale-95 transition-all">
-            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors">
-              <Bell className="w-5 h-5" />
+            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-colors">
+              <NotificationToggle />
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('alerts')}</span>
           </div>
