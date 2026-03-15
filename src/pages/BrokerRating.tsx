@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useCallback } from 'react';
+import { motion, useTransform, useMotionValue } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, LineChart, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart } from 'lucide-react';
@@ -555,6 +555,13 @@ export default function BrokerRating() {
   const [selectedLevel, setSelectedLevel] = useState('Principiante');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
+
+  // Parallax motion values
+  const scrollY = useMotionValue(0);
+  const heroParallaxY = useTransform(scrollY, [0, 200], [0, -30]);
+  const bgParallaxY = useTransform(scrollY, [0, 200], [0, -50]);
+  const bgScale = useTransform(scrollY, [0, 200], [1, 1.15]);
+  const logoParallaxY = useTransform(scrollY, [0, 200], [0, -8]);
   const [compareMode, setCompareMode] = useState(false);
   const [brokersToCompare, setBrokersToCompare] = useState<Broker[]>([]);
   const [showComparePanel, setShowComparePanel] = useState(false);
@@ -1065,19 +1072,38 @@ export default function BrokerRating() {
       {/* Broker Detail Dialog */}
       <Dialog open={!!selectedBroker} onOpenChange={() => setSelectedBroker(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] p-0 bg-card border-border">
-          <ScrollArea className="max-h-[90vh]">
+          <ScrollArea className="max-h-[90vh]" onScrollCapture={(e) => {
+            const target = e.currentTarget.querySelector('[data-radix-scroll-area-viewport]');
+            if (target) scrollY.set((target as HTMLElement).scrollTop);
+          }}>
             {selectedBroker && (
               <div className="pb-6">
-                {/* Hero header */}
+                {/* Hero header with parallax */}
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="relative px-5 pt-6 pb-4" style={{ background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)' }}>
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0">
+                  style={{ 
+                    background: 'linear-gradient(180deg, hsl(var(--primary) / 0.12) 0%, transparent 100%)',
+                    translateY: heroParallaxY,
+                  }}
+                  className="relative px-5 pt-6 pb-4 overflow-hidden">
+                  {/* Parallax background overlay */}
+                  <motion.div
+                    className="absolute inset-0 opacity-[0.07]"
+                    style={{
+                      backgroundImage: 'radial-gradient(circle at 70% 30%, hsl(var(--primary)) 0%, transparent 60%)',
+                      translateY: bgParallaxY,
+                      scale: bgScale,
+                    }}
+                  />
+                  <div className="relative z-10 flex items-center gap-4">
+                    <motion.div 
+                      className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden p-2 shadow-md shrink-0"
+                      style={{ translateY: logoParallaxY }}
+                    >
                       <img src={BROKER_LOGOS[selectedBroker.id]} alt={selectedBroker.name} className="w-full h-full object-contain" />
-                    </div>
+                    </motion.div>
                     <div className="flex-1 min-w-0">
                       <DialogHeader className="space-y-0">
                         <DialogTitle className="text-xl font-bold text-foreground">{selectedBroker.name}</DialogTitle>
