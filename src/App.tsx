@@ -61,6 +61,7 @@ const OrderFlowAnalysis = lazy(() => import("./pages/tools/OrderFlowAnalysis"));
 const BacktestPro = lazy(() => import("./pages/tools/BacktestPro"));
 const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCalendar"));
 const MarketSessions = lazy(() => import("./pages/tools/MarketSessions"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
