@@ -59,27 +59,27 @@ export function Header() {
         {/* Gradient divider */}
         <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
-        {/* Secondary row: quick action icons — below the divider */}
-        <div className="flex items-center justify-center gap-4 px-3 py-2">
-          <Link to="/tools/trading-journal" className="flex flex-col items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
-              <BookOpen className="w-4 h-4" />
+        {/* Secondary row: quick action icons — evenly distributed */}
+        <div className="grid grid-cols-4 w-full px-2 py-1.5">
+          <Link to="/tools/trading-journal" className="flex flex-col items-center gap-0.5 active:scale-95 transition-transform">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-9 w-9">
+              <BookOpen className="w-[18px] h-[18px]" />
             </Button>
-            <span className="text-[10px] text-muted-foreground leading-none">{t('journal')}</span>
+            <span className="text-[9px] font-medium text-muted-foreground leading-none">{t('journal')}</span>
           </Link>
-          <Link to="/tools" className="flex flex-col items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-8 w-8">
-              <BarChart3 className="w-4 h-4" />
+          <Link to="/tools" className="flex flex-col items-center gap-0.5 active:scale-95 transition-transform">
+            <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary h-9 w-9">
+              <BarChart3 className="w-[18px] h-[18px]" />
             </Button>
-            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
+            <span className="text-[9px] font-medium text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
           </Link>
-          <div className="flex flex-col items-center gap-0.5">
+          <div className="flex flex-col items-center gap-0.5 active:scale-95 transition-transform">
             <NotificationToggle />
-            <span className="text-[10px] text-muted-foreground leading-none">{t('alerts')}</span>
+            <span className="text-[9px] font-medium text-muted-foreground leading-none">{t('alerts')}</span>
           </div>
-          <div className="flex flex-col items-center gap-0.5">
+          <div className="flex flex-col items-center gap-0.5 active:scale-95 transition-transform">
             <LanguageQuickSelect />
-            <span className="text-[10px] text-muted-foreground leading-none">{t('language')}</span>
+            <span className="text-[9px] font-medium text-muted-foreground leading-none">{t('language')}</span>
           </div>
         </div>
 
