@@ -218,10 +218,10 @@ export default function OrderFlowAnalysis() {
             <h3 className="text-sm font-semibold text-foreground">{t('tp_institutional_positioning')}</h3>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-emerald-500/30 rounded-l-lg h-8 flex items-center justify-end pr-2" style={{ width: `${selected.longPercent}%` }}>
-                <span className="text-xs font-bold text-emerald-400">{selected.longPercent}% Long</span>
+                <span className="text-xs font-bold text-emerald-400">{selected.longPercent}% {t('of_long')}</span>
               </div>
               <div className="flex-1 bg-rose-500/30 rounded-r-lg h-8 flex items-center pl-2" style={{ width: `${selected.shortPercent}%` }}>
-                <span className="text-xs font-bold text-rose-400">{selected.shortPercent}% Short</span>
+                <span className="text-xs font-bold text-rose-400">{selected.shortPercent}% {t('of_short')}</span>
               </div>
             </div>
             <div className="flex justify-between text-[10px]">
