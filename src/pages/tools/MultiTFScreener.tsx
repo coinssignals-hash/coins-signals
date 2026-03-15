@@ -111,7 +111,7 @@ export default function MultiTFScreener() {
           <div className="flex items-center gap-2">
             {data.length > 0 && (
               <span className="flex items-center gap-1 text-[9px] text-emerald-400">
-                <Wifi className="w-3 h-3" /> Live
+                <Wifi className="w-3 h-3" /> {t('mtf_live')}
               </span>
             )}
             {error && (
