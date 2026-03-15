@@ -1180,10 +1180,14 @@ export default function BrokerRating() {
                       </span>
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Instruments */}
-                <div className="px-5 mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
+                  className="px-5 mb-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">{t('broker_available_instruments')}</h4>
                   <div className="grid grid-cols-2 gap-1.5">
                     {selectedBroker.instrumentTypes.map((inst, i) => (
