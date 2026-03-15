@@ -177,22 +177,32 @@ function AnimatedRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <TooltipProvider>
-        <div className="dark">
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <OnboardingTour />
-            <PWAInstallBanner />
-            <AnimatedRoutes />
-          </BrowserRouter>
-        </div>
-      </TooltipProvider>
-    </LanguageProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    if (isNativePlatform()) {
+      setupNativePushListeners((data) => {
+        console.log('Native push received:', data);
+      });
+    }
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <TooltipProvider>
+          <div className="dark">
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <OnboardingTour />
+              <PWAInstallBanner />
+              <AnimatedRoutes />
+            </BrowserRouter>
+          </div>
+        </TooltipProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
