@@ -287,6 +287,89 @@ export default function BrokerRating() {
           </CardContent>
         </Card>
 
+        {/* Global search results or regional view */}
+        {isGlobalSearch && globalSearchTerm.length >= 2 ? (
+          <>
+            <div className="flex items-center justify-between mb-4 gap-2">
+              <p className="text-xs text-muted-foreground flex-1">
+                {globalLoading ? 'Buscando en todas las regiones...' : `${globalResults.length} resultados globales`}
+              </p>
+            </div>
+            {globalLoading && (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              </div>
+            )}
+            {!globalLoading && globalResults.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground">
+                <Globe className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                <p className="text-sm">No se encontraron brokers para "{globalSearchTerm}"</p>
+              </div>
+            )}
+            {!globalLoading && globalResults.length > 0 && (
+              <div className="space-y-3">
+                {globalResults.map((broker) => (
+                  <Card
+                    key={broker.id}
+                    className="overflow-hidden transition-all active:scale-[0.99]"
+                    onClick={() => setSelectedBroker(broker)}
+                  >
+                    <CardContent className="p-0">
+                      <div className="flex items-center gap-3 p-3 pb-2">
+                        <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shrink-0 overflow-hidden text-lg">
+                          {getBrokerLogo(broker.name) ? (
+                            <LazyImage src={getBrokerLogo(broker.name)} alt={broker.name} className="w-full h-full object-contain p-1" />
+                          ) : (
+                            broker.countryFlag
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-bold text-foreground truncate">{broker.name}</h3>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <Globe className="w-3 h-3 text-primary shrink-0" />
+                            <span className="text-[10px] text-primary font-medium truncate">{broker.regionLabel}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end shrink-0">
+                          <div className="flex items-center gap-0.5">
+                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            <span className="text-sm font-bold text-foreground">{broker.rating}</span>
+                          </div>
+                          <span className="text-[9px] text-muted-foreground">/5.0</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-px bg-border/50 mx-3 rounded-lg overflow-hidden mb-2">
+                        <div className="bg-card p-2 text-center">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_initial_deposit')}</span>
+                          <span className="text-xs font-semibold text-accent">{broker.depositMin}</span>
+                        </div>
+                        <div className="bg-card p-2 text-center">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_spreads')}</span>
+                          <span className="text-[10px] font-semibold text-accent truncate block">{broker.spreads || 'Variable'}</span>
+                        </div>
+                        <div className="bg-card p-2 text-center">
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">{t('broker_leverage')}</span>
+                          <span className="text-[10px] font-semibold text-accent truncate block">{broker.leverage || 'N/A'}</span>
+                        </div>
+                      </div>
+                      <div className="px-3 pb-2">
+                        <div className="flex flex-wrap gap-1">
+                          {broker.regulations.slice(0, 2).map(r => (
+                            <span key={r} className="text-[10px] px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-medium">{r.split(' (')[0]}</span>
+                          ))}
+                          {broker.instruments.slice(0, 2).map(i => (
+                            <span key={i} className="text-[10px] px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground">{i}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+        <>
         <div className="flex items-center justify-between mb-4 gap-2">
           <p className="text-xs text-muted-foreground flex-1">
             {loading ? t('broker_loading') || 'Cargando...' : `${filteredBrokers.length} brokers · ${currentRegion?.label || ''}`}
