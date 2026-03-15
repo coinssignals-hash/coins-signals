@@ -69,9 +69,16 @@ serve(async (req) => {
       symbol,
       candles,
       indicators,
-      correlatedPairs,
       language,
       detailLevel,
+      timeframe,
+      trend,
+      volatility,
+      volume,
+      atr,
+      fundingRate,
+      openInterest,
+      previousResults,
     } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -80,99 +87,137 @@ serve(async (req) => {
     if (!symbol) {
       return new Response(
         JSON.stringify({ error: "Symbol is required" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const lang = language || "es";
+    const lang = language || "en";
     const detail = detailLevel || "standard";
-    const pairs = correlatedPairs || getCorrelatedPairs(symbol);
 
-    const langInstruction =
-      lang === "es"
-        ? "Responde en español."
-        : lang === "en"
-        ? "Respond in English."
-        : lang === "pt"
-        ? "Responda em português."
-        : lang === "fr"
-        ? "Réponds en français."
-        : "Responde en español.";
+    const langMap: Record<string, string> = {
+      en: "Respond in English.", es: "Respond in Spanish.", pt: "Respond in Portuguese.",
+      fr: "Respond in French.", it: "Respond in Italian.", de: "Respond in German.",
+      nl: "Respond in Dutch.", ar: "Respond in Arabic.", mt: "Respond in Maltese.",
+    };
+    const langInstruction = langMap[lang] || langMap.en;
 
-    const detailInstruction =
-      detail === "concise"
-        ? "Sé muy breve y directo."
-        : detail === "detailed"
-        ? "Proporciona un análisis extenso y profundo con datos históricos."
-        : "Sé conciso pero completo.";
+    const detailMap: Record<string, string> = {
+      concise: "Be very brief and direct, 2-3 lines max per section.",
+      standard: "Be concise but thorough.",
+      detailed: "Provide an extensive, in-depth analysis with multiple scenarios and detailed reasoning.",
+    };
+    const detailInstruction = detailMap[detail] || detailMap.standard;
 
-    // Extract market context from candles/indicators
-    let marketContext = "";
+    // Extract market data from candles
+    let lastPrice = "N/A";
+    let rsiVal = "N/A";
+    let macdVal = "N/A";
+    let stochVal = "N/A";
+    let patternList = "None detected";
+
     if (candles && Array.isArray(candles) && candles.length > 0) {
-      const recent = candles.slice(-30);
-      const lastCandle = recent[recent.length - 1];
-      const lastPrice = lastCandle?.close || lastCandle?.open || "N/A";
-      const high = Math.max(...recent.map((c: any) => c.high || c.close || 0));
-      const low = Math.min(
-        ...recent.map((c: any) => c.low || c.close || Infinity)
-      );
+      const lastCandle = candles[candles.length - 1];
+      lastPrice = lastCandle?.close?.toString() || "N/A";
 
       const rsi = indicators?.rsi;
       const lastRsi = Array.isArray(rsi) ? rsi[rsi.length - 1] : rsi;
+      if (lastRsi !== undefined) rsiVal = typeof lastRsi === "number" ? lastRsi.toFixed(1) : String(lastRsi);
 
-      marketContext = `
-**Datos del activo principal (${symbol}):**
-- Precio actual: ${lastPrice}
-- Rango reciente: ${low.toFixed(5)} — ${high.toFixed(5)}
-- Velas analizadas: ${candles.length}
-${lastRsi !== undefined ? `- RSI(14): ${typeof lastRsi === "number" ? lastRsi.toFixed(1) : lastRsi}` : ""}
-`;
+      const macd = indicators?.macdHistogram;
+      const lastMacd = Array.isArray(macd) ? macd[macd.length - 1] : macd;
+      if (lastMacd !== undefined) macdVal = typeof lastMacd === "number" ? lastMacd.toFixed(5) : String(lastMacd);
+
+      const stoch = indicators?.stochastic;
+      const lastStoch = Array.isArray(stoch) ? stoch[stoch.length - 1] : stoch;
+      if (lastStoch !== undefined) stochVal = typeof lastStoch === "number" ? lastStoch.toFixed(1) : String(lastStoch);
+
+      if (indicators?.patterns && Array.isArray(indicators.patterns) && indicators.patterns.length > 0) {
+        patternList = indicators.patterns.slice(0, 10).map((p: any) => `- ${p.name} (${p.type}, reliability: ${p.reliability})`).join("\n");
+      }
     }
 
-    const prompt = `Eres un analista cuantitativo de élite especializado en correlaciones entre instrumentos financieros, análisis inter-mercado y flujos de capital global.
+    // Previous analyses summary
+    let prevAnalyses = "";
+    if (previousResults) {
+      const entries = Object.entries(previousResults).slice(0, 2);
+      if (entries.length > 0) {
+        prevAnalyses = entries.map(([key, val]: [string, any]) => {
+          const content = val?.data?.analysis || val?.data?.prediction || val?.data?.report || "";
+          return content ? `### ${key}\n${String(content).slice(0, 500)}` : "";
+        }).filter(Boolean).join("\n\n");
+      }
+    }
 
-**Activo principal:** ${symbol}
-**Pares correlacionados a analizar:** ${pairs.join(", ")}
-${marketContext}
+    const prompt = `You are an institutional AI trading analyst combining technical analysis, quantitative signals, market flow intelligence, and risk management to produce a final trading decision.
 
-Realiza un análisis de correlación exhaustivo:
+**Asset**
+Symbol: ${symbol}
+Price: ${lastPrice}
 
-## 1. 🔗 Matriz de Correlación
-Para cada par correlacionado con ${symbol}:
-- Tipo de correlación: Positiva / Negativa / Neutral
-- Fuerza estimada: Fuerte (>0.7) / Moderada (0.4-0.7) / Débil (<0.4)
-- Estabilidad: ¿La correlación ha sido estable o se ha roto recientemente?
+**Market Context**
+Timeframe: ${timeframe || "D1"}
+Trend: ${trend || "N/A"}
+Volatility: ${volatility || "N/A"}
+Support: ${indicators?.support || "N/A"}
+Resistance: ${indicators?.resistance || "N/A"}
 
-## 2. 📊 Análisis de Divergencias
-- ¿Hay divergencias actuales entre ${symbol} y sus pares correlacionados?
-- Si ${symbol} se mueve en una dirección pero un par correlacionado no sigue, identifica la divergencia
-- Evalúa si la divergencia sugiere una oportunidad de reversión o continuación
+**Market Metrics**
+Volume: ${volume || "N/A"}
+ATR: ${atr || "N/A"}
+Funding Rate: ${fundingRate || "N/A"}
+Open Interest: ${openInterest || "N/A"}
 
-## 3. 🌐 Flujos Inter-Mercado
-- ¿Cómo están fluyendo los capitales entre mercados relacionados?
-- Identifica si hay rotación sectorial o cambios en el apetito de riesgo
-- Analiza la relación con índices de referencia (DXY, VIX si aplica)
+**Technical Indicators**
+RSI(14): ${rsiVal}
+MACD Histogram: ${macdVal}
+Stochastic K: ${stochVal}
 
-## 4. ⚡ Señales de Convergencia/Divergencia
-- Pares que están convergiendo (la correlación se fortalece)
-- Pares que están divergiendo (la correlación se debilita)
-- Implicaciones para el trading de ${symbol}
+**Detected Candlestick Patterns**
+${patternList}
 
-## 5. 🎯 Oportunidades de Trading por Correlación
-- **Trades de convergencia**: Si dos pares correlacionados divergen, apuesta por la reversión a la media
-- **Trades de confirmación**: Si la correlación confirma la dirección, usa como señal adicional
-- **Hedging**: Pares óptimos para cubrir posiciones en ${symbol}
+${prevAnalyses ? `**Previous AI Analyses**\n${prevAnalyses}` : ""}
 
-## 6. 📈 Conclusión y Scoring
-- **Correlation Score**: Puntuación global de la salud de las correlaciones (1-100)
-- **Señal dominante**: ¿Las correlaciones apoyan COMPRA, VENTA o NEUTRAL?
-- **Confianza**: Baja / Media / Alta
-- **Pares clave a monitorear**: Los 2-3 más relevantes ahora mismo
+**Tasks**
 
-${langInstruction} ${detailInstruction} Usa markdown con emojis. Sé profesional y directo.`;
+1. **Market Structure Analysis**
+   Evaluate trend strength, market regime (trend / range / breakout), and structural levels.
+
+2. **Technical Pattern Interpretation**
+   Assess the reliability and implication of detected candlestick patterns.
+
+3. **Smart Money & Flow Signals**
+   Detect accumulation/distribution, unusual volume, positioning imbalance, or capital rotation.
+
+4. **Quantitative Trade Signal**
+   Determine trade direction: LONG / SHORT / NO TRADE
+   Estimate probability of success (%).
+
+5. **Key Trading Levels**
+   Define optimal Entry, Stop Loss, and Take Profit.
+
+6. **Risk Evaluation**
+   Assess trade risk using volatility, ATR, and market context.
+   Classify risk level: Low / Medium / High.
+
+7. **Market Scenarios**
+   Best case, base case, and worst case outcome.
+
+8. **Institutional Signal Scoring**
+   Provide the following scores (0–100):
+   - Signal Score
+   - Trend Score
+   - Momentum Score
+   - Smart Money Score
+   - Risk Score
+
+9. **Final Decision**
+   Trade decision: BUY / SELL / WAIT
+   Confidence level (%)
+   Brief reasoning.
+
+${langInstruction} ${detailInstruction}
+
+Markdown format.`;
 
     const t0 = Date.now();
     const response = await fetch(
@@ -188,7 +233,7 @@ ${langInstruction} ${detailInstruction} Usa markdown con emojis. Sé profesional
           messages: [
             {
               role: "system",
-              content: `Eres un analista cuantitativo especializado en correlaciones inter-mercado, análisis de flujos de capital y estrategias de pairs trading. ${langInstruction} Proporcionas análisis detallados basados en relaciones históricas entre instrumentos.`,
+              content: `You are an elite institutional trading analyst with expertise in technical analysis, quantitative signals, smart money flow detection, and risk management. ${langInstruction} Provide professional, data-driven analysis.`,
             },
             { role: "user", content: prompt },
           ],
@@ -200,59 +245,27 @@ ${langInstruction} ${detailInstruction} Usa markdown con emojis. Sé profesional
 
     if (!response.ok) {
       logUsage(response.status, latency, undefined, { symbol });
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Límite de solicitudes alcanzado." }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Créditos agotados." }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
+      if (response.status === 429) return new Response(JSON.stringify({ error: "Rate limit reached." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (response.status === 402) return new Response(JSON.stringify({ error: "Credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(
-        JSON.stringify({ error: "Error del gateway de IA" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "AI gateway error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const data = await response.json();
-    logUsage(200, latency, data.usage, { symbol, correlatedPairs: pairs });
+    logUsage(200, latency, data.usage, { symbol });
 
-    const analysis =
-      data.choices?.[0]?.message?.content ||
-      "No se pudo generar el análisis de correlación.";
+    const analysis = data.choices?.[0]?.message?.content || "Unable to generate institutional analysis.";
 
     return new Response(
-      JSON.stringify({ analysis, correlatedPairs: pairs }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ analysis }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
     console.error("correlation-analysis error:", e);
     return new Response(
-      JSON.stringify({
-        error: e instanceof Error ? e.message : "Error desconocido",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
