@@ -887,10 +887,10 @@ function VolatilityAlerts({ session, sessionVolume, color }: {
       {/* Current status */}
       <div className="flex items-center justify-between">
         <span className="text-[11px] text-muted-foreground">
-          Rango actual: <span className="font-bold text-foreground">{sessionVolume.loading ? '...' : `${sessionVolume.avgDailyRange.toFixed(1)} pips`}</span>
+          {t('ms_current_range')}: <span className="font-bold text-foreground">{sessionVolume.loading ? '...' : `${sessionVolume.avgDailyRange.toFixed(1)} pips`}</span>
         </span>
         <span className="text-[11px] text-muted-foreground">
-          Umbral: <span className="font-bold" style={{ color: config.enabled ? `hsl(${color})` : undefined }}>{config.thresholdPips} pips</span>
+          {t('ms_threshold')}: <span className="font-bold" style={{ color: config.enabled ? `hsl(${color})` : undefined }}>{config.thresholdPips} pips</span>
         </span>
       </div>
 
