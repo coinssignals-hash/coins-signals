@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,14 +44,23 @@ export default function RiskRewardCalculator() {
   const { t } = useTranslation();
   const [pair, setPair] = useState('EUR/USD');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
-  const [entryPrice, setEntryPrice] = useState('');
-  const [stopLoss, setStopLoss] = useState('');
-  const [takeProfit, setTakeProfit] = useState('');
+  const [entryPrice, setEntryPrice] = useState('1.08500');
+  const [stopLoss, setStopLoss] = useState('1.08200');
+  const [takeProfit, setTakeProfit] = useState('1.09100');
   const [accountBalance, setAccountBalance] = useState('10000');
   const [riskPercent, setRiskPercent] = useState('2');
   const [result, setResult] = useState<Result | null>(null);
+  const initialCalcDone = useRef(false);
 
-  const handleCalculate = () => {
+  // Auto-calculate on mount with default values
+  useEffect(() => {
+    if (!initialCalcDone.current) {
+      initialCalcDone.current = true;
+      handleCalculate(true);
+    }
+  }, []);
+
+  const handleCalculate = (silent = false) => {
     const entry = parseFloat(entryPrice);
     const sl = parseFloat(stopLoss);
     const tp = parseFloat(takeProfit);
@@ -59,15 +68,15 @@ export default function RiskRewardCalculator() {
     const riskPct = parseFloat(riskPercent);
 
     if (!entry || !sl || !tp) {
-      toast.error(t('rr_fill_prices') || 'Completa Entry, Stop Loss y Take Profit');
+      if (!silent) toast.error(t('rr_fill_prices') || 'Completa Entry, Stop Loss y Take Profit');
       return;
     }
     if (!balance || balance <= 0) {
-      toast.error(t('rr_invalid_balance') || 'Ingresa un balance válido');
+      if (!silent) toast.error(t('rr_invalid_balance') || 'Ingresa un balance válido');
       return;
     }
     if (!riskPct || riskPct <= 0) {
-      toast.error(t('rr_invalid_risk') || 'Ingresa un % de riesgo válido');
+      if (!silent) toast.error(t('rr_invalid_risk') || 'Ingresa un % de riesgo válido');
       return;
     }
 
@@ -101,7 +110,7 @@ export default function RiskRewardCalculator() {
       microLots: microLots.toFixed(2),
     });
 
-    toast.success(t('rr_calculated') || 'Resultado calculado');
+    if (!silent) toast.success(t('rr_calculated') || 'Resultado calculado');
   };
 
   return (
@@ -168,7 +177,7 @@ export default function RiskRewardCalculator() {
               </div>
             </div>
 
-            <Button onClick={handleCalculate} className="w-full gap-2 font-semibold">
+            <Button onClick={() => handleCalculate()} className="w-full gap-2 font-semibold">
               <Calculator className="w-4 h-4" />
               {t('rr_calculate_btn') || 'Calcular Riesgo / Recompensa'}
             </Button>
