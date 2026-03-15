@@ -145,7 +145,7 @@ export default function BacktestPro() {
             </Link>
             <div className="flex items-center gap-2">
               <Workflow className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Backtesting Pro</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('bt_title')}</h1>
             </div>
           </div>
           {strategies.length < 4 && (
