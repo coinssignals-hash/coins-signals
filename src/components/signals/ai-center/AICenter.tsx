@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import {
-  Brain, BarChart3, Target, FileText, Layers, GitCompareArrows,
+  Brain, BarChart3, Target, FileText, Layers, Landmark,
   Play, Loader2, Sparkles, TrendingUp, AlertTriangle, Zap, ChevronDown } from
 'lucide-react';
 import { AIModelConfig, AIModelSettings } from './AIModelConfig';
