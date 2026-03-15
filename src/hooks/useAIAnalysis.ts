@@ -21,7 +21,7 @@ export function useAIAnalysis() {
     setError(null);
     try {
       const { data, error: fnError } = await supabase.functions.invoke(module, {
-        body: payload,
+        body: { ...payload, language },
       });
       if (fnError) throw fnError;
 
