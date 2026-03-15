@@ -470,11 +470,17 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <h3 className="font-semibold text-[15px] text-white line-clamp-2 group-hover:text-cyan-300 transition-colors leading-snug">
             {displayTitle}
           </h3>
-          {isTranslated &&
-          <span className="text-[9px] text-purple-400 mt-0.5 inline-flex items-center gap-0.5">
-              <Languages className="w-2.5 h-2.5" /> {t('news_translated')}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold" style={{ color: sentimentColor }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: sentimentColor }} />
+              {sentimentLabel}
             </span>
-          }
+            {isTranslated &&
+            <span className="text-[9px] text-purple-400 inline-flex items-center gap-0.5">
+                <Languages className="w-2.5 h-2.5" /> {t('news_translated')}
+              </span>
+            }
+          </div>
         </Link>
 
         {/* Summary snippet */}
@@ -679,6 +685,10 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
 
         <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
           <h2 className="text-lg md:text-xl font-bold text-white line-clamp-2 group-hover:text-cyan-300 transition-colors">{news.title}</h2>
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold mt-0.5" style={{ color: sentimentColor }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: sentimentColor }} />
+            {sentimentLabel}
+          </span>
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2 text-sm text-cyan-300/60">
               <Rss className="w-3 h-3 text-cyan-400" />
