@@ -452,11 +452,42 @@ export function AIResultPanel({ result, title }: Props) {
                 background: 'hsl(210, 80%, 4%)',
               }}
             >
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: isStreaming ? 'hsl(45, 90%, 55%)' : 'hsl(160, 70%, 50%)' }} />
-                <span className="text-[10px] text-slate-600">
-                  {isStreaming ? 'Streaming…' : t('ai_center_generated_by')}
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: isStreaming ? 'hsl(45, 90%, 55%)' : 'hsl(160, 70%, 50%)' }} />
+                  <span className="text-[10px] text-slate-600">
+                    {isStreaming ? 'Streaming…' : t('ai_center_generated_by')}
+                  </span>
+                </div>
+                {!isStreaming && (
+                  <div
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-full"
+                    style={liveQuoteInfo.hasLiveData ? {
+                      background: 'hsla(160, 70%, 50%, 0.1)',
+                      border: '1px solid hsla(160, 70%, 50%, 0.25)',
+                    } : {
+                      background: 'hsla(45, 80%, 50%, 0.1)',
+                      border: '1px solid hsla(45, 80%, 50%, 0.25)',
+                    }}
+                  >
+                    {liveQuoteInfo.hasLiveData ? (
+                      <>
+                        <Wifi className="w-3 h-3" style={{ color: 'hsl(160, 70%, 55%)' }} />
+                        <span className="text-[9px] font-bold" style={{ color: 'hsl(160, 70%, 55%)' }}>Live</span>
+                        {liveQuoteInfo.price && (
+                          <span className="text-[9px] font-mono" style={{ color: 'hsl(160, 50%, 45%)' }}>
+                            {liveQuoteInfo.price.toFixed(liveQuoteInfo.price > 100 ? 2 : 5)}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <WifiOff className="w-3 h-3" style={{ color: 'hsl(45, 80%, 55%)' }} />
+                        <span className="text-[9px] font-bold" style={{ color: 'hsl(45, 80%, 55%)' }}>Offline</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
               <span className="text-[10px] font-mono text-slate-600">
                 {rawContent.length.toLocaleString()} chars
