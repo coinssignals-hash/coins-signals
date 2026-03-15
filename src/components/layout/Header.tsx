@@ -76,7 +76,7 @@ export function Header() {
           </div>
           <div className="flex flex-col items-center gap-0.5">
             <LanguageQuickSelect />
-            <span className="text-[10px] text-muted-foreground leading-none">{t('nav_language') || 'Idioma'}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{t('language')}</span>
           </div>
         </div>
 
