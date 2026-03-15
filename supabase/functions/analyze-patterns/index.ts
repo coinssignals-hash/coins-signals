@@ -129,24 +129,24 @@ Markdown format.`;
       } catch (_) {}
 
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Límite de solicitudes alcanzado." }), {
+        return new Response(JSON.stringify({ error: "Rate limit reached. Please try again later." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos agotados." }), {
+        return new Response(JSON.stringify({ error: "Credits exhausted." }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Error del gateway de IA" }), {
+      return new Response(JSON.stringify({ error: "AI gateway error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const data = await response.json();
-    const analysis = data.choices?.[0]?.message?.content || "No se pudo generar el análisis.";
+    const analysis = data.choices?.[0]?.message?.content || "Unable to generate analysis.";
     const usage = data.usage;
 
     try {
