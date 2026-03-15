@@ -44,12 +44,21 @@ export default function RiskRewardCalculator() {
   const { t } = useTranslation();
   const [pair, setPair] = useState('EUR/USD');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
-  const [entryPrice, setEntryPrice] = useState('');
-  const [stopLoss, setStopLoss] = useState('');
-  const [takeProfit, setTakeProfit] = useState('');
+  const [entryPrice, setEntryPrice] = useState('1.08500');
+  const [stopLoss, setStopLoss] = useState('1.08200');
+  const [takeProfit, setTakeProfit] = useState('1.09100');
   const [accountBalance, setAccountBalance] = useState('10000');
   const [riskPercent, setRiskPercent] = useState('2');
   const [result, setResult] = useState<Result | null>(null);
+  const initialCalcDone = useRef(false);
+
+  // Auto-calculate on mount with default values
+  useEffect(() => {
+    if (!initialCalcDone.current) {
+      initialCalcDone.current = true;
+      handleCalculate(true);
+    }
+  }, []);
 
   const handleCalculate = () => {
     const entry = parseFloat(entryPrice);
