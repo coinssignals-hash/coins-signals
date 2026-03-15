@@ -503,10 +503,6 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           {news.time_ago}
         </div>
 
-        {/* Sentiment circle overlay bottom-right */}
-        <div className="absolute bottom-2 right-2">
-          <SentimentCircle sentiment={news.sentiment} relevance={relevancePercent} />
-        </div>
       </Link>
 
       {/* Content section */}
