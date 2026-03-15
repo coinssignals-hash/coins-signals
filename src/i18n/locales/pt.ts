@@ -1864,6 +1864,17 @@ const pt: TranslationKeys = {
   ms_day_wed: 'Qua',
   ms_day_thu: 'Qui',
   ms_day_fri: 'Sex',
+  of_more: 'Mais',
+  of_search_pair: 'Buscar par...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Compra',
+  of_ask: 'Venda',
+  of_cat_majors: 'Principais',
+  of_cat_crosses: 'Cruzados',
+  of_cat_exotics: 'Exóticos',
+  of_cat_commodities: 'Commodities',
+  of_cat_crypto: 'Cripto',
 };
 
 export default pt;

@@ -2060,6 +2060,17 @@ const it: TranslationKeys = {
   ms_day_wed: 'Mer',
   ms_day_thu: 'Gio',
   ms_day_fri: 'Ven',
+  of_more: 'Altro',
+  of_search_pair: 'Cerca coppia...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Acquisto',
+  of_ask: 'Vendita',
+  of_cat_majors: 'Principali',
+  of_cat_crosses: 'Incroci',
+  of_cat_exotics: 'Esotici',
+  of_cat_commodities: 'Materie Prime',
+  of_cat_crypto: 'Cripto',
 };
 
 export default it;

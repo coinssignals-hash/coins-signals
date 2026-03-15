@@ -1870,6 +1870,17 @@ const fr: TranslationKeys = {
   ms_day_wed: 'Mer',
   ms_day_thu: 'Jeu',
   ms_day_fri: 'Ven',
+  of_more: 'Plus',
+  of_search_pair: 'Chercher paire...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Achat',
+  of_ask: 'Vente',
+  of_cat_majors: 'Majeures',
+  of_cat_crosses: 'Croisées',
+  of_cat_exotics: 'Exotiques',
+  of_cat_commodities: 'Matières Premières',
+  of_cat_crypto: 'Crypto',
 };
 
 export default fr;

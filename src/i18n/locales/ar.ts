@@ -2060,6 +2060,17 @@ const ar: TranslationKeys = {
   ms_day_wed: 'أربعاء',
   ms_day_thu: 'خميس',
   ms_day_fri: 'جمعة',
+  of_more: 'المزيد',
+  of_search_pair: 'بحث عن زوج...',
+  of_long: 'شراء',
+  of_short: 'بيع',
+  of_bid: 'عرض',
+  of_ask: 'طلب',
+  of_cat_majors: 'رئيسية',
+  of_cat_crosses: 'تقاطعات',
+  of_cat_exotics: 'غريبة',
+  of_cat_commodities: 'سلع',
+  of_cat_crypto: 'عملات رقمية',
 };
 
 export default ar;

@@ -35,12 +35,12 @@ interface InstitutionalData {
   levels: OrderLevel[];
 }
 
-const ALL_PAIRS: Record<string, string[]> = {
-  'Majors': ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD'],
-  'Crosses': ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/AUD', 'EUR/CAD', 'EUR/CHF', 'GBP/AUD', 'GBP/CAD', 'AUD/JPY', 'CAD/JPY', 'NZD/JPY', 'AUD/NZD', 'AUD/CAD'],
-  'Exóticos': ['USD/MXN', 'USD/TRY', 'USD/ZAR', 'USD/SGD', 'USD/HKD', 'USD/NOK', 'USD/SEK', 'USD/DKK', 'EUR/NOK', 'EUR/SEK', 'EUR/TRY', 'EUR/PLN', 'EUR/HUF', 'EUR/CZK'],
-  'Commodities': ['XAU/USD', 'XAG/USD'],
-  'Crypto': ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD', 'BNB/USD', 'ADA/USD', 'DOGE/USD', 'DOT/USD', 'AVAX/USD', 'LINK/USD'],
+const ALL_PAIRS_DATA: Record<string, { key: string; pairs: string[] }> = {
+  'Majors': { key: 'of_cat_majors', pairs: ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF', 'AUD/USD', 'USD/CAD', 'NZD/USD'] },
+  'Crosses': { key: 'of_cat_crosses', pairs: ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/AUD', 'EUR/CAD', 'EUR/CHF', 'GBP/AUD', 'GBP/CAD', 'AUD/JPY', 'CAD/JPY', 'NZD/JPY', 'AUD/NZD', 'AUD/CAD'] },
+  'Exóticos': { key: 'of_cat_exotics', pairs: ['USD/MXN', 'USD/TRY', 'USD/ZAR', 'USD/SGD', 'USD/HKD', 'USD/NOK', 'USD/SEK', 'USD/DKK', 'EUR/NOK', 'EUR/SEK', 'EUR/TRY', 'EUR/PLN', 'EUR/HUF', 'EUR/CZK'] },
+  'Commodities': { key: 'of_cat_commodities', pairs: ['XAU/USD', 'XAG/USD'] },
+  'Crypto': { key: 'of_cat_crypto', pairs: ['BTC/USD', 'ETH/USD', 'SOL/USD', 'XRP/USD', 'BNB/USD', 'ADA/USD', 'DOGE/USD', 'DOT/USD', 'AVAX/USD', 'LINK/USD'] },
 };
 
 const VISIBLE_PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'XAU/USD', 'AUD/USD'];
@@ -87,7 +87,7 @@ function generateDataForPair(pair: string): InstitutionalData {
   };
 }
 
-const ALL_PAIR_LIST = Object.values(ALL_PAIRS).flat();
+const ALL_PAIR_LIST = Object.values(ALL_PAIRS_DATA).flatMap(g => g.pairs);
 
 function generateAllData(): InstitutionalData[] {
   return ALL_PAIR_LIST.map(generateDataForPair);
@@ -163,7 +163,7 @@ export default function OrderFlowAnalysis() {
                     : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
                 )}
               >
-                {!VISIBLE_PAIRS.includes(selectedPair) ? selectedPair : 'Más'}
+                {!VISIBLE_PAIRS.includes(selectedPair) ? selectedPair : t('of_more')}
                 <ChevronDown className="w-3 h-3" />
               </button>
             </DropdownMenuTrigger>
@@ -172,7 +172,7 @@ export default function OrderFlowAnalysis() {
                 <div className="relative">
                   <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                   <Input
-                    placeholder="Buscar par..."
+                    placeholder={t('of_search_pair')}
                     value={pairSearch}
                     onChange={(e) => setPairSearch(e.target.value)}
                     className="h-8 pl-7 text-xs"
@@ -181,7 +181,7 @@ export default function OrderFlowAnalysis() {
                 </div>
               </div>
               <ScrollArea className="h-64">
-                {Object.entries(ALL_PAIRS).map(([group, pairs]) => {
+                {Object.entries(ALL_PAIRS_DATA).map(([group, { key, pairs }]) => {
                   const filtered = pairs.filter(p => 
                     p.toLowerCase().includes(pairSearch.toLowerCase())
                   );
@@ -189,7 +189,7 @@ export default function OrderFlowAnalysis() {
                   return (
                     <div key={group}>
                       <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {group}
+                        {t(key)}
                       </DropdownMenuLabel>
                       {filtered.map(p => (
                         <DropdownMenuItem
@@ -218,10 +218,10 @@ export default function OrderFlowAnalysis() {
             <h3 className="text-sm font-semibold text-foreground">{t('tp_institutional_positioning')}</h3>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-emerald-500/30 rounded-l-lg h-8 flex items-center justify-end pr-2" style={{ width: `${selected.longPercent}%` }}>
-                <span className="text-xs font-bold text-emerald-400">{selected.longPercent}% Long</span>
+                <span className="text-xs font-bold text-emerald-400">{selected.longPercent}% {t('of_long')}</span>
               </div>
               <div className="flex-1 bg-rose-500/30 rounded-r-lg h-8 flex items-center pl-2" style={{ width: `${selected.shortPercent}%` }}>
-                <span className="text-xs font-bold text-rose-400">{selected.shortPercent}% Short</span>
+                <span className="text-xs font-bold text-rose-400">{selected.shortPercent}% {t('of_short')}</span>
               </div>
             </div>
             <div className="flex justify-between text-[10px]">
@@ -248,8 +248,8 @@ export default function OrderFlowAnalysis() {
                   <XAxis type="number" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} />
                   <YAxis dataKey="price" type="category" tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} width={60} />
                   <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
-                  <Bar dataKey="bid" fill="hsl(142 71% 45% / 0.6)" name="Bid" />
-                  <Bar dataKey="ask" fill="hsl(0 84% 60% / 0.6)" name="Ask" />
+                  <Bar dataKey="bid" fill="hsl(142 71% 45% / 0.6)" name={t('of_bid')} />
+                  <Bar dataKey="ask" fill="hsl(0 84% 60% / 0.6)" name={t('of_ask')} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

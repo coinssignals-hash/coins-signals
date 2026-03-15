@@ -2060,6 +2060,17 @@ const nl: TranslationKeys = {
   ms_day_wed: 'Wo',
   ms_day_thu: 'Do',
   ms_day_fri: 'Vr',
+  of_more: 'Meer',
+  of_search_pair: 'Zoek paar...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Bied',
+  of_ask: 'Laat',
+  of_cat_majors: 'Majors',
+  of_cat_crosses: 'Kruislingen',
+  of_cat_exotics: 'Exotisch',
+  of_cat_commodities: 'Grondstoffen',
+  of_cat_crypto: 'Crypto',
 };
 
 export default nl;

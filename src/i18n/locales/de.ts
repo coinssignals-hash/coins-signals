@@ -2060,6 +2060,17 @@ const de: TranslationKeys = {
   ms_day_wed: 'Mi',
   ms_day_thu: 'Do',
   ms_day_fri: 'Fr',
+  of_more: 'Mehr',
+  of_search_pair: 'Paar suchen...',
+  of_long: 'Long',
+  of_short: 'Short',
+  of_bid: 'Kauf',
+  of_ask: 'Verkauf',
+  of_cat_majors: 'Hauptwährungen',
+  of_cat_crosses: 'Kreuzpaare',
+  of_cat_exotics: 'Exotische',
+  of_cat_commodities: 'Rohstoffe',
+  of_cat_crypto: 'Krypto',
 };
 
 export default de;
