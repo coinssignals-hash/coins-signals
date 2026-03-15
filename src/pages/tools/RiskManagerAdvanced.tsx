@@ -114,7 +114,7 @@ export default function RiskManagerAdvanced() {
             </Link>
             <div className="flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">Risk Manager</h1>
+              <h1 className="text-lg font-bold text-foreground">{t('rm_title')}</h1>
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={addAccount} className="gap-1 text-xs">
