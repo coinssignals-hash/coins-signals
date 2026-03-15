@@ -193,7 +193,7 @@ export default function BacktestPro() {
                   <Input type="number" value={strat.winRate} onChange={e => updateStrategy(strat.id, 'winRate', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
-                  <Label className="text-[10px] text-muted-foreground">Avg R:R</Label>
+                  <Label className="text-[10px] text-muted-foreground">{t('bt_avg_rr')}</Label>
                   <Input type="number" step="0.1" value={strat.avgRR} onChange={e => updateStrategy(strat.id, 'avgRR', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
                 <div>
