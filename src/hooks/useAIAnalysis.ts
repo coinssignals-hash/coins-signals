@@ -11,6 +11,7 @@ export interface AIAnalysisResult {
 }
 
 export function useAIAnalysis() {
+  const { language } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, AIAnalysisResult>>({});
