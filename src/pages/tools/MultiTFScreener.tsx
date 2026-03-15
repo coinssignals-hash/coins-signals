@@ -116,7 +116,7 @@ export default function MultiTFScreener() {
             )}
             {error && (
               <span className="flex items-center gap-1 text-[9px] text-amber-400">
-                <WifiOff className="w-3 h-3" /> Offline
+                <WifiOff className="w-3 h-3" /> {t('mtf_offline')}
               </span>
             )}
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
