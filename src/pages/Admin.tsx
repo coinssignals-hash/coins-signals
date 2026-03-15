@@ -28,6 +28,7 @@ const TAB_TITLES: Record<string, string> = {
   notifications: 'Notificaciones Masivas',
   analytics: 'Métricas y Analíticas',
   'api-usage': 'Consumo de APIs e IA',
+  'health-check': 'Health Check',
   tables: 'Explorador de Base de Datos',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
