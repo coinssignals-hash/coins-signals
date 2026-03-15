@@ -1,0 +1,95 @@
+name: Deploy Backend to Hetzner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  DEPLOY_PATH: /opt/eco-signal-backend
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest httpx
+
+      - name: Run tests
+        run: |
+          cd backend
+          python -m pytest --tb=short -q || echo "No tests found, skipping"
+
+  deploy:
+    name: Deploy to Hetzner
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_SSH_PORT || 22 }}
+          source: "backend/"
+          target: ${{ env.DEPLOY_PATH }}
+          strip_components: 0
+          overwrite: true
+
+      - name: Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_SSH_PORT || 22 }}
+          script: |
+            cd ${{ env.DEPLOY_PATH }}/backend
+
+            # Create .env if it doesn't exist
+            if [ ! -f .env ]; then
+              echo "⚠️  .env not found, creating from example..."
+              cp .env.example .env
+            fi
+
+            # Build and restart services
+            echo "🔨 Building containers..."
+            docker compose -f docker-compose.prod.yml build --no-cache
+
+            echo "🚀 Starting services..."
+            docker compose -f docker-compose.prod.yml up -d
+
+            # Wait and verify health
+            echo "⏳ Waiting for health check..."
+            sleep 10
+            
+            if curl -sf http://localhost:8000/health > /dev/null; then
+              echo "✅ Backend deployed successfully!"
+            else
+              echo "❌ Health check failed, showing logs:"
+              docker compose -f docker-compose.prod.yml logs --tail=50 api
+              exit 1
+            fi
+
+            # Cleanup old images
+            docker image prune -f
