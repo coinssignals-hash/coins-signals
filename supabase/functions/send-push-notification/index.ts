@@ -15,88 +15,140 @@ interface NotificationPayload {
   filter?: { type: 'country' | 'role'; value: string };
 }
 
-async function generateVapidAuthorizationHeader(
-  audience: string,
-  subject: string,
-  publicKey: string,
-  privateKey: string
-): Promise<string> {
-  const header = { typ: 'JWT', alg: 'ES256' };
+// ── FCM v1 Auth: generate OAuth2 access token from Service Account ──
+
+function base64UrlEncode(data: Uint8Array): string {
+  return btoa(String.fromCharCode(...data))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+function base64UrlEncodeStr(str: string): string {
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+async function getAccessToken(serviceAccount: { client_email: string; private_key: string; project_id: string }): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
-  const payload = { aud: audience, exp: now + 12 * 60 * 60, sub: subject };
+  const header = base64UrlEncodeStr(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const claimSet = base64UrlEncodeStr(JSON.stringify({
+    iss: serviceAccount.client_email,
+    scope: 'https://www.googleapis.com/auth/firebase.messaging',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+  }));
 
-  const base64UrlEncode = (data: string) =>
-    btoa(data).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  const unsignedToken = `${header}.${claimSet}`;
 
-  const headerB64 = base64UrlEncode(JSON.stringify(header));
-  const payloadB64 = base64UrlEncode(JSON.stringify(payload));
-  const unsignedToken = `${headerB64}.${payloadB64}`;
-
-  const privateKeyBuffer = Uint8Array.from(
-    atob(privateKey.replace(/-/g, '+').replace(/_/g, '/')),
-    c => c.charCodeAt(0)
-  );
+  // Import RSA private key
+  const pemBody = serviceAccount.private_key
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s/g, '');
+  const keyBuffer = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
 
   const cryptoKey = await crypto.subtle.importKey(
-    'raw', privateKeyBuffer,
-    { name: 'ECDSA', namedCurve: 'P-256' },
+    'pkcs8', keyBuffer,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
     false, ['sign']
   );
 
   const signature = await crypto.subtle.sign(
-    { name: 'ECDSA', hash: 'SHA-256' },
+    'RSASSA-PKCS1-v1_5',
     cryptoKey,
     new TextEncoder().encode(unsignedToken)
   );
 
-  const signatureB64 = base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
-  return `vapid t=${unsignedToken}.${signatureB64}, k=${publicKey}`;
+  const jwt = `${unsignedToken}.${base64UrlEncode(new Uint8Array(signature))}`;
+
+  // Exchange JWT for access token
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+  });
+
+  if (!tokenRes.ok) {
+    const err = await tokenRes.text();
+    throw new Error(`OAuth2 token exchange failed: ${err}`);
+  }
+
+  const { access_token } = await tokenRes.json();
+  return access_token;
 }
 
-/**
- * Send a push notification via Firebase Cloud Messaging (FCM) HTTP v1 API
- */
-async function sendFCMNotification(
+// ── Send via FCM v1 ──
+
+async function sendFCMv1(
   fcmToken: string,
   title: string,
   body: string,
   data: Record<string, string>,
-  fcmServerKey: string
+  accessToken: string,
+  projectId: string
 ): Promise<boolean> {
-  const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+  const url = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `key=${fcmServerKey}`,
+      'Authorization': `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
-      to: fcmToken,
-      notification: { title, body, sound: 'default', click_action: 'FCM_PLUGIN_ACTIVITY' },
-      data,
-      priority: 'high',
+      message: {
+        token: fcmToken,
+        notification: { title, body },
+        data,
+        android: {
+          priority: 'HIGH',
+          notification: { sound: 'default', click_action: 'FCM_PLUGIN_ACTIVITY' },
+        },
+      },
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('FCM error:', response.status, errorText);
-    return false;
+    console.error('FCM v1 error:', response.status, errorText);
+    // Token invalid / unregistered
+    if (response.status === 404 || errorText.includes('UNREGISTERED')) {
+      return false;
+    }
+    throw new Error(`FCM v1 ${response.status}: ${errorText}`);
   }
 
   const result = await response.json();
-  console.log('FCM result:', JSON.stringify(result));
-
-  // Check for invalid tokens
-  if (result.failure > 0 && result.results) {
-    for (const r of result.results) {
-      if (r.error === 'NotRegistered' || r.error === 'InvalidRegistration') {
-        return false; // Token is stale
-      }
-    }
-  }
-
-  return result.success > 0;
+  console.log('FCM v1 result:', JSON.stringify(result));
+  return true;
 }
+
+// ── VAPID for Web Push ──
+
+async function generateVapidAuthorizationHeader(
+  audience: string, subject: string, publicKey: string, privateKey: string
+): Promise<string> {
+  const b64url = (data: string) =>
+    btoa(data).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+  const header = b64url(JSON.stringify({ typ: 'JWT', alg: 'ES256' }));
+  const now = Math.floor(Date.now() / 1000);
+  const payload = b64url(JSON.stringify({ aud: audience, exp: now + 12 * 3600, sub: subject }));
+  const unsigned = `${header}.${payload}`;
+
+  const pkBuf = Uint8Array.from(
+    atob(privateKey.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)
+  );
+  const key = await crypto.subtle.importKey(
+    'raw', pkBuf, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' }, key, new TextEncoder().encode(unsigned)
+  );
+  const sigB64 = b64url(String.fromCharCode(...new Uint8Array(sig)));
+  return `vapid t=${unsigned}.${sigB64}, k=${publicKey}`;
+}
+
+// ── Main handler ──
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -137,7 +189,7 @@ serve(async (req) => {
 
     const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
     const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
-    const fcmServerKey = Deno.env.get('FCM_SERVER_KEY');
+    const fcmServiceAccountJson = Deno.env.get('FCM_SERVICE_ACCOUNT');
 
     // Build filtered user_id list if segmented
     let targetUserIds: string[] | null = null;
@@ -175,7 +227,7 @@ serve(async (req) => {
 
     console.log(`Found ${webSubs.length} web + ${nativeSubs.length} native subscriptions`);
 
-    const notificationData = {
+    const notificationData: Record<string, string> = {
       url: payload.url || '/',
       signalId: payload.signalId || '',
       tag: payload.tag || 'trading-signal',
@@ -232,34 +284,38 @@ serve(async (req) => {
       }
     }
 
-    // ── Native FCM Push ──
-    if (fcmServerKey && nativeSubs.length > 0) {
-      for (const subscription of nativeSubs) {
-        if (!subscription.fcm_token) continue;
-        try {
-          const sent = await sendFCMNotification(
-            subscription.fcm_token,
-            payload.title,
-            payload.body,
-            notificationData,
-            fcmServerKey
-          );
+    // ── Native FCM v1 Push ──
+    if (fcmServiceAccountJson && nativeSubs.length > 0) {
+      try {
+        const serviceAccount = JSON.parse(fcmServiceAccountJson);
+        const accessToken = await getAccessToken(serviceAccount);
 
-          if (sent) {
-            results.native.success++;
-          } else {
+        for (const subscription of nativeSubs) {
+          if (!subscription.fcm_token) continue;
+          try {
+            const sent = await sendFCMv1(
+              subscription.fcm_token, payload.title, payload.body,
+              notificationData, accessToken, serviceAccount.project_id
+            );
+
+            if (sent) {
+              results.native.success++;
+            } else {
+              results.native.failed++;
+              await supabase.from('push_subscriptions').delete().eq('id', subscription.id);
+              results.errors.push('FCM v1: token unregistered and removed');
+            }
+          } catch (error: unknown) {
             results.native.failed++;
-            // Remove stale token
-            await supabase.from('push_subscriptions').delete().eq('id', subscription.id);
-            results.errors.push('FCM: token invalidated and removed');
+            results.errors.push(error instanceof Error ? error.message : 'Unknown FCM error');
           }
-        } catch (error: unknown) {
-          results.native.failed++;
-          results.errors.push(error instanceof Error ? error.message : 'Unknown FCM error');
         }
+      } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : 'FCM auth error';
+        results.errors.push(`FCM v1 auth: ${msg}`);
       }
-    } else if (!fcmServerKey && nativeSubs.length > 0) {
-      results.errors.push('FCM_SERVER_KEY not configured — skipped native notifications');
+    } else if (!fcmServiceAccountJson && nativeSubs.length > 0) {
+      results.errors.push('FCM_SERVICE_ACCOUNT not configured — skipped native notifications');
     }
 
     console.log('Notification results:', JSON.stringify(results));
