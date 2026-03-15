@@ -81,7 +81,7 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/` } });
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/onboarding` } });
       if (error) toast({ title: t('common_error'), description: error.message, variant: 'destructive' });
     } catch {
       toast({ title: t('common_error'), description: t('auth_error_google'), variant: 'destructive' });
@@ -114,13 +114,28 @@ export default function Auth() {
     finally { setLoading(false); }
   };
 
+  const checkProfileAndRedirect = async (userId: string, isNewUser = false) => {
+    try {
+      const { data: profile } = await supabase.from('profiles').select('first_name, country').eq('id', userId).maybeSingle();
+      const isComplete = profile?.first_name && profile?.country;
+      const onboardingDone = localStorage.getItem('onboarding_completed') === 'true';
+      if (!isComplete && !onboardingDone) {
+        navigate('/onboarding');
+      } else {
+        navigate('/');
+      }
+    } catch {
+      navigate(isNewUser ? '/onboarding' : '/');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
     setLoading(true);
     try {
       if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
             toast({ title: t('auth_error_credentials'), description: t('auth_error_credentials_desc'), variant: 'destructive' });
@@ -128,7 +143,8 @@ export default function Auth() {
           return;
         }
         toast({ title: t('auth_welcome'), description: t('auth_welcome_desc') });
-        navigate('/');
+        if (data.user) await checkProfileAndRedirect(data.user.id);
+        else navigate('/');
       } else {
         const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: `${window.location.origin}/auth` } });
         if (error) {
@@ -148,7 +164,8 @@ export default function Auth() {
             try { await supabase.functions.invoke('referrals', { body: { action: 'register', referral_code: referralCode, referred_user_id: data.user.id } }); localStorage.removeItem('referral_code'); } catch (refErr) { console.error('Referral registration error:', refErr); }
           }
           toast({ title: t('auth_account_created'), description: t('auth_account_created_desc') });
-          navigate('/');
+          if (data.user) await checkProfileAndRedirect(data.user.id, true);
+          else navigate('/onboarding');
         }
       }
     } catch { toast({ title: t('common_error'), description: t('auth_error_unexpected'), variant: 'destructive' }); }
