@@ -117,7 +117,7 @@ Genera un reporte profesional en español con:
 5. **📈 Escenarios**: Mejor caso (alcista), caso base (neutral), peor caso (bajista) con probabilidades
 6. **✅ Recomendación**: Sesgo operativo (COMPRA / VENTA / ESPERAR) con niveles sugeridos de entrada, SL y TP
 
-Sé conciso, profesional y directo. Usa markdown.`;
+Sé conciso, profesional y directo. ${langInstruction} ${detailInstruction} Usa markdown.`;
     } else {
       return new Response(JSON.stringify({ error: "No signal or candles provided" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
