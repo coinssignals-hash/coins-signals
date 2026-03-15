@@ -54,7 +54,7 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
         {onAICenter && (
           <button
             onClick={onAICenter}
-            className="flex items-center justify-center gap-0.5 px-1.5 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/30 active:scale-90 transition-all duration-200"
+            className="flex items-center justify-center gap-0.5 px-1.5 h-7 min-w-[4.5rem] rounded-lg bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/30 active:scale-90 transition-all duration-200"
             title="Central AI">
             <Brain className="w-3.5 h-3.5 text-purple-400" />
             <span className="text-[9px] font-semibold text-purple-300 tracking-wide">AI</span>
