@@ -572,9 +572,9 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
             </div>
             <div className="flex gap-0.5 h-1 rounded-full overflow-hidden">
-              <div className="rounded-l-full transition-all duration-500" style={{ width: `${sentimentBreakdown.pos}%`, background: 'hsl(135, 70%, 50%)' }} />
-              <div className="transition-all duration-500" style={{ width: `${sentimentBreakdown.neu}%`, background: 'hsl(45, 80%, 55%)' }} />
-              <div className="rounded-r-full transition-all duration-500" style={{ width: `${sentimentBreakdown.neg}%`, background: 'hsl(0, 70%, 55%)' }} />
+              <div className="rounded-l-full transition-all duration-500 bg-bullish" style={{ width: `${sentimentBreakdown.pos}%` }} />
+              <div className="transition-all duration-500 bg-neutral" style={{ width: `${sentimentBreakdown.neu}%` }} />
+              <div className="rounded-r-full transition-all duration-500 bg-bearish" style={{ width: `${sentimentBreakdown.neg}%` }} />
             </div>
           </div>
           {/* Volatility */}
