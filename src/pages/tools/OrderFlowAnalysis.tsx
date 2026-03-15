@@ -137,13 +137,13 @@ export default function OrderFlowAnalysis() {
         </div>
 
         {/* Pair Selector */}
-        <div className="grid grid-cols-3 gap-2">
-          {PAIRS.map(p => (
+        <div className="flex items-center gap-2 flex-wrap">
+          {VISIBLE_PAIRS.map(p => (
             <button
               key={p}
               onClick={() => setSelectedPair(p)}
               className={cn(
-                'px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all border',
+                'px-3 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all border',
                 selectedPair === p
                   ? 'bg-primary/15 border-primary text-primary shadow-sm shadow-primary/10'
                   : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
@@ -152,6 +152,64 @@ export default function OrderFlowAnalysis() {
               {p}
             </button>
           ))}
+          
+          <DropdownMenu open={dropdownOpen} onOpenChange={(open) => { setDropdownOpen(open); if (!open) setPairSearch(''); }}>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={cn(
+                  'px-3 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all border flex items-center gap-1',
+                  !VISIBLE_PAIRS.includes(selectedPair)
+                    ? 'bg-primary/15 border-primary text-primary shadow-sm shadow-primary/10'
+                    : 'bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                )}
+              >
+                {!VISIBLE_PAIRS.includes(selectedPair) ? selectedPair : 'Más'}
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="p-2">
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar par..."
+                    value={pairSearch}
+                    onChange={(e) => setPairSearch(e.target.value)}
+                    className="h-8 pl-7 text-xs"
+                    autoFocus
+                  />
+                </div>
+              </div>
+              <ScrollArea className="h-64">
+                {Object.entries(ALL_PAIRS).map(([group, pairs]) => {
+                  const filtered = pairs.filter(p => 
+                    p.toLowerCase().includes(pairSearch.toLowerCase())
+                  );
+                  if (filtered.length === 0) return null;
+                  return (
+                    <div key={group}>
+                      <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {group}
+                      </DropdownMenuLabel>
+                      {filtered.map(p => (
+                        <DropdownMenuItem
+                          key={p}
+                          onClick={() => { setSelectedPair(p); setDropdownOpen(false); setPairSearch(''); }}
+                          className={cn(
+                            'text-xs cursor-pointer',
+                            selectedPair === p && 'bg-primary/10 text-primary font-semibold'
+                          )}
+                        >
+                          {p}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator />
+                    </div>
+                  );
+                })}
+              </ScrollArea>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Institutional Positioning */}
