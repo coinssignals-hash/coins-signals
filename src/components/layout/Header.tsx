@@ -4,7 +4,7 @@ import logoImg from '@/assets/g174-2.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, BookOpen, Bell,
-  BarChart3, Wallet, BarChart2 } from
+  BarChart3, Wallet, BarChart2, Clock } from
 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
