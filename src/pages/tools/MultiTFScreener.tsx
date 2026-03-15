@@ -197,7 +197,7 @@ export default function MultiTFScreener() {
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-primary" />
-                <p className="text-xs font-bold text-foreground">Currency Strength</p>
+                <p className="text-xs font-bold text-foreground">{t('mtf_currency_strength')}</p>
               </div>
               <div className="space-y-2">
                 {currencyStrength.map(cs => (
