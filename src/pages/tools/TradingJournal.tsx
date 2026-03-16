@@ -554,7 +554,7 @@ interface JournalSignalsListProps {
   entries: TradeEntry[];
   onEdit: (e: TradeEntry) => void;
   onDelete: (id: string) => void;
-  dateLocale: globalThis.Locale | any;
+  dateLocale: any;
 }
 
 function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSignalsListProps) {
