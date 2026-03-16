@@ -662,6 +662,8 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                 >
                   <Card className="mt-1 bg-card border-border">
                     <CardContent className="p-4 space-y-3">
+                      {/* Chart with Entry/TP/SL levels */}
+                      <JournalMiniChart entry={entry} />
                       {/* Price details */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
