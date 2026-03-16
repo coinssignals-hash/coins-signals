@@ -20,8 +20,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, ReferenceLine } from 'recharts';
+import { formatPrice } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
 interface TradeEntry {
   id: string;
@@ -661,6 +662,8 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                 >
                   <Card className="mt-1 bg-card border-border">
                     <CardContent className="p-4 space-y-3">
+                      {/* Chart with Entry/TP/SL levels */}
+                      <JournalMiniChart entry={entry} />
                       {/* Price details */}
                       <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -752,6 +755,124 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
           </motion.div>
         );
       })}
+    </div>
+  );
+}
+
+/* ─── Mini chart for journal detail view ─── */
+function generateJournalChartData(entry: TradeEntry) {
+  const ep = parseFloat(entry.entryPrice);
+  const ex = parseFloat(entry.exitPrice);
+  const tp = entry.takeProfit ? parseFloat(entry.takeProfit) : ex;
+  const sl = entry.stopLoss ? parseFloat(entry.stopLoss) : ep;
+  const range = Math.max(Math.abs(tp - sl), Math.abs(ex - ep)) || ep * 0.001;
+  const isWin = entry.result === 'win';
+  const data = [];
+  const steps = 30;
+
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps;
+    // Simulate price movement from entry toward exit
+    const trend = ep + (ex - ep) * progress;
+    const noise = (Math.sin(i * 1.7) * 0.3 + Math.cos(i * 2.3) * 0.2) * range * 0.15;
+    const price = trend + noise;
+    
+    // Generate time labels
+    const baseDate = entry.executedAt ? new Date(entry.executedAt) : new Date(entry.date);
+    const time = new Date(baseDate.getTime() + i * 15 * 60000); // 15min intervals
+    data.push({
+      time: `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`,
+      price: parseFloat(price.toFixed(6)),
+    });
+  }
+  return data;
+}
+
+function JournalMiniChart({ entry }: { entry: TradeEntry }) {
+  const ep = parseFloat(entry.entryPrice);
+  const ex = parseFloat(entry.exitPrice);
+  const tp = entry.takeProfit ? parseFloat(entry.takeProfit) : null;
+  const sl = entry.stopLoss ? parseFloat(entry.stopLoss) : null;
+  const isWin = entry.result === 'win';
+  const isLoss = entry.result === 'loss';
+  const chartData = useMemo(() => generateJournalChartData(entry), [entry.id]);
+
+  // Calculate Y domain
+  const prices = [ep, ex, ...(tp ? [tp] : []), ...(sl ? [sl] : [])];
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+  const pad = (maxP - minP) * 0.15 || ep * 0.001;
+
+  return (
+    <div className="h-40 rounded-lg overflow-hidden bg-secondary/30">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id={`jcGrad-${entry.id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'} stopOpacity={0.25} />
+              <stop offset="95%" stopColor={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <XAxis
+            dataKey="time"
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }}
+            axisLine={false} tickLine={false}
+            interval={7}
+          />
+          <YAxis
+            domain={[minP - pad, maxP + pad]}
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }}
+            axisLine={false} tickLine={false}
+            orientation="right"
+            tickFormatter={(v) => formatPrice(v, entry.pair)}
+            width={55}
+          />
+          {/* Entry level */}
+          <ReferenceLine
+            y={ep}
+            stroke="hsl(210, 80%, 60%)"
+            strokeDasharray="4 3"
+            strokeOpacity={0.8}
+            label={{ value: `E ${formatPrice(ep, entry.pair)}`, position: 'left', fill: 'hsl(210, 80%, 60%)', fontSize: 9, fontWeight: 'bold' }}
+          />
+          {/* Take Profit level */}
+          {tp && (
+            <ReferenceLine
+              y={tp}
+              stroke="hsl(150, 60%, 50%)"
+              strokeDasharray="4 3"
+              strokeOpacity={0.7}
+              label={{ value: `TP ${formatPrice(tp, entry.pair)}`, position: 'left', fill: 'hsl(150, 60%, 50%)', fontSize: 9, fontWeight: 'bold' }}
+            />
+          )}
+          {/* Stop Loss level */}
+          {sl && (
+            <ReferenceLine
+              y={sl}
+              stroke="hsl(0, 60%, 50%)"
+              strokeDasharray="4 3"
+              strokeOpacity={0.7}
+              label={{ value: `SL ${formatPrice(sl, entry.pair)}`, position: 'left', fill: 'hsl(0, 60%, 50%)', fontSize: 9, fontWeight: 'bold' }}
+            />
+          )}
+          {/* Exit level */}
+          <ReferenceLine
+            y={ex}
+            stroke="hsl(45, 90%, 60%)"
+            strokeDasharray="2 2"
+            strokeOpacity={0.6}
+            label={{ value: `Exit ${formatPrice(ex, entry.pair)}`, position: 'left', fill: 'hsl(45, 90%, 60%)', fontSize: 8 }}
+          />
+          <Area
+            type="monotone"
+            dataKey="price"
+            stroke={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'}
+            strokeWidth={1.5}
+            fillOpacity={1}
+            fill={`url(#jcGrad-${entry.id})`}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }
