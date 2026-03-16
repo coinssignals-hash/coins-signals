@@ -14,8 +14,10 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
-  Loader2, LogIn, Pencil, Clock, Play, CheckCircle2
+  Loader2, LogIn, Pencil, Clock, Play, CheckCircle2, XCircle, ChevronDown
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -529,66 +531,174 @@ export default function TradingJournal() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-card border-border">
-              <CardContent className="p-0">
-                {entries.map((entry, i) => (
-                  <div
-                    key={entry.id}
-                    className={cn(
-                      'p-3 flex items-start gap-3',
-                      i !== entries.length - 1 && 'border-b border-border'
-                    )}
-                  >
-                    <div className={cn(
-                      'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
-                      entry.result === 'win' ? 'bg-emerald-500/15' :
-                      entry.result === 'loss' ? 'bg-rose-500/15' : 'bg-muted'
-                    )}>
-                      {entry.result === 'win' ? <TrendingUp className="w-4 h-4 text-emerald-400" /> :
-                       entry.result === 'loss' ? <TrendingDown className="w-4 h-4 text-rose-400" /> :
-                       <ShieldAlert className="w-4 h-4 text-muted-foreground" />}
-                    </div>
+            <JournalSignalsList
+              entries={entries}
+              onEdit={startEdit}
+              onDelete={handleDelete}
+              dateLocale={dateLocale}
+            />
+          )}
+        </div>
+      </main>
+    </PageShell>
+  );
+}
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-foreground">{entry.pair}</span>
-                          <span className={cn(
-                            'text-[10px] px-1.5 py-0.5 rounded font-semibold',
-                            entry.action === 'BUY' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
-                          )}>{entry.action}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <button onClick={() => startEdit(entry)} className="text-muted-foreground hover:text-primary transition-colors">
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-rose-400 transition-colors">
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+/* ─── Journal card list matching Performance > SignalsList style ─── */
+
+function getCurrencyFlags(pair: string) {
+  return pair.split('/').map(c => getSymbolVisual(c).flag || '🏳️').join(' ');
+}
+
+interface JournalSignalsListProps {
+  entries: TradeEntry[];
+  onEdit: (e: TradeEntry) => void;
+  onDelete: (id: string) => void;
+  dateLocale: any;
+}
+
+function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSignalsListProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { t } = useTranslation();
+
+  return (
+    <div className="space-y-2">
+      {entries.map((entry, i) => {
+        const pipsNum = parseFloat(entry.pips) || 0;
+        const isWin = entry.result === 'win';
+        const isLoss = entry.result === 'loss';
+        const percentage = entry.takeProfit && entry.entryPrice
+          ? Math.min(Math.round((Math.abs(pipsNum) / (Math.abs(parseFloat(entry.takeProfit) - parseFloat(entry.entryPrice)) * (entry.pair.includes('JPY') ? 100 : 10000))) * 100), 100)
+          : isWin ? 100 : Math.min(Math.abs(pipsNum), 100);
+
+        return (
+          <motion.div
+            key={entry.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card
+              className={cn(
+                'bg-card border-border cursor-pointer transition-all duration-200',
+                expandedId === entry.id && 'ring-1 ring-primary/30'
+              )}
+              onClick={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
+            >
+              <CardContent className="p-3">
+                <div className="flex items-center justify-between">
+                  {/* Left: Flag + Pair */}
+                  <div className="flex items-center gap-2">
+                    <div className="text-xl">{getCurrencyFlags(entry.pair)}</div>
+                    <div>
+                      <div className="text-xs font-bold text-foreground">{entry.pair}</div>
+                      <div className={cn(
+                        'text-[10px] font-bold',
+                        entry.action === 'BUY' ? 'text-emerald-400' : 'text-rose-400'
+                      )}>
+                        {entry.action}
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[10px] text-muted-foreground">{entry.date}</span>
-                        <span className="text-[10px] text-muted-foreground">{entry.lotSize} lotes</span>
+                  {/* Center: Pips */}
+                  <div className="text-center">
+                    <div className={cn(
+                      'text-sm font-bold tabular-nums',
+                      isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-muted-foreground'
+                    )}>
+                      {isLoss ? '-' : '+'}{entry.pips}p
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">{entry.date}</div>
+                  </div>
+
+                  {/* Right: Status ring */}
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 40 40">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="hsl(var(--muted)/0.3)" strokeWidth="3" />
+                        <circle
+                          cx="20" cy="20" r="16" fill="none"
+                          stroke={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'}
+                          strokeWidth="3" strokeLinecap="round"
+                          strokeDasharray={`${(percentage / 100) * 100.5} 100.5`}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
                         <span className={cn(
-                          'text-xs font-bold tabular-nums',
-                          entry.result === 'win' ? 'text-emerald-400' :
-                          entry.result === 'loss' ? 'text-rose-400' : 'text-muted-foreground'
+                          'text-[9px] font-bold tabular-nums',
+                          isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-muted-foreground'
                         )}>
-                          {entry.result === 'loss' ? '-' : '+'}{entry.pips} pips
+                          {percentage}%
                         </span>
                       </div>
+                    </div>
 
-                      <div className="text-[10px] text-muted-foreground mt-1">
-                        E: {entry.entryPrice} → S: {entry.exitPrice}
-                        {entry.stopLoss && <span className="ml-2">SL: {entry.stopLoss}</span>}
-                        {entry.takeProfit && <span className="ml-2">TP: {entry.takeProfit}</span>}
+                    {isWin ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    ) : isLoss ? (
+                      <XCircle className="w-4 h-4 text-rose-400" />
+                    ) : (
+                      <ShieldAlert className="w-4 h-4 text-muted-foreground" />
+                    )}
+
+                    <ChevronDown className={cn(
+                      'w-3 h-3 text-muted-foreground transition-transform',
+                      expandedId === entry.id && 'rotate-180'
+                    )} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <AnimatePresence>
+              {expandedId === entry.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Card className="mt-1 bg-card border-border">
+                    <CardContent className="p-4 space-y-3">
+                      {/* Price details */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Entry</p>
+                          <p className="text-xs font-bold text-foreground tabular-nums">{entry.entryPrice}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Exit</p>
+                          <p className="text-xs font-bold text-foreground tabular-nums">{entry.exitPrice}</p>
+                        </div>
+                        {entry.stopLoss && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Stop Loss</p>
+                            <p className="text-xs font-bold text-rose-400 tabular-nums">{entry.stopLoss}</p>
+                          </div>
+                        )}
+                        {entry.takeProfit && (
+                          <div>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Take Profit</p>
+                            <p className="text-xs font-bold text-emerald-400 tabular-nums">{entry.takeProfit}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Lot size */}
+                      <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
+                        <span>{entry.lotSize} lotes</span>
+                        <span className={cn(
+                          'font-bold text-xs',
+                          isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-muted-foreground'
+                        )}>
+                          {isLoss ? '-' : '+'}{entry.pips} pips
+                        </span>
                       </div>
 
                       {/* Timestamps */}
                       {(entry.signalArrivedAt || entry.executedAt || entry.completedAt) && (
-                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 pt-2 border-t border-border">
                           {entry.signalArrivedAt && (
                             <span className="text-[9px] text-muted-foreground flex items-center gap-1">
                               <Clock className="w-2.5 h-2.5 text-primary/70" />
@@ -610,17 +720,38 @@ export default function TradingJournal() {
                         </div>
                       )}
 
+                      {/* Notes */}
                       {entry.notes && (
-                        <p className="text-[10px] text-muted-foreground/70 mt-1 italic line-clamp-2">"{entry.notes}"</p>
+                        <p className="text-[10px] text-muted-foreground/70 italic border-t border-border pt-2">"{entry.notes}"</p>
                       )}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </main>
-    </PageShell>
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-2 border-t border-border">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 h-8 text-xs"
+                          onClick={(e) => { e.stopPropagation(); onEdit(entry); }}
+                        >
+                          <Pencil className="w-3 h-3 mr-1" /> Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 text-xs text-destructive hover:text-destructive"
+                          onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }
