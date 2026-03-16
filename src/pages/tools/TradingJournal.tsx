@@ -903,3 +903,61 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
     </div>
   );
 }
+
+/* ─── Filters for journal history ─── */
+interface JournalFiltersProps {
+  entries: TradeEntry[];
+  filterPair: string;
+  setFilterPair: (v: string) => void;
+  filterResult: string;
+  setFilterResult: (v: string) => void;
+}
+
+function JournalFilters({ entries, filterPair, setFilterPair, filterResult, setFilterResult }: JournalFiltersProps) {
+  const uniquePairs = useMemo(() => {
+    const set = new Set(entries.map(e => e.pair));
+    return Array.from(set).sort();
+  }, [entries]);
+
+  const resultOptions = [
+    { value: 'all', label: 'Todos', color: 'text-foreground' },
+    { value: 'win', label: 'Win', color: 'text-emerald-400' },
+    { value: 'loss', label: 'Loss', color: 'text-rose-400' },
+    { value: 'breakeven', label: 'BE', color: 'text-muted-foreground' },
+  ];
+
+  return (
+    <div className="flex gap-2">
+      {/* Pair filter */}
+      <Select value={filterPair} onValueChange={setFilterPair}>
+        <SelectTrigger className="h-8 text-xs bg-secondary border-border flex-1">
+          <SelectValue placeholder="Par" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Todos los pares</SelectItem>
+          {uniquePairs.map(p => (
+            <SelectItem key={p} value={p}>{p}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Result filter as pill buttons */}
+      <div className="flex rounded-lg border border-border overflow-hidden">
+        {resultOptions.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => setFilterResult(opt.value)}
+            className={cn(
+              'px-2.5 py-1.5 text-[10px] font-bold transition-colors',
+              filterResult === opt.value
+                ? 'bg-primary/20 text-primary'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
