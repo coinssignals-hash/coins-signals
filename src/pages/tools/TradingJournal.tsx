@@ -531,95 +531,12 @@ export default function TradingJournal() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-card border-border">
-              <CardContent className="p-0">
-                {entries.map((entry, i) => (
-                  <div
-                    key={entry.id}
-                    className={cn(
-                      'p-3 flex items-start gap-3',
-                      i !== entries.length - 1 && 'border-b border-border'
-                    )}
-                  >
-                    <div className={cn(
-                      'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
-                      entry.result === 'win' ? 'bg-emerald-500/15' :
-                      entry.result === 'loss' ? 'bg-rose-500/15' : 'bg-muted'
-                    )}>
-                      {entry.result === 'win' ? <TrendingUp className="w-4 h-4 text-emerald-400" /> :
-                       entry.result === 'loss' ? <TrendingDown className="w-4 h-4 text-rose-400" /> :
-                       <ShieldAlert className="w-4 h-4 text-muted-foreground" />}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-foreground">{entry.pair}</span>
-                          <span className={cn(
-                            'text-[10px] px-1.5 py-0.5 rounded font-semibold',
-                            entry.action === 'BUY' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
-                          )}>{entry.action}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <button onClick={() => startEdit(entry)} className="text-muted-foreground hover:text-primary transition-colors">
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={() => handleDelete(entry.id)} className="text-muted-foreground hover:text-rose-400 transition-colors">
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[10px] text-muted-foreground">{entry.date}</span>
-                        <span className="text-[10px] text-muted-foreground">{entry.lotSize} lotes</span>
-                        <span className={cn(
-                          'text-xs font-bold tabular-nums',
-                          entry.result === 'win' ? 'text-emerald-400' :
-                          entry.result === 'loss' ? 'text-rose-400' : 'text-muted-foreground'
-                        )}>
-                          {entry.result === 'loss' ? '-' : '+'}{entry.pips} pips
-                        </span>
-                      </div>
-
-                      <div className="text-[10px] text-muted-foreground mt-1">
-                        E: {entry.entryPrice} → S: {entry.exitPrice}
-                        {entry.stopLoss && <span className="ml-2">SL: {entry.stopLoss}</span>}
-                        {entry.takeProfit && <span className="ml-2">TP: {entry.takeProfit}</span>}
-                      </div>
-
-                      {/* Timestamps */}
-                      {(entry.signalArrivedAt || entry.executedAt || entry.completedAt) && (
-                        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
-                          {entry.signalArrivedAt && (
-                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
-                              <Clock className="w-2.5 h-2.5 text-primary/70" />
-                              Señal: {format(new Date(entry.signalArrivedAt), 'dd/MM HH:mm', { locale: dateLocale })}
-                            </span>
-                          )}
-                          {entry.executedAt && (
-                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
-                              <Play className="w-2.5 h-2.5 text-emerald-400/70" />
-                              Ejec: {format(new Date(entry.executedAt), 'dd/MM HH:mm', { locale: dateLocale })}
-                            </span>
-                          )}
-                          {entry.completedAt && (
-                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
-                              <CheckCircle2 className="w-2.5 h-2.5 text-amber-400/70" />
-                              Cierre: {format(new Date(entry.completedAt), 'dd/MM HH:mm', { locale: dateLocale })}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {entry.notes && (
-                        <p className="text-[10px] text-muted-foreground/70 mt-1 italic line-clamp-2">"{entry.notes}"</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <JournalSignalsList
+              entries={entries}
+              onEdit={startEdit}
+              onDelete={handleDelete}
+              dateLocale={dateLocale}
+            />
           )}
         </div>
       </main>
