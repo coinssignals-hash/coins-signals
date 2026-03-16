@@ -58,6 +58,16 @@ export default function TradingJournal() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [filterPair, setFilterPair] = useState<string>('all');
+  const [filterResult, setFilterResult] = useState<string>('all');
+
+  const filteredEntries = useMemo(() => {
+    return entries.filter(e => {
+      if (filterPair !== 'all' && e.pair !== filterPair) return false;
+      if (filterResult !== 'all' && e.result !== filterResult) return false;
+      return true;
+    });
+  }, [entries, filterPair, filterResult]);
 
   // Form state
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
