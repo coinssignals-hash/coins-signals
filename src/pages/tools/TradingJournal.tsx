@@ -58,6 +58,16 @@ export default function TradingJournal() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [filterPair, setFilterPair] = useState<string>('all');
+  const [filterResult, setFilterResult] = useState<string>('all');
+
+  const filteredEntries = useMemo(() => {
+    return entries.filter(e => {
+      if (filterPair !== 'all' && e.pair !== filterPair) return false;
+      if (filterResult !== 'all' && e.result !== filterResult) return false;
+      return true;
+    });
+  }, [entries, filterPair, filterResult]);
 
   // Form state
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -517,11 +527,22 @@ export default function TradingJournal() {
         )}
 
         {/* Trade History */}
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
             {t('journal_history')}
           </h3>
+
+          {/* Filters */}
+          {entries.length > 0 && (
+            <JournalFilters
+              entries={entries}
+              filterPair={filterPair}
+              setFilterPair={setFilterPair}
+              filterResult={filterResult}
+              setFilterResult={setFilterResult}
+            />
+          )}
 
           {entries.length === 0 ? (
             <Card className="bg-card border-border">
@@ -532,12 +553,18 @@ export default function TradingJournal() {
               </CardContent>
             </Card>
           ) : (
-            <JournalSignalsList
-              entries={entries}
-              onEdit={startEdit}
-              onDelete={handleDelete}
-              dateLocale={dateLocale}
-            />
+            <>
+              {filteredEntries.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">No hay operaciones con estos filtros</p>
+              ) : (
+                <JournalSignalsList
+                  entries={filteredEntries}
+                  onEdit={startEdit}
+                  onDelete={handleDelete}
+                  dateLocale={dateLocale}
+                />
+              )}
+            </>
           )}
         </div>
       </main>
@@ -873,6 +900,64 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
           />
         </AreaChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+/* ─── Filters for journal history ─── */
+interface JournalFiltersProps {
+  entries: TradeEntry[];
+  filterPair: string;
+  setFilterPair: (v: string) => void;
+  filterResult: string;
+  setFilterResult: (v: string) => void;
+}
+
+function JournalFilters({ entries, filterPair, setFilterPair, filterResult, setFilterResult }: JournalFiltersProps) {
+  const uniquePairs = useMemo(() => {
+    const set = new Set(entries.map(e => e.pair));
+    return Array.from(set).sort();
+  }, [entries]);
+
+  const resultOptions = [
+    { value: 'all', label: 'Todos', color: 'text-foreground' },
+    { value: 'win', label: 'Win', color: 'text-emerald-400' },
+    { value: 'loss', label: 'Loss', color: 'text-rose-400' },
+    { value: 'breakeven', label: 'BE', color: 'text-muted-foreground' },
+  ];
+
+  return (
+    <div className="flex gap-2">
+      {/* Pair filter */}
+      <Select value={filterPair} onValueChange={setFilterPair}>
+        <SelectTrigger className="h-8 text-xs bg-secondary border-border flex-1">
+          <SelectValue placeholder="Par" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Todos los pares</SelectItem>
+          {uniquePairs.map(p => (
+            <SelectItem key={p} value={p}>{p}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Result filter as pill buttons */}
+      <div className="flex rounded-lg border border-border overflow-hidden">
+        {resultOptions.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => setFilterResult(opt.value)}
+            className={cn(
+              'px-2.5 py-1.5 text-[10px] font-bold transition-colors',
+              filterResult === opt.value
+                ? 'bg-primary/20 text-primary'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
