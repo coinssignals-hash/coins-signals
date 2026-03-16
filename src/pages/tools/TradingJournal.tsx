@@ -14,8 +14,10 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
-  Loader2, LogIn, Pencil, Clock, Play, CheckCircle2
+  Loader2, LogIn, Pencil, Clock, Play, CheckCircle2, XCircle, ChevronDown
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
