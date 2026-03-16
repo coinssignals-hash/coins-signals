@@ -20,10 +20,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
 import { format, startOfWeek, parseISO } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, ReferenceLine, CartesianGrid } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, ReferenceLine } from 'recharts';
 import { formatPrice } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 
 interface TradeEntry {
   id: string;
