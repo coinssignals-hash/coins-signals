@@ -517,11 +517,22 @@ export default function TradingJournal() {
         )}
 
         {/* Trade History */}
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
             {t('journal_history')}
           </h3>
+
+          {/* Filters */}
+          {entries.length > 0 && (
+            <JournalFilters
+              entries={entries}
+              filterPair={filterPair}
+              setFilterPair={setFilterPair}
+              filterResult={filterResult}
+              setFilterResult={setFilterResult}
+            />
+          )}
 
           {entries.length === 0 ? (
             <Card className="bg-card border-border">
@@ -532,12 +543,18 @@ export default function TradingJournal() {
               </CardContent>
             </Card>
           ) : (
-            <JournalSignalsList
-              entries={entries}
-              onEdit={startEdit}
-              onDelete={handleDelete}
-              dateLocale={dateLocale}
-            />
+            <>
+              {filteredEntries.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">No hay operaciones con estos filtros</p>
+              ) : (
+                <JournalSignalsList
+                  entries={filteredEntries}
+                  onEdit={startEdit}
+                  onDelete={handleDelete}
+                  dateLocale={dateLocale}
+                />
+              )}
+            </>
           )}
         </div>
       </main>
