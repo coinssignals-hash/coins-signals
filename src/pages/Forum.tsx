@@ -38,6 +38,8 @@ export default function Forum() {
   const [replyTo, setReplyTo] = useState<ForumMessage | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [showReactions, setShowReactions] = useState<string | null>(null);
+  const [signalPickerOpen, setSignalPickerOpen] = useState(false);
+  const [pendingSignalId, setPendingSignalId] = useState<string | null>(null);
 
   const { channels, loading: channelsLoading } = useForumChannels();
   const { messages, loading: msgsLoading, sendMessage, toggleReaction, reportMessage } = useForumMessages(selectedChannelId);
