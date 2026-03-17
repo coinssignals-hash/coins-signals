@@ -174,6 +174,7 @@ function AnimatedRoutes() {
           <Route path="/tools/currency-converter" element={<CurrencyConverter />} />
           <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="/tools/market-sessions" element={<MarketSessions />} />
+          <Route path="/forum" element={<Forum />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
