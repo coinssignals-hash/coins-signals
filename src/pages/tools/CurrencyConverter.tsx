@@ -227,7 +227,7 @@ export default function CurrencyConverter() {
       setLoading(false);
       setChartLoading(false);
     }
-  }, [fromCurrency, toCurrency]);
+  }, [fromCurrency, toCurrency, period]);
 
   useEffect(() => {
     fetchAll();
