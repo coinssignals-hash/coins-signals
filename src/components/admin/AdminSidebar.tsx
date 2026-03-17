@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
+  ShieldBan,
   PlusCircle,
   Activity,
   HeartPulse,

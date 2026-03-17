@@ -97,6 +97,7 @@ export default function Admin() {
       case 'api-usage': return <AdminAPIUsageTab />;
       case 'health-check': return <AdminHealthCheckTab />;
       case 'tables': return <AdminTablesTabV2 />;
+      case 'moderation': return <AdminModerationTab />;
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
       default: return <AdminDashboardTab />;
