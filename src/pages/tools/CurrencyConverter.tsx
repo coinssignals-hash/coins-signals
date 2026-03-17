@@ -99,9 +99,10 @@ async function fetchFiatHistory(from: string, to: string, days: PeriodOption = 3
 }
 
 // Crypto → Fiat: CoinGecko market_chart (free, no key, 30 days)
-async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string): Promise<ChartPoint[]> {
+async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const vs = FIAT_TO_CG[fiatCode] || 'usd';
-  const url = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=${vs}&days=30&interval=daily`;
+  const interval = days <= 7 ? '' : '&interval=daily';
+  const url = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=${vs}&days=${days}${interval}`;
   const res = await fetch(url);
   const data = await res.json();
   if (!data.prices) return [];
