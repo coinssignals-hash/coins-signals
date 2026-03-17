@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
+import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
