@@ -11,7 +11,7 @@ import {
   ChevronRight, Calculator, CalendarDays, ScanSearch, BookOpen,
   TrendingUp, Target, DollarSign, Percent, BarChart3,
   CandlestickChart, Activity, Layers, Scale, Clock,
-  LineChart, Gauge, PieChart, Workflow, Shield, Zap, Lock
+  LineChart, Gauge, PieChart, Workflow, Shield, Zap, Lock, ArrowUpDown
 } from 'lucide-react';
 
 type ToolCategory = 'all' | 'calculadoras' | 'calendario' | 'screeners' | 'diario';
