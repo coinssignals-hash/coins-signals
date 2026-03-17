@@ -129,8 +129,8 @@ async function fetchCryptoToCryptoHistory(fromId: string, toId: string, days: Pe
 }
 
 // Fiat → Crypto: invert crypto→fiat
-async function fetchFiatToCryptoHistory(cryptoId: string, fiatCode: string): Promise<ChartPoint[]> {
-  const data = await fetchCryptoToFiatHistory(cryptoId, fiatCode);
+async function fetchFiatToCryptoHistory(cryptoId: string, fiatCode: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
+  const data = await fetchCryptoToFiatHistory(cryptoId, fiatCode, days);
   return data.map(p => ({ date: p.date, value: p.value > 0 ? 1 / p.value : 0 }));
 }
 
