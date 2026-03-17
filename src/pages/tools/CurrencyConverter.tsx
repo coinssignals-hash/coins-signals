@@ -263,33 +263,51 @@ export default function CurrencyConverter() {
   const fiatCurrencies = CURRENCIES.filter(c => c.type === 'fiat');
   const cryptoCurrencies = CURRENCIES.filter(c => c.type === 'crypto');
 
-  const CurrencySelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[90px] h-8 ml-auto text-xs bg-secondary border-border">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent className="max-h-60">
-        <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Fiat</div>
-        {fiatCurrencies.map(c => (
-          <SelectItem key={c.code} value={c.code}>
-            <span className="flex items-center gap-1.5">
-              <span>{c.flag}</span>
-              <span>{c.code}</span>
-            </span>
-          </SelectItem>
-        ))}
-        <div className="px-2 py-1 mt-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-t border-border">Crypto</div>
-        {cryptoCurrencies.map(c => (
-          <SelectItem key={c.code} value={c.code}>
-            <span className="flex items-center gap-1.5">
-              <span className="text-primary">{c.flag}</span>
-              <span>{c.code}</span>
-            </span>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
+  const CurrencySelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
+    const current = getCurrency(value);
+    return (
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Fiat selector */}
+        <Select value={current?.type === 'fiat' ? value : ''} onValueChange={onChange}>
+          <SelectTrigger className={cn(
+            "w-[72px] h-8 text-xs border-border",
+            current?.type === 'fiat' ? "bg-secondary" : "bg-secondary/50 text-muted-foreground"
+          )}>
+            <SelectValue placeholder="Fiat" />
+          </SelectTrigger>
+          <SelectContent className="max-h-60">
+            {fiatCurrencies.map(c => (
+              <SelectItem key={c.code} value={c.code}>
+                <span className="flex items-center gap-1.5">
+                  <span>{c.flag}</span>
+                  <span>{c.code}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {/* Crypto selector */}
+        <Select value={current?.type === 'crypto' ? value : ''} onValueChange={onChange}>
+          <SelectTrigger className={cn(
+            "w-[78px] h-8 text-xs border-border",
+            current?.type === 'crypto' ? "bg-primary/10 border-primary/30 text-primary" : "bg-secondary/50 text-muted-foreground"
+          )}>
+            <SelectValue placeholder="Crypto" />
+          </SelectTrigger>
+          <SelectContent className="max-h-60">
+            {cryptoCurrencies.map(c => (
+              <SelectItem key={c.code} value={c.code}>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-primary">{c.flag}</span>
+                  <span>{c.code}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  };
 
   return (
     <PageShell>
