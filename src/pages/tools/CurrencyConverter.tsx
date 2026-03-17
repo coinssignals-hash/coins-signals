@@ -391,11 +391,29 @@ export default function CurrencyConverter() {
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground">
-                  {fromCurrency}/{toCurrency} — 30 {t('tools_converter_days')}
+                  {fromCurrency}/{toCurrency} — {period} {t('tools_converter_days')}
                 </span>
                 <button onClick={fetchAll} className="text-primary hover:text-primary/80 transition-colors">
                   <RefreshCw className={cn("w-3.5 h-3.5", (loading || chartLoading) && "animate-spin")} />
                 </button>
+              </div>
+
+              {/* Period selector */}
+              <div className="flex gap-1.5 justify-center">
+                {([7, 30, 90] as PeriodOption[]).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPeriod(p)}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-semibold transition-colors",
+                      period === p
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {p}D
+                  </button>
+                ))}
               </div>
 
               {/* Current rate box */}
