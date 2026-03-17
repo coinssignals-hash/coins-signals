@@ -78,13 +78,14 @@ const FIAT_TO_CG: Record<string, string> = {
 };
 
 type ChartPoint = { date: string; value: number };
+type PeriodOption = 7 | 30 | 90;
 
 /* ────────── Historical data fetchers ────────── */
 
 // Fiat ↔ Fiat: Frankfurter API (free, no key)
-async function fetchFiatHistory(from: string, to: string): Promise<ChartPoint[]> {
+async function fetchFiatHistory(from: string, to: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const end = new Date();
-  const start = subDays(end, 30);
+  const start = subDays(end, days);
   const url = `https://api.frankfurter.app/${format(start, 'yyyy-MM-dd')}..${format(end, 'yyyy-MM-dd')}?from=${from}&to=${to}`;
   const res = await fetch(url);
   const data = await res.json();
@@ -98,9 +99,10 @@ async function fetchFiatHistory(from: string, to: string): Promise<ChartPoint[]>
 }
 
 // Crypto → Fiat: CoinGecko market_chart (free, no key, 30 days)
-async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string): Promise<ChartPoint[]> {
+async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const vs = FIAT_TO_CG[fiatCode] || 'usd';
-  const url = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=${vs}&days=30&interval=daily`;
+  const interval = days <= 7 ? '' : '&interval=daily';
+  const url = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=${vs}&days=${days}${interval}`;
   const res = await fetch(url);
   const data = await res.json();
   if (!data.prices) return [];
@@ -111,13 +113,12 @@ async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string): Pro
 }
 
 // Crypto → Crypto: route through USD
-async function fetchCryptoToCryptoHistory(fromId: string, toId: string): Promise<ChartPoint[]> {
+async function fetchCryptoToCryptoHistory(fromId: string, toId: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const [fromData, toData] = await Promise.all([
-    fetchCryptoToFiatHistory(fromId, 'USD'),
-    fetchCryptoToFiatHistory(toId, 'USD'),
+    fetchCryptoToFiatHistory(fromId, 'USD', days),
+    fetchCryptoToFiatHistory(toId, 'USD', days),
   ]);
   if (fromData.length === 0 || toData.length === 0) return [];
-  // Align by date
   const toMap = new Map(toData.map(p => [p.date, p.value]));
   return fromData
     .filter(p => toMap.has(p.date) && toMap.get(p.date)! > 0)
@@ -128,8 +129,8 @@ async function fetchCryptoToCryptoHistory(fromId: string, toId: string): Promise
 }
 
 // Fiat → Crypto: invert crypto→fiat
-async function fetchFiatToCryptoHistory(cryptoId: string, fiatCode: string): Promise<ChartPoint[]> {
-  const data = await fetchCryptoToFiatHistory(cryptoId, fiatCode);
+async function fetchFiatToCryptoHistory(cryptoId: string, fiatCode: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
+  const data = await fetchCryptoToFiatHistory(cryptoId, fiatCode, days);
   return data.map(p => ({ date: p.date, value: p.value > 0 ? 1 / p.value : 0 }));
 }
 
@@ -171,21 +172,21 @@ async function fetchCurrentRate(from: string, to: string): Promise<number | null
   return fromUsd && toUsd ? fromUsd / toUsd : null;
 }
 
-async function fetchHistoricalData(from: string, to: string): Promise<ChartPoint[]> {
+async function fetchHistoricalData(from: string, to: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const fromDef = getCurrency(from);
   const toDef = getCurrency(to);
 
   try {
     if (!isCrypto(from) && !isCrypto(to)) {
-      return await fetchFiatHistory(from, to);
+      return await fetchFiatHistory(from, to, days);
     }
     if (isCrypto(from) && !isCrypto(to)) {
-      return await fetchCryptoToFiatHistory(fromDef.coingeckoId!, to);
+      return await fetchCryptoToFiatHistory(fromDef.coingeckoId!, to, days);
     }
     if (!isCrypto(from) && isCrypto(to)) {
-      return await fetchFiatToCryptoHistory(toDef.coingeckoId!, from);
+      return await fetchFiatToCryptoHistory(toDef.coingeckoId!, from, days);
     }
-    return await fetchCryptoToCryptoHistory(fromDef.coingeckoId!, toDef.coingeckoId!);
+    return await fetchCryptoToCryptoHistory(fromDef.coingeckoId!, toDef.coingeckoId!, days);
   } catch {
     return [];
   }
@@ -204,6 +205,7 @@ export default function CurrencyConverter() {
   const [loading, setLoading] = useState(false);
   const [chartLoading, setChartLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState<PeriodOption>(30);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -212,7 +214,7 @@ export default function CurrencyConverter() {
     try {
       const [currentRate, history] = await Promise.all([
         fetchCurrentRate(fromCurrency, toCurrency),
-        fetchHistoricalData(fromCurrency, toCurrency),
+        fetchHistoricalData(fromCurrency, toCurrency, period),
       ]);
       if (currentRate !== null) {
         setRate(currentRate);
@@ -226,7 +228,7 @@ export default function CurrencyConverter() {
       setLoading(false);
       setChartLoading(false);
     }
-  }, [fromCurrency, toCurrency]);
+  }, [fromCurrency, toCurrency, period]);
 
   useEffect(() => {
     fetchAll();
@@ -390,11 +392,29 @@ export default function CurrencyConverter() {
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground">
-                  {fromCurrency}/{toCurrency} — 30 {t('tools_converter_days')}
+                  {fromCurrency}/{toCurrency} — {period} {t('tools_converter_days')}
                 </span>
                 <button onClick={fetchAll} className="text-primary hover:text-primary/80 transition-colors">
                   <RefreshCw className={cn("w-3.5 h-3.5", (loading || chartLoading) && "animate-spin")} />
                 </button>
+              </div>
+
+              {/* Period selector */}
+              <div className="flex gap-1.5 justify-center">
+                {([7, 30, 90] as PeriodOption[]).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPeriod(p)}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-semibold transition-colors",
+                      period === p
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {p}D
+                  </button>
+                ))}
               </div>
 
               {/* Current rate box */}
