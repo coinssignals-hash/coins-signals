@@ -1,0 +1,1 @@
+ALTER TABLE public.forum_daily_topics ADD COLUMN IF NOT EXISTS image_url text DEFAULT NULL;

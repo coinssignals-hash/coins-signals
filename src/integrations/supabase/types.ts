@@ -456,6 +456,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           id: string
+          image_url: string | null
           option_a: string
           option_b: string
           title: string
@@ -466,6 +467,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           option_a: string
           option_b: string
           title: string
@@ -476,6 +478,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           option_a?: string
           option_b?: string
           title?: string
