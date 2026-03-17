@@ -213,7 +213,7 @@ export default function CurrencyConverter() {
     try {
       const [currentRate, history] = await Promise.all([
         fetchCurrentRate(fromCurrency, toCurrency),
-        fetchHistoricalData(fromCurrency, toCurrency),
+        fetchHistoricalData(fromCurrency, toCurrency, period),
       ]);
       if (currentRate !== null) {
         setRate(currentRate);
