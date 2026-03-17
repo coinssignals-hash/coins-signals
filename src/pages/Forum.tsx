@@ -78,15 +78,46 @@ export default function Forum() {
     setView('dm-chat');
   };
 
+  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast.error('Solo se permiten imágenes'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('La imagen no puede superar 5MB'); return; }
+    const preview = URL.createObjectURL(file);
+    setPendingImage({ file, preview });
+    if (imageInputRef.current) imageInputRef.current.value = '';
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    if (!user) return null;
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('forum-images').upload(path, file);
+    if (error) { toast.error('Error al subir imagen'); return null; }
+    const { data } = supabase.storage.from('forum-images').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
   const handleSend = async () => {
     const text = messageInput.trim();
-    if (!text && !pendingSignalId) return;
+    if (!text && !pendingSignalId && !pendingImage) return;
     if (!user) { toast.error('Inicia sesión para enviar mensajes'); return; }
 
+    let imageUrl: string | undefined;
+    if (pendingImage) {
+      setUploadingImage(true);
+      const url = await uploadImage(pendingImage.file);
+      setUploadingImage(false);
+      if (!url) return;
+      imageUrl = url;
+      URL.revokeObjectURL(pendingImage.preview);
+      setPendingImage(null);
+    }
+
     if (view === 'chat') {
-      await sendMessage(text || '📊 Señal compartida', replyTo?.id, pendingSignalId || undefined);
+      await sendMessage(text || (imageUrl ? '📷 Imagen' : '📊 Señal compartida'), replyTo?.id, pendingSignalId || undefined, imageUrl);
     } else if (view === 'dm-chat') {
-      await sendDM(text);
+      await sendDM(text || '📷 Imagen');
     }
     setMessageInput('');
     setReplyTo(null);
