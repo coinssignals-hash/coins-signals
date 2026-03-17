@@ -325,4 +325,6 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
       </main>
     </PageShell>
   );
-}
+});
+
+export default RiskRewardCalculator;
