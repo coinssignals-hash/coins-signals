@@ -67,7 +67,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
     };
   }, [filteredSignals]);
 
-  if (stats.total === 0) return null;
+  
 
   const winRateColor =
     stats.winRate >= 60
