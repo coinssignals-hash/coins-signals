@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
+  ShieldBan,
   PlusCircle,
   Activity,
   HeartPulse,
@@ -35,6 +36,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'api-usage', label: 'Consumo APIs/IA', icon: Activity },
   { id: 'health-check', label: 'Health Check', icon: HeartPulse },
   { id: 'tables', label: 'Base de Datos', icon: Database },
+  { id: 'moderation', label: 'Moderación', icon: ShieldBan },
   { id: 'audit', label: 'Auditoría', icon: ScrollText },
   { id: 'documents', label: 'Documentos', icon: FileText },
 ];

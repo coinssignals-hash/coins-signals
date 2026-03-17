@@ -17,6 +17,7 @@ import { AdminCreateSignalTab } from '@/components/admin/AdminCreateSignalTab';
 import { AdminGlobalSearch } from '@/components/admin/AdminGlobalSearch';
 import { AdminAPIUsageTab } from '@/components/admin/AdminAPIUsageTab';
 import { AdminHealthCheckTab } from '@/components/admin/AdminHealthCheckTab';
+import { AdminModerationTab } from '@/components/admin/AdminModerationTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +31,7 @@ const TAB_TITLES: Record<string, string> = {
   'api-usage': 'Consumo de APIs e IA',
   'health-check': 'Health Check',
   tables: 'Explorador de Base de Datos',
+  moderation: 'Moderación del Foro',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
 };
@@ -95,6 +97,7 @@ export default function Admin() {
       case 'api-usage': return <AdminAPIUsageTab />;
       case 'health-check': return <AdminHealthCheckTab />;
       case 'tables': return <AdminTablesTabV2 />;
+      case 'moderation': return <AdminModerationTab />;
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
       default: return <AdminDashboardTab />;
