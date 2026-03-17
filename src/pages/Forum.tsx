@@ -400,8 +400,27 @@ export default function Forum() {
           </div>
         )}
 
+        {/* Pending signal preview */}
+        {pendingSignalId && (
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border-t border-primary/20">
+            <TrendingUp className="w-3 h-3 text-primary" />
+            <span className="text-[10px] text-primary flex-1">Señal adjunta</span>
+            <button onClick={() => setPendingSignalId(null)} className="text-muted-foreground text-xs">✕</button>
+          </div>
+        )}
+
         {/* Input */}
         <div className="flex gap-2 pt-2 border-t border-border">
+          {/* Signal picker button - only in channel chat */}
+          {!isDM && user && (
+            <button
+              onClick={() => setSignalPickerOpen(true)}
+              className="w-9 h-9 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+              title="Compartir señal"
+            >
+              <TrendingUp className="w-4 h-4" />
+            </button>
+          )}
           <Input
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
@@ -412,12 +431,24 @@ export default function Forum() {
           />
           <button
             onClick={handleSend}
-            disabled={!user || !messageInput.trim()}
+            disabled={!user || (!messageInput.trim() && !pendingSignalId)}
             className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
           >
             <Send className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Signal Picker Dialog */}
+        <SignalPicker
+          open={signalPickerOpen}
+          onOpenChange={setSignalPickerOpen}
+          onSelect={(signal) => {
+            setPendingSignalId(signal.id);
+            if (!messageInput.trim()) {
+              setMessageInput(`📊 ${signal.currency_pair} ${signal.action} @ ${signal.entry_price}`);
+            }
+          }}
+        />
       </div>
     );
   };
