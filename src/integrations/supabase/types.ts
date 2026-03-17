@@ -396,6 +396,308 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_channels: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      forum_daily_topics: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          option_a: string
+          option_b: string
+          title: string
+          topic_date: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          option_a: string
+          option_b: string
+          title: string
+          topic_date?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          option_a?: string
+          option_b?: string
+          title?: string
+          topic_date?: string
+        }
+        Relationships: []
+      }
+      forum_direct_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_read: boolean | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_read?: boolean | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_read?: boolean | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      forum_messages: {
+        Row: {
+          channel_id: string
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_deleted: boolean | null
+          reply_to_id: string | null
+          signal_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_deleted?: boolean | null
+          reply_to_id?: string | null
+          signal_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_deleted?: boolean | null
+          reply_to_id?: string | null
+          signal_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_messages_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "forum_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_messages_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "forum_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_messages_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "trading_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "forum_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_reports: {
+        Row: {
+          created_at: string
+          dm_id: string | null
+          id: string
+          message_id: string | null
+          reason: string
+          reporter_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          dm_id?: string | null
+          id?: string
+          message_id?: string | null
+          reason: string
+          reporter_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          dm_id?: string | null
+          id?: string
+          message_id?: string | null
+          reason?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_reports_dm_id_fkey"
+            columns: ["dm_id"]
+            isOneToOne: false
+            referencedRelation: "forum_direct_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_reports_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "forum_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_topic_votes: {
+        Row: {
+          created_at: string
+          id: string
+          topic_id: string
+          user_id: string
+          vote: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          topic_id: string
+          user_id: string
+          vote: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          topic_id?: string
+          user_id?: string
+          vote?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_topic_votes_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_daily_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_user_bans: {
+        Row: {
+          banned_by: string
+          banned_until: string | null
+          created_at: string
+          id: string
+          is_permanent: boolean | null
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          banned_by: string
+          banned_until?: string | null
+          created_at?: string
+          id?: string
+          is_permanent?: boolean | null
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          banned_by?: string
+          banned_until?: string | null
+          created_at?: string
+          id?: string
+          is_permanent?: boolean | null
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       market_data_cache: {
         Row: {
           cache_key: string
