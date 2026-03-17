@@ -265,28 +265,79 @@ export default function Forum() {
     return (
       <div className="flex flex-col flex-1 min-h-0">
         {/* Chat header */}
-        <div className="flex items-center gap-3 pb-2 sm:pb-3 border-b border-border mb-2">
+        <div className="flex items-center gap-2 pb-2 sm:pb-3 border-b border-border mb-2">
           <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="text-primary active:scale-95 transition-transform">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h2 className="text-sm sm:text-base font-bold text-foreground truncate">{title}</h2>
-          <span className="text-[10px] sm:text-xs text-muted-foreground ml-auto whitespace-nowrap">
-            {chatMessages.length} msgs
-          </span>
+          {/* Language filter toggle - only in channel chat */}
+          {!isDM && (
+            <button
+              onClick={() => setShowLangFilter(v => !v)}
+              className={cn(
+                "ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors active:scale-95",
+                languageFilter
+                  ? "bg-primary/10 border-primary/30 text-primary"
+                  : "bg-secondary border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Globe className="w-3 h-3" />
+              {languageFilter ? (LANGUAGE_FLAGS as any)[languageFilter] : '🌐'}
+            </button>
+          )}
+          {isDM && (
+            <span className="text-[10px] sm:text-xs text-muted-foreground ml-auto whitespace-nowrap">
+              {chatMessages.length} msgs
+            </span>
+          )}
         </div>
+
+        {/* Language filter bar */}
+        {showLangFilter && !isDM && (
+          <div className="flex gap-1.5 pb-2 overflow-x-auto scrollbar-none">
+            <button
+              onClick={() => { setLanguageFilter(null); setShowLangFilter(false); }}
+              className={cn(
+                "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors",
+                !languageFilter ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+              )}
+            >
+              🌐 Todos
+            </button>
+            {(['es', 'en', 'pt', 'fr', 'it', 'de', 'nl', 'ar', 'mt'] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => { setLanguageFilter(lang); setShowLangFilter(false); }}
+                className={cn(
+                  "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors",
+                  languageFilter === lang ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+                )}
+              >
+                {(LANGUAGE_FLAGS as any)[lang]} {(LANGUAGE_LABELS as any)[lang]}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Messages area */}
         <ScrollArea className="flex-1 pr-1 sm:pr-3">
           {chatLoading ? (
             <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-          ) : chatMessages.length === 0 ? (
+          ) : filteredMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-muted-foreground">
               <MessageCircle className="w-10 h-10 sm:w-14 sm:h-14 mb-2 opacity-40" />
-              <p className="text-xs sm:text-sm">No hay mensajes aún. ¡Sé el primero!</p>
+              <p className="text-xs sm:text-sm">
+                {languageFilter ? `No hay mensajes en ${(LANGUAGE_LABELS as any)[languageFilter]}` : 'No hay mensajes aún. ¡Sé el primero!'}
+              </p>
+              {languageFilter && (
+                <button onClick={() => setLanguageFilter(null)} className="mt-2 text-xs text-primary underline">
+                  Ver todos los idiomas
+                </button>
+              )}
             </div>
           ) : (
             <div className="space-y-3 sm:space-y-4 pb-2">
-              {(isDM ? dmMessages : messages).map((msg: any) => {
+              {filteredMessages.map((msg: any) => {
                 const isOwn = msg.user_id === user?.id || msg.sender_id === user?.id;
                 const userName = isDM ? msg.sender_name : msg.user_name;
                 const userAvatar = isDM ? msg.sender_avatar : msg.user_avatar;
