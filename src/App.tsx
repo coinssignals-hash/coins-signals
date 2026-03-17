@@ -63,6 +63,8 @@ const BacktestPro = lazy(() => import("./pages/tools/BacktestPro"));
 const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCalendar"));
 const MarketSessions = lazy(() => import("./pages/tools/MarketSessions"));
 const CurrencyConverter = lazy(() => import("./pages/tools/CurrencyConverter"));
+const CurrencyConverter = lazy(() => import("./pages/tools/CurrencyConverter"));
+const Forum = lazy(() => import("./pages/Forum"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
