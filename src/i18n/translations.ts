@@ -157,6 +157,9 @@ export type TranslationKeys = {
   signal_reached: string;
   signal_expired: string;
   signal_perf_title: string;
+  signal_perf_week: string;
+  signal_perf_month: string;
+  signal_perf_all: string;
   signal_win_rate: string;
   signal_tp_hit: string;
   signal_sl_hit: string;
