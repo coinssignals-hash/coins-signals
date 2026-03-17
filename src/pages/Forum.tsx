@@ -68,16 +68,17 @@ export default function Forum() {
 
   const handleSend = async () => {
     const text = messageInput.trim();
-    if (!text) return;
+    if (!text && !pendingSignalId) return;
     if (!user) { toast.error('Inicia sesión para enviar mensajes'); return; }
 
     if (view === 'chat') {
-      await sendMessage(text, replyTo?.id);
+      await sendMessage(text || '📊 Señal compartida', replyTo?.id, pendingSignalId || undefined);
     } else if (view === 'dm-chat') {
       await sendDM(text);
     }
     setMessageInput('');
     setReplyTo(null);
+    setPendingSignalId(null);
   };
 
   const handleReport = async (msgId: string) => {
