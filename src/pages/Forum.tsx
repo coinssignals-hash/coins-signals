@@ -50,6 +50,7 @@ export default function Forum() {
   const { topic, vote } = useDailyTopic();
   const { conversations, loading: convosLoading } = useDMConversations();
   const { messages: dmMessages, loading: dmLoading, sendDM } = useDirectMessages(dmPartnerId);
+  const { favorites, loading: favsLoading, isFavorite, toggleFavorite } = useFavoriteUsers();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
