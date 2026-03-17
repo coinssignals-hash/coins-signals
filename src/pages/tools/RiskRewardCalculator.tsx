@@ -40,7 +40,7 @@ interface Result {
   microLots: string;
 }
 
-export default function RiskRewardCalculator() {
+const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalculator(_props, ref) {
   const { t } = useTranslation();
   const [pair, setPair] = useState('EUR/USD');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
