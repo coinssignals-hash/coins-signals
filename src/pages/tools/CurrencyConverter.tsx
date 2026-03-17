@@ -83,9 +83,9 @@ type PeriodOption = 7 | 30 | 90;
 /* ────────── Historical data fetchers ────────── */
 
 // Fiat ↔ Fiat: Frankfurter API (free, no key)
-async function fetchFiatHistory(from: string, to: string): Promise<ChartPoint[]> {
+async function fetchFiatHistory(from: string, to: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const end = new Date();
-  const start = subDays(end, 30);
+  const start = subDays(end, days);
   const url = `https://api.frankfurter.app/${format(start, 'yyyy-MM-dd')}..${format(end, 'yyyy-MM-dd')}?from=${from}&to=${to}`;
   const res = await fetch(url);
   const data = await res.json();
