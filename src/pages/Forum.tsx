@@ -139,7 +139,7 @@ export default function Forum() {
         </Card>
       )}
 
-      {/* Tabs: Channels vs DMs */}
+      {/* Tabs: Channels / DMs / Favorites */}
       <div className="flex gap-2">
         <button
           onClick={() => setView('channels')}
@@ -154,6 +154,13 @@ export default function Forum() {
             view === 'dms' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
         >
           <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+        </button>
+        <button
+          onClick={() => setView('favorites')}
+          className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
+            view === 'favorites' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
+        >
+          <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
         </button>
       </div>
 
