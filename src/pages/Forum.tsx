@@ -201,6 +201,12 @@ export default function Forum() {
         <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
           <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
         </button>
+        <button
+          onClick={() => setView('favorites')}
+          className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground"
+        >
+          <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
+        </button>
       </div>
 
       {!user ? (
