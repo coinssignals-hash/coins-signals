@@ -59,6 +59,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       title: t('drawer_cat_learn'),
       items: [
         { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
+        { icon: MessageCircle, label: t('drawer_community'), href: '/forum' },
       ],
     },
     {
