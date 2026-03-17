@@ -392,13 +392,74 @@ export default function Forum() {
 
                 return (
                   <div key={msgId} className={cn("flex gap-2 sm:gap-3", isOwn && "flex-row-reverse")}>
-                    <Avatar className="w-7 h-7 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
-                      <AvatarImage src={userAvatar || ''} />
-                      <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
-                    </Avatar>
+                    {/* Avatar with popover for non-own users */}
+                    {!isOwn && !isDM && user ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="flex-shrink-0 mt-1 active:scale-95 transition-transform">
+                            <Avatar className="w-7 h-7 sm:w-8 sm:h-8">
+                              <AvatarImage src={userAvatar || ''} />
+                              <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
+                            </Avatar>
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent side="right" align="start" className="w-44 p-2 space-y-1">
+                          <p className="text-xs font-bold text-foreground px-2 py-1 truncate">{userName}</p>
+                          <Separator />
+                          <button
+                            onClick={() => toggleFavorite(msg.user_id, msg.user_name || 'Usuario')}
+                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs hover:bg-secondary transition-colors text-foreground"
+                          >
+                            <Star className={cn("w-3.5 h-3.5", isFavorite(msg.user_id) ? "text-yellow-500 fill-current" : "text-muted-foreground")} />
+                            {isFavorite(msg.user_id) ? 'Quitar de amigos' : 'Agregar como amigo'}
+                          </button>
+                          <button
+                            onClick={() => openDM(msg.user_id, msg.user_name || 'Usuario')}
+                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs hover:bg-secondary transition-colors text-foreground"
+                          >
+                            <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                            Enviar mensaje
+                          </button>
+                        </PopoverContent>
+                      </Popover>
+                    ) : (
+                      <Avatar className="w-7 h-7 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
+                        <AvatarImage src={userAvatar || ''} />
+                        <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
+                      </Avatar>
+                    )}
                     <div className={cn("max-w-[75%] sm:max-w-[65%] lg:max-w-[50%] space-y-1", isOwn && "items-end")}>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-semibold text-primary">{userName}</span>
+                        {/* Tappable name for non-own users */}
+                        {!isOwn && !isDM && user ? (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button className="text-[10px] font-semibold text-primary hover:underline active:scale-95 transition-transform">
+                                {userName}
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent side="bottom" align="start" className="w-44 p-2 space-y-1">
+                              <p className="text-xs font-bold text-foreground px-2 py-1 truncate">{userName}</p>
+                              <Separator />
+                              <button
+                                onClick={() => toggleFavorite(msg.user_id, msg.user_name || 'Usuario')}
+                                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs hover:bg-secondary transition-colors text-foreground"
+                              >
+                                <Star className={cn("w-3.5 h-3.5", isFavorite(msg.user_id) ? "text-yellow-500 fill-current" : "text-muted-foreground")} />
+                                {isFavorite(msg.user_id) ? 'Quitar de amigos' : 'Agregar como amigo'}
+                              </button>
+                              <button
+                                onClick={() => openDM(msg.user_id, msg.user_name || 'Usuario')}
+                                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs hover:bg-secondary transition-colors text-foreground"
+                              >
+                                <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                                Enviar mensaje
+                              </button>
+                            </PopoverContent>
+                          </Popover>
+                        ) : (
+                          <span className="text-[10px] font-semibold text-primary">{userName}</span>
+                        )}
                         {!isDM && msg.user_language && (LANGUAGE_FLAGS as any)[msg.user_language] && (
                           <span className="text-[10px]" title={(LANGUAGE_LABELS as any)[msg.user_language]}>{(LANGUAGE_FLAGS as any)[msg.user_language]}</span>
                         )}
