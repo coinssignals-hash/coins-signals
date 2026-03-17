@@ -9,20 +9,22 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
   Hash, Send, MessageCircle, ArrowLeft, ThumbsUp, Heart, Flame, Flag,
-  Reply, Loader2, Vote, Users, Mail, TrendingUp,
+  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star,
 } from 'lucide-react';
 import { SignalPicker } from '@/components/forum/SignalPicker';
 import { EmbeddedSignalCard } from '@/components/forum/EmbeddedSignalCard';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useForumChannels, useForumMessages, useDailyTopic, useDMConversations, useDirectMessages, ForumMessage } from '@/hooks/useForum';
+import { useFavoriteUsers } from '@/hooks/useFavoriteUsers';
+import { FavoriteUsersPanel } from '@/components/forum/FavoriteUsersPanel';
 import { format } from 'date-fns';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat';
+type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
@@ -48,6 +50,7 @@ export default function Forum() {
   const { topic, vote } = useDailyTopic();
   const { conversations, loading: convosLoading } = useDMConversations();
   const { messages: dmMessages, loading: dmLoading, sendDM } = useDirectMessages(dmPartnerId);
+  const { favorites, loading: favsLoading, isFavorite, toggleFavorite } = useFavoriteUsers();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -136,7 +139,7 @@ export default function Forum() {
         </Card>
       )}
 
-      {/* Tabs: Channels vs DMs */}
+      {/* Tabs: Channels / DMs / Favorites */}
       <div className="flex gap-2">
         <button
           onClick={() => setView('channels')}
@@ -151,6 +154,13 @@ export default function Forum() {
             view === 'dms' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
         >
           <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+        </button>
+        <button
+          onClick={() => setView('favorites')}
+          className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
+            view === 'favorites' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
+        >
+          <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
         </button>
       </div>
 
@@ -190,6 +200,12 @@ export default function Forum() {
         </button>
         <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
           <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+        </button>
+        <button
+          onClick={() => setView('favorites')}
+          className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground"
+        >
+          <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
         </button>
       </div>
 
@@ -363,6 +379,19 @@ export default function Forum() {
                               <Mail className="w-3 h-3" />
                             </button>
                           )}
+                          {/* Favorite user */}
+                          {!isOwn && user && (
+                            <button
+                              onClick={() => toggleFavorite(msg.user_id, msg.user_name || 'Usuario')}
+                              className={cn(
+                                "transition-colors",
+                                isFavorite(msg.user_id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"
+                              )}
+                              title={isFavorite(msg.user_id) ? "Quitar de amigos" : "Agregar como amigo"}
+                            >
+                              <Star className={cn("w-3 h-3", isFavorite(msg.user_id) && "fill-current")} />
+                            </button>
+                          )}
                         </div>
                       )}
 
@@ -458,7 +487,7 @@ export default function Forum() {
       <Header />
       <main className="container py-4 space-y-4">
         {/* Title */}
-        {(view === 'channels' || view === 'dms') && (
+        {(view === 'channels' || view === 'dms' || view === 'favorites') && (
           <div className="flex items-center gap-3">
             <Link to="/" className="text-primary hover:text-primary/80 transition-colors">
               <ArrowLeft className="w-5 h-5" />
@@ -476,6 +505,28 @@ export default function Forum() {
 
         {view === 'channels' && renderChannelsView()}
         {view === 'dms' && renderDMsView()}
+        {view === 'favorites' && (
+          <div className="space-y-4">
+            {/* Tabs */}
+            <div className="flex gap-2">
+              <button onClick={() => setView('channels')} className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground">
+                <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
+              </button>
+              <button onClick={() => setView('dms')} className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground">
+                <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+              </button>
+              <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
+                <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
+              </button>
+            </div>
+            <FavoriteUsersPanel
+              favorites={favorites}
+              loading={favsLoading}
+              onOpenDM={(userId, name) => openDM(userId, name)}
+              onRemove={(userId, name) => toggleFavorite(userId, name)}
+            />
+          </div>
+        )}
         {(view === 'chat' || view === 'dm-chat') && renderChatView()}
       </main>
     </PageShell>
