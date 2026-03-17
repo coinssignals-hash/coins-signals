@@ -114,7 +114,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
   };
 
   return (
-    <PageShell ref={ref}>
+    <PageShell>
       <Header />
       <main className="container py-6 space-y-5">
         <div className="flex items-center gap-3">
