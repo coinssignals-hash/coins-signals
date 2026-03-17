@@ -205,6 +205,7 @@ export default function CurrencyConverter() {
   const [loading, setLoading] = useState(false);
   const [chartLoading, setChartLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState<PeriodOption>(30);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
