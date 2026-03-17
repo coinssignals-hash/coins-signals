@@ -439,12 +439,12 @@ export default function Forum() {
         )}
 
         {/* Input */}
-        <div className="flex gap-2 pt-2 border-t border-border">
+        <div className="flex gap-2 pt-2 sm:pt-3 border-t border-border bg-background/50 backdrop-blur-sm">
           {/* Signal picker button - only in channel chat */}
           {!isDM && user && (
             <button
               onClick={() => setSignalPickerOpen(true)}
-              className="w-9 h-9 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all"
               title="Compartir señal"
             >
               <TrendingUp className="w-4 h-4" />
@@ -456,12 +456,12 @@ export default function Forum() {
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder={user ? "Escribe un mensaje..." : "Inicia sesión para escribir"}
             disabled={!user}
-            className="flex-1 h-9 text-xs bg-secondary border-border"
+            className="flex-1 h-9 sm:h-10 text-xs sm:text-sm bg-secondary border-border"
           />
           <button
             onClick={handleSend}
             disabled={!user || (!messageInput.trim() && !pendingSignalId)}
-            className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all"
           >
             <Send className="w-4 h-4" />
           </button>
