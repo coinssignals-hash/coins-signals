@@ -341,12 +341,14 @@ export default function Forum() {
 
         {/* Language filter bar */}
         {showLangFilter && !isDM && (
-          <div className="flex gap-1.5 pb-2 overflow-x-auto scrollbar-none">
+          <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-none">
             <button
               onClick={() => { setLanguageFilter(null); setShowLangFilter(false); }}
               className={cn(
-                "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors",
-                !languageFilter ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95",
+                !languageFilter
+                  ? "bg-gradient-to-r from-primary to-primary/70 text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.4)] border border-primary/60"
+                  : "bg-card/80 text-muted-foreground border border-border hover:border-primary/40 hover:text-foreground hover:shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
               )}
             >
               🌐 Todos
@@ -356,11 +358,14 @@ export default function Forum() {
                 key={lang}
                 onClick={() => { setLanguageFilter(lang); setShowLangFilter(false); }}
                 className={cn(
-                  "flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border whitespace-nowrap transition-colors",
-                  languageFilter === lang ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95",
+                  languageFilter === lang
+                    ? "bg-gradient-to-r from-primary to-primary/70 text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.4)] border border-primary/60"
+                    : "bg-card/80 text-muted-foreground border border-border hover:border-primary/40 hover:text-foreground hover:shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
                 )}
               >
-                {(LANGUAGE_FLAGS as any)[lang]} {(LANGUAGE_LABELS as any)[lang]}
+                <span className="text-sm">{(LANGUAGE_FLAGS as any)[lang]}</span>
+                {(LANGUAGE_LABELS as any)[lang]}
               </button>
             ))}
           </div>
