@@ -597,6 +597,12 @@ export type TranslationKeys = {
   tools_monte_carlo_desc: string;
   tools_risk_manager_title: string;
   tools_risk_manager_desc: string;
+  tools_currency_converter_title: string;
+  tools_currency_converter_desc: string;
+  tools_converter_days: string;
+  tools_converter_min: string;
+  tools_converter_max: string;
+  tools_converter_calculate: string;
   tools_multi_tf_title: string;
   tools_multi_tf_desc: string;
   tools_order_flow_title: string;
