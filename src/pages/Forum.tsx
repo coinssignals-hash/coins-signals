@@ -261,6 +261,9 @@ export default function Forum() {
     const chatMessages = isDM ? dmMessages : messages;
     const chatLoading = isDM ? dmLoading : msgsLoading;
     const title = isDM ? dmPartnerName : `${selectedChannelIcon} ${selectedChannelName}`;
+    const filteredMessages = isDM || !languageFilter
+      ? chatMessages
+      : chatMessages.filter((msg: any) => msg.user_language === languageFilter);
 
     return (
       <div className="flex flex-col flex-1 min-h-0">
