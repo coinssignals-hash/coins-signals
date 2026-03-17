@@ -558,6 +558,7 @@ const ar: TranslationKeys = {
   tools_converter_min: 'أدنى سعر',
   tools_converter_max: 'أعلى سعر',
   tools_converter_calculate: 'احسب',
+  tools_converter_no_chart: 'البيانات التاريخية غير متوفرة',
   tools_multi_tf_title: 'ماسح الإطارات الزمنية المتعددة',
   tools_multi_tf_desc: 'التقاء المؤشرات عبر إطارات زمنية متعددة',
   tools_order_flow_title: 'تحليل تدفق الأوامر',

@@ -603,6 +603,7 @@ export type TranslationKeys = {
   tools_converter_min: string;
   tools_converter_max: string;
   tools_converter_calculate: string;
+  tools_converter_no_chart: string;
   tools_multi_tf_title: string;
   tools_multi_tf_desc: string;
   tools_order_flow_title: string;

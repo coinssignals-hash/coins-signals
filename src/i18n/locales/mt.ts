@@ -558,6 +558,7 @@ const mt: TranslationKeys = {
   tools_converter_min: 'L-Anqas Milħuq',
   tools_converter_max: 'L-Ogħla Milħuq',
   tools_converter_calculate: 'Ikkalkula',
+  tools_converter_no_chart: 'Data storika mhux disponibbli',
   tools_multi_tf_title: 'Multi-Timeframe Screener',
   tools_multi_tf_desc: 'Konfluenza ta\' indikaturi fuq diversi timeframes',
   tools_order_flow_title: 'Analiżi tal-Order Flow',
