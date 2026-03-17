@@ -24,6 +24,7 @@ export interface ForumMessage {
   // Joined fields
   user_name?: string;
   user_avatar?: string;
+  user_language?: string;
   reactions?: ReactionCount[];
   reply_to?: { content: string; user_name: string } | null;
 }
