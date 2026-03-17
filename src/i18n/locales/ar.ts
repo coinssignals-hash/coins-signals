@@ -34,6 +34,7 @@ const ar: TranslationKeys = {
   drawer_link_broker: 'ربط الوسيط',
   drawer_security: 'الأمان',
   drawer_courses_tutorials: 'دورات ودروس',
+  drawer_community: 'المجتمع',
   drawer_earnings: 'الأرباح والأداء',
   drawer_broker_score: 'تقييم الوسيط',
   drawer_contact_support: 'التواصل والدعم',

@@ -63,6 +63,7 @@ const BacktestPro = lazy(() => import("./pages/tools/BacktestPro"));
 const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCalendar"));
 const MarketSessions = lazy(() => import("./pages/tools/MarketSessions"));
 const CurrencyConverter = lazy(() => import("./pages/tools/CurrencyConverter"));
+const Forum = lazy(() => import("./pages/Forum"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -172,6 +173,7 @@ function AnimatedRoutes() {
           <Route path="/tools/currency-converter" element={<CurrencyConverter />} />
           <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="/tools/market-sessions" element={<MarketSessions />} />
+          <Route path="/forum" element={<Forum />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

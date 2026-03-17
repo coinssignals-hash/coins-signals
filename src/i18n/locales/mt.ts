@@ -34,6 +34,7 @@ const mt: TranslationKeys = {
   drawer_link_broker: 'Qabbad Broker',
   drawer_security: 'Sigurtà',
   drawer_courses_tutorials: 'Korsijiet u Tutorials',
+  drawer_community: 'Komunità',
   drawer_earnings: 'Qligħ u Prestazzjoni',
   drawer_broker_score: 'Valutazzjoni tal-Broker',
   drawer_contact_support: 'Kuntatt u Appoġġ',

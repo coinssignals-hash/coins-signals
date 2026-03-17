@@ -34,6 +34,7 @@ const nl: TranslationKeys = {
   drawer_link_broker: 'Broker koppelen',
   drawer_security: 'Beveiliging',
   drawer_courses_tutorials: 'Cursussen & Tutorials',
+  drawer_community: 'Gemeenschap',
   drawer_earnings: 'Inkomsten & Prestaties',
   drawer_broker_score: 'Broker Beoordeling',
   drawer_contact_support: 'Contact & Ondersteuning',

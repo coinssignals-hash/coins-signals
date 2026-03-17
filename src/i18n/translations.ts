@@ -60,6 +60,7 @@ export type TranslationKeys = {
   drawer_link_broker: string;
   drawer_security: string;
   drawer_courses_tutorials: string;
+  drawer_community: string;
   drawer_earnings: string;
   drawer_broker_score: string;
   drawer_contact_support: string;
