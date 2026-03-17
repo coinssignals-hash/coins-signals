@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
+import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
   Hash, Send, MessageCircle, ArrowLeft, ThumbsUp, Heart, Flame, Flag,
-  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star, Globe,
+  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star, Globe, ImagePlus, X,
 } from 'lucide-react';
 import { LANGUAGE_FLAGS, LANGUAGE_LABELS } from '@/i18n/LanguageContext';
 import { SignalPicker } from '@/components/forum/SignalPicker';
@@ -47,6 +48,9 @@ export default function Forum() {
   const [pendingSignalId, setPendingSignalId] = useState<string | null>(null);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [showLangFilter, setShowLangFilter] = useState(false);
+  const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { channels, loading: channelsLoading } = useForumChannels();
   const { messages, loading: msgsLoading, sendMessage, toggleReaction, reportMessage } = useForumMessages(selectedChannelId);
@@ -74,15 +78,46 @@ export default function Forum() {
     setView('dm-chat');
   };
 
+  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast.error('Solo se permiten imágenes'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('La imagen no puede superar 5MB'); return; }
+    const preview = URL.createObjectURL(file);
+    setPendingImage({ file, preview });
+    if (imageInputRef.current) imageInputRef.current.value = '';
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    if (!user) return null;
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('forum-images').upload(path, file);
+    if (error) { toast.error('Error al subir imagen'); return null; }
+    const { data } = supabase.storage.from('forum-images').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
   const handleSend = async () => {
     const text = messageInput.trim();
-    if (!text && !pendingSignalId) return;
+    if (!text && !pendingSignalId && !pendingImage) return;
     if (!user) { toast.error('Inicia sesión para enviar mensajes'); return; }
 
+    let imageUrl: string | undefined;
+    if (pendingImage) {
+      setUploadingImage(true);
+      const url = await uploadImage(pendingImage.file);
+      setUploadingImage(false);
+      if (!url) return;
+      imageUrl = url;
+      URL.revokeObjectURL(pendingImage.preview);
+      setPendingImage(null);
+    }
+
     if (view === 'chat') {
-      await sendMessage(text || '📊 Señal compartida', replyTo?.id, pendingSignalId || undefined);
+      await sendMessage(text || (imageUrl ? '📷 Imagen' : '📊 Señal compartida'), replyTo?.id, pendingSignalId || undefined, imageUrl);
     } else if (view === 'dm-chat') {
-      await sendDM(text);
+      await sendDM(text || '📷 Imagen');
     }
     setMessageInput('');
     setReplyTo(null);
@@ -378,6 +413,18 @@ export default function Forum() {
                         )}
                       </div>
 
+                      {/* Image attachment */}
+                      {msg.image_url && !msg.is_deleted && (
+                        <a href={msg.image_url} target="_blank" rel="noopener noreferrer" className="block">
+                          <img
+                            src={msg.image_url}
+                            alt="Imagen adjunta"
+                            className="max-w-full rounded-lg border border-border max-h-48 sm:max-h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            loading="lazy"
+                          />
+                        </a>
+                      )}
+
                       {/* Embedded signal card */}
                       {!isDM && msg.signal_id && (
                         <EmbeddedSignalCard signalId={msg.signal_id} />
@@ -495,8 +542,39 @@ export default function Forum() {
           </div>
         )}
 
+        {/* Pending image preview */}
+        {pendingImage && (
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border-t border-primary/20">
+            <img src={pendingImage.preview} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-border" />
+            <span className="text-[10px] text-primary flex-1">Imagen adjunta</span>
+            <button onClick={() => { URL.revokeObjectURL(pendingImage.preview); setPendingImage(null); }} className="text-muted-foreground text-xs">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Hidden file input */}
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageSelect}
+        />
+
         {/* Input */}
         <div className="flex gap-2 pt-2 sm:pt-3 border-t border-border bg-background/50 backdrop-blur-sm">
+          {/* Image upload button */}
+          {user && (
+            <button
+              onClick={() => imageInputRef.current?.click()}
+              disabled={uploadingImage}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all disabled:opacity-40"
+              title="Enviar imagen"
+            >
+              {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+            </button>
+          )}
           {/* Signal picker button - only in channel chat */}
           {!isDM && user && (
             <button
@@ -517,7 +595,7 @@ export default function Forum() {
           />
           <button
             onClick={handleSend}
-            disabled={!user || (!messageInput.trim() && !pendingSignalId)}
+            disabled={!user || uploadingImage || (!messageInput.trim() && !pendingSignalId && !pendingImage)}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all"
           >
             <Send className="w-4 h-4" />

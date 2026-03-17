@@ -202,7 +202,7 @@ export function useForumMessages(channelId: string | null) {
     return () => { supabase.removeChannel(channel); };
   }, [channelId, fetchMessages]);
 
-  const sendMessage = useCallback(async (content: string, replyToId?: string, signalId?: string) => {
+  const sendMessage = useCallback(async (content: string, replyToId?: string, signalId?: string, imageUrl?: string) => {
     if (!user || !channelId) return;
     await supabase.from('forum_messages').insert({
       channel_id: channelId,
@@ -210,6 +210,7 @@ export function useForumMessages(channelId: string | null) {
       content,
       reply_to_id: replyToId || null,
       signal_id: signalId || null,
+      image_url: imageUrl || null,
     });
   }, [user, channelId]);
 
