@@ -78,6 +78,7 @@ const FIAT_TO_CG: Record<string, string> = {
 };
 
 type ChartPoint = { date: string; value: number };
+type PeriodOption = 7 | 30 | 90;
 
 /* ────────── Historical data fetchers ────────── */
 
