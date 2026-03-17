@@ -200,13 +200,14 @@ export function useForumMessages(channelId: string | null) {
     return () => { supabase.removeChannel(channel); };
   }, [channelId, fetchMessages]);
 
-  const sendMessage = useCallback(async (content: string, replyToId?: string) => {
+  const sendMessage = useCallback(async (content: string, replyToId?: string, signalId?: string) => {
     if (!user || !channelId) return;
     await supabase.from('forum_messages').insert({
       channel_id: channelId,
       user_id: user.id,
       content,
       reply_to_id: replyToId || null,
+      signal_id: signalId || null,
     });
   }, [user, channelId]);
 
