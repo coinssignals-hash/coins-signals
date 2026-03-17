@@ -172,21 +172,21 @@ async function fetchCurrentRate(from: string, to: string): Promise<number | null
   return fromUsd && toUsd ? fromUsd / toUsd : null;
 }
 
-async function fetchHistoricalData(from: string, to: string): Promise<ChartPoint[]> {
+async function fetchHistoricalData(from: string, to: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const fromDef = getCurrency(from);
   const toDef = getCurrency(to);
 
   try {
     if (!isCrypto(from) && !isCrypto(to)) {
-      return await fetchFiatHistory(from, to);
+      return await fetchFiatHistory(from, to, days);
     }
     if (isCrypto(from) && !isCrypto(to)) {
-      return await fetchCryptoToFiatHistory(fromDef.coingeckoId!, to);
+      return await fetchCryptoToFiatHistory(fromDef.coingeckoId!, to, days);
     }
     if (!isCrypto(from) && isCrypto(to)) {
-      return await fetchFiatToCryptoHistory(toDef.coingeckoId!, from);
+      return await fetchFiatToCryptoHistory(toDef.coingeckoId!, from, days);
     }
-    return await fetchCryptoToCryptoHistory(fromDef.coingeckoId!, toDef.coingeckoId!);
+    return await fetchCryptoToCryptoHistory(fromDef.coingeckoId!, toDef.coingeckoId!, days);
   } catch {
     return [];
   }
