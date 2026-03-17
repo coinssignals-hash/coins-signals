@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,7 +40,7 @@ interface Result {
   microLots: string;
 }
 
-export default function RiskRewardCalculator() {
+const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalculator(_props, ref) {
   const { t } = useTranslation();
   const [pair, setPair] = useState('EUR/USD');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
@@ -325,4 +325,6 @@ export default function RiskRewardCalculator() {
       </main>
     </PageShell>
   );
-}
+});
+
+export default RiskRewardCalculator;
