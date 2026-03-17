@@ -388,8 +388,11 @@ export default function Forum() {
                       <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
                     </Avatar>
                     <div className={cn("max-w-[75%] sm:max-w-[65%] lg:max-w-[50%] space-y-1", isOwn && "items-end")}>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-semibold text-primary">{userName}</span>
+                        {!isDM && msg.user_language && (LANGUAGE_FLAGS as any)[msg.user_language] && (
+                          <span className="text-[10px]" title={(LANGUAGE_LABELS as any)[msg.user_language]}>{(LANGUAGE_FLAGS as any)[msg.user_language]}</span>
+                        )}
                         <span className="text-[9px] text-muted-foreground">
                           {format(new Date(msg.created_at), 'HH:mm', { locale: dateLocale })}
                         </span>
