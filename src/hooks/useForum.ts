@@ -39,6 +39,7 @@ export interface DailyTopic {
   id: string;
   title: string;
   description: string | null;
+  image_url: string | null;
   option_a: string;
   option_b: string;
   topic_date: string;
