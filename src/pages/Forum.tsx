@@ -262,27 +262,27 @@ export default function Forum() {
     return (
       <div className="flex flex-col flex-1 min-h-0">
         {/* Chat header */}
-        <div className="flex items-center gap-3 pb-3">
-          <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="text-primary">
+        <div className="flex items-center gap-3 pb-2 sm:pb-3 border-b border-border mb-2">
+          <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="text-primary active:scale-95 transition-transform">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h2 className="text-sm font-bold text-foreground truncate">{title}</h2>
-          <span className="text-[10px] text-muted-foreground ml-auto">
+          <h2 className="text-sm sm:text-base font-bold text-foreground truncate">{title}</h2>
+          <span className="text-[10px] sm:text-xs text-muted-foreground ml-auto whitespace-nowrap">
             {chatMessages.length} msgs
           </span>
         </div>
 
         {/* Messages area */}
-        <ScrollArea className="flex-1 pr-2">
+        <ScrollArea className="flex-1 pr-1 sm:pr-3">
           {chatLoading ? (
             <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
           ) : chatMessages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <MessageCircle className="w-10 h-10 mb-2" />
-              <p className="text-xs">No hay mensajes aún. ¡Sé el primero!</p>
+            <div className="flex flex-col items-center justify-center py-12 sm:py-20 text-muted-foreground">
+              <MessageCircle className="w-10 h-10 sm:w-14 sm:h-14 mb-2 opacity-40" />
+              <p className="text-xs sm:text-sm">No hay mensajes aún. ¡Sé el primero!</p>
             </div>
           ) : (
-            <div className="space-y-3 pb-2">
+            <div className="space-y-3 sm:space-y-4 pb-2">
               {(isDM ? dmMessages : messages).map((msg: any) => {
                 const isOwn = msg.user_id === user?.id || msg.sender_id === user?.id;
                 const userName = isDM ? msg.sender_name : msg.user_name;
@@ -290,12 +290,12 @@ export default function Forum() {
                 const msgId = msg.id;
 
                 return (
-                  <div key={msgId} className={cn("flex gap-2", isOwn && "flex-row-reverse")}>
-                    <Avatar className="w-7 h-7 mt-1 flex-shrink-0">
+                  <div key={msgId} className={cn("flex gap-2 sm:gap-3", isOwn && "flex-row-reverse")}>
+                    <Avatar className="w-7 h-7 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
                       <AvatarImage src={userAvatar || ''} />
-                      <AvatarFallback className="bg-primary/20 text-primary text-[10px]">{(userName || '?')[0]}</AvatarFallback>
+                      <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
                     </Avatar>
-                    <div className={cn("max-w-[75%] space-y-1", isOwn && "items-end")}>
+                    <div className={cn("max-w-[75%] sm:max-w-[65%] lg:max-w-[50%] space-y-1", isOwn && "items-end")}>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-semibold text-primary">{userName}</span>
                         <span className="text-[9px] text-muted-foreground">
@@ -311,7 +311,7 @@ export default function Forum() {
                       )}
 
                       <div className={cn(
-                        "px-3 py-2 rounded-xl text-xs text-foreground",
+                        "px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm text-foreground leading-relaxed",
                         isOwn ? "bg-primary/20 rounded-tr-sm" : "bg-secondary rounded-tl-sm"
                       )}>
                         {msg.is_deleted ? (
@@ -439,12 +439,12 @@ export default function Forum() {
         )}
 
         {/* Input */}
-        <div className="flex gap-2 pt-2 border-t border-border">
+        <div className="flex gap-2 pt-2 sm:pt-3 border-t border-border bg-background/50 backdrop-blur-sm">
           {/* Signal picker button - only in channel chat */}
           {!isDM && user && (
             <button
               onClick={() => setSignalPickerOpen(true)}
-              className="w-9 h-9 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all"
               title="Compartir señal"
             >
               <TrendingUp className="w-4 h-4" />
@@ -456,12 +456,12 @@ export default function Forum() {
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder={user ? "Escribe un mensaje..." : "Inicia sesión para escribir"}
             disabled={!user}
-            className="flex-1 h-9 text-xs bg-secondary border-border"
+            className="flex-1 h-9 sm:h-10 text-xs sm:text-sm bg-secondary border-border"
           />
           <button
             onClick={handleSend}
             disabled={!user || (!messageInput.trim() && !pendingSignalId)}
-            className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 transition-opacity"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all"
           >
             <Send className="w-4 h-4" />
           </button>
