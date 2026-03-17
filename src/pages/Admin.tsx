@@ -31,6 +31,7 @@ const TAB_TITLES: Record<string, string> = {
   'api-usage': 'Consumo de APIs e IA',
   'health-check': 'Health Check',
   tables: 'Explorador de Base de Datos',
+  moderation: 'Moderación del Foro',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
 };
