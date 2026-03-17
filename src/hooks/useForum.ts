@@ -24,6 +24,7 @@ export interface ForumMessage {
   // Joined fields
   user_name?: string;
   user_avatar?: string;
+  user_language?: string;
   reactions?: ReactionCount[];
   reply_to?: { content: string; user_name: string } | null;
 }
@@ -111,7 +112,7 @@ export function useForumMessages(channelId: string | null) {
     // Fetch profiles for those users
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url')
+      .select('id, first_name, last_name, avatar_url, language')
       .in('id', userIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
@@ -168,7 +169,8 @@ export function useForumMessages(channelId: string | null) {
       return {
         ...m,
         user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
-        user_avatar: p?.avatar_url || null,
+        user_avatar: (p as any)?.avatar_url || null,
+        user_language: (p as any)?.language || 'es',
         reactions: reactionsByMessage.get(m.id) || [],
         reply_to: m.reply_to_id ? replyMap.get(m.reply_to_id) || null : null,
       };

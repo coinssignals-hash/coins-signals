@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { loadTranslations, getTranslationsSync, type Language, LANGUAGE_LABELS, LANGUAGE_FLAGS } from './translations';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LanguageContextValue {
   language: Language;
@@ -26,6 +27,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = dir;
     document.documentElement.lang = language;
     loadTranslations(language).then(() => setReady(r => r + 1));
+  }, [language]);
+
+  // Sync language to profile in database
+  useEffect(() => {
+    const syncLanguageToProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('profiles').update({ language } as any).eq('id', user.id);
+      }
+    };
+    syncLanguageToProfile();
   }, [language]);
 
   const setLanguage = useCallback((lang: Language) => {
