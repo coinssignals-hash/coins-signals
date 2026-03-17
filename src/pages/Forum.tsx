@@ -487,7 +487,7 @@ export default function Forum() {
       <Header />
       <main className="container py-4 space-y-4">
         {/* Title */}
-        {(view === 'channels' || view === 'dms') && (
+        {(view === 'channels' || view === 'dms' || view === 'favorites') && (
           <div className="flex items-center gap-3">
             <Link to="/" className="text-primary hover:text-primary/80 transition-colors">
               <ArrowLeft className="w-5 h-5" />
@@ -505,6 +505,28 @@ export default function Forum() {
 
         {view === 'channels' && renderChannelsView()}
         {view === 'dms' && renderDMsView()}
+        {view === 'favorites' && (
+          <div className="space-y-4">
+            {/* Tabs */}
+            <div className="flex gap-2">
+              <button onClick={() => setView('channels')} className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground">
+                <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
+              </button>
+              <button onClick={() => setView('dms')} className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground">
+                <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+              </button>
+              <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
+                <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
+              </button>
+            </div>
+            <FavoriteUsersPanel
+              favorites={favorites}
+              loading={favsLoading}
+              onOpenDM={(userId, name) => openDM(userId, name)}
+              onRemove={(userId, name) => toggleFavorite(userId, name)}
+            />
+          </div>
+        )}
         {(view === 'chat' || view === 'dm-chat') && renderChatView()}
       </main>
     </PageShell>
