@@ -16,6 +16,8 @@ import { EmbeddedSignalCard } from '@/components/forum/EmbeddedSignalCard';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useForumChannels, useForumMessages, useDailyTopic, useDMConversations, useDirectMessages, ForumMessage } from '@/hooks/useForum';
+import { useFavoriteUsers } from '@/hooks/useFavoriteUsers';
+import { FavoriteUsersPanel } from '@/components/forum/FavoriteUsersPanel';
 import { format } from 'date-fns';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
