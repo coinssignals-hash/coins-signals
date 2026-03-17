@@ -34,6 +34,7 @@ const de: TranslationKeys = {
   drawer_link_broker: 'Broker verbinden',
   drawer_security: 'Sicherheit',
   drawer_courses_tutorials: 'Kurse & Tutorials',
+  drawer_community: 'Gemeinschaft',
   drawer_earnings: 'Einnahmen & Leistung',
   drawer_broker_score: 'Broker-Bewertung',
   drawer_contact_support: 'Kontakt & Support',

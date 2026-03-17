@@ -34,6 +34,7 @@ const it: TranslationKeys = {
   drawer_link_broker: 'Collega Broker',
   drawer_security: 'Sicurezza',
   drawer_courses_tutorials: 'Corsi e Tutorial',
+  drawer_community: 'Comunità',
   drawer_earnings: 'Rendimenti e Guadagni',
   drawer_broker_score: 'Valutazione Broker',
   drawer_contact_support: 'Contatto e Supporto',
