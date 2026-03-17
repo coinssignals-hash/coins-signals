@@ -413,6 +413,18 @@ export default function Forum() {
                         )}
                       </div>
 
+                      {/* Image attachment */}
+                      {msg.image_url && !msg.is_deleted && (
+                        <a href={msg.image_url} target="_blank" rel="noopener noreferrer" className="block">
+                          <img
+                            src={msg.image_url}
+                            alt="Imagen adjunta"
+                            className="max-w-full rounded-lg border border-border max-h-48 sm:max-h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            loading="lazy"
+                          />
+                        </a>
+                      )}
+
                       {/* Embedded signal card */}
                       {!isDM && msg.signal_id && (
                         <EmbeddedSignalCard signalId={msg.signal_id} />
