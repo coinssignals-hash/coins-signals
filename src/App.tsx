@@ -169,6 +169,7 @@ function AnimatedRoutes() {
           <Route path="/tools/multi-tf-screener" element={<MultiTFScreener />} />
           <Route path="/tools/order-flow" element={<OrderFlowAnalysis />} />
           <Route path="/tools/backtest-pro" element={<BacktestPro />} />
+          <Route path="/tools/currency-converter" element={<CurrencyConverter />} />
           <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="/tools/market-sessions" element={<MarketSessions />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />

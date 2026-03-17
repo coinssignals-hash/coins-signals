@@ -45,6 +45,7 @@ const ALL_TOOLS: ToolItem[] = [
   { id: 'compound-calc', titleKey: 'tools_compound_calc_title', descKey: 'tools_compound_calc_desc', icon: LineChart, category: 'calculadoras', status: 'available', route: '/tools/compound-interest' },
   { id: 'monte-carlo', titleKey: 'tools_monte_carlo_title', descKey: 'tools_monte_carlo_desc', icon: PieChart, category: 'calculadoras', status: 'available', route: '/tools/monte-carlo' },
   { id: 'risk-manager', titleKey: 'tools_risk_manager_title', descKey: 'tools_risk_manager_desc', icon: Shield, category: 'calculadoras', status: 'available', route: '/tools/risk-manager' },
+  { id: 'currency-converter', titleKey: 'tools_currency_converter_title', descKey: 'tools_currency_converter_desc', icon: ArrowUpDown, category: 'calculadoras', status: 'available', route: '/tools/currency-converter' },
   // Calendario
   { id: 'eco-calendar', titleKey: 'tools_eco_calendar_title', descKey: 'tools_eco_calendar_desc', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/economic-calendar' },
   { id: 'eco-calendar-inst', titleKey: 'tools_institutional_cal_title', descKey: 'tools_institutional_cal_desc', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/institutional-calendar' },
