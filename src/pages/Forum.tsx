@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
   Hash, Send, MessageCircle, ArrowLeft, ThumbsUp, Heart, Flame, Flag,
-  Reply, Loader2, Vote, Users, Mail, TrendingUp,
+  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star,
 } from 'lucide-react';
 import { SignalPicker } from '@/components/forum/SignalPicker';
 import { EmbeddedSignalCard } from '@/components/forum/EmbeddedSignalCard';
