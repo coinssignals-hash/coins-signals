@@ -542,8 +542,39 @@ export default function Forum() {
           </div>
         )}
 
+        {/* Pending image preview */}
+        {pendingImage && (
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border-t border-primary/20">
+            <img src={pendingImage.preview} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-border" />
+            <span className="text-[10px] text-primary flex-1">Imagen adjunta</span>
+            <button onClick={() => { URL.revokeObjectURL(pendingImage.preview); setPendingImage(null); }} className="text-muted-foreground text-xs">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Hidden file input */}
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageSelect}
+        />
+
         {/* Input */}
         <div className="flex gap-2 pt-2 sm:pt-3 border-t border-border bg-background/50 backdrop-blur-sm">
+          {/* Image upload button */}
+          {user && (
+            <button
+              onClick={() => imageInputRef.current?.click()}
+              disabled={uploadingImage}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all disabled:opacity-40"
+              title="Enviar imagen"
+            >
+              {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+            </button>
+          )}
           {/* Signal picker button - only in channel chat */}
           {!isDM && user && (
             <button
@@ -564,7 +595,7 @@ export default function Forum() {
           />
           <button
             onClick={handleSend}
-            disabled={!user || (!messageInput.trim() && !pendingSignalId)}
+            disabled={!user || uploadingImage || (!messageInput.trim() && !pendingSignalId && !pendingImage)}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all"
           >
             <Send className="w-4 h-4" />
