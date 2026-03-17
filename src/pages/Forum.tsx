@@ -8,9 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Hash, Send, MessageCircle, ArrowLeft, ThumbsUp, Heart, Flame, Flag,
-  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star, Globe, ImagePlus, X,
+  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star, Globe, ImagePlus, X, UserPlus,
 } from 'lucide-react';
 import { LANGUAGE_FLAGS, LANGUAGE_LABELS } from '@/i18n/LanguageContext';
 import { SignalPicker } from '@/components/forum/SignalPicker';
