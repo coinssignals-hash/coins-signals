@@ -485,10 +485,10 @@ export default function Forum() {
   const isInChat = view === 'chat' || view === 'dm-chat';
 
   return (
-    <PageShell bottomPadding={!isInChat} showBottomNav={!isInChat}>
+    <PageShell bottomPadding showBottomNav>
       <Header />
       <main className={cn("container space-y-4", isInChat ? "py-2 pb-0 flex flex-col overflow-hidden" : "py-4")}
-        style={isInChat ? { height: 'calc(100dvh - 130px)' } : undefined}
+        style={isInChat ? { height: 'calc(100dvh - 190px)' } : undefined}
       >
         {/* Title */}
         {(view === 'channels' || view === 'dms' || view === 'favorites') && (
