@@ -3,6 +3,9 @@ import { TrendingUp, TrendingDown, Target, ShieldAlert, BarChart3, Activity, Che
 import { cn } from "@/lib/utils";
 import type { TradingSignal } from "@/hooks/useSignals";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { startOfWeek, startOfMonth, isAfter } from "date-fns";
+
+type PeriodFilter = 'week' | 'month' | 'all';
 
 interface SignalPerformanceStatsProps {
   signals: TradingSignal[];
@@ -12,13 +15,23 @@ interface SignalPerformanceStatsProps {
 export function SignalPerformanceStats({ signals, activesBadge }: SignalPerformanceStatsProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const [period, setPeriod] = useState<PeriodFilter>('week');
+
+  const filteredSignals = useMemo(() => {
+    if (period === 'all') return signals;
+    const now = new Date();
+    const cutoff = period === 'week'
+      ? startOfWeek(now, { weekStartsOn: 1 })
+      : startOfMonth(now);
+    return signals.filter((s) => isAfter(new Date(s.datetime), cutoff));
+  }, [signals, period]);
 
   const stats = useMemo(() => {
-    const completed = signals.filter((s) => s.status === "completed" && s.closedResult);
+    const completed = filteredSignals.filter((s) => s.status === "completed" && s.closedResult);
     const tpHit = completed.filter((s) => s.closedResult === "tp_hit");
     const slHit = completed.filter((s) => s.closedResult === "sl_hit");
-    const active = signals.filter((s) => s.status === "active" || s.status === "pending");
-    const total = signals.length;
+    const active = filteredSignals.filter((s) => s.status === "active" || s.status === "pending");
+    const total = filteredSignals.length;
     const winRate = completed.length > 0 ? (tpHit.length / completed.length) * 100 : 0;
 
     const totalPipsWon = tpHit.reduce((sum, s) => {
@@ -52,7 +65,7 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
       totalPipsLost,
       netPips: totalPipsWon - totalPipsLost,
     };
-  }, [signals]);
+  }, [filteredSignals]);
 
   if (stats.total === 0) return null;
 
