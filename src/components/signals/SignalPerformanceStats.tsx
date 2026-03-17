@@ -116,6 +116,30 @@ export function SignalPerformanceStats({ signals, activesBadge }: SignalPerforma
         />
       </button>
 
+      {/* Period selector */}
+      {expanded && (
+        <div className="flex gap-1 px-4 pb-2">
+          {([
+            { key: 'week' as PeriodFilter, label: t('signal_perf_week') || 'Semana' },
+            { key: 'month' as PeriodFilter, label: t('signal_perf_month') || 'Mes' },
+            { key: 'all' as PeriodFilter, label: t('signal_perf_all') || 'Todo' },
+          ]).map((opt) => (
+            <button
+              key={opt.key}
+              onClick={(e) => { e.stopPropagation(); setPeriod(opt.key); }}
+              className={cn(
+                "px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all",
+                period === opt.key
+                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                  : "text-cyan-300/40 hover:text-cyan-300/60 border border-transparent"
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Collapsible Content with grid-rows animation */}
       <div
         className="grid transition-all duration-300 ease-in-out"
