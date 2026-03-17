@@ -272,6 +272,7 @@ export function useDailyTopic() {
       id: data.id,
       title: data.title,
       description: data.description,
+      image_url: (data as any).image_url || null,
       option_a: data.option_a,
       option_b: data.option_b,
       topic_date: data.topic_date,

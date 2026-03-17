@@ -135,6 +135,14 @@ export default function Forum() {
       {/* Daily Topic */}
       {topic && (
         <Card className="bg-card border-border overflow-hidden">
+          {topic.image_url && (
+            <img
+              src={topic.image_url}
+              alt={topic.title}
+              className="w-full h-32 sm:h-40 object-cover"
+              loading="lazy"
+            />
+          )}
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Vote className="w-4 h-4 text-primary" />
