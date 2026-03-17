@@ -260,7 +260,7 @@ export default function Forum() {
     const title = isDM ? dmPartnerName : `${selectedChannelIcon} ${selectedChannelName}`;
 
     return (
-      <div className="flex flex-col h-[calc(100vh-280px)] min-h-[300px]">
+      <div className="flex flex-col h-[calc(100dvh-120px)]">
         {/* Chat header */}
         <div className="flex items-center gap-3 pb-3">
           <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="text-primary">
