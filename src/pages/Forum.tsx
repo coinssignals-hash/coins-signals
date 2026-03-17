@@ -311,7 +311,7 @@ export default function Forum() {
                       )}
 
                       <div className={cn(
-                        "px-3 py-2 rounded-xl text-xs text-foreground",
+                        "px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm text-foreground leading-relaxed",
                         isOwn ? "bg-primary/20 rounded-tr-sm" : "bg-secondary rounded-tl-sm"
                       )}>
                         {msg.is_deleted ? (
