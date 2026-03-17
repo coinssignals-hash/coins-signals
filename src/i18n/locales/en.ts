@@ -558,6 +558,7 @@ const en: TranslationKeys = {
   tools_converter_min: 'Low Reached',
   tools_converter_max: 'High Reached',
   tools_converter_calculate: 'Calculate',
+  tools_converter_no_chart: 'Historical data not available',
   tools_multi_tf_title: 'Multi-Timeframe Screener',
   tools_multi_tf_desc: 'Indicator confluence across multiple timeframes',
   tools_order_flow_title: 'Order Flow Analysis',

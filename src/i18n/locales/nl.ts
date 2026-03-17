@@ -558,6 +558,7 @@ const nl: TranslationKeys = {
   tools_converter_min: 'Laagste Bereikt',
   tools_converter_max: 'Hoogste Bereikt',
   tools_converter_calculate: 'Berekenen',
+  tools_converter_no_chart: 'Historische gegevens niet beschikbaar',
   tools_multi_tf_title: 'Multi-Timeframe Screener',
   tools_multi_tf_desc: 'Indicatorsamenvloeiing over meerdere tijdframes',
   tools_order_flow_title: 'Order Flow Analyse',

@@ -558,6 +558,7 @@ const de: TranslationKeys = {
   tools_converter_min: 'Tiefststand',
   tools_converter_max: 'Höchststand',
   tools_converter_calculate: 'Berechnen',
+  tools_converter_no_chart: 'Historische Daten nicht verfügbar',
   tools_multi_tf_title: 'Multi-Timeframe-Screener',
   tools_multi_tf_desc: 'Indikator-Zusammenfluss über mehrere Zeitrahmen',
   tools_order_flow_title: 'Order-Flow-Analyse',

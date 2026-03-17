@@ -8,63 +8,187 @@ import { ArrowLeft, ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw } 
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart,
 } from 'recharts';
 
-/* ────────── Currency list ────────── */
-const CURRENCIES = [
-  { code: 'USD', name: 'US Dollar', flag: '🇺🇸', symbol: '$' },
-  { code: 'EUR', name: 'Euro', flag: '🇪🇺', symbol: '€' },
-  { code: 'GBP', name: 'British Pound', flag: '🇬🇧', symbol: '£' },
-  { code: 'JPY', name: 'Japanese Yen', flag: '🇯🇵', symbol: '¥' },
-  { code: 'CHF', name: 'Swiss Franc', flag: '🇨🇭', symbol: 'Fr' },
-  { code: 'CAD', name: 'Canadian Dollar', flag: '🇨🇦', symbol: 'C$' },
-  { code: 'AUD', name: 'Australian Dollar', flag: '🇦🇺', symbol: 'A$' },
-  { code: 'NZD', name: 'New Zealand Dollar', flag: '🇳🇿', symbol: 'NZ$' },
-  { code: 'CNY', name: 'Chinese Yuan', flag: '🇨🇳', symbol: '¥' },
-  { code: 'MXN', name: 'Mexican Peso', flag: '🇲🇽', symbol: '$' },
-  { code: 'COP', name: 'Colombian Peso', flag: '🇨🇴', symbol: '$' },
-  { code: 'BRL', name: 'Brazilian Real', flag: '🇧🇷', symbol: 'R$' },
-  { code: 'ARS', name: 'Argentine Peso', flag: '🇦🇷', symbol: '$' },
-  { code: 'CLP', name: 'Chilean Peso', flag: '🇨🇱', symbol: '$' },
-  { code: 'PEN', name: 'Peruvian Sol', flag: '🇵🇪', symbol: 'S/' },
-  { code: 'UYU', name: 'Uruguayan Peso', flag: '🇺🇾', symbol: '$U' },
-  { code: 'CRC', name: 'Costa Rican Colón', flag: '🇨🇷', symbol: '₡' },
-  { code: 'DOP', name: 'Dominican Peso', flag: '🇩🇴', symbol: 'RD$' },
-  { code: 'INR', name: 'Indian Rupee', flag: '🇮🇳', symbol: '₹' },
-  { code: 'KRW', name: 'South Korean Won', flag: '🇰🇷', symbol: '₩' },
-  { code: 'TRY', name: 'Turkish Lira', flag: '🇹🇷', symbol: '₺' },
-  { code: 'ZAR', name: 'South African Rand', flag: '🇿🇦', symbol: 'R' },
-  { code: 'SEK', name: 'Swedish Krona', flag: '🇸🇪', symbol: 'kr' },
-  { code: 'NOK', name: 'Norwegian Krone', flag: '🇳🇴', symbol: 'kr' },
-  { code: 'SGD', name: 'Singapore Dollar', flag: '🇸🇬', symbol: 'S$' },
-  { code: 'HKD', name: 'Hong Kong Dollar', flag: '🇭🇰', symbol: 'HK$' },
+/* ────────── Currency definitions ────────── */
+interface CurrencyDef {
+  code: string;
+  name: string;
+  flag: string;
+  symbol: string;
+  type: 'fiat' | 'crypto';
+  coingeckoId?: string; // for crypto price fetching
+}
+
+const CURRENCIES: CurrencyDef[] = [
+  // ── Fiat ──
+  { code: 'USD', name: 'US Dollar', flag: '🇺🇸', symbol: '$', type: 'fiat' },
+  { code: 'EUR', name: 'Euro', flag: '🇪🇺', symbol: '€', type: 'fiat' },
+  { code: 'GBP', name: 'British Pound', flag: '🇬🇧', symbol: '£', type: 'fiat' },
+  { code: 'JPY', name: 'Japanese Yen', flag: '🇯🇵', symbol: '¥', type: 'fiat' },
+  { code: 'CHF', name: 'Swiss Franc', flag: '🇨🇭', symbol: 'Fr', type: 'fiat' },
+  { code: 'CAD', name: 'Canadian Dollar', flag: '🇨🇦', symbol: 'C$', type: 'fiat' },
+  { code: 'AUD', name: 'Australian Dollar', flag: '🇦🇺', symbol: 'A$', type: 'fiat' },
+  { code: 'NZD', name: 'New Zealand Dollar', flag: '🇳🇿', symbol: 'NZ$', type: 'fiat' },
+  { code: 'CNY', name: 'Chinese Yuan', flag: '🇨🇳', symbol: '¥', type: 'fiat' },
+  { code: 'MXN', name: 'Mexican Peso', flag: '🇲🇽', symbol: '$', type: 'fiat' },
+  { code: 'COP', name: 'Colombian Peso', flag: '🇨🇴', symbol: '$', type: 'fiat' },
+  { code: 'BRL', name: 'Brazilian Real', flag: '🇧🇷', symbol: 'R$', type: 'fiat' },
+  { code: 'ARS', name: 'Argentine Peso', flag: '🇦🇷', symbol: '$', type: 'fiat' },
+  { code: 'CLP', name: 'Chilean Peso', flag: '🇨🇱', symbol: '$', type: 'fiat' },
+  { code: 'PEN', name: 'Peruvian Sol', flag: '🇵🇪', symbol: 'S/', type: 'fiat' },
+  { code: 'UYU', name: 'Uruguayan Peso', flag: '🇺🇾', symbol: '$U', type: 'fiat' },
+  { code: 'CRC', name: 'Costa Rican Colón', flag: '🇨🇷', symbol: '₡', type: 'fiat' },
+  { code: 'DOP', name: 'Dominican Peso', flag: '🇩🇴', symbol: 'RD$', type: 'fiat' },
+  { code: 'INR', name: 'Indian Rupee', flag: '🇮🇳', symbol: '₹', type: 'fiat' },
+  { code: 'KRW', name: 'South Korean Won', flag: '🇰🇷', symbol: '₩', type: 'fiat' },
+  { code: 'TRY', name: 'Turkish Lira', flag: '🇹🇷', symbol: '₺', type: 'fiat' },
+  { code: 'ZAR', name: 'South African Rand', flag: '🇿🇦', symbol: 'R', type: 'fiat' },
+  { code: 'SEK', name: 'Swedish Krona', flag: '🇸🇪', symbol: 'kr', type: 'fiat' },
+  { code: 'NOK', name: 'Norwegian Krone', flag: '🇳🇴', symbol: 'kr', type: 'fiat' },
+  { code: 'SGD', name: 'Singapore Dollar', flag: '🇸🇬', symbol: 'S$', type: 'fiat' },
+  { code: 'HKD', name: 'Hong Kong Dollar', flag: '🇭🇰', symbol: 'HK$', type: 'fiat' },
+  // ── Crypto ──
+  { code: 'BTC', name: 'Bitcoin', flag: '₿', symbol: '₿', type: 'crypto', coingeckoId: 'bitcoin' },
+  { code: 'ETH', name: 'Ethereum', flag: 'Ξ', symbol: 'Ξ', type: 'crypto', coingeckoId: 'ethereum' },
+  { code: 'SOL', name: 'Solana', flag: '◎', symbol: 'SOL', type: 'crypto', coingeckoId: 'solana' },
+  { code: 'XRP', name: 'XRP', flag: '✕', symbol: 'XRP', type: 'crypto', coingeckoId: 'ripple' },
+  { code: 'BNB', name: 'BNB', flag: '⬡', symbol: 'BNB', type: 'crypto', coingeckoId: 'binancecoin' },
+  { code: 'ADA', name: 'Cardano', flag: '₳', symbol: 'ADA', type: 'crypto', coingeckoId: 'cardano' },
+  { code: 'DOGE', name: 'Dogecoin', flag: 'Ð', symbol: 'DOGE', type: 'crypto', coingeckoId: 'dogecoin' },
+  { code: 'DOT', name: 'Polkadot', flag: '●', symbol: 'DOT', type: 'crypto', coingeckoId: 'polkadot' },
+  { code: 'AVAX', name: 'Avalanche', flag: '▲', symbol: 'AVAX', type: 'crypto', coingeckoId: 'avalanche-2' },
+  { code: 'MATIC', name: 'Polygon', flag: '⬡', symbol: 'MATIC', type: 'crypto', coingeckoId: 'matic-network' },
 ];
 
 const getCurrency = (code: string) => CURRENCIES.find(c => c.code === code)!;
+const isCrypto = (code: string) => getCurrency(code)?.type === 'crypto';
 
-/* ────────── Chart mock generator (simulates 7-day trend) ────────── */
-function generateChartData(rate: number) {
-  const points = 30;
-  const data = [];
-  let value = rate * (0.98 + Math.random() * 0.02);
-  for (let i = 0; i < points; i++) {
-    const change = (Math.random() - 0.48) * rate * 0.003;
-    value = Math.max(value + change, rate * 0.95);
-    const dateOffset = points - i;
-    const d = new Date();
-    d.setDate(d.getDate() - dateOffset);
-    data.push({
-      date: format(d, 'dd/MM'),
-      value: parseFloat(value.toFixed(4)),
-    });
+/* ────────── CoinGecko fiat ID mapping ────────── */
+const FIAT_TO_CG: Record<string, string> = {
+  USD: 'usd', EUR: 'eur', GBP: 'gbp', JPY: 'jpy', CHF: 'chf', CAD: 'cad',
+  AUD: 'aud', NZD: 'nzd', CNY: 'cny', MXN: 'mxn', COP: 'cop', BRL: 'brl',
+  ARS: 'ars', CLP: 'clp', PEN: 'pen', UYU: 'uyu', CRC: 'crc', DOP: 'dop',
+  INR: 'inr', KRW: 'krw', TRY: 'try', ZAR: 'zar', SEK: 'sek', NOK: 'nok',
+  SGD: 'sgd', HKD: 'hkd',
+};
+
+type ChartPoint = { date: string; value: number };
+
+/* ────────── Historical data fetchers ────────── */
+
+// Fiat ↔ Fiat: Frankfurter API (free, no key)
+async function fetchFiatHistory(from: string, to: string): Promise<ChartPoint[]> {
+  const end = new Date();
+  const start = subDays(end, 30);
+  const url = `https://api.frankfurter.app/${format(start, 'yyyy-MM-dd')}..${format(end, 'yyyy-MM-dd')}?from=${from}&to=${to}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data.rates) return [];
+  return Object.entries(data.rates as Record<string, Record<string, number>>)
+    .map(([dateStr, rates]) => ({
+      date: format(new Date(dateStr), 'dd/MM'),
+      value: rates[to],
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// Crypto → Fiat: CoinGecko market_chart (free, no key, 30 days)
+async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string): Promise<ChartPoint[]> {
+  const vs = FIAT_TO_CG[fiatCode] || 'usd';
+  const url = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=${vs}&days=30&interval=daily`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data.prices) return [];
+  return (data.prices as [number, number][]).map(([ts, price]) => ({
+    date: format(new Date(ts), 'dd/MM'),
+    value: price,
+  }));
+}
+
+// Crypto → Crypto: route through USD
+async function fetchCryptoToCryptoHistory(fromId: string, toId: string): Promise<ChartPoint[]> {
+  const [fromData, toData] = await Promise.all([
+    fetchCryptoToFiatHistory(fromId, 'USD'),
+    fetchCryptoToFiatHistory(toId, 'USD'),
+  ]);
+  if (fromData.length === 0 || toData.length === 0) return [];
+  // Align by date
+  const toMap = new Map(toData.map(p => [p.date, p.value]));
+  return fromData
+    .filter(p => toMap.has(p.date) && toMap.get(p.date)! > 0)
+    .map(p => ({
+      date: p.date,
+      value: p.value / toMap.get(p.date)!,
+    }));
+}
+
+// Fiat → Crypto: invert crypto→fiat
+async function fetchFiatToCryptoHistory(cryptoId: string, fiatCode: string): Promise<ChartPoint[]> {
+  const data = await fetchCryptoToFiatHistory(cryptoId, fiatCode);
+  return data.map(p => ({ date: p.date, value: p.value > 0 ? 1 / p.value : 0 }));
+}
+
+/* ────────── Rate fetchers ────────── */
+
+async function fetchCurrentRate(from: string, to: string): Promise<number | null> {
+  const fromDef = getCurrency(from);
+  const toDef = getCurrency(to);
+
+  // Fiat ↔ Fiat
+  if (!isCrypto(from) && !isCrypto(to)) {
+    const res = await fetch(`https://open.er-api.com/v6/latest/${from}`);
+    const data = await res.json();
+    return data.result === 'success' ? data.rates?.[to] ?? null : null;
   }
-  // End near actual rate
-  data.push({ date: format(new Date(), 'dd/MM'), value: rate });
-  return data;
+
+  // Crypto → Fiat
+  if (isCrypto(from) && !isCrypto(to)) {
+    const vs = FIAT_TO_CG[to] || 'usd';
+    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${fromDef.coingeckoId}&vs_currencies=${vs}`);
+    const data = await res.json();
+    return data[fromDef.coingeckoId!]?.[vs] ?? null;
+  }
+
+  // Fiat → Crypto
+  if (!isCrypto(from) && isCrypto(to)) {
+    const vs = FIAT_TO_CG[from] || 'usd';
+    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${toDef.coingeckoId}&vs_currencies=${vs}`);
+    const data = await res.json();
+    const cryptoInFiat = data[toDef.coingeckoId!]?.[vs];
+    return cryptoInFiat ? 1 / cryptoInFiat : null;
+  }
+
+  // Crypto → Crypto
+  const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${fromDef.coingeckoId},${toDef.coingeckoId}&vs_currencies=usd`);
+  const data = await res.json();
+  const fromUsd = data[fromDef.coingeckoId!]?.usd;
+  const toUsd = data[toDef.coingeckoId!]?.usd;
+  return fromUsd && toUsd ? fromUsd / toUsd : null;
+}
+
+async function fetchHistoricalData(from: string, to: string): Promise<ChartPoint[]> {
+  const fromDef = getCurrency(from);
+  const toDef = getCurrency(to);
+
+  try {
+    if (!isCrypto(from) && !isCrypto(to)) {
+      return await fetchFiatHistory(from, to);
+    }
+    if (isCrypto(from) && !isCrypto(to)) {
+      return await fetchCryptoToFiatHistory(fromDef.coingeckoId!, to);
+    }
+    if (!isCrypto(from) && isCrypto(to)) {
+      return await fetchFiatToCryptoHistory(toDef.coingeckoId!, from);
+    }
+    return await fetchCryptoToCryptoHistory(fromDef.coingeckoId!, toDef.coingeckoId!);
+  } catch {
+    return [];
+  }
 }
 
 /* ────────── Main Component ────────── */
@@ -76,41 +200,43 @@ export default function CurrencyConverter() {
   const [toCurrency, setToCurrency] = useState('COP');
   const [amount, setAmount] = useState('1');
   const [rate, setRate] = useState<number | null>(null);
+  const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [loading, setLoading] = useState(false);
+  const [chartLoading, setChartLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRate = useCallback(async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
+    setChartLoading(true);
     setError(null);
     try {
-      const res = await fetch(`https://open.er-api.com/v6/latest/${fromCurrency}`);
-      const data = await res.json();
-      if (data.result === 'success' && data.rates?.[toCurrency]) {
-        setRate(data.rates[toCurrency]);
+      const [currentRate, history] = await Promise.all([
+        fetchCurrentRate(fromCurrency, toCurrency),
+        fetchHistoricalData(fromCurrency, toCurrency),
+      ]);
+      if (currentRate !== null) {
+        setRate(currentRate);
       } else {
         setError('Rate not available');
       }
+      setChartData(history);
     } catch {
       setError('Connection error');
     } finally {
       setLoading(false);
+      setChartLoading(false);
     }
   }, [fromCurrency, toCurrency]);
 
   useEffect(() => {
-    fetchRate();
-  }, [fetchRate]);
+    fetchAll();
+  }, [fetchAll]);
 
   const converted = useMemo(() => {
     if (!rate) return null;
     const val = parseFloat(amount) || 0;
     return val * rate;
   }, [amount, rate]);
-
-  const chartData = useMemo(() => {
-    if (!rate) return [];
-    return generateChartData(rate);
-  }, [rate]);
 
   const { minRate, maxRate } = useMemo(() => {
     if (chartData.length === 0) return { minRate: 0, maxRate: 0 };
@@ -129,8 +255,41 @@ export default function CurrencyConverter() {
   const formatValue = (v: number) => {
     if (v >= 1000) return v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (v >= 1) return v.toFixed(4);
-    return v.toFixed(6);
+    if (v >= 0.0001) return v.toFixed(6);
+    return v.toFixed(8);
   };
+
+  // Group currencies for the selector
+  const fiatCurrencies = CURRENCIES.filter(c => c.type === 'fiat');
+  const cryptoCurrencies = CURRENCIES.filter(c => c.type === 'crypto');
+
+  const CurrencySelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-[90px] h-8 ml-auto text-xs bg-secondary border-border">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="max-h-60">
+        <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Fiat</div>
+        {fiatCurrencies.map(c => (
+          <SelectItem key={c.code} value={c.code}>
+            <span className="flex items-center gap-1.5">
+              <span>{c.flag}</span>
+              <span>{c.code}</span>
+            </span>
+          </SelectItem>
+        ))}
+        <div className="px-2 py-1 mt-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-t border-border">Crypto</div>
+        {cryptoCurrencies.map(c => (
+          <SelectItem key={c.code} value={c.code}>
+            <span className="flex items-center gap-1.5">
+              <span className="text-primary">{c.flag}</span>
+              <span>{c.code}</span>
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 
   return (
     <PageShell>
@@ -157,23 +316,9 @@ export default function CurrencyConverter() {
             {/* FROM */}
             <div className="p-4 border-b border-border space-y-3">
               <div className="flex items-center gap-2">
-                <span className="text-lg">{from.flag}</span>
+                <span className={cn("text-lg", isCrypto(fromCurrency) && "text-primary font-bold")}>{from.flag}</span>
                 <span className="text-sm font-semibold text-foreground">{from.name}</span>
-                <Select value={fromCurrency} onValueChange={setFromCurrency}>
-                  <SelectTrigger className="w-[80px] h-8 ml-auto text-xs bg-secondary border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {CURRENCIES.map(c => (
-                      <SelectItem key={c.code} value={c.code}>
-                        <span className="flex items-center gap-1.5">
-                          <span>{c.flag}</span>
-                          <span>{c.code}</span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CurrencySelect value={fromCurrency} onChange={setFromCurrency} />
               </div>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-bold text-foreground">{from.symbol}</span>
@@ -203,23 +348,9 @@ export default function CurrencyConverter() {
             {/* TO */}
             <div className="p-4 border-b border-border space-y-3">
               <div className="flex items-center gap-2">
-                <span className="text-lg">{to.flag}</span>
+                <span className={cn("text-lg", isCrypto(toCurrency) && "text-primary font-bold")}>{to.flag}</span>
                 <span className="text-sm font-semibold text-foreground">{to.name}</span>
-                <Select value={toCurrency} onValueChange={setToCurrency}>
-                  <SelectTrigger className="w-[80px] h-8 ml-auto text-xs bg-secondary border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {CURRENCIES.map(c => (
-                      <SelectItem key={c.code} value={c.code}>
-                        <span className="flex items-center gap-1.5">
-                          <span>{c.flag}</span>
-                          <span>{c.code}</span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CurrencySelect value={toCurrency} onChange={setToCurrency} />
               </div>
               <div className="bg-secondary border border-border rounded-md px-4 py-3">
                 {loading ? (
@@ -243,8 +374,8 @@ export default function CurrencyConverter() {
                 <span className="text-xs font-medium text-muted-foreground">
                   {fromCurrency}/{toCurrency} — 30 {t('tools_converter_days')}
                 </span>
-                <button onClick={fetchRate} className="text-primary hover:text-primary/80 transition-colors">
-                  <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
+                <button onClick={fetchAll} className="text-primary hover:text-primary/80 transition-colors">
+                  <RefreshCw className={cn("w-3.5 h-3.5", (loading || chartLoading) && "animate-spin")} />
                 </button>
               </div>
 
@@ -257,7 +388,11 @@ export default function CurrencyConverter() {
 
               {/* Area chart */}
               <div className="h-[160px] w-full">
-                {chartData.length > 0 && (
+                {chartLoading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                ) : chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
                       <defs>
@@ -278,7 +413,7 @@ export default function CurrencyConverter() {
                         tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
                         axisLine={false}
                         tickLine={false}
-                        tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v.toFixed(2)}
+                        tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v >= 1 ? v.toFixed(2) : v.toFixed(4)}
                       />
                       <Tooltip
                         contentStyle={{
@@ -299,33 +434,39 @@ export default function CurrencyConverter() {
                       />
                     </AreaChart>
                   </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+                    {t('tools_converter_no_chart')}
+                  </div>
                 )}
               </div>
 
               {/* Min / Max row */}
-              <div className="flex justify-between px-2">
-                <div className="text-center">
-                  <p className="text-[10px] text-muted-foreground">{t('tools_converter_min')}</p>
-                  <p className="text-xs font-bold text-destructive flex items-center gap-0.5">
-                    <TrendingDown className="w-3 h-3" />
-                    {formatValue(minRate)}
-                  </p>
+              {chartData.length > 0 && (
+                <div className="flex justify-between px-2">
+                  <div className="text-center">
+                    <p className="text-[10px] text-muted-foreground">{t('tools_converter_min')}</p>
+                    <p className="text-xs font-bold text-destructive flex items-center gap-0.5">
+                      <TrendingDown className="w-3 h-3" />
+                      {formatValue(minRate)}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] text-muted-foreground">{t('tools_converter_max')}</p>
+                    <p className="text-xs font-bold text-primary flex items-center gap-0.5">
+                      <TrendingUp className="w-3 h-3" />
+                      {formatValue(maxRate)}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-[10px] text-muted-foreground">{t('tools_converter_max')}</p>
-                  <p className="text-xs font-bold text-primary flex items-center gap-0.5">
-                    <TrendingUp className="w-3 h-3" />
-                    {formatValue(maxRate)}
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
         {/* Calculate button */}
         <button
-          onClick={fetchRate}
+          onClick={fetchAll}
           className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-base shadow-lg hover:opacity-90 transition-opacity active:scale-[0.98]"
         >
           {t('tools_converter_calculate')}

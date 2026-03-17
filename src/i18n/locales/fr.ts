@@ -363,6 +363,7 @@ const fr: TranslationKeys = {
   tools_converter_min: 'Plus Bas Atteint',
   tools_converter_max: 'Plus Haut Atteint',
   tools_converter_calculate: 'Calculer',
+  tools_converter_no_chart: 'Données historiques non disponibles',
   tools_multi_tf_title: 'Screener Multi-Timeframe',
   tools_multi_tf_desc: 'Confluence d\'indicateurs sur plusieurs temporalités',
   tools_order_flow_title: 'Analyse de Flux d\'Ordres',

@@ -558,6 +558,7 @@ const es: TranslationKeys = {
   tools_converter_min: 'Menor Alcanzado',
   tools_converter_max: 'Mayor Alcanzado',
   tools_converter_calculate: 'Calcular',
+  tools_converter_no_chart: 'Datos históricos no disponibles',
   tools_multi_tf_title: 'Screener Multi-Timeframe',
   tools_multi_tf_desc: 'Confluencia de indicadores en múltiples temporalidades',
   tools_order_flow_title: 'Análisis de Flujo de Órdenes',
