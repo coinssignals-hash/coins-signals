@@ -24,7 +24,7 @@ import { useDateLocale } from '@/hooks/useDateLocale';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat';
+type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
