@@ -379,6 +379,19 @@ export default function Forum() {
                               <Mail className="w-3 h-3" />
                             </button>
                           )}
+                          {/* Favorite user */}
+                          {!isOwn && user && (
+                            <button
+                              onClick={() => toggleFavorite(msg.user_id, msg.user_name || 'Usuario')}
+                              className={cn(
+                                "transition-colors",
+                                isFavorite(msg.user_id) ? "text-yellow-500" : "text-muted-foreground hover:text-yellow-500"
+                              )}
+                              title={isFavorite(msg.user_id) ? "Quitar de amigos" : "Agregar como amigo"}
+                            >
+                              <Star className={cn("w-3 h-3", isFavorite(msg.user_id) && "fill-current")} />
+                            </button>
+                          )}
                         </div>
                       )}
 
