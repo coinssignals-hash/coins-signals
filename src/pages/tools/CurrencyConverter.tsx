@@ -113,13 +113,12 @@ async function fetchCryptoToFiatHistory(cryptoId: string, fiatCode: string, days
 }
 
 // Crypto → Crypto: route through USD
-async function fetchCryptoToCryptoHistory(fromId: string, toId: string): Promise<ChartPoint[]> {
+async function fetchCryptoToCryptoHistory(fromId: string, toId: string, days: PeriodOption = 30): Promise<ChartPoint[]> {
   const [fromData, toData] = await Promise.all([
-    fetchCryptoToFiatHistory(fromId, 'USD'),
-    fetchCryptoToFiatHistory(toId, 'USD'),
+    fetchCryptoToFiatHistory(fromId, 'USD', days),
+    fetchCryptoToFiatHistory(toId, 'USD', days),
   ]);
   if (fromData.length === 0 || toData.length === 0) return [];
-  // Align by date
   const toMap = new Map(toData.map(p => [p.date, p.value]));
   return fromData
     .filter(p => toMap.has(p.date) && toMap.get(p.date)! > 0)
