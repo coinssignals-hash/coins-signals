@@ -305,6 +305,11 @@ export default function Forum() {
                         )}
                       </div>
 
+                      {/* Embedded signal card */}
+                      {!isDM && msg.signal_id && (
+                        <EmbeddedSignalCard signalId={msg.signal_id} />
+                      )}
+
                       {/* Reactions */}
                       {!isDM && msg.reactions && msg.reactions.length > 0 && (
                         <div className="flex flex-wrap gap-1">
