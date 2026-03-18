@@ -157,7 +157,7 @@ export function useImportedTrades() {
         import_batch_id: batchId,
       }));
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('imported_trades')
         .upsert(rows, { onConflict: 'user_id,broker_source,external_trade_id', ignoreDuplicates: true })
         .select('id');
