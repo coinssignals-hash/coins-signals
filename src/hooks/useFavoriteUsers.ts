@@ -32,7 +32,7 @@ export function useFavoriteUsers() {
     const favUserIds = (data as any[]).map((d: any) => d.favorite_user_id);
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url')
+      .select('id, first_name, last_name, alias, avatar_url')
       .in('id', favUserIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
