@@ -325,7 +325,7 @@ export function useDirectMessages(partnerId: string | null) {
     if (!data) { setLoading(false); return; }
 
     const userIds = [...new Set(data.map(d => d.sender_id))];
-    const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, avatar_url').in('id', userIds);
+    const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, alias, avatar_url').in('id', userIds);
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
 
     setMessages(data.map(d => {
