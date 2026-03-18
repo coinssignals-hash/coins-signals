@@ -215,7 +215,7 @@ export function BrokerCatalog({
                       )}
 
                       {/* Action buttons */}
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {broker.apiSupported && (
                           <Button
                             size="sm"
@@ -227,6 +227,23 @@ export function BrokerCatalog({
                               <><Check className="w-3 h-3 mr-1" /> Conectado</>
                             ) : (
                               <><Wifi className="w-3 h-3 mr-1" /> Conectar API</>
+                            )}
+                          </Button>
+                        )}
+                        {isMT5Capable && (
+                          <Button
+                            size="sm"
+                            onClick={() => isMT5Connected ? onSyncMT5?.(broker) : onConnectMT5?.(broker)}
+                            className="flex-1 text-xs h-8"
+                            variant={isMT5Connected ? 'secondary' : 'default'}
+                            disabled={isMT5Syncing}
+                          >
+                            {isMT5Syncing ? (
+                              <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Sincronizando...</>
+                            ) : isMT5Connected ? (
+                              <><RefreshCw className="w-3 h-3 mr-1" /> Sync MT5</>
+                            ) : (
+                              <><Monitor className="w-3 h-3 mr-1" /> Conectar MT5</>
                             )}
                           </Button>
                         )}
