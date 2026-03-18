@@ -843,20 +843,21 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
   const isLoss = entry.result === 'loss';
   const chartData = useMemo(() => generateJournalChartData(entry), [entry.id]);
 
-  // Calculate Y domain
   const prices = [ep, ex, ...(tp ? [tp] : []), ...(sl ? [sl] : [])];
   const minP = Math.min(...prices);
   const maxP = Math.max(...prices);
-  const pad = (maxP - minP) * 0.15 || ep * 0.001;
+  const pad = (maxP - minP) * 0.2 || ep * 0.001;
+
+  const lineColor = isWin ? 'hsl(150, 70%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))';
 
   return (
-    <div className="h-40 rounded-lg overflow-hidden bg-secondary/30">
+    <div className="h-48 px-1 pt-2 pb-1">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData}>
+        <AreaChart data={chartData} margin={{ top: 8, right: 50, left: 8, bottom: 4 }}>
           <defs>
             <linearGradient id={`jcGrad-${entry.id}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'} stopOpacity={0.25} />
-              <stop offset="95%" stopColor={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'} stopOpacity={0} />
+              <stop offset="0%" stopColor={lineColor} stopOpacity={0.35} />
+              <stop offset="100%" stopColor={lineColor} stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <XAxis
@@ -871,49 +872,20 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
             axisLine={false} tickLine={false}
             orientation="right"
             tickFormatter={(v) => formatPrice(v, entry.pair)}
-            width={55}
+            width={52}
           />
-          {/* Entry level */}
-          <ReferenceLine
-            y={ep}
-            stroke="hsl(210, 80%, 60%)"
-            strokeDasharray="4 3"
-            strokeOpacity={0.8}
-            label={{ value: `E ${formatPrice(ep, entry.pair)}`, position: 'left', fill: 'hsl(210, 80%, 60%)', fontSize: 9, fontWeight: 'bold' }}
-          />
-          {/* Take Profit level */}
           {tp && (
-            <ReferenceLine
-              y={tp}
-              stroke="hsl(150, 60%, 50%)"
-              strokeDasharray="4 3"
-              strokeOpacity={0.7}
-              label={{ value: `TP ${formatPrice(tp, entry.pair)}`, position: 'left', fill: 'hsl(150, 60%, 50%)', fontSize: 9, fontWeight: 'bold' }}
-            />
+            <ReferenceLine y={tp} stroke="hsl(150, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} />
           )}
-          {/* Stop Loss level */}
+          <ReferenceLine y={ep} stroke="hsl(200, 70%, 55%)" strokeDasharray="4 4" strokeOpacity={0.6} />
           {sl && (
-            <ReferenceLine
-              y={sl}
-              stroke="hsl(0, 60%, 50%)"
-              strokeDasharray="4 3"
-              strokeOpacity={0.7}
-              label={{ value: `SL ${formatPrice(sl, entry.pair)}`, position: 'left', fill: 'hsl(0, 60%, 50%)', fontSize: 9, fontWeight: 'bold' }}
-            />
+            <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} />
           )}
-          {/* Exit level */}
-          <ReferenceLine
-            y={ex}
-            stroke="hsl(45, 90%, 60%)"
-            strokeDasharray="2 2"
-            strokeOpacity={0.6}
-            label={{ value: `Exit ${formatPrice(ex, entry.pair)}`, position: 'left', fill: 'hsl(45, 90%, 60%)', fontSize: 8 }}
-          />
           <Area
             type="monotone"
             dataKey="price"
-            stroke={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'}
-            strokeWidth={1.5}
+            stroke={lineColor}
+            strokeWidth={2}
             fillOpacity={1}
             fill={`url(#jcGrad-${entry.id})`}
           />
