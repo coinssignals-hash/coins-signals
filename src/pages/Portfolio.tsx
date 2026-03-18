@@ -301,6 +301,26 @@ export default function Portfolio() {
           </motion.div>
         )}
 
+        {/* Imported Trades Analytics */}
+        {!loading && user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.32 }}
+          >
+            <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4" />
+              Operaciones Importadas
+            </h2>
+            <TradeAnalytics
+              trades={importedTradesHook.trades}
+              stats={importedTradesHook.stats}
+              onImportClick={() => setShowImportModal(true)}
+              onDeleteAll={importedTradesHook.deleteAllTrades}
+            />
+          </motion.div>
+        )}
+
         {/* Loading skeletons */}
         {loading && (
           <div className="space-y-2">
@@ -320,6 +340,9 @@ export default function Portfolio() {
             ))}
           </div>
         )}
+
+        {/* Import Modal */}
+        <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
       </main>
     </PageShell>
   );
