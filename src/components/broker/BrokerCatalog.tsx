@@ -136,6 +136,9 @@ export function BrokerCatalog({
         const isExpanded = expandedBroker === broker.code;
         const isConnected = connectedBrokers.includes(broker.code);
         const isSyncing = syncingIds[broker.code] || false;
+        const isMT5Capable = MT5_CAPABLE_BROKERS.includes(broker.code);
+        const isMT5Connected = mt5ConnectedBrokers.includes(broker.code);
+        const isMT5Syncing = mt5SyncingIds[broker.code] || false;
 
         return (
           <Card key={broker.code} className="bg-card border-border overflow-hidden">
