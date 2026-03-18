@@ -209,13 +209,21 @@ export default function PersonalInfo() {
                     <AvatarFallback className="bg-[hsl(210,40%,14%)] text-cyan-300 text-2xl font-bold">{getInitials()}</AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={handleAvatarClick} disabled={uploadingAvatar} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/15 border border-cyan-500/25 text-cyan-300 hover:bg-cyan-500/25 transition-all disabled:opacity-50 active:scale-[0.97]">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleAvatarClick}
+                    disabled={uploadingAvatar}
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-[hsl(210,30%,12%)] border border-cyan-500/25 text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-400/40 transition-all disabled:opacity-50 active:scale-90"
+                    title={t('pi_upload_photo') || 'Subir foto'}
+                  >
                     {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                    {uploadingAvatar ? 'Subiendo...' : t('pi_upload_photo') || 'Subir foto'}
                   </button>
-                  <button onClick={() => setShowAvatarPicker(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-purple-500/15 border border-purple-500/25 text-purple-300 hover:bg-purple-500/25 transition-all active:scale-[0.97]">
-                    <ImageIcon className="w-3.5 h-3.5" /> Avatar
+                  <button
+                    onClick={() => setShowAvatarPicker(true)}
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-[hsl(210,30%,12%)] border border-purple-500/25 text-purple-300 hover:bg-purple-500/20 hover:border-purple-400/40 transition-all active:scale-90"
+                    title="Avatar"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
