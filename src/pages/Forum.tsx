@@ -184,26 +184,57 @@ export default function Forum() {
   const renderChannelsView = () => (
     <div className="space-y-4">
       {/* Daily Topic */}
-      {topic && (
+      {topic && (() => {
+        const displayTitle = translatedTopic?.title || topic.title;
+        const displayDesc = translatedTopic?.description ?? topic.description;
+        const displayOptA = translatedTopic?.option_a || topic.option_a;
+        const displayOptB = translatedTopic?.option_b || topic.option_b;
+
+        return (
         <Card className="bg-card border-border overflow-hidden">
-          {topic.image_url && (
-            <img
-              src={topic.image_url}
-              alt={topic.title}
-              className="w-full h-32 sm:h-40 object-cover"
-              loading="lazy"
-            />
-          )}
+          {/* Image area with admin upload */}
+          <div className="relative">
+            {topic.image_url ? (
+              <img
+                src={topic.image_url}
+                alt={displayTitle}
+                className="w-full h-32 sm:h-40 object-cover"
+                loading="lazy"
+              />
+            ) : isAdmin ? (
+              <div
+                onClick={() => topicImageRef.current?.click()}
+                className="w-full h-28 bg-secondary/40 border-b border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-secondary/60 transition-colors"
+              >
+                <ImagePlus className="w-6 h-6 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Agregar imagen al tema</span>
+              </div>
+            ) : null}
+            {isAdmin && topic.image_url && (
+              <button
+                onClick={() => topicImageRef.current?.click()}
+                className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm rounded-lg px-2 py-1 text-[10px] text-foreground border border-border hover:bg-background transition-colors"
+              >
+                {topicImageUploading ? '⏳' : '📷'} Cambiar
+              </button>
+            )}
+          </div>
+          {/* Hidden file input for topic image */}
+          <input ref={topicImageRef} type="file" accept="image/*" className="hidden" onChange={handleTopicImageUpload} />
+
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Vote className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold text-primary uppercase tracking-wider">Tema del Día</span>
+              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                {language === 'es' ? 'Tema del Día' : language === 'en' ? 'Topic of the Day' : language === 'pt' ? 'Tema do Dia' : language === 'fr' ? 'Sujet du Jour' : language === 'de' ? 'Thema des Tages' : language === 'it' ? 'Tema del Giorno' : language === 'ar' ? 'موضوع اليوم' : 'Tema del Día'}
+              </span>
+              {topicTranslating && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
             </div>
-            <h3 className="text-sm font-bold text-foreground">{topic.title}</h3>
-            {topic.description && <p className="text-xs text-muted-foreground">{topic.description}</p>}
+            <h3 className="text-sm font-bold text-foreground">{displayTitle}</h3>
+            {displayDesc && <p className="text-xs text-muted-foreground">{displayDesc}</p>}
             <div className="grid grid-cols-2 gap-2">
               {(['a', 'b'] as const).map(opt => {
-                const label = opt === 'a' ? topic.option_a : topic.option_b;
+                const label = opt === 'a' ? displayOptA : displayOptB;
                 const votes = opt === 'a' ? topic.votes_a : topic.votes_b;
                 const total = topic.votes_a + topic.votes_b;
                 const pct = total > 0 ? Math.round((votes / total) * 100) : 0;
@@ -234,7 +265,8 @@ export default function Forum() {
             </div>
           </CardContent>
         </Card>
-      )}
+        );
+      })()}
 
       {/* Past topics button or browser */}
       {showPastTopics ? (
