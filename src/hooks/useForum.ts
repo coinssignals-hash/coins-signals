@@ -138,7 +138,7 @@ export function useForumMessages(channelId: string | null) {
           const p = profileMap.get(r.user_id);
           replyMap.set(r.id, {
             content: r.content.slice(0, 60),
-            user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+            user_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
           });
         }
       }
