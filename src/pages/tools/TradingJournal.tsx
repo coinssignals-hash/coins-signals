@@ -886,6 +886,37 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
             <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'SL', position: 'insideBottomLeft', fill: 'hsl(0, 60%, 50%)', fontSize: 8, fontWeight: 600 }} />
           )}
           <ReferenceLine y={ex} stroke="hsl(35, 90%, 55%)" strokeDasharray="3 2" strokeOpacity={0.9} label={{ value: 'Close', position: 'insideTopLeft', fill: 'hsl(35, 90%, 55%)', fontSize: 8, fontWeight: 600 }} />
+          <Tooltip
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+              const price = payload[0].value as number;
+              const levels = [
+                ...(tp ? [{ label: 'TP', value: tp, color: 'hsl(150, 60%, 50%)' }] : []),
+                { label: 'Entry', value: ep, color: 'hsl(200, 70%, 55%)' },
+                { label: 'Close', value: ex, color: 'hsl(35, 90%, 55%)' },
+                ...(sl ? [{ label: 'SL', value: sl, color: 'hsl(0, 60%, 50%)' }] : []),
+              ];
+              return (
+                <div className="rounded-lg border border-border/50 bg-background/95 backdrop-blur-md px-2.5 py-2 shadow-xl text-[10px] space-y-1">
+                  <div className="font-semibold text-foreground tabular-nums">
+                    {payload[0].payload.time} — {formatPrice(price, entry.pair)}
+                  </div>
+                  <div className="space-y-0.5">
+                    {levels.map(l => (
+                      <div key={l.label} className="flex items-center justify-between gap-3">
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: l.color }} />
+                          <span className="text-muted-foreground">{l.label}</span>
+                        </span>
+                        <span className="tabular-nums font-medium" style={{ color: l.color }}>{formatPrice(l.value, entry.pair)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }}
+            cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeOpacity: 0.3, strokeDasharray: '3 3' }}
+          />
           <Area
             type="monotone"
             dataKey="price"
