@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Switch } from '@/components/ui/switch';
@@ -8,444 +8,374 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
+import { useBrokerSync } from '@/hooks/useBrokerSync';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
-
-interface BrokerSlot {
-  id: string;
-  name: string;
-  logo?: string;
-  connected: boolean;
-  connectionId?: string;
-  brokerId?: string;
-}
+import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
 
 export default function LinkBroker() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const { 
-    brokers, 
-    connections, 
-    loading, 
-    createConnection, 
-    testConnection, 
+  const {
+    brokers,
+    connections,
+    loading,
+    createConnection,
+    testConnection,
     deleteConnection,
-    refetch 
+    refetch,
   } = useBrokerConnections();
+  const { syncBroker, isSyncing } = useBrokerSync();
 
   const connectedCount = connections.filter(c => c.is_connected).length;
-  const accounts = connections;
   const [showImportModal, setShowImportModal] = useState(false);
 
-  const [brokerSlots, setBrokerSlots] = useState<BrokerSlot[]>([
-    { id: '1', name: '', connected: false },
-    { id: '2', name: '', connected: false },
-    { id: '3', name: '', connected: false },
-    { id: '4', name: '', connected: false },
-    { id: '5', name: '', connected: false },
-  ]);
-  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
-  
-  const [connectionMethod, setConnectionMethod] = useState<'api' | 'oauth'>('api');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
-  const [showBrokerDropdown, setShowBrokerDropdown] = useState(false);
-  const [formData, setFormData] = useState({
-    connectionName: '',
-    apiKey: '',
-    apiSecret: '',
-    accountId: '',
-  });
+  // Connection form state
+  const [showConnectForm, setShowConnectForm] = useState(false);
+  const [selectedCatalogBroker, setSelectedCatalogBroker] = useState<BrokerCatalogItem | null>(null);
+  const [formData, setFormData] = useState({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
   const [showApiKey, setShowApiKey] = useState(false);
   const [showApiSecret, setShowApiSecret] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
-  const [permissions, setPermissions] = useState({
-    copyTrader: true,
-    leerBalance: true,
-    alertas: true,
-    enviarOrdenes: true,
-    historial: true,
-    operacionesAbiertas: true,
-  });
   const [isLiveMode, setIsLiveMode] = useState(false);
 
-  useEffect(() => {
-    if (connections.length > 0) {
-      const newSlots: BrokerSlot[] = [];
-      connections.slice(0, 5).forEach((conn, index) => {
-        newSlots.push({
-          id: String(index + 1),
-          name: conn.broker?.display_name || conn.connection_name,
-          logo: conn.broker?.logo_url || undefined,
-          connected: conn.is_connected,
-          connectionId: conn.id,
-          brokerId: conn.broker_id,
-        });
-      });
-      while (newSlots.length < 5) {
-        newSlots.push({ id: String(newSlots.length + 1), name: '', connected: false });
-      }
-      setBrokerSlots(newSlots);
+  const connectedBrokerCodes = connections
+    .filter(c => c.is_connected && c.broker)
+    .map(c => (c.broker as any)?.code || '')
+    .filter(Boolean);
+
+  const handleConnectBroker = (catalogBroker: BrokerCatalogItem) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión');
+      navigate('/auth');
+      return;
     }
-  }, [connections]);
+    setSelectedCatalogBroker(catalogBroker);
+    setFormData({
+      connectionName: `${catalogBroker.name} - ${isLiveMode ? 'Live' : 'Demo'}`,
+      apiKey: '', apiSecret: '', accountId: '', accessToken: '',
+    });
+    setShowConnectForm(true);
+  };
 
-  const filteredBrokers = brokers.filter(b => 
-    b.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    b.code.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleSelectBroker = (broker: Broker) => {
-    setSelectedBroker(broker);
-    setSearchQuery(broker.display_name);
-    setShowBrokerDropdown(false);
-    setFormData(prev => ({
-      ...prev,
-      connectionName: `${broker.display_name} - ${isLiveMode ? 'Live' : 'Demo'}`,
-    }));
+  const handleSyncBroker = async (catalogBroker: BrokerCatalogItem) => {
+    const conn = connections.find(c => (c.broker as any)?.code === catalogBroker.code && c.is_connected);
+    if (conn) {
+      await syncBroker(conn.id);
+    } else {
+      toast.error('Broker no conectado');
+    }
   };
 
   const handleTestConnection = async () => {
-    if (!selectedBroker) {
-      toast.error(t('lb_select_first'));
-      return;
-    }
-    if (connectionMethod === 'api' && (!formData.apiKey || !formData.apiSecret)) {
-      toast.error(t('lb_complete_api'));
-      return;
-    }
+    if (!selectedCatalogBroker) return;
+    // Find DB broker by code
+    const dbBroker = brokers.find(b => b.code === selectedCatalogBroker.code);
 
     setIsTestingConnection(true);
     const result = await testConnection(
       undefined,
-      selectedBroker.code,
+      selectedCatalogBroker.code,
       {
         api_key: formData.apiKey,
         api_secret: formData.apiSecret,
         account_id: formData.accountId || undefined,
+        access_token: formData.accessToken || undefined,
       },
       isLiveMode ? 'live' : 'demo'
     );
     setIsTestingConnection(false);
-    
+
     if (result.success) {
-      toast.success(result.message || t('lb_connection_success'));
+      toast.success(result.message || 'Conexión exitosa');
     } else {
-      toast.error(result.message || t('lb_connection_error'));
+      toast.error(result.message || 'Error de conexión');
     }
   };
 
   const handleSaveConnection = async () => {
-    if (!user) {
-      toast.error(t('lb_login_required'));
-      navigate('/auth');
-      return;
-    }
-    if (!selectedBroker) {
-      toast.error(t('lb_select_first'));
-      return;
-    }
-    if (connectionMethod === 'api' && (!formData.apiKey || !formData.apiSecret)) {
-      toast.error(t('lb_complete_api'));
+    if (!selectedCatalogBroker || !user) return;
+    const dbBroker = brokers.find(b => b.code === selectedCatalogBroker.code);
+    if (!dbBroker) {
+      toast.error('Broker no encontrado en la base de datos');
       return;
     }
 
     setIsSaving(true);
     const connection = await createConnection(
-      selectedBroker.id,
-      formData.connectionName || `${selectedBroker.display_name} Account`,
+      dbBroker.id,
+      formData.connectionName || `${selectedCatalogBroker.name} Account`,
       isLiveMode ? 'live' : 'demo',
       {
         api_key: formData.apiKey,
         api_secret: formData.apiSecret,
         account_id: formData.accountId || undefined,
-      },
-      { permissions }
+        access_token: formData.accessToken || undefined,
+      }
     );
     setIsSaving(false);
-    
+
     if (connection) {
-      setFormData({ connectionName: '', apiKey: '', apiSecret: '', accountId: '' });
-      setSelectedBroker(null);
-      setSearchQuery('');
-      setSelectedSlotIndex(null);
+      setShowConnectForm(false);
+      setSelectedCatalogBroker(null);
+      setFormData({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
     }
   };
 
   const handleDeleteConnection = async (connectionId: string) => {
-    if (confirm(t('lb_delete_confirm'))) {
+    if (confirm('¿Eliminar esta conexión?')) {
       await deleteConnection(connectionId);
     }
   };
 
-  const handleSlotClick = (index: number) => {
-    setSelectedSlotIndex(index);
-    const slot = brokerSlots[index];
-    if (slot.connected && slot.brokerId) {
-      const broker = brokers.find(b => b.id === slot.brokerId);
-      if (broker) {
-        setSelectedBroker(broker);
-        setSearchQuery(broker.display_name);
-      }
-    } else {
-      setSelectedBroker(null);
-      setSearchQuery('');
-    }
-  };
-
-  const getBrokerEmoji = (code?: string): string => {
-    const emojiMap: Record<string, string> = {
-      alpaca: '🦙', oanda: '📊', interactive_brokers: '📈',
-      metatrader4: '📉', metatrader5: '💹', ig_markets: '🎯', forex_com: '💱',
-    };
-    return emojiMap[code || ''] || '🏦';
-  };
+  // Build syncing map by broker code
+  const syncingMap: Record<string, boolean> = {};
+  connections.forEach(c => {
+    const code = (c.broker as any)?.code;
+    if (code && isSyncing(c.id)) syncingMap[code] = true;
+  });
 
   return (
     <PageShell>
       <Header />
-      
-      <main className="px-4 py-4">
-        <div className="flex items-start gap-3 mb-6">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-slate-400 hover:text-white transition-colors">
+
+      <main className="px-4 py-4 space-y-5">
+        {/* Header */}
+        <div className="flex items-start gap-3">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 text-center pr-7">
-            <p className="text-cyan-400 text-sm font-medium">{t('lb_manage_accounts')}</p>
-            <p className="text-cyan-400/70 text-xs mt-0.5">{t('lb_invest_safely')}</p>
+            <h1 className="text-foreground text-lg font-bold">{t('lb_manage_accounts')}</h1>
+            <p className="text-muted-foreground text-xs mt-0.5">{t('lb_invest_safely')}</p>
           </div>
-          <button onClick={() => refetch()} className="p-2 text-slate-400 hover:text-white transition-colors" title={t('lb_refresh')}>
+          <button onClick={() => refetch()} className="p-2 text-muted-foreground hover:text-foreground transition-colors">
             <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
           </button>
         </div>
 
+        {/* Auth banner */}
         {!user && (
-          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
+          <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
             <LogIn className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-amber-200 text-sm font-medium">{t('lb_preview_mode')}</p>
               <p className="text-amber-200/70 text-xs mt-0.5">{t('lb_preview_desc')}</p>
-              <button onClick={() => navigate('/auth')} className="mt-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-full text-xs font-semibold transition-colors">
+              <button onClick={() => navigate('/auth')} className="mt-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-background rounded-full text-xs font-semibold transition-colors">
                 {t('lb_login')}
               </button>
             </div>
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-3 mb-8 overflow-x-auto pb-2">
-          {brokerSlots.map((slot, index) => (
-            <button
-              key={slot.id}
-              onClick={() => handleSlotClick(index)}
-              className={cn(
-                "flex flex-col items-center gap-1 p-2 rounded-xl transition-all min-w-[64px] relative group",
-                selectedSlotIndex === index && "ring-2 ring-cyan-500",
-                slot.connected ? "bg-slate-800/60 border border-cyan-500/40" : "bg-slate-800/40 border border-slate-700/50 hover:border-slate-600"
-              )}
-            >
-              {slot.connected && slot.connectionId && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleDeleteConnection(slot.connectionId!); }}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Trash2 className="w-3 h-3 text-white" />
-                </button>
-              )}
-              <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center text-lg overflow-hidden",
-                slot.connected ? "bg-gradient-to-br from-cyan-500/30 to-emerald-500/30 border border-cyan-400/50" : "bg-slate-700/50 border border-dashed border-slate-600"
-              )}>
-                {slot.connected ? (
-                  slot.logo ? (
-                    <img src={slot.logo} alt="" className="w-full h-full object-cover" onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      (e.target as HTMLImageElement).parentElement!.textContent = getBrokerEmoji();
-                    }} />
-                  ) : getBrokerEmoji()
-                ) : (
-                  <Plus className="w-4 h-4 text-slate-500" />
-                )}
-              </div>
-              <span className={cn("text-[9px] text-center leading-tight max-w-[56px] truncate", slot.connected ? "text-cyan-400" : "text-slate-500")}>
-                {slot.connected ? slot.name : t('lb_add')}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mb-6 space-y-2">
-          {accounts.length > 0 && (
-            <button onClick={() => navigate('/portfolio')} className="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              {t('lb_view_portfolio')}
-            </button>
-          )}
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="w-full py-3 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-          >
-            <FileSpreadsheet className="w-5 h-5 text-cyan-400" />
-            Importar CSV de operaciones
-          </button>
-        </div>
-
-
-        {/* Vincular Broker Section */}
-        <section className="mb-6">
-          <h2 className="text-white text-lg font-semibold mb-3">{t('lb_link_broker')}</h2>
-          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-            <label className="text-slate-400 text-sm mb-2 block">{t('lb_select_broker')}</label>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder={loading ? t('lb_loading_brokers') : t('lb_search_broker')}
-                value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setShowBrokerDropdown(true); }}
-                onFocus={() => setShowBrokerDropdown(true)}
-                className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500 pr-10"
-                disabled={loading}
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-              
-              {showBrokerDropdown && (searchQuery || brokers.length > 0) && (
-                <div className="absolute z-20 w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-xl max-h-48 overflow-y-auto">
-                  {filteredBrokers.length > 0 ? (
-                    filteredBrokers.map(broker => (
-                      <button
-                        key={broker.id}
-                        onClick={() => handleSelectBroker(broker)}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-800 transition-colors text-left"
-                      >
-                        <span className="text-lg">{getBrokerEmoji(broker.code)}</span>
-                        <div className="flex-1">
-                          <span className="text-white text-sm block">{broker.display_name}</span>
-                          <span className="text-slate-500 text-xs">{broker.supported_assets?.join(', ')}</span>
-                        </div>
-                        {selectedBroker?.id === broker.id && <Check className="w-4 h-4 text-cyan-400" />}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="px-4 py-3 text-slate-500 text-sm">
-                      {loading ? t('lb_loading') : t('lb_no_brokers')}
-                    </div>
+        {/* Connected accounts summary */}
+        {connections.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-foreground">Cuentas conectadas ({connectedCount})</span>
+              <button
+                onClick={() => navigate('/portfolio')}
+                className="text-xs text-primary hover:underline flex items-center gap-1"
+              >
+                <BarChart3 className="w-3 h-3" /> Ver portafolio
+              </button>
+            </div>
+            {connections.map(conn => (
+              <div key={conn.id} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
+                <div className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center text-lg",
+                  conn.is_connected ? "bg-emerald-500/15" : "bg-destructive/15"
+                )}>
+                  {conn.is_connected ? <Check className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-destructive" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs text-foreground font-medium truncate block">{conn.connection_name}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {conn.environment === 'live' ? '🔴 Live' : '🟢 Demo'}
+                    {conn.last_sync_at && ` · Sync: ${new Date(conn.last_sync_at).toLocaleDateString()}`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  {conn.is_connected && (
+                    <button
+                      onClick={() => syncBroker(conn.id)}
+                      disabled={isSyncing(conn.id)}
+                      className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
+                      title="Sincronizar"
+                    >
+                      {isSyncing(conn.id) ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      )}
+                    </button>
                   )}
+                  <button
+                    onClick={() => handleDeleteConnection(conn.id)}
+                    className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              )}
-            </div>
-            {selectedBroker && <p className="text-slate-500 text-xs mt-2">{selectedBroker.description}</p>}
+              </div>
+            ))}
           </div>
-        </section>
+        )}
 
-        {/* Metodo de Conexion */}
-        <section className="mb-6">
-          <h2 className="text-white text-lg font-semibold mb-3">{t('lb_connection_method')}</h2>
-          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 space-y-4">
-            <div className="flex items-center justify-center gap-1 p-1 bg-slate-900/60 rounded-full max-w-xs mx-auto">
-              <button onClick={() => setConnectionMethod('api')} className={cn("flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all", connectionMethod === 'api' ? "bg-cyan-600 text-white" : "text-slate-400 hover:text-white")}>
-                API Key
-              </button>
-              <button onClick={() => setConnectionMethod('oauth')} className={cn("flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all", connectionMethod === 'oauth' ? "bg-cyan-600 text-white" : "text-slate-400 hover:text-white")}>
-                OAuth
-              </button>
-            </div>
+        {/* Broker Catalog */}
+        <div>
+          <h2 className="text-sm font-semibold text-foreground mb-3">Brokers disponibles</h2>
+          <BrokerCatalog
+            onConnect={handleConnectBroker}
+            onImportCSV={() => setShowImportModal(true)}
+            onSync={handleSyncBroker}
+            syncingIds={syncingMap}
+            connectedBrokers={connectedBrokerCodes}
+          />
+        </div>
 
-            {connectionMethod === 'api' ? (
-              <div className="space-y-4">
+        {/* Connect Form Modal */}
+        {showConnectForm && selectedCatalogBroker && (
+          <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end justify-center">
+            <div className="w-full max-w-md bg-card border-t border-border rounded-t-2xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-foreground font-semibold flex items-center gap-2">
+                  <span className="text-xl">{selectedCatalogBroker.logoEmoji}</span>
+                  Conectar {selectedCatalogBroker.name}
+                </h3>
+                <button onClick={() => setShowConnectForm(false)} className="text-muted-foreground hover:text-foreground">✕</button>
+              </div>
+
+              <div className="space-y-3">
                 <div>
-                  <label className="text-slate-400 text-sm mb-1.5 block">{t('lb_connection_name')}</label>
-                  <Input type="text" placeholder="Mi cuenta Alpaca Demo" value={formData.connectionName} onChange={(e) => setFormData({ ...formData, connectionName: e.target.value })} className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500" />
+                  <label className="text-muted-foreground text-xs mb-1 block">Nombre de conexión</label>
+                  <Input value={formData.connectionName} onChange={(e) => setFormData(p => ({ ...p, connectionName: e.target.value }))} placeholder="Mi cuenta Demo" className="h-9 text-sm" />
                 </div>
-                <div>
-                  <label className="text-slate-400 text-sm mb-1.5 block">API Key</label>
-                  <div className="relative">
-                    <Input type={showApiKey ? 'text' : 'password'} placeholder={t('lb_introduce_api_key')} value={formData.apiKey} onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })} className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500 pr-10" />
-                    <button type="button" onClick={() => setShowApiKey(!showApiKey)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                      {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+
+                {/* Broker-specific fields */}
+                {['oanda', 'alpaca', 'pepperstone', 'avatrade', 'ic_markets', 'interactive_brokers', 'tradestation', 'tradovate'].includes(selectedCatalogBroker.code) && (
+                  <>
+                    <div>
+                      <label className="text-muted-foreground text-xs mb-1 block">
+                        {selectedCatalogBroker.code === 'tradestation' ? 'Access Token (OAuth)' : 'API Key'}
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type={showApiKey ? 'text' : 'password'}
+                          value={selectedCatalogBroker.code === 'tradestation' ? formData.accessToken : formData.apiKey}
+                          onChange={(e) => setFormData(p => ({
+                            ...p,
+                            [selectedCatalogBroker.code === 'tradestation' ? 'accessToken' : 'apiKey']: e.target.value,
+                          }))}
+                          placeholder="Tu API key..."
+                          className="h-9 text-sm pr-9"
+                        />
+                        <button onClick={() => setShowApiKey(!showApiKey)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+                          {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {selectedCatalogBroker.code !== 'oanda' && selectedCatalogBroker.code !== 'tradestation' && (
+                      <div>
+                        <label className="text-muted-foreground text-xs mb-1 block">
+                          {selectedCatalogBroker.code === 'tradovate' ? 'Password' : 'API Secret'}
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={showApiSecret ? 'text' : 'password'}
+                            value={formData.apiSecret}
+                            onChange={(e) => setFormData(p => ({ ...p, apiSecret: e.target.value }))}
+                            placeholder="Tu secret..."
+                            className="h-9 text-sm pr-9"
+                          />
+                          <button onClick={() => setShowApiSecret(!showApiSecret)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+                            {showApiSecret ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {(selectedCatalogBroker.code === 'oanda' || selectedCatalogBroker.code === 'tradovate') && (
+                      <div>
+                        <label className="text-muted-foreground text-xs mb-1 block">
+                          {selectedCatalogBroker.code === 'oanda' ? 'Account ID' : 'App ID (opcional)'}
+                        </label>
+                        <Input
+                          value={formData.accountId}
+                          onChange={(e) => setFormData(p => ({ ...p, accountId: e.target.value }))}
+                          placeholder={selectedCatalogBroker.code === 'oanda' ? '101-001-12345678-001' : 'TradeSync'}
+                          className="h-9 text-sm"
+                        />
+                      </div>
+                    )}
+
+                    {selectedCatalogBroker.code === 'interactive_brokers' && (
+                      <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                        <p className="text-[10px] text-amber-400 flex items-start gap-1.5">
+                          <AlertCircle className="w-3 h-3 flex-shrink-0 mt-0.5" />
+                          IBKR requiere TWS ejecutándose localmente. Las llamadas van a localhost:5000.
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Environment toggle */}
+                <div className="flex items-center justify-between p-2 bg-secondary/30 rounded-lg">
+                  <span className="text-xs text-muted-foreground">Entorno</span>
+                  <div className="flex items-center gap-2">
+                    <span className={cn("text-xs", isLiveMode ? "text-amber-400 font-medium" : "text-muted-foreground")}>
+                      {isLiveMode ? '🔴 Live' : '🟢 Demo'}
+                    </span>
+                    <Switch checked={isLiveMode} onCheckedChange={setIsLiveMode} className="data-[state=checked]:bg-amber-600" />
                   </div>
                 </div>
-                <div>
-                  <label className="text-slate-400 text-sm mb-1.5 block">{t('lb_api_secret')}</label>
-                  <div className="relative">
-                    <Input type={showApiSecret ? 'text' : 'password'} placeholder={t('lb_introduce_api_secret')} value={formData.apiSecret} onChange={(e) => setFormData({ ...formData, apiSecret: e.target.value })} className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500 pr-10" />
-                    <button type="button" onClick={() => setShowApiSecret(!showApiSecret)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                      {showApiSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                {selectedBroker?.code === 'oanda' && (
-                  <div>
-                    <label className="text-slate-400 text-sm mb-1.5 block">{t('lb_account_id')}</label>
-                    <Input type="text" placeholder="Ej: 101-001-12345678-001" value={formData.accountId} onChange={(e) => setFormData({ ...formData, accountId: e.target.value })} className="bg-slate-900/60 border-slate-600/50 text-white placeholder:text-slate-500" />
+
+                {isLiveMode && (
+                  <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <p className="text-[10px] text-amber-400">{t('lb_live_warning')}</p>
                   </div>
                 )}
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleTestConnection}
+                    disabled={isTestingConnection || !formData.apiKey}
+                    className="flex-1 py-2.5 bg-secondary hover:bg-secondary/80 disabled:opacity-50 text-foreground rounded-full text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    {isTestingConnection ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                    {isTestingConnection ? 'Probando...' : 'Probar'}
+                  </button>
+                  <button
+                    onClick={handleSaveConnection}
+                    disabled={isSaving || !formData.apiKey}
+                    className="flex-1 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-full text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                    {isSaving ? 'Guardando...' : 'Conectar'}
+                  </button>
+                </div>
+
+                {/* Privacy notice */}
+                <div className="flex items-start gap-1.5 pt-1">
+                  <Shield className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <p className="text-[9px] text-muted-foreground leading-relaxed">
+                    Credenciales cifradas AES-256-GCM. Solo lectura — no ejecutamos órdenes. Solo se almacenan en tu cuenta segura.
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-6">
-                <p className="text-slate-400 text-sm mb-4">{t('lb_oauth_desc')}</p>
-                <button className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-full font-medium transition-colors">
-                  {t('lb_oauth_connect')}
-                </button>
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <button onClick={handleTestConnection} disabled={isTestingConnection || !selectedBroker} className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-full font-semibold transition-colors flex items-center justify-center gap-2">
-                {isTestingConnection ? (<><Loader2 className="w-4 h-4 animate-spin" />{t('lb_testing')}</>) : t('lb_test')}
-              </button>
-              <button onClick={handleSaveConnection} disabled={isSaving || !selectedBroker || !formData.apiKey} className="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-800 disabled:text-cyan-300 text-white rounded-full font-semibold transition-colors flex items-center justify-center gap-2">
-                {isSaving ? (<><Loader2 className="w-4 h-4 animate-spin" />{t('lb_saving')}</>) : t('lb_save_connection')}
-              </button>
             </div>
           </div>
-        </section>
+        )}
 
-        {/* Permisos y Alcances */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-white text-lg font-semibold">{t('lb_permissions')}</h2>
-            <div className="flex items-center gap-2">
-              <span className={cn("text-sm", isLiveMode ? "text-amber-400" : "text-slate-400")}>
-                {isLiveMode ? 'Live' : 'Demo'}
-              </span>
-              <Switch checked={isLiveMode} onCheckedChange={setIsLiveMode} className="data-[state=checked]:bg-amber-600" />
-            </div>
-          </div>
-          
-          {isLiveMode && (
-            <div className="mb-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-              <p className="text-amber-400 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4" />
-                {t('lb_live_warning')}
-              </p>
-            </div>
-          )}
-          
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 divide-y divide-slate-700/50">
-            <PermissionRow label={t('lb_copy_trader')} checked={permissions.copyTrader} onChange={(v) => setPermissions({ ...permissions, copyTrader: v })} />
-            <PermissionRow label={t('lb_read_balance')} checked={permissions.leerBalance} onChange={(v) => setPermissions({ ...permissions, leerBalance: v })} />
-            <PermissionRow label={t('lb_broker_alerts')} checked={permissions.alertas} onChange={(v) => setPermissions({ ...permissions, alertas: v })} />
-            <PermissionRow label={t('lb_send_orders')} checked={permissions.enviarOrdenes} onChange={(v) => setPermissions({ ...permissions, enviarOrdenes: v })} />
-            <PermissionRow label={t('lb_trade_history')} checked={permissions.historial} onChange={(v) => setPermissions({ ...permissions, historial: v })} />
-            <PermissionRow label={t('lb_open_trades')} checked={permissions.operacionesAbiertas} onChange={(v) => setPermissions({ ...permissions, operacionesAbiertas: v })} />
-          </div>
-        </section>
-
+        {/* Import Modal */}
         <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
       </main>
     </PageShell>
-  );
-}
-
-function PermissionRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (value: boolean) => void }) {
-  return (
-    <div className="flex items-center justify-between px-4 py-3">
-      <span className="text-slate-300 text-sm">{label}</span>
-      <Switch checked={checked} onCheckedChange={onChange} className="data-[state=checked]:bg-cyan-600" />
-    </div>
   );
 }
