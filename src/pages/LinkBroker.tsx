@@ -198,11 +198,13 @@ export default function LinkBroker() {
     }
   };
 
-  // Build syncing map by broker code
+  // Build syncing maps
   const syncingMap: Record<string, boolean> = {};
+  const mt5SyncingMap: Record<string, boolean> = {};
   connections.forEach(c => {
     const code = (c.broker as any)?.code;
     if (code && isSyncing(c.id)) syncingMap[code] = true;
+    if (code && isMT5Syncing(c.id)) mt5SyncingMap[code] = true;
   });
 
   return (
