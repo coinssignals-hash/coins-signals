@@ -200,22 +200,23 @@ export default function Onboarding() {
               {step === 0 && (
                 <div className="space-y-4">
                   {/* Avatar */}
-                  <div className="flex justify-center">
-                    <div className="relative group">
-                      <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 blur-sm" />
-                      <Avatar className="relative w-20 h-20 border-2 border-primary/30 ring-2 ring-primary/10">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="relative">
+                      <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 blur-sm" />
+                      <Avatar className="relative w-28 h-28 border-2 border-primary/30 ring-2 ring-primary/10">
                         <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
-                        <AvatarFallback className="bg-secondary text-primary text-xl font-bold">{getInitials()}</AvatarFallback>
+                        <AvatarFallback className="bg-secondary text-primary text-2xl font-bold">{getInitials()}</AvatarFallback>
                       </Avatar>
-                      <button
-                        onClick={handleAvatarClick}
-                        disabled={uploadingAvatar}
-                        className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 transition-colors disabled:opacity-50 shadow-lg active:scale-90"
-                      >
-                        {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                      </button>
-                      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                     </div>
+                    <button
+                      onClick={handleAvatarClick}
+                      disabled={uploadingAvatar}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-secondary border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all disabled:opacity-50 active:scale-[0.97]"
+                    >
+                      {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                      {uploadingAvatar ? 'Subiendo...' : 'Cambiar foto'}
+                    </button>
+                    <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                   </div>
 
                   {/* Name fields */}
