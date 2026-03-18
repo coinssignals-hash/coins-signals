@@ -885,6 +885,7 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
           {sl && (
             <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} />
           )}
+          <ReferenceLine y={ex} stroke="hsl(35, 90%, 55%)" strokeDasharray="3 2" strokeOpacity={0.9} label={{ value: 'Close', position: 'left', fill: 'hsl(35, 90%, 55%)', fontSize: 9 }} />
           <Area
             type="monotone"
             dataKey="price"
