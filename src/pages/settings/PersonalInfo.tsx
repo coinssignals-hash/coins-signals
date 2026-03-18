@@ -73,6 +73,7 @@ export default function PersonalInfo() {
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [alias, setAlias] = useState('');
   const [country, setCountry] = useState('');
   const [timezone, setTimezone] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
