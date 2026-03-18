@@ -183,7 +183,7 @@ export function useImportedTrades() {
 
   const deleteBatch = useCallback(async (batchId: string) => {
     if (!user) return;
-    await (supabase as any)
+    await supabase
       .from('imported_trades')
       .delete()
       .eq('user_id', user.id)
