@@ -99,7 +99,7 @@ export function useImportedTrades() {
     if (!user) { setTrades([]); setLoading(false); return; }
     try {
       // Use type assertion since the table was just created and types aren't regenerated yet
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('imported_trades')
         .select('*')
         .eq('user_id', user.id)
@@ -157,7 +157,7 @@ export function useImportedTrades() {
         import_batch_id: batchId,
       }));
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('imported_trades')
         .upsert(rows, { onConflict: 'user_id,broker_source,external_trade_id', ignoreDuplicates: true })
         .select('id');
@@ -183,7 +183,7 @@ export function useImportedTrades() {
 
   const deleteBatch = useCallback(async (batchId: string) => {
     if (!user) return;
-    await (supabase as any)
+    await supabase
       .from('imported_trades')
       .delete()
       .eq('user_id', user.id)
@@ -194,7 +194,7 @@ export function useImportedTrades() {
 
   const deleteAllTrades = useCallback(async () => {
     if (!user) return;
-    await (supabase as any)
+    await supabase
       .from('imported_trades')
       .delete()
       .eq('user_id', user.id);
