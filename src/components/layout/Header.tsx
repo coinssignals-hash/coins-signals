@@ -101,41 +101,38 @@ export function Header() {
         </div>
 
         {/* Navigation tabs — scrollable on small screens */}
-        
+        <div className="flex items-center gap-1 px-3 py-2 overflow-x-auto scrollbar-none">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.href;
+            const badgeCount = item.badgeType === 'news' ? newsCount : 0;
+            const showBadge = item.badgeType === 'news' && badgeCount > 0 && !isActive;
 
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                onMouseEnter={onMouseEnter(item.href)}
+                onTouchStart={onTouchStart(item.href)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all active:scale-95',
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                )}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {item.label}
+                {showBadge && (
+                  <span className="min-w-[16px] h-4 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
+                    {badgeCount > 99 ? '99+' : badgeCount}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
       </header>
 
       <MainDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
