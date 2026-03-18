@@ -121,7 +121,13 @@ interface Props {
   mt5ConnectedBrokers?: string[];
 }
 
-export function BrokerCatalog({ onConnect, onImportCSV, onSync, syncingIds = {}, connectedBrokers = [] }: Props) {
+// Brokers that support MT4/MT5 terminal (csv-only ones that use MetaTrader)
+const MT5_CAPABLE_BROKERS = ['exness', 'vantage', 'xm', 'roboforex', 'eightcap', 'fxpro'];
+
+export function BrokerCatalog({
+  onConnect, onImportCSV, onSync, onConnectMT5, onSyncMT5,
+  syncingIds = {}, mt5SyncingIds = {}, connectedBrokers = [], mt5ConnectedBrokers = [],
+}: Props) {
   const [expandedBroker, setExpandedBroker] = useState<string | null>(null);
 
   return (
