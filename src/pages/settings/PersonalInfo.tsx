@@ -122,6 +122,20 @@ export default function PersonalInfo() {
 
   const handleAvatarClick = () => fileInputRef.current?.click();
 
+  const handleAvatarPick = async (avatar: AvatarOption) => {
+    if (!user) return;
+    setUploadingAvatar(true);
+    try {
+      const { error } = await updateProfile({ avatar_url: avatar.src });
+      if (error) throw error;
+      setAvatarUrl(avatar.src);
+      setShowAvatarPicker(false);
+      toast({ title: '✓ Avatar actualizado', description: `Has elegido "${avatar.label}"` });
+    } catch {
+      toast({ title: t('common_error'), description: 'No se pudo actualizar el avatar', variant: 'destructive' });
+    } finally { setUploadingAvatar(false); }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
