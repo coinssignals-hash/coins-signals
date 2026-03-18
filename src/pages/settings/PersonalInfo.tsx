@@ -11,7 +11,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   ArrowLeft, Camera, Loader2, Save, Check, Mail, MapPin, Clock, User, CalendarDays, Shield,
-  Phone, CreditCard, Play, Home
+  Phone, CreditCard, Play, Home, ImageIcon
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { AvatarPicker, type AvatarOption } from '@/components/settings/AvatarPicker';
 
 const COUNTRY_CODES = [
   'AR', 'BO', 'BR', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'SV',
