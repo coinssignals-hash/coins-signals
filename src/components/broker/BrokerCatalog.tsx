@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown, ChevronUp, ExternalLink, Wifi, WifiOff,
-  FileSpreadsheet, RefreshCw, Loader2, Check, Globe,
+  FileSpreadsheet, RefreshCw, Loader2, Check, Globe, Monitor,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
