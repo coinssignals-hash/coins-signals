@@ -107,11 +107,12 @@ export default function PersonalInfo() {
     const currentDob = dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : '';
     const profileDob = raw.date_of_birth || '';
     const changed = firstName !== (profile.first_name || '') || lastName !== (profile.last_name || '') ||
+      alias !== ((profile as any).alias || '') ||
       country !== (profile.country || '') || timezone !== (profile.timezone || 'America/New_York') ||
       currentDob !== profileDob || address !== (raw.address || '') || phone !== (raw.phone || '') || tradingMode !== (raw.trading_mode || 'demo');
     setHasChanges(changed);
     if (changed) setSaved(false);
-  }, [firstName, lastName, country, timezone, dateOfBirth, address, phone, tradingMode, profile]);
+  }, [firstName, lastName, alias, country, timezone, dateOfBirth, address, phone, tradingMode, profile]);
 
   const getInitials = () => {
     const first = firstName?.charAt(0) || ''; const last = lastName?.charAt(0) || '';
