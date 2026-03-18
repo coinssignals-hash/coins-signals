@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield, Monitor } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Switch } from '@/components/ui/switch';
@@ -9,10 +9,12 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
 import { useBrokerSync } from '@/hooks/useBrokerSync';
+import { useMT5Sync } from '@/hooks/useMT5Sync';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
+import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
 
 export default function LinkBroker() {
   const navigate = useNavigate();
