@@ -188,6 +188,19 @@ export default function Forum() {
         </Card>
       )}
 
+      {/* Past topics button or browser */}
+      {showPastTopics ? (
+        <PastTopicsBrowser onClose={() => setShowPastTopics(false)} />
+      ) : (
+        <button
+          onClick={() => setShowPastTopics(true)}
+          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-secondary/60 hover:bg-secondary text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          Ver temas anteriores
+        </button>
+      )}
+
       {/* Tabs: Channels / DMs / Favorites */}
       <div className="flex gap-2">
         <button
