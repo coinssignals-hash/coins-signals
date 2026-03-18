@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown, ChevronUp, ExternalLink, Wifi, WifiOff,
-  FileSpreadsheet, RefreshCw, Loader2, Check, Globe,
+  FileSpreadsheet, RefreshCw, Loader2, Check, Globe, Monitor,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -113,11 +113,21 @@ interface Props {
   onConnect?: (broker: BrokerCatalogItem) => void;
   onImportCSV?: (broker: BrokerCatalogItem) => void;
   onSync?: (broker: BrokerCatalogItem) => void;
+  onConnectMT5?: (broker: BrokerCatalogItem) => void;
+  onSyncMT5?: (broker: BrokerCatalogItem) => void;
   syncingIds?: Record<string, boolean>;
+  mt5SyncingIds?: Record<string, boolean>;
   connectedBrokers?: string[];
+  mt5ConnectedBrokers?: string[];
 }
 
-export function BrokerCatalog({ onConnect, onImportCSV, onSync, syncingIds = {}, connectedBrokers = [] }: Props) {
+// Brokers that support MT4/MT5 terminal (csv-only ones that use MetaTrader)
+const MT5_CAPABLE_BROKERS = ['exness', 'vantage', 'xm', 'roboforex', 'eightcap', 'fxpro'];
+
+export function BrokerCatalog({
+  onConnect, onImportCSV, onSync, onConnectMT5, onSyncMT5,
+  syncingIds = {}, mt5SyncingIds = {}, connectedBrokers = [], mt5ConnectedBrokers = [],
+}: Props) {
   const [expandedBroker, setExpandedBroker] = useState<string | null>(null);
 
   return (
@@ -126,6 +136,9 @@ export function BrokerCatalog({ onConnect, onImportCSV, onSync, syncingIds = {},
         const isExpanded = expandedBroker === broker.code;
         const isConnected = connectedBrokers.includes(broker.code);
         const isSyncing = syncingIds[broker.code] || false;
+        const isMT5Capable = MT5_CAPABLE_BROKERS.includes(broker.code);
+        const isMT5Connected = mt5ConnectedBrokers.includes(broker.code);
+        const isMT5Syncing = mt5SyncingIds[broker.code] || false;
 
         return (
           <Card key={broker.code} className="bg-card border-border overflow-hidden">
@@ -202,7 +215,7 @@ export function BrokerCatalog({ onConnect, onImportCSV, onSync, syncingIds = {},
                       )}
 
                       {/* Action buttons */}
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {broker.apiSupported && (
                           <Button
                             size="sm"
@@ -214,6 +227,23 @@ export function BrokerCatalog({ onConnect, onImportCSV, onSync, syncingIds = {},
                               <><Check className="w-3 h-3 mr-1" /> Conectado</>
                             ) : (
                               <><Wifi className="w-3 h-3 mr-1" /> Conectar API</>
+                            )}
+                          </Button>
+                        )}
+                        {isMT5Capable && (
+                          <Button
+                            size="sm"
+                            onClick={() => isMT5Connected ? onSyncMT5?.(broker) : onConnectMT5?.(broker)}
+                            className="flex-1 text-xs h-8"
+                            variant={isMT5Connected ? 'secondary' : 'default'}
+                            disabled={isMT5Syncing}
+                          >
+                            {isMT5Syncing ? (
+                              <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Sincronizando...</>
+                            ) : isMT5Connected ? (
+                              <><RefreshCw className="w-3 h-3 mr-1" /> Sync MT5</>
+                            ) : (
+                              <><Monitor className="w-3 h-3 mr-1" /> Conectar MT5</>
                             )}
                           </Button>
                         )}

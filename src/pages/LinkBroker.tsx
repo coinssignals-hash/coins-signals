@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield, Monitor } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Switch } from '@/components/ui/switch';
@@ -9,10 +9,12 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
 import { useBrokerSync } from '@/hooks/useBrokerSync';
+import { useMT5Sync } from '@/hooks/useMT5Sync';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
+import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
 
 export default function LinkBroker() {
   const navigate = useNavigate();
@@ -28,9 +30,12 @@ export default function LinkBroker() {
     refetch,
   } = useBrokerConnections();
   const { syncBroker, isSyncing } = useBrokerSync();
+  const { syncMT5, isSyncing: isMT5Syncing } = useMT5Sync();
 
   const connectedCount = connections.filter(c => c.is_connected).length;
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showMT5Dialog, setShowMT5Dialog] = useState(false);
+  const [mt5Broker, setMT5Broker] = useState<BrokerCatalogItem | null>(null);
 
   // Connection form state
   const [showConnectForm, setShowConnectForm] = useState(false);
@@ -46,6 +51,68 @@ export default function LinkBroker() {
     .filter(c => c.is_connected && c.broker)
     .map(c => (c.broker as any)?.code || '')
     .filter(Boolean);
+
+  // MT5-connected brokers
+  const mt5ConnectedBrokerCodes = connections
+    .filter(c => c.is_connected && c.broker && (c as any).connection_name?.includes('MT'))
+    .map(c => (c.broker as any)?.code || '')
+    .filter(Boolean);
+
+  const handleConnectMT5 = (catalogBroker: BrokerCatalogItem) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión');
+      navigate('/auth');
+      return;
+    }
+    setMT5Broker(catalogBroker);
+    setShowMT5Dialog(true);
+  };
+
+  const handleSaveMT5 = async (data: {
+    broker: BrokerCatalogItem;
+    server: string;
+    login: string;
+    password: string;
+    platform: 'mt4' | 'mt5';
+    connectionName: string;
+    environment: 'demo' | 'live';
+  }) => {
+    const dbBroker = brokers.find(b => b.code === data.broker.code);
+    if (!dbBroker) {
+      toast.error('Broker no encontrado en la base de datos');
+      return;
+    }
+
+    const connection = await createConnection(
+      dbBroker.id,
+      data.connectionName,
+      data.environment,
+      {
+        mt5_server: data.server,
+        mt5_login: data.login,
+        mt5_password: data.password,
+        mt5_platform: data.platform,
+      }
+    );
+
+    if (connection) {
+      toast.success(`${data.broker.name} conectado vía ${data.platform.toUpperCase()}`);
+      // Auto-sync after connecting
+      await syncMT5(connection.id);
+    }
+  };
+
+  const handleSyncMT5Broker = async (catalogBroker: BrokerCatalogItem) => {
+    const conn = connections.find(
+      c => (c.broker as any)?.code === catalogBroker.code && c.is_connected && (c as any).connection_name?.includes('MT')
+    );
+    if (conn) {
+      await syncMT5(conn.id);
+    } else {
+      // Not connected yet, open dialog
+      handleConnectMT5(catalogBroker);
+    }
+  };
 
   const handleConnectBroker = (catalogBroker: BrokerCatalogItem) => {
     if (!user) {
@@ -131,11 +198,13 @@ export default function LinkBroker() {
     }
   };
 
-  // Build syncing map by broker code
+  // Build syncing maps
   const syncingMap: Record<string, boolean> = {};
+  const mt5SyncingMap: Record<string, boolean> = {};
   connections.forEach(c => {
     const code = (c.broker as any)?.code;
     if (code && isSyncing(c.id)) syncingMap[code] = true;
+    if (code && isMT5Syncing(c.id)) mt5SyncingMap[code] = true;
   });
 
   return (
@@ -232,8 +301,12 @@ export default function LinkBroker() {
             onConnect={handleConnectBroker}
             onImportCSV={() => setShowImportModal(true)}
             onSync={handleSyncBroker}
+            onConnectMT5={handleConnectMT5}
+            onSyncMT5={handleSyncMT5Broker}
             syncingIds={syncingMap}
+            mt5SyncingIds={mt5SyncingMap}
             connectedBrokers={connectedBrokerCodes}
+            mt5ConnectedBrokers={mt5ConnectedBrokerCodes}
           />
         </div>
 
@@ -375,6 +448,14 @@ export default function LinkBroker() {
 
         {/* Import Modal */}
         <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
+
+        {/* MT5 Connect Dialog */}
+        <MT5ConnectDialog
+          open={showMT5Dialog}
+          onOpenChange={setShowMT5Dialog}
+          broker={mt5Broker}
+          onSave={handleSaveMT5}
+        />
       </main>
     </PageShell>
   );
