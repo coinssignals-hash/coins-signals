@@ -30,9 +30,12 @@ export default function LinkBroker() {
     refetch,
   } = useBrokerConnections();
   const { syncBroker, isSyncing } = useBrokerSync();
+  const { syncMT5, isSyncing: isMT5Syncing } = useMT5Sync();
 
   const connectedCount = connections.filter(c => c.is_connected).length;
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showMT5Dialog, setShowMT5Dialog] = useState(false);
+  const [mt5Broker, setMT5Broker] = useState<BrokerCatalogItem | null>(null);
 
   // Connection form state
   const [showConnectForm, setShowConnectForm] = useState(false);
