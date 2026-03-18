@@ -276,14 +276,23 @@ export default function LinkBroker() {
           ))}
         </div>
 
-        {accounts.length > 0 && (
-          <div className="mb-6">
+        {/* Action Buttons */}
+        <div className="mb-6 space-y-2">
+          {accounts.length > 0 && (
             <button onClick={() => navigate('/portfolio')} className="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
               <BarChart3 className="w-5 h-5" />
               {t('lb_view_portfolio')}
             </button>
-          </div>
-        )}
+          )}
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="w-full py-3 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+          >
+            <FileSpreadsheet className="w-5 h-5 text-cyan-400" />
+            Importar CSV de operaciones
+          </button>
+        </div>
+
 
         {/* Vincular Broker Section */}
         <section className="mb-6">
