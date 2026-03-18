@@ -250,6 +250,14 @@ export default function PersonalInfo() {
                 <FormField label={t('pi_last_name')} value={lastName} onChange={setLastName} placeholder={t('pi_last_name_ph') || t('pi_last_name')} />
               </div>
               <div className="space-y-1.5 mt-3">
+                <Label className="text-[11px] font-medium text-slate-400">Alias <span className="text-cyan-500/50">(nombre visible en chats)</span></Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                  <Input value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="Ej: TraderPro99" maxLength={20} className="bg-[hsl(210,30%,10%)] border-cyan-800/20 text-white text-sm h-10 pl-9 placeholder:text-slate-600 focus:border-cyan-500/40 hover:border-cyan-700/30 transition-colors" />
+                </div>
+                <p className="text-[10px] text-slate-600">Máx. 20 caracteres. Se mostrará en lugar de tu nombre real en el foro y chats.</p>
+              </div>
+              <div className="space-y-1.5 mt-3">
                 <Label className="text-[11px] font-medium text-slate-400">{t('pi_dob')}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
