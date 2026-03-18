@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { PastTopicsBrowser } from '@/components/forum/PastTopicsBrowser';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
@@ -11,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Hash, Send, MessageCircle, ArrowLeft, ThumbsUp, Heart, Flame, Flag,
-  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star, Globe, ImagePlus, X, UserPlus,
+  Reply, Loader2, Vote, Users, Mail, TrendingUp, Star, Globe, ImagePlus, X, UserPlus, Calendar,
 } from 'lucide-react';
 import { LANGUAGE_FLAGS, LANGUAGE_LABELS } from '@/i18n/LanguageContext';
 import { SignalPicker } from '@/components/forum/SignalPicker';
@@ -50,6 +51,7 @@ export default function Forum() {
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [showLangFilter, setShowLangFilter] = useState(false);
   const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
+  const [showPastTopics, setShowPastTopics] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -184,6 +186,19 @@ export default function Forum() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Past topics button or browser */}
+      {showPastTopics ? (
+        <PastTopicsBrowser onClose={() => setShowPastTopics(false)} />
+      ) : (
+        <button
+          onClick={() => setShowPastTopics(true)}
+          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-secondary/60 hover:bg-secondary text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          Ver temas anteriores
+        </button>
       )}
 
       {/* Tabs: Channels / DMs / Favorites */}
