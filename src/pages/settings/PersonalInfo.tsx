@@ -219,11 +219,11 @@ export default function PersonalInfo() {
                   </button>
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                <div className="flex-1 min-w-0">
+                <div className="text-center min-w-0">
                   <h2 className="text-base font-bold text-white truncate">{firstName || lastName ? `${firstName} ${lastName}`.trim() : t('pi_no_name')}</h2>
-                  <div className="flex items-center gap-1.5 mt-0.5"><Mail className="w-3 h-3 text-slate-500" /><span className="text-xs text-slate-400 truncate">{user?.email}</span></div>
-                  {selectedCountry && (<div className="flex items-center gap-1.5 mt-0.5"><span className="text-sm">{selectedCountry.flag}</span><span className="text-xs text-slate-500">{selectedCountry.name}</span></div>)}
-                  {memberSince && (<div className="flex items-center gap-1.5 mt-1"><CalendarDays className="w-3 h-3 text-cyan-500/50" /><span className="text-[10px] text-cyan-400/40">{t('pi_member_since')} {memberSince}</span></div>)}
+                  <div className="flex items-center justify-center gap-1.5 mt-0.5"><Mail className="w-3 h-3 text-slate-500" /><span className="text-xs text-slate-400 truncate">{user?.email}</span></div>
+                  {selectedCountry && (<div className="flex items-center justify-center gap-1.5 mt-0.5"><span className="text-sm">{selectedCountry.flag}</span><span className="text-xs text-slate-500">{selectedCountry.name}</span></div>)}
+                  {memberSince && (<div className="flex items-center justify-center gap-1.5 mt-1"><CalendarDays className="w-3 h-3 text-cyan-500/50" /><span className="text-[10px] text-cyan-400/40">{t('pi_member_since')} {memberSince}</span></div>)}
                 </div>
               </div>
               <div className="flex items-center gap-2 px-5 pb-4">
