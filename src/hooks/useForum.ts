@@ -303,7 +303,7 @@ export function useDailyTopic() {
     fetchTopic();
   }, [user, topic, fetchTopic]);
 
-  return { topic, loading, vote };
+  return { topic, loading, vote, refetchTopic: fetchTopic };
 }
 
 export function useDirectMessages(partnerId: string | null) {

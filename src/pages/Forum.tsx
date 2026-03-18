@@ -19,9 +19,11 @@ import { SignalPicker } from '@/components/forum/SignalPicker';
 import { EmbeddedSignalCard } from '@/components/forum/EmbeddedSignalCard';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useForumChannels, useForumMessages, useDailyTopic, useDMConversations, useDirectMessages, ForumMessage } from '@/hooks/useForum';
 import { useFavoriteUsers } from '@/hooks/useFavoriteUsers';
 import { FavoriteUsersPanel } from '@/components/forum/FavoriteUsersPanel';
+import { useTopicTranslation } from '@/hooks/useTopicTranslation';
 import { format } from 'date-fns';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
@@ -33,7 +35,7 @@ type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
 export default function Forum() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const dateLocale = useDateLocale();
   const { user } = useAuth();
 
@@ -53,20 +55,66 @@ export default function Forum() {
   const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
   const [showPastTopics, setShowPastTopics] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [topicImageUploading, setTopicImageUploading] = useState(false);
+  const [translatedTopic, setTranslatedTopic] = useState<{ title: string; description: string | null; option_a: string; option_b: string } | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const topicImageRef = useRef<HTMLInputElement>(null);
 
   const { channels, loading: channelsLoading } = useForumChannels();
   const { messages, loading: msgsLoading, sendMessage, toggleReaction, reportMessage } = useForumMessages(selectedChannelId);
-  const { topic, vote } = useDailyTopic();
+  const { topic, vote, refetchTopic } = useDailyTopic();
   const { conversations, loading: convosLoading } = useDMConversations();
   const { messages: dmMessages, loading: dmLoading, sendDM } = useDirectMessages(dmPartnerId);
   const { favorites, loading: favsLoading, isFavorite, toggleFavorite } = useFavoriteUsers();
+  const { isAdmin } = useUserRole();
+  const { translateTopic, translating: topicTranslating } = useTopicTranslation();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, dmMessages]);
+
+  // Translate topic when language changes
+  useEffect(() => {
+    if (!topic || language === 'es') {
+      setTranslatedTopic(null);
+      return;
+    }
+    let cancelled = false;
+    translateTopic(topic, language).then(result => {
+      if (!cancelled) setTranslatedTopic(result);
+    });
+    return () => { cancelled = true; };
+  }, [topic?.id, language, translateTopic]);
+
+  // Admin: upload image for daily topic
+  const handleTopicImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !topic) return;
+    if (!file.type.startsWith('image/')) { toast.error('Solo se permiten imágenes'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Máximo 5MB'); return; }
+
+    setTopicImageUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `topic-${topic.id}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('forum-images').upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from('forum-images').getPublicUrl(path);
+      const imageUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      await supabase.from('forum_daily_topics').update({ image_url: imageUrl }).eq('id', topic.id);
+      refetchTopic();
+      toast.success('Imagen del tema actualizada');
+    } catch (err: any) {
+      toast.error('Error al subir imagen: ' + err.message);
+    } finally {
+      setTopicImageUploading(false);
+      if (topicImageRef.current) topicImageRef.current.value = '';
+    }
+  };
 
   const openChannel = (channelId: string, name: string, icon: string) => {
     setSelectedChannelId(channelId);
@@ -136,26 +184,57 @@ export default function Forum() {
   const renderChannelsView = () => (
     <div className="space-y-4">
       {/* Daily Topic */}
-      {topic && (
+      {topic && (() => {
+        const displayTitle = translatedTopic?.title || topic.title;
+        const displayDesc = translatedTopic?.description ?? topic.description;
+        const displayOptA = translatedTopic?.option_a || topic.option_a;
+        const displayOptB = translatedTopic?.option_b || topic.option_b;
+
+        return (
         <Card className="bg-card border-border overflow-hidden">
-          {topic.image_url && (
-            <img
-              src={topic.image_url}
-              alt={topic.title}
-              className="w-full h-32 sm:h-40 object-cover"
-              loading="lazy"
-            />
-          )}
+          {/* Image area with admin upload */}
+          <div className="relative">
+            {topic.image_url ? (
+              <img
+                src={topic.image_url}
+                alt={displayTitle}
+                className="w-full h-32 sm:h-40 object-cover"
+                loading="lazy"
+              />
+            ) : isAdmin ? (
+              <div
+                onClick={() => topicImageRef.current?.click()}
+                className="w-full h-28 bg-secondary/40 border-b border-border flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-secondary/60 transition-colors"
+              >
+                <ImagePlus className="w-6 h-6 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Agregar imagen al tema</span>
+              </div>
+            ) : null}
+            {isAdmin && topic.image_url && (
+              <button
+                onClick={() => topicImageRef.current?.click()}
+                className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm rounded-lg px-2 py-1 text-[10px] text-foreground border border-border hover:bg-background transition-colors"
+              >
+                {topicImageUploading ? '⏳' : '📷'} Cambiar
+              </button>
+            )}
+          </div>
+          {/* Hidden file input for topic image */}
+          <input ref={topicImageRef} type="file" accept="image/*" className="hidden" onChange={handleTopicImageUpload} />
+
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Vote className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold text-primary uppercase tracking-wider">Tema del Día</span>
+              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                {language === 'es' ? 'Tema del Día' : language === 'en' ? 'Topic of the Day' : language === 'pt' ? 'Tema do Dia' : language === 'fr' ? 'Sujet du Jour' : language === 'de' ? 'Thema des Tages' : language === 'it' ? 'Tema del Giorno' : language === 'ar' ? 'موضوع اليوم' : 'Tema del Día'}
+              </span>
+              {topicTranslating && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
             </div>
-            <h3 className="text-sm font-bold text-foreground">{topic.title}</h3>
-            {topic.description && <p className="text-xs text-muted-foreground">{topic.description}</p>}
+            <h3 className="text-sm font-bold text-foreground">{displayTitle}</h3>
+            {displayDesc && <p className="text-xs text-muted-foreground">{displayDesc}</p>}
             <div className="grid grid-cols-2 gap-2">
               {(['a', 'b'] as const).map(opt => {
-                const label = opt === 'a' ? topic.option_a : topic.option_b;
+                const label = opt === 'a' ? displayOptA : displayOptB;
                 const votes = opt === 'a' ? topic.votes_a : topic.votes_b;
                 const total = topic.votes_a + topic.votes_b;
                 const pct = total > 0 ? Math.round((votes / total) * 100) : 0;
@@ -186,7 +265,8 @@ export default function Forum() {
             </div>
           </CardContent>
         </Card>
-      )}
+        );
+      })()}
 
       {/* Past topics button or browser */}
       {showPastTopics ? (
