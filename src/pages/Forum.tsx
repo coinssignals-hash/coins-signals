@@ -55,14 +55,19 @@ export default function Forum() {
   const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
   const [showPastTopics, setShowPastTopics] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [topicImageUploading, setTopicImageUploading] = useState(false);
+  const [translatedTopic, setTranslatedTopic] = useState<{ title: string; description: string | null; option_a: string; option_b: string } | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const topicImageRef = useRef<HTMLInputElement>(null);
 
   const { channels, loading: channelsLoading } = useForumChannels();
   const { messages, loading: msgsLoading, sendMessage, toggleReaction, reportMessage } = useForumMessages(selectedChannelId);
-  const { topic, vote } = useDailyTopic();
+  const { topic, vote, refetchTopic } = useDailyTopic();
   const { conversations, loading: convosLoading } = useDMConversations();
   const { messages: dmMessages, loading: dmLoading, sendDM } = useDirectMessages(dmPartnerId);
   const { favorites, loading: favsLoading, isFavorite, toggleFavorite } = useFavoriteUsers();
+  const { isAdmin } = useUserRole();
+  const { translateTopic, translating: topicTranslating } = useTopicTranslation();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
