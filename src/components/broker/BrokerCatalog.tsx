@@ -113,8 +113,12 @@ interface Props {
   onConnect?: (broker: BrokerCatalogItem) => void;
   onImportCSV?: (broker: BrokerCatalogItem) => void;
   onSync?: (broker: BrokerCatalogItem) => void;
+  onConnectMT5?: (broker: BrokerCatalogItem) => void;
+  onSyncMT5?: (broker: BrokerCatalogItem) => void;
   syncingIds?: Record<string, boolean>;
+  mt5SyncingIds?: Record<string, boolean>;
   connectedBrokers?: string[];
+  mt5ConnectedBrokers?: string[];
 }
 
 export function BrokerCatalog({ onConnect, onImportCSV, onSync, syncingIds = {}, connectedBrokers = [] }: Props) {
