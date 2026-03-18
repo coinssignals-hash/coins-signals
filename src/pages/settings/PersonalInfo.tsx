@@ -11,7 +11,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   ArrowLeft, Camera, Loader2, Save, Check, Mail, MapPin, Clock, User, CalendarDays, Shield,
-  Phone, CreditCard, Play, Home
+  Phone, CreditCard, Play, Home, ImageIcon
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { AvatarPicker, type AvatarOption } from '@/components/settings/AvatarPicker';
 
 const COUNTRY_CODES = [
   'AR', 'BO', 'BR', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'SV',
@@ -83,6 +84,7 @@ export default function PersonalInfo() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saved, setSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   useEffect(() => { if (!loading && !user) navigate('/auth'); }, [loading, user, navigate]);
 
@@ -119,6 +121,20 @@ export default function PersonalInfo() {
   const memberSince = user?.created_at ? format(new Date(user.created_at), "d MMMM, yyyy", { locale: dateLocale }) : null;
 
   const handleAvatarClick = () => fileInputRef.current?.click();
+
+  const handleAvatarPick = async (avatar: AvatarOption) => {
+    if (!user) return;
+    setUploadingAvatar(true);
+    try {
+      const { error } = await updateProfile({ avatar_url: avatar.src });
+      if (error) throw error;
+      setAvatarUrl(avatar.src);
+      setShowAvatarPicker(false);
+      toast({ title: '✓ Avatar actualizado', description: `Has elegido "${avatar.label}"` });
+    } catch {
+      toast({ title: t('common_error'), description: 'No se pudo actualizar el avatar', variant: 'destructive' });
+    } finally { setUploadingAvatar(false); }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -194,6 +210,9 @@ export default function PersonalInfo() {
                   </Avatar>
                   <button onClick={handleAvatarClick} disabled={uploadingAvatar} className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-cyan-500 text-white hover:bg-cyan-400 transition-colors disabled:opacity-50 shadow-lg shadow-cyan-500/30 active:scale-90">
                     {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                  </button>
+                  <button onClick={() => setShowAvatarPicker(true)} className="absolute -bottom-1 -left-1 p-1.5 rounded-full bg-purple-500 text-white hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/30 active:scale-90">
+                    <ImageIcon className="w-3.5 h-3.5" />
                   </button>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 </div>
@@ -325,6 +344,13 @@ export default function PersonalInfo() {
               {saving ? (<><Loader2 className="w-4 h-4 animate-spin" />{t('pi_saving')}</>) : saved ? (<><Check className="w-4 h-4" />{t('pi_saved')}</>) : (<><Save className="w-4 h-4" />{t('pi_save_changes')}</>)}
             </button>
           </div>
+          <AvatarPicker
+            open={showAvatarPicker}
+            onOpenChange={setShowAvatarPicker}
+            currentAvatarUrl={avatarUrl}
+            onSelect={handleAvatarPick}
+            loading={uploadingAvatar}
+          />
           <BottomNav />
         </div>
       </div>
