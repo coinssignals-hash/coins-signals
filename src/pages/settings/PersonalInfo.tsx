@@ -167,6 +167,7 @@ export default function PersonalInfo() {
     try {
       const updateData: any = {
         first_name: firstName.trim() || null, last_name: lastName.trim() || null,
+        alias: alias.trim() || null,
         country: country || null, timezone: timezone || null,
         date_of_birth: dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : null,
         address: address.trim() || null, phone: phone.trim() || null, trading_mode: tradingMode,
