@@ -344,6 +344,13 @@ export default function PersonalInfo() {
               {saving ? (<><Loader2 className="w-4 h-4 animate-spin" />{t('pi_saving')}</>) : saved ? (<><Check className="w-4 h-4" />{t('pi_saved')}</>) : (<><Save className="w-4 h-4" />{t('pi_save_changes')}</>)}
             </button>
           </div>
+          <AvatarPicker
+            open={showAvatarPicker}
+            onOpenChange={setShowAvatarPicker}
+            currentAvatarUrl={avatarUrl}
+            onSelect={handleAvatarPick}
+            loading={uploadingAvatar}
+          />
           <BottomNav />
         </div>
       </div>
