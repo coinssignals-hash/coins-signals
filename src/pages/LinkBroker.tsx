@@ -301,8 +301,12 @@ export default function LinkBroker() {
             onConnect={handleConnectBroker}
             onImportCSV={() => setShowImportModal(true)}
             onSync={handleSyncBroker}
+            onConnectMT5={handleConnectMT5}
+            onSyncMT5={handleSyncMT5Broker}
             syncingIds={syncingMap}
+            mt5SyncingIds={mt5SyncingMap}
             connectedBrokers={connectedBrokerCodes}
+            mt5ConnectedBrokers={mt5ConnectedBrokerCodes}
           />
         </div>
 
