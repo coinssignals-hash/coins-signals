@@ -40,6 +40,8 @@ export default function Portfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { accounts, summary, loading, error, lastRefresh, isLive, isDemo, refetch, getAllPositions } = usePortfolio();
+  const importedTradesHook = useImportedTrades();
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const allPositions = getAllPositions();
 
