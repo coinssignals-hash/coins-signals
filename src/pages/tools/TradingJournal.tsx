@@ -687,80 +687,99 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Card className="mt-1 bg-card border-border">
-                    <CardContent className="p-4 space-y-3">
-                      {/* Chart with Entry/TP/SL levels */}
+                  <Card className="mt-1 overflow-hidden" style={{
+                    background: 'radial-gradient(ellipse at center 30%, hsl(200, 100%, 12%) 0%, hsl(210, 100%, 6%) 100%)',
+                    border: '1px solid hsl(200, 60%, 20%)',
+                  }}>
+                    <CardContent className="p-0">
+                      {/* Chart */}
                       <JournalMiniChart entry={entry} />
-                      {/* Price details */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Entry</p>
-                          <p className="text-xs font-bold text-foreground tabular-nums">{entry.entryPrice}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Exit</p>
-                          <p className="text-xs font-bold text-foreground tabular-nums">{entry.exitPrice}</p>
-                        </div>
-                        {entry.stopLoss && (
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Stop Loss</p>
-                            <p className="text-xs font-bold text-rose-400 tabular-nums">{entry.stopLoss}</p>
-                          </div>
-                        )}
-                        {entry.takeProfit && (
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Take Profit</p>
-                            <p className="text-xs font-bold text-emerald-400 tabular-nums">{entry.takeProfit}</p>
-                          </div>
-                        )}
-                      </div>
 
-                      {/* Lot size */}
-                      <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-                        <span>{entry.lotSize} lotes</span>
-                        <span className={cn(
-                          'font-bold text-xs',
-                          isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-muted-foreground'
-                        )}>
-                          {isLoss ? '-' : '+'}{entry.pips} pips
-                        </span>
-                      </div>
-
-                      {/* Timestamps */}
-                      {(entry.signalArrivedAt || entry.executedAt || entry.completedAt) && (
-                        <div className="flex flex-wrap gap-x-3 gap-y-1 pt-2 border-t border-border">
-                          {entry.signalArrivedAt && (
-                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
-                              <Clock className="w-2.5 h-2.5 text-primary/70" />
-                              Señal: {format(new Date(entry.signalArrivedAt), 'dd/MM HH:mm', { locale: dateLocale })}
-                            </span>
-                          )}
-                          {entry.executedAt && (
-                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
-                              <Play className="w-2.5 h-2.5 text-emerald-400/70" />
-                              Ejec: {format(new Date(entry.executedAt), 'dd/MM HH:mm', { locale: dateLocale })}
-                            </span>
-                          )}
-                          {entry.completedAt && (
-                            <span className="text-[9px] text-muted-foreground flex items-center gap-1">
-                              <CheckCircle2 className="w-2.5 h-2.5 text-amber-400/70" />
-                              Cierre: {format(new Date(entry.completedAt), 'dd/MM HH:mm', { locale: dateLocale })}
-                            </span>
-                          )}
+                      {/* Info panels: TIEMPO + PRECIOS */}
+                      <div className="grid grid-cols-2 gap-px bg-border/20 mx-3 mb-3 rounded-lg overflow-hidden border border-border/40">
+                        {/* TIEMPO */}
+                        <div className="bg-card/60 backdrop-blur-sm p-3 space-y-3">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <Clock className="w-3 h-3" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Tiempo</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-y-2.5">
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">Señal</p>
+                              <p className="text-[11px] font-bold text-amber-400 tabular-nums">
+                                {entry.signalArrivedAt ? format(new Date(entry.signalArrivedAt), 'hh:mm a') : '--:--'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">Final</p>
+                              <p className="text-[11px] font-bold text-emerald-400 tabular-nums">
+                                {entry.completedAt ? format(new Date(entry.completedAt), 'hh:mm a') : '--:--'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">Ejecución</p>
+                              <p className="text-[11px] font-bold text-cyan-400 tabular-nums">
+                                {entry.executedAt ? format(new Date(entry.executedAt), 'hh:mm a') : '--:--'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">Duración</p>
+                              <p className="text-[11px] font-bold text-foreground tabular-nums">
+                                {(() => {
+                                  if (!entry.executedAt || !entry.completedAt) return '--:--';
+                                  const diff = new Date(entry.completedAt).getTime() - new Date(entry.executedAt).getTime();
+                                  const hrs = Math.floor(diff / 3600000);
+                                  const mins = Math.floor((diff % 3600000) / 60000);
+                                  return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+                                })()}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      )}
+
+                        {/* PRECIOS */}
+                        <div className="bg-card/60 backdrop-blur-sm p-3 space-y-3">
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            <DollarSign className="w-3 h-3" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Precios</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-y-2.5">
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">Entrada</p>
+                              <p className="text-[11px] font-bold text-cyan-400 tabular-nums">{entry.entryPrice}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">TP</p>
+                              <p className="text-[11px] font-bold text-emerald-400 tabular-nums">{entry.takeProfit || '--'}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">SL</p>
+                              <p className="text-[11px] font-bold text-rose-400 tabular-nums">{entry.stopLoss || '--'}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-muted-foreground/70">Pips</p>
+                              <p className={cn(
+                                'text-[11px] font-bold tabular-nums',
+                                isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-amber-400'
+                              )}>
+                                {isLoss ? '-' : '+'}{entry.pips}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
                       {/* Notes */}
                       {entry.notes && (
-                        <p className="text-[10px] text-muted-foreground/70 italic border-t border-border pt-2">"{entry.notes}"</p>
+                        <p className="text-[10px] text-muted-foreground/70 italic px-3 pb-2">"{entry.notes}"</p>
                       )}
 
                       {/* Actions */}
-                      <div className="flex gap-2 pt-2 border-t border-border">
+                      <div className="flex gap-2 px-3 pb-3">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="flex-1 h-8 text-xs"
+                          className="flex-1 h-8 text-xs border-border/50"
                           onClick={(e) => { e.stopPropagation(); onEdit(entry); }}
                         >
                           <Pencil className="w-3 h-3 mr-1" /> Editar
@@ -768,7 +787,7 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-8 text-xs text-destructive hover:text-destructive"
+                          className="h-8 text-xs text-destructive hover:text-destructive border-border/50"
                           onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -824,20 +843,21 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
   const isLoss = entry.result === 'loss';
   const chartData = useMemo(() => generateJournalChartData(entry), [entry.id]);
 
-  // Calculate Y domain
   const prices = [ep, ex, ...(tp ? [tp] : []), ...(sl ? [sl] : [])];
   const minP = Math.min(...prices);
   const maxP = Math.max(...prices);
-  const pad = (maxP - minP) * 0.15 || ep * 0.001;
+  const pad = (maxP - minP) * 0.2 || ep * 0.001;
+
+  const lineColor = isWin ? 'hsl(150, 70%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))';
 
   return (
-    <div className="h-40 rounded-lg overflow-hidden bg-secondary/30">
+    <div className="h-48 px-1 pt-2 pb-1">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData}>
+        <AreaChart data={chartData} margin={{ top: 8, right: 50, left: 8, bottom: 4 }}>
           <defs>
             <linearGradient id={`jcGrad-${entry.id}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'} stopOpacity={0.25} />
-              <stop offset="95%" stopColor={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'} stopOpacity={0} />
+              <stop offset="0%" stopColor={lineColor} stopOpacity={0.35} />
+              <stop offset="100%" stopColor={lineColor} stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <XAxis
@@ -852,49 +872,20 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
             axisLine={false} tickLine={false}
             orientation="right"
             tickFormatter={(v) => formatPrice(v, entry.pair)}
-            width={55}
+            width={52}
           />
-          {/* Entry level */}
-          <ReferenceLine
-            y={ep}
-            stroke="hsl(210, 80%, 60%)"
-            strokeDasharray="4 3"
-            strokeOpacity={0.8}
-            label={{ value: `E ${formatPrice(ep, entry.pair)}`, position: 'left', fill: 'hsl(210, 80%, 60%)', fontSize: 9, fontWeight: 'bold' }}
-          />
-          {/* Take Profit level */}
           {tp && (
-            <ReferenceLine
-              y={tp}
-              stroke="hsl(150, 60%, 50%)"
-              strokeDasharray="4 3"
-              strokeOpacity={0.7}
-              label={{ value: `TP ${formatPrice(tp, entry.pair)}`, position: 'left', fill: 'hsl(150, 60%, 50%)', fontSize: 9, fontWeight: 'bold' }}
-            />
+            <ReferenceLine y={tp} stroke="hsl(150, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} />
           )}
-          {/* Stop Loss level */}
+          <ReferenceLine y={ep} stroke="hsl(200, 70%, 55%)" strokeDasharray="4 4" strokeOpacity={0.6} />
           {sl && (
-            <ReferenceLine
-              y={sl}
-              stroke="hsl(0, 60%, 50%)"
-              strokeDasharray="4 3"
-              strokeOpacity={0.7}
-              label={{ value: `SL ${formatPrice(sl, entry.pair)}`, position: 'left', fill: 'hsl(0, 60%, 50%)', fontSize: 9, fontWeight: 'bold' }}
-            />
+            <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} />
           )}
-          {/* Exit level */}
-          <ReferenceLine
-            y={ex}
-            stroke="hsl(45, 90%, 60%)"
-            strokeDasharray="2 2"
-            strokeOpacity={0.6}
-            label={{ value: `Exit ${formatPrice(ex, entry.pair)}`, position: 'left', fill: 'hsl(45, 90%, 60%)', fontSize: 8 }}
-          />
           <Area
             type="monotone"
             dataKey="price"
-            stroke={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'}
-            strokeWidth={1.5}
+            stroke={lineColor}
+            strokeWidth={2}
             fillOpacity={1}
             fill={`url(#jcGrad-${entry.id})`}
           />
