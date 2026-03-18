@@ -341,31 +341,32 @@ export default function Forum() {
 
         {/* Language filter bar */}
         {showLangFilter && !isDM && (
-          <div className="flex gap-2 pb-2 overflow-x-auto scrollbar-none">
+          <div className="flex gap-1.5 pb-3 pt-1 overflow-x-auto scrollbar-none -mx-1 px-1">
             <button
               onClick={() => { setLanguageFilter(null); setShowLangFilter(false); }}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95",
+                "flex flex-col items-center justify-center min-w-[52px] h-[52px] rounded-xl text-[10px] font-bold whitespace-nowrap transition-all duration-200 active:scale-90",
                 !languageFilter
-                  ? "bg-gradient-to-r from-primary to-primary/70 text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.4)] border border-primary/60"
-                  : "bg-card/80 text-muted-foreground border border-border hover:border-primary/40 hover:text-foreground hover:shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
+                  ? "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-[0_0_14px_hsl(var(--primary)/0.5)] border border-primary/70 ring-1 ring-primary/30"
+                  : "bg-card text-muted-foreground border border-border hover:border-primary/40"
               )}
             >
-              🌐 Todos
+              <span className="text-base leading-none mb-0.5">🌐</span>
+              <span>Todos</span>
             </button>
             {(['es', 'en', 'pt', 'fr', 'it', 'de', 'nl', 'ar', 'mt'] as const).map(lang => (
               <button
                 key={lang}
                 onClick={() => { setLanguageFilter(lang); setShowLangFilter(false); }}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95",
+                  "flex flex-col items-center justify-center min-w-[52px] h-[52px] rounded-xl text-[10px] font-bold whitespace-nowrap transition-all duration-200 active:scale-90",
                   languageFilter === lang
-                    ? "bg-gradient-to-r from-primary to-primary/70 text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.4)] border border-primary/60"
-                    : "bg-card/80 text-muted-foreground border border-border hover:border-primary/40 hover:text-foreground hover:shadow-[0_0_8px_hsl(var(--primary)/0.15)]"
+                    ? "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-[0_0_14px_hsl(var(--primary)/0.5)] border border-primary/70 ring-1 ring-primary/30"
+                    : "bg-card text-muted-foreground border border-border hover:border-primary/40"
                 )}
               >
-                <span className="text-sm">{(LANGUAGE_FLAGS as any)[lang]}</span>
-                {(LANGUAGE_LABELS as any)[lang]}
+                <span className="text-lg leading-none mb-0.5">{(LANGUAGE_FLAGS as any)[lang]}</span>
+                <span className="truncate max-w-[48px]">{(LANGUAGE_LABELS as any)[lang]}</span>
               </button>
             ))}
           </div>
