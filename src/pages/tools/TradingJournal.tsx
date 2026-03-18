@@ -857,7 +857,7 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
   return (
     <div className="h-48 px-1 pt-2 pb-1">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData} margin={{ top: 8, right: 50, left: 8, bottom: 4 }}>
+        <AreaChart data={chartData} margin={{ top: 8, right: 50, left: 35, bottom: 4 }}>
           <defs>
             <linearGradient id={`jcGrad-${entry.id}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={lineColor} stopOpacity={0.35} />
