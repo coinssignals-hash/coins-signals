@@ -113,7 +113,7 @@ export function useForumMessages(channelId: string | null) {
     // Fetch profiles for those users
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url, language')
+      .select('id, first_name, last_name, alias, avatar_url, language')
       .in('id', userIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
