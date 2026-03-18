@@ -4,7 +4,7 @@ import logoImg from '@/assets/g174-2.svg';
 import { cn } from '@/lib/utils';
 import {
   TrendingUp, Newspaper, Menu, BookOpen, Bell,
-  BarChart3, Wallet, BarChart2, Clock } from
+  BarChart3, Wallet, BarChart2, Clock, Users, Briefcase } from
 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -52,8 +52,15 @@ export function Header() {
             <img src={logoImg} alt="Coins Signals" className="h-16 w-auto" />
           </Link>
 
-          {/* Right: placeholder for balance */}
-          <div className="w-10" />
+          {/* Right: Community + Portfolio icons */}
+          <div className="flex items-center gap-1">
+            <Link to="/forum" className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
+              <Users className="w-5 h-5 text-primary" />
+            </Link>
+            <Link to="/portfolio" className="p-2 rounded-xl bg-accent/10 hover:bg-accent/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/portfolio')}>
+              <Briefcase className="w-5 h-5 text-accent" />
+            </Link>
+          </div>
         </div>
 
         {/* Gradient divider */}
