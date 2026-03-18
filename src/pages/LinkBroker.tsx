@@ -37,6 +37,7 @@ export default function LinkBroker() {
 
   const connectedCount = connections.filter(c => c.is_connected).length;
   const accounts = connections;
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const [brokerSlots, setBrokerSlots] = useState<BrokerSlot[]>([
     { id: '1', name: '', connected: false },
