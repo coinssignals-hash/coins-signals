@@ -4,17 +4,20 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, RefreshCw, TrendingUp, TrendingDown, Wallet,
   Clock, AlertCircle, Plus, Radio, ArrowUpRight, ArrowDownRight,
-  BarChart3
+  BarChart3, FileSpreadsheet
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { usePortfolio, Position } from '@/hooks/usePortfolio';
+import { useImportedTrades } from '@/hooks/useImportedTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
+import { TradeAnalytics } from '@/components/portfolio/TradeAnalytics';
+import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 
 function formatCurrency(value: number, currency = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
@@ -37,6 +40,8 @@ export default function Portfolio() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { accounts, summary, loading, error, lastRefresh, isLive, isDemo, refetch, getAllPositions } = usePortfolio();
+  const importedTradesHook = useImportedTrades();
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const allPositions = getAllPositions();
 
@@ -296,6 +301,26 @@ export default function Portfolio() {
           </motion.div>
         )}
 
+        {/* Imported Trades Analytics */}
+        {!loading && user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.32 }}
+          >
+            <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4" />
+              Operaciones Importadas
+            </h2>
+            <TradeAnalytics
+              trades={importedTradesHook.trades}
+              stats={importedTradesHook.stats}
+              onImportClick={() => setShowImportModal(true)}
+              onDeleteAll={importedTradesHook.deleteAllTrades}
+            />
+          </motion.div>
+        )}
+
         {/* Loading skeletons */}
         {loading && (
           <div className="space-y-2">
@@ -315,6 +340,9 @@ export default function Portfolio() {
             ))}
           </div>
         )}
+
+        {/* Import Modal */}
+        <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
       </main>
     </PageShell>
   );

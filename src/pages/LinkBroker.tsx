@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Switch } from '@/components/ui/switch';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 
 interface BrokerSlot {
   id: string;
@@ -36,6 +37,7 @@ export default function LinkBroker() {
 
   const connectedCount = connections.filter(c => c.is_connected).length;
   const accounts = connections;
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const [brokerSlots, setBrokerSlots] = useState<BrokerSlot[]>([
     { id: '1', name: '', connected: false },
@@ -274,14 +276,23 @@ export default function LinkBroker() {
           ))}
         </div>
 
-        {accounts.length > 0 && (
-          <div className="mb-6">
+        {/* Action Buttons */}
+        <div className="mb-6 space-y-2">
+          {accounts.length > 0 && (
             <button onClick={() => navigate('/portfolio')} className="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
               <BarChart3 className="w-5 h-5" />
               {t('lb_view_portfolio')}
             </button>
-          </div>
-        )}
+          )}
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="w-full py-3 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+          >
+            <FileSpreadsheet className="w-5 h-5 text-cyan-400" />
+            Importar CSV de operaciones
+          </button>
+        </div>
+
 
         {/* Vincular Broker Section */}
         <section className="mb-6">
@@ -423,6 +434,8 @@ export default function LinkBroker() {
             <PermissionRow label={t('lb_open_trades')} checked={permissions.operacionesAbiertas} onChange={(v) => setPermissions({ ...permissions, operacionesAbiertas: v })} />
           </div>
         </section>
+
+        <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
       </main>
     </PageShell>
   );
