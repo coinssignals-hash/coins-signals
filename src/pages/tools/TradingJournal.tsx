@@ -746,15 +746,15 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                           <div className="grid grid-cols-2 gap-y-2.5">
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Entrada</p>
-                              <p className="text-[11px] font-bold text-cyan-400 tabular-nums">{entry.entryPrice}</p>
+                              <p className="text-[11px] font-bold text-cyan-400 tabular-nums">{formatPrice(parseFloat(entry.entryPrice), entry.pair)}</p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">TP</p>
-                              <p className="text-[11px] font-bold text-emerald-400 tabular-nums">{entry.takeProfit || '--'}</p>
+                              <p className="text-[11px] font-bold text-emerald-400 tabular-nums">{entry.takeProfit ? formatPrice(parseFloat(entry.takeProfit), entry.pair) : '--'}</p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">SL</p>
-                              <p className="text-[11px] font-bold text-rose-400 tabular-nums">{entry.stopLoss || '--'}</p>
+                              <p className="text-[11px] font-bold text-rose-400 tabular-nums">{entry.stopLoss ? formatPrice(parseFloat(entry.stopLoss), entry.pair) : '--'}</p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Pips</p>
