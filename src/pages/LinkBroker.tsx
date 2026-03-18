@@ -434,6 +434,8 @@ export default function LinkBroker() {
             <PermissionRow label={t('lb_open_trades')} checked={permissions.operacionesAbiertas} onChange={(v) => setPermissions({ ...permissions, operacionesAbiertas: v })} />
           </div>
         </section>
+
+        <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
       </main>
     </PageShell>
   );
