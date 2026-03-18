@@ -73,6 +73,7 @@ export default function PersonalInfo() {
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [alias, setAlias] = useState('');
   const [country, setCountry] = useState('');
   const [timezone, setTimezone] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -91,6 +92,7 @@ export default function PersonalInfo() {
   useEffect(() => {
     if (profile) {
       setFirstName(profile.first_name || ''); setLastName(profile.last_name || '');
+      setAlias((profile as any).alias || '');
       setCountry(profile.country || ''); setTimezone(profile.timezone || 'America/New_York');
       setAvatarUrl(profile.avatar_url);
       const raw = profile as any;
@@ -105,11 +107,12 @@ export default function PersonalInfo() {
     const currentDob = dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : '';
     const profileDob = raw.date_of_birth || '';
     const changed = firstName !== (profile.first_name || '') || lastName !== (profile.last_name || '') ||
+      alias !== ((profile as any).alias || '') ||
       country !== (profile.country || '') || timezone !== (profile.timezone || 'America/New_York') ||
       currentDob !== profileDob || address !== (raw.address || '') || phone !== (raw.phone || '') || tradingMode !== (raw.trading_mode || 'demo');
     setHasChanges(changed);
     if (changed) setSaved(false);
-  }, [firstName, lastName, country, timezone, dateOfBirth, address, phone, tradingMode, profile]);
+  }, [firstName, lastName, alias, country, timezone, dateOfBirth, address, phone, tradingMode, profile]);
 
   const getInitials = () => {
     const first = firstName?.charAt(0) || ''; const last = lastName?.charAt(0) || '';
@@ -164,6 +167,7 @@ export default function PersonalInfo() {
     try {
       const updateData: any = {
         first_name: firstName.trim() || null, last_name: lastName.trim() || null,
+        alias: alias.trim() || null,
         country: country || null, timezone: timezone || null,
         date_of_birth: dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : null,
         address: address.trim() || null, phone: phone.trim() || null, trading_mode: tradingMode,
@@ -228,7 +232,8 @@ export default function PersonalInfo() {
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 <div className="text-center min-w-0">
-                  <h2 className="text-base font-bold text-white truncate">{firstName || lastName ? `${firstName} ${lastName}`.trim() : t('pi_no_name')}</h2>
+                  <h2 className="text-base font-bold text-white truncate">{alias || (firstName || lastName ? `${firstName} ${lastName}`.trim() : t('pi_no_name'))}</h2>
+                  {alias && (firstName || lastName) && <p className="text-[10px] text-slate-500">{`${firstName} ${lastName}`.trim()}</p>}
                   <div className="flex items-center justify-center gap-1.5 mt-0.5"><Mail className="w-3 h-3 text-slate-500" /><span className="text-xs text-slate-400 truncate">{user?.email}</span></div>
                   {selectedCountry && (<div className="flex items-center justify-center gap-1.5 mt-0.5"><span className="text-sm">{selectedCountry.flag}</span><span className="text-xs text-slate-500">{selectedCountry.name}</span></div>)}
                   {memberSince && (<div className="flex items-center justify-center gap-1.5 mt-1"><CalendarDays className="w-3 h-3 text-cyan-500/50" /><span className="text-[10px] text-cyan-400/40">{t('pi_member_since')} {memberSince}</span></div>)}
@@ -244,6 +249,14 @@ export default function PersonalInfo() {
               <div className="grid grid-cols-2 gap-3">
                 <FormField label={t('pi_name')} value={firstName} onChange={setFirstName} placeholder={t('pi_first_name_ph') || t('pi_name')} />
                 <FormField label={t('pi_last_name')} value={lastName} onChange={setLastName} placeholder={t('pi_last_name_ph') || t('pi_last_name')} />
+              </div>
+              <div className="space-y-1.5 mt-3">
+                <Label className="text-[11px] font-medium text-slate-400">Alias <span className="text-cyan-500/50">(nombre visible en chats)</span></Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                  <Input value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="Ej: TraderPro99" maxLength={20} className="bg-[hsl(210,30%,10%)] border-cyan-800/20 text-white text-sm h-10 pl-9 placeholder:text-slate-600 focus:border-cyan-500/40 hover:border-cyan-700/30 transition-colors" />
+                </div>
+                <p className="text-[10px] text-slate-600">Máx. 20 caracteres. Se mostrará en lugar de tu nombre real en el foro y chats.</p>
               </div>
               <div className="space-y-1.5 mt-3">
                 <Label className="text-[11px] font-medium text-slate-400">{t('pi_dob')}</Label>

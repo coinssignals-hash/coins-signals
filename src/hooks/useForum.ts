@@ -113,7 +113,7 @@ export function useForumMessages(channelId: string | null) {
     // Fetch profiles for those users
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url, language')
+      .select('id, first_name, last_name, alias, avatar_url, language')
       .in('id', userIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
@@ -138,7 +138,7 @@ export function useForumMessages(channelId: string | null) {
           const p = profileMap.get(r.user_id);
           replyMap.set(r.id, {
             content: r.content.slice(0, 60),
-            user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+            user_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
           });
         }
       }
@@ -169,7 +169,7 @@ export function useForumMessages(channelId: string | null) {
       const p = profileMap.get(m.user_id);
       return {
         ...m,
-        user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+        user_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
         user_avatar: (p as any)?.avatar_url || null,
         user_language: (p as any)?.language || 'es',
         reactions: reactionsByMessage.get(m.id) || [],
@@ -325,14 +325,14 @@ export function useDirectMessages(partnerId: string | null) {
     if (!data) { setLoading(false); return; }
 
     const userIds = [...new Set(data.map(d => d.sender_id))];
-    const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, avatar_url').in('id', userIds);
+    const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, alias, avatar_url').in('id', userIds);
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
 
     setMessages(data.map(d => {
       const p = profileMap.get(d.sender_id);
       return {
         ...d,
-        sender_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+        sender_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
         sender_avatar: p?.avatar_url || null,
       };
     }));
@@ -414,7 +414,7 @@ export function useDMConversations() {
 
       // Fetch partner profiles
       const partnerIds = [...partnerMap.keys()];
-      const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, avatar_url').in('id', partnerIds);
+      const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, alias, avatar_url').in('id', partnerIds);
       const profileMap = new Map((profiles || []).map(p => [p.id, p]));
 
       const convos: DMConversation[] = partnerIds.map(pid => {
@@ -423,7 +423,7 @@ export function useDMConversations() {
         const p = profileMap.get(pid);
         return {
           user_id: pid,
-          user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+          user_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
           user_avatar: p?.avatar_url || null,
           last_message: lastMsg.content.slice(0, 50),
           last_at: lastMsg.created_at,
