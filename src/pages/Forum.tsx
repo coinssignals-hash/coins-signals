@@ -35,7 +35,7 @@ type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
 export default function Forum() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const dateLocale = useDateLocale();
   const { user } = useAuth();
 
