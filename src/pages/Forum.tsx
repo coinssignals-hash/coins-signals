@@ -51,6 +51,7 @@ export default function Forum() {
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [showLangFilter, setShowLangFilter] = useState(false);
   const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
+  const [showPastTopics, setShowPastTopics] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
