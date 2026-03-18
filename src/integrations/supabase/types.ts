@@ -722,6 +722,89 @@ export type Database = {
         }
         Relationships: []
       }
+      imported_trades: {
+        Row: {
+          broker_source: string
+          commission: number | null
+          connection_id: string | null
+          created_at: string
+          entry_price: number
+          entry_time: string
+          exit_price: number | null
+          exit_time: string | null
+          external_trade_id: string | null
+          id: string
+          import_batch_id: string | null
+          net_profit: number | null
+          notes: string | null
+          profit: number | null
+          quantity: number
+          raw_data: Json | null
+          side: string
+          status: string
+          swap: number | null
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          broker_source?: string
+          commission?: number | null
+          connection_id?: string | null
+          created_at?: string
+          entry_price?: number
+          entry_time?: string
+          exit_price?: number | null
+          exit_time?: string | null
+          external_trade_id?: string | null
+          id?: string
+          import_batch_id?: string | null
+          net_profit?: number | null
+          notes?: string | null
+          profit?: number | null
+          quantity?: number
+          raw_data?: Json | null
+          side?: string
+          status?: string
+          swap?: number | null
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          broker_source?: string
+          commission?: number | null
+          connection_id?: string | null
+          created_at?: string
+          entry_price?: number
+          entry_time?: string
+          exit_price?: number | null
+          exit_time?: string | null
+          external_trade_id?: string | null
+          id?: string
+          import_batch_id?: string | null
+          net_profit?: number | null
+          notes?: string | null
+          profit?: number | null
+          quantity?: number
+          raw_data?: Json | null
+          side?: string
+          status?: string
+          swap?: number | null
+          symbol?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imported_trades_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "user_broker_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_data_cache: {
         Row: {
           cache_key: string
