@@ -194,7 +194,7 @@ export function useImportedTrades() {
 
   const deleteAllTrades = useCallback(async () => {
     if (!user) return;
-    await (supabase as any)
+    await supabase
       .from('imported_trades')
       .delete()
       .eq('user_id', user.id);
