@@ -332,7 +332,7 @@ export function useDirectMessages(partnerId: string | null) {
       const p = profileMap.get(d.sender_id);
       return {
         ...d,
-        sender_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+        sender_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
         sender_avatar: p?.avatar_url || null,
       };
     }));
