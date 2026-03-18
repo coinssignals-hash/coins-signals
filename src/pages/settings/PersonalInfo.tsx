@@ -201,26 +201,29 @@ export default function PersonalInfo() {
             <div className="relative overflow-hidden rounded-2xl border border-cyan-800/25 bg-[hsl(210,40%,8%)]">
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
-              <div className="relative flex items-center gap-4 p-5">
-                <div className="relative group">
-                  <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 blur-sm" />
-                  <Avatar className="relative w-20 h-20 border-2 border-cyan-500/30 ring-2 ring-cyan-400/10">
+              <div className="relative flex flex-col items-center gap-3 p-5">
+                <div className="relative">
+                  <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 blur-sm" />
+                  <Avatar className="relative w-28 h-28 border-2 border-cyan-500/30 ring-2 ring-cyan-400/10">
                     <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
-                    <AvatarFallback className="bg-[hsl(210,40%,14%)] text-cyan-300 text-xl font-bold">{getInitials()}</AvatarFallback>
+                    <AvatarFallback className="bg-[hsl(210,40%,14%)] text-cyan-300 text-2xl font-bold">{getInitials()}</AvatarFallback>
                   </Avatar>
-                  <button onClick={handleAvatarClick} disabled={uploadingAvatar} className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-cyan-500 text-white hover:bg-cyan-400 transition-colors disabled:opacity-50 shadow-lg shadow-cyan-500/30 active:scale-90">
-                    {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                  </button>
-                  <button onClick={() => setShowAvatarPicker(true)} className="absolute -bottom-1 -left-1 p-1.5 rounded-full bg-purple-500 text-white hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/30 active:scale-90">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                  </button>
-                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <button onClick={handleAvatarClick} disabled={uploadingAvatar} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/15 border border-cyan-500/25 text-cyan-300 hover:bg-cyan-500/25 transition-all disabled:opacity-50 active:scale-[0.97]">
+                    {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+                    {uploadingAvatar ? 'Subiendo...' : t('pi_upload_photo') || 'Subir foto'}
+                  </button>
+                  <button onClick={() => setShowAvatarPicker(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-purple-500/15 border border-purple-500/25 text-purple-300 hover:bg-purple-500/25 transition-all active:scale-[0.97]">
+                    <ImageIcon className="w-3.5 h-3.5" /> Avatar
+                  </button>
+                </div>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                <div className="text-center min-w-0">
                   <h2 className="text-base font-bold text-white truncate">{firstName || lastName ? `${firstName} ${lastName}`.trim() : t('pi_no_name')}</h2>
-                  <div className="flex items-center gap-1.5 mt-0.5"><Mail className="w-3 h-3 text-slate-500" /><span className="text-xs text-slate-400 truncate">{user?.email}</span></div>
-                  {selectedCountry && (<div className="flex items-center gap-1.5 mt-0.5"><span className="text-sm">{selectedCountry.flag}</span><span className="text-xs text-slate-500">{selectedCountry.name}</span></div>)}
-                  {memberSince && (<div className="flex items-center gap-1.5 mt-1"><CalendarDays className="w-3 h-3 text-cyan-500/50" /><span className="text-[10px] text-cyan-400/40">{t('pi_member_since')} {memberSince}</span></div>)}
+                  <div className="flex items-center justify-center gap-1.5 mt-0.5"><Mail className="w-3 h-3 text-slate-500" /><span className="text-xs text-slate-400 truncate">{user?.email}</span></div>
+                  {selectedCountry && (<div className="flex items-center justify-center gap-1.5 mt-0.5"><span className="text-sm">{selectedCountry.flag}</span><span className="text-xs text-slate-500">{selectedCountry.name}</span></div>)}
+                  {memberSince && (<div className="flex items-center justify-center gap-1.5 mt-1"><CalendarDays className="w-3 h-3 text-cyan-500/50" /><span className="text-[10px] text-cyan-400/40">{t('pi_member_since')} {memberSince}</span></div>)}
                 </div>
               </div>
               <div className="flex items-center gap-2 px-5 pb-4">
