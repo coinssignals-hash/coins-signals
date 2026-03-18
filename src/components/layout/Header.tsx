@@ -87,13 +87,13 @@ export function Header() {
             <span className="text-[10px] font-medium text-muted-foreground leading-none">Sessions</span>
           </Link>
           <div className="flex flex-col items-center gap-1 active:scale-95 transition-all">
-            <div className="flex items-center justify-center h-8 w-full">
+            <div className="flex items-center justify-center h-8 w-full rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-colors">
               <NotificationToggle />
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('alerts')}</span>
           </div>
           <div className="flex flex-col items-center gap-1 active:scale-95 transition-all">
-            <div className="flex items-center justify-center h-8 w-full">
+            <div className="flex items-center justify-center h-8 w-full rounded-xl bg-secondary/50 text-foreground/80 hover:bg-secondary transition-colors">
               <LanguageQuickSelect />
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('language')}</span>
