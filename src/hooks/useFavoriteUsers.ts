@@ -41,7 +41,7 @@ export function useFavoriteUsers() {
       const p = profileMap.get(d.favorite_user_id);
       return {
         ...d,
-        name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+        name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
         avatar_url: p?.avatar_url || null,
       };
     }));

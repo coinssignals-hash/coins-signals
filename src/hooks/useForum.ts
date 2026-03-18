@@ -423,7 +423,7 @@ export function useDMConversations() {
         const p = profileMap.get(pid);
         return {
           user_id: pid,
-          user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+          user_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
           user_avatar: p?.avatar_url || null,
           last_message: lastMsg.content.slice(0, 50),
           last_at: lastMsg.created_at,
