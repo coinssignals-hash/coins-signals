@@ -84,6 +84,7 @@ export default function PersonalInfo() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saved, setSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   useEffect(() => { if (!loading && !user) navigate('/auth'); }, [loading, user, navigate]);
 
