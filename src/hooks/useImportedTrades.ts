@@ -99,7 +99,7 @@ export function useImportedTrades() {
     if (!user) { setTrades([]); setLoading(false); return; }
     try {
       // Use type assertion since the table was just created and types aren't regenerated yet
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('imported_trades')
         .select('*')
         .eq('user_id', user.id)
