@@ -4,17 +4,20 @@ import { motion } from 'framer-motion';
 import {
   ArrowLeft, RefreshCw, TrendingUp, TrendingDown, Wallet,
   Clock, AlertCircle, Plus, Radio, ArrowUpRight, ArrowDownRight,
-  BarChart3
+  BarChart3, FileSpreadsheet
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { usePortfolio, Position } from '@/hooks/usePortfolio';
+import { useImportedTrades } from '@/hooks/useImportedTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
+import { TradeAnalytics } from '@/components/portfolio/TradeAnalytics';
+import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 
 function formatCurrency(value: number, currency = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
