@@ -366,7 +366,7 @@ export default function Forum() {
                 )}
               >
                 <span className="text-lg leading-none mb-0.5">{(LANGUAGE_FLAGS as any)[lang]}</span>
-                <span className="truncate max-w-[48px]">{(LANGUAGE_LABELS as any)[lang]}</span>
+                <span className="uppercase">{lang}</span>
               </button>
             ))}
           </div>
