@@ -857,7 +857,7 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
   return (
     <div className="h-48 px-1 pt-2 pb-1">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData} margin={{ top: 8, right: 50, left: 8, bottom: 4 }}>
+        <AreaChart data={chartData} margin={{ top: 8, right: 50, left: 35, bottom: 4 }}>
           <defs>
             <linearGradient id={`jcGrad-${entry.id}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={lineColor} stopOpacity={0.35} />
@@ -879,13 +879,13 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
             width={52}
           />
           {tp && (
-            <ReferenceLine y={tp} stroke="hsl(150, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'TP', position: 'left', fill: 'hsl(150, 60%, 50%)', fontSize: 9 }} />
+            <ReferenceLine y={tp} stroke="hsl(150, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'TP', position: 'insideTopLeft', fill: 'hsl(150, 60%, 50%)', fontSize: 8, fontWeight: 600 }} />
           )}
-          <ReferenceLine y={ep} stroke="hsl(200, 70%, 55%)" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Entry', position: 'left', fill: 'hsl(200, 70%, 55%)', fontSize: 9 }} />
+          <ReferenceLine y={ep} stroke="hsl(200, 70%, 55%)" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Entry', position: 'insideTopLeft', fill: 'hsl(200, 70%, 55%)', fontSize: 8, fontWeight: 600 }} />
           {sl && (
-            <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'SL', position: 'left', fill: 'hsl(0, 60%, 50%)', fontSize: 9 }} />
+            <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'SL', position: 'insideBottomLeft', fill: 'hsl(0, 60%, 50%)', fontSize: 8, fontWeight: 600 }} />
           )}
-          <ReferenceLine y={ex} stroke="hsl(35, 90%, 55%)" strokeDasharray="3 2" strokeOpacity={0.9} label={{ value: 'Close', position: 'left', fill: 'hsl(35, 90%, 55%)', fontSize: 9 }} />
+          <ReferenceLine y={ex} stroke="hsl(35, 90%, 55%)" strokeDasharray="3 2" strokeOpacity={0.9} label={{ value: 'Close', position: 'insideTopLeft', fill: 'hsl(35, 90%, 55%)', fontSize: 8, fontWeight: 600 }} />
           <Area
             type="monotone"
             dataKey="price"
