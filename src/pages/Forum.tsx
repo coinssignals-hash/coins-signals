@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { PastTopicsBrowser } from '@/components/forum/PastTopicsBrowser';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
