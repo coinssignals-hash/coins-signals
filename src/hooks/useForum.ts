@@ -169,7 +169,7 @@ export function useForumMessages(channelId: string | null) {
       const p = profileMap.get(m.user_id);
       return {
         ...m,
-        user_name: p ? `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Anónimo' : 'Anónimo',
+        user_name: p ? ((p as any).alias || `${p.first_name || ''} ${p.last_name || ''}`.trim()) || 'Anónimo' : 'Anónimo',
         user_avatar: (p as any)?.avatar_url || null,
         user_language: (p as any)?.language || 'es',
         reactions: reactionsByMessage.get(m.id) || [],
