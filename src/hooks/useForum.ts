@@ -414,7 +414,7 @@ export function useDMConversations() {
 
       // Fetch partner profiles
       const partnerIds = [...partnerMap.keys()];
-      const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, avatar_url').in('id', partnerIds);
+      const { data: profiles } = await supabase.from('profiles').select('id, first_name, last_name, alias, avatar_url').in('id', partnerIds);
       const profileMap = new Map((profiles || []).map(p => [p.id, p]));
 
       const convos: DMConversation[] = partnerIds.map(pid => {
