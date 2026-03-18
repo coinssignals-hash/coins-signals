@@ -24,7 +24,6 @@ import { useForumChannels, useForumMessages, useDailyTopic, useDMConversations, 
 import { useFavoriteUsers } from '@/hooks/useFavoriteUsers';
 import { FavoriteUsersPanel } from '@/components/forum/FavoriteUsersPanel';
 import { useTopicTranslation } from '@/hooks/useTopicTranslation';
-import { FavoriteUsersPanel } from '@/components/forum/FavoriteUsersPanel';
 import { format } from 'date-fns';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
