@@ -37,6 +37,10 @@ export interface ConnectionCredentials {
   account_id?: string;
   access_token?: string;
   refresh_token?: string;
+  mt5_server?: string;
+  mt5_login?: string;
+  mt5_password?: string;
+  mt5_platform?: string;
 }
 
 export function useBrokerConnections() {
