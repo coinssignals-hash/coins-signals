@@ -35,8 +35,9 @@ export function SignalPicker({ open, onOpenChange, onSelect }: SignalPickerProps
     setLoading(true);
     supabase
       .from('trading_signals')
-      .select('id, currency_pair, action, entry_price, take_profit, stop_loss, probability, status, trend, created_at')
+      .select('id, currency_pair, action, entry_price, take_profit, stop_loss, probability, status, trend, created_at, source')
       .in('status', ['active', 'pending'])
+      .eq('source', 'ai-center')
       .order('created_at', { ascending: false })
       .limit(50)
       .then(({ data }) => {
