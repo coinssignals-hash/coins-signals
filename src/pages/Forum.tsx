@@ -642,43 +642,46 @@ export default function Forum() {
         />
 
         {/* Input */}
-        <div className="flex gap-2 pt-2 sm:pt-3 border-t border-border bg-background/50 backdrop-blur-sm">
-          {/* Image upload button */}
-          {user && (
+        <div className="pt-2 sm:pt-3 border-t border-border bg-background/80 backdrop-blur-md">
+          <div className="flex items-center gap-1.5 rounded-xl bg-secondary/80 border border-border focus-within:border-primary/40 focus-within:shadow-[0_0_12px_hsl(var(--primary)/0.15)] transition-all duration-200 px-1.5 py-1">
+            {/* Attachments: image + signal in a unified area */}
+            {user && (
+              <div className="flex items-center gap-0.5">
+                <button
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 active:scale-90 transition-all disabled:opacity-40"
+                  title="Enviar imagen"
+                >
+                  {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+                </button>
+                {!isDM && (
+                  <button
+                    onClick={() => setSignalPickerOpen(true)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 active:scale-90 transition-all"
+                    title="Compartir señal"
+                  >
+                    <TrendingUp className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            )}
+            <input
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+              placeholder={user ? "Escribe un mensaje..." : "Inicia sesión para escribir"}
+              disabled={!user}
+              className="flex-1 min-w-0 h-8 sm:h-9 bg-transparent border-none outline-none text-xs sm:text-sm text-foreground placeholder:text-muted-foreground px-1.5"
+            />
             <button
-              onClick={() => imageInputRef.current?.click()}
-              disabled={uploadingImage}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all disabled:opacity-40"
-              title="Enviar imagen"
+              onClick={handleSend}
+              disabled={!user || uploadingImage || (!messageInput.trim() && !pendingSignalId && !pendingImage)}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 active:scale-90 transition-all shrink-0"
             >
-              {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+              <Send className="w-4 h-4" />
             </button>
-          )}
-          {/* Signal picker button - only in channel chat */}
-          {!isDM && user && (
-            <button
-              onClick={() => setSignalPickerOpen(true)}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 active:scale-95 transition-all"
-              title="Compartir señal"
-            >
-              <TrendingUp className="w-4 h-4" />
-            </button>
-          )}
-          <Input
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder={user ? "Escribe un mensaje..." : "Inicia sesión para escribir"}
-            disabled={!user}
-            className="flex-1 h-9 sm:h-10 text-xs sm:text-sm bg-secondary border-border"
-          />
-          <button
-            onClick={handleSend}
-            disabled={!user || uploadingImage || (!messageInput.trim() && !pendingSignalId && !pendingImage)}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 hover:opacity-90 active:scale-95 transition-all"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+          </div>
         </div>
 
         {/* Signal Picker Dialog */}
