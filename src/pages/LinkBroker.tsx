@@ -448,6 +448,14 @@ export default function LinkBroker() {
 
         {/* Import Modal */}
         <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
+
+        {/* MT5 Connect Dialog */}
+        <MT5ConnectDialog
+          open={showMT5Dialog}
+          onOpenChange={setShowMT5Dialog}
+          broker={mt5Broker}
+          onSave={handleSaveMT5}
+        />
       </main>
     </PageShell>
   );
