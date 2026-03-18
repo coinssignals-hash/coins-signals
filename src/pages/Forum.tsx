@@ -75,6 +75,47 @@ export default function Forum() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, dmMessages]);
 
+  // Translate topic when language changes
+  useEffect(() => {
+    if (!topic || language === 'es') {
+      setTranslatedTopic(null);
+      return;
+    }
+    let cancelled = false;
+    translateTopic(topic, language).then(result => {
+      if (!cancelled) setTranslatedTopic(result);
+    });
+    return () => { cancelled = true; };
+  }, [topic?.id, language, translateTopic]);
+
+  // Admin: upload image for daily topic
+  const handleTopicImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !topic) return;
+    if (!file.type.startsWith('image/')) { toast.error('Solo se permiten imágenes'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Máximo 5MB'); return; }
+
+    setTopicImageUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `topic-${topic.id}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('forum-images').upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from('forum-images').getPublicUrl(path);
+      const imageUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      await supabase.from('forum_daily_topics').update({ image_url: imageUrl }).eq('id', topic.id);
+      refetchTopic();
+      toast.success('Imagen del tema actualizada');
+    } catch (err: any) {
+      toast.error('Error al subir imagen: ' + err.message);
+    } finally {
+      setTopicImageUploading(false);
+      if (topicImageRef.current) topicImageRef.current.value = '';
+    }
+  };
+
   const openChannel = (channelId: string, name: string, icon: string) => {
     setSelectedChannelId(channelId);
     setSelectedChannelName(name);
