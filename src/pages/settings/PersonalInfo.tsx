@@ -211,6 +211,9 @@ export default function PersonalInfo() {
                   <button onClick={handleAvatarClick} disabled={uploadingAvatar} className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-cyan-500 text-white hover:bg-cyan-400 transition-colors disabled:opacity-50 shadow-lg shadow-cyan-500/30 active:scale-90">
                     {uploadingAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                   </button>
+                  <button onClick={() => setShowAvatarPicker(true)} className="absolute -bottom-1 -left-1 p-1.5 rounded-full bg-purple-500 text-white hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/30 active:scale-90">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                  </button>
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 </div>
                 <div className="flex-1 min-w-0">
