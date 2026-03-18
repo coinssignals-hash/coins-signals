@@ -8,7 +8,7 @@ import { es, enUS, pt, fr, de, it, ar } from 'date-fns/locale';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useTopicTranslation } from '@/hooks/useTopicTranslation';
 
-const DATE_LOCALES: Record<string, Locale> = { es, en: enUS, pt, fr, de, it, ar };
+const DATE_LOCALES: Record<string, typeof es> = { es, en: enUS, pt, fr, de, it, ar };
 
 interface PastTopic {
   id: string;
