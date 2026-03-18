@@ -92,6 +92,7 @@ export default function PersonalInfo() {
   useEffect(() => {
     if (profile) {
       setFirstName(profile.first_name || ''); setLastName(profile.last_name || '');
+      setAlias((profile as any).alias || '');
       setCountry(profile.country || ''); setTimezone(profile.timezone || 'America/New_York');
       setAvatarUrl(profile.avatar_url);
       const raw = profile as any;
