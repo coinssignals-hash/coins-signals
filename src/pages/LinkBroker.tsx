@@ -52,6 +52,68 @@ export default function LinkBroker() {
     .map(c => (c.broker as any)?.code || '')
     .filter(Boolean);
 
+  // MT5-connected brokers
+  const mt5ConnectedBrokerCodes = connections
+    .filter(c => c.is_connected && c.broker && (c as any).connection_name?.includes('MT'))
+    .map(c => (c.broker as any)?.code || '')
+    .filter(Boolean);
+
+  const handleConnectMT5 = (catalogBroker: BrokerCatalogItem) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión');
+      navigate('/auth');
+      return;
+    }
+    setMT5Broker(catalogBroker);
+    setShowMT5Dialog(true);
+  };
+
+  const handleSaveMT5 = async (data: {
+    broker: BrokerCatalogItem;
+    server: string;
+    login: string;
+    password: string;
+    platform: 'mt4' | 'mt5';
+    connectionName: string;
+    environment: 'demo' | 'live';
+  }) => {
+    const dbBroker = brokers.find(b => b.code === data.broker.code);
+    if (!dbBroker) {
+      toast.error('Broker no encontrado en la base de datos');
+      return;
+    }
+
+    const connection = await createConnection(
+      dbBroker.id,
+      data.connectionName,
+      data.environment,
+      {
+        mt5_server: data.server,
+        mt5_login: data.login,
+        mt5_password: data.password,
+        mt5_platform: data.platform,
+      }
+    );
+
+    if (connection) {
+      toast.success(`${data.broker.name} conectado vía ${data.platform.toUpperCase()}`);
+      // Auto-sync after connecting
+      await syncMT5(connection.id);
+    }
+  };
+
+  const handleSyncMT5Broker = async (catalogBroker: BrokerCatalogItem) => {
+    const conn = connections.find(
+      c => (c.broker as any)?.code === catalogBroker.code && c.is_connected && (c as any).connection_name?.includes('MT')
+    );
+    if (conn) {
+      await syncMT5(conn.id);
+    } else {
+      // Not connected yet, open dialog
+      handleConnectMT5(catalogBroker);
+    }
+  };
+
   const handleConnectBroker = (catalogBroker: BrokerCatalogItem) => {
     if (!user) {
       toast.error('Debes iniciar sesión');
