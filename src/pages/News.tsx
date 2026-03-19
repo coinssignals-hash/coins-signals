@@ -694,7 +694,8 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </Link>);
+    </Link>
+    </GlowCard>);
 
 }
 
