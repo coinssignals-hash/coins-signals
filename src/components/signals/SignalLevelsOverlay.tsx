@@ -21,9 +21,19 @@ export function SignalLevelsOverlay({
   takeProfit,
   takeProfit2,
   stopLoss,
+  signalDatetime,
   visible = true,
   onExited,
 }: SignalLevelsOverlayProps) {
+  const timeLabel = useMemo(() => {
+    if (!signalDatetime) return null;
+    try {
+      const d = new Date(signalDatetime);
+      return format(d, 'HH:mm');
+    } catch {
+      return null;
+    }
+  }, [signalDatetime]);
   const levels = useMemo(() => {
     const allPrices = [entryPrice, takeProfit, stopLoss];
     if (takeProfit2) allPrices.push(takeProfit2);
