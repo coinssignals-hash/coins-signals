@@ -25,8 +25,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
 
   if (favorites.length === 0) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-6 text-center space-y-2">
+      <GlowCard color="210 70% 55%">
+        <div className="p-6 text-center space-y-2">
           <Star className="w-8 h-8 text-muted-foreground mx-auto" />
           <p className="text-xs text-muted-foreground">
             No tienes usuarios favoritos aún
@@ -34,8 +34,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
           <p className="text-[10px] text-muted-foreground">
             Toca la ⭐ en el chat para agregar amigos
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
