@@ -393,17 +393,11 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
   const session = getMarketSession(news.published_at);
 
   return (
-    <div
-      className={cn('group relative rounded-xl overflow-hidden animate-fade-in')}
-      style={{
-        animationDelay: `${index * 50}ms`,
-        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.3)'
-      }}>
-
-      {/* Top glow line */}
-      <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+    <GlowCard
+      color="210 70% 55%"
+      className={cn('group animate-fade-in rounded-2xl')}
+      style={{ animationDelay: `${index * 50}ms` } as React.CSSProperties}
+    >
 
       {/* Hero Image */}
       <Link to={`/news/${news.id}`} className="block relative aspect-[5/3] sm:aspect-[2/1] overflow-hidden">
