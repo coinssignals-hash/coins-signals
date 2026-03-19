@@ -9,7 +9,7 @@ import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { useNewsCache } from '@/hooks/useNewsCache';
 import { useTranslation } from '@/i18n/LanguageContext';
 import {
-  User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
+  User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
   Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert
 } from 'lucide-react';
@@ -68,6 +68,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       title: t('drawer_cat_account'),
       items: [
         { icon: UserIcon, label: t('drawer_profile_settings'), href: '/settings' },
+        { icon: Trophy, label: 'Logros', href: '/achievements' },
         { icon: FileText, label: t('drawer_subscriptions'), href: '/subscriptions' },
         { icon: Shield, label: t('drawer_security'), href: '/settings/security' },
         { icon: Gift, label: t('drawer_referral_bonus'), href: '/referrals' },
