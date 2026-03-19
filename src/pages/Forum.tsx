@@ -384,7 +384,11 @@ export default function Forum() {
             <button
               key={c.user_id}
               onClick={() => openDM(c.user_id, c.user_name)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all"
+              style={{
+                background: 'linear-gradient(165deg, hsl(210 70% 55% / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
+                border: '1px solid hsl(210 70% 55% / 0.15)',
+              }}
             >
               <div className="relative">
                 <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
