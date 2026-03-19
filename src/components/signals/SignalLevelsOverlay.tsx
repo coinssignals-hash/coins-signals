@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface SignalLevelsOverlayProps {
   entryPrice: number;
   takeProfit: number;
   takeProfit2?: number;
   stopLoss: number;
+  signalDatetime?: string;
   visible?: boolean;
   onExited?: () => void;
 }
