@@ -624,16 +624,11 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
   return (
+    <GlowCard color="210 70% 55%" className="rounded-2xl">
     <Link
       to={`/news/${news.id}`}
-      className={cn('group block rounded-xl overflow-hidden relative transition-all duration-500 hover:shadow-xl animate-fade-in')}
-      style={{
-        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.3)'
-      }}>
+      className={cn('group block rounded-xl overflow-hidden relative transition-all duration-500 hover:shadow-xl animate-fade-in')}>
 
-      <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
         {news.image_url ?
