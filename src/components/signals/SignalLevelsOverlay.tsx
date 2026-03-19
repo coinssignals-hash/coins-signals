@@ -98,8 +98,9 @@ export function SignalLevelsOverlay({
 
       {/* SL zone - red */}
       <div
-        className="absolute left-0 right-0"
+        className="absolute right-0"
         style={{
+          left: '38%',
           top: `${slZoneTop}%`,
           height: `${slZoneBottom - slZoneTop}%`,
           background: 'rgba(239, 68, 68, 0.08)',
