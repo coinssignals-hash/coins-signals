@@ -266,7 +266,7 @@ export default function Forum() {
               })}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
         );
       })()}
 
