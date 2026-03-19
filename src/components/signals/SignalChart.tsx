@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Maximize2, X } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Maximize2, X, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 
@@ -61,24 +61,88 @@ function buildWidgetUrl(symbol: string, fullscreen: boolean): string {
   return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
 }
 
+/** Detect if device is in portrait orientation */
+function useOrientation() {
+  const [isPortrait, setIsPortrait] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerHeight > window.innerWidth;
+  });
+
+  useEffect(() => {
+    const update = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth);
+    };
+
+    // Listen to both resize and orientation change
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', () => {
+      // Delay to let the browser finish rotating
+      setTimeout(update, 150);
+    });
+
+    const mql = window.matchMedia?.('(orientation: portrait)');
+    mql?.addEventListener?.('change', update);
+
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+      mql?.removeEventListener?.('change', update);
+    };
+  }, []);
+
+  return isPortrait;
+}
+
 export function SignalChart({
   currencyPair,
   className,
 }: SignalChartProps) {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState(false);
+  const [forceRotate, setForceRotate] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const tvSymbol = toTradingViewSymbol(currencyPair);
+  const isPortrait = useOrientation();
 
+  // In fullscreen: if device is landscape, no need to force rotate
+  // If device is portrait and user toggled rotate, apply CSS rotation
+  const shouldRotate = fullscreen && isPortrait && forceRotate;
+
+  // Lock body scroll in fullscreen
   useEffect(() => {
     if (fullscreen) {
       document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
+      // Try to request landscape via Screen Orientation API
+      try {
+        (screen.orientation as any)?.lock?.('landscape').catch(() => {});
+      } catch {}
+      return () => {
+        document.body.style.overflow = '';
+        try {
+          (screen.orientation as any)?.unlock?.();
+        } catch {}
+      };
     }
   }, [fullscreen]);
 
+  // Auto-enable rotation when entering fullscreen on portrait
+  useEffect(() => {
+    if (fullscreen && isPortrait) {
+      setForceRotate(true);
+    }
+    if (!fullscreen) {
+      setForceRotate(false);
+    }
+  }, [fullscreen, isPortrait]);
+
+  const closeFullscreen = useCallback(() => {
+    setFullscreen(false);
+    setForceRotate(false);
+  }, []);
+
   return (
     <>
+      {/* Inline chart */}
       <div className={cn('mx-0 sm:mx-1.5 mb-3', className)}>
         <div
           className="relative rounded-none sm:rounded-lg overflow-hidden"
@@ -106,31 +170,75 @@ export function SignalChart({
         </div>
       </div>
 
+      {/* Fullscreen overlay */}
       {fullscreen && (
         <div
           ref={fsRef}
-          className="fixed inset-0 z-[9999] bg-black"
+          className="fixed inset-0 z-[9999]"
+          style={{ background: '#060e1c' }}
           onClick={(e) => {
-            if (e.target === fsRef.current) setFullscreen(false);
+            if (e.target === fsRef.current) closeFullscreen();
           }}
         >
-          <button
-            onClick={() => setFullscreen(false)}
-            className="absolute top-3 right-3 z-[10001] p-2 rounded-full active:scale-90"
-            style={{
-              background: 'rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.3)',
-            }}
+          {/* Rotated container when portrait + forceRotate */}
+          <div
+            className="w-full h-full"
+            style={shouldRotate ? {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: '100vh',
+              height: '100vw',
+              transform: 'translate(-50%, -50%) rotate(90deg)',
+              transformOrigin: 'center center',
+            } : undefined}
           >
-            <X className="w-5 h-5 text-white" />
-          </button>
+            {/* Controls bar */}
+            <div className="absolute top-0 left-0 right-0 z-[10001] flex items-center justify-between px-3 py-2"
+              style={{ background: 'linear-gradient(to bottom, rgba(6,14,28,0.9), transparent)' }}
+            >
+              <span className="text-xs font-mono text-cyan-300/80 tracking-wider">
+                {currencyPair}
+              </span>
 
-          <iframe
-            src={buildWidgetUrl(tvSymbol, true)}
-            style={{ width: '100%', height: '100%', border: 'none' }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-            sandbox="allow-scripts allow-same-origin allow-popups"
-          />
+              <div className="flex items-center gap-2">
+                {/* Rotate toggle */}
+                <button
+                  onClick={() => setForceRotate(!forceRotate)}
+                  className={cn(
+                    "p-1.5 rounded-md transition-all active:scale-90",
+                    forceRotate ? "text-cyan-300" : "text-white/50"
+                  )}
+                  style={{
+                    background: forceRotate ? 'rgba(0,230,180,0.15)' : 'rgba(0,0,0,0.4)',
+                    border: `1px solid ${forceRotate ? 'rgba(0,230,180,0.3)' : 'rgba(255,255,255,0.2)'}`,
+                  }}
+                  title="Rotar gráfico"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+
+                {/* Close */}
+                <button
+                  onClick={closeFullscreen}
+                  className="p-1.5 rounded-md active:scale-90"
+                  style={{
+                    background: 'rgba(0,0,0,0.4)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                  }}
+                >
+                  <X className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </div>
+
+            <iframe
+              src={buildWidgetUrl(tvSymbol, true)}
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+              sandbox="allow-scripts allow-same-origin allow-popups"
+            />
+          </div>
         </div>
       )}
     </>
