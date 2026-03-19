@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAchievements } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,6 +24,12 @@ import { useDateLocale } from '@/hooks/useDateLocale';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, ReferenceLine } from 'recharts';
 import { formatPrice } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+/* ─── Blue accent color ─── */
+const ACCENT = '210 70% 55%';
+const ACCENT_GREEN = '142 60% 55%';
+const ACCENT_ROSE = '0 70% 55%';
+const ACCENT_AMBER = '45 80% 55%';
 
 interface TradeEntry {
   id: string;
@@ -192,7 +198,6 @@ export default function TradingJournal() {
     setShowForm(false);
     setEditingId(null);
     await fetchEntries(userId);
-    // Check achievements after saving a trade
     setTimeout(() => checkAndUnlockAchievements(), 1000);
   }
 
@@ -243,26 +248,29 @@ export default function TradingJournal() {
     return (
       <PageShell>
         <Header />
-        <main className="container py-6 space-y-5">
+        <main className="container py-3 max-w-lg mx-auto px-3 space-y-4">
           <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+            <Link to="/tools" className="w-8 h-8 rounded-xl flex items-center justify-center" style={{
+              background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+              border: `1px solid hsl(${ACCENT} / 0.25)`,
+            }}>
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-primary" />
+              <BookOpen className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
             </div>
           </div>
-          <Card className="bg-card border-border">
-            <CardContent className="p-8 text-center space-y-3">
-              <LogIn className="w-10 h-10 text-primary mx-auto opacity-60" />
+          <GlowCard color={ACCENT}>
+            <div className="p-8 text-center space-y-3">
+              <LogIn className="w-10 h-10 mx-auto opacity-60" style={{ color: `hsl(${ACCENT})` }} />
               <p className="text-sm text-foreground font-medium">{t('journal_login_required')}</p>
               <p className="text-xs text-muted-foreground">{t('journal_login_desc')}</p>
               <Button onClick={() => navigate('/auth')} className="mt-2">
                 <LogIn className="w-4 h-4 mr-2" /> {t('drawer_login')}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </GlowCard>
         </main>
       </PageShell>
     );
@@ -271,55 +279,63 @@ export default function TradingJournal() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-4">
         {/* Navigation */}
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-xl flex items-center justify-center" style={{
+            background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+            border: `1px solid hsl(${ACCENT} / 0.25)`,
+          }}>
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-primary" />
+            <BookOpen className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
             <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-4 gap-2">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="grid grid-cols-4 gap-2"
+        >
           {[
-            { label: t('journal_total_trades'), value: stats.total, icon: BarChart3, color: 'text-primary' },
-            { label: t('journal_wins'), value: stats.wins, icon: TrendingUp, color: 'text-emerald-400' },
-            { label: t('journal_losses'), value: stats.losses, icon: TrendingDown, color: 'text-rose-400' },
-            { label: t('journal_win_rate'), value: `${stats.winRate}%`, icon: Target, color: 'text-amber-400' },
-          ].map(s => (
-            <Card key={s.label} className="bg-card border-border">
-              <CardContent className="p-3 text-center">
-                <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
-                <p className={cn('text-lg font-bold', s.color)}>{s.value}</p>
+            { label: t('journal_total_trades'), value: stats.total, icon: BarChart3, color: ACCENT },
+            { label: t('journal_wins'), value: stats.wins, icon: TrendingUp, color: ACCENT_GREEN },
+            { label: t('journal_losses'), value: stats.losses, icon: TrendingDown, color: ACCENT_ROSE },
+            { label: t('journal_win_rate'), value: `${stats.winRate}%`, icon: Target, color: ACCENT_AMBER },
+          ].map((s, i) => (
+            <GlowCard key={s.label} color={s.color}>
+              <div className="p-3 text-center">
+                <s.icon className="w-4 h-4 mx-auto mb-1" style={{ color: `hsl(${s.color})` }} />
+                <p className="text-lg font-bold" style={{ color: `hsl(${s.color})` }}>{s.value}</p>
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
-              </CardContent>
-            </Card>
+              </div>
+            </GlowCard>
           ))}
-        </div>
+        </motion.div>
 
         {/* Total Pips */}
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 flex items-center justify-between">
+        <GlowCard color={ACCENT}>
+          <div className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-primary" />
+              <DollarSign className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
               <span className="text-sm font-medium text-foreground">{t('journal_total_pips')}</span>
             </div>
             <span className={cn(
               'text-lg font-bold tabular-nums',
-              parseFloat(stats.totalPips) >= 0 ? 'text-emerald-400' : 'text-rose-400'
-            )}>
+            )} style={{
+              color: parseFloat(stats.totalPips) >= 0 ? `hsl(${ACCENT_GREEN})` : `hsl(${ACCENT_ROSE})`,
+            }}>
               {parseFloat(stats.totalPips) >= 0 ? '+' : ''}{stats.totalPips}
             </span>
-          </CardContent>
-        </Card>
+          </div>
+        </GlowCard>
 
         {/* Performance Charts */}
         {entries.length >= 2 && (() => {
-          // Equity curve: cumulative pips over time (sorted by date asc)
           const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
           let cumPips = 0;
           const equityData = sorted.map(e => {
@@ -328,15 +344,13 @@ export default function TradingJournal() {
             return { date: e.date, pips: parseFloat(cumPips.toFixed(1)) };
           });
 
-          // Pair distribution
           const pairMap: Record<string, number> = {};
           entries.forEach(e => { pairMap[e.pair] = (pairMap[e.pair] || 0) + 1; });
           const pairData = Object.entries(pairMap)
             .map(([name, value]) => ({ name, value }))
             .sort((a, b) => b.value - a.value);
-          const pieColors = ['hsl(var(--primary))', '#34d399', '#f59e0b', '#f87171', '#a78bfa', '#38bdf8', '#fb923c', '#e879f9'];
+          const pieColors = [`hsl(${ACCENT})`, '#34d399', '#f59e0b', '#f87171', '#a78bfa', '#38bdf8', '#fb923c', '#e879f9'];
 
-          // Weekly pips
           const weekMap: Record<string, number> = {};
           sorted.forEach(e => {
             const p = parseFloat(e.pips) || 0;
@@ -348,34 +362,36 @@ export default function TradingJournal() {
           return (
             <div className="space-y-4">
               {/* Equity Curve */}
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-primary" /> Curva de Equity (Pips)
-                  </h3>
-                  <div className="h-44">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={equityData}>
-                        <defs>
-                          <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <XAxis dataKey="date" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
-                        <YAxis tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={35} />
-                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11, color: 'hsl(var(--foreground))' }} />
-                        <Area type="monotone" dataKey="pips" stroke="hsl(var(--primary))" fill="url(#eqGrad)" strokeWidth={2} dot={false} />
-                      </AreaChart>
-                    </ResponsiveContainer>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: 0.08 }}>
+                <GlowCard color={ACCENT}>
+                  <div className="p-4 space-y-3">
+                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} /> Curva de Equity (Pips)
+                    </h3>
+                    <div className="h-44">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={equityData}>
+                          <defs>
+                            <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor={`hsl(${ACCENT})`} stopOpacity={0.3} />
+                              <stop offset="100%" stopColor={`hsl(${ACCENT})`} stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <XAxis dataKey="date" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                          <YAxis tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={35} />
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11, color: 'hsl(var(--foreground))' }} />
+                          <Area type="monotone" dataKey="pips" stroke={`hsl(${ACCENT})`} fill="url(#eqGrad)" strokeWidth={2} dot={false} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </GlowCard>
+              </motion.div>
 
               <div className="grid grid-cols-2 gap-3">
                 {/* Pair Distribution */}
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 space-y-2">
+                <GlowCard color="270 60% 55%">
+                  <div className="p-4 space-y-2">
                     <h3 className="text-[11px] font-semibold text-foreground">{t('tj_pair_distribution')}</h3>
                     <div className="h-32">
                       <ResponsiveContainer width="100%" height="100%">
@@ -395,12 +411,12 @@ export default function TradingJournal() {
                         </span>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </GlowCard>
 
                 {/* Weekly Pips */}
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 space-y-2">
+                <GlowCard color={ACCENT_AMBER}>
+                  <div className="p-4 space-y-2">
                     <h3 className="text-[11px] font-semibold text-foreground">Pips/Semana</h3>
                     <div className="h-32">
                       <ResponsiveContainer width="100%" height="100%">
@@ -409,13 +425,13 @@ export default function TradingJournal() {
                           <YAxis tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} width={28} />
                           <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 10, color: 'hsl(var(--foreground))' }} />
                           <Bar dataKey="pips" radius={[3, 3, 0, 0]}>
-                            {weekData.map((d, i) => <Cell key={i} fill={d.pips >= 0 ? '#34d399' : '#f87171'} />)}
+                            {weekData.map((d, i) => <Cell key={i} fill={d.pips >= 0 ? `hsl(${ACCENT_GREEN})` : `hsl(${ACCENT_ROSE})`} />)}
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </GlowCard>
               </div>
             </div>
           );
@@ -423,8 +439,12 @@ export default function TradingJournal() {
 
         <Button
           onClick={() => { if (showForm) { resetForm(); } setShowForm(!showForm); }}
-          className="w-full"
+          className="w-full rounded-xl"
           variant={showForm ? 'secondary' : 'default'}
+          style={!showForm ? {
+            background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+            boxShadow: `0 4px 12px hsl(${ACCENT} / 0.3)`,
+          } : undefined}
         >
           <Plus className="w-4 h-4 mr-2" />
           {showForm ? t('journal_cancel') : t('journal_new_trade')}
@@ -432,10 +452,10 @@ export default function TradingJournal() {
 
         {/* New Trade Form */}
         {showForm && (
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 space-y-4">
+          <GlowCard color={ACCENT}>
+            <div className="p-4 space-y-4">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
+                <FileText className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
                 {t('journal_new_trade')}
               </h3>
 
@@ -464,9 +484,17 @@ export default function TradingJournal() {
                         className={cn(
                           'flex-1 py-2 rounded-md text-xs font-semibold transition-colors',
                           action === a
-                            ? a === 'BUY' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                            : 'bg-secondary text-muted-foreground border border-border'
+                            ? a === 'BUY' ? 'text-foreground' : 'text-foreground'
+                            : 'text-muted-foreground'
                         )}
+                        style={action === a ? {
+                          background: a === 'BUY' ? `hsl(${ACCENT_GREEN} / 0.15)` : `hsl(${ACCENT_ROSE} / 0.15)`,
+                          border: `1px solid ${a === 'BUY' ? `hsl(${ACCENT_GREEN} / 0.3)` : `hsl(${ACCENT_ROSE} / 0.3)`}`,
+                          color: a === 'BUY' ? `hsl(${ACCENT_GREEN})` : `hsl(${ACCENT_ROSE})`,
+                        } : {
+                          background: 'hsl(var(--secondary))',
+                          border: '1px solid hsl(var(--border))',
+                        }}
                       >{a}</button>
                     ))}
                   </div>
@@ -526,16 +554,16 @@ export default function TradingJournal() {
                 {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : editingId ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                 {editingId ? t('journal_update_trade') : t('journal_save_trade')}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </GlowCard>
         )}
 
         {/* Trade History */}
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-primary" />
-            {t('journal_history')}
-          </h3>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('journal_history')}</span>
+          </div>
 
           {/* Filters */}
           {entries.length > 0 && (
@@ -549,13 +577,13 @@ export default function TradingJournal() {
           )}
 
           {entries.length === 0 ? (
-            <Card className="bg-card border-border">
-              <CardContent className="p-8 text-center">
+            <GlowCard color={ACCENT}>
+              <div className="p-8 text-center">
                 <BookOpen className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
                 <p className="text-sm text-muted-foreground">{t('journal_no_trades')}</p>
                 <p className="text-xs text-muted-foreground/60 mt-1">Comienza registrando tu primera operación</p>
-              </CardContent>
-            </Card>
+              </div>
+            </GlowCard>
           ) : (
             <>
               {filteredEntries.length === 0 ? (
@@ -576,7 +604,7 @@ export default function TradingJournal() {
   );
 }
 
-/* ─── Journal card list matching Performance > SignalsList style ─── */
+/* ─── Journal card list ─── */
 
 function getCurrencyFlags(pair: string) {
   return pair.split('/').map(c => getSymbolVisual(c).flag || '🏳️').join(' ');
@@ -603,6 +631,8 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
           ? Math.min(Math.round((Math.abs(pipsNum) / (Math.abs(parseFloat(entry.takeProfit) - parseFloat(entry.entryPrice)) * (entry.pair.includes('JPY') ? 100 : 10000))) * 100), 100)
           : isWin ? 100 : Math.min(Math.abs(pipsNum), 100);
 
+        const entryColor = isWin ? ACCENT_GREEN : isLoss ? ACCENT_ROSE : ACCENT;
+
         return (
           <motion.div
             key={entry.id}
@@ -610,24 +640,23 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card
+            <GlowCard
+              color={entryColor}
               className={cn(
-                'bg-card border-border cursor-pointer transition-all duration-200',
-                expandedId === entry.id && 'ring-1 ring-primary/30'
+                'cursor-pointer transition-all duration-200',
+                expandedId === entry.id && 'ring-1'
               )}
-              onClick={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
             >
-              <CardContent className="p-3">
+              <div className="p-3" onClick={() => setExpandedId(expandedId === entry.id ? null : entry.id)}>
                 <div className="flex items-center justify-between">
                   {/* Left: Flag + Pair */}
                   <div className="flex items-center gap-2">
                     <div className="text-xl">{getCurrencyFlags(entry.pair)}</div>
                     <div>
                       <div className="text-xs font-bold text-foreground">{entry.pair}</div>
-                      <div className={cn(
-                        'text-[10px] font-bold',
-                        entry.action === 'BUY' ? 'text-emerald-400' : 'text-rose-400'
-                      )}>
+                      <div className="text-[10px] font-bold" style={{
+                        color: entry.action === 'BUY' ? `hsl(${ACCENT_GREEN})` : `hsl(${ACCENT_ROSE})`,
+                      }}>
                         {entry.action}
                       </div>
                     </div>
@@ -635,10 +664,9 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
 
                   {/* Center: Pips */}
                   <div className="text-center">
-                    <div className={cn(
-                      'text-sm font-bold tabular-nums',
-                      isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-muted-foreground'
-                    )}>
+                    <div className="text-sm font-bold tabular-nums" style={{
+                      color: isWin ? `hsl(${ACCENT_GREEN})` : isLoss ? `hsl(${ACCENT_ROSE})` : 'hsl(var(--muted-foreground))',
+                    }}>
                       {isLoss ? '-' : '+'}{entry.pips}p
                     </div>
                     <div className="text-[10px] text-muted-foreground">{entry.date}</div>
@@ -651,25 +679,24 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                         <circle cx="20" cy="20" r="16" fill="none" stroke="hsl(var(--muted)/0.3)" strokeWidth="3" />
                         <circle
                           cx="20" cy="20" r="16" fill="none"
-                          stroke={isWin ? 'hsl(150, 60%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))'}
+                          stroke={isWin ? `hsl(${ACCENT_GREEN})` : isLoss ? `hsl(${ACCENT_ROSE})` : 'hsl(var(--muted-foreground))'}
                           strokeWidth="3" strokeLinecap="round"
                           strokeDasharray={`${(percentage / 100) * 100.5} 100.5`}
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={cn(
-                          'text-[9px] font-bold tabular-nums',
-                          isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-muted-foreground'
-                        )}>
+                        <span className="text-[9px] font-bold tabular-nums" style={{
+                          color: isWin ? `hsl(${ACCENT_GREEN})` : isLoss ? `hsl(${ACCENT_ROSE})` : 'hsl(var(--muted-foreground))',
+                        }}>
                           {percentage}%
                         </span>
                       </div>
                     </div>
 
                     {isWin ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <CheckCircle2 className="w-4 h-4" style={{ color: `hsl(${ACCENT_GREEN})` }} />
                     ) : isLoss ? (
-                      <XCircle className="w-4 h-4 text-rose-400" />
+                      <XCircle className="w-4 h-4" style={{ color: `hsl(${ACCENT_ROSE})` }} />
                     ) : (
                       <ShieldAlert className="w-4 h-4 text-muted-foreground" />
                     )}
@@ -680,8 +707,8 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                     )} />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </GlowCard>
 
             <AnimatePresence>
               {expandedId === entry.id && (
@@ -691,18 +718,24 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Card className="mt-1 overflow-hidden" style={{
-                    background: 'radial-gradient(ellipse at center 30%, hsl(200, 100%, 12%) 0%, hsl(210, 100%, 6%) 100%)',
-                    border: '1px solid hsl(200, 60%, 20%)',
+                  <div className="mt-1 relative rounded-2xl overflow-hidden" style={{
+                    background: `linear-gradient(165deg, hsl(${ACCENT} / 0.12) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+                    border: `1px solid hsl(${ACCENT} / 0.25)`,
                   }}>
-                    <CardContent className="p-0">
+                    <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+                      background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)`,
+                    }} />
+                    <div className="relative">
                       {/* Chart */}
                       <JournalMiniChart entry={entry} />
 
-                      {/* Info panels: TIEMPO + PRECIOS */}
-                      <div className="grid grid-cols-2 gap-px bg-border/20 mx-3 mb-3 rounded-lg overflow-hidden border border-border/40">
+                      {/* Info panels */}
+                      <div className="grid grid-cols-2 gap-px mx-3 mb-3 rounded-xl overflow-hidden" style={{
+                        background: `hsl(${ACCENT} / 0.1)`,
+                        border: `1px solid hsl(${ACCENT} / 0.15)`,
+                      }}>
                         {/* TIEMPO */}
-                        <div className="bg-card/60 backdrop-blur-sm p-3 space-y-3">
+                        <div className="p-3 space-y-3" style={{ background: 'hsl(var(--card) / 0.6)' }}>
                           <div className="flex items-center gap-1.5 text-muted-foreground">
                             <Clock className="w-3 h-3" />
                             <span className="text-[10px] font-bold uppercase tracking-wider">Tiempo</span>
@@ -710,19 +743,19 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                           <div className="grid grid-cols-2 gap-y-2.5">
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Señal</p>
-                              <p className="text-[11px] font-bold text-amber-400 tabular-nums">
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT_AMBER})` }}>
                                 {entry.signalArrivedAt ? format(new Date(entry.signalArrivedAt), 'hh:mm a') : '--:--'}
                               </p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Final</p>
-                              <p className="text-[11px] font-bold text-emerald-400 tabular-nums">
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT_GREEN})` }}>
                                 {entry.completedAt ? format(new Date(entry.completedAt), 'hh:mm a') : '--:--'}
                               </p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Ejecución</p>
-                              <p className="text-[11px] font-bold text-cyan-400 tabular-nums">
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>
                                 {entry.executedAt ? format(new Date(entry.executedAt), 'hh:mm a') : '--:--'}
                               </p>
                             </div>
@@ -742,7 +775,7 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                         </div>
 
                         {/* PRECIOS */}
-                        <div className="bg-card/60 backdrop-blur-sm p-3 space-y-3">
+                        <div className="p-3 space-y-3" style={{ background: 'hsl(var(--card) / 0.6)' }}>
                           <div className="flex items-center gap-1.5 text-muted-foreground">
                             <DollarSign className="w-3 h-3" />
                             <span className="text-[10px] font-bold uppercase tracking-wider">Precios</span>
@@ -750,26 +783,25 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                           <div className="grid grid-cols-2 gap-y-2.5">
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Entrada</p>
-                              <p className="text-[11px] font-bold text-cyan-400 tabular-nums">{formatPrice(parseFloat(entry.entryPrice), entry.pair)}</p>
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>{formatPrice(parseFloat(entry.entryPrice), entry.pair)}</p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">Salida</p>
-                              <p className="text-[11px] font-bold text-amber-400 tabular-nums">{formatPrice(parseFloat(entry.exitPrice), entry.pair)}</p>
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT_AMBER})` }}>{formatPrice(parseFloat(entry.exitPrice), entry.pair)}</p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">TP</p>
-                              <p className="text-[11px] font-bold text-emerald-400 tabular-nums">{entry.takeProfit ? formatPrice(parseFloat(entry.takeProfit), entry.pair) : '--'}</p>
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT_GREEN})` }}>{entry.takeProfit ? formatPrice(parseFloat(entry.takeProfit), entry.pair) : '--'}</p>
                             </div>
                             <div>
                               <p className="text-[9px] text-muted-foreground/70">SL</p>
-                              <p className="text-[11px] font-bold text-rose-400 tabular-nums">{entry.stopLoss ? formatPrice(parseFloat(entry.stopLoss), entry.pair) : '--'}</p>
+                              <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT_ROSE})` }}>{entry.stopLoss ? formatPrice(parseFloat(entry.stopLoss), entry.pair) : '--'}</p>
                             </div>
                             <div className="col-span-2">
                               <p className="text-[9px] text-muted-foreground/70">Pips</p>
-                              <p className={cn(
-                                'text-[11px] font-bold tabular-nums',
-                                isWin ? 'text-emerald-400' : isLoss ? 'text-rose-400' : 'text-amber-400'
-                              )}>
+                              <p className="text-[11px] font-bold tabular-nums" style={{
+                                color: isWin ? `hsl(${ACCENT_GREEN})` : isLoss ? `hsl(${ACCENT_ROSE})` : `hsl(${ACCENT_AMBER})`,
+                              }}>
                                 {isLoss ? '-' : '+'}{entry.pips}
                               </p>
                             </div>
@@ -787,7 +819,8 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                         <Button
                           size="sm"
                           variant="outline"
-                          className="flex-1 h-8 text-xs border-border/50"
+                          className="flex-1 h-8 text-xs"
+                          style={{ borderColor: `hsl(${ACCENT} / 0.2)` }}
                           onClick={(e) => { e.stopPropagation(); onEdit(entry); }}
                         >
                           <Pencil className="w-3 h-3 mr-1" /> Editar
@@ -795,14 +828,15 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-8 text-xs text-destructive hover:text-destructive border-border/50"
+                          className="h-8 text-xs"
+                          style={{ borderColor: `hsl(${ACCENT_ROSE} / 0.2)`, color: `hsl(${ACCENT_ROSE})` }}
                           onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }}
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -826,14 +860,12 @@ function generateJournalChartData(entry: TradeEntry) {
 
   for (let i = 0; i <= steps; i++) {
     const progress = i / steps;
-    // Simulate price movement from entry toward exit
     const trend = ep + (ex - ep) * progress;
     const noise = (Math.sin(i * 1.7) * 0.3 + Math.cos(i * 2.3) * 0.2) * range * 0.15;
     const price = trend + noise;
     
-    // Generate time labels
     const baseDate = entry.executedAt ? new Date(entry.executedAt) : new Date(entry.date);
-    const time = new Date(baseDate.getTime() + i * 15 * 60000); // 15min intervals
+    const time = new Date(baseDate.getTime() + i * 15 * 60000);
     data.push({
       time: `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`,
       price: parseFloat(price.toFixed(6)),
@@ -856,7 +888,7 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
   const maxP = Math.max(...prices);
   const pad = (maxP - minP) * 0.2 || ep * 0.001;
 
-  const lineColor = isWin ? 'hsl(150, 70%, 50%)' : isLoss ? 'hsl(0, 60%, 50%)' : 'hsl(var(--muted-foreground))';
+  const lineColor = isWin ? `hsl(${ACCENT_GREEN})` : isLoss ? `hsl(${ACCENT_ROSE})` : 'hsl(var(--muted-foreground))';
 
   return (
     <div className="h-48 px-1 pt-2 pb-1">
@@ -883,22 +915,22 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
             width={52}
           />
           {tp && (
-            <ReferenceLine y={tp} stroke="hsl(150, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'TP', position: 'insideTopLeft', fill: 'hsl(150, 60%, 50%)', fontSize: 8, fontWeight: 600 }} />
+            <ReferenceLine y={tp} stroke={`hsl(${ACCENT_GREEN})`} strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'TP', position: 'insideTopLeft', fill: `hsl(${ACCENT_GREEN})`, fontSize: 8, fontWeight: 600 }} />
           )}
-          <ReferenceLine y={ep} stroke="hsl(200, 70%, 55%)" strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Entry', position: 'insideTopLeft', fill: 'hsl(200, 70%, 55%)', fontSize: 8, fontWeight: 600 }} />
+          <ReferenceLine y={ep} stroke={`hsl(${ACCENT})`} strokeDasharray="4 4" strokeOpacity={0.6} label={{ value: 'Entry', position: 'insideTopLeft', fill: `hsl(${ACCENT})`, fontSize: 8, fontWeight: 600 }} />
           {sl && (
-            <ReferenceLine y={sl} stroke="hsl(0, 60%, 50%)" strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'SL', position: 'insideBottomLeft', fill: 'hsl(0, 60%, 50%)', fontSize: 8, fontWeight: 600 }} />
+            <ReferenceLine y={sl} stroke={`hsl(${ACCENT_ROSE})`} strokeDasharray="6 3" strokeOpacity={0.8} label={{ value: 'SL', position: 'insideBottomLeft', fill: `hsl(${ACCENT_ROSE})`, fontSize: 8, fontWeight: 600 }} />
           )}
-          <ReferenceLine y={ex} stroke="hsl(35, 90%, 55%)" strokeDasharray="3 2" strokeOpacity={0.9} label={{ value: 'Close', position: 'insideTopLeft', fill: 'hsl(35, 90%, 55%)', fontSize: 8, fontWeight: 600 }} />
+          <ReferenceLine y={ex} stroke={`hsl(${ACCENT_AMBER})`} strokeDasharray="3 2" strokeOpacity={0.9} label={{ value: 'Close', position: 'insideTopLeft', fill: `hsl(${ACCENT_AMBER})`, fontSize: 8, fontWeight: 600 }} />
           <Tooltip
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null;
               const price = payload[0].value as number;
               const levels = [
-                ...(tp ? [{ label: 'TP', value: tp, color: 'hsl(150, 60%, 50%)' }] : []),
-                { label: 'Entry', value: ep, color: 'hsl(200, 70%, 55%)' },
-                { label: 'Close', value: ex, color: 'hsl(35, 90%, 55%)' },
-                ...(sl ? [{ label: 'SL', value: sl, color: 'hsl(0, 60%, 50%)' }] : []),
+                ...(tp ? [{ label: 'TP', value: tp, color: `hsl(${ACCENT_GREEN})` }] : []),
+                { label: 'Entry', value: ep, color: `hsl(${ACCENT})` },
+                { label: 'Close', value: ex, color: `hsl(${ACCENT_AMBER})` },
+                ...(sl ? [{ label: 'SL', value: sl, color: `hsl(${ACCENT_ROSE})` }] : []),
               ];
               return (
                 <div className="rounded-lg border border-border/50 bg-background/95 backdrop-blur-md px-2.5 py-2 shadow-xl text-[10px] space-y-1">
@@ -935,7 +967,7 @@ function JournalMiniChart({ entry }: { entry: TradeEntry }) {
   );
 }
 
-/* ─── Filters for journal history ─── */
+/* ─── Filters ─── */
 interface JournalFiltersProps {
   entries: TradeEntry[];
   filterPair: string;
@@ -951,15 +983,14 @@ function JournalFilters({ entries, filterPair, setFilterPair, filterResult, setF
   }, [entries]);
 
   const resultOptions = [
-    { value: 'all', label: 'Todos', color: 'text-foreground' },
-    { value: 'win', label: 'Win', color: 'text-emerald-400' },
-    { value: 'loss', label: 'Loss', color: 'text-rose-400' },
-    { value: 'breakeven', label: 'BE', color: 'text-muted-foreground' },
+    { value: 'all', label: 'Todos', color: ACCENT },
+    { value: 'win', label: 'Win', color: ACCENT_GREEN },
+    { value: 'loss', label: 'Loss', color: ACCENT_ROSE },
+    { value: 'breakeven', label: 'BE', color: ACCENT },
   ];
 
   return (
     <div className="flex gap-2">
-      {/* Pair filter */}
       <Select value={filterPair} onValueChange={setFilterPair}>
         <SelectTrigger className="h-8 text-xs bg-secondary border-border flex-1">
           <SelectValue placeholder="Par" />
@@ -972,18 +1003,16 @@ function JournalFilters({ entries, filterPair, setFilterPair, filterResult, setF
         </SelectContent>
       </Select>
 
-      {/* Result filter as pill buttons */}
-      <div className="flex rounded-lg border border-border overflow-hidden">
+      <div className="flex rounded-xl overflow-hidden" style={{ border: `1px solid hsl(${ACCENT} / 0.2)` }}>
         {resultOptions.map(opt => (
           <button
             key={opt.value}
             onClick={() => setFilterResult(opt.value)}
-            className={cn(
-              'px-2.5 py-1.5 text-[10px] font-bold transition-colors',
-              filterResult === opt.value
-                ? 'bg-primary/20 text-primary'
-                : 'bg-secondary text-muted-foreground hover:text-foreground'
-            )}
+            className="px-2.5 py-1.5 text-[10px] font-bold transition-colors"
+            style={{
+              background: filterResult === opt.value ? `hsl(${opt.color} / 0.15)` : 'hsl(var(--secondary))',
+              color: filterResult === opt.value ? `hsl(${opt.color})` : 'hsl(var(--muted-foreground))',
+            }}
           >
             {opt.label}
           </button>
