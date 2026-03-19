@@ -52,13 +52,10 @@ export function Header() {
             <img src={logoImg} alt="Coins Signals" className="h-16 w-auto" />
           </Link>
 
-          {/* Right: Community + Portfolio icons */}
+          {/* Right: Community icon */}
           <div className="flex items-center gap-1">
-            <Link to="/forum" className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
-              <Users className="w-5 h-5 text-primary" />
-            </Link>
-            <Link to="/portfolio" className="p-2 rounded-xl bg-accent/10 hover:bg-accent/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/portfolio')}>
-              <Briefcase className="w-5 h-5 text-accent" />
+            <Link to="/forum" className="p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
+              <Users className="w-7 h-7 text-primary" />
             </Link>
           </div>
         </div>
