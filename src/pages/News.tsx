@@ -274,12 +274,12 @@ function VolatilityIndicator({ newsId, title, category, currencies
   if (isLoading) {
     return (
       <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
-      style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+      style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_volatility')}</span>
-          <Loader2 className="w-3 h-3 text-cyan-400/50 animate-spin" />
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">{t('news_volatility')}</span>
+          <Loader2 className="w-3 h-3 text-muted-foreground animate-spin" />
         </div>
-        <div className="h-1 rounded-full bg-slate-800/80 animate-pulse" />
+        <div className="h-1 rounded-full animate-pulse" style={{ background: 'hsl(var(--muted) / 0.3)' }} />
       </div>);
 
   }
