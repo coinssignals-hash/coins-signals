@@ -560,7 +560,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           </div>
           {/* Sentiment quick */}
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
-          style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+          style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
             <div className="flex items-center justify-between mb-1">
               <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_sentiment')}</span>
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
