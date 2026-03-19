@@ -349,7 +349,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
           {config.label}
         </span>
       </div>
-      <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden relative">
+      <div className="h-1 rounded-full overflow-hidden relative" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{
