@@ -110,7 +110,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     if (!user?.id || !open) return;
     supabase
       .from('profiles')
-      .select('alias, avatar_url')
+      .select('alias, avatar_url, signal_alerts_enabled')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
