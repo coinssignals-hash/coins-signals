@@ -102,6 +102,7 @@ export default function Admin() {
       case 'moderation': return <AdminModerationTab />;
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
+      case 'forum-suggestions': return <AdminForumSuggestionsTab />;
       default: return <AdminDashboardTab />;
     }
   };
