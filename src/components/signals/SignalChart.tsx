@@ -242,7 +242,7 @@ export function SignalChart({
                 {/* Toggle levels in fullscreen */}
                 {signalLevels && (
                   <button
-                    onClick={() => setShowLevels(!showLevels)}
+                    onClick={toggleLevels}
                     className={cn(
                       "p-1.5 rounded-md transition-all active:scale-90",
                       showLevels ? "text-cyan-300" : "text-white/50"
