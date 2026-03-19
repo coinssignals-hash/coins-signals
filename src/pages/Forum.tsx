@@ -490,6 +490,7 @@ export default function Forum() {
                 const isOwn = msg.user_id === user?.id || msg.sender_id === user?.id;
                 const userName = isDM ? msg.sender_name : msg.user_name;
                 const userAvatar = isDM ? msg.sender_avatar : msg.user_avatar;
+                const isLegendary = isLegendaryAvatar(userAvatar);
                 const msgId = msg.id;
 
                 return (
