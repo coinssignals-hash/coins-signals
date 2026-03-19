@@ -283,6 +283,9 @@ export default function Forum() {
         </button>
       )}
 
+      {/* Tomorrow's Suggestions */}
+      <TomorrowSuggestions />
+
       {/* Tabs: Channels / DMs / Favorites */}
       <div className="flex gap-2">
         <button
