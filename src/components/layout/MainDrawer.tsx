@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
+import { isLegendaryAvatar, LEGENDARY_RING_CLASS } from '@/lib/legendaryAvatar';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { useNewsCache } from '@/hooks/useNewsCache';
@@ -34,6 +35,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const savedNewsCount = getAllCachedNews().length;
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<{ alias: string | null; avatar_url: string | null } | null>(null);
   const { t, language } = useTranslation();
   const drawerSide = language === 'ar' ? 'right' : 'left';
   
@@ -102,6 +104,19 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch profile when user changes or drawer opens
+  useEffect(() => {
+    if (!user?.id || !open) return;
+    supabase
+      .from('profiles')
+      .select('alias, avatar_url')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) setProfile(data);
+      });
+  }, [user?.id, open]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({ title: t('drawer_session_closed'), description: t('drawer_session_closed_desc') });
@@ -120,15 +135,22 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         <SheetHeader className="p-6 pb-4">
           {user ? (
             <div className="flex items-center gap-3">
-              <Avatar className="h-16 w-16 border-2 border-primary">
-                <AvatarImage src="/placeholder.svg" alt="Usuario" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                  {getInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className={cn("h-16 w-16 border-2 border-primary", profile?.avatar_url && isLegendaryAvatar(profile.avatar_url) && LEGENDARY_RING_CLASS)}>
+                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.alias || 'Avatar'} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                    {getInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                {profile?.avatar_url && isLegendaryAvatar(profile.avatar_url) && (
+                  <span className="absolute -bottom-0.5 -right-0.5 text-sm">👑</span>
+                )}
+              </div>
               <div className="flex flex-col items-start">
-                <h2 className="text-lg font-bold text-foreground">{t('drawer_welcome')}</h2>
-                <p className="text-sm font-medium text-primary truncate max-w-[150px]">
+                <h2 className="text-lg font-bold text-foreground">
+                  {profile?.alias || t('drawer_welcome')}
+                </h2>
+                <p className="text-xs text-muted-foreground truncate max-w-[150px]">
                   {user.email}
                 </p>
                 <Badge variant="outline" className="mt-1 border-primary text-primary flex items-center gap-1">
