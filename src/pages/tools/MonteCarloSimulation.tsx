@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -155,7 +156,7 @@ export default function MonteCarloSimulation() {
         </div>
 
         {/* Parameters */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_monte_carlo_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -193,12 +194,12 @@ export default function MonteCarloSimulation() {
               {running ? t('tp_simulating') : t('tp_run_simulations').replace('{count}', String(simulations))}
             </Button>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {result && (
           <>
             {/* Equity Projection Chart */}
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_capital_projection')}</h3>
                 <div className="h-56">
@@ -222,10 +223,10 @@ export default function MonteCarloSimulation() {
                   <span className="text-primary/30">■ P5-P95</span>
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
 
             {/* Distribution */}
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_distribution')}</h3>
                 <div className="h-40">
@@ -238,10 +239,10 @@ export default function MonteCarloSimulation() {
                   </ResponsiveContainer>
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
 
             {/* Stats */}
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground">{t('tp_key_stats')}</h3>
                 {[
@@ -258,9 +259,9 @@ export default function MonteCarloSimulation() {
                   </div>
                 ))}
               </CardContent>
-            </Card>
+            </GlowCard>
 
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -269,7 +270,7 @@ export default function MonteCarloSimulation() {
               </p>
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
           </>
         )}
       </main>

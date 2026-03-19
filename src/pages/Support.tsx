@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -56,7 +57,7 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
 
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-6">
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader>
           <CardTitle className="text-sm text-primary flex items-center gap-2">
             <Headphones className="w-4 h-4" /> {t('support_welcome')}
@@ -105,9 +106,9 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </GlowCard>
 
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_channels')}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <ContactRow icon={MessageCircle} title={t('support_live_chat')} detail={t('support_chat_live_hours')} color="text-emerald-400" />
@@ -118,9 +119,9 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
           <ContactRow icon={Globe} title="Instagram" detail="@ecosignal.ai" color="text-[hsl(340,75%,55%)]" onClick={() => window.open('https://instagram.com/ecosignal.ai', '_blank')} />
           <ContactRow icon={Globe} title="TikTok" detail="@ecosignal.ai" color="text-foreground" onClick={() => window.open('https://tiktok.com/@ecosignal.ai', '_blank')} />
         </CardContent>
-      </Card>
+      </GlowCard>
 
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_location_phones')}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">{t('support_intl_offices')}</p>
@@ -129,9 +130,9 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
             <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary"><MapPin className="w-5 h-5 text-primary mt-0.5" /><div><p className="text-sm font-medium text-foreground">Netherlands</p><p className="text-xs text-muted-foreground">Boomgaardstraat 12, Fijnaart 2544</p></div></div>
           </div>
         </CardContent>
-      </Card>
+      </GlowCard>
 
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_legal')}</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-2">
@@ -143,7 +144,7 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
             ))}
           </div>
         </CardContent>
-      </Card>
+      </GlowCard>
     </motion.div>
   );
 }
@@ -194,7 +195,7 @@ function FAQSection({ onBack, t }: { onBack: () => void; t: (k: string) => strin
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
       <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">{t('support_back')}</Button>
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary flex items-center gap-2"><HelpCircle className="w-4 h-4" /> {t('support_faq')}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="relative">
@@ -229,7 +230,7 @@ function FAQSection({ onBack, t }: { onBack: () => void; t: (k: string) => strin
             </div>
           ))}
         </CardContent>
-      </Card>
+      </GlowCard>
     </motion.div>
   );
 }
@@ -269,7 +270,7 @@ function ChatSection({ onBack, userName, t }: { onBack: () => void; userName: st
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
       <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">{t('support_back')}</Button>
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"><Bot className="w-4 h-4 text-primary" /></div>
@@ -306,7 +307,7 @@ function ChatSection({ onBack, userName, t }: { onBack: () => void; userName: st
             <Button size="icon" onClick={sendMessage} disabled={!input.trim()}><Send className="w-4 h-4" /></Button>
           </div>
         </CardContent>
-      </Card>
+      </GlowCard>
     </motion.div>
   );
 }
@@ -342,7 +343,7 @@ function TicketSection({ onBack, t }: { onBack: () => void; t: (k: string) => st
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
       <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">{t('support_back')}</Button>
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_send_request')}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">{t('support_send_request_desc')}</p>
@@ -392,16 +393,16 @@ function TicketSection({ onBack, t }: { onBack: () => void; t: (k: string) => st
             ) : (<><Send className="w-4 h-4 mr-2" />{t('support_ticket_send')}</>)}
           </Button>
         </CardContent>
-      </Card>
+      </GlowCard>
 
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_recent_tickets')}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           <TicketRow id="TK-4821" topic={t('support_topic_signals')} status="resolved" date="05 Mar" summary="EUR/USD" />
           <TicketRow id="TK-4798" topic={t('support_topic_payments')} status="open" date="03 Mar" summary="Subscription" />
           <TicketRow id="TK-4756" topic={t('support_topic_account')} status="resolved" date="28 Feb" summary="KYC" />
         </CardContent>
-      </Card>
+      </GlowCard>
     </motion.div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -156,7 +157,7 @@ export default function BacktestPro() {
         </div>
 
         {/* Global Config */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -169,7 +170,7 @@ export default function BacktestPro() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Strategy Cards */}
         {strategies.map((strat, idx) => (
@@ -217,7 +218,7 @@ export default function BacktestPro() {
         {results && (
           <>
             {/* Equity Chart */}
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_equity_curves')}</h3>
                 <div className="h-56">
@@ -235,10 +236,10 @@ export default function BacktestPro() {
                   </ResponsiveContainer>
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
 
             {/* Comparison Table */}
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_comparison')}</h3>
                 <div className="overflow-x-auto">
@@ -276,11 +277,11 @@ export default function BacktestPro() {
                   </table>
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
           </>
         )}
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -289,7 +290,7 @@ export default function BacktestPro() {
               </p>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
       </main>
     </PageShell>
   );

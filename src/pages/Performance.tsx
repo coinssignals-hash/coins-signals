@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -250,12 +251,12 @@ export default function Performance() {
               onToggleDay={handleToggleDay}
             />
           ) : (
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-8 text-center">
                 <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">{t('perf_no_signals_this_week')}</p>
               </CardContent>
-            </Card>
+            </GlowCard>
           )}
         </motion.div>
 

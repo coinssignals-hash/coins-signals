@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { ChevronRight, User, FileText, Shield, Bell, Palette, HelpCircle } from 'lucide-react';
 import { useOnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -47,7 +48,7 @@ export default function Settings() {
           {settingsSections.map((section) => (
             <div key={section.title}>
               <h2 className="text-sm font-semibold text-primary mb-3">{section.title}</h2>
-              <Card className="bg-card border-border">
+              <GlowCard>
                 <CardContent className="p-0">
                   {section.items.map((item, index) => {
                     const Icon = item.icon;
@@ -73,13 +74,13 @@ export default function Settings() {
                     );
                   })}
                 </CardContent>
-              </Card>
+              </GlowCard>
             </div>
           ))}
 
           <div>
             <h2 className="text-sm font-semibold text-primary mb-3">{t('settings_help')}</h2>
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-0">
                 <button
                   onClick={startTour}
@@ -97,7 +98,7 @@ export default function Settings() {
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </button>
               </CardContent>
-            </Card>
+            </GlowCard>
           </div>
         </div>
       </main>

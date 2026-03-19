@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, forwardRef } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -127,7 +128,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
           </div>
         </div>
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('rr_trade_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -182,7 +183,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
               {t('rr_calculate_btn') || 'Calcular Riesgo / Recompensa'}
             </Button>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {result && (() => {
           const riskVal = parseFloat(result.riskPips);
@@ -209,7 +210,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
             </Card>
 
             {/* Visual bar chart */}
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4 space-y-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
                   {t('rr_visual') || 'Proporción Visual'}
@@ -258,25 +259,25 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
 
             <div className="grid grid-cols-2 gap-3">
-              <Card className="bg-card border-border">
+              <GlowCard>
                 <CardContent className="p-3 text-center">
                   <ShieldAlert className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-xs text-muted-foreground">{t('rr_risk')}</p>
                   <p className="text-sm font-bold text-rose-400 tabular-nums">{result.riskPips} pips</p>
                   <p className="text-xs text-rose-400/70 tabular-nums">${result.riskAmount}</p>
                 </CardContent>
-              </Card>
-              <Card className="bg-card border-border">
+              </GlowCard>
+              <GlowCard>
                 <CardContent className="p-3 text-center">
                   <Target className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
                   <p className="text-xs text-muted-foreground">{t('rr_reward')}</p>
                   <p className="text-sm font-bold text-emerald-400 tabular-nums">{result.rewardPips} pips</p>
                   <p className="text-xs text-emerald-400/70 tabular-nums">${result.potentialProfit}</p>
                 </CardContent>
-              </Card>
+              </GlowCard>
             </div>
 
             {/* Optimal Lot Size */}
@@ -314,14 +315,14 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
           );
         })()}
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('rr_info_text')}</p>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
       </main>
     </PageShell>
   );

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -68,7 +69,7 @@ export default function SwapCalculator() {
           </div>
         </div>
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -104,10 +105,10 @@ export default function SwapCalculator() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {pairData && (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                 <Moon className="w-4 h-4 text-primary" />{t('swap_rates')} — {pair}
@@ -133,7 +134,7 @@ export default function SwapCalculator() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </GlowCard>
         )}
 
         {result && (
@@ -150,34 +151,34 @@ export default function SwapCalculator() {
               </CardContent>
             </Card>
             <div className="grid grid-cols-2 gap-3">
-              <Card className="bg-card border-border">
+              <GlowCard>
                 <CardContent className="p-3 text-center">
                   <Moon className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('swap_cost_night')}</p>
                   <p className={cn('text-sm font-bold tabular-nums', parseFloat(result.dailyCostUsd) >= 0 ? 'text-emerald-400' : 'text-rose-400')}>${result.dailyCostUsd}</p>
                   <p className="text-[10px] text-muted-foreground tabular-nums">{result.dailyCostPips} pips</p>
                 </CardContent>
-              </Card>
-              <Card className="bg-card border-border">
+              </GlowCard>
+              <GlowCard>
                 <CardContent className="p-3 text-center">
                   <Calendar className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('swap_effective_nights')}</p>
                   <p className="text-sm font-bold text-foreground tabular-nums">{result.effectiveDays}</p>
                   <p className="text-[10px] text-muted-foreground">{t('swap_includes_triple')}</p>
                 </CardContent>
-              </Card>
+              </GlowCard>
             </div>
           </>
         )}
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('swap_info_text')}</p>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
       </main>
     </PageShell>
   );

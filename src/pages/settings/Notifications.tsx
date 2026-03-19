@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -172,7 +173,7 @@ export default function Notifications() {
         <div className="space-y-4">
           <GlobalAlertsPanel />
 
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardHeader><CardTitle className="text-sm text-primary">{t('notif_settings')}</CardTitle></CardHeader>
             <CardContent>
               <div className="flex items-center justify-between py-3 border-b border-border">
@@ -183,7 +184,7 @@ export default function Notifications() {
                 <Switch checked={settings.pushNotifications} onCheckedChange={() => toggleSetting('pushNotifications')} className="data-[state=checked]:bg-primary" />
               </div>
             </CardContent>
-          </Card>
+          </GlowCard>
 
           <Card className="bg-card border-border border-green-500/20">
             <CardHeader>
@@ -220,7 +221,7 @@ export default function Notifications() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardHeader>
               <CardTitle className="text-sm text-primary flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />{t('notif_signal_alert')}
@@ -239,9 +240,9 @@ export default function Notifications() {
                 </div>
               ))}
             </CardContent>
-          </Card>
+          </GlowCard>
 
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardHeader>
               <CardTitle className="text-sm text-primary flex items-center gap-2">
                 <Volume2 className="w-4 h-4" />{t('notif_alert_sound')}
@@ -285,16 +286,16 @@ export default function Notifications() {
                 </div>
               ))}
             </CardContent>
-          </Card>
+          </GlowCard>
 
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-foreground">{t('notif_broker_alert')}</span>
                 <Switch checked={settings.brokerAccount} onCheckedChange={() => toggleSetting('brokerAccount')} className="data-[state=checked]:bg-primary" />
               </div>
             </CardContent>
-          </Card>
+          </GlowCard>
         </div>
       </main>
     </PageShell>

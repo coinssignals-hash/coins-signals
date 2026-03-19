@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Palette, Eye, Type, Globe, Zap, Minimize2, Sparkles } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -141,7 +142,7 @@ export default function Appearance() {
         </div>
 
         {/* Theme & Language */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Palette className="w-4 h-4" />{t('appearance_prefs')}
@@ -176,10 +177,10 @@ export default function Appearance() {
               </p>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Color Accent */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Sparkles className="w-4 h-4" />{t('appearance_accent_color')}
@@ -212,10 +213,10 @@ export default function Appearance() {
             </div>
             <p className="text-[11px] text-muted-foreground mt-2">{t('appearance_accent_desc')}</p>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Typography */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Type className="w-4 h-4" />{t('appearance_typography')}
@@ -256,10 +257,10 @@ export default function Appearance() {
               <p className="text-xs text-muted-foreground">{t('appearance_preview_tiny')}</p>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Accessibility */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Eye className="w-4 h-4" />{t('appearance_accessibility')}
@@ -311,7 +312,7 @@ export default function Appearance() {
               <Switch checked={compactMode} onCheckedChange={setCompactMode} />
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
       </main>
     </PageShell>
   );
