@@ -369,22 +369,23 @@ export function AICenter({ onClose }: Props) {
 
       {/* Results */}
       {Object.keys(results).length > 0 &&
-      <div className="space-y-3">
-          <div className="flex items-center gap-2 px-1">
+      <GlowCard color="160 60% 45%">
+        <div className="p-4 space-y-3">
+          <div className="flex items-center gap-2">
             <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(160, 70%, 45%), hsl(200, 90%, 50%))' }} />
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">{t('ai_center_results_title')}</h3>
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-widest">{t('ai_center_results_title')}</h3>
           </div>
           {Object.entries(results).map(([key, result]) => {
-          const mod = AI_MODULES.find((m) => m.id === key);
-          return (
-            <AIResultPanel
-              key={key}
-              result={result}
-              title={mod?.title || key} />);
-
-
-        })}
+            const mod = AI_MODULES.find((m) => m.id === key);
+            return (
+              <AIResultPanel
+                key={key}
+                result={result}
+                title={mod?.title || key} />
+            );
+          })}
         </div>
+      </GlowCard>
       }
 
       {/* Create Signal Button */}
