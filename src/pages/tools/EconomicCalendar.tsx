@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -169,7 +170,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         </div>
 
         {/* Day Tabs */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-1.5">
             <div className="flex gap-1">
               {DAY_OFFSETS.map(d => (
@@ -188,7 +189,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
               ))}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Stats Overview */}
         {!isLoading && events.length > 0 && (
@@ -212,7 +213,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Currency Breakdown */}
         {!isLoading && currencies.length > 0 && (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2.5">
                 <Globe className="w-4 h-4 text-primary" />
@@ -246,11 +247,11 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </GlowCard>
         )}
 
         {/* Impact Filter */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-3 flex items-center gap-2 flex-wrap">
             <Zap className="w-4 h-4 text-primary shrink-0" />
             <span className="text-xs font-medium text-muted-foreground shrink-0">{t('ec_impact')}:</span>
@@ -281,26 +282,26 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
               );
             })}
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Events List */}
         {isLoading ? (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground">{t('ec_loading')}</p>
             </CardContent>
-          </Card>
+          </GlowCard>
         ) : filtered.length === 0 ? (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="p-8 text-center">
               <CalendarDays className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
               <p className="text-sm text-muted-foreground">{t('ec_no_events')}</p>
               <p className="text-xs text-muted-foreground/60 mt-1">{t('ec_no_events_hint')}</p>
             </CardContent>
-          </Card>
+          </GlowCard>
         ) : (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="p-0">
               {filtered.map((event, i) => {
                 const impact = IMPACT_CONFIG_LOCAL[event.impact] || IMPACT_CONFIG_LOCAL.Low;
@@ -461,7 +462,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                 );
               })}
             </CardContent>
-          </Card>
+          </GlowCard>
         )}
 
         {/* Push Notification Toggle */}
@@ -493,14 +494,14 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Warning */}
         {!isLoading && events.length > 0 && (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="p-3 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('ec_volatility_warning')}
               </p>
             </CardContent>
-          </Card>
+          </GlowCard>
         )}
       </main>
     </PageShell>

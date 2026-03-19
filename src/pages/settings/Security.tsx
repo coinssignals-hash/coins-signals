@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -74,7 +75,7 @@ function PasswordChangeCard() {
   };
 
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader>
         <CardTitle className="text-sm text-primary flex items-center gap-2">
           <Lock className="w-4 h-4" />{t('sec_change_password')}
@@ -117,7 +118,7 @@ function PasswordChangeCard() {
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -147,7 +148,7 @@ function TwoFactorCard() {
   const copyRecoveryCodes = () => { navigator.clipboard.writeText(recoveryCodes.join('\n')); setCopied(true); toast.success(t('sec_codes_copied') || 'Códigos copiados al portapapeles'); setTimeout(() => setCopied(false), 2000); };
 
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader>
         <CardTitle className="text-sm text-primary flex items-center gap-2">
           <Mail className="w-4 h-4" />{t('sec_2fa_title')}
@@ -180,7 +181,7 @@ function TwoFactorCard() {
           </div>
         )}
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -215,7 +216,7 @@ function SessionManagerCard() {
   const DeviceIcon = ({ device }: { device: string }) => device === 'mobile' ? <Smartphone className="w-5 h-5 text-primary" /> : <Monitor className="w-5 h-5 text-primary" />;
 
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-sm text-primary flex items-center gap-2"><Globe className="w-4 h-4" />{t('sec_sessions')}</CardTitle>
         {sessions.length > 1 && (<Button variant="ghost" size="sm" onClick={revokeAll} className="text-destructive text-xs h-7"><LogOut className="w-3 h-3 mr-1" />{t('sec_close_all')}</Button>)}
@@ -242,7 +243,7 @@ function SessionManagerCard() {
           </div>
         ))}
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -277,7 +278,7 @@ function SecurityActivityCard() {
   };
 
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader><CardTitle className="text-sm text-primary flex items-center gap-2"><Clock className="w-4 h-4" />{t('sec_activity')}</CardTitle></CardHeader>
       <CardContent>
         {loading ? (<div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>) : (
@@ -297,7 +298,7 @@ function SecurityActivityCard() {
           </div>
         )}
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -311,7 +312,7 @@ function BiometricCard() {
   };
 
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader><CardTitle className="text-sm text-primary flex items-center gap-2"><Fingerprint className="w-4 h-4" />{t('sec_biometric_title')}</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <p className="text-xs text-muted-foreground">{t('sec_biometric_desc')}</p>
@@ -320,7 +321,7 @@ function BiometricCard() {
           <Switch checked={enabled} onCheckedChange={handleToggle} className="data-[state=checked]:bg-primary" />
         </div>
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -341,13 +342,13 @@ export default function Security() {
           </div>
         </div>
         {!isAuthenticated ? (
-          <Card className="bg-card border-border">
+          <GlowCard>
             <CardContent className="py-8 text-center space-y-3">
               <Lock className="w-10 h-10 text-muted-foreground mx-auto" />
               <p className="text-sm text-muted-foreground">{t('sec_login_required')}</p>
               <Link to="/auth"><Button className="bg-primary text-primary-foreground">{t('sec_login_btn')}</Button></Link>
             </CardContent>
-          </Card>
+          </GlowCard>
         ) : (
           <div className="space-y-4">
             <PasswordChangeCard />

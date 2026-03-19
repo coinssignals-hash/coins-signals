@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -81,7 +82,7 @@ export default function Referrals() {
         </div>
 
         {/* Hero Card */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-6 text-center">
             <div className="w-14 h-14 rounded-2xl bg-accent/10 mx-auto mb-4 flex items-center justify-center border border-accent/20">
               <Gift className="w-7 h-7 text-accent" />
@@ -96,7 +97,7 @@ export default function Referrals() {
               {t('ref_per_friend')}
             </p>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
@@ -127,7 +128,7 @@ export default function Referrals() {
         </div>
 
         {/* Referral Link */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
@@ -165,10 +166,10 @@ export default function Referrals() {
               </>
             )}
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* How It Works */}
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-primary">{t('ref_how_it_works')}</CardTitle>
           </CardHeader>
@@ -192,7 +193,7 @@ export default function Referrals() {
               step={3}
             />
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Referral History */}
         <ReferralHistory loading={loading} stats={stats} t={t} />
@@ -203,7 +204,7 @@ export default function Referrals() {
 
 function ReferralHistory({ loading, stats, t }: { loading: boolean; stats: any; t: (k: string) => string }) {
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm text-primary flex items-center gap-2">
           <Clock className="w-4 h-4" />
@@ -265,7 +266,7 @@ function ReferralHistory({ loading, stats, t }: { loading: boolean; stats: any; 
           </div>
         )}
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -273,7 +274,7 @@ function StatCard({ icon: Icon, label, value, color, bg }: {
   icon: any; label: string; value: string | number; color: string; bg: string;
 }) {
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardContent className="p-4 flex items-center gap-3">
         <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', bg)}>
           <Icon className={cn('w-5 h-5', color)} />
@@ -283,7 +284,7 @@ function StatCard({ icon: Icon, label, value, color, bg }: {
           <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
         </div>
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -221,7 +222,7 @@ export default function Auth() {
       </header>
 
       <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-card border-border">
+        <GlowCard className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">{getIcon()}</div>
@@ -349,7 +350,7 @@ export default function Auth() {
               </>
             )}
           </CardContent>
-        </Card>
+        </GlowCard>
       </div>
     </div>
     </div>

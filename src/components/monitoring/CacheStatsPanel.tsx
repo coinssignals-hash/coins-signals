@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { Database, RefreshCw, Trash2, Clock, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -131,17 +132,17 @@ export function CacheStatsPanel() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card border-border">
+      <GlowCard>
         <CardContent className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-primary animate-spin" />
           <span className="ml-2 text-muted-foreground">{t('cache_loading')}</span>
         </CardContent>
-      </Card>
+      </GlowCard>
     );
   }
 
   return (
-    <Card className="bg-card border-border">
+    <GlowCard>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -274,6 +275,6 @@ export function CacheStatsPanel() {
           </div>
         )}
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }

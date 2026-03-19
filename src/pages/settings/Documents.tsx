@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Upload, FileText, Check, Clock, AlertCircle, Trash2, Loader2, ShieldCheck, Eye } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -132,7 +133,7 @@ export default function Documents() {
                   latestDoc?.status === 'rejected' ? <AlertCircle className="w-4 h-4 text-destructive" /> : null;
               return (
                 <AccordionItem key={section.key} value={section.key} className="border-border mb-3">
-                  <Card className="bg-card border-border">
+                  <GlowCard>
                     <AccordionTrigger className="px-4 py-3 hover:no-underline">
                       <div className="flex items-center gap-3 flex-1">
                         <FileText className="w-5 h-5 text-primary" />
@@ -143,13 +144,13 @@ export default function Documents() {
                     <AccordionContent className="px-4 pb-4">
                       <DocumentUploadSection section={section} latestDoc={latestDoc} uploading={uploading} onUpload={handleUpload} t={t} />
                     </AccordionContent>
-                  </Card>
+                  </GlowCard>
                 </AccordionItem>
               );
             })}
           </Accordion>
 
-          <Card className="bg-card border-border mt-6">
+          <GlowCard className="mt-6">
             <CardHeader><CardTitle className="text-sm text-primary">{t('doc_history')}</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {loading ? (
@@ -178,7 +179,7 @@ export default function Documents() {
                 ))
               )}
             </CardContent>
-          </Card>
+          </GlowCard>
         </div>
       </main>
     </PageShell>

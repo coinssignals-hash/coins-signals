@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { cn } from '@/lib/utils';
 import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { useNavigate } from 'react-router-dom';
@@ -121,7 +122,7 @@ export default function Tools() {
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25 }}
           >
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-0">
                 {filtered.map((tool, index) => {
                   const ToolIcon = tool.icon;
@@ -163,7 +164,7 @@ export default function Tools() {
                   );
                 })}
               </CardContent>
-            </Card>
+            </GlowCard>
           </motion.div>
         </AnimatePresence>
       </main>

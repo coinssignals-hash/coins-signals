@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw } from 'lucide-react';
@@ -413,7 +414,7 @@ export default function CurrencyConverter() {
         </p>
 
         {/* ──── Converter Card ──── */}
-        <Card className="bg-card border-border overflow-hidden">
+        <GlowCard>
           <CardContent className="p-0">
             {/* FROM */}
             <div className="p-4 border-b border-border space-y-3">
@@ -582,7 +583,7 @@ export default function CurrencyConverter() {
               )}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Calculate button */}
         <button

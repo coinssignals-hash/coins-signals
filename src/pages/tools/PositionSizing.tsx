@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -69,7 +70,7 @@ export default function PositionSizing() {
           </div>
         </div>
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -96,7 +97,7 @@ export default function PositionSizing() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {result && (
           <>
@@ -118,7 +119,7 @@ export default function PositionSizing() {
               );
             })()}
 
-            <Card className="bg-card border-border">
+            <GlowCard>
               <CardContent className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Layers className="w-4 h-4 text-primary" />{t('ps_optimal_size')}
@@ -137,35 +138,35 @@ export default function PositionSizing() {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </GlowCard>
 
             <div className="grid grid-cols-2 gap-3">
-              <Card className="bg-card border-border">
+              <GlowCard>
                 <CardContent className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ps_max_risk')}</p>
                   <p className="text-lg font-bold text-rose-400 tabular-nums">${result.riskAmount}</p>
                 </CardContent>
-              </Card>
-              <Card className="bg-card border-border">
+              </GlowCard>
+              <GlowCard>
                 <CardContent className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">$/Pip</p>
                   <p className="text-lg font-bold text-primary tabular-nums">${result.maxLossPerPip}</p>
                 </CardContent>
-              </Card>
+              </GlowCard>
             </div>
           </>
         )}
 
-        <Card className="bg-card border-border">
+        <GlowCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('ps_info_text')}</p>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
       </main>
     </PageShell>
   );
