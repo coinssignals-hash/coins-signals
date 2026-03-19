@@ -277,20 +277,18 @@ export function AICenter({ onClose }: Props) {
 
       {/* Data Status */}
       {forexData &&
-      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl"
-      style={{
-        background: 'hsl(160, 60%, 8%)',
-        border: '1px solid hsl(160, 50%, 20%)'
-      }}>
+      <GlowCard color="160 60% 45%">
+        <div className="flex items-center gap-2.5 px-4 py-2.5">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-          <span className="text-xs text-white font-semibold font-mono">{forexData.symbol}</span>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-xs text-foreground font-semibold font-mono">{forexData.symbol}</span>
+          <span className="text-[11px] text-muted-foreground">
             {forexData.candles.length} {t('ai_center_candles_loaded')}
           </span>
-          <span className="text-[11px] text-cyan-300/60 ml-auto font-mono">
+          <span className="text-[11px] text-muted-foreground ml-auto font-mono">
             {t('ai_center_last')}: {forexData.candles[forexData.candles.length - 1]?.close.toFixed(5)}
           </span>
         </div>
+      </GlowCard>
       }
       {forexError &&
       <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
