@@ -171,7 +171,7 @@ export function SignalChart({
           {/* Toggle signal levels */}
           {signalLevels && (
             <button
-              onClick={() => setShowLevels(!showLevels)}
+              onClick={toggleLevels}
               className={cn(
                 "absolute top-2 right-12 z-10 p-1.5 rounded-md transition-all active:scale-95",
                 showLevels ? "text-cyan-300" : "text-white/40"
