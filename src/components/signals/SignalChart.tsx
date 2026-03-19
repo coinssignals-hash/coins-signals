@@ -193,6 +193,7 @@ export function SignalChart({
               takeProfit={signalLevels.takeProfit}
               takeProfit2={signalLevels.takeProfit2}
               stopLoss={signalLevels.stopLoss}
+              signalDatetime={signalLevels.signalDatetime}
               visible={showLevels}
               onExited={() => setLevelsMounted(false)}
             />
@@ -294,6 +295,7 @@ export function SignalChart({
                 takeProfit={signalLevels.takeProfit}
                 takeProfit2={signalLevels.takeProfit2}
                 stopLoss={signalLevels.stopLoss}
+                signalDatetime={signalLevels.signalDatetime}
                 visible={showLevels}
                 onExited={() => setLevelsMounted(false)}
               />

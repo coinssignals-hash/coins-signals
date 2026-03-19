@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface SignalLevelsOverlayProps {
   entryPrice: number;
   takeProfit: number;
   takeProfit2?: number;
   stopLoss: number;
+  signalDatetime?: string;
   visible?: boolean;
   onExited?: () => void;
 }
@@ -19,9 +21,19 @@ export function SignalLevelsOverlay({
   takeProfit,
   takeProfit2,
   stopLoss,
+  signalDatetime,
   visible = true,
   onExited,
 }: SignalLevelsOverlayProps) {
+  const timeLabel = useMemo(() => {
+    if (!signalDatetime) return null;
+    try {
+      const d = new Date(signalDatetime);
+      return format(d, 'HH:mm');
+    } catch {
+      return null;
+    }
+  }, [signalDatetime]);
   const levels = useMemo(() => {
     const allPrices = [entryPrice, takeProfit, stopLoss];
     if (takeProfit2) allPrices.push(takeProfit2);
@@ -133,17 +145,33 @@ export function SignalLevelsOverlay({
         </span>
       </div>
 
-      {/* SL line */}
-      <div
-        className="absolute left-0 right-0 flex items-center"
-        style={{ top: `${levels.sl}%` }}
-      >
-        <div className="absolute inset-x-0 border-t border-dashed" style={{ borderColor: 'rgba(239, 68, 68, 0.7)' }} />
-        <span className="absolute right-1 -translate-y-1/2 text-[9px] font-mono font-bold px-1 py-0.5 rounded"
-          style={{ background: 'rgba(239, 68, 68, 0.85)', color: '#fff' }}>
-          SL {stopLoss.toFixed(stopLoss > 100 ? 2 : 5)}
-        </span>
-      </div>
+      {/* Signal arrival time vertical line */}
+      {timeLabel && (
+        <div
+          className="absolute top-0 bottom-0 flex flex-col items-center"
+          style={{ left: '38%' }}
+        >
+          <div
+            className="absolute inset-y-0"
+            style={{
+              width: 0,
+              borderLeft: '1.5px dashed rgba(148, 163, 184, 0.45)',
+            }}
+          />
+          <span
+            className="absolute top-1 -translate-x-1/2 text-[8px] font-mono font-semibold px-1.5 py-0.5 rounded"
+            style={{
+              background: 'rgba(148, 163, 184, 0.2)',
+              color: 'rgba(203, 213, 225, 0.9)',
+              border: '1px solid rgba(148, 163, 184, 0.25)',
+              backdropFilter: 'blur(4px)',
+              left: '50%',
+            }}
+          >
+            ⏱ {timeLabel}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
