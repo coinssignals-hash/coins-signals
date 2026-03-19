@@ -105,12 +105,12 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
 
   if (loading) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 flex items-center justify-center gap-2 text-muted-foreground text-xs">
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground text-xs">
           <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
           {language === 'es' ? 'Cargando historial...' : 'Loading history...'}
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
