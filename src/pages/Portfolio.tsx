@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { Card, CardContent } from '@/components/ui/card';
 import { usePortfolio, Position } from '@/hooks/usePortfolio';
 import { useImportedTrades } from '@/hooks/useImportedTrades';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,6 +17,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
 import { TradeAnalytics } from '@/components/portfolio/TradeAnalytics';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
+
+/* ─── Theme color for Portfolio (green accent in HSL) ─── */
+const ACCENT = '142 70% 45%';
 
 function formatCurrency(value: number, currency = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
@@ -62,17 +64,24 @@ export default function Portfolio() {
     <PageShell>
       <Header />
 
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-4">
         {/* Auth Banner */}
         {showAuthBanner && (
-          <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-3">
+          <div className="p-3 rounded-xl flex items-center justify-between gap-3" style={{
+            background: 'hsl(45 80% 55% / 0.08)',
+            border: '1px solid hsl(45 80% 55% / 0.25)',
+          }}>
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-              <p className="text-amber-200 text-xs">{t('portfolio_login_banner')}</p>
+              <AlertCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'hsl(45 80% 55%)' }} />
+              <p className="text-xs" style={{ color: 'hsl(45 80% 70%)' }}>{t('portfolio_login_banner')}</p>
             </div>
             <button
               onClick={() => navigate('/auth')}
-              className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 rounded-full text-xs font-medium transition-colors whitespace-nowrap"
+              className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap"
+              style={{
+                background: 'hsl(45 80% 55% / 0.15)',
+                color: 'hsl(45 80% 70%)',
+              }}
             >
               {t('portfolio_login')}
             </button>
@@ -94,12 +103,18 @@ export default function Portfolio() {
           </div>
           <div className="flex items-center gap-2">
             {isDemo && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-semibold uppercase tracking-wider">
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider" style={{
+                background: 'hsl(45 80% 55% / 0.15)',
+                color: 'hsl(45 80% 55%)',
+              }}>
                 DEMO
               </span>
             )}
             {isLive && !isDemo && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-semibold uppercase tracking-wider flex items-center gap-1">
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1" style={{
+                background: `hsl(${ACCENT} / 0.15)`,
+                color: `hsl(${ACCENT})`,
+              }}>
                 <Radio className="w-3 h-3 animate-pulse" />
                 LIVE
               </span>
@@ -118,8 +133,11 @@ export default function Portfolio() {
 
         {/* Error */}
         {error && (
-          <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-xl">
-            <p className="text-destructive text-xs flex items-center gap-2">
+          <div className="p-3 rounded-xl" style={{
+            background: 'hsl(0 70% 50% / 0.08)',
+            border: '1px solid hsl(0 70% 50% / 0.25)',
+          }}>
+            <p className="text-xs flex items-center gap-2" style={{ color: 'hsl(0 70% 55%)' }}>
               <AlertCircle className="w-4 h-4" /> {error}
             </p>
           </div>
@@ -133,8 +151,8 @@ export default function Portfolio() {
           className="grid grid-cols-5 gap-3"
         >
           {/* Equity Card - 3 cols */}
-          <Card className="col-span-3 bg-card border-border">
-            <CardContent className="p-4 space-y-2">
+          <GlowCard className="col-span-3" color={ACCENT}>
+            <div className="p-4 space-y-2">
               {loading ? (
                 <>
                   <Skeleton className="h-3 w-16" />
@@ -144,8 +162,11 @@ export default function Portfolio() {
               ) : (
                 <>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center">
-                      <Wallet className="w-4 h-4 text-primary" />
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{
+                      background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+                      border: `1px solid hsl(${ACCENT} / 0.25)`,
+                    }}>
+                      <Wallet className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
                     </div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t('portfolio_equity')}</span>
                   </div>
@@ -159,31 +180,31 @@ export default function Portfolio() {
                   </div>
                   <div className="flex items-center gap-1.5 mt-1">
                     {summary.total_unrealized_pnl >= 0 ? (
-                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                      <TrendingUp className="w-3.5 h-3.5" style={{ color: 'hsl(142 60% 55%)' }} />
                     ) : (
-                      <TrendingDown className="w-3.5 h-3.5 text-red-400" />
+                      <TrendingDown className="w-3.5 h-3.5" style={{ color: 'hsl(0 70% 55%)' }} />
                     )}
                     <span className={cn(
                       "text-sm font-semibold tabular-nums",
-                      summary.total_unrealized_pnl >= 0 ? 'text-emerald-400' : 'text-red-400'
-                    )}>
+                    )} style={{
+                      color: summary.total_unrealized_pnl >= 0 ? 'hsl(142 60% 55%)' : 'hsl(0 70% 55%)',
+                    }}>
                       {summary.total_unrealized_pnl >= 0 ? '+' : ''}{formatCurrency(summary.total_unrealized_pnl)}
                     </span>
-                    <span className={cn(
-                      "text-[10px] tabular-nums",
-                      summary.total_unrealized_pnl >= 0 ? 'text-emerald-400/70' : 'text-red-400/70'
-                    )}>
+                    <span className="text-[10px] tabular-nums" style={{
+                      color: summary.total_unrealized_pnl >= 0 ? 'hsl(142 60% 55% / 0.7)' : 'hsl(0 70% 55% / 0.7)',
+                    }}>
                       {formatPercent(summary.total_equity > 0 ? (summary.total_unrealized_pnl / summary.total_equity) * 100 : 0)}
                     </span>
                   </div>
                 </>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </GlowCard>
 
           {/* Positions Summary Card - 2 cols */}
-          <Card className="col-span-2 bg-card border-border">
-            <CardContent className="p-4 space-y-3">
+          <GlowCard className="col-span-2" color="210 70% 55%">
+            <div className="p-4 space-y-3">
               {loading ? (
                 <>
                   <Skeleton className="h-3 w-16" />
@@ -196,23 +217,23 @@ export default function Portfolio() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
-                        <ArrowUpRight className="w-3 h-3 text-emerald-400" />
-                        <span className="text-[10px] text-emerald-400">{t('portfolio_buy')}</span>
+                        <ArrowUpRight className="w-3 h-3" style={{ color: 'hsl(142 60% 55%)' }} />
+                        <span className="text-[10px]" style={{ color: 'hsl(142 60% 55%)' }}>{t('portfolio_buy')}</span>
                       </div>
-                      <span className="text-xs font-semibold text-emerald-400">{positionStats.buys}</span>
+                      <span className="text-xs font-semibold" style={{ color: 'hsl(142 60% 55%)' }}>{positionStats.buys}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
-                        <ArrowDownRight className="w-3 h-3 text-red-400" />
-                        <span className="text-[10px] text-red-400">{t('portfolio_sell')}</span>
+                        <ArrowDownRight className="w-3 h-3" style={{ color: 'hsl(0 70% 55%)' }} />
+                        <span className="text-[10px]" style={{ color: 'hsl(0 70% 55%)' }}>{t('portfolio_sell')}</span>
                       </div>
-                      <span className="text-xs font-semibold text-red-400">{positionStats.sells}</span>
+                      <span className="text-xs font-semibold" style={{ color: 'hsl(0 70% 55%)' }}>{positionStats.sells}</span>
                     </div>
                   </div>
                 </>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </GlowCard>
         </motion.div>
 
         {/* History Chart */}
@@ -222,12 +243,12 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.08 }}
           >
-            <h2 className="text-sm font-semibold text-primary mb-3">{t('portfolio_history')}</h2>
-            <Card className="bg-card border-border">
-              <CardContent className="p-3">
+            <SectionTitle icon={<BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />} label={t('portfolio_history')} />
+            <GlowCard color={ACCENT}>
+              <div className="p-3">
                 <PortfolioHistoryChart />
-              </CardContent>
-            </Card>
+              </div>
+            </GlowCard>
           </motion.div>
         )}
 
@@ -241,6 +262,7 @@ export default function Portfolio() {
           >
              <DistributionCard
                title={t('portfolio_by_broker')}
+               color="270 60% 55%"
                items={accounts.filter(a => !a.error && a.equity > 0).map(a => ({
                  label: a.broker_name.replace(/\s*\(Demo\)\s*/i, ''),
                  value: a.equity,
@@ -248,6 +270,7 @@ export default function Portfolio() {
              />
              <DistributionCard
                title={t('portfolio_by_asset')}
+               color="200 70% 55%"
                items={allPositions.filter(p => p.market_value > 0).map(p => ({
                  label: p.symbol,
                  value: Math.abs(p.market_value),
@@ -258,22 +281,30 @@ export default function Portfolio() {
 
         {/* No Accounts */}
         {!loading && accounts.length === 0 && (
-          <Card className="bg-card border-border">
-            <CardContent className="text-center py-10 px-4">
-              <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mx-auto mb-3">
+          <GlowCard color={ACCENT}>
+            <div className="text-center py-10 px-4">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" style={{
+                background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+                border: `1px solid hsl(${ACCENT} / 0.25)`,
+              }}>
                 <Wallet className="w-6 h-6 text-muted-foreground" />
               </div>
                <h3 className="text-foreground font-medium mb-1 text-sm">{t('portfolio_no_brokers')}</h3>
                <p className="text-muted-foreground text-xs mb-4">{t('portfolio_no_brokers_desc')}</p>
                <button
                  onClick={() => navigate('/link-broker')}
-                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full text-xs font-medium transition-colors"
+                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all active:scale-95"
+                 style={{
+                   background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+                   color: 'white',
+                   boxShadow: `0 4px 12px hsl(${ACCENT} / 0.3)`,
+                 }}
                >
                  <Plus className="w-3.5 h-3.5" />
                  {t('portfolio_link_broker')}
                </button>
-            </CardContent>
-          </Card>
+            </div>
+          </GlowCard>
         )}
 
         {/* Open Positions List */}
@@ -283,12 +314,13 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.24 }}
           >
-             <h2 className="text-sm font-semibold text-primary mb-3">
-               {t('portfolio_open_positions')}
-               <span className="text-muted-foreground font-normal ml-2 text-[10px]">{allPositions.length} {t('portfolio_active')}</span>
-             </h2>
-            <Card className="bg-card border-border">
-              <CardContent className="p-0">
+             <SectionTitle
+               icon={<TrendingUp className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />}
+               label={t('portfolio_open_positions')}
+               badge={`${allPositions.length} ${t('portfolio_active')}`}
+             />
+            <GlowCard color={ACCENT}>
+              <div>
                 {allPositions.map((pos, i) => (
                   <PositionRow
                     key={`${pos.broker}-${pos.symbol}-${i}`}
@@ -296,8 +328,8 @@ export default function Portfolio() {
                     isLast={i === allPositions.length - 1}
                   />
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </GlowCard>
           </motion.div>
         )}
 
@@ -308,10 +340,10 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.32 }}
           >
-            <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
-              <FileSpreadsheet className="w-4 h-4" />
-              Operaciones Importadas
-            </h2>
+            <SectionTitle
+              icon={<FileSpreadsheet className="w-3.5 h-3.5" style={{ color: 'hsl(45 80% 55%)' }} />}
+              label="Operaciones Importadas"
+            />
             <TradeAnalytics
               trades={importedTradesHook.trades}
               stats={importedTradesHook.stats}
@@ -323,10 +355,10 @@ export default function Portfolio() {
 
         {/* Loading skeletons */}
         {loading && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="bg-card border-border">
-                <CardContent className="p-3">
+              <GlowCard key={i} color={ACCENT}>
+                <div className="p-3">
                   <div className="flex items-center gap-3">
                     <Skeleton className="w-9 h-9 rounded-lg" />
                     <div className="flex-1 space-y-1.5">
@@ -335,8 +367,8 @@ export default function Portfolio() {
                     </div>
                     <Skeleton className="h-5 w-16" />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </GlowCard>
             ))}
           </div>
         )}
@@ -348,7 +380,42 @@ export default function Portfolio() {
   );
 }
 
-/* ── Position Row (Tools-style list item) ─────────────────────────────────── */
+/* ── Glow Card (Market Sessions style) ─────────────────────────────────── */
+function GlowCard({ children, color, className }: { children: React.ReactNode; color: string; className?: string }) {
+  return (
+    <div className={cn("relative rounded-2xl overflow-hidden", className)} style={{
+      background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+      border: `1px solid hsl(${color} / 0.2)`,
+    }}>
+      {/* Top glow line */}
+      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+        background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
+      }} />
+      {/* Subtle radial glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
+        background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
+      }} />
+      <div className="relative">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ── Section Title ─────────────────────────────────── */
+function SectionTitle({ icon, label, badge }: { icon: React.ReactNode; label: string; badge?: string }) {
+  return (
+    <div className="flex items-center gap-1.5 mb-2">
+      {icon}
+      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+      {badge && (
+        <span className="text-[10px] text-muted-foreground font-normal ml-1">{badge}</span>
+      )}
+    </div>
+  );
+}
+
+/* ── Position Row ─────────────────────────────────── */
 function PositionRow({ position, isLast }: { position: Position & { broker: string }; isLast: boolean }) {
   const { t } = useTranslation();
   const isPnlPositive = position.unrealized_pnl >= 0;
@@ -356,31 +423,32 @@ function PositionRow({ position, isLast }: { position: Position & { broker: stri
 
   return (
     <div className={cn(
-      "p-4 transition-colors hover:bg-secondary/50",
-      !isLast && "border-b border-border"
-    )}>
+      "p-4 transition-colors hover:bg-muted/10",
+      !isLast && "border-b"
+    )} style={{ borderColor: 'hsl(var(--border) / 0.15)' }}>
       {/* Row 1: Symbol + Side + PnL */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2.5">
-          <div className={cn(
-            "w-10 h-10 rounded-lg flex items-center justify-center",
-            isBuy ? "bg-emerald-500/15" : "bg-red-500/15"
-          )}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+            background: isBuy
+              ? 'linear-gradient(135deg, hsl(142 60% 55% / 0.2), hsl(142 60% 55% / 0.08))'
+              : 'linear-gradient(135deg, hsl(0 70% 55% / 0.2), hsl(0 70% 55% / 0.08))',
+            border: `1px solid ${isBuy ? 'hsl(142 60% 55% / 0.25)' : 'hsl(0 70% 55% / 0.25)'}`,
+          }}>
             {isBuy ? (
-              <ArrowUpRight className="w-5 h-5 text-emerald-400" />
+              <ArrowUpRight className="w-5 h-5" style={{ color: 'hsl(142 60% 55%)' }} />
             ) : (
-              <ArrowDownRight className="w-5 h-5 text-red-400" />
+              <ArrowDownRight className="w-5 h-5" style={{ color: 'hsl(0 70% 55%)' }} />
             )}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-foreground font-medium">{position.symbol}</span>
-              <span className={cn(
-                "text-[9px] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider",
-                isBuy
-                  ? 'bg-emerald-500/15 text-emerald-400'
-                  : 'bg-red-500/15 text-red-400'
-              )}>
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider" style={{
+                background: isBuy ? 'hsl(142 60% 55% / 0.12)' : 'hsl(0 70% 55% / 0.12)',
+                color: isBuy ? 'hsl(142 60% 55%)' : 'hsl(0 70% 55%)',
+                border: `1px solid ${isBuy ? 'hsl(142 60% 55% / 0.25)' : 'hsl(0 70% 55% / 0.25)'}`,
+              }}>
                 {isBuy ? 'BUY' : 'SELL'}
               </span>
             </div>
@@ -388,16 +456,14 @@ function PositionRow({ position, isLast }: { position: Position & { broker: stri
           </div>
         </div>
         <div className="text-right">
-          <span className={cn(
-            "text-sm font-bold tabular-nums",
-            isPnlPositive ? 'text-emerald-400' : 'text-red-400'
-          )}>
+          <span className="text-sm font-bold tabular-nums" style={{
+            color: isPnlPositive ? 'hsl(142 60% 55%)' : 'hsl(0 70% 55%)',
+          }}>
             {isPnlPositive ? '+' : ''}{formatCurrency(position.unrealized_pnl)}
           </span>
-          <p className={cn(
-            "text-[10px] tabular-nums",
-            isPnlPositive ? 'text-emerald-400/70' : 'text-red-400/70'
-          )}>
+          <p className="text-[10px] tabular-nums" style={{
+            color: isPnlPositive ? 'hsl(142 60% 55% / 0.7)' : 'hsl(0 70% 55% / 0.7)',
+          }}>
             {formatPercent(position.unrealized_pnl_percent)}
           </p>
         </div>
@@ -444,37 +510,40 @@ function DetailItem({ label, value, valueColor = 'text-foreground' }: { label: s
   );
 }
 
-const DIST_COLORS = ['hsl(var(--primary))', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444'];
+const DIST_COLORS_HSL = ['142 70% 45%', '200 70% 55%', '45 80% 55%', '270 60% 55%', '330 70% 55%', '0 70% 55%'];
 
-function DistributionCard({ title, items }: { title: string; items: { label: string; value: number }[] }) {
+function DistributionCard({ title, items, color }: { title: string; items: { label: string; value: number }[]; color: string }) {
   const total = items.reduce((s, i) => s + i.value, 0);
   if (total === 0) return null;
 
   return (
-    <Card className="bg-card border-border">
-      <CardContent className="p-3 space-y-2">
+    <GlowCard color={color}>
+      <div className="p-3 space-y-2">
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{title}</span>
         <div className="space-y-2">
           {items.slice(0, 6).map((item, idx) => {
             const pct = (item.value / total) * 100;
-            const color = DIST_COLORS[idx % DIST_COLORS.length];
+            const barColor = DIST_COLORS_HSL[idx % DIST_COLORS_HSL.length];
             return (
               <div key={`${item.label}-${idx}`} className="space-y-0.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-foreground truncate max-w-[70%]">{item.label}</span>
                   <span className="text-[10px] text-muted-foreground tabular-nums">{pct.toFixed(1)}%</span>
                 </div>
-                <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${pct}%`, backgroundColor: color }}
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.6, delay: idx * 0.08 }}
+                    style={{ background: `linear-gradient(90deg, hsl(${barColor} / 0.5), hsl(${barColor}))` }}
                   />
                 </div>
               </div>
             );
           })}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </GlowCard>
   );
 }
