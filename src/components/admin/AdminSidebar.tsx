@@ -15,6 +15,7 @@ import {
   PlusCircle,
   Activity,
   HeartPulse,
+  Vote,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
