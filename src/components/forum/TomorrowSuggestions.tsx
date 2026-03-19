@@ -148,8 +148,8 @@ export function TomorrowSuggestions() {
   }
 
   return (
-    <Card className="bg-card border-border overflow-hidden">
-      <CardContent className="p-0">
+    <GlowCard color="210 70% 55%">
+      <div className="p-0">
         {/* Header */}
         <button
           onClick={() => setExpanded(!expanded)}
