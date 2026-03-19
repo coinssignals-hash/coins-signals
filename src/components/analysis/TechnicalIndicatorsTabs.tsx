@@ -20,6 +20,7 @@ interface Props {
 
 type TFn = (key: string) => string;
 
+/** Short display label for chart X-axis (may collide across days — only for display) */
 function formatTime(t: string) {
   const normalized = t.includes('T') ? t : t.replace(' ', 'T');
   const d = new Date(normalized.endsWith('Z') ? normalized : normalized + 'Z');
@@ -28,6 +29,18 @@ function formatTime(t: string) {
     return match ? `${match[1]}:${match[2]}` : t.slice(-5);
   }
   return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
+}
+
+/** Unique key including date — safe for Map lookups across multiple days */
+function formatTimeKey(t: string) {
+  const normalized = t.includes('T') ? t : t.replace(' ', 'T');
+  const d = new Date(normalized.endsWith('Z') ? normalized : normalized + 'Z');
+  if (isNaN(d.getTime())) return t;
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const min = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${mm}-${dd} ${hh}:${min}`;
 }
 
 function SignalBadge({ signal, label }: {signal: 'buy' | 'sell' | 'neutral';label: string;}) {
@@ -171,13 +184,17 @@ function MACDPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
 function BollingerPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const bb = calcBollingerBands(candles);
-    return bb.map((b) => ({
-      time: formatTime(b.time),
-      upper: +b.upper.toFixed(5),
-      middle: +b.middle.toFixed(5),
-      lower: +b.lower.toFixed(5),
-      price: candles.find((c) => formatTime(c.time) === formatTime(b.time))?.close ?? b.middle
-    }));
+    const priceByKey = new Map(candles.map((c) => [formatTimeKey(c.time), c.close]));
+    return bb.map((b) => {
+      const key = formatTimeKey(b.time);
+      return {
+        time: formatTime(b.time),
+        upper: +b.upper.toFixed(5),
+        middle: +b.middle.toFixed(5),
+        lower: +b.lower.toFixed(5),
+        price: +(priceByKey.get(key) ?? b.middle).toFixed(5),
+      };
+    });
   }, [candles]);
 
   const latest = data[data.length - 1];
@@ -352,18 +369,20 @@ function MovingAveragesPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
     const ema20 = calcEMA(candles, 20);
     const ema50 = calcEMA(candles, 50);
     const sma200 = calcSMA(candles, 200);
-    const priceMap = new Map(candles.map((c) => [formatTime(c.time), c.close]));
-    const allTimes = candles.map((c) => formatTime(c.time));
-    const ema20Map = new Map(ema20.map((e) => [formatTime(e.time), e.value]));
-    const ema50Map = new Map(ema50.map((e) => [formatTime(e.time), e.value]));
-    const sma200Map = new Map(sma200.map((e) => [formatTime(e.time), e.value]));
-    return allTimes.map((t) => ({
-      time: t,
-      price: +(priceMap.get(t) ?? 0).toFixed(5),
-      ema20: ema20Map.has(t) ? +ema20Map.get(t)!.toFixed(5) : undefined,
-      ema50: ema50Map.has(t) ? +ema50Map.get(t)!.toFixed(5) : undefined,
-      sma200: sma200Map.has(t) ? +sma200Map.get(t)!.toFixed(5) : undefined
-    }));
+    // Use unique keys (with date) for Map lookups to avoid collisions across days
+    const ema20Map = new Map(ema20.map((e) => [formatTimeKey(e.time), e.value]));
+    const ema50Map = new Map(ema50.map((e) => [formatTimeKey(e.time), e.value]));
+    const sma200Map = new Map(sma200.map((e) => [formatTimeKey(e.time), e.value]));
+    return candles.map((c) => {
+      const key = formatTimeKey(c.time);
+      return {
+        time: formatTime(c.time),
+        price: +c.close.toFixed(5),
+        ema20: ema20Map.has(key) ? +ema20Map.get(key)!.toFixed(5) : undefined,
+        ema50: ema50Map.has(key) ? +ema50Map.get(key)!.toFixed(5) : undefined,
+        sma200: sma200Map.has(key) ? +sma200Map.get(key)!.toFixed(5) : undefined,
+      };
+    });
   }, [candles]);
 
   const latest = data[data.length - 1];
