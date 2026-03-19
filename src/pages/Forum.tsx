@@ -320,24 +320,21 @@ export default function Forum() {
       {channelsLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {channels.map(ch => (
-            <button
-              key={ch.id}
-              onClick={() => openChannel(ch.id, ch.name, ch.icon)}
-              className="w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all"
-              style={{
-                background: 'linear-gradient(165deg, hsl(210 70% 55% / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-                border: '1px solid hsl(210 70% 55% / 0.15)',
-              }}
-            >
-              <span className="text-xl">{ch.icon}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">{ch.name}</p>
-                {ch.description && <p className="text-[10px] text-muted-foreground truncate">{ch.description}</p>}
-              </div>
-              <Hash className="w-4 h-4 text-muted-foreground" />
-            </button>
+            <GlowCard key={ch.id} color="210 70% 55%" className="rounded-xl">
+              <button
+                onClick={() => openChannel(ch.id, ch.name, ch.icon)}
+                className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
+              >
+                <span className="text-xl">{ch.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{ch.name}</p>
+                  {ch.description && <p className="text-[10px] text-muted-foreground truncate">{ch.description}</p>}
+                </div>
+                <Hash className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </GlowCard>
           ))}
         </div>
       )}
