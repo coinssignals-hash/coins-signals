@@ -950,12 +950,10 @@ const News = () => {
   '';
 
   return (
-    <PageTransition>
-    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
-      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
+    <PageShell>
       <Header />
       
-      <main className="px-3 sm:px-4 py-3 sm:py-4 space-y-3">
+      <main className="container py-3 max-w-2xl mx-auto px-3 sm:px-4 space-y-3 pb-20">
         {/* Date Tabs */}
         <DateTabs
               selectedDate={selectedDate}
