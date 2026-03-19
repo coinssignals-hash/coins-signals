@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { PastTopicsBrowser } from '@/components/forum/PastTopicsBrowser';
+import { TomorrowSuggestions } from '@/components/forum/TomorrowSuggestions';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
@@ -281,6 +282,9 @@ export default function Forum() {
           Ver temas anteriores
         </button>
       )}
+
+      {/* Tomorrow's Suggestions */}
+      <TomorrowSuggestions />
 
       {/* Tabs: Channels / DMs / Favorites */}
       <div className="flex gap-2">

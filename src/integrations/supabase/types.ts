@@ -660,6 +660,33 @@ export type Database = {
           },
         ]
       }
+      forum_suggestion_votes: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          option_value: string
+          poll_date: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          option_value: string
+          poll_date?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          option_value?: string
+          poll_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       forum_topic_votes: {
         Row: {
           created_at: string
