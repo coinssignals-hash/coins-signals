@@ -146,6 +146,18 @@ export function useAchievements() {
       }));
       await supabase.from('user_achievements').upsert(rows, { onConflict: 'user_id,achievement_code' });
       await refetchUnlocked();
+
+      // Show toast for each unlocked achievement
+      for (const code of newUnlocks) {
+        const achievement = ACHIEVEMENTS.find(a => a.code === code);
+        if (achievement) {
+          toast({
+            title: `${achievement.icon} ¡Logro desbloqueado!`,
+            description: `${achievement.name}: ${achievement.description}. ¡Nuevo avatar legendario disponible! 👑`,
+            duration: 6000,
+          });
+        }
+      }
     }
 
     return newUnlocks;
