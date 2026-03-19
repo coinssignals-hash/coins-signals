@@ -139,11 +139,11 @@ export function TomorrowSuggestions() {
 
   if (loading) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 flex justify-center">
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 flex justify-center">
           <Loader2 className="w-5 h-5 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
