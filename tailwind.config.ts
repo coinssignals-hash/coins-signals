@@ -107,6 +107,15 @@ export default {
         "glow-red": "var(--shadow-glow-red)",
       },
       keyframes: {
+        "bell-ring": {
+          "0%": { transform: "rotate(0deg) scale(1)" },
+          "15%": { transform: "rotate(14deg) scale(1.15)" },
+          "30%": { transform: "rotate(-12deg) scale(1.15)" },
+          "45%": { transform: "rotate(10deg) scale(1.1)" },
+          "60%": { transform: "rotate(-8deg) scale(1.05)" },
+          "75%": { transform: "rotate(4deg) scale(1)" },
+          "100%": { transform: "rotate(0deg) scale(1)" },
+        },
         "zone-pulse": {
           "0%": { transform: "scale(1)", opacity: "1" },
           "30%": { transform: "scale(1.18)", opacity: "0.85" },
