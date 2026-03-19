@@ -377,12 +377,15 @@ export default function Forum() {
               onClick={() => openDM(c.user_id, c.user_name)}
               className="w-full flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors text-left"
             >
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={c.user_avatar || ''} />
-                <AvatarFallback className="bg-primary/20 text-primary text-xs">{c.user_name[0]}</AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
+                  <AvatarImage src={c.user_avatar || ''} />
+                  <AvatarFallback className="bg-primary/20 text-primary text-xs">{c.user_name[0]}</AvatarFallback>
+                </Avatar>
+                {isLegendaryAvatar(c.user_avatar) && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">{c.user_name}</p>
+                <p className="text-sm font-semibold text-foreground flex items-center gap-1">{c.user_name}{isLegendaryAvatar(c.user_avatar) && <span className="text-[9px]">👑</span>}</p>
                 <p className="text-[10px] text-muted-foreground truncate">{c.last_message}</p>
               </div>
               {c.unread_count > 0 && (
