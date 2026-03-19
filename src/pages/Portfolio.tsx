@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { GlowCard } from '@/components/ui/glow-card';
 import {
   ArrowLeft, RefreshCw, TrendingUp, TrendingDown, Wallet,
   Clock, AlertCircle, Plus, Radio, ArrowUpRight, ArrowDownRight,
@@ -380,27 +381,7 @@ export default function Portfolio() {
   );
 }
 
-/* ── Glow Card (Market Sessions style) ─────────────────────────────────── */
-function GlowCard({ children, color, className }: { children: React.ReactNode; color: string; className?: string }) {
-  return (
-    <div className={cn("relative rounded-2xl overflow-hidden", className)} style={{
-      background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-      border: `1px solid hsl(${color} / 0.2)`,
-    }}>
-      {/* Top glow line */}
-      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-        background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-      }} />
-      {/* Subtle radial glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
-        background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
-      }} />
-      <div className="relative">
-        {children}
-      </div>
-    </div>
-  );
-}
+/* GlowCard is now imported from @/components/ui/glow-card */
 
 /* ── Section Title ─────────────────────────────────── */
 function SectionTitle({ icon, label, badge }: { icon: React.ReactNode; label: string; badge?: string }) {

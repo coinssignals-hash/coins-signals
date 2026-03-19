@@ -4,6 +4,7 @@ import { TomorrowSuggestions } from '@/components/forum/TomorrowSuggestions';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -193,7 +194,7 @@ export default function Forum() {
         const displayOptB = translatedTopic?.option_b || topic.option_b;
 
         return (
-        <Card className="bg-card border-border overflow-hidden">
+        <GlowCard color="210 70% 55%">
           {/* Image area with admin upload */}
           <div className="relative">
             {topic.image_url ? (
@@ -266,7 +267,7 @@ export default function Forum() {
               })}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
         );
       })()}
 
@@ -320,7 +321,11 @@ export default function Forum() {
             <button
               key={ch.id}
               onClick={() => openChannel(ch.id, ch.name, ch.icon)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all"
+              style={{
+                background: 'linear-gradient(165deg, hsl(210 70% 55% / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
+                border: '1px solid hsl(210 70% 55% / 0.15)',
+              }}
             >
               <span className="text-xl">{ch.icon}</span>
               <div className="flex-1 min-w-0">
@@ -357,29 +362,33 @@ export default function Forum() {
       </div>
 
       {!user ? (
-        <Card className="bg-card border-border">
-          <CardContent className="p-6 text-center space-y-2">
+        <GlowCard color="210 70% 55%">
+          <div className="p-6 text-center space-y-2">
             <Users className="w-8 h-8 text-muted-foreground mx-auto" />
             <p className="text-sm text-muted-foreground">Inicia sesión para ver tus mensajes directos</p>
             <Link to="/auth" className="text-xs text-primary font-bold hover:underline">Iniciar Sesión</Link>
-          </CardContent>
-        </Card>
+          </div>
+        </GlowCard>
       ) : convosLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : conversations.length === 0 ? (
-        <Card className="bg-card border-border">
-          <CardContent className="p-6 text-center">
+        <GlowCard color="210 70% 55%">
+          <div className="p-6 text-center">
             <MessageCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">No tienes conversaciones aún</p>
-          </CardContent>
-        </Card>
+          </div>
+        </GlowCard>
       ) : (
         <div className="space-y-1.5">
           {conversations.map(c => (
             <button
               key={c.user_id}
               onClick={() => openDM(c.user_id, c.user_name)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all"
+              style={{
+                background: 'linear-gradient(165deg, hsl(210 70% 55% / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
+                border: '1px solid hsl(210 70% 55% / 0.15)',
+              }}
             >
               <div className="relative">
                 <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
