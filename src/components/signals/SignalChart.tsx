@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Maximize2, X, RotateCcw, Crosshair } from 'lucide-react';
+import { Maximize2, X, Smartphone, Crosshair } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { SignalLevelsOverlay } from './SignalLevelsOverlay';
