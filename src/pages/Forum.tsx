@@ -568,7 +568,7 @@ export default function Forum() {
                             </PopoverContent>
                           </Popover>
                         ) : (
-                          <span className="text-[10px] font-semibold text-primary">{userName}</span>
+                          <span className="text-[10px] font-semibold text-primary flex items-center gap-0.5">{userName}{isLegendary && <span className="text-[8px]">👑</span>}</span>
                         )}
                         {!isDM && msg.user_language && (LANGUAGE_FLAGS as any)[msg.user_language] && (
                           <span className="text-[10px]" title={(LANGUAGE_LABELS as any)[msg.user_language]}>{(LANGUAGE_FLAGS as any)[msg.user_language]}</span>
