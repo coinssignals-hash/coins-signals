@@ -20,6 +20,7 @@ interface Props {
 
 type TFn = (key: string) => string;
 
+/** Short display label for chart X-axis (may collide across days — only for display) */
 function formatTime(t: string) {
   const normalized = t.includes('T') ? t : t.replace(' ', 'T');
   const d = new Date(normalized.endsWith('Z') ? normalized : normalized + 'Z');
@@ -28,6 +29,18 @@ function formatTime(t: string) {
     return match ? `${match[1]}:${match[2]}` : t.slice(-5);
   }
   return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
+}
+
+/** Unique key including date — safe for Map lookups across multiple days */
+function formatTimeKey(t: string) {
+  const normalized = t.includes('T') ? t : t.replace(' ', 'T');
+  const d = new Date(normalized.endsWith('Z') ? normalized : normalized + 'Z');
+  if (isNaN(d.getTime())) return t;
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const min = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${mm}-${dd} ${hh}:${min}`;
 }
 
 function SignalBadge({ signal, label }: {signal: 'buy' | 'sell' | 'neutral';label: string;}) {
