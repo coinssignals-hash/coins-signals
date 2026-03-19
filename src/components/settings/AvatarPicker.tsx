@@ -26,6 +26,16 @@ import mambaLethal from '@/assets/avatars/mamba-lethal.png';
 import rhinoCharge from '@/assets/avatars/rhino-charge.png';
 import wolverineBerserker from '@/assets/avatars/wolverine-berserker.png';
 import raptorApex from '@/assets/avatars/raptor-apex.png';
+import cyberWolf from '@/assets/avatars/cyber-wolf.png';
+import cyberSamurai from '@/assets/avatars/cyber-samurai.png';
+import cyberPhoenix from '@/assets/avatars/cyber-phoenix.png';
+import cyberSkull from '@/assets/avatars/cyber-skull.png';
+import cyberDragon from '@/assets/avatars/cyber-dragon.png';
+import cyberPanther from '@/assets/avatars/cyber-panther.png';
+import cyberHawk from '@/assets/avatars/cyber-hawk.png';
+import cyberViper from '@/assets/avatars/cyber-viper.png';
+import cyberBull from '@/assets/avatars/cyber-bull.png';
+import cyberLion from '@/assets/avatars/cyber-lion.png';
 
 export interface AvatarOption {
   id: string;
@@ -55,6 +65,16 @@ export const TRADING_AVATARS: AvatarOption[] = [
   { id: 'rhino-charge', src: rhinoCharge, label: 'Rinoceronte', category: 'Agresivos' },
   { id: 'wolverine-berserker', src: wolverineBerserker, label: 'Wolverine', category: 'Agresivos' },
   { id: 'raptor-apex', src: raptorApex, label: 'Raptor Apex', category: 'Agresivos' },
+  { id: 'cyber-wolf', src: cyberWolf, label: 'Lobo Cyber', category: 'Cyberpunk' },
+  { id: 'cyber-samurai', src: cyberSamurai, label: 'Samurai Neon', category: 'Cyberpunk' },
+  { id: 'cyber-phoenix', src: cyberPhoenix, label: 'Fénix Cyber', category: 'Cyberpunk' },
+  { id: 'cyber-skull', src: cyberSkull, label: 'Cráneo Mech', category: 'Cyberpunk' },
+  { id: 'cyber-dragon', src: cyberDragon, label: 'Dragón Matrix', category: 'Cyberpunk' },
+  { id: 'cyber-panther', src: cyberPanther, label: 'Pantera Neon', category: 'Cyberpunk' },
+  { id: 'cyber-hawk', src: cyberHawk, label: 'Halcón Cyber', category: 'Cyberpunk' },
+  { id: 'cyber-viper', src: cyberViper, label: 'Víbora Tóxica', category: 'Cyberpunk' },
+  { id: 'cyber-bull', src: cyberBull, label: 'Toro Mech', category: 'Cyberpunk' },
+  { id: 'cyber-lion', src: cyberLion, label: 'León Holográfico', category: 'Cyberpunk' },
 ];
 
 interface Props {
