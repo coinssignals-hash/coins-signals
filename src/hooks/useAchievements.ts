@@ -92,6 +92,7 @@ async function calculateTradingStats(userId: string): Promise<TradingStats> {
 
 export function useAchievements() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: unlockedCodes = [], refetch: refetchUnlocked } = useQuery({
     queryKey: ['user-achievements', user?.id],
