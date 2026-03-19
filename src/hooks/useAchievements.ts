@@ -134,13 +134,13 @@ export function useAchievements() {
       let met = false;
       switch (achievement.requirementType) {
         case 'trades_count':
-          met = stats.totalTrades >= achievement.requirementValue;
+          met = freshStats.totalTrades >= achievement.requirementValue;
           break;
         case 'win_streak':
-          met = stats.maxWinStreak >= achievement.requirementValue;
+          met = freshStats.maxWinStreak >= achievement.requirementValue;
           break;
         case 'total_pips':
-          met = stats.totalPips >= achievement.requirementValue;
+          met = freshStats.totalPips >= achievement.requirementValue;
           break;
       }
 
