@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { GlowCard } from '@/components/ui/glow-card';
 import {
   ArrowLeft, RefreshCw, TrendingUp, TrendingDown, Wallet,
   Clock, AlertCircle, Plus, Radio, ArrowUpRight, ArrowDownRight,
