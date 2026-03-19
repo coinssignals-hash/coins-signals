@@ -16,6 +16,7 @@ import { useAIAnalysis, AIModule, DetailLevel } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
 import { detectCandlePatterns } from '@/lib/candle-patterns';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
