@@ -189,12 +189,11 @@ export function AICenter({ onClose }: Props) {
 
       {/* Model Config (collapsible) */}
       {showConfig &&
-      <div className="rounded-xl border border-cyan-800/30 overflow-hidden"
-      style={{ background: 'radial-gradient(ellipse at top center, hsl(200,100%,12%) 0%, hsl(210,100%,6%) 100%)' }}>
+      <GlowCard color="210 70% 55%">
           <div className="p-4">
             <AIModelConfig settings={modelSettings} onChange={setModelSettings} detailLevel={detailLevel} onDetailLevelChange={setDetailLevel} />
           </div>
-        </div>
+        </GlowCard>
       }
 
       {/* Instrument Category Tabs */}
