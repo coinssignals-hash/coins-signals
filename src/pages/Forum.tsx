@@ -18,6 +18,7 @@ import { LANGUAGE_FLAGS, LANGUAGE_LABELS } from '@/i18n/LanguageContext';
 import { SignalPicker } from '@/components/forum/SignalPicker';
 import { EmbeddedSignalCard } from '@/components/forum/EmbeddedSignalCard';
 import { cn } from '@/lib/utils';
+import { isLegendaryAvatar, LEGENDARY_RING_CLASS } from '@/lib/legendaryAvatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useForumChannels, useForumMessages, useDailyTopic, useDMConversations, useDirectMessages, ForumMessage } from '@/hooks/useForum';
@@ -376,12 +377,15 @@ export default function Forum() {
               onClick={() => openDM(c.user_id, c.user_name)}
               className="w-full flex items-center gap-3 p-3 rounded-lg bg-card border border-border hover:border-primary/30 transition-colors text-left"
             >
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={c.user_avatar || ''} />
-                <AvatarFallback className="bg-primary/20 text-primary text-xs">{c.user_name[0]}</AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
+                  <AvatarImage src={c.user_avatar || ''} />
+                  <AvatarFallback className="bg-primary/20 text-primary text-xs">{c.user_name[0]}</AvatarFallback>
+                </Avatar>
+                {isLegendaryAvatar(c.user_avatar) && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">{c.user_name}</p>
+                <p className="text-sm font-semibold text-foreground flex items-center gap-1">{c.user_name}{isLegendaryAvatar(c.user_avatar) && <span className="text-[9px]">👑</span>}</p>
                 <p className="text-[10px] text-muted-foreground truncate">{c.last_message}</p>
               </div>
               {c.unread_count > 0 && (
@@ -489,6 +493,7 @@ export default function Forum() {
                 const isOwn = msg.user_id === user?.id || msg.sender_id === user?.id;
                 const userName = isDM ? msg.sender_name : msg.user_name;
                 const userAvatar = isDM ? msg.sender_avatar : msg.user_avatar;
+                const isLegendary = isLegendaryAvatar(userAvatar);
                 const msgId = msg.id;
 
                 return (
@@ -498,10 +503,13 @@ export default function Forum() {
                       <Popover>
                         <PopoverTrigger asChild>
                           <button className="flex-shrink-0 mt-1 active:scale-95 transition-transform">
-                            <Avatar className="w-7 h-7 sm:w-8 sm:h-8">
-                              <AvatarImage src={userAvatar || ''} />
-                              <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
-                            </Avatar>
+                            <div className="relative">
+                              <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
+                                <AvatarImage src={userAvatar || ''} />
+                                <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
+                              </Avatar>
+                              {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
+                            </div>
                           </button>
                         </PopoverTrigger>
                         <PopoverContent side="right" align="start" className="w-44 p-2 space-y-1">
@@ -524,10 +532,13 @@ export default function Forum() {
                         </PopoverContent>
                       </Popover>
                     ) : (
-                      <Avatar className="w-7 h-7 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
-                        <AvatarImage src={userAvatar || ''} />
-                        <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
-                      </Avatar>
+                      <div className="relative mt-1 flex-shrink-0">
+                        <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
+                          <AvatarImage src={userAvatar || ''} />
+                          <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
+                        </Avatar>
+                        {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
+                      </div>
                     )}
                     <div className={cn("max-w-[75%] sm:max-w-[65%] lg:max-w-[50%] space-y-1", isOwn && "items-end")}>
                       <div className="flex items-center gap-1.5">
@@ -535,8 +546,9 @@ export default function Forum() {
                         {!isOwn && !isDM && user ? (
                           <Popover>
                             <PopoverTrigger asChild>
-                              <button className="text-[10px] font-semibold text-primary hover:underline active:scale-95 transition-transform">
+                              <button className="text-[10px] font-semibold text-primary hover:underline active:scale-95 transition-transform flex items-center gap-0.5">
                                 {userName}
+                                {isLegendary && <span className="text-[8px]">👑</span>}
                               </button>
                             </PopoverTrigger>
                             <PopoverContent side="bottom" align="start" className="w-44 p-2 space-y-1">
@@ -559,7 +571,7 @@ export default function Forum() {
                             </PopoverContent>
                           </Popover>
                         ) : (
-                          <span className="text-[10px] font-semibold text-primary">{userName}</span>
+                          <span className="text-[10px] font-semibold text-primary flex items-center gap-0.5">{userName}{isLegendary && <span className="text-[8px]">👑</span>}</span>
                         )}
                         {!isDM && msg.user_language && (LANGUAGE_FLAGS as any)[msg.user_language] && (
                           <span className="text-[10px]" title={(LANGUAGE_LABELS as any)[msg.user_language]}>{(LANGUAGE_FLAGS as any)[msg.user_language]}</span>
