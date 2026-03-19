@@ -152,36 +152,30 @@ export function SignalChart({
           className="relative rounded-none sm:rounded-lg overflow-hidden"
           style={{ background: '#060e1c' }}
         >
-          {/* Fullscreen button */}
-          <button
-            onClick={() => setFullscreen(true)}
-            className="absolute top-2 right-2 z-10 p-1.5 rounded-md transition-colors active:scale-95"
-            style={{
-              background: 'rgba(6,14,28,0.8)',
-              border: '1px solid rgba(100,116,139,0.3)',
-            }}
-            title={t('chart_fullscreen')}
-          >
-            <Maximize2 className="w-4 h-4 text-cyan-300/70" />
-          </button>
-
-          {/* Toggle signal levels */}
-          {signalLevels && (
+          {/* Chart action buttons */}
+          <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+            {signalLevels && (
+              <button
+                onClick={toggleLevels}
+                className={cn(
+                  "p-2 rounded-lg backdrop-blur-md transition-all duration-200 active:scale-90 shadow-lg shadow-black/20",
+                  showLevels
+                    ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-300"
+                    : "bg-white/5 border border-white/10 text-white/50 hover:text-white/70 hover:bg-white/10"
+                )}
+                title="Signal Levels"
+              >
+                <Crosshair className="w-4 h-4" />
+              </button>
+            )}
             <button
-              onClick={toggleLevels}
-              className={cn(
-                "absolute top-2 right-12 z-10 p-1.5 rounded-md transition-all active:scale-95",
-                showLevels ? "text-cyan-300" : "text-white/40"
-              )}
-              style={{
-                background: showLevels ? 'rgba(0,230,180,0.15)' : 'rgba(6,14,28,0.8)',
-                border: `1px solid ${showLevels ? 'rgba(0,230,180,0.4)' : 'rgba(100,116,139,0.3)'}`,
-              }}
-              title="Signal Levels"
+              onClick={() => setFullscreen(true)}
+              className="p-2 rounded-lg backdrop-blur-md bg-white/5 border border-white/10 text-white/50 hover:text-white/70 hover:bg-white/10 shadow-lg shadow-black/20 transition-all duration-200 active:scale-90"
+              title={t('chart_fullscreen')}
             >
-              <Crosshair className="w-4 h-4" />
+              <Maximize2 className="w-4 h-4" />
             </button>
-          )}
+          </div>
 
           {/* Signal levels overlay */}
           {levelsMounted && signalLevels && (
