@@ -104,6 +104,19 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch profile when user changes or drawer opens
+  useEffect(() => {
+    if (!user?.id || !open) return;
+    supabase
+      .from('profiles')
+      .select('alias, avatar_url')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) setProfile(data);
+      });
+  }, [user?.id, open]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({ title: t('drawer_session_closed'), description: t('drawer_session_closed_desc') });
