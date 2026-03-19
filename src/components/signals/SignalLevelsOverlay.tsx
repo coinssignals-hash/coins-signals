@@ -18,6 +18,8 @@ export function SignalLevelsOverlay({
   takeProfit,
   takeProfit2,
   stopLoss,
+  visible = true,
+  onExited,
 }: SignalLevelsOverlayProps) {
   const levels = useMemo(() => {
     const allPrices = [entryPrice, takeProfit, stopLoss];
