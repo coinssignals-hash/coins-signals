@@ -393,11 +393,11 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
   const session = getMarketSession(news.published_at);
 
   return (
-    <GlowCard
-      color="210 70% 55%"
-      className={cn('group animate-fade-in rounded-2xl')}
-      style={{ animationDelay: `${index * 50}ms` } as React.CSSProperties}
+    <div
+      className={cn('group animate-fade-in')}
+      style={{ animationDelay: `${index * 50}ms` }}
     >
+    <GlowCard color="210 70% 55%" className="rounded-2xl">
 
       {/* Hero Image */}
       <Link to={`/news/${news.id}`} className="block relative aspect-[5/3] sm:aspect-[2/1] overflow-hidden">
