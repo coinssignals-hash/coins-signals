@@ -546,7 +546,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">{t('news_relevance')}</span>
               <span className="font-mono text-[10px] font-bold text-foreground">{relevancePercent}%</span>
             </div>
-            <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden">
+            <div className="h-1 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
