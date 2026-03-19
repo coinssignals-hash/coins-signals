@@ -15,7 +15,7 @@ import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { TerminalStatusBar } from '@/components/analysis/TerminalStatusBar';
 import { QuickStatsGrid } from '@/components/analysis/QuickStatsGrid';
-import { CandlestickChart } from '@/components/analysis/CandlestickChart';
+import { AnalysisTVChart } from '@/components/analysis/AnalysisTVChart';
 import { TechnicalIndicatorsTabs } from '@/components/analysis/TechnicalIndicatorsTabs';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { LazySection } from '@/components/ui/lazy-section';
@@ -243,11 +243,7 @@ export default function Analysis() {
                   candles={ohlcvCandles}
                   loading={previousDayLoading}
                   priceChart={
-                  <CandlestickChart
-                    data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
-                    support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
-                    realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-                    previousDayDate={previousDayData?.date} alertState={alertState} />
+                  <AnalysisTVChart symbol={selectedPair} timeframe={selectedTimeframe} />
                   } />
                 
             <LazySection minHeight="200px">
