@@ -162,7 +162,7 @@ export function SignalChart({
 
           <iframe
             src={buildWidgetUrl(tvSymbol, false)}
-            style={{ width: '100%', height: 280, border: 'none' }}
+            style={{ width: '100%', height: 370, border: 'none' }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
             sandbox="allow-scripts allow-same-origin allow-popups"
             loading="lazy"
