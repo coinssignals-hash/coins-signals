@@ -1175,10 +1175,7 @@ const News = () => {
           </>
             }
       </main>
-      </div>
-      <BottomNav />
-    </div>
-    </PageTransition>);
+    </PageShell>);
 
 };
 
