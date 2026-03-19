@@ -36,6 +36,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<{ alias: string | null; avatar_url: string | null; signal_alerts_enabled?: boolean | null } | null>(null);
+  const [bellAnimating, setBellAnimating] = useState(false);
   const { t, language } = useTranslation();
   const drawerSide = language === 'ar' ? 'right' : 'left';
   
