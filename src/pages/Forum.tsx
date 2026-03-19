@@ -362,13 +362,13 @@ export default function Forum() {
       </div>
 
       {!user ? (
-        <Card className="bg-card border-border">
-          <CardContent className="p-6 text-center space-y-2">
+        <GlowCard color="210 70% 55%">
+          <div className="p-6 text-center space-y-2">
             <Users className="w-8 h-8 text-muted-foreground mx-auto" />
             <p className="text-sm text-muted-foreground">Inicia sesión para ver tus mensajes directos</p>
             <Link to="/auth" className="text-xs text-primary font-bold hover:underline">Iniciar Sesión</Link>
-          </CardContent>
-        </Card>
+          </div>
+        </GlowCard>
       ) : convosLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : conversations.length === 0 ? (
