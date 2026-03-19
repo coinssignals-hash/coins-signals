@@ -242,6 +242,6 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
           <span>{currentIndex + 1} / {topics.length}</span>
         </div>
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }

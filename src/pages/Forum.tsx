@@ -290,29 +290,31 @@ export default function Forum() {
       <TomorrowSuggestions />
 
       {/* Tabs: Channels / DMs / Favorites */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => setView('channels')}
-          className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-            view === 'channels' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
-        >
-          <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
-        </button>
-        <button
-          onClick={() => setView('dms')}
-          className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-            view === 'dms' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
-        >
-          <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
-        </button>
-        <button
-          onClick={() => setView('favorites')}
-          className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-            view === 'favorites' ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground")}
-        >
-          <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
-        </button>
-      </div>
+      <GlowCard color="210 70% 55%" className="rounded-xl">
+        <div className="flex gap-2 p-1.5">
+          <button
+            onClick={() => setView('channels')}
+            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
+              view === 'channels' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+          >
+            <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
+          </button>
+          <button
+            onClick={() => setView('dms')}
+            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
+              view === 'dms' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+          >
+            <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+          </button>
+          <button
+            onClick={() => setView('favorites')}
+            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
+              view === 'favorites' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+          >
+            <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
+          </button>
+        </div>
+      </GlowCard>
 
       {/* Channel list */}
       {channelsLoading ? (

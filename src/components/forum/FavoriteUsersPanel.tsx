@@ -81,7 +81,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
                 <Star className="w-3.5 h-3.5 fill-current" />
               </button>
             </div>
-          </div>
+            </div>
+          </GlowCard>
         );
       })}
     </div>

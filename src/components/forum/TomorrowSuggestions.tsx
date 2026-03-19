@@ -228,7 +228,7 @@ export function TomorrowSuggestions() {
             })}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </GlowCard>
   );
 }
