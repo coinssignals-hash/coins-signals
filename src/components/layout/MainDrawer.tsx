@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
+import { isLegendaryAvatar, LEGENDARY_RING_CLASS } from '@/lib/legendaryAvatar';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { useNewsCache } from '@/hooks/useNewsCache';
