@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
-import { PageTransition } from '@/components/layout/PageTransition';
+import { PageShell } from '@/components/layout/PageShell';
 import { StaggerList } from '@/components/layout/StaggerList';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
@@ -18,6 +17,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { Currency, CURRENCIES, EconomicCategory } from '@/types/news';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { GlowCard } from '@/components/ui/glow-card';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 // Use RealNewsItem as NewsListItem for compatibility
