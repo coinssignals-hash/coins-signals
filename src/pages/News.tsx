@@ -606,7 +606,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <NewsAISummaryInline news={news} />
         </div>
       }
-    </div>);
+    </GlowCard>);
 
 }
 // Featured news card for top story
