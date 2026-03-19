@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useAchievements } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,6 +53,7 @@ export default function TradingJournal() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
+  const { checkAndUnlockAchievements } = useAchievements();
   const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -190,6 +192,8 @@ export default function TradingJournal() {
     setShowForm(false);
     setEditingId(null);
     await fetchEntries(userId);
+    // Check achievements after saving a trade
+    setTimeout(() => checkAndUnlockAchievements(), 1000);
   }
 
   async function handleDelete(id: string) {

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
+import { useAchievements } from '@/hooks/useAchievements';
 import type { TradingSignal } from '@/hooks/useSignals';
 import {
   Dialog,
@@ -28,6 +29,7 @@ interface SaveSignalToJournalProps {
 export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalProps) {
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
+  const { checkAndUnlockAchievements } = useAchievements();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
@@ -111,6 +113,8 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
     toast.success(t('journal_signal_saved_toast'));
     setAlreadySaved(true);
     setOpen(false);
+    // Check achievements after saving
+    setTimeout(() => checkAndUnlockAchievements(), 1000);
   };
 
   const formatDateTimeLocal = (iso: string) => {

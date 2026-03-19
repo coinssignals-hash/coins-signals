@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -92,6 +92,7 @@ async function calculateTradingStats(userId: string): Promise<TradingStats> {
 
 export function useAchievements() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: unlockedCodes = [], refetch: refetchUnlocked } = useQuery({
     queryKey: ['user-achievements', user?.id],
@@ -114,7 +115,16 @@ export function useAchievements() {
   });
 
   const checkAndUnlockAchievements = async () => {
-    if (!user?.id || !stats) return;
+    if (!user?.id) return;
+
+    // Refetch stats to get latest data
+    await queryClient.invalidateQueries({ queryKey: ['trading-stats', user.id] });
+    const freshStats = await queryClient.fetchQuery({
+      queryKey: ['trading-stats', user.id],
+      queryFn: () => calculateTradingStats(user.id),
+    });
+
+    if (!freshStats) return;
 
     const newUnlocks: string[] = [];
 
@@ -124,13 +134,13 @@ export function useAchievements() {
       let met = false;
       switch (achievement.requirementType) {
         case 'trades_count':
-          met = stats.totalTrades >= achievement.requirementValue;
+          met = freshStats.totalTrades >= achievement.requirementValue;
           break;
         case 'win_streak':
-          met = stats.maxWinStreak >= achievement.requirementValue;
+          met = freshStats.maxWinStreak >= achievement.requirementValue;
           break;
         case 'total_pips':
-          met = stats.totalPips >= achievement.requirementValue;
+          met = freshStats.totalPips >= achievement.requirementValue;
           break;
       }
 
