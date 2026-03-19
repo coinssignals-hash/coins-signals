@@ -50,56 +50,64 @@ function TradingViewWidget({
   fullscreen?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const widgetId = useRef(`tv_${Math.random().toString(36).slice(2, 10)}`);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     container.innerHTML = '';
+    setLoading(true);
+
+    const widgetConfig = {
+      autosize: true,
+      symbol,
+      interval: '15',
+      timezone: 'Etc/UTC',
+      theme: 'dark',
+      style: '1',
+      locale: 'es',
+      toolbar_bg: '#060e1c',
+      hide_top_toolbar: !fullscreen,
+      hide_legend: !fullscreen,
+      hide_side_toolbar: !fullscreen,
+      allow_symbol_change: fullscreen,
+      save_image: false,
+      withdateranges: fullscreen,
+      details: false,
+      hotlist: false,
+      calendar: false,
+      studies: fullscreen ? ['MACD@tv-basicstudies'] : [],
+      backgroundColor: '#060e1c',
+      gridColor: '#152a47',
+    };
 
     const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/tv.js';
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
     script.async = true;
-    script.onload = () => {
-      if (!(window as any).TradingView) return;
-      new (window as any).TradingView.widget({
-        container_id: widgetId.current,
-        autosize: true,
-        symbol,
-        interval: '15',
-        timezone: 'Etc/UTC',
-        theme: 'dark',
-        style: '1', // Candlestick
-        locale: 'es',
-        toolbar_bg: '#060e1c',
-        hide_top_toolbar: !fullscreen,
-        hide_legend: !fullscreen,
-        hide_side_toolbar: !fullscreen,
-        allow_symbol_change: fullscreen,
-        save_image: false,
-        withdateranges: fullscreen,
-        details: false,
-        hotlist: false,
-        calendar: false,
-        studies: fullscreen ? ['MACD@tv-basicstudies'] : [],
-        overrides: {
-          'paneProperties.background': '#060e1c',
-          'paneProperties.backgroundType': 'solid',
-          'mainSeriesProperties.candleStyle.upColor': '#00e6b4',
-          'mainSeriesProperties.candleStyle.downColor': '#ff5080',
-          'mainSeriesProperties.candleStyle.borderUpColor': '#00e6b4',
-          'mainSeriesProperties.candleStyle.borderDownColor': '#ff5080',
-          'mainSeriesProperties.candleStyle.wickUpColor': '#00d4aa',
-          'mainSeriesProperties.candleStyle.wickDownColor': '#ff4976',
-          'scalesProperties.backgroundColor': '#060e1c',
-          'scalesProperties.lineColor': '#152a47',
-          'scalesProperties.textColor': '#5a6f8a',
-        },
-      });
-    };
-    document.head.appendChild(script);
+    script.innerHTML = JSON.stringify(widgetConfig);
+    script.onload = () => setLoading(false);
+    script.onerror = () => setLoading(false);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'tradingview-widget-container';
+    wrapper.style.height = '100%';
+    wrapper.style.width = '100%';
+
+    const widgetDiv = document.createElement('div');
+    widgetDiv.className = 'tradingview-widget-container__widget';
+    widgetDiv.style.height = '100%';
+    widgetDiv.style.width = '100%';
+
+    wrapper.appendChild(widgetDiv);
+    wrapper.appendChild(script);
+    container.appendChild(wrapper);
+
+    // Fallback timeout for loading state
+    const timeout = setTimeout(() => setLoading(false), 5000);
 
     return () => {
+      clearTimeout(timeout);
       container.innerHTML = '';
     };
   }, [symbol, fullscreen]);
@@ -107,9 +115,13 @@ function TradingViewWidget({
   return (
     <div
       ref={containerRef}
-      style={{ height: fullscreen ? '100%' : height, width: '100%' }}
+      style={{ height: fullscreen ? '100%' : height, width: '100%', position: 'relative' }}
     >
-      <div id={widgetId.current} style={{ height: '100%', width: '100%' }} />
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#060e1c' }}>
+          <Skeleton className="w-full h-full" style={{ background: 'rgba(21,42,71,0.3)' }} />
+        </div>
+      )}
     </div>
   );
 }
