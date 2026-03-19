@@ -198,18 +198,8 @@ export function AICenter({ onClose }: Props) {
       }
 
       {/* Instrument Category Tabs */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at top center, hsl(210, 70%, 8%) 0%, hsl(210, 100%, 4%) 100%)',
-          border: '1px solid hsl(210, 40%, 14%)',
-        }}
-      >
-        <div
-          className="h-[1.5px]"
-          style={{ background: 'linear-gradient(90deg, transparent, hsl(200, 90%, 50%), hsl(270, 80%, 55%), transparent)' }}
-        />
-        <div className="flex items-center gap-0.5 px-1.5 py-2 overflow-x-auto scrollbar-none">
+      <GlowCard color="210 70% 55%">
+        <div className="flex items-center gap-1 px-2 py-2.5 overflow-x-auto scrollbar-none">
           {INSTRUMENT_TABS.map((tab) => {
             const TabIcon = tab.icon;
             const isActive = instrumentCategory === tab.key;
@@ -218,7 +208,7 @@ export function AICenter({ onClose }: Props) {
                 key={tab.key}
                 onClick={() => setInstrumentCategory(tab.key)}
                 className={cn(
-                  "relative flex flex-col items-center gap-1 min-w-[52px] py-2 px-2 rounded-xl transition-all duration-200 active:scale-95",
+                  "relative flex flex-col items-center gap-1.5 min-w-[60px] py-2.5 px-2.5 rounded-xl transition-all duration-200 active:scale-95",
                   isActive
                     ? "text-white"
                     : "text-slate-500 hover:text-slate-300"
@@ -232,7 +222,7 @@ export function AICenter({ onClose }: Props) {
                 }}
               >
                 <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+                  className="w-11 h-11 rounded-xl flex items-center justify-center transition-all"
                   style={isActive ? {
                     background: `linear-gradient(135deg, ${tab.color}30, ${tab.color}10)`,
                     boxShadow: `0 0 10px -3px ${tab.color}40`,
@@ -240,7 +230,7 @@ export function AICenter({ onClose }: Props) {
                     background: 'hsl(210, 30%, 10%)',
                   }}
                 >
-                  <TabIcon className="w-5 h-5" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
+                  <TabIcon className="w-6 h-6" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
                 </div>
                 <span className="text-[9px] font-bold leading-none whitespace-nowrap">
                   {tab.label}
@@ -260,7 +250,7 @@ export function AICenter({ onClose }: Props) {
             );
           })}
         </div>
-      </div>
+      </GlowCard>
 
       {/* Symbol Search + Fetch */}
       <div className="space-y-2.5">
