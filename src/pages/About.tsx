@@ -77,7 +77,7 @@ export default function About() {
         </div>
 
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
-          <Card className="mb-6 overflow-hidden bg-card border-border">
+          <GlowCard className="mb-6">
             <div className="relative">
               <img src={aboutHero} alt="Kinderdijk" className="w-full h-48 md:h-64 object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
@@ -89,10 +89,10 @@ export default function About() {
                 <p className="text-xs text-muted-foreground mt-1">{t('about_hero_subtitle')}</p>
               </div>
             </div>
-          </Card>
+          </GlowCard>
         </motion.div>
 
-        <Card className="mb-6 bg-card border-border">
+        <GlowCard className="mb-6">
           <CardHeader>
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <BarChart3 className="w-4 h-4" /> {t('about_origin_title')}
@@ -104,9 +104,9 @@ export default function About() {
             <p dangerouslySetInnerHTML={{ __html: t('about_origin_p3') }} />
             <p dangerouslySetInnerHTML={{ __html: t('about_origin_p4') }} />
           </CardContent>
-        </Card>
+        </GlowCard>
 
-        <Card className="mb-6 bg-card border-border">
+        <GlowCard className="mb-6">
           <CardHeader>
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Shield className="w-4 h-4" /> {t('about_values_title')}
@@ -125,7 +125,7 @@ export default function About() {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-primary" /> {t('about_stats_title')}
@@ -149,7 +149,7 @@ export default function About() {
           ))}
         </div>
 
-        <Card className="mb-6 bg-card border-border">
+        <GlowCard className="mb-6">
           <CardHeader>
             <CardTitle className="text-sm text-primary flex items-center gap-2">
               <Zap className="w-4 h-4" /> {t('about_timeline_title')}
@@ -168,7 +168,7 @@ export default function About() {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
           <Users className="w-4 h-4 text-primary" /> {t('about_team_title')}
