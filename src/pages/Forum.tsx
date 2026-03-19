@@ -372,12 +372,12 @@ export default function Forum() {
       ) : convosLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : conversations.length === 0 ? (
-        <Card className="bg-card border-border">
-          <CardContent className="p-6 text-center">
+        <GlowCard color="210 70% 55%">
+          <div className="p-6 text-center">
             <MessageCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">No tienes conversaciones aún</p>
-          </CardContent>
-        </Card>
+          </div>
+        </GlowCard>
       ) : (
         <div className="space-y-1.5">
           {conversations.map(c => (
