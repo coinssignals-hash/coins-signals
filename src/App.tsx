@@ -147,6 +147,7 @@ function AnimatedRoutes() {
           <Route path="/broker-rating" element={<BrokerRating />} />
           <Route path="/link-broker" element={<LinkBroker />} />
           <Route path="/portfolio" element={<SubscriptionGate requiredTier="premium" featureName="Portfolio Multi-Broker"><Portfolio /></SubscriptionGate>} />
+          <Route path="/achievements" element={<Achievements />} />
           <Route path="/create-signal" element={<CreateSignal />} />
           
           <Route path="/ai-center" element={<SubscriptionGate requiredTier="plus" featureName="Centro de IA"><AICenter /></SubscriptionGate>} />
