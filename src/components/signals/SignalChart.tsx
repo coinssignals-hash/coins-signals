@@ -101,6 +101,17 @@ export function SignalChart({
   const [fullscreen, setFullscreen] = useState(false);
   const [forceRotate, setForceRotate] = useState(false);
   const [showLevels, setShowLevels] = useState(false);
+  const [levelsMounted, setLevelsMounted] = useState(false);
+
+  const toggleLevels = useCallback(() => {
+    if (showLevels) {
+      setShowLevels(false); // triggers fade-out, stays mounted
+    } else {
+      setLevelsMounted(true);
+      // RAF to ensure mount before animation
+      requestAnimationFrame(() => setShowLevels(true));
+    }
+  }, [showLevels]);
   const fsRef = useRef<HTMLDivElement>(null);
   const tvSymbol = toTradingViewSymbol(currencyPair);
   const isPortrait = useOrientation();
@@ -160,7 +171,7 @@ export function SignalChart({
           {/* Toggle signal levels */}
           {signalLevels && (
             <button
-              onClick={() => setShowLevels(!showLevels)}
+              onClick={toggleLevels}
               className={cn(
                 "absolute top-2 right-12 z-10 p-1.5 rounded-md transition-all active:scale-95",
                 showLevels ? "text-cyan-300" : "text-white/40"
@@ -176,12 +187,14 @@ export function SignalChart({
           )}
 
           {/* Signal levels overlay */}
-          {showLevels && signalLevels && (
+          {levelsMounted && signalLevels && (
             <SignalLevelsOverlay
               entryPrice={signalLevels.entryPrice}
               takeProfit={signalLevels.takeProfit}
               takeProfit2={signalLevels.takeProfit2}
               stopLoss={signalLevels.stopLoss}
+              visible={showLevels}
+              onExited={() => setLevelsMounted(false)}
             />
           )}
 
@@ -229,7 +242,7 @@ export function SignalChart({
                 {/* Toggle levels in fullscreen */}
                 {signalLevels && (
                   <button
-                    onClick={() => setShowLevels(!showLevels)}
+                    onClick={toggleLevels}
                     className={cn(
                       "p-1.5 rounded-md transition-all active:scale-90",
                       showLevels ? "text-cyan-300" : "text-white/50"
@@ -275,12 +288,14 @@ export function SignalChart({
             </div>
 
             {/* Signal levels overlay in fullscreen */}
-            {showLevels && signalLevels && (
+            {levelsMounted && signalLevels && (
               <SignalLevelsOverlay
                 entryPrice={signalLevels.entryPrice}
                 takeProfit={signalLevels.takeProfit}
                 takeProfit2={signalLevels.takeProfit2}
                 stopLoss={signalLevels.stopLoss}
+                visible={showLevels}
+                onExited={() => setLevelsMounted(false)}
               />
             )}
 

@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 interface SignalLevelsOverlayProps {
   entryPrice: number;
   takeProfit: number;
   takeProfit2?: number;
   stopLoss: number;
-  action?: 'BUY' | 'SELL';
+  visible?: boolean;
+  onExited?: () => void;
 }
 
 /**
@@ -17,6 +19,8 @@ export function SignalLevelsOverlay({
   takeProfit,
   takeProfit2,
   stopLoss,
+  visible = true,
+  onExited,
 }: SignalLevelsOverlayProps) {
   const levels = useMemo(() => {
     const allPrices = [entryPrice, takeProfit, stopLoss];
@@ -62,7 +66,11 @@ export function SignalLevelsOverlay({
   const slZoneBottom = isBuy ? levels.sl : levels.entry;
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-[5] animate-fade-in" style={{ overflow: 'hidden' }}>
+    <div
+      className={cn("absolute inset-0 pointer-events-none z-[5] transition-opacity duration-300", visible ? "opacity-100" : "opacity-0")}
+      style={{ overflow: 'hidden' }}
+      onTransitionEnd={() => { if (!visible) onExited?.(); }}
+    >
       {/* TP zone - green */}
       <div
         className="absolute left-0 right-0"
