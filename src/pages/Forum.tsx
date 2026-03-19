@@ -347,23 +347,25 @@ export default function Forum() {
   // ═══ DM CONVERSATIONS LIST ═══
   const renderDMsView = () => (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <button
-          onClick={() => setView('channels')}
-          className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground"
-        >
-          <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
-        </button>
-        <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
-          <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
-        </button>
-        <button
-          onClick={() => setView('favorites')}
-          className="flex-1 py-2 rounded-lg text-xs font-bold bg-secondary text-muted-foreground"
-        >
-          <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
-        </button>
-      </div>
+      <GlowCard color="210 70% 55%" className="rounded-xl">
+        <div className="flex gap-2 p-1.5">
+          <button
+            onClick={() => setView('channels')}
+            className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
+          </button>
+          <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
+            <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
+          </button>
+          <button
+            onClick={() => setView('favorites')}
+            className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
+          </button>
+        </div>
+      </GlowCard>
 
       {!user ? (
         <GlowCard color="210 70% 55%">
