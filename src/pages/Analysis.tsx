@@ -15,7 +15,7 @@ import { DayTabs } from '@/components/analysis/DayTabs';
 import { CurrencyHeader } from '@/components/analysis/CurrencyHeader';
 import { TerminalStatusBar } from '@/components/analysis/TerminalStatusBar';
 import { QuickStatsGrid } from '@/components/analysis/QuickStatsGrid';
-import { CandlestickChart } from '@/components/analysis/CandlestickChart';
+import { AnalysisTVChart } from '@/components/analysis/AnalysisTVChart';
 import { TechnicalIndicatorsTabs } from '@/components/analysis/TechnicalIndicatorsTabs';
 import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { LazySection } from '@/components/ui/lazy-section';
