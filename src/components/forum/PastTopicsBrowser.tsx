@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
+import { CardContent } from '@/components/ui/card';
 import { Trophy, ChevronLeft, ChevronRight, Calendar, TrendingUp, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -104,27 +105,27 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
 
   if (loading) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 flex items-center justify-center gap-2 text-muted-foreground text-xs">
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground text-xs">
           <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
           {language === 'es' ? 'Cargando historial...' : 'Loading history...'}
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
   if (topics.length === 0) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 text-center space-y-2">
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 text-center space-y-2">
           <p className="text-xs text-muted-foreground">
             {language === 'es' ? 'No hay temas anteriores disponibles' : 'No past topics available'}
           </p>
           <button onClick={onClose} className="text-xs text-primary font-semibold">
             {language === 'es' ? 'Volver' : 'Back'}
           </button>
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
@@ -147,7 +148,7 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
   const dateLocale = DATE_LOCALES[language] || es;
 
   return (
-    <Card className="bg-card border-border overflow-hidden">
+    <GlowCard color="210 70% 55%">
       {topic.image_url && (
         <img src={topic.image_url} alt={displayTitle} className="w-full h-28 object-cover" loading="lazy" />
       )}
@@ -241,6 +242,6 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
           <span>{currentIndex + 1} / {topics.length}</span>
         </div>
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }

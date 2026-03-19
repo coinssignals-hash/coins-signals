@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
+import { CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Sunrise, TrendingUp, Target, MessageCircle, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -138,17 +139,17 @@ export function TomorrowSuggestions() {
 
   if (loading) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 flex justify-center">
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 flex justify-center">
           <Loader2 className="w-5 h-5 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
   return (
-    <Card className="bg-card border-border overflow-hidden">
-      <CardContent className="p-0">
+    <GlowCard color="210 70% 55%">
+      <div className="p-0">
         {/* Header */}
         <button
           onClick={() => setExpanded(!expanded)}
@@ -227,7 +228,7 @@ export function TomorrowSuggestions() {
             })}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </GlowCard>
   );
 }

@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
+import { CardContent } from '@/components/ui/card';
 import { Star, Mail, MessageCircle, Loader2 } from 'lucide-react';
 import { FavoriteUser } from '@/hooks/useFavoriteUsers';
 import { cn } from '@/lib/utils';
@@ -24,8 +25,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
 
   if (favorites.length === 0) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-6 text-center space-y-2">
+      <GlowCard color="210 70% 55%">
+        <div className="p-6 text-center space-y-2">
           <Star className="w-8 h-8 text-muted-foreground mx-auto" />
           <p className="text-xs text-muted-foreground">
             No tienes usuarios favoritos aún
@@ -33,8 +34,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
           <p className="text-[10px] text-muted-foreground">
             Toca la ⭐ en el chat para agregar amigos
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
@@ -43,10 +44,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
       {favorites.map(fav => {
         const legendary = isLegendaryAvatar(fav.avatar_url);
         return (
-          <div
-            key={fav.id}
-            className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border"
-          >
+          <GlowCard key={fav.id} color="210 70% 55%" className="rounded-xl">
+            <div className="flex items-center gap-3 p-3">
             <div className="relative">
               <Avatar className={cn("w-9 h-9", legendary && LEGENDARY_RING_CLASS)}>
                 <AvatarImage src={fav.avatar_url || ''} />
@@ -82,7 +81,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
                 <Star className="w-3.5 h-3.5 fill-current" />
               </button>
             </div>
-          </div>
+            </div>
+          </GlowCard>
         );
       })}
     </div>
