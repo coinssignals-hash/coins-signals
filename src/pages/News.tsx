@@ -592,10 +592,8 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       {expanded &&
       <div className="px-3 pb-3 space-y-3 animate-fade-in">
           <div className="rounded-lg p-3 relative overflow-hidden"
-        style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
-            <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-          style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">{t('news_sentiment_analysis')}</span>
+        style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2 block">{t('news_sentiment_analysis')}</span>
             <div className="space-y-1.5">
               <NewsImpactBar label={t('news_sentiment_bullish')} value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
               <NewsImpactBar label={t('news_sentiment_bearish')} value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
