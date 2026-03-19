@@ -18,6 +18,7 @@ import { LANGUAGE_FLAGS, LANGUAGE_LABELS } from '@/i18n/LanguageContext';
 import { SignalPicker } from '@/components/forum/SignalPicker';
 import { EmbeddedSignalCard } from '@/components/forum/EmbeddedSignalCard';
 import { cn } from '@/lib/utils';
+import { isLegendaryAvatar, LEGENDARY_RING_CLASS } from '@/lib/legendaryAvatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useForumChannels, useForumMessages, useDailyTopic, useDMConversations, useDirectMessages, ForumMessage } from '@/hooks/useForum';
