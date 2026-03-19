@@ -62,7 +62,7 @@ export function SignalLevelsOverlay({
   const slZoneBottom = isBuy ? levels.sl : levels.entry;
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-[5]" style={{ overflow: 'hidden' }}>
+    <div className="absolute inset-0 pointer-events-none z-[5] animate-fade-in" style={{ overflow: 'hidden' }}>
       {/* TP zone - green */}
       <div
         className="absolute left-0 right-0"
