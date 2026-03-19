@@ -500,10 +500,13 @@ export default function Forum() {
                       <Popover>
                         <PopoverTrigger asChild>
                           <button className="flex-shrink-0 mt-1 active:scale-95 transition-transform">
-                            <Avatar className="w-7 h-7 sm:w-8 sm:h-8">
-                              <AvatarImage src={userAvatar || ''} />
-                              <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
-                            </Avatar>
+                            <div className="relative">
+                              <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
+                                <AvatarImage src={userAvatar || ''} />
+                                <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
+                              </Avatar>
+                              {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
+                            </div>
                           </button>
                         </PopoverTrigger>
                         <PopoverContent side="right" align="start" className="w-44 p-2 space-y-1">
