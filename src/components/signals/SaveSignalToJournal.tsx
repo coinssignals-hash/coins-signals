@@ -113,6 +113,8 @@ export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalPr
     toast.success(t('journal_signal_saved_toast'));
     setAlreadySaved(true);
     setOpen(false);
+    // Check achievements after saving
+    setTimeout(() => checkAndUnlockAchievements(), 1000);
   };
 
   const formatDateTimeLocal = (iso: string) => {
