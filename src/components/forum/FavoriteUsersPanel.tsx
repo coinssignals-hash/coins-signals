@@ -44,10 +44,8 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
       {favorites.map(fav => {
         const legendary = isLegendaryAvatar(fav.avatar_url);
         return (
-          <div
-            key={fav.id}
-            className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border"
-          >
+          <GlowCard key={fav.id} color="210 70% 55%" className="rounded-xl">
+            <div className="flex items-center gap-3 p-3">
             <div className="relative">
               <Avatar className={cn("w-9 h-9", legendary && LEGENDARY_RING_CLASS)}>
                 <AvatarImage src={fav.avatar_url || ''} />
