@@ -193,7 +193,7 @@ export default function Forum() {
         const displayOptB = translatedTopic?.option_b || topic.option_b;
 
         return (
-        <Card className="bg-card border-border overflow-hidden">
+        <GlowCard color="210 70% 55%">
           {/* Image area with admin upload */}
           <div className="relative">
             {topic.image_url ? (
