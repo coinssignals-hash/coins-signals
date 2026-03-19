@@ -85,8 +85,9 @@ export function SignalLevelsOverlay({
     >
       {/* TP zone - green */}
       <div
-        className="absolute left-0 right-0"
+        className="absolute right-0"
         style={{
+          left: '38%',
           top: `${tpZoneTop}%`,
           height: `${tpZoneBottom - tpZoneTop}%`,
           background: 'rgba(34, 197, 94, 0.08)',
