@@ -5,7 +5,8 @@ interface SignalLevelsOverlayProps {
   takeProfit: number;
   takeProfit2?: number;
   stopLoss: number;
-  action?: 'BUY' | 'SELL';
+  visible?: boolean;
+  onExited?: () => void;
 }
 
 /**
