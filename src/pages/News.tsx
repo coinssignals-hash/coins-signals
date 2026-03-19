@@ -341,7 +341,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
       style={{ background: `radial-gradient(ellipse at center, ${config.glow}, transparent 70%)` }} />
       }
       <div className="flex items-center justify-between mb-1 relative">
-        <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium flex items-center gap-1">
+        <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1">
           <Activity className="w-2.5 h-2.5" style={{ color: config.color }} />
           {t('news_volatility')}
         </span>
