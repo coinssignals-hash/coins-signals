@@ -9,7 +9,7 @@ import { useNewNewsCount } from '@/hooks/useNewNewsCount';
 import { useNewsCache } from '@/hooks/useNewsCache';
 import { useTranslation } from '@/i18n/LanguageContext';
 import {
-  User as UserIcon, FileText, Gift, Link2, Shield, BookOpen,
+  User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
   Bell, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert
 } from 'lucide-react';
