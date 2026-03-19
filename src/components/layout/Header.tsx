@@ -52,13 +52,10 @@ export function Header() {
             <img src={logoImg} alt="Coins Signals" className="h-16 w-auto" />
           </Link>
 
-          {/* Right: Community + Portfolio icons */}
+          {/* Right: Community icon */}
           <div className="flex items-center gap-1">
-            <Link to="/forum" className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
-              <Users className="w-5 h-5 text-primary" />
-            </Link>
-            <Link to="/portfolio" className="p-2 rounded-xl bg-accent/10 hover:bg-accent/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/portfolio')}>
-              <Briefcase className="w-5 h-5 text-accent" />
+            <Link to="/forum" className="p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
+              <Users className="w-7 h-7 text-primary" />
             </Link>
           </div>
         </div>
@@ -74,11 +71,11 @@ export function Header() {
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('journal')}</span>
           </Link>
-          <Link to="/tools" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
+          <Link to="/portfolio" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-accent/10 text-accent hover:bg-accent/20 transition-colors">
-              <BarChart3 className="w-[18px] h-[18px]" />
+              <Briefcase className="w-[18px] h-[18px]" />
             </div>
-            <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
+            <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('nav_portfolio')}</span>
           </Link>
           <Link to="/tools/market-sessions" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-colors">
