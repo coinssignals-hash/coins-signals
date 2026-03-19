@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { Header } from '@/components/layout/Header';
-import { BottomNav } from '@/components/layout/BottomNav';
-import { PageTransition } from '@/components/layout/PageTransition';
+import { PageShell } from '@/components/layout/PageShell';
 import { StaggerList } from '@/components/layout/StaggerList';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
@@ -18,6 +17,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { Currency, CURRENCIES, EconomicCategory } from '@/types/news';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { GlowCard } from '@/components/ui/glow-card';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 // Use RealNewsItem as NewsListItem for compatibility
@@ -205,7 +205,7 @@ function NewsImpactBar({ label, value, color }: {label: string;value: number;col
   return (
     <div className="flex items-center gap-2">
       <span className="text-[10px] w-12 text-right" style={{ color }}>{label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${value}%`, background: color }} />
       </div>
       <span className="text-[11px] font-semibold w-8 text-right" style={{ color }}>{value}%</span>
@@ -274,12 +274,12 @@ function VolatilityIndicator({ newsId, title, category, currencies
   if (isLoading) {
     return (
       <div className="rounded-lg overflow-hidden px-2.5 py-1.5"
-      style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+      style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_volatility')}</span>
-          <Loader2 className="w-3 h-3 text-cyan-400/50 animate-spin" />
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">{t('news_volatility')}</span>
+          <Loader2 className="w-3 h-3 text-muted-foreground animate-spin" />
         </div>
-        <div className="h-1 rounded-full bg-slate-800/80 animate-pulse" />
+        <div className="h-1 rounded-full animate-pulse" style={{ background: 'hsl(var(--muted) / 0.3)' }} />
       </div>);
 
   }
@@ -289,7 +289,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
 
   return (
     <div className="rounded-lg overflow-hidden px-2.5 py-1.5 relative group/vol cursor-pointer"
-    style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+    style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
       {/* Tooltip */}
       <div className={cn(
         'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-44',
@@ -341,7 +341,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
       style={{ background: `radial-gradient(ellipse at center, ${config.glow}, transparent 70%)` }} />
       }
       <div className="flex items-center justify-between mb-1 relative">
-        <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium flex items-center gap-1">
+        <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1">
           <Activity className="w-2.5 h-2.5" style={{ color: config.color }} />
           {t('news_volatility')}
         </span>
@@ -349,7 +349,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
           {config.label}
         </span>
       </div>
-      <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden relative">
+      <div className="h-1 rounded-full overflow-hidden relative" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{
@@ -394,16 +394,10 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
 
   return (
     <div
-      className={cn('group relative rounded-xl overflow-hidden animate-fade-in')}
-      style={{
-        animationDelay: `${index * 50}ms`,
-        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.3)'
-      }}>
-
-      {/* Top glow line */}
-      <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
+      className={cn('group animate-fade-in')}
+      style={{ animationDelay: `${index * 50}ms` }}
+    >
+    <GlowCard color="210 70% 55%" className="rounded-2xl">
 
       {/* Hero Image */}
       <Link to={`/news/${news.id}`} className="block relative aspect-[5/3] sm:aspect-[2/1] overflow-hidden">
@@ -547,12 +541,12 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
         <div className="grid grid-cols-3 gap-1.5">
           {/* Relevance */}
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
-          style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+          style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_relevance')}</span>
-              <span className="font-mono text-[10px] font-bold text-white">{relevancePercent}%</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">{t('news_relevance')}</span>
+              <span className="font-mono text-[10px] font-bold text-foreground">{relevancePercent}%</span>
             </div>
-            <div className="h-1 rounded-full bg-slate-800/80 overflow-hidden">
+            <div className="h-1 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
@@ -566,9 +560,9 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           </div>
           {/* Sentiment quick */}
           <div className="rounded-lg overflow-hidden px-2 py-1.5"
-          style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+          style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[9px] uppercase tracking-wider text-cyan-300/50 font-medium">{t('news_sentiment')}</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">{t('news_sentiment')}</span>
               <SentimentIcon className="w-3 h-3" style={{ color: sentimentColor }} />
             </div>
             <div className="flex gap-0.5 h-1 rounded-full overflow-hidden">
@@ -598,10 +592,8 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
       {expanded &&
       <div className="px-3 pb-3 space-y-3 animate-fade-in">
           <div className="rounded-lg p-3 relative overflow-hidden"
-        style={{ background: 'linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)', border: '1px solid hsla(200, 60%, 35%, 0.3)' }}>
-            <div className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-          style={{ background: 'radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)' }} />
-            <span className="text-[10px] uppercase tracking-wider text-cyan-300/60 font-medium mb-2 block">{t('news_sentiment_analysis')}</span>
+        style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2 block">{t('news_sentiment_analysis')}</span>
             <div className="space-y-1.5">
               <NewsImpactBar label={t('news_sentiment_bullish')} value={sentimentBreakdown.pos} color="hsl(135, 70%, 50%)" />
               <NewsImpactBar label={t('news_sentiment_bearish')} value={sentimentBreakdown.neg} color="hsl(0, 70%, 55%)" />
@@ -612,6 +604,7 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
           <NewsAISummaryInline news={news} />
         </div>
       }
+    </GlowCard>
     </div>);
 
 }
@@ -629,16 +622,11 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
   const relevancePercent = Math.round(news.relevance_score > 1 ? news.relevance_score : news.relevance_score * 100);
 
   return (
+    <GlowCard color="210 70% 55%" className="rounded-2xl">
     <Link
       to={`/news/${news.id}`}
-      className={cn('group block rounded-xl overflow-hidden relative transition-all duration-500 hover:shadow-xl animate-fade-in')}
-      style={{
-        background: 'radial-gradient(ellipse at center 40%, hsl(200, 100%, 15%) 0%, hsl(205, 100%, 7%) 70%, hsl(210, 100%, 5%) 100%)',
-        border: '1px solid hsla(200, 60%, 35%, 0.3)'
-      }}>
+      className={cn('group block rounded-xl overflow-hidden relative transition-all duration-500 hover:shadow-xl animate-fade-in')}>
 
-      <div className="absolute top-0 left-[15%] right-[15%] h-[1px] z-10"
-      style={{ background: 'radial-gradient(ellipse at center, hsl(200, 80%, 55%) 0%, transparent 70%)' }} />
 
       <div className="relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
         {news.image_url ?
@@ -704,7 +692,8 @@ function FeaturedCard({ news }: {news: NewsListItem;}) {
           <FeaturedHistoricalChart newsId={news.id} title={news.title} category={news.category as EconomicCategory} currencies={news.affected_currencies} />
         </div>
       </div>
-    </Link>);
+    </Link>
+    </GlowCard>);
 
 }
 
@@ -959,18 +948,20 @@ const News = () => {
   '';
 
   return (
-    <PageTransition>
-    <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
-      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
+    <PageShell>
       <Header />
       
-      <main className="px-3 sm:px-4 py-3 sm:py-4 space-y-3">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3 pb-20">
         {/* Date Tabs */}
-        <DateTabs
-              selectedDate={selectedDate}
-              onDateChange={setSelectedDate}
-              onRefresh={handleRefresh}
-              isRefreshing={isRefreshing} />
+        <GlowCard color="210 70% 55%" className="rounded-xl">
+          <div className="p-2">
+            <DateTabs
+                  selectedDate={selectedDate}
+                  onDateChange={setSelectedDate}
+                  onRefresh={handleRefresh}
+                  isRefreshing={isRefreshing} />
+          </div>
+        </GlowCard>
 
         
         {/* Section Header + Currency Filter */}
@@ -1186,10 +1177,7 @@ const News = () => {
           </>
             }
       </main>
-      </div>
-      <BottomNav />
-    </div>
-    </PageTransition>);
+    </PageShell>);
 
 };
 
