@@ -116,16 +116,16 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
 
   if (topics.length === 0) {
     return (
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 text-center space-y-2">
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 text-center space-y-2">
           <p className="text-xs text-muted-foreground">
             {language === 'es' ? 'No hay temas anteriores disponibles' : 'No past topics available'}
           </p>
           <button onClick={onClose} className="text-xs text-primary font-semibold">
             {language === 'es' ? 'Volver' : 'Back'}
           </button>
-        </CardContent>
-      </Card>
+        </div>
+      </GlowCard>
     );
   }
 
