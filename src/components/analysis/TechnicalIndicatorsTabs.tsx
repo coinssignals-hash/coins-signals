@@ -184,13 +184,17 @@ function MACDPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
 function BollingerPanel({ candles, t }: {candles: OHLCVCandle[]; t: TFn}) {
   const data = useMemo(() => {
     const bb = calcBollingerBands(candles);
-    return bb.map((b) => ({
-      time: formatTime(b.time),
-      upper: +b.upper.toFixed(5),
-      middle: +b.middle.toFixed(5),
-      lower: +b.lower.toFixed(5),
-      price: candles.find((c) => formatTime(c.time) === formatTime(b.time))?.close ?? b.middle
-    }));
+    const priceByKey = new Map(candles.map((c) => [formatTimeKey(c.time), c.close]));
+    return bb.map((b) => {
+      const key = formatTimeKey(b.time);
+      return {
+        time: formatTime(b.time),
+        upper: +b.upper.toFixed(5),
+        middle: +b.middle.toFixed(5),
+        lower: +b.lower.toFixed(5),
+        price: +(priceByKey.get(key) ?? b.middle).toFixed(5),
+      };
+    });
   }, [candles]);
 
   const latest = data[data.length - 1];
