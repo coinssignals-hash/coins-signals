@@ -3,6 +3,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { ArrowLeft, Building2, Users, Globe, Server, Briefcase, UserCheck, MapPin, Phone, Mail, Target, TrendingUp, Shield, Award, Zap, BarChart3, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -132,7 +133,7 @@ export default function About() {
         <div className="grid grid-cols-2 gap-3 mb-6">
           {stats.map((s, i) => (
             <motion.div key={s.label} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-              <Card className="bg-card border-border h-full">
+              <GlowCard className="h-full">
                 <CardContent className="p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -143,7 +144,7 @@ export default function About() {
                   <p className="text-xs font-semibold text-foreground mb-1">{s.label}</p>
                   <p className="text-[10px] text-muted-foreground leading-relaxed">{s.desc}</p>
                 </CardContent>
-              </Card>
+              </GlowCard>
             </motion.div>
           ))}
         </div>
@@ -175,7 +176,7 @@ export default function About() {
         <div className="space-y-3 mb-6">
           {teamMembers.map((m, i) => (
             <motion.div key={m.name} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-              <Card className="bg-card border-border overflow-hidden">
+              <GlowCard>
                 <CardContent className="p-4">
                   <div className="flex gap-3">
                     <Avatar className="w-14 h-14 border-2 border-border shrink-0">
@@ -194,7 +195,7 @@ export default function About() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </GlowCard>
             </motion.div>
           ))}
         </div>
@@ -231,7 +232,7 @@ export default function About() {
           ))}
         </div>
 
-        <Card className="bg-card border-border mb-4">
+        <GlowCard className="mb-4">
           <CardContent className="p-4 text-center">
             <p className="text-sm text-foreground font-medium mb-1">{t('about_cta_title')}</p>
             <p className="text-xs text-muted-foreground mb-3">{t('about_cta_subtitle')}</p>
@@ -248,7 +249,7 @@ export default function About() {
               </Link>
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
       </main>
     </PageShell>
   );
