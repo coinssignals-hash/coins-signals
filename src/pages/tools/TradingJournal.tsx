@@ -192,6 +192,8 @@ export default function TradingJournal() {
     setShowForm(false);
     setEditingId(null);
     await fetchEntries(userId);
+    // Check achievements after saving a trade
+    setTimeout(() => checkAndUnlockAchievements(), 1000);
   }
 
   async function handleDelete(id: string) {

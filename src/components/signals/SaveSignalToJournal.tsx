@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useDateLocale } from '@/hooks/useDateLocale';
+import { useAchievements } from '@/hooks/useAchievements';
 import type { TradingSignal } from '@/hooks/useSignals';
 import {
   Dialog,
