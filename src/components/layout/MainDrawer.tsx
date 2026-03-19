@@ -180,24 +180,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
 
         <div className="flex items-center justify-between px-6 py-2">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('drawer_language_tz')}</span>
-          <div className="flex items-center gap-1">
-            {user && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn("h-8 w-8", profile?.signal_alerts_enabled ? 'text-primary' : 'text-muted-foreground')}
-                onClick={async () => {
-                  const newVal = !profile?.signal_alerts_enabled;
-                  await supabase.from('profiles').update({ signal_alerts_enabled: newVal }).eq('id', user.id);
-                  setProfile(prev => prev ? { ...prev, signal_alerts_enabled: newVal } : prev);
-                  toast({ title: newVal ? t('drawer_notifications') + ' ON' : t('drawer_notifications') + ' OFF' });
-                }}
-              >
-                {profile?.signal_alerts_enabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-              </Button>
-            )}
-            <LanguageQuickSelect />
-          </div>
+          <LanguageQuickSelect />
         </div>
 
         <Separator className="bg-border" />
