@@ -529,10 +529,13 @@ export default function Forum() {
                         </PopoverContent>
                       </Popover>
                     ) : (
-                      <Avatar className="w-7 h-7 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
-                        <AvatarImage src={userAvatar || ''} />
-                        <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
-                      </Avatar>
+                      <div className="relative mt-1 flex-shrink-0">
+                        <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
+                          <AvatarImage src={userAvatar || ''} />
+                          <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
+                        </Avatar>
+                        {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
+                      </div>
                     )}
                     <div className={cn("max-w-[75%] sm:max-w-[65%] lg:max-w-[50%] space-y-1", isOwn && "items-end")}>
                       <div className="flex items-center gap-1.5">
