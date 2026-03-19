@@ -230,51 +230,38 @@ export function SignalChart({
                 {currencyPair}
               </span>
 
-              <div className="flex items-center gap-2">
-                {/* Toggle levels in fullscreen */}
+              <div className="flex items-center gap-1.5">
                 {signalLevels && (
                   <button
                     onClick={toggleLevels}
                     className={cn(
-                      "p-1.5 rounded-md transition-all active:scale-90",
-                      showLevels ? "text-cyan-300" : "text-white/50"
+                      "p-2 rounded-lg backdrop-blur-md transition-all duration-200 active:scale-90 shadow-lg shadow-black/30",
+                      showLevels
+                        ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-300"
+                        : "bg-white/5 border border-white/10 text-white/50 hover:text-white/70 hover:bg-white/10"
                     )}
-                    style={{
-                      background: showLevels ? 'rgba(0,230,180,0.15)' : 'rgba(0,0,0,0.4)',
-                      border: `1px solid ${showLevels ? 'rgba(0,230,180,0.3)' : 'rgba(255,255,255,0.2)'}`,
-                    }}
                     title="Signal Levels"
                   >
                     <Crosshair className="w-4 h-4" />
                   </button>
                 )}
-
-                {/* Rotate toggle */}
                 <button
                   onClick={() => setForceRotate(!forceRotate)}
                   className={cn(
-                    "p-1.5 rounded-md transition-all active:scale-90",
-                    forceRotate ? "text-cyan-300" : "text-white/50"
+                    "p-2 rounded-lg backdrop-blur-md transition-all duration-200 active:scale-90 shadow-lg shadow-black/30",
+                    forceRotate
+                      ? "bg-emerald-500/20 border border-emerald-400/50 text-emerald-300"
+                      : "bg-white/5 border border-white/10 text-white/50 hover:text-white/70 hover:bg-white/10"
                   )}
-                  style={{
-                    background: forceRotate ? 'rgba(0,230,180,0.15)' : 'rgba(0,0,0,0.4)',
-                    border: `1px solid ${forceRotate ? 'rgba(0,230,180,0.3)' : 'rgba(255,255,255,0.2)'}`,
-                  }}
                   title="Rotar gráfico"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <Smartphone className={cn("w-4 h-4 transition-transform duration-300", forceRotate ? "rotate-90" : "")} />
                 </button>
-
-                {/* Close */}
                 <button
                   onClick={closeFullscreen}
-                  className="p-1.5 rounded-md active:scale-90"
-                  style={{
-                    background: 'rgba(0,0,0,0.4)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                  }}
+                  className="p-2 rounded-lg backdrop-blur-md bg-red-500/10 border border-red-400/30 text-red-300/80 hover:bg-red-500/20 hover:text-red-300 shadow-lg shadow-black/30 transition-all duration-200 active:scale-90"
                 >
-                  <X className="w-4 h-4 text-white" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
