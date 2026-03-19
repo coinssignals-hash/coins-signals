@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -225,7 +226,7 @@ export default function BrokerRating() {
           );
         })()}
 
-        <Card className="mb-4">
+        <GlowCard className="mb-4">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-base font-semibold text-foreground">{t('broker_search')}</h2>
@@ -311,7 +312,7 @@ export default function BrokerRating() {
               })}
             </div>
           </CardContent>
-        </Card>
+        </GlowCard>
 
         {/* Global search results or regional view */}
         {isGlobalSearch && globalSearchTerm.length >= 2 ? (

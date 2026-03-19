@@ -150,7 +150,7 @@ export default function Documents() {
             })}
           </Accordion>
 
-          <Card className="bg-card border-border mt-6">
+          <GlowCard className="mt-6">
             <CardHeader><CardTitle className="text-sm text-primary">{t('doc_history')}</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {loading ? (
@@ -179,7 +179,7 @@ export default function Documents() {
                 ))
               )}
             </CardContent>
-          </Card>
+          </GlowCard>
         </div>
       </main>
     </PageShell>
