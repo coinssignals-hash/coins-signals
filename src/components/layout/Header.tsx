@@ -67,7 +67,7 @@ export function Header() {
         <div className="h-[1px] w-full bg-gradient-to-r from-accent via-primary to-[hsl(280,60%,50%)]" />
 
         {/* Secondary row: quick action icons — evenly distributed */}
-        <div className="grid grid-cols-5 gap-2 w-full px-3 py-2">
+        <div className="grid grid-cols-4 gap-2 w-full px-3 py-2">
           <Link to="/tools/trading-journal" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
               <BookOpen className="w-[18px] h-[18px]" />
@@ -86,12 +86,6 @@ export function Header() {
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">Sessions</span>
           </Link>
-          <div className="flex flex-col items-center gap-1 active:scale-95 transition-all">
-            <div className="flex items-center justify-center h-8 w-full rounded-xl bg-green-500/10 hover:bg-green-500/20 transition-colors">
-              <NotificationToggle />
-            </div>
-            <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('alerts')}</span>
-          </div>
           <div className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-secondary/50 text-foreground/80 hover:bg-secondary transition-colors">
               <LanguageQuickSelect />
