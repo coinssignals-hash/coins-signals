@@ -115,7 +115,16 @@ export function useAchievements() {
   });
 
   const checkAndUnlockAchievements = async () => {
-    if (!user?.id || !stats) return;
+    if (!user?.id) return;
+
+    // Refetch stats to get latest data
+    await queryClient.invalidateQueries({ queryKey: ['trading-stats', user.id] });
+    const freshStats = await queryClient.fetchQuery({
+      queryKey: ['trading-stats', user.id],
+      queryFn: () => calculateTradingStats(user.id),
+    });
+
+    if (!freshStats) return;
 
     const newUnlocks: string[] = [];
 
