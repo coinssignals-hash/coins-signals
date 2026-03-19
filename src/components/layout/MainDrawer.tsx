@@ -197,36 +197,60 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 const isActive = location.pathname === item.href;
                 const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
                 const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
+                const isNotificationItem = item.href === '/settings/notifications';
 
                 return (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    onClick={() => onOpenChange(false)}
-                    onMouseEnter={onMouseEnter(item.href)}
-                    onTouchStart={onTouchStart(item.href)}
-                    className={cn(
-                      'flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
-                      isActive
-                        ? 'bg-primary/10 text-primary border-l-4 border-primary'
-                        : 'text-foreground hover:bg-secondary'
+                  <div key={item.href} className="flex items-center">
+                    <Link
+                      to={item.href}
+                      onClick={() => onOpenChange(false)}
+                      onMouseEnter={onMouseEnter(item.href)}
+                      onTouchStart={onTouchStart(item.href)}
+                      className={cn(
+                        'flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex-1',
+                        isActive
+                          ? 'bg-primary/10 text-primary border-l-4 border-primary'
+                          : 'text-foreground hover:bg-secondary'
+                      )}
+                    >
+                      <div className="relative">
+                        <Icon className="w-5 h-5" />
+                        {showNewsBadge && (
+                          <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
+                            {newsCount > 99 ? '99+' : newsCount}
+                          </span>
+                        )}
+                        {showSavedBadge && (
+                          <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground rounded-full">
+                            {savedNewsCount > 99 ? '99+' : savedNewsCount}
+                          </span>
+                        )}
+                      </div>
+                      {item.label}
+                    </Link>
+                    {isNotificationItem && user && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          "h-8 w-8 mr-2 transition-all duration-300",
+                          profile?.signal_alerts_enabled ? 'text-primary' : 'text-muted-foreground',
+                          bellAnimating && 'animate-[bell-ring_0.5s_ease-in-out]'
+                        )}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          setBellAnimating(true);
+                          setTimeout(() => setBellAnimating(false), 500);
+                          const newVal = !profile?.signal_alerts_enabled;
+                          await supabase.from('profiles').update({ signal_alerts_enabled: newVal }).eq('id', user.id);
+                          setProfile(prev => prev ? { ...prev, signal_alerts_enabled: newVal } : prev);
+                          toast({ title: newVal ? t('drawer_notifications') + ' ON' : t('drawer_notifications') + ' OFF' });
+                        }}
+                      >
+                        {profile?.signal_alerts_enabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+                      </Button>
                     )}
-                  >
-                    <div className="relative">
-                      <Icon className="w-5 h-5" />
-                      {showNewsBadge && (
-                        <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full">
-                          {newsCount > 99 ? '99+' : newsCount}
-                        </span>
-                      )}
-                      {showSavedBadge && (
-                        <span className="absolute -top-1 -right-1.5 min-w-[14px] h-3.5 px-1 flex items-center justify-center text-[9px] font-bold bg-primary text-primary-foreground rounded-full">
-                          {savedNewsCount > 99 ? '99+' : savedNewsCount}
-                        </span>
-                      )}
-                    </div>
-                    {item.label}
-                  </Link>
+                  </div>
                 );
               })}
             </div>
