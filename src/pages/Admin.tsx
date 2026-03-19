@@ -18,6 +18,7 @@ import { AdminGlobalSearch } from '@/components/admin/AdminGlobalSearch';
 import { AdminAPIUsageTab } from '@/components/admin/AdminAPIUsageTab';
 import { AdminHealthCheckTab } from '@/components/admin/AdminHealthCheckTab';
 import { AdminModerationTab } from '@/components/admin/AdminModerationTab';
+import { AdminForumSuggestionsTab } from '@/components/admin/AdminForumSuggestionsTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,7 @@ const TAB_TITLES: Record<string, string> = {
   moderation: 'Moderación del Foro',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
+  'forum-suggestions': 'Sugerencias del Foro',
 };
 
 export default function Admin() {
@@ -100,6 +102,7 @@ export default function Admin() {
       case 'moderation': return <AdminModerationTab />;
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
+      case 'forum-suggestions': return <AdminForumSuggestionsTab />;
       default: return <AdminDashboardTab />;
     }
   };

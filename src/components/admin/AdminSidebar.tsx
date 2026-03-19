@@ -15,6 +15,7 @@ import {
   PlusCircle,
   Activity,
   HeartPulse,
+  Vote,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'moderation', label: 'Moderación', icon: ShieldBan },
   { id: 'audit', label: 'Auditoría', icon: ScrollText },
   { id: 'documents', label: 'Documentos', icon: FileText },
+  { id: 'forum-suggestions', label: 'Sugerencias Foro', icon: Vote },
 ];
 
 interface AdminSidebarProps {
