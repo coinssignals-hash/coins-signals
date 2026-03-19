@@ -148,7 +148,7 @@ export function PastTopicsBrowser({ onClose }: { onClose: () => void }) {
   const dateLocale = DATE_LOCALES[language] || es;
 
   return (
-    <Card className="bg-card border-border overflow-hidden">
+    <GlowCard color="210 70% 55%">
       {topic.image_url && (
         <img src={topic.image_url} alt={displayTitle} className="w-full h-28 object-cover" loading="lazy" />
       )}
