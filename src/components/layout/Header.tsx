@@ -71,11 +71,11 @@ export function Header() {
             </div>
             <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('journal')}</span>
           </Link>
-          <Link to="/tools" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
+          <Link to="/portfolio" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-accent/10 text-accent hover:bg-accent/20 transition-colors">
-              <BarChart3 className="w-[18px] h-[18px]" />
+              <Briefcase className="w-[18px] h-[18px]" />
             </div>
-            <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('nav_tools') || 'Herramientas'}</span>
+            <span className="text-[10px] font-medium text-muted-foreground leading-none">{t('nav_portfolio')}</span>
           </Link>
           <Link to="/tools/market-sessions" className="flex flex-col items-center gap-1 active:scale-95 transition-all">
             <div className="flex items-center justify-center h-8 w-full rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-colors">
