@@ -35,6 +35,7 @@ const TAB_TITLES: Record<string, string> = {
   moderation: 'Moderación del Foro',
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
+  'forum-suggestions': 'Sugerencias del Foro',
 };
 
 export default function Admin() {
