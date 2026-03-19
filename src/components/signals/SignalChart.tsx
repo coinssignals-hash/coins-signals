@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Maximize2, X, RotateCcw } from 'lucide-react';
+import { Maximize2, X, RotateCcw, Crosshair } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { SignalLevelsOverlay } from './SignalLevelsOverlay';
 
 interface SignalLevels {
   entryPrice: number;
@@ -73,10 +74,8 @@ function useOrientation() {
       setIsPortrait(window.innerHeight > window.innerWidth);
     };
 
-    // Listen to both resize and orientation change
     window.addEventListener('resize', update);
     window.addEventListener('orientationchange', () => {
-      // Delay to let the browser finish rotating
       setTimeout(update, 150);
     });
 
@@ -95,24 +94,22 @@ function useOrientation() {
 
 export function SignalChart({
   currencyPair,
+  signalLevels,
   className,
 }: SignalChartProps) {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState(false);
   const [forceRotate, setForceRotate] = useState(false);
+  const [showLevels, setShowLevels] = useState(false);
   const fsRef = useRef<HTMLDivElement>(null);
   const tvSymbol = toTradingViewSymbol(currencyPair);
   const isPortrait = useOrientation();
 
-  // In fullscreen: if device is landscape, no need to force rotate
-  // If device is portrait and user toggled rotate, apply CSS rotation
   const shouldRotate = fullscreen && isPortrait && forceRotate;
 
-  // Lock body scroll in fullscreen
   useEffect(() => {
     if (fullscreen) {
       document.body.style.overflow = 'hidden';
-      // Try to request landscape via Screen Orientation API
       try {
         (screen.orientation as any)?.lock?.('landscape').catch(() => {});
       } catch {}
@@ -125,7 +122,6 @@ export function SignalChart({
     }
   }, [fullscreen]);
 
-  // Auto-enable rotation when entering fullscreen on portrait
   useEffect(() => {
     if (fullscreen && isPortrait) {
       setForceRotate(true);
@@ -148,6 +144,7 @@ export function SignalChart({
           className="relative rounded-none sm:rounded-lg overflow-hidden"
           style={{ background: '#060e1c' }}
         >
+          {/* Fullscreen button */}
           <button
             onClick={() => setFullscreen(true)}
             className="absolute top-2 right-2 z-10 p-1.5 rounded-md transition-colors active:scale-95"
@@ -159,6 +156,34 @@ export function SignalChart({
           >
             <Maximize2 className="w-4 h-4 text-cyan-300/70" />
           </button>
+
+          {/* Toggle signal levels */}
+          {signalLevels && (
+            <button
+              onClick={() => setShowLevels(!showLevels)}
+              className={cn(
+                "absolute top-2 right-12 z-10 p-1.5 rounded-md transition-all active:scale-95",
+                showLevels ? "text-cyan-300" : "text-white/40"
+              )}
+              style={{
+                background: showLevels ? 'rgba(0,230,180,0.15)' : 'rgba(6,14,28,0.8)',
+                border: `1px solid ${showLevels ? 'rgba(0,230,180,0.4)' : 'rgba(100,116,139,0.3)'}`,
+              }}
+              title="Signal Levels"
+            >
+              <Crosshair className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Signal levels overlay */}
+          {showLevels && signalLevels && (
+            <SignalLevelsOverlay
+              entryPrice={signalLevels.entryPrice}
+              takeProfit={signalLevels.takeProfit}
+              takeProfit2={signalLevels.takeProfit2}
+              stopLoss={signalLevels.stopLoss}
+            />
+          )}
 
           <iframe
             src={buildWidgetUrl(tvSymbol, false)}
@@ -180,9 +205,8 @@ export function SignalChart({
             if (e.target === fsRef.current) closeFullscreen();
           }}
         >
-          {/* Rotated container when portrait + forceRotate */}
           <div
-            className="w-full h-full"
+            className="w-full h-full relative"
             style={shouldRotate ? {
               position: 'absolute',
               top: '50%',
@@ -202,6 +226,24 @@ export function SignalChart({
               </span>
 
               <div className="flex items-center gap-2">
+                {/* Toggle levels in fullscreen */}
+                {signalLevels && (
+                  <button
+                    onClick={() => setShowLevels(!showLevels)}
+                    className={cn(
+                      "p-1.5 rounded-md transition-all active:scale-90",
+                      showLevels ? "text-cyan-300" : "text-white/50"
+                    )}
+                    style={{
+                      background: showLevels ? 'rgba(0,230,180,0.15)' : 'rgba(0,0,0,0.4)',
+                      border: `1px solid ${showLevels ? 'rgba(0,230,180,0.3)' : 'rgba(255,255,255,0.2)'}`,
+                    }}
+                    title="Signal Levels"
+                  >
+                    <Crosshair className="w-4 h-4" />
+                  </button>
+                )}
+
                 {/* Rotate toggle */}
                 <button
                   onClick={() => setForceRotate(!forceRotate)}
@@ -231,6 +273,16 @@ export function SignalChart({
                 </button>
               </div>
             </div>
+
+            {/* Signal levels overlay in fullscreen */}
+            {showLevels && signalLevels && (
+              <SignalLevelsOverlay
+                entryPrice={signalLevels.entryPrice}
+                takeProfit={signalLevels.takeProfit}
+                takeProfit2={signalLevels.takeProfit2}
+                stopLoss={signalLevels.stopLoss}
+              />
+            )}
 
             <iframe
               src={buildWidgetUrl(tvSymbol, true)}
