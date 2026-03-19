@@ -951,13 +951,17 @@ const News = () => {
     <PageShell>
       <Header />
       
-      <main className="container py-3 max-w-2xl mx-auto px-3 sm:px-4 space-y-3 pb-20">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3 pb-20">
         {/* Date Tabs */}
-        <DateTabs
-              selectedDate={selectedDate}
-              onDateChange={setSelectedDate}
-              onRefresh={handleRefresh}
-              isRefreshing={isRefreshing} />
+        <GlowCard color="210 70% 55%" className="rounded-xl">
+          <div className="p-2">
+            <DateTabs
+                  selectedDate={selectedDate}
+                  onDateChange={setSelectedDate}
+                  onRefresh={handleRefresh}
+                  isRefreshing={isRefreshing} />
+          </div>
+        </GlowCard>
 
         
         {/* Section Header + Currency Filter */}
