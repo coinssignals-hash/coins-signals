@@ -543,8 +543,9 @@ export default function Forum() {
                         {!isOwn && !isDM && user ? (
                           <Popover>
                             <PopoverTrigger asChild>
-                              <button className="text-[10px] font-semibold text-primary hover:underline active:scale-95 transition-transform">
+                              <button className="text-[10px] font-semibold text-primary hover:underline active:scale-95 transition-transform flex items-center gap-0.5">
                                 {userName}
+                                {isLegendary && <span className="text-[8px]">👑</span>}
                               </button>
                             </PopoverTrigger>
                             <PopoverContent side="bottom" align="start" className="w-44 p-2 space-y-1">
