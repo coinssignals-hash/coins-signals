@@ -29,6 +29,7 @@ interface SaveSignalToJournalProps {
 export function SaveSignalToJournal({ signal, className }: SaveSignalToJournalProps) {
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
+  const { checkAndUnlockAchievements } = useAchievements();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
