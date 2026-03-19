@@ -205,7 +205,7 @@ function NewsImpactBar({ label, value, color }: {label: string;value: number;col
   return (
     <div className="flex items-center gap-2">
       <span className="text-[10px] w-12 text-right" style={{ color }}>{label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.3)' }}>
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${value}%`, background: color }} />
       </div>
       <span className="text-[11px] font-semibold w-8 text-right" style={{ color }}>{value}%</span>
