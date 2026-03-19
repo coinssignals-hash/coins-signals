@@ -16,6 +16,7 @@ import { useAIAnalysis, AIModule, DetailLevel } from '@/hooks/useAIAnalysis';
 import { computeIndicators, type OHLCVCandle } from '@/lib/indicators';
 import { detectCandlePatterns } from '@/lib/candle-patterns';
 import { SignalStyleCard } from '@/components/ui/signal-style-card';
+import { GlowCard } from '@/components/ui/glow-card';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
@@ -188,27 +189,16 @@ export function AICenter({ onClose }: Props) {
 
       {/* Model Config (collapsible) */}
       {showConfig &&
-      <div className="rounded-xl border border-cyan-800/30 overflow-hidden"
-      style={{ background: 'radial-gradient(ellipse at top center, hsl(200,100%,12%) 0%, hsl(210,100%,6%) 100%)' }}>
+      <GlowCard color="210 70% 55%">
           <div className="p-4">
             <AIModelConfig settings={modelSettings} onChange={setModelSettings} detailLevel={detailLevel} onDetailLevelChange={setDetailLevel} />
           </div>
-        </div>
+        </GlowCard>
       }
 
       {/* Instrument Category Tabs */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at top center, hsl(210, 70%, 8%) 0%, hsl(210, 100%, 4%) 100%)',
-          border: '1px solid hsl(210, 40%, 14%)',
-        }}
-      >
-        <div
-          className="h-[1.5px]"
-          style={{ background: 'linear-gradient(90deg, transparent, hsl(200, 90%, 50%), hsl(270, 80%, 55%), transparent)' }}
-        />
-        <div className="flex items-center gap-0.5 px-1.5 py-2 overflow-x-auto scrollbar-none">
+      <GlowCard color="210 70% 55%">
+        <div className="flex items-center gap-1 px-2 py-2.5 overflow-x-auto scrollbar-none">
           {INSTRUMENT_TABS.map((tab) => {
             const TabIcon = tab.icon;
             const isActive = instrumentCategory === tab.key;
@@ -217,7 +207,7 @@ export function AICenter({ onClose }: Props) {
                 key={tab.key}
                 onClick={() => setInstrumentCategory(tab.key)}
                 className={cn(
-                  "relative flex flex-col items-center gap-1 min-w-[52px] py-2 px-2 rounded-xl transition-all duration-200 active:scale-95",
+                  "relative flex flex-col items-center gap-1.5 min-w-[60px] py-2.5 px-2.5 rounded-xl transition-all duration-200 active:scale-95",
                   isActive
                     ? "text-white"
                     : "text-slate-500 hover:text-slate-300"
@@ -231,7 +221,7 @@ export function AICenter({ onClose }: Props) {
                 }}
               >
                 <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+                  className="w-11 h-11 rounded-xl flex items-center justify-center transition-all"
                   style={isActive ? {
                     background: `linear-gradient(135deg, ${tab.color}30, ${tab.color}10)`,
                     boxShadow: `0 0 10px -3px ${tab.color}40`,
@@ -239,7 +229,7 @@ export function AICenter({ onClose }: Props) {
                     background: 'hsl(210, 30%, 10%)',
                   }}
                 >
-                  <TabIcon className="w-5 h-5" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
+                  <TabIcon className="w-6 h-6" style={{ color: isActive ? tab.color : 'hsl(210, 20%, 40%)' }} />
                 </div>
                 <span className="text-[9px] font-bold leading-none whitespace-nowrap">
                   {tab.label}
@@ -259,7 +249,7 @@ export function AICenter({ onClose }: Props) {
             );
           })}
         </div>
-      </div>
+      </GlowCard>
 
       {/* Symbol Search + Fetch */}
       <div className="space-y-2.5">
@@ -287,20 +277,18 @@ export function AICenter({ onClose }: Props) {
 
       {/* Data Status */}
       {forexData &&
-      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl"
-      style={{
-        background: 'hsl(160, 60%, 8%)',
-        border: '1px solid hsl(160, 50%, 20%)'
-      }}>
+      <GlowCard color="160 60% 45%">
+        <div className="flex items-center gap-2.5 px-4 py-2.5">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-          <span className="text-xs text-white font-semibold font-mono">{forexData.symbol}</span>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-xs text-foreground font-semibold font-mono">{forexData.symbol}</span>
+          <span className="text-[11px] text-muted-foreground">
             {forexData.candles.length} {t('ai_center_candles_loaded')}
           </span>
-          <span className="text-[11px] text-cyan-300/60 ml-auto font-mono">
+          <span className="text-[11px] text-muted-foreground ml-auto font-mono">
             {t('ai_center_last')}: {forexData.candles[forexData.candles.length - 1]?.close.toFixed(5)}
           </span>
         </div>
+      </GlowCard>
       }
       {forexError &&
       <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
@@ -346,25 +334,26 @@ export function AICenter({ onClose }: Props) {
       </button>
 
       {/* AI Modules */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 px-1">
-          <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(270, 80%, 55%))' }} />
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">{t('ai_center_modules_title')}</h3>
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(270, 80%, 55%))' }} />
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-widest">{t('ai_center_modules_title')}</h3>
+          </div>
+          <div className="grid gap-2">
+            {AI_MODULES.map((mod) =>
+            <AIModuleCard
+              key={mod.id}
+              title={mod.title}
+              description={mod.desc}
+              icon={mod.icon}
+              status={moduleStatuses[mod.id] || 'idle'}
+              onRun={() => handleRunModule(mod.id)}
+              disabled={!forexData || aiLoading} />
+            )}
+          </div>
         </div>
-        <div className="grid gap-2">
-          {AI_MODULES.map((mod) =>
-          <AIModuleCard
-            key={mod.id}
-            title={mod.title}
-            description={mod.desc}
-            icon={mod.icon}
-            status={moduleStatuses[mod.id] || 'idle'}
-            onRun={() => handleRunModule(mod.id)}
-            disabled={!forexData || aiLoading} />
-
-          )}
-        </div>
-      </div>
+      </GlowCard>
 
       {/* Error */}
       {aiError &&
@@ -380,22 +369,23 @@ export function AICenter({ onClose }: Props) {
 
       {/* Results */}
       {Object.keys(results).length > 0 &&
-      <div className="space-y-3">
-          <div className="flex items-center gap-2 px-1">
+      <GlowCard color="160 60% 45%">
+        <div className="p-4 space-y-3">
+          <div className="flex items-center gap-2">
             <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(160, 70%, 45%), hsl(200, 90%, 50%))' }} />
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">{t('ai_center_results_title')}</h3>
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-widest">{t('ai_center_results_title')}</h3>
           </div>
           {Object.entries(results).map(([key, result]) => {
-          const mod = AI_MODULES.find((m) => m.id === key);
-          return (
-            <AIResultPanel
-              key={key}
-              result={result}
-              title={mod?.title || key} />);
-
-
-        })}
+            const mod = AI_MODULES.find((m) => m.id === key);
+            return (
+              <AIResultPanel
+                key={key}
+                result={result}
+                title={mod?.title || key} />
+            );
+          })}
         </div>
+      </GlowCard>
       }
 
       {/* Create Signal Button */}
