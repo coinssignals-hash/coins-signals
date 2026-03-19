@@ -334,25 +334,26 @@ export function AICenter({ onClose }: Props) {
       </button>
 
       {/* AI Modules */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 px-1">
-          <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(270, 80%, 55%))' }} />
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">{t('ai_center_modules_title')}</h3>
+      <GlowCard color="210 70% 55%">
+        <div className="p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, hsl(200, 90%, 50%), hsl(270, 80%, 55%))' }} />
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-widest">{t('ai_center_modules_title')}</h3>
+          </div>
+          <div className="grid gap-2">
+            {AI_MODULES.map((mod) =>
+            <AIModuleCard
+              key={mod.id}
+              title={mod.title}
+              description={mod.desc}
+              icon={mod.icon}
+              status={moduleStatuses[mod.id] || 'idle'}
+              onRun={() => handleRunModule(mod.id)}
+              disabled={!forexData || aiLoading} />
+            )}
+          </div>
         </div>
-        <div className="grid gap-2">
-          {AI_MODULES.map((mod) =>
-          <AIModuleCard
-            key={mod.id}
-            title={mod.title}
-            description={mod.desc}
-            icon={mod.icon}
-            status={moduleStatuses[mod.id] || 'idle'}
-            onRun={() => handleRunModule(mod.id)}
-            disabled={!forexData || aiLoading} />
-
-          )}
-        </div>
-      </div>
+      </GlowCard>
 
       {/* Error */}
       {aiError &&
