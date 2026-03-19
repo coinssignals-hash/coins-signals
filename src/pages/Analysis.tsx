@@ -243,7 +243,7 @@ export default function Analysis() {
                   candles={ohlcvCandles}
                   loading={previousDayLoading}
                   priceChart={
-                  <AnalysisTVChart symbol={selectedPair} timeframe={selectedTimeframe} />
+                  <AnalysisTVChart symbol={selectedPair} timeframe={selectedTimeframe} support={previousDayData?.support || marketStats.support} resistance={previousDayData?.resistance || marketStats.resistance} />
                   } />
                 
             <LazySection minHeight="200px">
