@@ -46,7 +46,7 @@ function buildWidgetUrl(symbol: string, fullscreen: boolean): string {
     locale: 'es',
     hide_top_toolbar: fullscreen ? '0' : '1',
     hide_legend: fullscreen ? '0' : '1',
-    hide_side_toolbar: fullscreen ? '0' : '1',
+    hide_side_toolbar: '1',
     allow_symbol_change: fullscreen ? '1' : '0',
     save_image: '0',
     withdateranges: fullscreen ? '1' : '0',
@@ -56,9 +56,6 @@ function buildWidgetUrl(symbol: string, fullscreen: boolean): string {
     backgroundColor: 'rgba(6, 14, 28, 1)',
     gridColor: 'rgba(21, 42, 71, 1)',
   });
-  if (fullscreen) {
-    params.set('studies', 'MACD@tv-basicstudies');
-  }
   return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
 }
 
