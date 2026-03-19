@@ -101,6 +101,17 @@ export function SignalChart({
   const [fullscreen, setFullscreen] = useState(false);
   const [forceRotate, setForceRotate] = useState(false);
   const [showLevels, setShowLevels] = useState(false);
+  const [levelsMounted, setLevelsMounted] = useState(false);
+
+  const toggleLevels = useCallback(() => {
+    if (showLevels) {
+      setShowLevels(false); // triggers fade-out, stays mounted
+    } else {
+      setLevelsMounted(true);
+      // RAF to ensure mount before animation
+      requestAnimationFrame(() => setShowLevels(true));
+    }
+  }, [showLevels]);
   const fsRef = useRef<HTMLDivElement>(null);
   const tvSymbol = toTradingViewSymbol(currencyPair);
   const isPortrait = useOrientation();
