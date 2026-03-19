@@ -243,11 +243,7 @@ export default function Analysis() {
                   candles={ohlcvCandles}
                   loading={previousDayLoading}
                   priceChart={
-                  <CandlestickChart
-                    data={previousDayData?.candles || []} resistance={previousDayData?.resistance || marketStats.resistance}
-                    support={previousDayData?.support || marketStats.support} loading={previousDayLoading}
-                    realtimePrice={realtimeQuote?.price} isRealtimeConnected={isConnected}
-                    previousDayDate={previousDayData?.date} alertState={alertState} />
+                  <AnalysisTVChart symbol={selectedPair} timeframe={selectedTimeframe} />
                   } />
                 
             <LazySection minHeight="200px">
