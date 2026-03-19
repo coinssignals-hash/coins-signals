@@ -518,12 +518,10 @@ function ModernNewsCard({ news, index, translateHook }: {news: NewsListItem;inde
               {isTranslating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Languages className="w-3 h-3" />}
               {isTranslated ? 'Original' : targetLabel}
             </button>
-            {news.url &&
-            <a href={news.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-            className="text-cyan-400 hover:text-cyan-300">
+            <Link to={`/news/${news.id}`} onClick={(e) => e.stopPropagation()}
+            className="text-primary hover:text-primary/80">
                 <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            }
+              </Link>
           </div>
         </div>
 
