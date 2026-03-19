@@ -289,7 +289,7 @@ function VolatilityIndicator({ newsId, title, category, currencies
 
   return (
     <div className="rounded-lg overflow-hidden px-2.5 py-1.5 relative group/vol cursor-pointer"
-    style={{ background: 'hsl(210, 30%, 8%)', border: '1px solid hsla(200, 60%, 30%, 0.2)' }}>
+    style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
       {/* Tooltip */}
       <div className={cn(
         'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-44',
