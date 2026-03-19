@@ -187,12 +187,14 @@ export function SignalChart({
           )}
 
           {/* Signal levels overlay */}
-          {showLevels && signalLevels && (
+          {levelsMounted && signalLevels && (
             <SignalLevelsOverlay
               entryPrice={signalLevels.entryPrice}
               takeProfit={signalLevels.takeProfit}
               takeProfit2={signalLevels.takeProfit2}
               stopLoss={signalLevels.stopLoss}
+              visible={showLevels}
+              onExited={() => setLevelsMounted(false)}
             />
           )}
 
