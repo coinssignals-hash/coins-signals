@@ -518,7 +518,7 @@ export default function Forum() {
                           <button className="flex-shrink-0 mt-1 active:scale-95 transition-transform">
                             <div className="relative">
                               <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
-                                <AvatarImage src={userAvatar || ''} />
+                                <AvatarImage src={userAvatar || undefined} />
                                 <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
                               </Avatar>
                               {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
