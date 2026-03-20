@@ -37,6 +37,7 @@ const TAB_TITLES: Record<string, string> = {
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
   'forum-suggestions': 'Sugerencias del Foro',
+  referrals: 'Referidos',
 };
 
 export default function Admin() {
