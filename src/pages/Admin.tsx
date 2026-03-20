@@ -19,6 +19,7 @@ import { AdminAPIUsageTab } from '@/components/admin/AdminAPIUsageTab';
 import { AdminHealthCheckTab } from '@/components/admin/AdminHealthCheckTab';
 import { AdminModerationTab } from '@/components/admin/AdminModerationTab';
 import { AdminForumSuggestionsTab } from '@/components/admin/AdminForumSuggestionsTab';
+import { AdminReferralsTab } from '@/components/admin/AdminReferralsTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
