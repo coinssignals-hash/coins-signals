@@ -19,6 +19,7 @@ import { AdminAPIUsageTab } from '@/components/admin/AdminAPIUsageTab';
 import { AdminHealthCheckTab } from '@/components/admin/AdminHealthCheckTab';
 import { AdminModerationTab } from '@/components/admin/AdminModerationTab';
 import { AdminForumSuggestionsTab } from '@/components/admin/AdminForumSuggestionsTab';
+import { AdminReferralsTab } from '@/components/admin/AdminReferralsTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -36,6 +37,7 @@ const TAB_TITLES: Record<string, string> = {
   audit: 'Registros de Auditoría',
   documents: 'Documentos de Usuarios',
   'forum-suggestions': 'Sugerencias del Foro',
+  referrals: 'Referidos',
 };
 
 export default function Admin() {
@@ -103,6 +105,7 @@ export default function Admin() {
       case 'audit': return <AdminAuditTab />;
       case 'documents': return <AdminDocumentsTab />;
       case 'forum-suggestions': return <AdminForumSuggestionsTab />;
+      case 'referrals': return <AdminReferralsTab />;
       default: return <AdminDashboardTab />;
     }
   };
