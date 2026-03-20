@@ -48,7 +48,7 @@ export function FavoriteUsersPanel({ favorites, loading, onOpenDM, onRemove }: P
             <div className="flex items-center gap-3 p-3">
             <div className="relative">
               <Avatar className={cn("w-9 h-9", legendary && LEGENDARY_RING_CLASS)}>
-                <AvatarImage src={fav.avatar_url || ''} />
+                <AvatarImage src={fav.avatar_url || undefined} />
                 <AvatarFallback className="bg-primary/20 text-primary text-xs">
                   {fav.name[0]}
                 </AvatarFallback>
