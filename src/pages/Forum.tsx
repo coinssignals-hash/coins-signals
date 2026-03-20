@@ -391,7 +391,7 @@ export default function Forum() {
               >
                 <div className="relative">
                   <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
-                    <AvatarImage src={c.user_avatar || ''} />
+                    <AvatarImage src={c.user_avatar || undefined} />
                     <AvatarFallback className="bg-primary/20 text-primary text-xs">{c.user_name[0]}</AvatarFallback>
                   </Avatar>
                   {isLegendaryAvatar(c.user_avatar) && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
@@ -518,7 +518,7 @@ export default function Forum() {
                           <button className="flex-shrink-0 mt-1 active:scale-95 transition-transform">
                             <div className="relative">
                               <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
-                                <AvatarImage src={userAvatar || ''} />
+                                <AvatarImage src={userAvatar || undefined} />
                                 <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
                               </Avatar>
                               {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
@@ -547,7 +547,7 @@ export default function Forum() {
                     ) : (
                       <div className="relative mt-1 flex-shrink-0">
                         <Avatar className={cn("w-7 h-7 sm:w-8 sm:h-8", isLegendary && LEGENDARY_RING_CLASS)}>
-                          <AvatarImage src={userAvatar || ''} />
+                          <AvatarImage src={userAvatar || undefined} />
                           <AvatarFallback className="bg-primary/20 text-primary text-[10px] sm:text-xs">{(userName || '?')[0]}</AvatarFallback>
                         </Avatar>
                         {isLegendary && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
