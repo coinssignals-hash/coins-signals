@@ -391,7 +391,7 @@ export default function Forum() {
               >
                 <div className="relative">
                   <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
-                    <AvatarImage src={c.user_avatar || ''} />
+                    <AvatarImage src={c.user_avatar || undefined} />
                     <AvatarFallback className="bg-primary/20 text-primary text-xs">{c.user_name[0]}</AvatarFallback>
                   </Avatar>
                   {isLegendaryAvatar(c.user_avatar) && <span className="absolute -bottom-0.5 -right-0.5 text-[8px]">👑</span>}
