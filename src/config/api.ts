@@ -3,7 +3,7 @@
 // Local dev: falls back to localhost:8000
 // Set VITE_API_URL in environment to override
 
-const PRODUCTION_API_URL = 'https://api.yourdomain.com'; // ← Reemplaza con tu dominio Hetzner
+const PRODUCTION_API_URL = 'http://135.181.90.105:8000';
 
 const resolveBaseUrl = (): string => {
   // 1. Explicit env var always wins
