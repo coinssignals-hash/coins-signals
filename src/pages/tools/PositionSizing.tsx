@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,6 +24,8 @@ const PAIRS = [
   { symbol: 'GBP/JPY', pipSize: 0.01, pipValuePerLot: 6.7 },
   { symbol: 'XAU/USD', pipSize: 0.01, pipValuePerLot: 1 },
 ];
+
+const ACCENT = '195 80% 50%';
 
 export default function PositionSizing() {
   const { t } = useTranslation();
@@ -65,12 +67,12 @@ export default function PositionSizing() {
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
+            <Target className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
             <h1 className="text-lg font-bold text-foreground">{t('ps_title')}</h1>
           </div>
         </div>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -119,7 +121,7 @@ export default function PositionSizing() {
               );
             })()}
 
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Layers className="w-4 h-4 text-primary" />{t('ps_optimal_size')}
@@ -141,14 +143,14 @@ export default function PositionSizing() {
             </ToolCard>
 
             <div className="grid grid-cols-2 gap-3">
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ps_max_risk')}</p>
                   <p className="text-lg font-bold text-rose-400 tabular-nums">${result.riskAmount}</p>
                 </div>
               </ToolCard>
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">$/Pip</p>
@@ -159,7 +161,7 @@ export default function PositionSizing() {
           </>
         )}
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

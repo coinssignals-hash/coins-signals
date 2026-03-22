@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -35,7 +35,7 @@ const SignalDot = ({ signal }: { signal: Signal }) => (
 );
 
 const PairCardSkeleton = () => (
-  <ToolCard>
+  <ToolCard accent={ACCENT}>
     <div className="p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -64,6 +64,8 @@ const PAIR_CATEGORIES_KEYS: Record<string, { key: string; pairs: string[] }> = {
   'Crosses': { key: 'Crosses', pairs: ['EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'AUD/JPY', 'CHF/JPY', 'EUR/AUD', 'GBP/AUD', 'EUR/CAD', 'GBP/CAD', 'AUD/CAD', 'AUD/NZD', 'EUR/NZD', 'GBP/NZD'] },
   'mtf_metals': { key: 'mtf_metals', pairs: ['XAU/USD', 'XAG/USD'] },
 };
+
+const ACCENT = '155 70% 45%';
 
 export default function MultiTFScreener() {
   const { t } = useTranslation();
@@ -105,7 +107,7 @@ export default function MultiTFScreener() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <ScanSearch className="w-5 h-5 text-primary" />
+              <ScanSearch className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('mtf_title')}</h1>
             </div>
           </div>
@@ -194,7 +196,7 @@ export default function MultiTFScreener() {
 
         {/* Currency Strength Meter */}
         {currencyStrength.length > 0 && (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-primary" />
@@ -326,7 +328,7 @@ export default function MultiTFScreener() {
           ))}
         </div>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

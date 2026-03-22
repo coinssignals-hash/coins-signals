@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -69,6 +69,8 @@ function generateEvents(): InstitutionalEvent[] {
   });
 }
 
+const ACCENT = '170 70% 45%';
+
 export default function InstitutionalCalendar() {
   const { t } = useTranslation();
   const [events, setEvents] = useState(() => generateEvents());
@@ -93,7 +95,7 @@ export default function InstitutionalCalendar() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-primary" />
+              <CalendarDays className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('tools_institutional_cal_title')}</h1>
             </div>
           </div>
@@ -245,7 +247,7 @@ export default function InstitutionalCalendar() {
           })}
         </div>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,6 +25,8 @@ const LEVERAGE_OPTIONS = [
   { value: 50, label: '1:50' }, { value: 100, label: '1:100' }, { value: 200, label: '1:200' },
   { value: 500, label: '1:500' },
 ];
+
+const ACCENT = '25 85% 55%';
 
 export default function MarginCalculator() {
   const { t } = useTranslation();
@@ -80,7 +82,7 @@ export default function MarginCalculator() {
           </div>
         </div>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -122,7 +124,7 @@ export default function MarginCalculator() {
           </div>
         </ToolCard>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Shield className="w-4 h-4 text-primary" />
@@ -142,10 +144,10 @@ export default function MarginCalculator() {
           </div>
         </ToolCard>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Percent className="w-4 h-4 text-primary" />
+              <Percent className="w-4 h-4 " style={{ color: `hsl(${ACCENT})` }} />
               <h2 className="text-sm font-semibold text-primary">{t('margin_breakdown')}</h2>
             </div>
             <div className="space-y-3">

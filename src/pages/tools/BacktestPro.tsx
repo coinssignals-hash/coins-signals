@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -85,6 +85,8 @@ function runBacktest(strategy: Strategy, capital: number, months: number): Backt
   };
 }
 
+const ACCENT = '280 65% 55%';
+
 export default function BacktestPro() {
   const { t } = useTranslation();
   const [capital, setCapital] = useState(10000);
@@ -145,7 +147,7 @@ export default function BacktestPro() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <Workflow className="w-5 h-5 text-primary" />
+              <Workflow className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('bt_title')}</h1>
             </div>
           </div>
@@ -157,7 +159,7 @@ export default function BacktestPro() {
         </div>
 
         {/* Global Config */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -218,7 +220,7 @@ export default function BacktestPro() {
         {results && (
           <>
             {/* Equity Chart */}
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_equity_curves')}</h3>
                 <div className="h-56">
@@ -239,7 +241,7 @@ export default function BacktestPro() {
             </ToolCard>
 
             {/* Comparison Table */}
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_comparison')}</h3>
                 <div className="overflow-x-auto">
@@ -281,7 +283,7 @@ export default function BacktestPro() {
           </>
         )}
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

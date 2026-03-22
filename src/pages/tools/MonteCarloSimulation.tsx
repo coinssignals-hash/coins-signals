@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -85,6 +85,8 @@ function runSimulation(
   };
 }
 
+const ACCENT = '265 70% 60%';
+
 export default function MonteCarloSimulation() {
   const { t } = useTranslation();
   const [capital, setCapital] = useState(10000);
@@ -150,13 +152,13 @@ export default function MonteCarloSimulation() {
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
-            <PieChart className="w-5 h-5 text-primary" />
+            <PieChart className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
             <h1 className="text-lg font-bold text-foreground">{t('tools_monte_carlo_title')}</h1>
           </div>
         </div>
 
         {/* Parameters */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_monte_carlo_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -199,7 +201,7 @@ export default function MonteCarloSimulation() {
         {result && (
           <>
             {/* Equity Projection Chart */}
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_capital_projection')}</h3>
                 <div className="h-56">
@@ -226,7 +228,7 @@ export default function MonteCarloSimulation() {
             </ToolCard>
 
             {/* Distribution */}
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_distribution')}</h3>
                 <div className="h-40">
@@ -242,7 +244,7 @@ export default function MonteCarloSimulation() {
             </ToolCard>
 
             {/* Stats */}
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground">{t('tp_key_stats')}</h3>
                 {[
@@ -261,7 +263,7 @@ export default function MonteCarloSimulation() {
               </div>
             </ToolCard>
 
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-3">
                 <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

@@ -2,13 +2,15 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, LineChart, TrendingUp, DollarSign, Calendar, Info, Percent } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+const ACCENT = '142 70% 45%';
 
 export default function CompoundInterestCalculator() {
   const { t } = useTranslation();
@@ -50,12 +52,12 @@ export default function CompoundInterestCalculator() {
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
-            <LineChart className="w-5 h-5 text-primary" />
+            <LineChart className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
             <h1 className="text-lg font-bold text-foreground">{t('ci_title')}</h1>
           </div>
         </div>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -97,7 +99,7 @@ export default function CompoundInterestCalculator() {
               </div>
             </div>
 
-            <ToolCard>
+            <ToolCard accent={ACCENT}>
               <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary" />{t('ci_growth_curve')}
@@ -132,21 +134,21 @@ export default function CompoundInterestCalculator() {
             </ToolCard>
 
             <div className="grid grid-cols-3 gap-2">
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ci_profit')}</p>
                   <p className="text-sm font-bold text-emerald-400 tabular-nums">${Number(result.totalGain).toLocaleString()}</p>
                 </div>
               </ToolCard>
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <Calendar className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('ci_deposited')}</p>
                   <p className="text-sm font-bold text-foreground tabular-nums">${Number(result.totalDeposited).toLocaleString()}</p>
                 </div>
               </ToolCard>
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <Percent className="w-4 h-4 mx-auto mb-1 text-amber-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ci_return')}</p>
@@ -157,7 +159,7 @@ export default function CompoundInterestCalculator() {
           </>
         )}
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

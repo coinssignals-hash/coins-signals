@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,6 +24,8 @@ const PAIRS = [
   { symbol: 'AUD/JPY', pipSize: 0.01 },
   { symbol: 'XAU/USD', pipSize: 0.01 },
 ];
+
+const ACCENT = '210 70% 55%';
 
 export default function LotCalculator() {
   const { t } = useTranslation();
@@ -71,7 +73,7 @@ export default function LotCalculator() {
           </div>
         </div>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -103,7 +105,7 @@ export default function LotCalculator() {
           </div>
         </ToolCard>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingDown className="w-4 h-4 text-primary" />
@@ -116,10 +118,10 @@ export default function LotCalculator() {
           </div>
         </ToolCard>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Calculator className="w-4 h-4 text-primary" />
+              <Calculator className="w-4 h-4 " style={{ color: `hsl(${ACCENT})` }} />
               <h2 className="text-sm font-semibold text-primary">{t('lot_recommended_size')}</h2>
             </div>
             <div className="space-y-3">

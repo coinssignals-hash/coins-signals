@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Layers, RefreshCw, Info } from 'lucide-react';
@@ -36,6 +36,8 @@ function corrColor(val: number): string {
   if (val > -0.7) return 'bg-rose-500/30 text-rose-300';
   return 'bg-rose-500/70 text-white';
 }
+
+const ACCENT = '185 70% 50%';
 
 export default function CorrelationMatrix() {
   const { t } = useTranslation();
@@ -72,7 +74,7 @@ export default function CorrelationMatrix() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <Layers className="w-5 h-5 text-primary" />
+              <Layers className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('tools_corr_matrix_title')}</h1>
             </div>
           </div>
@@ -82,7 +84,7 @@ export default function CorrelationMatrix() {
         </div>
 
         {/* Matrix Grid */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-2 overflow-x-auto">
             <table className="w-full min-w-[600px]">
               <thead>
@@ -121,7 +123,7 @@ export default function CorrelationMatrix() {
         </ToolCard>
 
         {/* Legend */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <p className="text-[10px] text-muted-foreground mb-2 font-medium">{t('tp_correlation_scale')}</p>
             <div className="flex gap-1 items-center">
@@ -142,7 +144,7 @@ export default function CorrelationMatrix() {
         </ToolCard>
 
         {/* Top Correlations */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-2">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_strongest_correlations')}</h3>
             {highlights.map((h, i) => (
@@ -159,7 +161,7 @@ export default function CorrelationMatrix() {
           </div>
         </ToolCard>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

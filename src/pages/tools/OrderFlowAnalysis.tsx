@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -94,6 +94,8 @@ function generateAllData(): InstitutionalData[] {
   return ALL_PAIR_LIST.map(generateDataForPair);
 }
 
+const ACCENT = '45 90% 50%';
+
 export default function OrderFlowAnalysis() {
   const { t } = useTranslation();
   const [data, setData] = useState(() => generateAllData());
@@ -128,7 +130,7 @@ export default function OrderFlowAnalysis() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-primary" />
+              <Zap className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('tp_order_flow')}</h1>
             </div>
           </div>
@@ -214,7 +216,7 @@ export default function OrderFlowAnalysis() {
         </div>
 
         {/* Institutional Positioning */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_institutional_positioning')}</h3>
             <div className="flex items-center gap-2">
@@ -239,7 +241,7 @@ export default function OrderFlowAnalysis() {
         </ToolCard>
 
         {/* Volume Profile */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_volume_profile')}</h3>
             <div className="h-64">
@@ -258,7 +260,7 @@ export default function OrderFlowAnalysis() {
         </ToolCard>
 
         {/* Delta Table */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_delta_by_level')}</h3>
             <div className="space-y-0.5 max-h-60 overflow-y-auto">
@@ -284,7 +286,7 @@ export default function OrderFlowAnalysis() {
         </ToolCard>
 
         {/* All Pairs Summary */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_multi_pair_summary')}</h3>
             {data.slice(0, 10).map(d => (
@@ -304,7 +306,7 @@ export default function OrderFlowAnalysis() {
           </div>
         </ToolCard>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,6 +52,8 @@ function generateSamplePositions(): Position[] {
     };
   });
 }
+
+const ACCENT = '340 70% 55%';
 
 export default function RiskManagerAdvanced() {
   const { t } = useTranslation();
@@ -114,7 +116,7 @@ export default function RiskManagerAdvanced() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
+              <Shield className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
               <h1 className="text-lg font-bold text-foreground">{t('rm_title')}</h1>
             </div>
           </div>
@@ -138,7 +140,7 @@ export default function RiskManagerAdvanced() {
         )}
 
         {/* Global Limits */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_global_limits')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -172,7 +174,7 @@ export default function RiskManagerAdvanced() {
 
         {/* Exposure Pie */}
         {pieData.length > 0 && (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-2">{t('tp_exposure_by_pair')}</h3>
               <div className="h-40">
@@ -251,7 +253,7 @@ export default function RiskManagerAdvanced() {
           );
         })}
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

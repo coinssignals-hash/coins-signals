@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -45,6 +45,8 @@ function getFlag(currency: string): string {
   };
   return map[currency] || '🌐';
 }
+
+const ACCENT = '38 90% 50%';
 
 export default function EconomicCalendar() {
   const { t } = useTranslation();
@@ -152,7 +154,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
-            <CalendarDays className="w-5 h-5 text-primary" />
+            <CalendarDays className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
             <div>
               <h1 className="text-lg font-bold text-foreground">{t('ec_title')}</h1>
               <p className="text-[10px] text-muted-foreground">{format(targetDate, 'PPPP', { locale: dateLocale })}</p>
@@ -170,7 +172,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         </div>
 
         {/* Day Tabs */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-1.5">
             <div className="flex gap-1">
               {DAY_OFFSETS.map(d => (
@@ -213,7 +215,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Currency Breakdown */}
         {!isLoading && currencies.length > 0 && (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-3">
               <div className="flex items-center gap-2 mb-2.5">
                 <Globe className="w-4 h-4 text-primary" />
@@ -251,7 +253,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         )}
 
         {/* Impact Filter */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3 flex items-center gap-2 flex-wrap">
             <Zap className="w-4 h-4 text-primary shrink-0" />
             <span className="text-xs font-medium text-muted-foreground shrink-0">{t('ec_impact')}:</span>
@@ -286,14 +288,14 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Events List */}
         {isLoading ? (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground">{t('ec_loading')}</p>
             </div>
           </ToolCard>
         ) : filtered.length === 0 ? (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-8 text-center">
               <CalendarDays className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
               <p className="text-sm text-muted-foreground">{t('ec_no_events')}</p>
@@ -301,7 +303,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
             </div>
           </ToolCard>
         ) : (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-0">
               {filtered.map((event, i) => {
                 const impact = IMPACT_CONFIG_LOCAL[event.impact] || IMPACT_CONFIG_LOCAL.Low;
@@ -494,7 +496,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Warning */}
         {!isLoading && events.length > 0 && (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-3 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
