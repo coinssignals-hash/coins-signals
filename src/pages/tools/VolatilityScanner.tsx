@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Gauge, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Clock, Zap } from 'lucide-react';
+import { Gauge, RefreshCw, Minus, Info, Clock, Zap } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+const ACCENT = '330 70% 60%';
 
 interface VolatilityData {
   pair: string;
