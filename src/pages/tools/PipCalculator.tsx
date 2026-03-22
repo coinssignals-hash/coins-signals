@@ -124,12 +124,12 @@ export default function PipCalculator() {
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
-        <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_result')}</h2>
-        <ToolCard className="mb-3">
-          <CardContent className="p-4">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('tool_result')}</h2>
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2] p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_pip_size')}</span>
