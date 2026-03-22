@@ -298,92 +298,195 @@ export default function Tools() {
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            <div className="rounded-xl border overflow-hidden" style={{
-              borderColor: `hsl(${activeCatConfig.color} / 0.2)`,
-              background: 'hsl(var(--card) / 0.6)',
-            }}>
-              <div className="px-3 py-2 flex items-center gap-1.5" style={{ background: `hsl(${activeCatConfig.color} / 0.08)` }}>
-                <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${activeCatConfig.color})` }} />
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {t(activeCatConfig.labelKey as any)}
-                </span>
-                <span className="ml-auto text-[10px] font-bold tabular-nums" style={{ color: `hsl(${activeCatConfig.color})` }}>
-                  {filtered.length}
-                </span>
-              </div>
-
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
-              >
-                {filtered.map((tool) => {
-                  const ToolIcon = tool.icon;
-                  const isComingSoon = tool.status === 'coming_soon';
-                  const isClickable = !!tool.route && !isComingSoon;
-                  const isFavorited = isFav(tool.id);
-
+            {activeCategory === 'all' ? (
+              /* ─── Horizontal carousels per category ─── */
+              <div className="space-y-4">
+                {CATEGORY_TABS.filter(tab => tab.key !== 'all').map((tab) => {
+                  const categoryTools = ALL_TOOLS
+                    .filter(t => t.category === tab.key)
+                    .sort((a, b) => a.popularity - b.popularity);
+                  if (categoryTools.length === 0) return null;
                   return (
-                    <motion.div
-                      key={tool.id}
-                      variants={{
-                        hidden: { opacity: 0, x: -12 },
-                        visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } },
-                      }}
-                    >
-                      <div
-                        className={cn(
-                          'w-full flex items-center gap-3 px-3 py-2.5 transition-all duration-300 border-b',
-                          isClickable ? 'hover:bg-muted/10' : 'opacity-40',
-                        )}
-                        style={{ borderColor: 'hsl(var(--border) / 0.15)' }}
-                      >
-                        {/* Favorite toggle in list */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggle(tool.id); }}
-                          className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
-                          style={{
-                            background: isFavorited ? 'hsl(0 80% 60% / 0.12)' : 'transparent',
-                          }}
+                    <div key={tab.key}>
+                      <div className="flex items-center gap-2 mb-2 px-0.5">
+                        <span className="text-base leading-none">{tab.emoji}</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                          {t(tab.labelKey as any)}
+                        </span>
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                          style={{ background: `hsl(${tab.color} / 0.15)`, color: `hsl(${tab.color})` }}
                         >
-                          <Heart
-                            className={cn('w-3.5 h-3.5 transition-colors', isFavorited ? 'text-rose-400 fill-rose-400' : 'text-muted-foreground/40')}
-                          />
-                        </button>
-
+                          {categoryTools.length}
+                        </span>
                         <button
-                          onClick={() => isClickable && navigate(tool.route!)}
-                          disabled={!isClickable}
-                          className={cn(
-                            'flex-1 flex items-center gap-3 text-left',
-                            isClickable ? 'active:scale-[0.98]' : 'cursor-not-allowed',
-                          )}
+                          onClick={() => setActiveCategory(tab.key)}
+                          className="ml-auto text-[10px] font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-0.5"
                         >
-                          <div
-                            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                            style={{
-                              background: `linear-gradient(135deg, hsl(${tool.color} / 0.2), hsl(${tool.color} / 0.08))`,
-                              border: `1px solid hsl(${tool.color} / 0.2)`,
-                            }}
-                          >
-                            <ToolIcon className="w-4 h-4" style={{ color: `hsl(${tool.color})` }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold text-foreground truncate">{t(tool.titleKey as any)}</p>
-                            <p className="text-[11px] text-muted-foreground truncate">{t(tool.descKey as any)}</p>
-                          </div>
-                          {isClickable ? (
-                            <ChevronRight className="w-4 h-4 shrink-0" style={{ color: `hsl(${tool.color} / 0.6)` }} />
-                          ) : isComingSoon ? (
-                            <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                          ) : null}
+                          Ver todo <ChevronRight className="w-3 h-3" />
                         </button>
                       </div>
-                    </motion.div>
+                      <div
+                        className="flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-3 px-3"
+                        style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}
+                      >
+                        {categoryTools.map((tool, i) => {
+                          const ToolIcon = tool.icon;
+                          const isComingSoon = tool.status === 'coming_soon';
+                          const isClickable = !!tool.route && !isComingSoon;
+                          const isFavorited = isFav(tool.id);
+                          return (
+                            <motion.div
+                              key={tool.id}
+                              initial={{ opacity: 0, scale: 0.92 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: i * 0.04, duration: 0.25 }}
+                              className="snap-start shrink-0 w-[150px] relative"
+                            >
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggle(tool.id); }}
+                                className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full flex items-center justify-center transition-all active:scale-90"
+                                style={{
+                                  background: isFavorited ? 'hsl(0 80% 60% / 0.2)' : 'hsl(var(--card) / 0.8)',
+                                  border: `1px solid ${isFavorited ? 'hsl(0 80% 60% / 0.4)' : 'hsl(var(--border) / 0.4)'}`,
+                                }}
+                              >
+                                <Heart className={cn('w-3 h-3 transition-all', isFavorited ? 'text-rose-400 fill-rose-400' : 'text-muted-foreground')} />
+                              </button>
+                              <button
+                                onClick={() => isClickable && navigate(tool.route!)}
+                                disabled={!isClickable}
+                                className={cn(
+                                  'w-full rounded-xl p-3 flex flex-col items-start gap-2 text-left transition-all h-[130px]',
+                                  isClickable ? 'active:scale-95' : 'opacity-40 cursor-not-allowed',
+                                )}
+                                style={{
+                                  background: `linear-gradient(165deg, hsl(${tool.color} / 0.15), hsl(var(--card) / 0.85))`,
+                                  border: `1px solid hsl(${tool.color} / 0.2)`,
+                                  boxShadow: `0 4px 12px hsl(${tool.color} / 0.08)`,
+                                }}
+                              >
+                                <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-xl" style={{
+                                  background: `linear-gradient(90deg, transparent, hsl(${tool.color} / 0.5), transparent)`,
+                                }} />
+                                <div
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center"
+                                  style={{
+                                    background: `linear-gradient(135deg, hsl(${tool.color} / 0.3), hsl(${tool.color} / 0.1))`,
+                                    border: `1px solid hsl(${tool.color} / 0.3)`,
+                                    boxShadow: `0 0 10px hsl(${tool.color} / 0.12)`,
+                                  }}
+                                >
+                                  <ToolIcon className="w-4.5 h-4.5" style={{ color: `hsl(${tool.color})` }} />
+                                </div>
+                                <div className="flex-1 min-w-0 pr-4">
+                                  <p className="text-[11px] font-bold text-foreground leading-tight line-clamp-1">{t(tool.titleKey as any)}</p>
+                                  <p className="text-[9px] text-muted-foreground leading-snug line-clamp-2 mt-0.5">{t(tool.descKey as any)}</p>
+                                </div>
+                                <div className="flex items-center gap-1 mt-auto">
+                                  {isComingSoon ? (
+                                    <Lock className="w-3 h-3 text-muted-foreground" />
+                                  ) : (
+                                    <ChevronRight className="w-3 h-3" style={{ color: `hsl(${tool.color} / 0.5)` }} />
+                                  )}
+                                </div>
+                              </button>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   );
                 })}
-              </motion.div>
-            </div>
+              </div>
+            ) : (
+              /* ─── Vertical list for single category ─── */
+              <div className="rounded-xl border overflow-hidden" style={{
+                borderColor: `hsl(${activeCatConfig.color} / 0.2)`,
+                background: 'hsl(var(--card) / 0.6)',
+              }}>
+                <div className="px-3 py-2 flex items-center gap-1.5" style={{ background: `hsl(${activeCatConfig.color} / 0.08)` }}>
+                  <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${activeCatConfig.color})` }} />
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {t(activeCatConfig.labelKey as any)}
+                  </span>
+                  <span className="ml-auto text-[10px] font-bold tabular-nums" style={{ color: `hsl(${activeCatConfig.color})` }}>
+                    {filtered.length}
+                  </span>
+                </div>
+
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
+                >
+                  {filtered.map((tool) => {
+                    const ToolIcon = tool.icon;
+                    const isComingSoon = tool.status === 'coming_soon';
+                    const isClickable = !!tool.route && !isComingSoon;
+                    const isFavorited = isFav(tool.id);
+
+                    return (
+                      <motion.div
+                        key={tool.id}
+                        variants={{
+                          hidden: { opacity: 0, x: -12 },
+                          visible: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } },
+                        }}
+                      >
+                        <div
+                          className={cn(
+                            'w-full flex items-center gap-3 px-3 py-2.5 transition-all duration-300 border-b',
+                            isClickable ? 'hover:bg-muted/10' : 'opacity-40',
+                          )}
+                          style={{ borderColor: 'hsl(var(--border) / 0.15)' }}
+                        >
+                          <button
+                            onClick={(e) => { e.stopPropagation(); toggle(tool.id); }}
+                            className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
+                            style={{
+                              background: isFavorited ? 'hsl(0 80% 60% / 0.12)' : 'transparent',
+                            }}
+                          >
+                            <Heart
+                              className={cn('w-3.5 h-3.5 transition-colors', isFavorited ? 'text-rose-400 fill-rose-400' : 'text-muted-foreground/40')}
+                            />
+                          </button>
+
+                          <button
+                            onClick={() => isClickable && navigate(tool.route!)}
+                            disabled={!isClickable}
+                            className={cn(
+                              'flex-1 flex items-center gap-3 text-left',
+                              isClickable ? 'active:scale-[0.98]' : 'cursor-not-allowed',
+                            )}
+                          >
+                            <div
+                              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                              style={{
+                                background: `linear-gradient(135deg, hsl(${tool.color} / 0.2), hsl(${tool.color} / 0.08))`,
+                                border: `1px solid hsl(${tool.color} / 0.2)`,
+                              }}
+                            >
+                              <ToolIcon className="w-4 h-4" style={{ color: `hsl(${tool.color})` }} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-semibold text-foreground truncate">{t(tool.titleKey as any)}</p>
+                              <p className="text-[11px] text-muted-foreground truncate">{t(tool.descKey as any)}</p>
+                            </div>
+                            {isClickable ? (
+                              <ChevronRight className="w-4 h-4 shrink-0" style={{ color: `hsl(${tool.color} / 0.6)` }} />
+                            ) : isComingSoon ? (
+                              <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            ) : null}
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
 
