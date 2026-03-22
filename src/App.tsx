@@ -92,9 +92,7 @@ const PageLoader = () => (
   </div>
 );
 
-import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
 const ADMIN_HOSTNAME = 'admin.coinssignals.com';
 
