@@ -140,7 +140,9 @@ export function AdminHealthCheckTab() {
         </div>
       )}
 
-      {/* Last check */}
+      {/* Redis Cache Stats */}
+      <RedisCacheStatsPanel />
+
       {dataUpdatedAt > 0 && (
         <p className="text-[10px] text-white/20 text-center">
           Última verificación: {new Date(dataUpdatedAt).toLocaleString()}
