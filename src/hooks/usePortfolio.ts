@@ -52,8 +52,8 @@ export interface RealtimePriceUpdate {
 const DEMO_ACCOUNTS: AccountData[] = [
   {
     connection_id: 'demo-1',
-    broker_code: 'alpaca',
-    broker_name: 'Alpaca (Demo)',
+    broker_code: 'demo',
+    broker_name: 'Demo Portfolio',
     environment: 'paper',
     cash_balance: 25420.50,
     equity: 48750.25,
@@ -65,38 +65,18 @@ const DEMO_ACCOUNTS: AccountData[] = [
     currency: 'USD',
     last_updated: new Date().toISOString(),
     positions: [
-      { symbol: 'AAPL', quantity: 50, average_entry_price: 178.50, current_price: 192.30, market_value: 9615, unrealized_pnl: 690, unrealized_pnl_percent: 7.72, side: 'long', commission: 1.50, spread: 0.02 },
-      { symbol: 'TSLA', quantity: 25, average_entry_price: 245.00, current_price: 268.40, market_value: 6710, unrealized_pnl: 585, unrealized_pnl_percent: 9.55, side: 'long', commission: 1.50, spread: 0.05 },
-      { symbol: 'NVDA', quantity: 30, average_entry_price: 485.20, current_price: 512.80, market_value: 15384, unrealized_pnl: 828, unrealized_pnl_percent: 5.69, side: 'long', commission: 1.50, spread: 0.10 },
-    ],
-  },
-  {
-    connection_id: 'demo-2',
-    broker_code: 'ibkr',
-    broker_name: 'Interactive Brokers (Demo)',
-    environment: 'paper',
-    cash_balance: 15320.75,
-    equity: 32180.50,
-    buying_power: 40000,
-    unrealized_pnl: -456.30,
-    realized_pnl_today: 128.50,
-    margin_used: 8000,
-    margin_available: 32000,
-    currency: 'USD',
-    last_updated: new Date().toISOString(),
-    positions: [
-      { symbol: 'EUR/USD', quantity: 10000, average_entry_price: 1.0892, current_price: 1.0845, market_value: 10845, unrealized_pnl: -470, unrealized_pnl_percent: -4.31, side: 'long', spread: 1.2, swap: -3.50 },
-      { symbol: 'BTC/USD', quantity: 0.15, average_entry_price: 42500, current_price: 43200, market_value: 6480, unrealized_pnl: 105, unrealized_pnl_percent: 1.65, side: 'long', spread: 15.0, swap: -1.20 },
+      { symbol: 'EUR/USD', quantity: 1.0, average_entry_price: 1.0850, current_price: 1.0920, market_value: 10920, unrealized_pnl: 700, unrealized_pnl_percent: 6.45, side: 'long', spread: 1.2 },
+      { symbol: 'GBP/USD', quantity: 0.5, average_entry_price: 1.2640, current_price: 1.2580, market_value: 6290, unrealized_pnl: -300, unrealized_pnl_percent: -4.75, side: 'long', spread: 1.5 },
     ],
   },
 ];
 
 const DEMO_SUMMARY: PortfolioSummary = {
-  total_equity: 80930.75,
-  total_cash: 40741.25,
-  total_unrealized_pnl: 1367.15,
-  total_realized_pnl: 471.30,
-  total_positions: 5,
+  total_equity: 48750.25,
+  total_cash: 25420.50,
+  total_unrealized_pnl: 1823.45,
+  total_realized_pnl: 342.80,
+  total_positions: 2,
 };
 
 export function usePortfolio() {
