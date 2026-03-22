@@ -54,8 +54,9 @@ export function Header() {
 
           {/* Right: Community icon */}
           <div className="flex items-center gap-1">
-            <Link to="/forum" className="p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
-              <Users className="w-7 h-7 text-primary" />
+            <Link to="/forum" className="flex flex-col items-center gap-0.5 p-2 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors active:scale-95" onMouseEnter={onMouseEnter('/forum')}>
+              <Users className="w-6 h-6 text-primary" />
+              <span className="text-[9px] font-semibold text-primary leading-none">Foros</span>
             </Link>
           </div>
         </div>
