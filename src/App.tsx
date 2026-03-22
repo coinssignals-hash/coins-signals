@@ -203,8 +203,10 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <OnboardingTour />
-              <PWAInstallBanner />
+              <Suspense fallback={null}>
+                <OnboardingTour />
+                <PWAInstallBanner />
+              </Suspense>
               <AnimatedRoutes />
             </BrowserRouter>
           </div>

@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => ({
           'vendor-motion': ['framer-motion'],
           'vendor-dates': ['date-fns'],
           'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-icons': ['lucide-react'],
           'ui-core': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs', '@radix-ui/react-tooltip', '@radix-ui/react-popover'],
           'ui-forms': ['@radix-ui/react-select', '@radix-ui/react-checkbox', '@radix-ui/react-switch', '@radix-ui/react-slider', '@radix-ui/react-radio-group'],
           'ui-overlay': ['@radix-ui/react-alert-dialog', '@radix-ui/react-toast', '@radix-ui/react-hover-card', '@radix-ui/react-context-menu'],

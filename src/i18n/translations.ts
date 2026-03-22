@@ -2277,6 +2277,6 @@ export function getTranslationsSync(lang: Language): TranslationKeys {
 // Legacy compat — some files may still import this
 export const translations: Record<Language, TranslationKeys> = new Proxy({} as Record<Language, TranslationKeys>, {
   get(_, lang: string) {
-    return translationsCache[lang as Language] ?? esDefault;
+    return translationsCache[lang as Language] ?? esDefault ?? ({} as TranslationKeys);
   },
 });
