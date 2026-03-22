@@ -474,14 +474,14 @@ export default function Signals() {
             <div className="flex gap-3">
               {/* Status filter */}
               <div className="space-y-1 flex-1">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Estado</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_status')}</span>
                 <div className="flex gap-1 flex-wrap">
                   {[
-                    { key: 'all', label: 'Todos', color: '' },
-                    { key: 'active', label: 'Activa', color: 'text-emerald-400' },
-                    { key: 'pending', label: 'Pendiente', color: 'text-amber-400' },
-                    { key: 'completed', label: 'Cerrada', color: 'text-sky-400' },
-                    { key: 'cancelled', label: 'Cancelada', color: 'text-red-400' },
+                    { key: 'all', label: t('sf_all'), color: '' },
+                    { key: 'active', label: t('sf_active'), color: 'text-emerald-400' },
+                    { key: 'pending', label: t('sf_pending'), color: 'text-amber-400' },
+                    { key: 'completed', label: t('sf_completed'), color: 'text-sky-400' },
+                    { key: 'cancelled', label: t('sf_cancelled'), color: 'text-red-400' },
                   ].map((s) => (
                     <button
                       key={s.key}
