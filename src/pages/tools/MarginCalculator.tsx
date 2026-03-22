@@ -26,7 +26,7 @@ const LEVERAGE_OPTIONS = [
   { value: 500, label: '1:500' },
 ];
 
-const ACCENT = '25 85% 55%';
+const ACCENT = '25 92% 58%';
 
 export default function MarginCalculator() {
   const { t } = useTranslation();

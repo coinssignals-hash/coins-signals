@@ -10,7 +10,7 @@ import { ArrowLeft, LineChart, TrendingUp, DollarSign, Calendar, Info, Percent }
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-const ACCENT = '142 70% 45%';
+const ACCENT = '142 85% 52%';
 
 export default function CompoundInterestCalculator() {
   const { t } = useTranslation();

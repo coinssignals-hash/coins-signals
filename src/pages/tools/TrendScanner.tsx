@@ -45,7 +45,7 @@ function generateTrendData(): PairTrend[] {
 
 type FilterType = 'all' | 'bullish' | 'bearish' | 'neutral';
 
-const ACCENT = '150 65% 50%';
+const ACCENT = '150 85% 55%';
 
 export default function TrendScanner() {
   const { t } = useTranslation();

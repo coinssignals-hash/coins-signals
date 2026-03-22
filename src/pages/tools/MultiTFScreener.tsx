@@ -65,7 +65,7 @@ const PAIR_CATEGORIES_KEYS: Record<string, { key: string; pairs: string[] }> = {
   'mtf_metals': { key: 'mtf_metals', pairs: ['XAU/USD', 'XAG/USD'] },
 };
 
-const ACCENT = '155 70% 45%';
+const ACCENT = '155 85% 52%';
 
 export default function MultiTFScreener() {
   const { t } = useTranslation();

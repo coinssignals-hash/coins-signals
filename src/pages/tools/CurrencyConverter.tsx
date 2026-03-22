@@ -392,7 +392,7 @@ export default function CurrencyConverter() {
     );
   };
 
-  const ACCENT = '45 80% 55%'; // gold accent like sessions
+  const ACCENT = '45 92% 58%'; // gold accent like sessions
 
   return (
     <PageShell>

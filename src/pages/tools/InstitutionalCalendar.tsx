@@ -69,7 +69,7 @@ function generateEvents(): InstitutionalEvent[] {
   });
 }
 
-const ACCENT = '170 70% 45%';
+const ACCENT = '170 85% 52%';
 
 export default function InstitutionalCalendar() {
   const { t } = useTranslation();

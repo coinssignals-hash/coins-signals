@@ -37,7 +37,7 @@ function corrColor(val: number): string {
   return 'bg-rose-500/70 text-white';
 }
 
-const ACCENT = '185 70% 50%';
+const ACCENT = '185 85% 55%';
 
 export default function CorrelationMatrix() {
   const { t } = useTranslation();

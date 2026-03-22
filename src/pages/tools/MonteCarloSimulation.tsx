@@ -85,7 +85,7 @@ function runSimulation(
   };
 }
 
-const ACCENT = '265 70% 60%';
+const ACCENT = '265 85% 65%';
 
 export default function MonteCarloSimulation() {
   const { t } = useTranslation();
