@@ -2112,6 +2112,19 @@ const it: TranslationKeys = {
   rm_title: 'Gestore del Rischio',
   rm_main_account: 'Conto Principale',
   rm_demo_account: 'Conto Demo',
+  sf_pair: 'Coppia',
+  sf_status: 'Stato',
+  sf_probability: 'Probabilità',
+  sf_all: 'Tutti',
+  sf_all_f: 'Tutte',
+  sf_active: 'Attivo',
+  sf_pending: 'In attesa',
+  sf_completed: 'Chiuso',
+  sf_cancelled: 'Annullato',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Cancella filtri',
 };
 
 export default it;

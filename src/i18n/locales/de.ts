@@ -2112,6 +2112,19 @@ const de: TranslationKeys = {
   rm_title: 'Risikomanager',
   rm_main_account: 'Hauptkonto',
   rm_demo_account: 'Demokonto',
+  sf_pair: 'Paar',
+  sf_status: 'Status',
+  sf_probability: 'Wahrscheinlichkeit',
+  sf_all: 'Alle',
+  sf_all_f: 'Alle',
+  sf_active: 'Aktiv',
+  sf_pending: 'Ausstehend',
+  sf_completed: 'Geschlossen',
+  sf_cancelled: 'Storniert',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Filter löschen',
 };
 
 export default de;
