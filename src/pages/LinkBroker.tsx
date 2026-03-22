@@ -39,7 +39,7 @@ export default function LinkBroker() {
   const [mt5Broker, setMT5Broker] = useState<BrokerCatalogItem | null>(null);
   const [showAPIDialog, setShowAPIDialog] = useState(false);
   const [apiBroker, setAPIBroker] = useState<BrokerCatalogItem | null>(null);
-  const [isLiveMode, setIsLiveMode] = useState(false);
+  
 
   const connectedBrokerCodes = connections
     .filter(c => c.is_connected && c.broker)
