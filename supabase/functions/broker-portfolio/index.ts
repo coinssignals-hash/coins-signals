@@ -236,10 +236,12 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
   }
 
   try {
-    const login = credentials.login || credentials.mt_login;
-    const password = credentials.password || credentials.mt_password;
-    const server = credentials.server || credentials.mt_server;
-    const platform = (config?.platform as string) || 'mt5';
+    const login = credentials.mt5_login || credentials.mt_login || credentials.login;
+    const password = credentials.mt5_password || credentials.mt_password || credentials.password;
+    const server = credentials.mt5_server || credentials.mt_server || credentials.server;
+    const platform = (config?.platform as string) || credentials.mt5_platform || 'mt5';
+
+    console.log('[broker-portfolio] MT creds check:', { login: !!login, password: !!password, server: !!server, keys: Object.keys(credentials) });
 
     if (!login || !password || !server) {
       return { error: 'MT5 credentials incomplete' };
