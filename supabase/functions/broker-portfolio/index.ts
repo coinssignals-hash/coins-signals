@@ -294,10 +294,24 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     return { error: 'MetaAPI token not configured' };
   }
 
-  // Create HTTP client that trusts MetaAPI certificates
-  const httpClient = Deno.createHttpClient({ caCerts: [] });
-  const metaFetch = (url: string, opts: RequestInit = {}) =>
-    fetch(url, { ...opts, client: httpClient } as RequestInit);
+  // Use regular fetch - if TLS fails, fall back to ignoring cert errors
+  const metaFetch = async (url: string, opts: RequestInit = {}) => {
+    try {
+      return await fetch(url, opts);
+    } catch (tlsErr) {
+      // If TLS fails, try with a permissive HTTP client
+      try {
+        const permissiveClient = Deno.createHttpClient({
+          caCerts: [],
+        });
+        const res = await fetch(url, { ...opts, client: permissiveClient } as RequestInit);
+        permissiveClient.close();
+        return res;
+      } catch {
+        throw tlsErr;
+      }
+    }
+  };
 
   try {
     const login = credentials.mt5_login || credentials.mt_login || credentials.login;
