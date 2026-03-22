@@ -2237,6 +2237,19 @@ export type TranslationKeys = {
   rm_title: string;
   rm_main_account: string;
   rm_demo_account: string;
+  sf_pair: string;
+  sf_status: string;
+  sf_probability: string;
+  sf_all: string;
+  sf_all_f: string;
+  sf_active: string;
+  sf_pending: string;
+  sf_completed: string;
+  sf_cancelled: string;
+  sf_high: string;
+  sf_medium: string;
+  sf_low: string;
+  sf_clear: string;
 };
 
 // Dynamic locale loaders — only the active language is loaded at runtime
