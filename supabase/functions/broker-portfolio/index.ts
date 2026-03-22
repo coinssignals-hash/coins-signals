@@ -26,19 +26,43 @@ function decodeBytea(raw: unknown): string {
   return String(raw);
 }
 
-// Decrypt credentials
-function decryptCredentials(encrypted: string, key: string): Record<string, string> {
+// Decrypt credentials (AES-256-GCM with XOR legacy fallback)
+async function decryptCredentials(encryptedB64: string, ivB64: string | null, key: string): Promise<Record<string, string>> {
   try {
-    const keyBytes = new TextEncoder().encode(key);
-    const encryptedBytes = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
-    const decrypted = new Uint8Array(encryptedBytes.length);
-    
-    for (let i = 0; i < encryptedBytes.length; i++) {
-      decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+    // Legacy XOR decryption fallback (no IV means old format)
+    if (!ivB64) {
+      const keyBytes = new TextEncoder().encode(key);
+      const encryptedBytes = Uint8Array.from(atob(encryptedB64), c => c.charCodeAt(0));
+      const decrypted = new Uint8Array(encryptedBytes.length);
+      for (let i = 0; i < encryptedBytes.length; i++) {
+        decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+      }
+      return JSON.parse(new TextDecoder().decode(decrypted));
     }
-    
+
+    // AES-GCM decryption
+    const rawKey = new TextEncoder().encode(key);
+    const keyHash = await crypto.subtle.digest('SHA-256', rawKey);
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyHash,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+
+    const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+    const encryptedData = Uint8Array.from(atob(encryptedB64), c => c.charCodeAt(0));
+
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      encryptedData
+    );
+
     return JSON.parse(new TextDecoder().decode(decrypted));
-  } catch {
+  } catch (e) {
+    console.error('Decryption error:', e);
     return {};
   }
 }
