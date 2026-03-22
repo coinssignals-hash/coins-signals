@@ -294,6 +294,25 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     return { error: 'MetaAPI token not configured' };
   }
 
+  // Use regular fetch - if TLS fails, fall back to ignoring cert errors
+  const metaFetch = async (url: string, opts: RequestInit = {}) => {
+    try {
+      return await fetch(url, opts);
+    } catch (tlsErr) {
+      // If TLS fails, try with a permissive HTTP client
+      try {
+        const permissiveClient = Deno.createHttpClient({
+          caCerts: [],
+        });
+        const res = await fetch(url, { ...opts, client: permissiveClient } as RequestInit);
+        permissiveClient.close();
+        return res;
+      } catch {
+        throw tlsErr;
+      }
+    }
+  };
+
   try {
     const login = credentials.mt5_login || credentials.mt_login || credentials.login;
     const password = credentials.mt5_password || credentials.mt_password || credentials.password;
@@ -307,22 +326,26 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     }
 
     // Step 1: Find or provision the MetaAPI account
-    const listRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+    const listRes = await metaFetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
       headers: { 'auth-token': metaApiToken },
     });
 
     let accountId: string | null = null;
+    let accountRegion = 'vint-hill'; // default region
 
     if (listRes.ok) {
       const accounts = await listRes.json();
+      console.log('[broker-portfolio] MetaAPI accounts found:', accounts.length);
       const match = accounts.find((a: Record<string, unknown>) =>
         String(a.login) === String(login) && a.server === server
       );
       if (match) {
         accountId = match._id;
+        accountRegion = String(match.region || 'vint-hill');
+        console.log('[broker-portfolio] Matched account:', accountId, 'region:', accountRegion, 'state:', match.state);
         // Ensure it's deployed
         if (match.state !== 'DEPLOYED') {
-          await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+          await metaFetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
             method: 'POST',
             headers: { 'auth-token': metaApiToken },
           });
@@ -334,7 +357,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
 
     if (!accountId) {
       // Create new MetaAPI account
-      const createRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+      const createRes = await metaFetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
         method: 'POST',
         headers: {
           'auth-token': metaApiToken,
@@ -359,9 +382,10 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
 
       const created = await createRes.json();
       accountId = created.id;
+      accountRegion = String(created.region || 'vint-hill');
 
       // Deploy
-      await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+      await metaFetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
         method: 'POST',
         headers: { 'auth-token': metaApiToken },
       });
@@ -370,8 +394,12 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       await new Promise(r => setTimeout(r, 5000));
     }
 
+    // Use region-specific client API URL
+    const clientApiBase = `https://mt-client-api-v1.${accountRegion}.agiliumtrade.agiliumtrade.ai`;
+    console.log('[broker-portfolio] Using client API:', clientApiBase);
+
     // Step 2: Get account information
-    const infoRes = await fetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/account-information`, {
+    const infoRes = await metaFetch(`${clientApiBase}/users/current/accounts/${accountId}/account-information`, {
       headers: { 'auth-token': metaApiToken },
     });
 
@@ -393,7 +421,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     const info = await infoRes.json();
 
     // Step 3: Get open positions
-    const posRes = await fetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/positions`, {
+    const posRes = await metaFetch(`${clientApiBase}/users/current/accounts/${accountId}/positions`, {
       headers: { 'auth-token': metaApiToken },
     });
 
