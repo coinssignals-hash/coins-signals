@@ -235,6 +235,7 @@ export function useSessionPerformance(selectedWeek: Date, dateRange?: { from?: D
 
   return useQuery({
     queryKey: ['session-performance', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2,
     queryFn: async (): Promise<SessionPerformance[]> => {
       const { data: signals, error } = await supabase
         .from('trading_signals')
