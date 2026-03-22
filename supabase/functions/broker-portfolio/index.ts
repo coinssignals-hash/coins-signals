@@ -451,6 +451,8 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
   } catch (error) {
     console.error('MetaAPI fetch error:', error);
     return { error: error instanceof Error ? error.message : 'Failed to fetch MT5 data' };
+  } finally {
+    httpClient.close();
   }
 }
 
