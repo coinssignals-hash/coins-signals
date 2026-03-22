@@ -2271,7 +2271,7 @@ export async function loadTranslations(lang: Language): Promise<TranslationKeys>
 }
 
 export function getTranslationsSync(lang: Language): TranslationKeys {
-  return translationsCache[lang] ?? esDefault;
+  return translationsCache[lang] ?? esDefault ?? ({} as TranslationKeys);
 }
 
 // Legacy compat — some files may still import this
