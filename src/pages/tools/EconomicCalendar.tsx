@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -201,13 +200,13 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
               { label: t('ec_medium'), value: stats.medium, icon: AlertTriangle, color: 'text-amber-400' },
               { label: t('ec_published'), value: stats.withActual, icon: BarChart3, color: 'text-emerald-400' },
             ].map(s => (
-              <Card key={s.label} className="bg-card border-border">
+              <div key={s.label} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
                 <div className="p-3 text-center">
                   <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
                   <p className={cn('text-lg font-bold tabular-nums', s.color)}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground">{s.label}</p>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
@@ -467,7 +466,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         )}
 
         {/* Push Notification Toggle */}
-        <Card className={cn(
+        <div className={cn('rounded-xl overflow-hidden',
           "border transition-colors",
           config.enableCalendarAlerts ? "bg-primary/5 border-primary/30" : "bg-card border-border"
         )}>
@@ -491,7 +490,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
               />
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Warning */}
         {!isLoading && events.length > 0 && (

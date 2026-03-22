@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -140,7 +139,7 @@ export default function SwapCalculator() {
 
         {result && (
           <>
-            <Card className={cn('border', result.isPositive ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20')}>
+            <div className={cn('rounded-xl overflow-hidden','border', result.isPositive ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20')}>
               <div className="p-4 text-center space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('swap_total_cost')}</p>
                 <p className={cn('text-3xl font-bold tabular-nums', result.isPositive ? 'text-emerald-400' : 'text-rose-400')}>
@@ -150,7 +149,7 @@ export default function SwapCalculator() {
                   {result.totalPips} {t('swap_pips_in_nights').replace('{count}', String(result.effectiveDays))}
                 </p>
               </div>
-            </Card>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <ToolCard>
                 <div className="p-3 text-center">

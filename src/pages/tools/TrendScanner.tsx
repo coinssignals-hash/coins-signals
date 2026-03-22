@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -116,7 +115,7 @@ export default function TrendScanner() {
             { key: 'neutral' as FilterType, label: t('tp_trend_neutral'), value: summary.neutral, icon: Minus, color: 'text-muted-foreground' },
           ]).map(s => (
             <button key={s.key} onClick={() => setFilter(filter === s.key ? 'all' : s.key)}>
-              <Card className={cn(
+              <div className={cn('rounded-xl overflow-hidden',
                 'border transition-colors',
                 filter === s.key ? 'bg-primary/10 border-primary/40' : 'bg-card border-border'
               )}>
@@ -125,7 +124,7 @@ export default function TrendScanner() {
                   <p className={cn('text-xl font-bold tabular-nums', s.color)}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground">{s.label}</p>
                 </div>
-              </Card>
+              </div>
             </button>
           ))}
         </div>

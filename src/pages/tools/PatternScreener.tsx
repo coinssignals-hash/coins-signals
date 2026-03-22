@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -99,13 +98,13 @@ export default function PatternScreener() {
             { label: t('tp_pattern_bearish'), value: summary.bearish, icon: TrendingDown, color: 'text-rose-400' },
             { label: t('tp_pattern_neutral'), value: summary.neutral, icon: CandlestickChart, color: 'text-muted-foreground' },
           ].map(s => (
-            <Card key={s.label} className="bg-card border-border">
+            <div key={s.label} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
               <div className="p-3 text-center">
                 <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
                 <p className={cn('text-xl font-bold', s.color)}>{s.value}</p>
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 

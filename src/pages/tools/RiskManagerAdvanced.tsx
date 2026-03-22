@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -126,7 +125,7 @@ export default function RiskManagerAdvanced() {
 
         {/* Alerts */}
         {alerts.length > 0 && (
-          <Card className="bg-destructive/10 border-destructive/30">
+          <div className="rounded-xl overflow-hidden" style={{ background: "hsl(0 70% 50% / 0.08)", border: "1px solid hsl(0 70% 50% / 0.25)" }}>
             <div className="p-3 space-y-1">
               {alerts.map((a, i) => (
                 <div key={i} className="flex items-start gap-2">
@@ -135,7 +134,7 @@ export default function RiskManagerAdvanced() {
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         )}
 
         {/* Global Limits */}
@@ -162,12 +161,12 @@ export default function RiskManagerAdvanced() {
             { label: t('tp_risk_at_sl'), value: `$${totalRiskAtSL.toFixed(0)}`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
             { label: t('tp_risk_pct'), value: `${riskPercent.toFixed(1)}%`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
           ].map(s => (
-            <Card key={s.label} className="bg-card border-border">
+            <div key={s.label} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
               <div className="p-3 text-center">
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
                 <p className={cn('text-sm font-bold tabular-nums mt-1', s.color)}>{s.value}</p>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
@@ -197,7 +196,7 @@ export default function RiskManagerAdvanced() {
           const accRisk = account.openPositions.reduce((s, p) => s + Math.abs(p.entryPrice - p.stopLoss) * p.lots * 100000, 0);
           const accRiskPct = account.balance > 0 ? (accRisk / account.balance) * 100 : 0;
           return (
-            <Card key={account.id} className="bg-card border-border">
+            <div key={account.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <Input
@@ -248,7 +247,7 @@ export default function RiskManagerAdvanced() {
                   </div>
                 )}
               </div>
-            </Card>
+            </div>
           );
         })}
 
