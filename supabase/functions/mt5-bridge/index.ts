@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// ─── Decrypt MT5 credentials ───────────────────────────────────────────────
+// ─── Decrypt helpers ───────────────────────────────────────────────────────
 
 function unwrapByteaToBase64(raw: unknown): string {
   if (!raw) return '';
@@ -57,93 +57,41 @@ async function decryptCredentials(encryptedB64: string, ivB64: string | null, ke
   }
 }
 
-// ─── MetaAPI WebSocket RPC Client ──────────────────────────────────────────
+// ─── MetaAPI via FastAPI proxy ─────────────────────────────────────────────
 
-async function metaApiWsRequest(
-  region: string,
+async function metaApiClientRequest(
+  fastApiUrl: string,
   metaApiToken: string,
   accountId: string,
-  requestType: string,
-  timeoutMs = 25000,
-  extraParams: Record<string, unknown> = {},
+  region: string,
+  endpoint: string,
 ): Promise<Record<string, unknown>> {
-  const wsUrl = `wss://mt-client-api-v1.${region}.agiliumtrade.agiliumtrade.ai/ws`;
-  const requestId = crypto.randomUUID();
-
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      try { ws.close(); } catch {}
-      reject(new Error(`MetaAPI WS timeout for ${requestType}`));
-    }, timeoutMs);
-
-    const ws = new WebSocket(wsUrl);
-    let authenticated = false;
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({
-        requestId: crypto.randomUUID(),
-        type: 'subscribe',
-        sequenceTimestamp: Date.now(),
-        accountId,
-        instanceIndex: 0,
-        host: `mt-client-api-v1.${region}.agiliumtrade.agiliumtrade.ai`,
-        protocol: 3,
-        application: 'MetaApi',
-        auth_token: metaApiToken,
-      }));
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-
-        if (!authenticated) {
-          if (msg.type === 'authenticated' || msg.type === 'synchronize' || msg.connected) {
-            authenticated = true;
-            ws.send(JSON.stringify({
-              requestId,
-              type: requestType,
-              accountId,
-              application: 'RPC',
-              ...extraParams,
-            }));
-          } else if (msg.type === 'error') {
-            clearTimeout(timer);
-            ws.close();
-            reject(new Error(`MetaAPI WS auth error: ${msg.message || JSON.stringify(msg)}`));
-          }
-          return;
-        }
-
-        if (msg.requestId === requestId) {
-          clearTimeout(timer);
-          ws.close();
-          if (msg.type === 'error') {
-            reject(new Error(`MetaAPI WS error: ${msg.message || msg.error || JSON.stringify(msg)}`));
-          } else {
-            resolve(msg);
-          }
-        }
-      } catch (e) {
-        console.error('[metaApiWs] parse error:', e);
-      }
-    };
-
-    ws.onerror = (err) => {
-      clearTimeout(timer);
-      reject(new Error(`MetaAPI WS connection error: ${err}`));
-    };
-
-    ws.onclose = (ev) => {
-      clearTimeout(timer);
-      if (!authenticated) {
-        reject(new Error(`MetaAPI WS closed before auth: code=${ev.code} reason=${ev.reason}`));
-      }
-    };
+  const res = await fetch(`${fastApiUrl}/api/v1/metaapi/proxy`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      account_id: accountId,
+      region,
+      endpoint,
+      method: 'GET',
+      meta_token: metaApiToken,
+    }),
   });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`FastAPI proxy error (${res.status}): ${errText}`);
+  }
+
+  const result = await res.json();
+  if (result.error) {
+    throw new Error(`MetaAPI error (${result.status}): ${result.body}`);
+  }
+
+  return result.data;
 }
 
-// ─── MetaAPI provisioning (REST — works fine) ──────────────────────────────
+// ─── MetaAPI provisioning (REST — works directly) ──────────────────────────
 
 async function provisionMetaApiAccount(
   metaApiToken: string,
@@ -165,6 +113,8 @@ async function provisionMetaApiAccount(
     if (existing) {
       return { accountId: existing._id, region: existing.region || 'vint-hill' };
     }
+  } else {
+    await listRes.text(); // consume body
   }
 
   const createRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
@@ -212,14 +162,14 @@ async function waitForConnection(metaApiToken: string, accountId: string, maxWai
         return;
       }
     } else {
-      await res.text(); // consume body
+      await res.text();
     }
     await new Promise(r => setTimeout(r, 3000));
   }
   throw new Error('MetaAPI: Timeout esperando conexión MT5');
 }
 
-// ─── Fetch MT5 history via WebSocket ───────────────────────────────────────
+// ─── MT5 history via proxy ─────────────────────────────────────────────────
 
 interface MT5Trade {
   external_trade_id: string;
@@ -238,35 +188,32 @@ interface MT5Trade {
 }
 
 async function fetchMT5History(
+  fastApiUrl: string,
   metaApiToken: string,
   accountId: string,
   region: string,
 ): Promise<{ trades: MT5Trade[]; account: Record<string, unknown> }> {
-  // Get account info via WS
+  // Account info via proxy
   let accInfo: Record<string, unknown> = {};
   try {
-    accInfo = await metaApiWsRequest(region, metaApiToken, accountId, 'getAccountInformation');
+    accInfo = await metaApiClientRequest(fastApiUrl, metaApiToken, accountId, region, 'account-information');
   } catch (e) {
-    console.warn('[mt5-bridge] Account info WS error:', e);
+    console.warn('[mt5-bridge] Account info error:', e);
   }
 
-  // Get history deals via WS
+  // History deals via proxy (last 90 days)
   const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   const endDate = new Date().toISOString();
 
   let deals: Record<string, unknown>[] = [];
   try {
-    const histResponse = await metaApiWsRequest(
-      region,
-      metaApiToken,
-      accountId,
-      'getDealsByTimeRange',
-      30000,
-      { startTime: startDate, endTime: endDate },
+    const result = await metaApiClientRequest(
+      fastApiUrl, metaApiToken, accountId, region,
+      `history-deals/time/${startDate}/${endDate}?limit=1000`
     );
-    deals = (histResponse as any).deals || [];
+    deals = Array.isArray(result) ? result : [];
   } catch (e) {
-    console.warn('[mt5-bridge] History WS error:', e);
+    console.warn('[mt5-bridge] History error:', e);
   }
 
   const trades: MT5Trade[] = (Array.isArray(deals) ? deals : [])
@@ -315,18 +262,22 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const encryptionKey = Deno.env.get('ENCRYPTION_KEY');
     const metaApiToken = Deno.env.get('METAAPI_TOKEN');
+    const fastApiUrl = Deno.env.get('FASTAPI_BASE_URL');
 
     if (!encryptionKey) {
-      return new Response(JSON.stringify({ error: 'Server configuration error: encryption key missing' }), {
+      return new Response(JSON.stringify({ error: 'Encryption key missing' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     if (!metaApiToken) {
-      return new Response(JSON.stringify({
-        error: 'MetaAPI no configurado',
-        needs_config: true,
-      }), {
+      return new Response(JSON.stringify({ error: 'MetaAPI no configurado', needs_config: true }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!fastApiUrl) {
+      return new Response(JSON.stringify({ error: 'FastAPI proxy URL not configured' }), {
         status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -373,10 +324,10 @@ serve(async (req) => {
     const ivStr = conn.credentials_iv ? unwrapByteaToBase64(conn.credentials_iv) : null;
     const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
 
-    console.log('[mt5-bridge] Credential keys found:', Object.keys(credentials));
+    console.log('[mt5-bridge] Credential keys:', Object.keys(credentials));
 
     if (!credentials.mt5_server || !credentials.mt5_login || !credentials.mt5_password) {
-      return new Response(JSON.stringify({ error: 'Credenciales MT4/MT5 incompletas. Reconecta tu cuenta.' }), {
+      return new Response(JSON.stringify({ error: 'Credenciales MT4/MT5 incompletas' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -384,21 +335,17 @@ serve(async (req) => {
     const platform = (credentials.mt5_platform || 'mt5') as 'mt4' | 'mt5';
     const brokerCode = conn.broker?.code || 'unknown';
 
-    // 1. Provision MetaAPI account
+    // 1. Provision
     const { accountId: metaAccountId, region } = await provisionMetaApiAccount(
-      metaApiToken,
-      credentials.mt5_server,
-      credentials.mt5_login,
-      credentials.mt5_password,
-      platform,
-      brokerCode,
+      metaApiToken, credentials.mt5_server, credentials.mt5_login,
+      credentials.mt5_password, platform, brokerCode,
     );
 
     // 2. Wait for connection
     await waitForConnection(metaApiToken, metaAccountId);
 
-    // 3. Fetch history via WebSocket
-    const { trades, account } = await fetchMT5History(metaApiToken, metaAccountId, region);
+    // 3. Fetch history via FastAPI proxy
+    const { trades, account } = await fetchMT5History(fastApiUrl, metaApiToken, metaAccountId, region);
 
     // 4. Upsert trades
     let imported = 0;
@@ -406,12 +353,8 @@ serve(async (req) => {
     const batchId = `mt5_${brokerCode}_${Date.now()}`;
 
     if (trades.length > 0) {
-      const chunks: MT5Trade[][] = [];
       for (let i = 0; i < trades.length; i += 50) {
-        chunks.push(trades.slice(i, i + 50));
-      }
-
-      for (const chunk of chunks) {
+        const chunk = trades.slice(i, i + 50);
         const rows = chunk.map(t => ({
           user_id: user.id,
           broker_source: brokerCode,
@@ -447,11 +390,7 @@ serve(async (req) => {
     // 5. Update connection
     await supabase
       .from('user_broker_connections')
-      .update({
-        is_connected: true,
-        last_sync_at: new Date().toISOString(),
-        connection_error: null,
-      })
+      .update({ is_connected: true, last_sync_at: new Date().toISOString(), connection_error: null })
       .eq('id', connection_id);
 
     // 6. Audit
