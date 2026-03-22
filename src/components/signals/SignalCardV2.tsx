@@ -1,4 +1,7 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, memo } from "react";
+import { SignalCardV2Header } from "./SignalCardV2Header";
+import { SignalCardV2Badges } from "./SignalCardV2Badges";
+import { SignalCardV2Strategy } from "./SignalCardV2Strategy";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Loader2, Sparkles } from "lucide-react";
