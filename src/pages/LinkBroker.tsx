@@ -16,7 +16,7 @@ import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
 import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
 
-const ACCENT = '200 80% 55%';
+const ACCENT = '200 90% 58%';
 
 export default function LinkBroker() {
   const navigate = useNavigate();
