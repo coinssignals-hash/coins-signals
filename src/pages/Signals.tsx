@@ -412,7 +412,132 @@ export default function Signals() {
               ))}
             </PopoverContent>
           </Popover>
+
+          {/* Advanced filters toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={cn(
+              "relative flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
+              showFilters || activeFilterCount > 0
+                ? "bg-primary/15 text-primary border-primary/30"
+                : "bg-secondary/50 text-foreground border-border/50"
+            )}
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
         </div>
+
+        {/* Advanced Filters Panel */}
+        {showFilters && (
+          <div className="px-3 pb-2 space-y-2 animate-in slide-in-from-top-2 duration-200">
+            {/* Pair filter */}
+            <div className="space-y-1">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Par</span>
+              <ScrollArea className="w-full">
+                <div className="flex gap-1 pb-1">
+                  <button
+                    onClick={() => setPairFilter('all')}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all",
+                      pairFilter === 'all'
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted/30 text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Todos
+                  </button>
+                  {availablePairs.map((pair) => (
+                    <button
+                      key={pair}
+                      onClick={() => setPairFilter(pair === pairFilter ? 'all' : pair)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all",
+                        pairFilter === pair
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted/30 text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {pair}
+                    </button>
+                  ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+
+            {/* Status + Probability row */}
+            <div className="flex gap-3">
+              {/* Status filter */}
+              <div className="space-y-1 flex-1">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Estado</span>
+                <div className="flex gap-1 flex-wrap">
+                  {[
+                    { key: 'all', label: 'Todos', color: '' },
+                    { key: 'active', label: 'Activa', color: 'text-emerald-400' },
+                    { key: 'pending', label: 'Pendiente', color: 'text-amber-400' },
+                    { key: 'completed', label: 'Cerrada', color: 'text-sky-400' },
+                    { key: 'cancelled', label: 'Cancelada', color: 'text-red-400' },
+                  ].map((s) => (
+                    <button
+                      key={s.key}
+                      onClick={() => setStatusFilter(s.key === statusFilter ? 'all' : s.key)}
+                      className={cn(
+                        "px-2 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all",
+                        statusFilter === s.key
+                          ? "bg-primary text-primary-foreground"
+                          : cn("bg-muted/30 text-muted-foreground hover:text-foreground", s.color)
+                      )}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Probability filter */}
+            <div className="space-y-1">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Probabilidad</span>
+              <div className="flex gap-1">
+                {[
+                  { key: 'all', label: 'Todas' },
+                  { key: 'high', label: '≥ 80%' },
+                  { key: 'medium', label: '60-79%' },
+                  { key: 'low', label: '< 60%' },
+                ].map((p) => (
+                  <button
+                    key={p.key}
+                    onClick={() => setProbFilter(p.key === probFilter ? 'all' : p.key)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all flex-1 text-center",
+                      probFilter === p.key
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted/30 text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Clear all filters */}
+            {activeFilterCount > 0 && (
+              <button
+                onClick={() => { setPairFilter('all'); setStatusFilter('all'); setProbFilter('all'); }}
+                className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 font-medium px-1"
+              >
+                <X className="w-3 h-3" />
+                Limpiar filtros ({activeFilterCount})
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Calendar date indicator */}
         {dayTab === 'calendar' && calendarDate && (
