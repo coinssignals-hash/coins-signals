@@ -9,6 +9,10 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 
+// Lazy load non-critical shell components
+const OnboardingTour = lazy(() => import("@/components/onboarding/OnboardingTour").then(m => ({ default: m.OnboardingTour })));
+const PWAInstallBanner = lazy(() => import("@/components/pwa/PWAInstallBanner").then(m => ({ default: m.PWAInstallBanner })));
+
 // Lazy load all pages
 const News = lazy(() => import("./pages/News"));
 const SavedNews = lazy(() => import("./pages/SavedNews"));
@@ -88,9 +92,7 @@ const PageLoader = () => (
   </div>
 );
 
-import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import { PWAInstallBanner } from "@/components/pwa/PWAInstallBanner";
 
 const ADMIN_HOSTNAME = 'admin.coinssignals.com';
 
@@ -201,8 +203,10 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <OnboardingTour />
-              <PWAInstallBanner />
+              <Suspense fallback={null}>
+                <OnboardingTour />
+                <PWAInstallBanner />
+              </Suspense>
               <AnimatedRoutes />
             </BrowserRouter>
           </div>
