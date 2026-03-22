@@ -455,7 +455,8 @@ serve(async (req) => {
     // Fetch data from each connected broker
     const accountPromises = connections.map(async (conn): Promise<AccountData> => {
       const encryptedStr = decodeBytea(conn.encrypted_credentials);
-      const credentials = decryptCredentials(encryptedStr, encryptionKey);
+      const ivStr = conn.credentials_iv ? decodeBytea(conn.credentials_iv) : null;
+      const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
       const brokerCode = conn.broker?.code;
       const config = (conn.config || {}) as Record<string, unknown>;
 
