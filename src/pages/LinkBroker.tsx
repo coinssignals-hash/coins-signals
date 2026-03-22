@@ -11,7 +11,7 @@ import { useMT5Sync } from '@/hooks/useMT5Sync';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
-import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
+import { BrokerCatalog, BrokerCatalogItem, MT5_CAPABLE_BROKERS } from '@/components/broker/BrokerCatalog';
 import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
 import { APIConnectDialog } from '@/components/broker/APIConnectDialog';
 

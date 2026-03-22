@@ -26,15 +26,15 @@ interface Props {
 }
 
 const BROKER_ACCENT: Record<string, string> = {
-  exness: '185 80% 55%',
-  oanda: '42 90% 55%',
-  vantage: '340 75% 55%',
-  pepperstone: '0 75% 55%',
-  icmarkets: '210 80% 55%',
-  xtb: '145 70% 50%',
-  xm: '25 85% 55%',
-  fxpro: '260 70% 60%',
-  tradovate: '200 75% 55%',
+  ic_markets: '195 85% 55%', oanda: '35 90% 55%', pepperstone: '0 80% 58%',
+  xm: '140 75% 50%', exness: '200 85% 55%', fp_markets: '170 80% 48%',
+  fusion_markets: '45 85% 52%', blackbull: '25 80% 50%', admirals: '220 75% 55%',
+  fxopen: '310 70% 55%', avatrade: '220 85% 60%', hotforex: '15 85% 55%',
+  fbs: '340 75% 55%', roboforex: '260 80% 60%', alpari: '210 70% 55%',
+  thinkmarkets: '175 70% 50%', fxgt: '30 85% 55%', tickmill: '145 70% 50%',
+  vantage: '280 75% 60%', fxtm: '195 75% 50%', octafx: '270 70% 55%',
+  litefinance: '50 80% 52%', weltrade: '160 70% 48%', nordfx: '205 80% 60%',
+  amarkets: '350 70% 55%',
 };
 
 export function MT5ConnectDialog({ open, onOpenChange, broker, onSave }: Props) {
