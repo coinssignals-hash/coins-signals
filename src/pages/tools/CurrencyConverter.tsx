@@ -1,12 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { format, subDays } from 'date-fns';
@@ -394,37 +392,25 @@ export default function CurrencyConverter() {
     );
   };
 
+  const ACCENT = '45 80% 55%'; // gold accent like sessions
+
   return (
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Back + title */}
-        <div className="flex items-center gap-3">
-          <Link
-            to="/tools"
-            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
-            style={{
-              background: 'hsl(var(--card) / 0.85)',
-              border: '1px solid hsl(var(--border) / 0.6)',
-              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
-            }}
-          >
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div>
-            <h1 className="text-lg font-bold text-foreground">
-              {t('tools_currency_converter_title')}
-            </h1>
-            <p className="text-[10px] text-muted-foreground">{format(new Date(), "d MMM yyyy", { locale: dateLocale })}</p>
-          </div>
-        </div>
-
+        <ToolPageHeader
+          icon={<ArrowLeftRight className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('tools_currency_converter_title')}
+          subtitle={format(new Date(), "d MMM yyyy", { locale: dateLocale })}
+          accent={ACCENT}
+        />
 
         {/* ──── Converter Card ──── */}
-        <ToolCard>
-          <CardContent className="p-0">
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2]">
             {/* FROM */}
-            <div className="p-4 border-b border-border space-y-3">
+            <div className="p-4 space-y-3" style={{ borderBottom: '1px solid hsl(var(--border) / 0.3)' }}>
               <div className="flex items-center gap-2">
                 <span className={cn("text-lg", isCrypto(fromCurrency) && "text-primary font-bold")}>{from.flag}</span>
                 <span className="text-sm font-semibold text-foreground">{from.name}</span>
@@ -436,7 +422,8 @@ export default function CurrencyConverter() {
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="pl-10 text-xl font-bold h-12 bg-secondary border-border text-foreground"
+                  className="pl-10 text-xl font-bold h-12 border-border text-foreground"
+                  style={{ background: 'hsl(var(--card) / 0.6)' }}
                   min="0"
                 />
               </div>
@@ -449,26 +436,34 @@ export default function CurrencyConverter() {
             <div className="relative h-0">
               <button
                 onClick={swapCurrencies}
-                className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95"
+                className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95"
+                style={{
+                  background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+                  color: 'hsl(var(--background))',
+                  boxShadow: `0 4px 12px hsl(${ACCENT} / 0.3)`,
+                }}
               >
                 <ArrowUpDown className="w-4 h-4" />
               </button>
             </div>
 
             {/* TO */}
-            <div className="p-4 border-b border-border space-y-3">
+            <div className="p-4 space-y-3" style={{ borderBottom: '1px solid hsl(var(--border) / 0.3)' }}>
               <div className="flex items-center gap-2">
                 <span className={cn("text-lg", isCrypto(toCurrency) && "text-primary font-bold")}>{to.flag}</span>
                 <span className="text-sm font-semibold text-foreground">{to.name}</span>
                 <CurrencySelect value={toCurrency} onChange={setToCurrency} />
               </div>
-              <div className="bg-secondary border border-border rounded-md px-4 py-3">
+              <div className="rounded-lg px-4 py-3" style={{
+                background: 'hsl(var(--card) / 0.6)',
+                border: '1px solid hsl(var(--border) / 0.5)',
+              }}>
                 {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                  <Loader2 className="w-5 h-5 animate-spin" style={{ color: `hsl(${ACCENT})` }} />
                 ) : error ? (
                   <span className="text-destructive text-sm">{error}</span>
                 ) : (
-                  <span className="text-xl font-bold text-foreground">
+                  <span className="text-xl font-bold text-foreground tabular-nums">
                     {to.symbol} {converted !== null ? formatValue(converted) : '...'}
                   </span>
                 )}
@@ -481,11 +476,11 @@ export default function CurrencyConverter() {
             {/* ──── Chart ──── */}
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   {fromCurrency}/{toCurrency} — {period} {t('tools_converter_days')}
                 </span>
-                <button onClick={fetchAll} className="text-primary hover:text-primary/80 transition-colors">
-                  <RefreshCw className={cn("w-3.5 h-3.5", (loading || chartLoading) && "animate-spin")} />
+                <button onClick={fetchAll} className="p-1 rounded hover:bg-muted/20 transition-colors">
+                  <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", (loading || chartLoading) && "animate-spin")} />
                 </button>
               </div>
 
@@ -495,12 +490,15 @@ export default function CurrencyConverter() {
                   <button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs font-semibold transition-colors",
-                      period === p
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-muted-foreground hover:text-foreground"
-                    )}
+                    className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                    style={{
+                      background: period === p
+                        ? `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`
+                        : 'hsl(var(--card) / 0.5)',
+                      border: `1px solid ${period === p ? `hsl(${ACCENT} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                      color: period === p ? `hsl(${ACCENT})` : 'hsl(var(--muted-foreground))',
+                      boxShadow: period === p ? `0 2px 8px hsl(${ACCENT} / 0.15)` : undefined,
+                    }}
                   >
                     {p}D
                   </button>
@@ -509,8 +507,13 @@ export default function CurrencyConverter() {
 
               {/* Current rate box */}
               <div className="flex justify-center">
-                <div className="bg-secondary border border-primary/30 rounded-md px-4 py-1.5">
-                  <span className="text-sm font-bold text-foreground">{rate ? formatValue(rate) : '...'}</span>
+                <div className="rounded-lg px-4 py-1.5" style={{
+                  background: `hsl(${ACCENT} / 0.08)`,
+                  border: `1px solid hsl(${ACCENT} / 0.25)`,
+                }}>
+                  <span className="text-sm font-bold font-mono tabular-nums" style={{ color: `hsl(${ACCENT})` }}>
+                    {rate ? formatValue(rate) : '...'}
+                  </span>
                 </div>
               </div>
 
@@ -518,15 +521,15 @@ export default function CurrencyConverter() {
               <div className="h-[160px] w-full">
                 {chartLoading ? (
                   <div className="flex items-center justify-center h-full">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: `hsl(${ACCENT})` }} />
                   </div>
                 ) : chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
                       <defs>
                         <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                          <stop offset="5%" stopColor={`hsl(${ACCENT})`} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={`hsl(${ACCENT})`} stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <XAxis
@@ -556,7 +559,7 @@ export default function CurrencyConverter() {
                       <Area
                         type="monotone"
                         dataKey="value"
-                        stroke="hsl(var(--primary))"
+                        stroke={`hsl(${ACCENT})`}
                         strokeWidth={2}
                         fill="url(#chartGrad)"
                       />
@@ -571,17 +574,23 @@ export default function CurrencyConverter() {
 
               {/* Min / Max row */}
               {chartData.length > 0 && (
-                <div className="flex justify-between px-2">
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground">{t('tools_converter_min')}</p>
-                    <p className="text-xs font-bold text-destructive flex items-center gap-0.5">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl p-2.5 text-center" style={{
+                    background: 'hsl(var(--card) / 0.6)',
+                    border: '1px solid hsl(var(--border) / 0.5)',
+                  }}>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{t('tools_converter_min')}</span>
+                    <p className="text-xs font-bold text-destructive flex items-center justify-center gap-0.5 tabular-nums">
                       <TrendingDown className="w-3 h-3" />
                       {formatValue(minRate)}
                     </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground">{t('tools_converter_max')}</p>
-                    <p className="text-xs font-bold text-primary flex items-center gap-0.5">
+                  <div className="rounded-xl p-2.5 text-center" style={{
+                    background: 'hsl(var(--card) / 0.6)',
+                    border: '1px solid hsl(var(--border) / 0.5)',
+                  }}>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{t('tools_converter_max')}</span>
+                    <p className="text-xs font-bold flex items-center justify-center gap-0.5 tabular-nums" style={{ color: `hsl(${ACCENT})` }}>
                       <TrendingUp className="w-3 h-3" />
                       {formatValue(maxRate)}
                     </p>
@@ -589,13 +598,18 @@ export default function CurrencyConverter() {
                 </div>
               )}
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Calculate button */}
         <button
           onClick={fetchAll}
-          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-base shadow-lg hover:opacity-90 transition-opacity active:scale-[0.98]"
+          className="w-full py-3 rounded-xl font-bold text-base shadow-lg hover:opacity-90 transition-opacity active:scale-[0.98]"
+          style={{
+            background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+            color: 'hsl(var(--background))',
+            boxShadow: `0 4px 16px hsl(${ACCENT} / 0.3)`,
+          }}
         >
           {t('tools_converter_calculate')}
         </button>

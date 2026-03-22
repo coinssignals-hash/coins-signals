@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -71,7 +72,7 @@ export default function PositionSizing() {
         </div>
 
         <ToolCard>
-          <CardContent className="p-4 space-y-4">
+          <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -96,7 +97,7 @@ export default function PositionSizing() {
                 <Input type="number" value={stopLossPips} onChange={e => setStopLossPips(e.target.value)} className="bg-secondary border-border text-foreground" />
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {result && (
@@ -105,7 +106,7 @@ export default function PositionSizing() {
               const cfg = riskLevelConfig[result.riskLevel as keyof typeof riskLevelConfig];
               return (
                 <Card className={cn('border', cfg.bg, 'border-transparent')}>
-                  <CardContent className="p-3 flex items-center justify-between">
+                  <div className="p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <ShieldAlert className={cn('w-4 h-4', cfg.color)} />
                       <div>
@@ -114,13 +115,13 @@ export default function PositionSizing() {
                       </div>
                     </div>
                     <span className={cn('text-lg font-bold tabular-nums', cfg.color)}>{parseFloat(riskPercent).toFixed(1)}%</span>
-                  </CardContent>
+                  </div>
                 </Card>
               );
             })()}
 
             <ToolCard>
-              <CardContent className="p-4 space-y-3">
+              <div className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Layers className="w-4 h-4 text-primary" />{t('ps_optimal_size')}
                 </h3>
@@ -137,35 +138,35 @@ export default function PositionSizing() {
                     </div>
                   ))}
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
 
             <div className="grid grid-cols-2 gap-3">
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ps_max_risk')}</p>
                   <p className="text-lg font-bold text-rose-400 tabular-nums">${result.riskAmount}</p>
-                </CardContent>
+                </div>
               </ToolCard>
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">$/Pip</p>
                   <p className="text-lg font-bold text-primary tabular-nums">${result.maxLossPerPip}</p>
-                </CardContent>
+                </div>
               </ToolCard>
             </div>
           </>
         )}
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('ps_info_text')}</p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

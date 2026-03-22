@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
+import { Card } from '@/components/ui/card';
 import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -158,7 +159,7 @@ export default function RsiMacdScreener() {
 
         {/* Interval Selector */}
         <ToolCard>
-          <CardContent className="p-3 flex items-center justify-between">
+          <div className="p-3 flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground">{t('tp_rsi_timeframe')}</span>
             <div className="flex gap-1.5">
               {INTERVALS.map(iv => (
@@ -176,7 +177,7 @@ export default function RsiMacdScreener() {
                 </button>
               ))}
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Stats Summary */}
@@ -196,11 +197,11 @@ export default function RsiMacdScreener() {
                   "border transition-colors",
                   filter === s.key ? "bg-primary/10 border-primary/40" : "bg-card border-border"
                 )}>
-                  <CardContent className="p-3 text-center">
+                  <div className="p-3 text-center">
                     <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
                     <p className={cn('text-lg font-bold tabular-nums', s.color)}>{s.count}</p>
                     <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                  </CardContent>
+                  </div>
                 </Card>
               </button>
             ))}
@@ -209,33 +210,33 @@ export default function RsiMacdScreener() {
 
         {/* Scan Info */}
         <ToolCard>
-          <CardContent className="p-3 flex items-center justify-between">
+          <div className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-foreground">{t('tp_pairs_scanned')}</span>
             </div>
             <span className="text-sm font-bold text-primary tabular-nums">{SCAN_PAIRS.length}</span>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Results */}
         {isLoading ? (
           <ToolCard>
-            <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
+            <div className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground">{t('tp_scanning').replace('{count}', String(SCAN_PAIRS.length))}</p>
-            </CardContent>
+            </div>
           </ToolCard>
         ) : filtered.length === 0 ? (
           <ToolCard>
-            <CardContent className="p-8 text-center">
+            <div className="p-8 text-center">
               <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
               <p className="text-sm text-muted-foreground">{t('tp_no_results_filter')}</p>
-            </CardContent>
+            </div>
           </ToolCard>
         ) : (
           <ToolCard>
-            <CardContent className="p-0">
+            <div className="p-0">
               {filtered.map((r, i) => {
                 const rsiConf = signalConfig[r.rsiSignal];
                 const macdConf = signalConfig[r.macdTrend];
@@ -286,7 +287,7 @@ export default function RsiMacdScreener() {
                   </div>
                 );
               })}
-            </CardContent>
+            </div>
           </ToolCard>
         )}
       </main>

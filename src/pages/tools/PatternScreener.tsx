@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -99,11 +100,11 @@ export default function PatternScreener() {
             { label: t('tp_pattern_neutral'), value: summary.neutral, icon: CandlestickChart, color: 'text-muted-foreground' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
-              <CardContent className="p-3 text-center">
+              <div className="p-3 text-center">
                 <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
                 <p className={cn('text-xl font-bold', s.color)}>{s.value}</p>
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
-              </CardContent>
+              </div>
             </Card>
           ))}
         </div>
@@ -125,7 +126,7 @@ export default function PatternScreener() {
 
         {/* Patterns List */}
         <ToolCard>
-          <CardContent className="p-0">
+          <div className="p-0">
             {filtered.length === 0 ? (
               <div className="p-8 text-center">
                 <CandlestickChart className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-40" />
@@ -167,7 +168,7 @@ export default function PatternScreener() {
                 </div>
               ))
             )}
-          </CardContent>
+          </div>
         </ToolCard>
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
@@ -176,14 +177,14 @@ export default function PatternScreener() {
         </div>
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_pattern_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

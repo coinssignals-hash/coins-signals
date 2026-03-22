@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -70,7 +71,7 @@ export default function SwapCalculator() {
         </div>
 
         <ToolCard>
-          <CardContent className="p-4 space-y-4">
+          <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -104,12 +105,12 @@ export default function SwapCalculator() {
                 <Input type="number" min="1" value={holdDays} onChange={e => setHoldDays(e.target.value)} className="bg-secondary border-border text-foreground" />
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {pairData && (
           <ToolCard>
-            <CardContent className="p-4">
+            <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                 <Moon className="w-4 h-4 text-primary" />{t('swap_rates')} — {pair}
               </h3>
@@ -133,14 +134,14 @@ export default function SwapCalculator() {
                   </p>
                 </div>
               </div>
-            </CardContent>
+            </div>
           </ToolCard>
         )}
 
         {result && (
           <>
             <Card className={cn('border', result.isPositive ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20')}>
-              <CardContent className="p-4 text-center space-y-1">
+              <div className="p-4 text-center space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('swap_total_cost')}</p>
                 <p className={cn('text-3xl font-bold tabular-nums', result.isPositive ? 'text-emerald-400' : 'text-rose-400')}>
                   {result.isPositive ? '+' : ''}${result.totalCostUsd}
@@ -148,36 +149,36 @@ export default function SwapCalculator() {
                 <p className="text-xs text-muted-foreground">
                   {result.totalPips} {t('swap_pips_in_nights').replace('{count}', String(result.effectiveDays))}
                 </p>
-              </CardContent>
+              </div>
             </Card>
             <div className="grid grid-cols-2 gap-3">
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <Moon className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('swap_cost_night')}</p>
                   <p className={cn('text-sm font-bold tabular-nums', parseFloat(result.dailyCostUsd) >= 0 ? 'text-emerald-400' : 'text-rose-400')}>${result.dailyCostUsd}</p>
                   <p className="text-[10px] text-muted-foreground tabular-nums">{result.dailyCostPips} pips</p>
-                </CardContent>
+                </div>
               </ToolCard>
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <Calendar className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('swap_effective_nights')}</p>
                   <p className="text-sm font-bold text-foreground tabular-nums">{result.effectiveDays}</p>
                   <p className="text-[10px] text-muted-foreground">{t('swap_includes_triple')}</p>
-                </CardContent>
+                </div>
               </ToolCard>
             </div>
           </>
         )}
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('swap_info_text')}</p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

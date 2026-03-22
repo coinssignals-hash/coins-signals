@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -72,7 +72,7 @@ export default function LotCalculator() {
         </div>
 
         <ToolCard className="mb-3">
-          <CardContent className="p-4 space-y-4">
+          <div className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
               <Select value={pair} onValueChange={setPair}>
@@ -100,11 +100,11 @@ export default function LotCalculator() {
                 <Input type="number" value={exchangeRate} onChange={e => setExchangeRate(e.target.value)} step="0.0001" />
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         <ToolCard className="mb-3">
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingDown className="w-4 h-4 text-primary" />
               <h2 className="text-sm font-semibold text-primary">{t('lot_monetary_risk')}</h2>
@@ -113,11 +113,11 @@ export default function LotCalculator() {
               <span className="text-xs text-muted-foreground">{t('lot_risk_amount')} ({riskPercent}%)</span>
               <span className="text-lg font-mono font-bold text-foreground">${result.riskAmount.toFixed(2)}</span>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         <ToolCard className="mb-3">
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Calculator className="w-4 h-4 text-primary" />
               <h2 className="text-sm font-semibold text-primary">{t('lot_recommended_size')}</h2>
@@ -146,7 +146,7 @@ export default function LotCalculator() {
                 <span className="text-sm font-mono font-semibold text-muted-foreground">${result.pipValuePerStandard.toFixed(2)}</span>
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>

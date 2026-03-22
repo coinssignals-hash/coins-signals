@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Gauge, RefreshCw, TrendingUp, TrendingDown, Minus, Info, Clock, Zap } from 'lucide-react';
+import { Gauge, RefreshCw, Minus, Info, Clock, Zap } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+const ACCENT = '330 70% 60%';
 
 interface VolatilityData {
   pair: string;
@@ -69,15 +69,11 @@ export default function VolatilityScanner() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <Gauge className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">{t('tools_volatility_title')}</h1>
-            </div>
-          </div>
+          <ToolPageHeader
+            icon={<Gauge className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+            title={t('tools_volatility_title')}
+            accent={ACCENT}
+          />
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
             <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
           </Button>
@@ -86,17 +82,18 @@ export default function VolatilityScanner() {
         {/* Summary */}
         <div className="grid grid-cols-3 gap-2">
           {([
-            { key: 'high' as const, label: t('tp_volatility_high'), count: summary.high, color: 'text-rose-400', Icon: Zap },
-            { key: 'medium' as const, label: t('tp_volatility_medium'), count: summary.medium, color: 'text-amber-400', Icon: Gauge },
-            { key: 'low' as const, label: t('tp_volatility_low'), count: summary.low, color: 'text-emerald-400', Icon: Minus },
+            { key: 'high' as const, label: t('tp_volatility_high'), count: summary.high, color: 'text-rose-400', bgColor: 'hsl(0 70% 50% / 0.08)', borderColor: 'hsl(0 70% 50% / 0.2)', Icon: Zap },
+            { key: 'medium' as const, label: t('tp_volatility_medium'), count: summary.medium, color: 'text-amber-400', bgColor: 'hsl(45 80% 55% / 0.08)', borderColor: 'hsl(45 80% 55% / 0.2)', Icon: Gauge },
+            { key: 'low' as const, label: t('tp_volatility_low'), count: summary.low, color: 'text-emerald-400', bgColor: 'hsl(140 60% 50% / 0.08)', borderColor: 'hsl(140 60% 50% / 0.2)', Icon: Minus },
           ]).map(s => (
-            <Card key={s.key} className="bg-card border-border">
-              <CardContent className="p-3 text-center">
-                <s.Icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
-                <p className={cn('text-xl font-bold', s.color)}>{s.count}</p>
-                <p className="text-[10px] text-muted-foreground">{s.label}</p>
-              </CardContent>
-            </Card>
+            <div key={s.key} className="rounded-xl p-2.5 text-center" style={{
+              background: s.bgColor,
+              border: `1px solid ${s.borderColor}`,
+            }}>
+              <s.Icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
+              <p className={cn('text-xl font-bold tabular-nums', s.color)}>{s.count}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{s.label}</p>
+            </div>
           ))}
         </div>
 
@@ -116,9 +113,9 @@ export default function VolatilityScanner() {
         </div>
 
         {/* Data Table */}
-        <ToolCard>
-          <CardContent className="p-0">
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2]">
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5" style={{ background: `hsl(${ACCENT} / 0.06)`, borderBottom: '1px solid hsl(var(--border) / 0.3)' }}>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('tp_pair')}</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-right w-14">ATR14</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-14">Vol%</span>
@@ -156,7 +153,7 @@ export default function VolatilityScanner() {
                 </div>
               );
             })}
-          </CardContent>
+          </div>
         </ToolCard>
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
@@ -164,15 +161,15 @@ export default function VolatilityScanner() {
           {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
-        <ToolCard>
-          <CardContent className="p-3">
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2] p-3">
             <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 shrink-0 mt-0.5" style={{ color: `hsl(${ACCENT})` }} />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_volatility_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

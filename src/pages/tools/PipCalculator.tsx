@@ -1,15 +1,15 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Info } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Info, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+const ACCENT = '200 80% 55%';
 
 const PAIRS = [
   { symbol: 'EUR/USD', pipSize: 0.0001, label: 'EUR/USD' },
@@ -71,19 +71,16 @@ export default function PipCalculator() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center gap-3 mb-6">
-          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">{t('pip_title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('pip_subtitle')}</p>
-          </div>
-        </div>
+        <ToolPageHeader
+          icon={<Calculator className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('pip_title')}
+          subtitle={t('pip_subtitle')}
+          accent={ACCENT}
+        />
 
-        <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_parameters')}</h2>
-        <ToolCard className="mb-3">
-          <CardContent className="p-4 space-y-4">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('tool_parameters')}</h2>
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2] p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
               <Select value={pair} onValueChange={setPair}>
@@ -127,12 +124,12 @@ export default function PipCalculator() {
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
-        <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_result')}</h2>
-        <ToolCard className="mb-3">
-          <CardContent className="p-4">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('tool_result')}</h2>
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2] p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_pip_size')}</span>
@@ -142,10 +139,10 @@ export default function PipCalculator() {
                 <span className="text-xs text-muted-foreground">{t('pip_position_size')}</span>
                 <span className="text-sm font-mono font-semibold text-foreground">{result.positionSize.toLocaleString()}</span>
               </div>
-              <div className="h-px" style={{ background: "hsl(var(--border) / 0.3)" }} />
+              <div className="h-px" style={{ background: `hsl(${ACCENT} / 0.15)` }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_value_per_pip')}</span>
-                <span className="text-base font-mono font-bold text-foreground">${result.pipValue.toFixed(2)} {accountCurrency}</span>
+                <span className="text-base font-mono font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>${result.pipValue.toFixed(2)} {accountCurrency}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_total_value')} ({pips} pips)</span>
@@ -154,10 +151,10 @@ export default function PipCalculator() {
                 </span>
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
-        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
+        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-[11px] text-muted-foreground leading-relaxed">{t('pip_info_text')}</p>
         </div>
