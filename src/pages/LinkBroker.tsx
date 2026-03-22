@@ -70,7 +70,11 @@ export default function LinkBroker() {
     connectionName: string;
     environment: 'demo' | 'live';
   }) => {
-    const dbBroker = brokers.find(b => b.code === data.broker.code);
+    // MT5 catalog brokers (exness, xm, etc.) map to the generic metatrader4/metatrader5 DB entry
+    const platformCode = data.platform === 'mt4' ? 'metatrader4' : 'metatrader5';
+    const dbBroker = brokers.find(b => b.code === data.broker.code)
+      || brokers.find(b => b.code === platformCode);
+
     if (!dbBroker) {
       toast.error('Broker no encontrado en la base de datos');
       return;
@@ -85,7 +89,8 @@ export default function LinkBroker() {
         mt5_login: data.login,
         mt5_password: data.password,
         mt5_platform: data.platform,
-      }
+      },
+      { catalog_broker_code: data.broker.code, catalog_broker_name: data.broker.name }
     );
 
     if (connection) {
@@ -343,12 +348,19 @@ export default function LinkBroker() {
                     <div className="flex items-center gap-1">
                       {conn.is_connected && (
                         <button
-                          onClick={() => syncBroker(conn.id)}
-                          disabled={isSyncing(conn.id)}
+                          onClick={() => {
+                            const isMT5 = conn.connection_name?.includes('MT');
+                            if (isMT5) {
+                              syncMT5(conn.id);
+                            } else {
+                              syncBroker(conn.id);
+                            }
+                          }}
+                          disabled={isSyncing(conn.id) || isMT5Syncing(conn.id)}
                           className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90"
                           style={{ background: 'hsl(var(--card) / 0.8)', border: '1px solid hsl(var(--border) / 0.4)' }}
                         >
-                          {isSyncing(conn.id)
+                          {(isSyncing(conn.id) || isMT5Syncing(conn.id))
                             ? <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
                             : <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
                           }
