@@ -35,10 +35,10 @@ const CATEGORY_TABS: { key: ToolCategory; labelKey: string; emoji: string; color
 ];
 
 const ALL_TOOLS: ToolItem[] = [
-  { id: 'trade-journal', titleKey: 'tools_journal_basic_title', descKey: 'tools_journal_basic_desc', icon: BookOpen, category: 'diario', status: 'available', route: '/tools/trading-journal', color: '30 80% 50%', popularity: 1 },
-  { id: 'currency-converter', titleKey: 'tools_currency_converter_title', descKey: 'tools_currency_converter_desc', icon: ArrowUpDown, category: 'calculadoras', status: 'available', route: '/tools/currency-converter', color: '45 80% 55%', popularity: 2 },
-  { id: 'eco-calendar', titleKey: 'tools_eco_calendar_title', descKey: 'tools_eco_calendar_desc', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/economic-calendar', color: '140 60% 50%', popularity: 3 },
-  { id: 'backtest-pro', titleKey: 'tools_backtest_pro_title', descKey: 'tools_backtest_pro_desc', icon: Workflow, category: 'diario', status: 'available', route: '/tools/backtest-pro', color: '30 80% 50%', popularity: 4 },
+  { id: 'currency-converter', titleKey: 'tools_currency_converter_title', descKey: 'tools_currency_converter_desc', icon: ArrowUpDown, category: 'calculadoras', status: 'available', route: '/tools/currency-converter', color: '45 80% 55%', popularity: 1 },
+  { id: 'backtest-pro', titleKey: 'tools_backtest_pro_title', descKey: 'tools_backtest_pro_desc', icon: Workflow, category: 'diario', status: 'available', route: '/tools/backtest-pro', color: '30 80% 50%', popularity: 2 },
+  { id: 'trade-journal', titleKey: 'tools_journal_basic_title', descKey: 'tools_journal_basic_desc', icon: BookOpen, category: 'diario', status: 'available', route: '/tools/trading-journal', color: '30 80% 50%', popularity: 3 },
+  { id: 'eco-calendar', titleKey: 'tools_eco_calendar_title', descKey: 'tools_eco_calendar_desc', icon: CalendarDays, category: 'calendario', status: 'available', route: '/tools/economic-calendar', color: '140 60% 50%', popularity: 4 },
   { id: 'pip-calc', titleKey: 'tools_pip_calc_title', descKey: 'tools_pip_calc_desc', icon: DollarSign, category: 'calculadoras', status: 'available', route: '/tools/pip-calculator', color: '45 80% 55%', popularity: 5 },
   { id: 'lot-calc', titleKey: 'tools_lot_calc_title', descKey: 'tools_lot_calc_desc', icon: Calculator, category: 'calculadoras', status: 'available', route: '/tools/lot-calculator', color: '45 80% 55%', popularity: 6 },
   { id: 'position-size', titleKey: 'tools_position_size_title', descKey: 'tools_position_size_desc', icon: Target, category: 'calculadoras', status: 'available', route: '/tools/position-sizing', color: '45 80% 55%', popularity: 7 },
