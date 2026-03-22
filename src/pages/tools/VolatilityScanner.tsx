@@ -153,7 +153,7 @@ export default function VolatilityScanner() {
                 </div>
               );
             })}
-          </CardContent>
+          </div>
         </ToolCard>
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
