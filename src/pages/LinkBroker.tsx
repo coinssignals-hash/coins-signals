@@ -16,6 +16,8 @@ import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
 import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
 
+const ACCENT = '200 80% 55%';
+
 export default function LinkBroker() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -37,7 +39,6 @@ export default function LinkBroker() {
   const [showMT5Dialog, setShowMT5Dialog] = useState(false);
   const [mt5Broker, setMT5Broker] = useState<BrokerCatalogItem | null>(null);
 
-  // Connection form state
   const [showConnectForm, setShowConnectForm] = useState(false);
   const [selectedCatalogBroker, setSelectedCatalogBroker] = useState<BrokerCatalogItem | null>(null);
   const [formData, setFormData] = useState({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
@@ -52,7 +53,6 @@ export default function LinkBroker() {
     .map(c => (c.broker as any)?.code || '')
     .filter(Boolean);
 
-  // MT5-connected brokers
   const mt5ConnectedBrokerCodes = connections
     .filter(c => c.is_connected && c.broker && (c as any).connection_name?.includes('MT'))
     .map(c => (c.broker as any)?.code || '')
@@ -97,7 +97,6 @@ export default function LinkBroker() {
 
     if (connection) {
       toast.success(`${data.broker.name} conectado vía ${data.platform.toUpperCase()}`);
-      // Auto-sync after connecting
       await syncMT5(connection.id);
     }
   };
@@ -109,7 +108,6 @@ export default function LinkBroker() {
     if (conn) {
       await syncMT5(conn.id);
     } else {
-      // Not connected yet, open dialog
       handleConnectMT5(catalogBroker);
     }
   };
@@ -139,9 +137,6 @@ export default function LinkBroker() {
 
   const handleTestConnection = async () => {
     if (!selectedCatalogBroker) return;
-    // Find DB broker by code
-    const dbBroker = brokers.find(b => b.code === selectedCatalogBroker.code);
-
     setIsTestingConnection(true);
     const result = await testConnection(
       undefined,
@@ -198,7 +193,6 @@ export default function LinkBroker() {
     }
   };
 
-  // Build syncing maps
   const syncingMap: Record<string, boolean> = {};
   const mt5SyncingMap: Record<string, boolean> = {};
   connections.forEach(c => {
@@ -211,31 +205,66 @@ export default function LinkBroker() {
     <PageShell>
       <Header />
 
-      <main className="px-4 py-4 space-y-5">
-        {/* Header */}
-        <div className="flex items-start gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
+        {/* Header — glassmorphism back button like MarketSessions */}
+        <div className="flex items-center gap-3 mb-1">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+            style={{
+              background: 'hsl(var(--card) / 0.85)',
+              border: '1px solid hsl(var(--border) / 0.6)',
+              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+            }}
+          >
+            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </button>
-          <div className="flex-1 text-center pr-7">
-            <h1 className="text-foreground text-lg font-bold">{t('lb_manage_accounts')}</h1>
-            <p className="text-muted-foreground text-xs mt-0.5">{t('lb_invest_safely')}</p>
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Monitor className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+            <div className="min-w-0">
+              <h1 className="text-base font-bold text-foreground truncate">{t('lb_manage_accounts')}</h1>
+              <p className="text-[10px] text-muted-foreground truncate">{t('lb_invest_safely')}</p>
+            </div>
           </div>
-          <button onClick={() => refetch()} className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+          <button
+            onClick={() => refetch()}
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+            style={{
+              background: 'hsl(var(--card) / 0.85)',
+              border: '1px solid hsl(var(--border) / 0.6)',
+              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+            }}
+          >
+            <RefreshCw className={cn("w-4 h-4 text-muted-foreground", loading && "animate-spin")} />
           </button>
         </div>
 
         {/* Auth banner */}
         {!user && (
-          <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3">
-            <LogIn className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-amber-200 text-sm font-medium">{t('lb_preview_mode')}</p>
-              <p className="text-amber-200/70 text-xs mt-0.5">{t('lb_preview_desc')}</p>
-              <button onClick={() => navigate('/auth')} className="mt-2 px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-background rounded-full text-xs font-semibold transition-colors">
-                {t('lb_login')}
-              </button>
+          <div
+            className="relative rounded-2xl overflow-hidden"
+            style={{
+              background: `linear-gradient(165deg, hsl(45 80% 55% / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+              border: '1px solid hsl(45 80% 55% / 0.2)',
+            }}
+          >
+            <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, hsl(45 80% 55% / 0.7), transparent)' }} />
+            <div className="relative z-[2] p-4 flex items-start gap-3">
+              <LogIn className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-amber-200 text-sm font-medium">{t('lb_preview_mode')}</p>
+                <p className="text-amber-200/70 text-xs mt-0.5">{t('lb_preview_desc')}</p>
+                <button
+                  onClick={() => navigate('/auth')}
+                  className="mt-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-colors"
+                  style={{
+                    background: 'hsl(45 80% 55%)',
+                    color: 'hsl(var(--background))',
+                  }}
+                >
+                  {t('lb_login')}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -243,60 +272,143 @@ export default function LinkBroker() {
         {/* Connected accounts summary */}
         {connections.length > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-foreground">Cuentas conectadas ({connectedCount})</span>
+            <div className="flex items-center justify-between px-0.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Cuentas conectadas
+              </span>
               <button
                 onClick={() => navigate('/portfolio')}
-                className="text-xs text-primary hover:underline flex items-center gap-1"
+                className="text-[10px] font-bold flex items-center gap-1 transition-colors"
+                style={{ color: `hsl(${ACCENT})` }}
               >
                 <BarChart3 className="w-3 h-3" /> Ver portafolio
               </button>
             </div>
-            {connections.map(conn => (
-              <div key={conn.id} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
-                <div className={cn(
-                  "w-9 h-9 rounded-lg flex items-center justify-center text-lg",
-                  conn.is_connected ? "bg-emerald-500/15" : "bg-destructive/15"
-                )}>
-                  {conn.is_connected ? <Check className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-destructive" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-xs text-foreground font-medium truncate block">{conn.connection_name}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {conn.environment === 'live' ? '🔴 Live' : '🟢 Demo'}
-                    {conn.last_sync_at && ` · Sync: ${new Date(conn.last_sync_at).toLocaleDateString()}`}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {conn.is_connected && (
-                    <button
-                      onClick={() => syncBroker(conn.id)}
-                      disabled={isSyncing(conn.id)}
-                      className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
-                      title="Sincronizar"
-                    >
-                      {isSyncing(conn.id) ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <RefreshCw className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleDeleteConnection(conn.id)}
-                    className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+
+            {/* Summary stats */}
+            <div className="grid grid-cols-3 gap-2">
+              <div
+                className="rounded-xl p-2.5 text-center"
+                style={{
+                  background: 'hsl(140 60% 50% / 0.08)',
+                  border: '1px solid hsl(140 60% 50% / 0.2)',
+                }}
+              >
+                <p className="text-xl font-bold tabular-nums text-emerald-400">{connectedCount}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Activas</p>
               </div>
-            ))}
+              <div
+                className="rounded-xl p-2.5 text-center"
+                style={{
+                  background: `hsl(${ACCENT} / 0.08)`,
+                  border: `1px solid hsl(${ACCENT} / 0.2)`,
+                }}
+              >
+                <p className="text-xl font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>{connections.length}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Total</p>
+              </div>
+              <div
+                className="rounded-xl p-2.5 text-center"
+                style={{
+                  background: 'hsl(330 70% 60% / 0.08)',
+                  border: '1px solid hsl(330 70% 60% / 0.2)',
+                }}
+              >
+                <p className="text-xl font-bold tabular-nums" style={{ color: 'hsl(330 70% 60%)' }}>
+                  {connections.filter(c => !c.is_connected).length}
+                </p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Inactivas</p>
+              </div>
+            </div>
+
+            {/* Connection cards — session style */}
+            <div
+              className="relative rounded-2xl overflow-hidden"
+              style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+                border: `1px solid hsl(${ACCENT} / 0.2)`,
+              }}
+            >
+              <div className="absolute top-0 inset-x-0 h-[2px] z-[1]" style={{ background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)` }} />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle, hsl(${ACCENT} / 0.4), transparent 70%)` }} />
+
+              <div
+                className="relative z-[2] px-3 py-2 flex items-center gap-1.5"
+                style={{ background: `hsl(${ACCENT} / 0.06)`, borderBottom: '1px solid hsl(var(--border) / 0.3)' }}
+              >
+                <Monitor className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Conexiones</span>
+                <span className="ml-auto text-[10px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>{connections.length}</span>
+              </div>
+
+              <div className="relative z-[2]">
+                {connections.map((conn, i) => (
+                  <div
+                    key={conn.id}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-3',
+                      i !== connections.length - 1 && 'border-b'
+                    )}
+                    style={{ borderColor: 'hsl(var(--border) / 0.15)' }}
+                  >
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                      style={{
+                        background: conn.is_connected
+                          ? 'linear-gradient(135deg, hsl(140 60% 50% / 0.2), hsl(140 60% 50% / 0.08))'
+                          : 'linear-gradient(135deg, hsl(0 70% 50% / 0.2), hsl(0 70% 50% / 0.08))',
+                        border: conn.is_connected
+                          ? '1px solid hsl(140 60% 50% / 0.3)'
+                          : '1px solid hsl(0 70% 50% / 0.3)',
+                      }}
+                    >
+                      {conn.is_connected
+                        ? <Check className="w-4 h-4 text-emerald-400" />
+                        : <AlertCircle className="w-4 h-4 text-rose-400" />
+                      }
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-semibold text-foreground truncate block">{conn.connection_name}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {conn.environment === 'live' ? '🔴 Live' : '🟢 Demo'}
+                        {conn.last_sync_at && ` · Sync: ${new Date(conn.last_sync_at).toLocaleDateString()}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {conn.is_connected && (
+                        <button
+                          onClick={() => syncBroker(conn.id)}
+                          disabled={isSyncing(conn.id)}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90"
+                          style={{ background: 'hsl(var(--card) / 0.8)', border: '1px solid hsl(var(--border) / 0.4)' }}
+                        >
+                          {isSyncing(conn.id)
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
+                            : <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+                          }
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteConnection(conn.id)}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90"
+                        style={{ background: 'hsl(0 70% 50% / 0.08)', border: '1px solid hsl(0 70% 50% / 0.2)' }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
         {/* Broker Catalog */}
         <div>
-          <h2 className="text-sm font-semibold text-foreground mb-3">Brokers disponibles</h2>
+          <div className="flex items-center gap-1.5 mb-2 px-0.5">
+            <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Brokers disponibles</span>
+          </div>
           <BrokerCatalog
             onConnect={handleConnectBroker}
             onImportCSV={() => setShowImportModal(true)}
@@ -313,13 +425,24 @@ export default function LinkBroker() {
         {/* Connect Form Modal */}
         {showConnectForm && selectedCatalogBroker && (
           <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end justify-center">
-            <div className="w-full max-w-md bg-card border-t border-border rounded-t-2xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200">
+            <div
+              className="w-full max-w-md rounded-t-2xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200"
+              style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.06) 0%, hsl(var(--card)) 30%, hsl(var(--background)) 100%)`,
+                borderTop: `1px solid hsl(${ACCENT} / 0.3)`,
+                borderLeft: `1px solid hsl(${ACCENT} / 0.15)`,
+                borderRight: `1px solid hsl(${ACCENT} / 0.15)`,
+              }}
+            >
+              {/* Top glow */}
+              <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-2xl" style={{ background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)` }} />
+
               <div className="flex items-center justify-between">
                 <h3 className="text-foreground font-semibold flex items-center gap-2">
                   <span className="text-xl">{selectedCatalogBroker.logoEmoji}</span>
                   Conectar {selectedCatalogBroker.name}
                 </h3>
-                <button onClick={() => setShowConnectForm(false)} className="text-muted-foreground hover:text-foreground">✕</button>
+                <button onClick={() => setShowConnectForm(false)} className="text-muted-foreground hover:text-foreground transition-colors">✕</button>
               </div>
 
               <div className="space-y-3">
@@ -328,7 +451,6 @@ export default function LinkBroker() {
                   <Input value={formData.connectionName} onChange={(e) => setFormData(p => ({ ...p, connectionName: e.target.value }))} placeholder="Mi cuenta Demo" className="h-9 text-sm" />
                 </div>
 
-                {/* Broker-specific fields */}
                 {['oanda', 'alpaca', 'pepperstone', 'avatrade', 'ic_markets', 'interactive_brokers', 'tradestation', 'tradovate'].includes(selectedCatalogBroker.code) && (
                   <>
                     <div>
@@ -387,7 +509,13 @@ export default function LinkBroker() {
                     )}
 
                     {selectedCatalogBroker.code === 'interactive_brokers' && (
-                      <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <div
+                        className="p-2 rounded-lg"
+                        style={{
+                          background: 'hsl(45 80% 55% / 0.08)',
+                          border: '1px solid hsl(45 80% 55% / 0.25)',
+                        }}
+                      >
                         <p className="text-[10px] text-amber-400 flex items-start gap-1.5">
                           <AlertCircle className="w-3 h-3 flex-shrink-0 mt-0.5" />
                           IBKR requiere TWS ejecutándose localmente. Las llamadas van a localhost:5000.
@@ -398,7 +526,10 @@ export default function LinkBroker() {
                 )}
 
                 {/* Environment toggle */}
-                <div className="flex items-center justify-between p-2 bg-secondary/30 rounded-lg">
+                <div
+                  className="flex items-center justify-between p-2 rounded-lg"
+                  style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}
+                >
                   <span className="text-xs text-muted-foreground">Entorno</span>
                   <div className="flex items-center gap-2">
                     <span className={cn("text-xs", isLiveMode ? "text-amber-400 font-medium" : "text-muted-foreground")}>
@@ -409,7 +540,13 @@ export default function LinkBroker() {
                 </div>
 
                 {isLiveMode && (
-                  <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <div
+                    className="p-2 rounded-lg"
+                    style={{
+                      background: 'hsl(45 80% 55% / 0.08)',
+                      border: '1px solid hsl(45 80% 55% / 0.25)',
+                    }}
+                  >
                     <p className="text-[10px] text-amber-400">{t('lb_live_warning')}</p>
                   </div>
                 )}
@@ -419,7 +556,12 @@ export default function LinkBroker() {
                   <button
                     onClick={handleTestConnection}
                     disabled={isTestingConnection || !formData.apiKey}
-                    className="flex-1 py-2.5 bg-secondary hover:bg-secondary/80 disabled:opacity-50 text-foreground rounded-full text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 active:scale-95"
+                    style={{
+                      background: 'hsl(var(--card) / 0.8)',
+                      border: `1px solid hsl(${ACCENT} / 0.3)`,
+                      color: `hsl(${ACCENT})`,
+                    }}
                   >
                     {isTestingConnection ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                     {isTestingConnection ? 'Probando...' : 'Probar'}
@@ -427,7 +569,7 @@ export default function LinkBroker() {
                   <button
                     onClick={handleSaveConnection}
                     disabled={isSaving || !formData.apiKey}
-                    className="flex-1 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-full text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-95"
                   >
                     {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                     {isSaving ? 'Guardando...' : 'Conectar'}
@@ -435,8 +577,11 @@ export default function LinkBroker() {
                 </div>
 
                 {/* Privacy notice */}
-                <div className="flex items-start gap-1.5 pt-1">
-                  <Shield className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-0.5" />
+                <div
+                  className="flex items-start gap-2 p-2.5 rounded-xl"
+                  style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}
+                >
+                  <Shield className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
                   <p className="text-[9px] text-muted-foreground leading-relaxed">
                     Credenciales cifradas AES-256-GCM. Solo lectura — no ejecutamos órdenes. Solo se almacenan en tu cuenta segura.
                   </p>
