@@ -32,7 +32,6 @@ import bullBg from "@/assets/brand-logo-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import brandLogo from "@/assets/g174.svg";
 
-import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
 import { useDateLocale } from "@/hooks/useDateLocale";
 import {
