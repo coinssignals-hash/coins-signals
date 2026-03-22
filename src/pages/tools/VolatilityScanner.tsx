@@ -82,17 +82,18 @@ export default function VolatilityScanner() {
         {/* Summary */}
         <div className="grid grid-cols-3 gap-2">
           {([
-            { key: 'high' as const, label: t('tp_volatility_high'), count: summary.high, color: 'text-rose-400', Icon: Zap },
-            { key: 'medium' as const, label: t('tp_volatility_medium'), count: summary.medium, color: 'text-amber-400', Icon: Gauge },
-            { key: 'low' as const, label: t('tp_volatility_low'), count: summary.low, color: 'text-emerald-400', Icon: Minus },
+            { key: 'high' as const, label: t('tp_volatility_high'), count: summary.high, color: 'text-rose-400', bgColor: 'hsl(0 70% 50% / 0.08)', borderColor: 'hsl(0 70% 50% / 0.2)', Icon: Zap },
+            { key: 'medium' as const, label: t('tp_volatility_medium'), count: summary.medium, color: 'text-amber-400', bgColor: 'hsl(45 80% 55% / 0.08)', borderColor: 'hsl(45 80% 55% / 0.2)', Icon: Gauge },
+            { key: 'low' as const, label: t('tp_volatility_low'), count: summary.low, color: 'text-emerald-400', bgColor: 'hsl(140 60% 50% / 0.08)', borderColor: 'hsl(140 60% 50% / 0.2)', Icon: Minus },
           ]).map(s => (
-            <Card key={s.key} className="bg-card border-border">
-              <CardContent className="p-3 text-center">
-                <s.Icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
-                <p className={cn('text-xl font-bold', s.color)}>{s.count}</p>
-                <p className="text-[10px] text-muted-foreground">{s.label}</p>
-              </CardContent>
-            </Card>
+            <div key={s.key} className="rounded-xl p-2.5 text-center" style={{
+              background: s.bgColor,
+              border: `1px solid ${s.borderColor}`,
+            }}>
+              <s.Icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
+              <p className={cn('text-xl font-bold tabular-nums', s.color)}>{s.count}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{s.label}</p>
+            </div>
           ))}
         </div>
 
