@@ -116,6 +116,21 @@ export default function Signals() {
     localStorage.setItem('signals-sort-by', sortBy);
   }, [sortBy]);
 
+  // Extract unique currency pairs for the filter
+  const availablePairs = useMemo(() => {
+    const pairs = new Set(signals.map(s => s.currencyPair));
+    return Array.from(pairs).sort();
+  }, [signals]);
+
+  // Count active filters
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (pairFilter !== 'all') count++;
+    if (statusFilter !== 'all') count++;
+    if (probFilter !== 'all') count++;
+    return count;
+  }, [pairFilter, statusFilter, probFilter]);
+
   // Filter and sort signals
   const filteredAndSortedSignals = useMemo(() => {
     let result = showFavoritesOnly ?
@@ -125,6 +140,31 @@ export default function Signals() {
     // Filter by source
     if (sourceFilter !== 'all') {
       result = result.filter((s) => s.source === sourceFilter);
+    }
+
+    // Filter by pair
+    if (pairFilter !== 'all') {
+      result = result.filter((s) => s.currencyPair === pairFilter);
+    }
+
+    // Filter by status
+    if (statusFilter !== 'all') {
+      result = result.filter((s) => s.status === statusFilter);
+    }
+
+    // Filter by probability
+    if (probFilter !== 'all') {
+      switch (probFilter) {
+        case 'high':
+          result = result.filter((s) => s.probability >= 80);
+          break;
+        case 'medium':
+          result = result.filter((s) => s.probability >= 60 && s.probability < 80);
+          break;
+        case 'low':
+          result = result.filter((s) => s.probability < 60);
+          break;
+      }
     }
 
     // Sort signals
@@ -148,7 +188,7 @@ export default function Signals() {
     });
 
     return result;
-  }, [signals, showFavoritesOnly, favoriteIds, sortBy, sourceFilter]);
+  }, [signals, showFavoritesOnly, favoriteIds, sortBy, sourceFilter, pairFilter, statusFilter, probFilter]);
 
   // Separate today, tomorrow, yesterday, and other days
   const { todaySignals, tomorrowSignals, yesterdaySignals, otherDayGroups } = useMemo(() => {
