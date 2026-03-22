@@ -77,6 +77,18 @@ export default function BrokerRating() {
   const [brokersToCompare, setBrokersToCompare] = useState<NormalizedBroker[]>([]);
   const [showComparePanel, setShowComparePanel] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption | ''>('');
+  
+  // Advanced filters
+  const [advDepositMax, setAdvDepositMax] = useState('');
+  const [advRatingMin, setAdvRatingMin] = useState('');
+  const [advRegulation, setAdvRegulation] = useState('');
+  const [advLeverage, setAdvLeverage] = useState('');
+  const [advPlatform, setAdvPlatform] = useState('');
+
+  const hasActiveAdvFilters = !!(advDepositMax || advRatingMin || advRegulation || advLeverage || advPlatform);
+  const clearAdvancedFilters = () => {
+    setAdvDepositMax(''); setAdvRatingMin(''); setAdvRegulation(''); setAdvLeverage(''); setAdvPlatform('');
+  };
 
   const { brokers, loading, error } = useBrokerData(selectedRegion);
   const { results: globalResults, loading: globalLoading } = useGlobalBrokerSearch(isGlobalSearch ? globalSearchTerm : '');
