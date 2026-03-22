@@ -53,7 +53,7 @@ function generateSamplePositions(): Position[] {
   });
 }
 
-const ACCENT = '340 70% 55%';
+const ACCENT = '340 85% 60%';
 
 export default function RiskManagerAdvanced() {
   const { t } = useTranslation();

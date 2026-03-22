@@ -94,7 +94,7 @@ function generateAllData(): InstitutionalData[] {
   return ALL_PAIR_LIST.map(generateDataForPair);
 }
 
-const ACCENT = '45 90% 50%';
+const ACCENT = '45 95% 55%';
 
 export default function OrderFlowAnalysis() {
   const { t } = useTranslation();

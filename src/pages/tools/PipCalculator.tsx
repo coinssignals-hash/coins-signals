@@ -9,7 +9,7 @@ import { Info, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-const ACCENT = '200 80% 55%';
+const ACCENT = '200 95% 60%';
 
 const PAIRS = [
   { symbol: 'EUR/USD', pipSize: 0.0001, label: 'EUR/USD' },

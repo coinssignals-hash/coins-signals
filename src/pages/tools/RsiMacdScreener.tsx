@@ -90,7 +90,7 @@ async function fetchPairData(symbol: string, interval: string): Promise<PairResu
   }
 }
 
-const ACCENT = '80 70% 45%';
+const ACCENT = '80 85% 52%';
 
 export default function RsiMacdScreener() {
   const { t } = useTranslation();

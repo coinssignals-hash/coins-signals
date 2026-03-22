@@ -49,7 +49,7 @@ function generatePatterns(): PatternResult[] {
 
 type FilterType = 'all' | 'bullish' | 'bearish' | 'neutral';
 
-const ACCENT = '0 70% 55%';
+const ACCENT = '0 85% 60%';
 
 export default function PatternScreener() {
   const { t } = useTranslation();

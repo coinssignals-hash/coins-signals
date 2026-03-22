@@ -25,7 +25,7 @@ const PAIRS = [
   { symbol: 'XAU/USD', pipSize: 0.01, pipValuePerLot: 1 },
 ];
 
-const ACCENT = '195 80% 50%';
+const ACCENT = '195 90% 55%';
 
 export default function PositionSizing() {
   const { t } = useTranslation();

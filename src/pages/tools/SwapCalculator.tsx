@@ -27,7 +27,7 @@ const SWAP_DATA: SwapRate[] = [
   { symbol: 'XAU/USD', longSwap: -2.85, shortSwap: 0.45, pipValue: 1 },
 ];
 
-const ACCENT = '30 80% 50%';
+const ACCENT = '30 92% 55%';
 
 export default function SwapCalculator() {
   const { t } = useTranslation();

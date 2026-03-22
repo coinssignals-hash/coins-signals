@@ -85,7 +85,7 @@ function runBacktest(strategy: Strategy, capital: number, months: number): Backt
   };
 }
 
-const ACCENT = '280 65% 55%';
+const ACCENT = '280 80% 62%';
 
 export default function BacktestPro() {
   const { t } = useTranslation();

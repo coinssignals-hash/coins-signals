@@ -46,7 +46,7 @@ function getFlag(currency: string): string {
   return map[currency] || '🌐';
 }
 
-const ACCENT = '38 90% 50%';
+const ACCENT = '38 95% 55%';
 
 export default function EconomicCalendar() {
   const { t } = useTranslation();

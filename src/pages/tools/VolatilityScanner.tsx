@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Gauge, RefreshCw, Minus, Info, Clock, Zap } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-const ACCENT = '330 70% 60%';
+const ACCENT = '330 85% 65%';
 
 interface VolatilityData {
   pair: string;
