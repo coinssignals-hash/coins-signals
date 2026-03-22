@@ -419,13 +419,13 @@ export default function Signals() {
             className={cn(
               "relative flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
               showFilters || activeFilterCount > 0
-                ? "bg-primary/15 text-primary border-primary/30"
+                ? "bg-primary/15 text-primary border-primary/30 shadow-[0_0_8px_hsl(var(--primary)/0.2)]"
                 : "bg-secondary/50 text-foreground border-border/50"
             )}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             {activeFilterCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse">
                 {activeFilterCount}
               </span>
             )}
@@ -434,108 +434,128 @@ export default function Signals() {
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="px-3 pb-2 space-y-2 animate-in slide-in-from-top-2 duration-200">
-            {/* Pair filter */}
-            <div className="space-y-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_pair')}</span>
-              <ScrollArea className="w-full">
-                <div className="flex gap-1 pb-1">
-                  <button
-                    onClick={() => setPairFilter('all')}
-                    className={cn(
-                      "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all",
-                      pairFilter === 'all'
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted/30 text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {t('sf_all')}
-                  </button>
-                  {availablePairs.map((pair) => (
+          <div className="px-3 pb-3 space-y-3 animate-in slide-in-from-top-2 duration-200">
+            {/* Glassmorphism container */}
+            <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 p-3 space-y-3 shadow-[inset_0_1px_0_hsl(var(--primary)/0.1)]">
+
+              {/* Pair filter */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 px-0.5">
+                  <Layers className="w-3 h-3 text-primary/70" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{t('sf_pair')}</span>
+                </div>
+                <ScrollArea className="w-full">
+                  <div className="flex gap-1.5 pb-1">
                     <button
-                      key={pair}
-                      onClick={() => setPairFilter(pair === pairFilter ? 'all' : pair)}
+                      onClick={() => setPairFilter('all')}
                       className={cn(
-                        "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all",
-                        pairFilter === pair
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted/30 text-muted-foreground hover:text-foreground"
+                        "px-2.5 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all border",
+                        pairFilter === 'all'
+                          ? "bg-primary text-primary-foreground border-primary shadow-[0_0_10px_hsl(var(--primary)/0.3)]"
+                          : "bg-muted/20 text-muted-foreground hover:text-foreground border-border/30 hover:border-primary/30"
                       )}
                     >
-                      {pair}
+                      {t('sf_all')}
                     </button>
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
+                    {availablePairs.map((pair) => (
+                      <button
+                        key={pair}
+                        onClick={() => setPairFilter(pair === pairFilter ? 'all' : pair)}
+                        className={cn(
+                          "px-2.5 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all border",
+                          pairFilter === pair
+                            ? "bg-primary text-primary-foreground border-primary shadow-[0_0_10px_hsl(var(--primary)/0.3)]"
+                            : "bg-muted/20 text-muted-foreground hover:text-foreground border-border/30 hover:border-primary/30"
+                        )}
+                      >
+                        {pair}
+                      </button>
+                    ))}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
 
-            {/* Status + Probability row */}
-            <div className="flex gap-3">
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
               {/* Status filter */}
-              <div className="space-y-1 flex-1">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_status')}</span>
-                <div className="flex gap-1 flex-wrap">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 px-0.5">
+                  <Activity className="w-3 h-3 text-primary/70" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{t('sf_status')}</span>
+                </div>
+                <div className="flex gap-1.5 flex-wrap">
                   {[
-                    { key: 'all', label: t('sf_all'), color: '' },
-                    { key: 'active', label: t('sf_active'), color: 'text-emerald-400' },
-                    { key: 'pending', label: t('sf_pending'), color: 'text-amber-400' },
-                    { key: 'completed', label: t('sf_completed'), color: 'text-sky-400' },
-                    { key: 'cancelled', label: t('sf_cancelled'), color: 'text-red-400' },
+                    { key: 'all', label: t('sf_all'), icon: <CircleDot className="w-3 h-3" />, activeColor: 'bg-primary text-primary-foreground border-primary shadow-[0_0_10px_hsl(var(--primary)/0.3)]' },
+                    { key: 'active', label: t('sf_active'), icon: <TrendingUp className="w-3 h-3" />, activeColor: 'bg-emerald-500/90 text-white border-emerald-400 shadow-[0_0_10px_hsl(152_69%_40%/0.4)]' },
+                    { key: 'pending', label: t('sf_pending'), icon: <Clock className="w-3 h-3" />, activeColor: 'bg-amber-500/90 text-white border-amber-400 shadow-[0_0_10px_hsl(38_92%_50%/0.4)]' },
+                    { key: 'completed', label: t('sf_completed'), icon: <CheckCircle2 className="w-3 h-3" />, activeColor: 'bg-sky-500/90 text-white border-sky-400 shadow-[0_0_10px_hsl(199_89%_48%/0.4)]' },
+                    { key: 'cancelled', label: t('sf_cancelled'), icon: <XCircle className="w-3 h-3" />, activeColor: 'bg-red-500/90 text-white border-red-400 shadow-[0_0_10px_hsl(0_84%_60%/0.4)]' },
                   ].map((s) => (
                     <button
                       key={s.key}
                       onClick={() => setStatusFilter(s.key === statusFilter ? 'all' : s.key)}
                       className={cn(
-                        "px-2 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all",
+                        "flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all border",
                         statusFilter === s.key
-                          ? "bg-primary text-primary-foreground"
-                          : cn("bg-muted/30 text-muted-foreground hover:text-foreground", s.color)
+                          ? s.activeColor
+                          : "bg-muted/20 text-muted-foreground hover:text-foreground border-border/30 hover:border-primary/30"
                       )}
                     >
+                      {s.icon}
                       {s.label}
                     </button>
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Probability filter */}
-            <div className="space-y-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_probability')}</span>
-              <div className="flex gap-1">
-                {[
-                  { key: 'all', label: t('sf_all_f') },
-                  { key: 'high', label: t('sf_high') },
-                  { key: 'medium', label: t('sf_medium') },
-                  { key: 'low', label: t('sf_low') },
-                ].map((p) => (
-                  <button
-                    key={p.key}
-                    onClick={() => setProbFilter(p.key === probFilter ? 'all' : p.key)}
-                    className={cn(
-                      "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-all flex-1 text-center",
-                      probFilter === p.key
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted/30 text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
+              {/* Probability filter */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 px-0.5">
+                  <Gauge className="w-3 h-3 text-primary/70" />
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{t('sf_probability')}</span>
+                </div>
+                <div className="flex gap-1.5">
+                  {[
+                    { key: 'all', label: t('sf_all_f'), icon: <BarChart3 className="w-3 h-3" /> },
+                    { key: 'high', label: t('sf_high'), icon: <TrendingUp className="w-3 h-3" /> },
+                    { key: 'medium', label: t('sf_medium'), icon: <Activity className="w-3 h-3" /> },
+                    { key: 'low', label: t('sf_low'), icon: <Target className="w-3 h-3" /> },
+                  ].map((p) => (
+                    <button
+                      key={p.key}
+                      onClick={() => setProbFilter(p.key === probFilter ? 'all' : p.key)}
+                      className={cn(
+                        "flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap transition-all flex-1 text-center border",
+                        probFilter === p.key
+                          ? "bg-primary text-primary-foreground border-primary shadow-[0_0_10px_hsl(var(--primary)/0.3)]"
+                          : "bg-muted/20 text-muted-foreground hover:text-foreground border-border/30 hover:border-primary/30"
+                      )}
+                    >
+                      {p.icon}
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Clear all filters */}
-            {activeFilterCount > 0 && (
-              <button
-                onClick={() => { setPairFilter('all'); setStatusFilter('all'); setProbFilter('all'); }}
-                className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 font-medium px-1"
-              >
-                <X className="w-3 h-3" />
-                {t('sf_clear')} ({activeFilterCount})
-              </button>
-            )}
+              {/* Clear all filters */}
+              {activeFilterCount > 0 && (
+                <div className="pt-1">
+                  <button
+                    onClick={() => { setPairFilter('all'); setStatusFilter('all'); setProbFilter('all'); }}
+                    className="flex items-center gap-1.5 text-[11px] text-primary hover:text-primary/80 font-medium px-1 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    {t('sf_clear')} ({activeFilterCount})
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
