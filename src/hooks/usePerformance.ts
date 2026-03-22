@@ -277,6 +277,7 @@ export function useCurrencyPairPerformance(selectedWeek: Date, dateRange?: { fro
 
   return useQuery({
     queryKey: ['currency-pair-performance', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2,
     queryFn: async (): Promise<CurrencyPairPerformance[]> => {
       const { data: signals, error } = await supabase
         .from('trading_signals')
