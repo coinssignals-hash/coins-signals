@@ -38,14 +38,8 @@ export default function LinkBroker() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showMT5Dialog, setShowMT5Dialog] = useState(false);
   const [mt5Broker, setMT5Broker] = useState<BrokerCatalogItem | null>(null);
-
-  const [showConnectForm, setShowConnectForm] = useState(false);
-  const [selectedCatalogBroker, setSelectedCatalogBroker] = useState<BrokerCatalogItem | null>(null);
-  const [formData, setFormData] = useState({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [showApiSecret, setShowApiSecret] = useState(false);
-  const [isTestingConnection, setIsTestingConnection] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [showAPIDialog, setShowAPIDialog] = useState(false);
+  const [apiBroker, setAPIBroker] = useState<BrokerCatalogItem | null>(null);
   const [isLiveMode, setIsLiveMode] = useState(false);
 
   const connectedBrokerCodes = connections
