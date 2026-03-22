@@ -81,6 +81,7 @@ function applyCompactMode(enabled: boolean) {
 }
 
 export default function Appearance() {
+  const { user, profile, updateProfile } = useAuth();
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('app-font-scale') || '100');
   const [contrastLevel, setContrastLevel] = useState(() => localStorage.getItem('app-contrast-level') || 'normal');
   const [largeText, setLargeText] = useState(() => localStorage.getItem('app-large-text') === 'true');
@@ -89,6 +90,14 @@ export default function Appearance() {
   const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem('app-reduce-motion') === 'true');
   const [compactMode, setCompactMode] = useState(() => localStorage.getItem('app-compact-mode') === 'true');
   const { language, setLanguage, t } = useTranslation();
+
+  // Load timezone from profile if available
+  useEffect(() => {
+    if (profile?.timezone) {
+      setTimezone(profile.timezone);
+      localStorage.setItem('app-timezone', profile.timezone);
+    }
+  }, [profile]);
 
   useEffect(() => {
     document.documentElement.classList.remove('contrast-low', 'high-contrast', 'contrast-high');
@@ -103,7 +112,13 @@ export default function Appearance() {
   useEffect(() => { applyAccentColor(accentColor); }, [accentColor]);
   useEffect(() => { applyReducedMotion(reducedMotion); }, [reducedMotion]);
   useEffect(() => { applyCompactMode(compactMode); }, [compactMode]);
-  useEffect(() => { localStorage.setItem('app-timezone', timezone); }, [timezone]);
+  useEffect(() => {
+    localStorage.setItem('app-timezone', timezone);
+    // Sync timezone to profile DB for authenticated users
+    if (user) {
+      updateProfile({ timezone } as any);
+    }
+  }, [timezone, user, updateProfile]);
 
   const handleResetAll = useCallback(() => {
     setFontSize('100');
