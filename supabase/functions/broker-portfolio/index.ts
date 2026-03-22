@@ -102,129 +102,41 @@ interface Position {
   spread?: number;
 }
 
-// ─── MetaAPI WebSocket Client (Socket.IO over WS) ─────────────────────────
-// Connects directly via WebSocket, bypassing REST TLS issues.
+// ─── MetaAPI via FastAPI proxy (avoids TLS issues) ─────────────────────────
 
-function generateRequestId(): string {
-  return crypto.randomUUID();
-}
-
-/**
- * Opens a Socket.IO WebSocket to MetaAPI and sends a single RPC request.
- * Returns the response payload.
- */
-async function metaApiWSRequest(
+async function metaApiClientRequest(
+  fastApiUrl: string,
   metaApiToken: string,
   accountId: string,
   region: string,
-  requestPayload: Record<string, unknown>,
-  timeoutMs = 30000,
+  endpoint: string,
+  method = 'GET',
+  body?: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
-  const wsUrl = `wss://mt-client-api-v1.${region}.agiliumtrade.agiliumtrade.ai/ws/?EIO=4&transport=websocket&auth-token=${metaApiToken}`;
-  const requestId = generateRequestId();
-
-  return new Promise((resolve, reject) => {
-    let ws: WebSocket;
-    let settled = false;
-    let sioConnected = false;
-
-    const timer = setTimeout(() => {
-      if (!settled) {
-        settled = true;
-        try { ws.close(); } catch { /* ok */ }
-        reject(new Error('MetaAPI WebSocket timeout'));
-      }
-    }, timeoutMs);
-
-    const settle = (fn: () => void) => {
-      if (!settled) {
-        settled = true;
-        clearTimeout(timer);
-        try { ws.close(); } catch { /* ok */ }
-        fn();
-      }
-    };
-
-    try {
-      ws = new WebSocket(wsUrl);
-    } catch (e) {
-      clearTimeout(timer);
-      reject(new Error(`WS connect error: ${e}`));
-      return;
-    }
-
-    ws.onopen = () => {
-      console.log('[metaapi-ws] Connected to', region);
-    };
-
-    ws.onmessage = (event) => {
-      const raw = String(event.data);
-
-      // Engine.IO packets: 0=open, 2=ping, 3=pong, 4=message
-      if (raw === '2') {
-        // Ping → Pong
-        ws.send('3');
-        return;
-      }
-
-      if (raw.startsWith('0')) {
-        // Engine.IO open packet — ignore, wait for Socket.IO connect
-        return;
-      }
-
-      // Socket.IO messages are prefixed with '4'
-      if (!raw.startsWith('4')) return;
-
-      const sioPayload = raw.slice(1);
-
-      // Socket.IO connect confirmation: '0' after the '4' prefix
-      if (sioPayload === '0' || sioPayload.startsWith('0{')) {
-        sioConnected = true;
-        // Send the RPC request as Socket.IO event: 42["request", {...}]
-        const request = {
-          ...requestPayload,
-          accountId,
-          requestId,
-          application: 'RPC',
-        };
-        ws.send(`42${JSON.stringify(['request', request])}`);
-        return;
-      }
-
-      // Socket.IO event: '2[eventName, data]'
-      if (sioPayload.startsWith('2')) {
-        try {
-          const arr = JSON.parse(sioPayload.slice(1));
-          if (!Array.isArray(arr) || arr.length < 2) return;
-
-          const [eventName, data] = arr;
-
-          if (eventName === 'response' && data?.requestId === requestId) {
-            if (data.error) {
-              settle(() => reject(new Error(`MetaAPI: ${data.error} (${data.numericCode || ''})`)));
-            } else {
-              settle(() => resolve(data));
-            }
-          }
-
-          if (eventName === 'processingError' && data?.requestId === requestId) {
-            settle(() => reject(new Error(`MetaAPI processing error: ${data.message || JSON.stringify(data)}`)));
-          }
-        } catch (e) {
-          console.warn('[metaapi-ws] Parse error:', e);
-        }
-      }
-    };
-
-    ws.onerror = (e) => {
-      console.error('[metaapi-ws] WS error:', e);
-      settle(() => reject(new Error('MetaAPI WebSocket error')));
-    };
-
-    ws.onclose = () => {
-      settle(() => reject(new Error('MetaAPI WebSocket closed before response')));
-    };
+  const res = await fetch(`${fastApiUrl}/api/v1/metaapi/proxy`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      account_id: accountId,
+      region,
+      endpoint,
+      method,
+      body,
+      meta_token: metaApiToken,
+    }),
   });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`FastAPI proxy error (${res.status}): ${errText}`);
+  }
+
+  const result = await res.json();
+  if (result.error) {
+    throw new Error(`MetaAPI error (${result.status}): ${result.body}`);
+  }
+
+  return result.data;
 }
 
 /**
@@ -362,13 +274,17 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
   }
 }
 
-// ─── MetaAPI via WebSocket (bypasses TLS issues) ──────────────────────────
+// ─── MetaAPI via FastAPI proxy ─────────────────────────────────────────────
 
 async function fetchMetaApiAccount(credentials: Record<string, string>, config: Record<string, unknown>): Promise<Partial<AccountData>> {
   const metaApiToken = Deno.env.get('METAAPI_TOKEN');
+  const fastApiUrl = Deno.env.get('FASTAPI_BASE_URL');
 
   if (!metaApiToken) {
     return { error: 'MetaAPI token not configured' };
+  }
+  if (!fastApiUrl) {
+    return { error: 'FastAPI proxy URL not configured' };
   }
 
   try {
@@ -450,22 +366,20 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       await new Promise(r => setTimeout(r, 5000));
     }
 
-    console.log('[broker-portfolio] Fetching via WebSocket, region:', accountRegion);
+    console.log('[broker-portfolio] Fetching via FastAPI proxy, region:', accountRegion);
 
-    // Step 2: Get account info via WebSocket RPC
-    const info = await metaApiWSRequest(
-      metaApiToken, accountId!, accountRegion,
-      { type: 'getAccountInformation' },
+    // Step 2: Get account info via FastAPI proxy
+    const info = await metaApiClientRequest(
+      fastApiUrl, metaApiToken, accountId!, accountRegion, 'account-information'
     );
 
-    // Step 3: Get positions via WebSocket RPC
+    // Step 3: Get positions via FastAPI proxy
     let positionsData: Record<string, unknown>[] = [];
     try {
-      const posResult = await metaApiWSRequest(
-        metaApiToken, accountId!, accountRegion,
-        { type: 'getPositions' },
+      const posResult = await metaApiClientRequest(
+        fastApiUrl, metaApiToken, accountId!, accountRegion, 'positions'
       );
-      positionsData = Array.isArray(posResult.positions) ? posResult.positions as Record<string, unknown>[] : [];
+      positionsData = Array.isArray(posResult) ? posResult : [];
     } catch (posErr) {
       console.warn('[broker-portfolio] Positions error (non-fatal):', posErr);
     }
@@ -497,26 +411,25 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       };
     });
 
-    const accountInfo = info.accountInformation as Record<string, unknown> || info;
-    const balance = Number(accountInfo.balance || 0);
-    const equity = Number(accountInfo.equity || 0);
-    const margin = Number(accountInfo.margin || 0);
-    const freeMargin = Number(accountInfo.freeMargin || 0);
+    const balance = Number(info.balance || 0);
+    const equity = Number(info.equity || 0);
+    const margin = Number(info.margin || 0);
+    const freeMargin = Number(info.freeMargin || 0);
 
     return {
       cash_balance: balance,
       equity,
       buying_power: freeMargin,
       unrealized_pnl: equity - balance,
-      realized_pnl_today: Number(accountInfo.todayProfit || 0),
+      realized_pnl_today: Number(info.todayProfit || 0),
       margin_used: margin,
       margin_available: freeMargin,
-      currency: String(accountInfo.currency || 'USD'),
+      currency: String(info.currency || 'USD'),
       positions,
     };
   } catch (error) {
-    console.error('MetaAPI WS error:', error);
-    return { error: error instanceof Error ? error.message : 'Failed to fetch MT5 data via WebSocket' };
+    console.error('MetaAPI proxy error:', error);
+    return { error: error instanceof Error ? error.message : 'Failed to fetch MT5 data' };
   }
 }
 
