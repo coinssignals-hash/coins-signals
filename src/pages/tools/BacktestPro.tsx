@@ -174,7 +174,7 @@ export default function BacktestPro() {
 
         {/* Strategy Cards */}
         {strategies.map((strat, idx) => (
-          <div key={strat.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }} style={{ borderLeftColor: strat.color, borderLeftWidth: 3 }}>
+          <div key={strat.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)", borderLeftColor: strat.color, borderLeftWidth: 3 }}>
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Input
