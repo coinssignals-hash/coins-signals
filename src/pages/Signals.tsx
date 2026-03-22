@@ -449,7 +449,7 @@ export default function Signals() {
                         : "bg-muted/30 text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    Todos
+                    {t('sf_all')}
                   </button>
                   {availablePairs.map((pair) => (
                     <button
