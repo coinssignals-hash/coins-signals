@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronDown, ChevronUp, ExternalLink, Wifi, WifiOff,
+  ChevronDown, ExternalLink, Wifi, WifiOff,
   FileSpreadsheet, RefreshCw, Loader2, Check, Globe, Monitor,
+  Zap, Shield, Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 
 export interface BrokerCatalogItem {
   code: string;
@@ -14,116 +16,283 @@ export interface BrokerCatalogItem {
   assets: string[];
   apiSupported: boolean;
   csvOnly?: boolean;
-  affiliateCookie?: string;
   affiliateUrl?: string;
   logoEmoji: string;
   affiliateSteps?: string[];
+  category: 'mt_native' | 'mt_metaapi' | 'institutional' | 'api_rest' | 'latam';
+  latam?: boolean;
 }
 
-export const BROKER_CATALOG: BrokerCatalogItem[] = [
+// ─── MT4/MT5 con API propia ────────────────────────────
+const MT_NATIVE_BROKERS: BrokerCatalogItem[] = [
   {
-    code: 'exness', name: 'Exness', description: 'Forex & CFDs',
-    regulation: 'FCA, CySEC, ASIC', assets: ['Forex', 'CFDs'],
-    apiSupported: false, csvOnly: true, logoEmoji: '💹',
-    affiliateSteps: ['Regístrate en Exness con nuestro enlace de afiliado', 'Verifica tu cuenta', 'Descarga tu historial CSV desde MT4/MT5'],
+    code: 'ic_markets', name: 'IC Markets', description: 'True ECN, spreads desde 0.0',
+    regulation: 'ASIC, CySEC, FSA', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '🔷', category: 'mt_native',
+    affiliateSteps: ['Crea tu cuenta en IC Markets', 'Descarga MT4 o MT5', 'Obtén tu servidor y credenciales de lectura'],
   },
   {
-    code: 'oanda', name: 'OANDA', description: 'Forex & CFDs',
+    code: 'oanda', name: 'OANDA', description: 'Forex & CFDs — 180+ países',
     regulation: 'FCA, CFTC, MAS', assets: ['Forex', 'CFDs'],
-    apiSupported: true, logoEmoji: '📊',
-    affiliateSteps: ['Crea tu cuenta en OANDA', 'Genera tu API Token en Settings > API Management', 'Copia tu Account ID y Token'],
+    apiSupported: true, logoEmoji: '📊', category: 'mt_native',
+    affiliateSteps: ['Crea tu cuenta en OANDA', 'Descarga MT4/MT5 o usa API REST', 'Ingresa servidor y login'],
   },
   {
-    code: 'vantage', name: 'Vantage', description: 'Forex, CFDs, Acciones',
-    regulation: 'ASIC, FCA', assets: ['Forex', 'CFDs', 'Stocks'],
-    apiSupported: false, csvOnly: true, logoEmoji: '🎯',
-    affiliateSteps: ['Regístrate en Vantage', 'Accede a tu terminal MT4/MT5', 'Exporta tu historial como CSV'],
+    code: 'pepperstone', name: 'Pepperstone', description: 'Ejecución ultra rápida',
+    regulation: 'FCA, ASIC, CySEC', assets: ['Forex', 'CFDs', 'Indices'],
+    apiSupported: false, logoEmoji: '🌶️', category: 'mt_native',
+    affiliateSteps: ['Abre tu cuenta en Pepperstone', 'Descarga MT4/MT5', 'Ingresa servidor y contraseña investor'],
   },
   {
-    code: 'pepperstone', name: 'Pepperstone', description: 'Forex & CFDs',
-    regulation: 'FCA, ASIC, CySEC', assets: ['Forex', 'CFDs'],
-    apiSupported: true, affiliateCookie: '45 días', logoEmoji: '🌶️',
-    affiliateSteps: ['Abre tu cuenta en Pepperstone', 'Solicita acceso API en tu área de cliente', 'Genera tus credenciales cTrader Open API'],
-  },
-  {
-    code: 'avatrade', name: 'AvaTrade', description: 'Forex, CFDs, Crypto',
-    regulation: '9 jurisdicciones', assets: ['Forex', 'CFDs', 'Crypto'],
-    apiSupported: true, logoEmoji: '🔵',
-    affiliateSteps: ['Regístrate en AvaTrade (AvaPartner)', 'Verifica tu identidad', 'Genera tu API key desde el dashboard'],
-  },
-  {
-    code: 'ic_markets', name: 'IC Markets', description: 'Forex, CFDs, Crypto',
-    regulation: 'ASIC, CySEC', assets: ['Forex', 'CFDs', 'Crypto'],
-    apiSupported: true, logoEmoji: '🔷',
-    affiliateSteps: ['Crea cuenta en IC Markets', 'Accede a cTrader y genera tu API token', 'Configura los permisos de lectura'],
-  },
-  {
-    code: 'alpaca', name: 'Alpaca', description: 'Acciones US, ETFs, Crypto',
-    regulation: 'FINRA/SEC', assets: ['Stocks', 'Crypto'],
-    apiSupported: true, logoEmoji: '🦙',
-    affiliateSteps: ['Regístrate en Alpaca Markets', 'Ve a Settings > API Keys', 'Genera un par de API Key + Secret'],
-  },
-  {
-    code: 'xm', name: 'XM Group', description: 'Forex, CFDs, Acciones',
+    code: 'xm', name: 'XM Group', description: '1000+ instrumentos',
     regulation: 'CySEC, ASIC, IFSC', assets: ['Forex', 'CFDs', 'Stocks'],
-    apiSupported: false, csvOnly: true, logoEmoji: '🟢',
-    affiliateSteps: ['Abre tu cuenta en XM', 'Descarga MT4/MT5', 'Exporta historial > CSV'],
+    apiSupported: false, logoEmoji: '🟢', category: 'mt_native', latam: true,
+    affiliateSteps: ['Abre tu cuenta en XM', 'Descarga MT4/MT5 desde tu área de cliente', 'Copia el nombre del servidor y login'],
   },
   {
-    code: 'roboforex', name: 'RoboForex', description: 'Forex, CFDs, Acciones',
-    regulation: 'IFSC Belize', assets: ['Forex', 'CFDs', 'Stocks'],
-    apiSupported: false, csvOnly: true, logoEmoji: '🤖',
-    affiliateSteps: ['Regístrate en RoboForex', 'Exporta historial desde tu terminal MT4/MT5'],
+    code: 'exness', name: 'Exness', description: 'Retiros instantáneos',
+    regulation: 'FCA, CySEC, FSCA', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '💹', category: 'mt_native', latam: true,
+    affiliateSteps: ['Regístrate en Exness', 'Abre una cuenta de trading MT4/MT5', 'Usa la contraseña investor (solo lectura)'],
   },
   {
-    code: 'eightcap', name: 'Eightcap', description: 'Forex, CFDs, Crypto',
-    regulation: 'ASIC, FCA, SCB', assets: ['Forex', 'CFDs', 'Crypto'],
-    apiSupported: false, csvOnly: true, logoEmoji: '8️⃣',
-    affiliateSteps: ['Crea tu cuenta en Eightcap', 'Descarga MT4/MT5', 'Exporta tu historial como CSV'],
+    code: 'fp_markets', name: 'FP Markets', description: 'ECN desde 2005',
+    regulation: 'ASIC, CySEC', assets: ['Forex', 'CFDs', 'Stocks'],
+    apiSupported: false, logoEmoji: '🏔️', category: 'mt_native',
+    affiliateSteps: ['Crea cuenta en FP Markets', 'Descarga MT4/MT5', 'Conecta con tu servidor y login'],
   },
   {
-    code: 'tradovate', name: 'Tradovate', description: 'Futuros & Opciones',
-    regulation: 'NFA/CFTC', assets: ['Futures'],
-    apiSupported: true, affiliateCookie: 'Comisión máx.', logoEmoji: '📈',
-    affiliateSteps: ['Regístrate en Tradovate', 'Ve a Settings > API Access', 'Genera tu usuario y contraseña API'],
+    code: 'fusion_markets', name: 'Fusion Markets', description: 'Comisiones ultra bajas',
+    regulation: 'ASIC, VFSC', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '⚡', category: 'mt_native',
+    affiliateSteps: ['Regístrate en Fusion Markets', 'Descarga MT4/MT5', 'Ingresa servidor y credenciales'],
   },
   {
-    code: 'fxpro', name: 'FxPro', description: 'Forex, CFDs',
-    regulation: 'FCA, CySEC, DFSA', assets: ['Forex', 'CFDs'],
-    apiSupported: false, csvOnly: true, affiliateCookie: 'Lifetime', logoEmoji: '🏛️',
-    affiliateSteps: ['Abre cuenta en FxPro', 'Exporta historial desde cTrader o MT4/MT5'],
+    code: 'blackbull', name: 'BlackBull Markets', description: 'ECN institucional',
+    regulation: 'FMA, FSA', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '🐂', category: 'mt_native',
+    affiliateSteps: ['Crea cuenta en BlackBull', 'Descarga MT4/MT5', 'Usa tus credenciales investor'],
   },
   {
-    code: 'interactive_brokers', name: 'Interactive Brokers', description: 'Multi-activo global',
-    regulation: 'SEC, FCA, ASIC', assets: ['Stocks', 'Forex', 'Futures', 'Options'],
-    apiSupported: true, logoEmoji: '🏢',
-    affiliateSteps: ['Abre cuenta en IBKR', 'Descarga y ejecuta TWS (Trader Workstation)', 'Habilita Client Portal API en configuración', '⚠️ Requiere TWS ejecutándose localmente'],
+    code: 'admirals', name: 'Admirals', description: 'Regulado en EU',
+    regulation: 'FCA, CySEC, ASIC', assets: ['Forex', 'CFDs', 'Stocks', 'ETFs'],
+    apiSupported: false, logoEmoji: '⚓', category: 'mt_native',
+    affiliateSteps: ['Abre cuenta en Admirals', 'Descarga MT5 Supreme Edition', 'Conecta con servidor y login'],
   },
   {
-    code: 'tradestation', name: 'TradeStation', description: 'Multi-activo US',
-    regulation: 'SEC, FINRA', assets: ['Stocks', 'Futures', 'Options'],
-    apiSupported: true, logoEmoji: '🚉',
-    affiliateSteps: ['Crea tu cuenta en TradeStation', 'Registra tu app en developer.tradestation.com', 'Obtén tu OAuth access token'],
+    code: 'fxopen', name: 'FxOpen', description: 'ECN desde 2005',
+    regulation: 'FCA, ASIC', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '🔓', category: 'mt_native',
+    affiliateSteps: ['Regístrate en FxOpen', 'Descarga MT4/MT5', 'Conecta con tus credenciales'],
   },
 ];
 
-// Unique accent colors per broker for visual variety
+// ─── MT4/MT5 vía MetaAPI (sin API propia) ──────────────
+const MT_METAAPI_BROKERS: BrokerCatalogItem[] = [
+  {
+    code: 'avatrade', name: 'AvaTrade', description: 'Forex, CFDs, Crypto',
+    regulation: '9 jurisdicciones', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '🔵', category: 'mt_metaapi', latam: true,
+    affiliateSteps: ['Regístrate en AvaTrade', 'Descarga MT4/MT5', 'Ingresa servidor y contraseña investor'],
+  },
+  {
+    code: 'hotforex', name: 'HotForex (HFM)', description: 'Premiado globalmente',
+    regulation: 'FCA, FSCA, FSA', assets: ['Forex', 'CFDs', 'Stocks'],
+    apiSupported: false, logoEmoji: '🔥', category: 'mt_metaapi', latam: true,
+    affiliateSteps: ['Crea cuenta en HFM', 'Descarga MT4/MT5', 'Conecta con tu servidor y login'],
+  },
+  {
+    code: 'fbs', name: 'FBS', description: 'Popular en LATAM',
+    regulation: 'IFSC, CySEC', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '🎯', category: 'mt_metaapi', latam: true,
+    affiliateSteps: ['Regístrate en FBS', 'Descarga MT4/MT5', 'Usa tus credenciales de acceso'],
+  },
+  {
+    code: 'roboforex', name: 'RoboForex', description: 'Apalancamiento alto',
+    regulation: 'IFSC Belize', assets: ['Forex', 'CFDs', 'Stocks'],
+    apiSupported: false, logoEmoji: '🤖', category: 'mt_metaapi',
+    affiliateSteps: ['Regístrate en RoboForex', 'Descarga MT4/MT5', 'Conecta con servidor y login'],
+  },
+  {
+    code: 'alpari', name: 'Alpari', description: 'Desde 1998',
+    regulation: 'FSC', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '🅰️', category: 'mt_metaapi',
+    affiliateSteps: ['Crea cuenta en Alpari', 'Descarga MT4/MT5', 'Ingresa datos de conexión'],
+  },
+  {
+    code: 'thinkmarkets', name: 'ThinkMarkets', description: 'ThinkTrader premiado',
+    regulation: 'FCA, ASIC', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '💭', category: 'mt_metaapi',
+    affiliateSteps: ['Regístrate en ThinkMarkets', 'Descarga MT4/MT5', 'Usa credenciales investor'],
+  },
+  {
+    code: 'fxgt', name: 'FXGT', description: 'Forex, CFDs, Crypto híbrido',
+    regulation: 'FSA, VFSC', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '🔶', category: 'mt_metaapi',
+    affiliateSteps: ['Crea cuenta en FXGT', 'Descarga MT5', 'Conecta con servidor y login'],
+  },
+  {
+    code: 'tickmill', name: 'Tickmill', description: 'Spreads ultra bajos',
+    regulation: 'FCA, CySEC, FSA', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '✅', category: 'mt_metaapi',
+    affiliateSteps: ['Regístrate en Tickmill', 'Descarga MT4/MT5', 'Ingresa credenciales'],
+  },
+  {
+    code: 'vantage', name: 'Vantage FX', description: 'ASIC regulado',
+    regulation: 'ASIC, FCA', assets: ['Forex', 'CFDs', 'Stocks'],
+    apiSupported: false, logoEmoji: '🎯', category: 'mt_metaapi',
+    affiliateSteps: ['Regístrate en Vantage', 'Descarga MT4/MT5', 'Usa credenciales investor'],
+  },
+  {
+    code: 'fxtm', name: 'FXTM', description: 'ForexTime',
+    regulation: 'FCA, CySEC, FSCA', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '⏱️', category: 'mt_metaapi', latam: true,
+    affiliateSteps: ['Crea cuenta en FXTM', 'Descarga MT4/MT5', 'Conecta con servidor y login'],
+  },
+  {
+    code: 'octafx', name: 'OctaFX', description: 'Copy trading',
+    regulation: 'CySEC', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '🐙', category: 'mt_metaapi', latam: true,
+    affiliateSteps: ['Regístrate en OctaFX', 'Descarga MT4/MT5', 'Ingresa datos de tu cuenta'],
+  },
+  {
+    code: 'litefinance', name: 'LiteFinance', description: 'Social trading',
+    regulation: 'SVG FSA', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '💡', category: 'mt_metaapi',
+    affiliateSteps: ['Crea cuenta en LiteFinance', 'Descarga MT4/MT5', 'Conecta con credenciales'],
+  },
+  {
+    code: 'weltrade', name: 'Weltrade', description: 'Desde 2006',
+    regulation: 'SVG FSA', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '🌍', category: 'mt_metaapi',
+    affiliateSteps: ['Regístrate en Weltrade', 'Descarga MT4/MT5', 'Usa tus credenciales investor'],
+  },
+  {
+    code: 'nordfx', name: 'NordFX', description: 'Nórdico & Crypto',
+    regulation: 'VFSC', assets: ['Forex', 'CFDs', 'Crypto'],
+    apiSupported: false, logoEmoji: '❄️', category: 'mt_metaapi',
+    affiliateSteps: ['Crea cuenta en NordFX', 'Descarga MT4/MT5', 'Ingresa datos de conexión'],
+  },
+  {
+    code: 'amarkets', name: 'AMarkets', description: 'ECN/STP',
+    regulation: 'FSA', assets: ['Forex', 'CFDs'],
+    apiSupported: false, logoEmoji: '🅰️', category: 'mt_metaapi',
+    affiliateSteps: ['Regístrate en AMarkets', 'Descarga MT4/MT5', 'Conecta con tus credenciales'],
+  },
+];
+
+// ─── Institucionales ───────────────────────────────────
+const INSTITUTIONAL_BROKERS: BrokerCatalogItem[] = [
+  {
+    code: 'interactive_brokers', name: 'Interactive Brokers', description: 'Multi-activo global — TWS API',
+    regulation: 'SEC, FCA, ASIC', assets: ['Stocks', 'Forex', 'Futures', 'Options'],
+    apiSupported: true, logoEmoji: '🏢', category: 'institutional',
+    affiliateSteps: ['Abre cuenta en IBKR', 'Habilita Client Portal API', '⚠️ Requiere TWS ejecutándose'],
+  },
+  {
+    code: 'saxo_bank', name: 'Saxo Bank', description: 'Multi-activo — OpenAPI',
+    regulation: 'DFSA, MAS, FSA', assets: ['Forex', 'Stocks', 'Futures', 'Bonds'],
+    apiSupported: true, logoEmoji: '🏦', category: 'institutional',
+    affiliateSteps: ['Abre cuenta en Saxo Bank', 'Solicita acceso a OpenAPI', 'Genera tus credenciales'],
+  },
+  {
+    code: 'fxcm', name: 'FXCM', description: 'Forex & CFDs — REST API',
+    regulation: 'FCA, ASIC', assets: ['Forex', 'CFDs'],
+    apiSupported: true, logoEmoji: '📐', category: 'institutional',
+    affiliateSteps: ['Crea cuenta en FXCM', 'Accede a la REST API', 'Genera tu token de acceso'],
+  },
+  {
+    code: 'swissquote', name: 'Swissquote', description: 'Multi-activo suizo — FIX API',
+    regulation: 'FINMA', assets: ['Forex', 'Stocks', 'CFDs', 'Crypto'],
+    apiSupported: true, logoEmoji: '🇨🇭', category: 'institutional',
+    affiliateSteps: ['Abre cuenta en Swissquote', 'Solicita acceso FIX', 'Configura conexión FIX'],
+  },
+  {
+    code: 'lmax', name: 'LMAX', description: 'FIX API institucional',
+    regulation: 'FCA', assets: ['Forex', 'CFDs'],
+    apiSupported: true, logoEmoji: '🏛️', category: 'institutional',
+    affiliateSteps: ['Solicita cuenta institucional en LMAX', 'Recibe credenciales FIX', 'Configura tu conexión'],
+  },
+];
+
+// ─── API REST nativos ──────────────────────────────────
+const API_REST_BROKERS: BrokerCatalogItem[] = [
+  {
+    code: 'alpaca', name: 'Alpaca', description: 'Acciones US, ETFs, Crypto',
+    regulation: 'FINRA/SEC', assets: ['Stocks', 'Crypto'],
+    apiSupported: true, logoEmoji: '🦙', category: 'api_rest',
+    affiliateSteps: ['Regístrate en Alpaca Markets', 'Ve a Settings > API Keys', 'Genera API Key + Secret'],
+  },
+  {
+    code: 'oanda', name: 'OANDA (API)', description: 'Forex & CFDs — REST API v20',
+    regulation: 'FCA, CFTC, MAS', assets: ['Forex', 'CFDs'],
+    apiSupported: true, logoEmoji: '📊', category: 'api_rest',
+    affiliateSteps: ['Crea tu cuenta en OANDA', 'Ve a Settings > API Management', 'Genera tu API Token'],
+  },
+];
+
+// ─── All brokers combined ──────────────────────────────
+export const BROKER_CATALOG: BrokerCatalogItem[] = [
+  ...MT_NATIVE_BROKERS,
+  ...MT_METAAPI_BROKERS,
+  ...INSTITUTIONAL_BROKERS,
+  ...API_REST_BROKERS,
+];
+
+// All MT-capable brokers (for MT5ConnectDialog)
+export const MT5_CAPABLE_BROKERS = [
+  ...MT_NATIVE_BROKERS.map(b => b.code),
+  ...MT_METAAPI_BROKERS.map(b => b.code),
+];
+
+// LATAM popular subset
+const LATAM_BROKERS = BROKER_CATALOG.filter(b => b.latam);
+
+// Accent colors per broker
 const BROKER_COLORS: Record<string, string> = {
-  exness: '200 85% 55%',
-  oanda: '35 90% 55%',
-  vantage: '280 75% 60%',
-  pepperstone: '0 80% 58%',
-  avatrade: '220 85% 60%',
   ic_markets: '195 85% 55%',
-  alpaca: '150 75% 50%',
+  oanda: '35 90% 55%',
+  pepperstone: '0 80% 58%',
   xm: '140 75% 50%',
+  exness: '200 85% 55%',
+  fp_markets: '170 80% 48%',
+  fusion_markets: '45 85% 52%',
+  blackbull: '25 80% 50%',
+  admirals: '220 75% 55%',
+  fxopen: '310 70% 55%',
+  avatrade: '220 85% 60%',
+  hotforex: '15 85% 55%',
+  fbs: '340 75% 55%',
   roboforex: '260 80% 60%',
-  eightcap: '170 80% 48%',
-  tradovate: '45 90% 52%',
-  fxpro: '310 70% 58%',
+  alpari: '210 70% 55%',
+  thinkmarkets: '175 70% 50%',
+  fxgt: '30 85% 55%',
+  tickmill: '145 70% 50%',
+  vantage: '280 75% 60%',
+  fxtm: '195 75% 50%',
+  octafx: '270 70% 55%',
+  litefinance: '50 80% 52%',
+  weltrade: '160 70% 48%',
+  nordfx: '205 80% 60%',
+  amarkets: '350 70% 55%',
+  alpaca: '150 75% 50%',
   interactive_brokers: '25 85% 55%',
-  tradestation: '235 80% 62%',
+  saxo_bank: '210 80% 55%',
+  fxcm: '0 70% 55%',
+  swissquote: '350 80% 55%',
+  lmax: '230 70% 55%',
 };
+
+// ─── Tab categories ────────────────────────────────────
+type TabKey = 'mt_native' | 'mt_metaapi' | 'latam' | 'institutional' | 'api_rest';
+
+const TABS: { key: TabKey; label: string; icon: React.ReactNode; brokers: BrokerCatalogItem[] }[] = [
+  { key: 'mt_native', label: 'MT4/MT5 API', icon: <Monitor className="w-3.5 h-3.5" />, brokers: MT_NATIVE_BROKERS },
+  { key: 'mt_metaapi', label: 'MetaAPI', icon: <Zap className="w-3.5 h-3.5" />, brokers: MT_METAAPI_BROKERS },
+  { key: 'latam', label: 'LATAM', icon: <Globe className="w-3.5 h-3.5" />, brokers: LATAM_BROKERS },
+  { key: 'institutional', label: 'Institucional', icon: <Building2 className="w-3.5 h-3.5" />, brokers: INSTITUTIONAL_BROKERS },
+  { key: 'api_rest', label: 'API REST', icon: <Wifi className="w-3.5 h-3.5" />, brokers: API_REST_BROKERS },
+];
 
 interface Props {
   onConnect?: (broker: BrokerCatalogItem) => void;
@@ -137,17 +306,76 @@ interface Props {
   mt5ConnectedBrokers?: string[];
 }
 
-const MT5_CAPABLE_BROKERS = ['exness', 'vantage', 'xm', 'roboforex', 'eightcap', 'fxpro'];
-
 export function BrokerCatalog({
   onConnect, onImportCSV, onSync, onConnectMT5, onSyncMT5,
   syncingIds = {}, mt5SyncingIds = {}, connectedBrokers = [], mt5ConnectedBrokers = [],
 }: Props) {
   const [expandedBroker, setExpandedBroker] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabKey>('mt_native');
+
+  const currentTab = TABS.find(t => t.key === activeTab) || TABS[0];
 
   return (
     <div className="space-y-3">
-      {BROKER_CATALOG.map(broker => {
+      {/* Category tabs */}
+      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+        {TABS.map(tab => {
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => { setActiveTab(tab.key); setExpandedBroker(null); }}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all shrink-0',
+                isActive
+                  ? 'text-foreground shadow-lg'
+                  : 'text-muted-foreground hover:text-foreground/80'
+              )}
+              style={isActive ? {
+                background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.05))',
+                border: '1px solid hsl(var(--primary) / 0.3)',
+                boxShadow: '0 2px 8px hsl(var(--primary) / 0.15)',
+              } : {
+                background: 'hsl(var(--card) / 0.5)',
+                border: '1px solid hsl(var(--border) / 0.3)',
+              }}
+            >
+              {tab.icon}
+              {tab.label}
+              <span
+                className="text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+                style={{
+                  background: isActive ? 'hsl(var(--primary) / 0.15)' : 'hsl(var(--muted) / 0.3)',
+                  color: isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
+                }}
+              >
+                {tab.brokers.length}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Category description */}
+      <div
+        className="rounded-xl px-3 py-2 flex items-center gap-2"
+        style={{
+          background: 'hsl(var(--card) / 0.6)',
+          border: '1px solid hsl(var(--border) / 0.3)',
+        }}
+      >
+        <Shield className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          {activeTab === 'mt_native' && 'Brokers con servidor MetaTrader propio. Conexión directa vía MetaAPI con credenciales investor (solo lectura).'}
+          {activeTab === 'mt_metaapi' && 'Brokers sin API REST propia. Se conectan mediante MetaAPI como puente para sincronizar operaciones MT4/MT5.'}
+          {activeTab === 'latam' && 'Brokers populares en Latinoamérica con soporte en español y depósitos locales.'}
+          {activeTab === 'institutional' && 'Brokers institucionales con FIX API o REST API profesional. Requieren cuentas verificadas.'}
+          {activeTab === 'api_rest' && 'Brokers con API REST nativa. Conexión directa sin MetaAPI — más rápida y confiable.'}
+        </p>
+      </div>
+
+      {/* Broker cards */}
+      {currentTab.brokers.map(broker => {
         const isExpanded = expandedBroker === broker.code;
         const isConnected = connectedBrokers.includes(broker.code);
         const isSyncing = syncingIds[broker.code] || false;
@@ -173,7 +401,6 @@ export function BrokerCatalog({
               }}
             />
 
-            {/* Subtle radial glow */}
             {isExpanded && (
               <div
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none"
@@ -186,7 +413,6 @@ export function BrokerCatalog({
               onClick={() => setExpandedBroker(isExpanded ? null : broker.code)}
               className="w-full relative z-[2] p-3 flex items-center gap-3 text-left transition-colors active:scale-[0.99]"
             >
-              {/* Logo with accent gradient */}
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
                 style={{
@@ -201,12 +427,20 @@ export function BrokerCatalog({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-foreground">{broker.name}</span>
-                  {isConnected && (
+                  {(isConnected || isMT5Connected) && (
                     <span
                       className="text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
                       style={{ background: 'hsl(140 70% 45% / 0.15)', color: 'hsl(140 70% 50%)' }}
                     >
                       ● Activo
+                    </span>
+                  )}
+                  {broker.latam && (
+                    <span
+                      className="text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+                      style={{ background: 'hsl(45 90% 55% / 0.1)', color: 'hsl(45 90% 55%)' }}
+                    >
+                      🌎
                     </span>
                   )}
                 </div>
@@ -216,22 +450,25 @@ export function BrokerCatalog({
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                {/* Connection type badge */}
                 <span
                   className="text-[8px] px-2 py-1 rounded-full font-bold flex items-center gap-0.5 uppercase tracking-wider"
                   style={{
-                    background: broker.apiSupported
+                    background: isMT5Capable
+                      ? `hsl(${color} / 0.12)`
+                      : broker.apiSupported
                       ? `hsl(${color} / 0.12)`
                       : 'hsl(var(--muted) / 0.3)',
-                    color: broker.apiSupported
+                    color: isMT5Capable || broker.apiSupported
                       ? `hsl(${color})`
                       : 'hsl(var(--muted-foreground))',
-                    border: `1px solid ${broker.apiSupported
+                    border: `1px solid ${isMT5Capable || broker.apiSupported
                       ? `hsl(${color} / 0.25)`
                       : 'hsl(var(--border))'}`,
                   }}
                 >
-                  {broker.apiSupported ? (
+                  {isMT5Capable ? (
+                    <><Monitor className="w-2.5 h-2.5" /> MT</>
+                  ) : broker.apiSupported ? (
                     <><Wifi className="w-2.5 h-2.5" /> API</>
                   ) : (
                     <><FileSpreadsheet className="w-2.5 h-2.5" /> CSV</>
@@ -257,13 +494,6 @@ export function BrokerCatalog({
                   {a}
                 </span>
               ))}
-              {broker.affiliateCookie && (
-                <span className="text-[8px] px-1.5 py-0.5 rounded-md font-semibold"
-                  style={{ background: 'hsl(45 90% 55% / 0.1)', color: 'hsl(45 90% 55%)' }}
-                >
-                  🍪 {broker.affiliateCookie}
-                </span>
-              )}
             </div>
 
             {/* Expanded content */}
@@ -277,7 +507,6 @@ export function BrokerCatalog({
                   className="overflow-hidden"
                 >
                   <div className="relative z-[2] px-3 pb-4 space-y-3">
-                    {/* Divider */}
                     <div className="h-[1px]" style={{ background: `linear-gradient(90deg, transparent, hsl(${color} / 0.3), transparent)` }} />
 
                     {/* Steps */}
@@ -307,7 +536,7 @@ export function BrokerCatalog({
                       </div>
                     )}
 
-                    {/* Action buttons — pill style */}
+                    {/* Action buttons */}
                     <div className="flex flex-wrap gap-2">
                       {isMT5Capable && (
                         <button
@@ -328,7 +557,7 @@ export function BrokerCatalog({
                           ) : isMT5Connected ? (
                             <><RefreshCw className="w-3.5 h-3.5" /> Sync MT5</>
                           ) : (
-                            <><Monitor className="w-3.5 h-3.5" /> Conectar MT5</>
+                            <><Monitor className="w-3.5 h-3.5" /> Conectar MT4/MT5</>
                           )}
                         </button>
                       )}
@@ -414,7 +643,7 @@ export function BrokerCatalog({
             </div>
           </div>
           <button
-            onClick={() => onImportCSV?.({ code: 'generic', name: 'Genérico', description: '', regulation: '', assets: [], apiSupported: false, logoEmoji: '📄' })}
+            onClick={() => onImportCSV?.({ code: 'generic', name: 'Genérico', description: '', regulation: '', assets: [], apiSupported: false, logoEmoji: '📄', category: 'api_rest' })}
             className="py-2 px-4 rounded-full text-xs font-semibold transition-all active:scale-95"
             style={{
               background: 'hsl(var(--card) / 0.8)',
