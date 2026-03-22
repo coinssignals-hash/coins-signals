@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useAchievements } from '@/hooks/useAchievements';
+import { useAchievements, ACHIEVEMENTS } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { ToolCard } from '@/components/tools/ToolCard';
