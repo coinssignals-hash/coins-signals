@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,6 +24,8 @@ const PAIRS = [
   { symbol: 'AUD/JPY', pipSize: 0.01 },
   { symbol: 'XAU/USD', pipSize: 0.01 },
 ];
+
+const ACCENT = '210 70% 55%';
 
 export default function LotCalculator() {
   const { t } = useTranslation();
@@ -61,17 +63,14 @@ export default function LotCalculator() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center gap-3 mb-6">
-          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">{t('lot_title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('lot_subtitle')}</p>
-          </div>
-        </div>
+        <ToolPageHeader
+          icon={<Calculator className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('lot_title')}
+          subtitle={t('lot_subtitle')}
+          accent={ACCENT}
+        />
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -103,7 +102,7 @@ export default function LotCalculator() {
           </div>
         </ToolCard>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingDown className="w-4 h-4 text-primary" />
@@ -116,10 +115,10 @@ export default function LotCalculator() {
           </div>
         </ToolCard>
 
-        <ToolCard className="mb-3">
+        <ToolCard accent={ACCENT} className="mb-3">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Calculator className="w-4 h-4 text-primary" />
+              <Calculator className="w-4 h-4 " style={{ color: `hsl(${ACCENT})` }} />
               <h2 className="text-sm font-semibold text-primary">{t('lot_recommended_size')}</h2>
             </div>
             <div className="space-y-3">

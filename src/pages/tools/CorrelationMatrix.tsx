@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Layers, RefreshCw, Info } from 'lucide-react';
@@ -37,6 +37,8 @@ function corrColor(val: number): string {
   return 'bg-rose-500/70 text-white';
 }
 
+const ACCENT = '185 70% 50%';
+
 export default function CorrelationMatrix() {
   const { t } = useTranslation();
   const [matrix, setMatrix] = useState(() => generateMatrix(PAIRS));
@@ -67,22 +69,18 @@ export default function CorrelationMatrix() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <Layers className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">{t('tools_corr_matrix_title')}</h1>
-            </div>
-          </div>
+        <ToolPageHeader
+          icon={<Layers className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('tools_corr_matrix_title')}
+          accent={ACCENT}
+        />
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
             <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
           </Button>
         </div>
 
         {/* Matrix Grid */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-2 overflow-x-auto">
             <table className="w-full min-w-[600px]">
               <thead>
@@ -121,7 +119,7 @@ export default function CorrelationMatrix() {
         </ToolCard>
 
         {/* Legend */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <p className="text-[10px] text-muted-foreground mb-2 font-medium">{t('tp_correlation_scale')}</p>
             <div className="flex gap-1 items-center">
@@ -142,7 +140,7 @@ export default function CorrelationMatrix() {
         </ToolCard>
 
         {/* Top Correlations */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-2">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_strongest_correlations')}</h3>
             {highlights.map((h, i) => (
@@ -159,7 +157,7 @@ export default function CorrelationMatrix() {
           </div>
         </ToolCard>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

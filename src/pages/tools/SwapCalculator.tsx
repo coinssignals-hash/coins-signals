@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -26,6 +26,8 @@ const SWAP_DATA: SwapRate[] = [
   { symbol: 'GBP/JPY', longSwap: 0.52, shortSwap: -0.95, pipValue: 6.7 },
   { symbol: 'XAU/USD', longSwap: -2.85, shortSwap: 0.45, pipValue: 1 },
 ];
+
+const ACCENT = '30 80% 50%';
 
 export default function SwapCalculator() {
   const { t } = useTranslation();
@@ -59,17 +61,13 @@ export default function SwapCalculator() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">{t('swap_title')}</h1>
-          </div>
-        </div>
+        <ToolPageHeader
+          icon={<Clock className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('swap_title')}
+          accent={ACCENT}
+        />
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -108,7 +106,7 @@ export default function SwapCalculator() {
         </ToolCard>
 
         {pairData && (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                 <Moon className="w-4 h-4 text-primary" />{t('swap_rates')} — {pair}
@@ -151,7 +149,7 @@ export default function SwapCalculator() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <Moon className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('swap_cost_night')}</p>
@@ -159,7 +157,7 @@ export default function SwapCalculator() {
                   <p className="text-[10px] text-muted-foreground tabular-nums">{result.dailyCostPips} pips</p>
                 </div>
               </ToolCard>
-              <ToolCard>
+              <ToolCard accent={ACCENT}>
                 <div className="p-3 text-center">
                   <Calendar className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('swap_effective_nights')}</p>
@@ -171,7 +169,7 @@ export default function SwapCalculator() {
           </>
         )}
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

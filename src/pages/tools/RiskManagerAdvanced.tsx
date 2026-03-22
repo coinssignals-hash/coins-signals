@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,6 +52,8 @@ function generateSamplePositions(): Position[] {
     };
   });
 }
+
+const ACCENT = '340 70% 55%';
 
 export default function RiskManagerAdvanced() {
   const { t } = useTranslation();
@@ -109,15 +111,11 @@ export default function RiskManagerAdvanced() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">{t('rm_title')}</h1>
-            </div>
-          </div>
+        <ToolPageHeader
+          icon={<Shield className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('rm_title')}
+          accent={ACCENT}
+        />
           <Button variant="outline" size="sm" onClick={addAccount} className="gap-1 text-xs">
             <Plus className="w-3 h-3" /> {t('tp_account')}
           </Button>
@@ -138,7 +136,7 @@ export default function RiskManagerAdvanced() {
         )}
 
         {/* Global Limits */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_global_limits')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -172,7 +170,7 @@ export default function RiskManagerAdvanced() {
 
         {/* Exposure Pie */}
         {pieData.length > 0 && (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-2">{t('tp_exposure_by_pair')}</h3>
               <div className="h-40">
@@ -251,7 +249,7 @@ export default function RiskManagerAdvanced() {
           );
         })}
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -90,6 +90,8 @@ async function fetchPairData(symbol: string, interval: string): Promise<PairResu
   }
 }
 
+const ACCENT = '80 70% 45%';
+
 export default function RsiMacdScreener() {
   const { t } = useTranslation();
   const [interval, setInterval] = useState('4h');
@@ -137,27 +139,14 @@ export default function RsiMacdScreener() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Navigation */}
-        <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">{t('tools_rsi_screener_title')}</h1>
-          </div>
-          <div className="ml-auto">
-            <button
-              onClick={() => refetch()}
-              disabled={isFetching}
-              className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent transition-colors"
-            >
-              <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isFetching && "animate-spin")} />
-            </button>
-          </div>
-        </div>
+        <ToolPageHeader
+          icon={<Activity className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('tools_rsi_screener_title')}
+          accent={ACCENT}
+        />
 
         {/* Interval Selector */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3 flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground">{t('tp_rsi_timeframe')}</span>
             <div className="flex gap-1.5">
@@ -208,7 +197,7 @@ export default function RsiMacdScreener() {
         )}
 
         {/* Scan Info */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" />
@@ -220,21 +209,21 @@ export default function RsiMacdScreener() {
 
         {/* Results */}
         {isLoading ? (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground">{t('tp_scanning').replace('{count}', String(SCAN_PAIRS.length))}</p>
             </div>
           </ToolCard>
         ) : filtered.length === 0 ? (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-8 text-center">
               <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
               <p className="text-sm text-muted-foreground">{t('tp_no_results_filter')}</p>
             </div>
           </ToolCard>
         ) : (
-          <ToolCard>
+          <ToolCard accent={ACCENT}>
             <div className="p-0">
               {filtered.map((r, i) => {
                 const rsiConf = signalConfig[r.rsiSignal];

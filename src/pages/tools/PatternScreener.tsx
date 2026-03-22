@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -49,6 +49,8 @@ function generatePatterns(): PatternResult[] {
 
 type FilterType = 'all' | 'bullish' | 'bearish' | 'neutral';
 
+const ACCENT = '0 70% 55%';
+
 export default function PatternScreener() {
   const { t } = useTranslation();
   const [patterns, setPatterns] = useState<PatternResult[]>(generatePatterns);
@@ -76,15 +78,11 @@ export default function PatternScreener() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <CandlestickChart className="w-5 h-5 text-primary" />
-              <h1 className="text-lg font-bold text-foreground">{t('tools_pattern_screener_title')}</h1>
-            </div>
-          </div>
+        <ToolPageHeader
+          icon={<CandlestickChart className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('tools_pattern_screener_title')}
+          accent={ACCENT}
+        />
           <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
             <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
           </Button>
@@ -124,7 +122,7 @@ export default function PatternScreener() {
         </div>
 
         {/* Patterns List */}
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-0">
             {filtered.length === 0 ? (
               <div className="p-8 text-center">
@@ -175,7 +173,7 @@ export default function PatternScreener() {
           {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
-        <ToolCard>
+        <ToolCard accent={ACCENT}>
           <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
