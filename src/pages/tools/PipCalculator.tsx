@@ -78,9 +78,9 @@ export default function PipCalculator() {
           accent={ACCENT}
         />
 
-        <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_parameters')}</h2>
-        <ToolCard className="mb-3">
-          <CardContent className="p-4 space-y-4">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{t('tool_parameters')}</h2>
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2] p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
               <Select value={pair} onValueChange={setPair}>
