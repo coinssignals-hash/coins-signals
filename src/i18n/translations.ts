@@ -2252,12 +2252,16 @@ const localeLoaders: Record<Language, () => Promise<{ default: TranslationKeys }
   mt: () => import('./locales/mt'),
 };
 
-// Keep a synchronous fallback (Spanish is default and bundled inline for instant first paint)
-import esDefault from './locales/es';
+// Spanish is loaded lazily like all other languages — no static import to reduce main bundle
+let esDefault: TranslationKeys | null = null;
 
-const translationsCache: Partial<Record<Language, TranslationKeys>> = {
-  es: esDefault,
-};
+const translationsCache: Partial<Record<Language, TranslationKeys>> = {};
+
+// Pre-load Spanish on module init (default language)
+localeLoaders.es().then(mod => {
+  esDefault = mod.default;
+  translationsCache.es = mod.default;
+});
 
 export async function loadTranslations(lang: Language): Promise<TranslationKeys> {
   if (translationsCache[lang]) return translationsCache[lang]!;
