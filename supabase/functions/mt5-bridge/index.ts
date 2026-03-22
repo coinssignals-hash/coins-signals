@@ -8,6 +8,32 @@ const corsHeaders = {
 
 // ─── Decrypt MT5 credentials ───────────────────────────────────────────────
 
+function unwrapByteaToBase64(raw: unknown): string {
+  if (!raw) return '';
+  const s = String(raw);
+  let text = s;
+  if (s.startsWith('\\x')) {
+    const hex = s.slice(2);
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+    }
+    text = new TextDecoder().decode(bytes);
+  }
+  if (text.startsWith('{"') && text.includes('"0":')) {
+    try {
+      const obj = JSON.parse(text) as Record<string, number>;
+      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+      const bytes = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        bytes[i] = obj[String(keys[i])];
+      }
+      return new TextDecoder().decode(bytes);
+    } catch { /* fall through */ }
+  }
+  return text;
+}
+
 async function decryptCredentials(encryptedB64: string, ivB64: string | null, keyBase64: string): Promise<Record<string, string>> {
   try {
     if (!ivB64) {
@@ -31,25 +57,94 @@ async function decryptCredentials(encryptedB64: string, ivB64: string | null, ke
   }
 }
 
-// ─── MetaAPI MT4/MT5 bridge ────────────────────────────────────────────────
+// ─── MetaAPI WebSocket RPC Client ──────────────────────────────────────────
 
-interface MT5Trade {
-  external_trade_id: string;
-  symbol: string;
-  side: string;
-  quantity: number;
-  entry_price: number;
-  exit_price: number | null;
-  entry_time: string;
-  exit_time: string | null;
-  commission: number;
-  swap: number;
-  profit: number;
-  status: string;
-  notes: string;
+async function metaApiWsRequest(
+  region: string,
+  metaApiToken: string,
+  accountId: string,
+  requestType: string,
+  timeoutMs = 25000,
+  extraParams: Record<string, unknown> = {},
+): Promise<Record<string, unknown>> {
+  const wsUrl = `wss://mt-client-api-v1.${region}.agiliumtrade.agiliumtrade.ai/ws`;
+  const requestId = crypto.randomUUID();
+
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      try { ws.close(); } catch {}
+      reject(new Error(`MetaAPI WS timeout for ${requestType}`));
+    }, timeoutMs);
+
+    const ws = new WebSocket(wsUrl);
+    let authenticated = false;
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        requestId: crypto.randomUUID(),
+        type: 'subscribe',
+        sequenceTimestamp: Date.now(),
+        accountId,
+        instanceIndex: 0,
+        host: `mt-client-api-v1.${region}.agiliumtrade.agiliumtrade.ai`,
+        protocol: 3,
+        application: 'MetaApi',
+        auth_token: metaApiToken,
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+
+        if (!authenticated) {
+          if (msg.type === 'authenticated' || msg.type === 'synchronize' || msg.connected) {
+            authenticated = true;
+            ws.send(JSON.stringify({
+              requestId,
+              type: requestType,
+              accountId,
+              application: 'RPC',
+              ...extraParams,
+            }));
+          } else if (msg.type === 'error') {
+            clearTimeout(timer);
+            ws.close();
+            reject(new Error(`MetaAPI WS auth error: ${msg.message || JSON.stringify(msg)}`));
+          }
+          return;
+        }
+
+        if (msg.requestId === requestId) {
+          clearTimeout(timer);
+          ws.close();
+          if (msg.type === 'error') {
+            reject(new Error(`MetaAPI WS error: ${msg.message || msg.error || JSON.stringify(msg)}`));
+          } else {
+            resolve(msg);
+          }
+        }
+      } catch (e) {
+        console.error('[metaApiWs] parse error:', e);
+      }
+    };
+
+    ws.onerror = (err) => {
+      clearTimeout(timer);
+      reject(new Error(`MetaAPI WS connection error: ${err}`));
+    };
+
+    ws.onclose = (ev) => {
+      clearTimeout(timer);
+      if (!authenticated) {
+        reject(new Error(`MetaAPI WS closed before auth: code=${ev.code} reason=${ev.reason}`));
+      }
+    };
+  });
 }
 
-// Provision a MetaAPI account for an MT4/MT5 login
+// ─── MetaAPI provisioning (REST — works fine) ──────────────────────────────
+
 async function provisionMetaApiAccount(
   metaApiToken: string,
   server: string,
@@ -57,8 +152,7 @@ async function provisionMetaApiAccount(
   password: string,
   platform: 'mt4' | 'mt5',
   brokerCode: string,
-): Promise<string> {
-  // Check if account already exists for this login+server
+): Promise<{ accountId: string; region: string }> {
   const listRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
     headers: { 'auth-token': metaApiToken },
   });
@@ -66,12 +160,13 @@ async function provisionMetaApiAccount(
   if (listRes.ok) {
     const accounts = await listRes.json();
     const existing = accounts.find(
-      (a: any) => a.login === login && a.server === server && a.state !== 'DELETED'
+      (a: any) => String(a.login) === String(login) && a.server === server && a.state !== 'DELETED'
     );
-    if (existing) return existing._id;
+    if (existing) {
+      return { accountId: existing._id, region: existing.region || 'vint-hill' };
+    }
   }
 
-  // Create new account
   const createRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
     method: 'POST',
     headers: {
@@ -97,12 +192,10 @@ async function provisionMetaApiAccount(
   }
 
   const created = await createRes.json();
-  return created.id || created._id;
+  return { accountId: created.id || created._id, region: created.region || 'vint-hill' };
 }
 
-// Wait for MetaAPI account to deploy and connect
-async function waitForConnection(metaApiToken: string, accountId: string, maxWaitMs = 60000): Promise<void> {
-  // Deploy
+async function waitForConnection(metaApiToken: string, accountId: string, maxWaitMs = 45000): Promise<void> {
   await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
     method: 'POST',
     headers: { 'auth-token': metaApiToken },
@@ -118,34 +211,67 @@ async function waitForConnection(metaApiToken: string, accountId: string, maxWai
       if (data.connectionStatus === 'CONNECTED' || data.state === 'DEPLOYED') {
         return;
       }
+    } else {
+      await res.text(); // consume body
     }
     await new Promise(r => setTimeout(r, 3000));
   }
-  throw new Error('MetaAPI: Timeout esperando conexión MT5. Verifica servidor y credenciales.');
+  throw new Error('MetaAPI: Timeout esperando conexión MT5');
 }
 
-// Fetch history from MetaAPI
-async function fetchMT5History(metaApiToken: string, accountId: string): Promise<{ trades: MT5Trade[]; account: Record<string, unknown> }> {
-  const baseUrl = `https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}`;
-  const headers = { 'auth-token': metaApiToken };
+// ─── Fetch MT5 history via WebSocket ───────────────────────────────────────
 
-  // Account info
-  const accRes = await fetch(`${baseUrl}/account-information`, { headers });
-  const accInfo = accRes.ok ? await accRes.json() : {};
+interface MT5Trade {
+  external_trade_id: string;
+  symbol: string;
+  side: string;
+  quantity: number;
+  entry_price: number;
+  exit_price: number | null;
+  entry_time: string;
+  exit_time: string | null;
+  commission: number;
+  swap: number;
+  profit: number;
+  status: string;
+  notes: string;
+}
 
-  // History deals (last 90 days)
+async function fetchMT5History(
+  metaApiToken: string,
+  accountId: string,
+  region: string,
+): Promise<{ trades: MT5Trade[]; account: Record<string, unknown> }> {
+  // Get account info via WS
+  let accInfo: Record<string, unknown> = {};
+  try {
+    accInfo = await metaApiWsRequest(region, metaApiToken, accountId, 'getAccountInformation');
+  } catch (e) {
+    console.warn('[mt5-bridge] Account info WS error:', e);
+  }
+
+  // Get history deals via WS
   const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   const endDate = new Date().toISOString();
 
-  const histRes = await fetch(
-    `${baseUrl}/history-deals/time/${startDate}/${endDate}?limit=1000`,
-    { headers }
-  );
-  const deals = histRes.ok ? await histRes.json() : [];
+  let deals: Record<string, unknown>[] = [];
+  try {
+    const histResponse = await metaApiWsRequest(
+      region,
+      metaApiToken,
+      accountId,
+      'getDealsByTimeRange',
+      30000,
+      { startTime: startDate, endTime: endDate },
+    );
+    deals = (histResponse as any).deals || [];
+  } catch (e) {
+    console.warn('[mt5-bridge] History WS error:', e);
+  }
 
   const trades: MT5Trade[] = (Array.isArray(deals) ? deals : [])
     .filter((d: any) => d.type === 'DEAL_TYPE_BUY' || d.type === 'DEAL_TYPE_SELL')
-    .filter((d: any) => d.entryType !== 'DEAL_ENTRY_IN' || d.profit !== 0) // skip partial entries with no PnL
+    .filter((d: any) => d.entryType !== 'DEAL_ENTRY_IN' || d.profit !== 0)
     .map((d: any) => ({
       external_trade_id: String(d.id || d.positionId || d.orderId),
       symbol: d.symbol || '',
@@ -177,6 +303,8 @@ async function fetchMT5History(metaApiToken: string, accountId: string): Promise
   };
 }
 
+// ─── Main handler ──────────────────────────────────────────────────────────
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -195,8 +323,8 @@ serve(async (req) => {
     }
 
     if (!metaApiToken) {
-      return new Response(JSON.stringify({ 
-        error: 'MetaAPI no configurado. Contacta al administrador para habilitar la sincronización MT4/MT5.',
+      return new Response(JSON.stringify({
+        error: 'MetaAPI no configurado',
         needs_config: true,
       }), {
         status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -228,7 +356,6 @@ serve(async (req) => {
       });
     }
 
-    // Get connection
     const { data: conn, error: connError } = await supabase
       .from('user_broker_connections')
       .select(`*, broker:brokers(code, display_name)`)
@@ -242,37 +369,8 @@ serve(async (req) => {
       });
     }
 
-    // Decrypt credentials (mt5_server, mt5_login, mt5_password, mt5_platform)
-    // bytea columns: stored as hex of JSON {"0":byteVal,...} wrapping UTF-8 of base64
-    function unwrapByteaToBase64(raw: unknown): string {
-      if (!raw) return '';
-      const s = String(raw);
-      let text = s;
-      if (s.startsWith('\\x')) {
-        const hex = s.slice(2);
-        const bytes = new Uint8Array(hex.length / 2);
-        for (let i = 0; i < hex.length; i += 2) {
-          bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-        }
-        text = new TextDecoder().decode(bytes);
-      }
-      if (text.startsWith('{"') && text.includes('"0":')) {
-        try {
-          const obj = JSON.parse(text) as Record<string, number>;
-          const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-          const bytes = new Uint8Array(keys.length);
-          for (let i = 0; i < keys.length; i++) {
-            bytes[i] = obj[String(keys[i])];
-          }
-          return new TextDecoder().decode(bytes);
-        } catch { /* fall through */ }
-      }
-      return text;
-    }
-
     const encryptedStr = unwrapByteaToBase64(conn.encrypted_credentials);
     const ivStr = conn.credentials_iv ? unwrapByteaToBase64(conn.credentials_iv) : null;
-
     const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
 
     console.log('[mt5-bridge] Credential keys found:', Object.keys(credentials));
@@ -287,7 +385,7 @@ serve(async (req) => {
     const brokerCode = conn.broker?.code || 'unknown';
 
     // 1. Provision MetaAPI account
-    const metaAccountId = await provisionMetaApiAccount(
+    const { accountId: metaAccountId, region } = await provisionMetaApiAccount(
       metaApiToken,
       credentials.mt5_server,
       credentials.mt5_login,
@@ -299,8 +397,8 @@ serve(async (req) => {
     // 2. Wait for connection
     await waitForConnection(metaApiToken, metaAccountId);
 
-    // 3. Fetch history
-    const { trades, account } = await fetchMT5History(metaApiToken, metaAccountId);
+    // 3. Fetch history via WebSocket
+    const { trades, account } = await fetchMT5History(metaApiToken, metaAccountId, region);
 
     // 4. Upsert trades
     let imported = 0;
@@ -391,7 +489,7 @@ serve(async (req) => {
     }
 
     if (message.includes('401') || message.includes('auth') || message.includes('credentials')) {
-      return new Response(JSON.stringify({ error: 'Credenciales MT5 inválidas. Verifica servidor, login y contraseña.', needs_reconnect: true }), {
+      return new Response(JSON.stringify({ error: 'Credenciales MT5 inválidas.', needs_reconnect: true }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
