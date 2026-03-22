@@ -617,10 +617,3 @@ export default function CurrencyConverter() {
     </PageShell>
   );
 }
-        >
-          {t('tools_converter_calculate')}
-        </button>
-      </main>
-    </PageShell>
-  );
-}
