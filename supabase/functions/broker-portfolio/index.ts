@@ -54,6 +54,40 @@ function byteaToBytes(raw: unknown): Uint8Array {
   return new TextEncoder().encode(String(raw));
 }
 
+// Extract base64 string from double-wrapped bytea
+// Storage flow: base64str -> TextEncoder -> Uint8Array -> Supabase serializes as JSON {"0":99,"1":55,...} -> stored as bytea
+// Read flow: bytea -> hex \x7b2230... -> decode hex -> JSON string -> parse JSON -> byte values -> decode UTF-8 -> base64 string
+function unwrapByteaToBase64(raw: unknown): string {
+  if (!raw) return '';
+  const s = String(raw);
+  
+  // Step 1: If hex-encoded, decode to text first
+  let text = s;
+  if (s.startsWith('\\x')) {
+    const hex = s.slice(2);
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+    }
+    text = new TextDecoder().decode(bytes);
+  }
+  
+  // Step 2: If the text is a JSON object like {"0":99,"1":55,...}, parse it to extract byte values
+  if (text.startsWith('{"') && text.includes('"0":')) {
+    try {
+      const obj = JSON.parse(text) as Record<string, number>;
+      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+      const bytes = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        bytes[i] = obj[String(keys[i])];
+      }
+      return new TextDecoder().decode(bytes);
+    } catch { /* fall through */ }
+  }
+  
+  return text;
+}
+
 // Decrypt AES-256-GCM encrypted credentials
 async function decryptCredentials(
   encryptedRaw: unknown,
@@ -61,32 +95,13 @@ async function decryptCredentials(
   keyStr: string
 ): Promise<Record<string, string>> {
   try {
-    // Log raw types and values for debugging
-    console.log('[broker-portfolio] RAW encrypted type:', typeof encryptedRaw, 
-      'constructor:', encryptedRaw?.constructor?.name,
-      'isArray:', Array.isArray(encryptedRaw));
-    
-    if (typeof encryptedRaw === 'string') {
-      console.log('[broker-portfolio] RAW encrypted string first 50:', encryptedRaw.substring(0, 50));
-    } else if (typeof encryptedRaw === 'object' && encryptedRaw !== null) {
-      const keys = Object.keys(encryptedRaw as Record<string, unknown>);
-      console.log('[broker-portfolio] RAW encrypted obj keys count:', keys.length, 'first 5:', keys.slice(0, 5));
-    }
-    
-    console.log('[broker-portfolio] RAW iv type:', typeof ivRaw, 'truthy:', !!ivRaw);
+    const encB64 = unwrapByteaToBase64(encryptedRaw);
+    const ivB64 = ivRaw ? unwrapByteaToBase64(ivRaw) : null;
 
-    // Convert bytea to raw bytes, then decode as UTF-8 to get the base64 string
-    const encBytes = byteaToBytes(encryptedRaw);
-    const encB64 = new TextDecoder().decode(encBytes);
-    
-    const ivBytes = ivRaw ? byteaToBytes(ivRaw) : null;
-    const ivB64 = ivBytes && ivBytes.length > 0 ? new TextDecoder().decode(ivBytes) : null;
-
-    console.log('[broker-portfolio] decoded encB64 len:', encB64.length, 'first20:', encB64.substring(0, 20));
-    console.log('[broker-portfolio] decoded ivB64:', ivB64 ? `len=${ivB64.length} first20=${ivB64.substring(0, 20)}` : 'null');
+    console.log('[broker-portfolio] unwrapped encB64 len:', encB64.length, 'first30:', encB64.substring(0, 30));
+    console.log('[broker-portfolio] unwrapped ivB64:', ivB64 ? `len=${ivB64.length}` : 'null');
 
     if (!ivB64) {
-      // Legacy XOR fallback
       const keyBytes = new TextEncoder().encode(keyStr);
       const encryptedBytes = Uint8Array.from(atob(encB64), c => c.charCodeAt(0));
       const decrypted = new Uint8Array(encryptedBytes.length);
@@ -96,7 +111,6 @@ async function decryptCredentials(
       return JSON.parse(new TextDecoder().decode(decrypted));
     }
 
-    // AES-GCM decryption
     const rawKey = new TextEncoder().encode(keyStr);
     const keyHash = await crypto.subtle.digest('SHA-256', rawKey);
     const cryptoKey = await crypto.subtle.importKey(
