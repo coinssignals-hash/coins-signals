@@ -419,10 +419,6 @@ export default function CurrencyConverter() {
           </div>
         </div>
 
-        {/* Date */}
-        <p className="text-xs text-muted-foreground border border-border rounded-md px-3 py-1.5 w-fit">
-          {format(new Date(), "d MMM yyyy", { locale: dateLocale })}
-        </p>
 
         {/* ──── Converter Card ──── */}
         <ToolCard>
