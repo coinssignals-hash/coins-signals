@@ -1,12 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
-import { ToolCard } from '@/components/tools/ToolCard';
+import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { format, subDays } from 'date-fns';
