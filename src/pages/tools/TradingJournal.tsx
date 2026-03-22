@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useAchievements } from '@/hooks/useAchievements';
+import { useAchievements, ACHIEVEMENTS } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { ToolCard } from '@/components/tools/ToolCard';
@@ -16,7 +16,7 @@ import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
   Loader2, LogIn, Pencil, Clock, Play, CheckCircle2, XCircle, ChevronDown,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Trophy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
@@ -60,7 +60,7 @@ export default function TradingJournal() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
-  const { checkAndUnlockAchievements } = useAchievements();
+  const { checkAndUnlockAchievements, unlockedCodes, getProgress: achievementGetProgress } = useAchievements();
   const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -574,6 +574,58 @@ export default function TradingJournal() {
             </div>
           </ToolCard>
         )}
+
+        {/* ─── Achievements Progress Widget ─── */}
+        {userId && (() => {
+          const nextAchievements = ACHIEVEMENTS
+            .filter(a => !unlockedCodes.includes(a.code) && (a.category === 'journal_entries' || a.category === 'trades_count' || a.category === 'trading_days'))
+            .sort((a, b) => achievementGetProgress(b) - achievementGetProgress(a))
+            .slice(0, 3);
+
+          if (nextAchievements.length === 0) return null;
+
+          return (
+            <div className="rounded-xl overflow-hidden" style={{
+              background: 'linear-gradient(165deg, hsl(270 70% 60% / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
+              border: '1px solid hsl(270 70% 60% / 0.12)',
+            }}>
+              <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+                background: 'linear-gradient(90deg, transparent, hsl(270 70% 60% / 0.4), transparent)',
+              }} />
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <Trophy className="w-3.5 h-3.5" style={{ color: 'hsl(45 90% 55%)' }} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Próximos Logros</span>
+                  </div>
+                  <Link to="/achievements" className="text-[10px] font-bold" style={{ color: 'hsl(45 90% 55%)' }}>
+                    Ver todos →
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {nextAchievements.map(a => {
+                    const pct = Math.round(achievementGetProgress(a) * 100);
+                    return (
+                      <div key={a.code} className="flex items-center gap-2">
+                        <span className="text-sm">{a.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] font-semibold text-foreground truncate">{a.name}</p>
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'hsl(270 70% 60% / 0.1)' }}>
+                              <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'hsl(270 70% 60%)' }} />
+                            </div>
+                            <span className="text-[9px] font-bold tabular-nums text-muted-foreground">{pct}%</span>
+                          </div>
+                        </div>
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'hsl(270 70% 60% / 0.1)', color: 'hsl(270 70% 60%)' }}>+{a.xp} XP</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Trade History */}
         <div className="space-y-3">
