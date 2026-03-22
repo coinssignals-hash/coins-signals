@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -105,7 +104,7 @@ export default function PositionSizing() {
             {(() => {
               const cfg = riskLevelConfig[result.riskLevel as keyof typeof riskLevelConfig];
               return (
-                <Card className={cn('border', cfg.bg, 'border-transparent')}>
+                <div className={cn('rounded-xl overflow-hidden','border', cfg.bg, 'border-transparent')}>
                   <div className="p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <ShieldAlert className={cn('w-4 h-4', cfg.color)} />
@@ -116,7 +115,7 @@ export default function PositionSizing() {
                     </div>
                     <span className={cn('text-lg font-bold tabular-nums', cfg.color)}>{parseFloat(riskPercent).toFixed(1)}%</span>
                   </div>
-                </Card>
+                </div>
               );
             })()}
 

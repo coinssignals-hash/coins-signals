@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -193,7 +192,7 @@ export default function RsiMacdScreener() {
                 key={s.key}
                 onClick={() => setFilter(filter === s.key ? 'all' : s.key)}
               >
-                <Card className={cn(
+                <div className={cn('rounded-xl overflow-hidden',
                   "border transition-colors",
                   filter === s.key ? "bg-primary/10 border-primary/40" : "bg-card border-border"
                 )}>
@@ -202,7 +201,7 @@ export default function RsiMacdScreener() {
                     <p className={cn('text-lg font-bold tabular-nums', s.color)}>{s.count}</p>
                     <p className="text-[10px] text-muted-foreground">{s.label}</p>
                   </div>
-                </Card>
+                </div>
               </button>
             ))}
           </div>

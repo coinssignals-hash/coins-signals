@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -175,7 +174,7 @@ export default function BacktestPro() {
 
         {/* Strategy Cards */}
         {strategies.map((strat, idx) => (
-          <Card key={strat.id} className="bg-card border-border" style={{ borderLeftColor: strat.color, borderLeftWidth: 3 }}>
+          <div key={strat.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)", borderLeftColor: strat.color, borderLeftWidth: 3 }}>
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Input
@@ -208,7 +207,7 @@ export default function BacktestPro() {
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
         ))}
 
         <Button onClick={handleRun} disabled={running} className="w-full gap-2">

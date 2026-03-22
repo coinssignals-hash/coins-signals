@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -195,7 +194,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
 
           return (
           <>
-            <Card className={cn('border',
+            <div className={cn('rounded-xl overflow-hidden','border',
               result.isGoodRatio ? 'bg-emerald-500/5 border-emerald-500/20' :
               result.isAcceptable ? 'bg-amber-500/5 border-amber-500/20' : 'bg-rose-500/5 border-rose-500/20'
             )}>
@@ -208,7 +207,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                   result.isGoodRatio ? 'bg-emerald-500/15 text-emerald-400' : result.isAcceptable ? 'bg-amber-500/15 text-amber-400' : 'bg-rose-500/15 text-rose-400'
                 )}>{result.verdict}</span>
               </div>
-            </Card>
+            </div>
 
             {/* Visual bar chart */}
             <ToolCard>
@@ -282,7 +281,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
             </div>
 
             {/* Optimal Lot Size */}
-            <Card className="bg-card border-primary/20">
+            <div className="bg-card border-primary/20">
               <div className="p-4 space-y-3">
                 <div className="flex items-center gap-2 justify-center">
                   <Layers className="w-4 h-4 text-primary" />
@@ -311,7 +310,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                   {t('rr_lot_info') || `Basado en ${riskPercent}% de riesgo ($${result.riskAmount}) sobre ${result.riskPips} pips de SL`}
                 </p>
               </div>
-            </Card>
+            </div>
           </>
           );
         })()}

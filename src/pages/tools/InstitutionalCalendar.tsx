@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -137,7 +136,7 @@ export default function InstitutionalCalendar() {
           {filtered.map(evt => {
             const isExpanded = expandedId === evt.id;
             return (
-              <Card key={evt.id} className="bg-card border-border">
+              <div key={evt.id} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
                 <div className="p-0">
                   <button className="w-full flex items-center justify-between p-4" onClick={() => setExpandedId(isExpanded ? null : evt.id)}>
                     <div className="flex items-center gap-3">
@@ -241,7 +240,7 @@ export default function InstitutionalCalendar() {
                     </div>
                   )}
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>

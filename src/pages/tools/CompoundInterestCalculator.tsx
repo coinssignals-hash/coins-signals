@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
@@ -88,7 +87,7 @@ export default function CompoundInterestCalculator() {
 
         {result && (
           <>
-            <Card className="bg-emerald-500/5 border border-emerald-500/20">
+            <div className="rounded-xl overflow-hidden" style={{ background: "hsl(160 80% 45% / 0.06)", border: "1px solid hsl(160 80% 45% / 0.2)" }}>
               <div className="p-4 text-center space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('ci_final_balance')}</p>
                 <p className="text-3xl font-bold text-emerald-400 tabular-nums">${Number(result.finalBalance).toLocaleString()}</p>
@@ -96,7 +95,7 @@ export default function CompoundInterestCalculator() {
                   {t('ci_total_return')}: <span className="text-emerald-400 font-semibold">{result.totalReturnPct}%</span>
                 </p>
               </div>
-            </Card>
+            </div>
 
             <ToolCard>
               <div className="p-4">

@@ -3,7 +3,6 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard } from '@/components/tools/ToolCard';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -228,13 +227,13 @@ export default function MultiTFScreener() {
         )}
         {/* Error */}
         {error && !loading && data.length === 0 && (
-          <Card className="bg-card border-destructive/30">
+          <div className="rounded-xl overflow-hidden" style={{ background: "hsl(0 70% 50% / 0.08)", border: "1px solid hsl(0 70% 50% / 0.25)" }}>
             <div className="p-4 text-center space-y-2">
               <p className="text-sm text-destructive">{t('mtf_error')}</p>
               <p className="text-xs text-muted-foreground">{error}</p>
               <Button size="sm" variant="outline" onClick={() => fetchData(true)}>{t('mtf_retry')}</Button>
             </div>
-          </Card>
+          </div>
         )}
 
         {/* Loading skeletons */}
@@ -247,7 +246,7 @@ export default function MultiTFScreener() {
         {/* Pair Cards */}
         <div className="space-y-2">
           {filtered.map(pair => (
-            <Card key={pair.pair} className="bg-card border-border">
+            <div key={pair.pair} className="rounded-xl overflow-hidden" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
               <div className="p-0">
                 <button
                   className="w-full flex items-center justify-between p-4"
@@ -323,7 +322,7 @@ export default function MultiTFScreener() {
                   </div>
                 )}
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
