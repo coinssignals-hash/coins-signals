@@ -243,14 +243,28 @@ serve(async (req) => {
     }
 
     // Decrypt credentials (mt5_server, mt5_login, mt5_password, mt5_platform)
-    const encryptedStr = typeof conn.encrypted_credentials === 'string'
-      ? conn.encrypted_credentials
-      : new TextDecoder().decode(conn.encrypted_credentials);
-    const ivStr = conn.credentials_iv
-      ? (typeof conn.credentials_iv === 'string' ? conn.credentials_iv : new TextDecoder().decode(conn.credentials_iv))
-      : null;
+    // bytea columns from Supabase come as hex strings (\x...) or base64
+    function decodeBytea(val: unknown): string {
+      if (!val) return '';
+      const s = typeof val === 'string' ? val : new TextDecoder().decode(val as Uint8Array);
+      // PostgREST returns bytea as hex: \x<hex>
+      if (s.startsWith('\\x')) {
+        const hex = s.slice(2);
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+          bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+        }
+        return new TextDecoder().decode(bytes);
+      }
+      return s;
+    }
+
+    const encryptedStr = decodeBytea(conn.encrypted_credentials);
+    const ivStr = conn.credentials_iv ? decodeBytea(conn.credentials_iv) : null;
 
     const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
+
+    console.log('[mt5-bridge] Credential keys found:', Object.keys(credentials));
 
     if (!credentials.mt5_server || !credentials.mt5_login || !credentials.mt5_password) {
       return new Response(JSON.stringify({ error: 'Credenciales MT4/MT5 incompletas. Reconecta tu cuenta.' }), {
