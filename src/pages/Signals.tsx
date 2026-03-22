@@ -533,7 +533,7 @@ export default function Signals() {
                 className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 font-medium px-1"
               >
                 <X className="w-3 h-3" />
-                Limpiar filtros ({activeFilterCount})
+                {t('sf_clear')} ({activeFilterCount})
               </button>
             )}
           </div>
