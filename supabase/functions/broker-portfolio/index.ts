@@ -59,6 +59,9 @@ function decodeBytea(raw: unknown): string {
 // Decrypt credentials (AES-256-GCM with XOR legacy fallback)
 async function decryptCredentials(encryptedB64: string, ivB64: string | null, key: string): Promise<Record<string, string>> {
   try {
+    console.log('[decrypt] encryptedB64 type:', typeof encryptedB64, 'length:', encryptedB64?.length, 'first50:', encryptedB64?.substring(0, 50));
+    console.log('[decrypt] ivB64 type:', typeof ivB64, 'length:', ivB64?.length, 'first50:', ivB64?.substring(0, 50));
+    
     // Legacy XOR decryption fallback (no IV means old format)
     if (!ivB64) {
       const keyBytes = new TextEncoder().encode(key);
