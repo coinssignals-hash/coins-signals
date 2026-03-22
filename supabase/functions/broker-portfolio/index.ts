@@ -6,62 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Convert raw Supabase bytea value to Uint8Array
-function byteaToBytes(raw: unknown): Uint8Array {
-  if (!raw) return new Uint8Array(0);
-  
-  if (raw instanceof Uint8Array) return raw;
-  
-  if (typeof raw === 'string') {
-    // Hex format: \x4142...
-    if (raw.startsWith('\\x')) {
-      const hex = raw.slice(2);
-      const bytes = new Uint8Array(hex.length / 2);
-      for (let i = 0; i < hex.length; i += 2) {
-        bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-      }
-      return bytes;
-    }
-    // JSON object string: '{"0":53,"1":120,...}'
-    if (raw.startsWith('{"')) {
-      try {
-        const obj = JSON.parse(raw) as Record<string, number>;
-        const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-        const bytes = new Uint8Array(keys.length);
-        for (let i = 0; i < keys.length; i++) {
-          bytes[i] = obj[String(keys[i])];
-        }
-        return bytes;
-      } catch { /* fall through */ }
-    }
-    // Plain text (legacy) — encode to bytes
-    return new TextEncoder().encode(raw);
-  }
-  
-  // Object form: { "0": byte, "1": byte, ... }
-  if (typeof raw === 'object' && raw !== null) {
-    const obj = raw as Record<string, number>;
-    const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-    if (keys.length > 0) {
-      const bytes = new Uint8Array(keys.length);
-      for (let i = 0; i < keys.length; i++) {
-        bytes[i] = obj[String(keys[i])];
-      }
-      return bytes;
-    }
-  }
-  
-  return new TextEncoder().encode(String(raw));
-}
+// ─── bytea helpers ─────────────────────────────────────────────────────────
 
-// Extract base64 string from double-wrapped bytea
-// Storage flow: base64str -> TextEncoder -> Uint8Array -> Supabase serializes as JSON {"0":99,"1":55,...} -> stored as bytea
-// Read flow: bytea -> hex \x7b2230... -> decode hex -> JSON string -> parse JSON -> byte values -> decode UTF-8 -> base64 string
 function unwrapByteaToBase64(raw: unknown): string {
   if (!raw) return '';
   const s = String(raw);
-  
-  // Step 1: If hex-encoded, decode to text first
   let text = s;
   if (s.startsWith('\\x')) {
     const hex = s.slice(2);
@@ -71,8 +20,6 @@ function unwrapByteaToBase64(raw: unknown): string {
     }
     text = new TextDecoder().decode(bytes);
   }
-  
-  // Step 2: If the text is a JSON object like {"0":99,"1":55,...}, parse it to extract byte values
   if (text.startsWith('{"') && text.includes('"0":')) {
     try {
       const obj = JSON.parse(text) as Record<string, number>;
@@ -84,11 +31,9 @@ function unwrapByteaToBase64(raw: unknown): string {
       return new TextDecoder().decode(bytes);
     } catch { /* fall through */ }
   }
-  
   return text;
 }
 
-// Decrypt AES-256-GCM encrypted credentials
 async function decryptCredentials(
   encryptedRaw: unknown,
   ivRaw: unknown,
@@ -97,9 +42,6 @@ async function decryptCredentials(
   try {
     const encB64 = unwrapByteaToBase64(encryptedRaw);
     const ivB64 = ivRaw ? unwrapByteaToBase64(ivRaw) : null;
-
-    console.log('[broker-portfolio] unwrapped encB64 len:', encB64.length, 'first30:', encB64.substring(0, 30));
-    console.log('[broker-portfolio] unwrapped ivB64:', ivB64 ? `len=${ivB64.length}` : 'null');
 
     if (!ivB64) {
       const keyBytes = new TextEncoder().encode(keyStr);
@@ -125,6 +67,8 @@ async function decryptCredentials(
     return {};
   }
 }
+
+// ─── Types ─────────────────────────────────────────────────────────────────
 
 interface AccountData {
   connection_id: string;
@@ -158,9 +102,59 @@ interface Position {
   spread?: number;
 }
 
+// ─── MetaAPI via FastAPI proxy (avoids TLS issues) ─────────────────────────
+
+/**
+ * Calls MetaAPI client API through FastAPI proxy to avoid TLS cert issues
+ * in the Supabase edge runtime.
+ */
+async function metaApiClientRequest(
+  fastApiUrl: string,
+  metaApiToken: string,
+  accountId: string,
+  region: string,
+  endpoint: string,
+  method = 'GET',
+  body?: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const res = await fetch(`${fastApiUrl}/api/v1/metaapi/proxy`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      account_id: accountId,
+      region,
+      endpoint,
+      method,
+      body,
+      meta_token: metaApiToken,
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`FastAPI proxy error (${res.status}): ${errText}`);
+  }
+
+  const result = await res.json();
+  if (result.error) {
+    throw new Error(`MetaAPI error (${result.status}): ${result.body}`);
+  }
+
+  return result.data;
+}
+
+/**
+ * Provisioning API (REST — works fine directly from edge runtime)
+ */
+async function metaApiProvisioningFetch(path: string, opts: RequestInit = {}): Promise<Response> {
+  return fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai${path}`, opts);
+}
+
+// ─── Broker-specific fetchers ──────────────────────────────────────────────
+
 async function fetchAlpacaAccount(credentials: Record<string, string>, environment: string): Promise<Partial<AccountData>> {
-  const baseUrl = environment === 'live' 
-    ? 'https://api.alpaca.markets' 
+  const baseUrl = environment === 'live'
+    ? 'https://api.alpaca.markets'
     : 'https://paper-api.alpaca.markets';
 
   try {
@@ -170,7 +164,6 @@ async function fetchAlpacaAccount(credentials: Record<string, string>, environme
         'APCA-API-SECRET-KEY': credentials.api_secret,
       },
     });
-
     if (!accountRes.ok) throw new Error('Failed to fetch Alpaca account');
     const account = await accountRes.json();
 
@@ -180,7 +173,6 @@ async function fetchAlpacaAccount(credentials: Record<string, string>, environme
         'APCA-API-SECRET-KEY': credentials.api_secret,
       },
     });
-
     const positionsData = positionsRes.ok ? await positionsRes.json() : [];
 
     const positions: Position[] = positionsData.map((p: Record<string, unknown>) => ({
@@ -223,7 +215,6 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
         'Content-Type': 'application/json',
       },
     });
-
     if (!accountsRes.ok) throw new Error('Failed to fetch OANDA accounts');
     const accountsData = await accountsRes.json();
     const accountId = credentials.account_id || accountsData.accounts?.[0]?.id;
@@ -235,7 +226,6 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
         'Content-Type': 'application/json',
       },
     });
-
     if (!accountRes.ok) throw new Error('Failed to fetch OANDA account details');
     const { account } = await accountRes.json();
 
@@ -252,7 +242,7 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
         const shortUnits = parseInt(short?.units || '0');
         const isLong = longUnits > 0;
         const units = isLong ? longUnits : Math.abs(shortUnits);
-        const pl = isLong 
+        const pl = isLong
           ? parseFloat(long?.unrealizedPL || '0')
           : parseFloat(short?.unrealizedPL || '0');
         const avgPrice = isLong
@@ -288,30 +278,18 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
   }
 }
 
+// ─── MetaAPI via FastAPI proxy ─────────────────────────────────────────────
+
 async function fetchMetaApiAccount(credentials: Record<string, string>, config: Record<string, unknown>): Promise<Partial<AccountData>> {
   const metaApiToken = Deno.env.get('METAAPI_TOKEN');
+  const fastApiUrl = Deno.env.get('FASTAPI_BASE_URL');
+
   if (!metaApiToken) {
     return { error: 'MetaAPI token not configured' };
   }
-
-  // Use regular fetch - if TLS fails, fall back to ignoring cert errors
-  const metaFetch = async (url: string, opts: RequestInit = {}) => {
-    try {
-      return await fetch(url, opts);
-    } catch (tlsErr) {
-      // If TLS fails, try with a permissive HTTP client
-      try {
-        const permissiveClient = Deno.createHttpClient({
-          caCerts: [],
-        });
-        const res = await fetch(url, { ...opts, client: permissiveClient } as RequestInit);
-        permissiveClient.close();
-        return res;
-      } catch {
-        throw tlsErr;
-      }
-    }
-  };
+  if (!fastApiUrl) {
+    return { error: 'FastAPI proxy URL not configured' };
+  }
 
   try {
     const login = credentials.mt5_login || credentials.mt_login || credentials.login;
@@ -319,19 +297,19 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     const server = credentials.mt5_server || credentials.mt_server || credentials.server;
     const platform = (config?.platform as string) || credentials.mt5_platform || 'mt5';
 
-    console.log('[broker-portfolio] MT creds check:', { login: !!login, password: !!password, server: !!server, keys: Object.keys(credentials) });
+    console.log('[broker-portfolio] MT creds check:', { login: !!login, password: !!password, server: !!server });
 
     if (!login || !password || !server) {
       return { error: 'MT5 credentials incomplete' };
     }
 
-    // Step 1: Find or provision the MetaAPI account
-    const listRes = await metaFetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+    // Step 1: Find or provision (REST provisioning API — works directly)
+    const listRes = await metaApiProvisioningFetch('/users/current/accounts', {
       headers: { 'auth-token': metaApiToken },
     });
 
     let accountId: string | null = null;
-    let accountRegion = 'vint-hill'; // default region
+    let accountRegion = 'vint-hill';
 
     if (listRes.ok) {
       const accounts = await listRes.json();
@@ -342,22 +320,23 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       if (match) {
         accountId = match._id;
         accountRegion = String(match.region || 'vint-hill');
-        console.log('[broker-portfolio] Matched account:', accountId, 'region:', accountRegion, 'state:', match.state);
-        // Ensure it's deployed
+        console.log('[broker-portfolio] Matched:', accountId, 'region:', accountRegion, 'state:', match.state);
         if (match.state !== 'DEPLOYED') {
-          await metaFetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+          await metaApiProvisioningFetch(`/users/current/accounts/${accountId}/deploy`, {
             method: 'POST',
             headers: { 'auth-token': metaApiToken },
           });
-          // Wait for deployment
           await new Promise(r => setTimeout(r, 3000));
         }
       }
+    } else {
+      const errText = await listRes.text();
+      console.error('[broker-portfolio] List accounts failed:', listRes.status, errText);
+      return { error: `MetaAPI provisioning error: ${listRes.status}` };
     }
 
     if (!accountId) {
-      // Create new MetaAPI account
-      const createRes = await metaFetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+      const createRes = await metaApiProvisioningFetch('/users/current/accounts', {
         method: 'POST',
         headers: {
           'auth-token': metaApiToken,
@@ -384,50 +363,32 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       accountId = created.id;
       accountRegion = String(created.region || 'vint-hill');
 
-      // Deploy
-      await metaFetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+      await metaApiProvisioningFetch(`/users/current/accounts/${accountId}/deploy`, {
         method: 'POST',
         headers: { 'auth-token': metaApiToken },
       });
-
-      // Wait for deployment
       await new Promise(r => setTimeout(r, 5000));
     }
 
-    // Use region-specific client API URL
-    const clientApiBase = `https://mt-client-api-v1.${accountRegion}.agiliumtrade.agiliumtrade.ai`;
-    console.log('[broker-portfolio] Using client API:', clientApiBase);
+    console.log('[broker-portfolio] Fetching via FastAPI proxy, region:', accountRegion);
 
-    // Step 2: Get account information
-    const infoRes = await metaFetch(`${clientApiBase}/users/current/accounts/${accountId}/account-information`, {
-      headers: { 'auth-token': metaApiToken },
-    });
+    // Step 2: Get account info via FastAPI proxy
+    const info = await metaApiClientRequest(
+      fastApiUrl, metaApiToken, accountId!, accountRegion, 'account-information'
+    );
 
-    if (!infoRes.ok) {
-      const errText = await infoRes.text();
-      console.error('MetaAPI account info error:', infoRes.status, errText);
-      // If not connected yet, return partial data
-      if (infoRes.status === 404 || infoRes.status === 502) {
-        return {
-          error: 'Account connecting... try again in a few seconds',
-          cash_balance: 0,
-          equity: 0,
-          positions: [],
-        };
-      }
-      return { error: `MetaAPI error: ${infoRes.status}` };
+    // Step 3: Get positions via FastAPI proxy
+    let positionsData: Record<string, unknown>[] = [];
+    try {
+      const posResult = await metaApiClientRequest(
+        fastApiUrl, metaApiToken, accountId!, accountRegion, 'positions'
+      );
+      positionsData = Array.isArray(posResult) ? posResult : [];
+    } catch (posErr) {
+      console.warn('[broker-portfolio] Positions error (non-fatal):', posErr);
     }
 
-    const info = await infoRes.json();
-
-    // Step 3: Get open positions
-    const posRes = await metaFetch(`${clientApiBase}/users/current/accounts/${accountId}/positions`, {
-      headers: { 'auth-token': metaApiToken },
-    });
-
-    const positionsData = posRes.ok ? await posRes.json() : [];
-
-    const positions: Position[] = (positionsData || []).map((p: Record<string, unknown>) => {
+    const positions: Position[] = positionsData.map((p: Record<string, unknown>) => {
       const volume = Number(p.volume || 0);
       const openPrice = Number(p.openPrice || 0);
       const currentPrice = Number(p.currentPrice || 0);
@@ -458,13 +419,12 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     const equity = Number(info.equity || 0);
     const margin = Number(info.margin || 0);
     const freeMargin = Number(info.freeMargin || 0);
-    const unrealizedPnl = equity - balance;
 
     return {
       cash_balance: balance,
       equity,
       buying_power: freeMargin,
-      unrealized_pnl: unrealizedPnl,
+      unrealized_pnl: equity - balance,
       realized_pnl_today: Number(info.todayProfit || 0),
       margin_used: margin,
       margin_available: freeMargin,
@@ -472,10 +432,12 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       positions,
     };
   } catch (error) {
-    console.error('MetaAPI fetch error:', error);
+    console.error('MetaAPI proxy error:', error);
     return { error: error instanceof Error ? error.message : 'Failed to fetch MT5 data' };
   }
 }
+
+// ─── Main handler ──────────────────────────────────────────────────────────
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -487,66 +449,47 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const encryptionKey = Deno.env.get('ENCRYPTION_KEY');
     if (!encryptionKey || encryptionKey === 'default-key') {
-      return new Response(JSON.stringify({ error: 'Server configuration error: encryption key not set' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
+
     if (authError || !user) {
       return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Get all active connections for user
     const { data: connections, error: connError } = await supabase
       .from('user_broker_connections')
-      .select(`
-        *,
-        broker:brokers(id, code, display_name)
-      `)
+      .select(`*, broker:brokers(id, code, display_name)`)
       .eq('user_id', user.id)
       .eq('is_active', true);
 
     if (connError) throw connError;
 
     if (!connections || connections.length === 0) {
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         accounts: [],
-        summary: {
-          total_equity: 0,
-          total_cash: 0,
-          total_unrealized_pnl: 0,
-          total_realized_pnl: 0,
-          total_positions: 0,
-        }
+        summary: { total_equity: 0, total_cash: 0, total_unrealized_pnl: 0, total_realized_pnl: 0, total_positions: 0 },
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Fetch data from each connected broker
     const accountPromises = connections.map(async (conn): Promise<AccountData> => {
-      const credentials = await decryptCredentials(
-        conn.encrypted_credentials, 
-        conn.credentials_iv, 
-        encryptionKey
-      );
-      console.log('[broker-portfolio] Credential keys:', Object.keys(credentials));
+      const credentials = await decryptCredentials(conn.encrypted_credentials, conn.credentials_iv, encryptionKey);
       const brokerCode = conn.broker?.code;
       const config = (conn.config || {}) as Record<string, unknown>;
 
@@ -564,20 +507,16 @@ serve(async (req) => {
           accountData = await fetchMetaApiAccount(credentials, config);
           break;
         default:
-          // Check config for MT5 platform hint
           if (config.platform === 'mt5' || config.platform === 'mt4') {
             accountData = await fetchMetaApiAccount(credentials, config);
           } else {
-            accountData = { 
-              error: `Broker "${brokerCode}" not supported for live data`,
-              cash_balance: 0,
-              equity: 0,
-              positions: [],
+            accountData = {
+              error: `Broker "${brokerCode}" not supported`,
+              cash_balance: 0, equity: 0, positions: [],
             };
           }
       }
 
-      // Save snapshot on success
       if (!accountData.error) {
         await supabase.from('account_snapshots').insert({
           user_id: user.id,
@@ -621,7 +560,6 @@ serve(async (req) => {
 
     const accounts = await Promise.all(accountPromises);
 
-    // Calculate summary
     const summary = accounts.reduce((acc, account) => {
       if (!account.error) {
         acc.total_equity += account.equity;
@@ -632,11 +570,8 @@ serve(async (req) => {
       }
       return acc;
     }, {
-      total_equity: 0,
-      total_cash: 0,
-      total_unrealized_pnl: 0,
-      total_realized_pnl: 0,
-      total_positions: 0,
+      total_equity: 0, total_cash: 0, total_unrealized_pnl: 0,
+      total_realized_pnl: 0, total_positions: 0,
     });
 
     return new Response(JSON.stringify({ accounts, summary }), {
@@ -646,8 +581,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in broker-portfolio:', error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Internal server error' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });

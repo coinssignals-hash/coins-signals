@@ -6,7 +6,33 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// ─── Decrypt MT5 credentials ───────────────────────────────────────────────
+// ─── Decrypt helpers ───────────────────────────────────────────────────────
+
+function unwrapByteaToBase64(raw: unknown): string {
+  if (!raw) return '';
+  const s = String(raw);
+  let text = s;
+  if (s.startsWith('\\x')) {
+    const hex = s.slice(2);
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+    }
+    text = new TextDecoder().decode(bytes);
+  }
+  if (text.startsWith('{"') && text.includes('"0":')) {
+    try {
+      const obj = JSON.parse(text) as Record<string, number>;
+      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+      const bytes = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        bytes[i] = obj[String(keys[i])];
+      }
+      return new TextDecoder().decode(bytes);
+    } catch { /* fall through */ }
+  }
+  return text;
+}
 
 async function decryptCredentials(encryptedB64: string, ivB64: string | null, keyBase64: string): Promise<Record<string, string>> {
   try {
@@ -31,25 +57,42 @@ async function decryptCredentials(encryptedB64: string, ivB64: string | null, ke
   }
 }
 
-// ─── MetaAPI MT4/MT5 bridge ────────────────────────────────────────────────
+// ─── MetaAPI via FastAPI proxy ─────────────────────────────────────────────
 
-interface MT5Trade {
-  external_trade_id: string;
-  symbol: string;
-  side: string;
-  quantity: number;
-  entry_price: number;
-  exit_price: number | null;
-  entry_time: string;
-  exit_time: string | null;
-  commission: number;
-  swap: number;
-  profit: number;
-  status: string;
-  notes: string;
+async function metaApiClientRequest(
+  fastApiUrl: string,
+  metaApiToken: string,
+  accountId: string,
+  region: string,
+  endpoint: string,
+): Promise<Record<string, unknown>> {
+  const res = await fetch(`${fastApiUrl}/api/v1/metaapi/proxy`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      account_id: accountId,
+      region,
+      endpoint,
+      method: 'GET',
+      meta_token: metaApiToken,
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`FastAPI proxy error (${res.status}): ${errText}`);
+  }
+
+  const result = await res.json();
+  if (result.error) {
+    throw new Error(`MetaAPI error (${result.status}): ${result.body}`);
+  }
+
+  return result.data;
 }
 
-// Provision a MetaAPI account for an MT4/MT5 login
+// ─── MetaAPI provisioning (REST — works directly) ──────────────────────────
+
 async function provisionMetaApiAccount(
   metaApiToken: string,
   server: string,
@@ -57,8 +100,7 @@ async function provisionMetaApiAccount(
   password: string,
   platform: 'mt4' | 'mt5',
   brokerCode: string,
-): Promise<string> {
-  // Check if account already exists for this login+server
+): Promise<{ accountId: string; region: string }> {
   const listRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
     headers: { 'auth-token': metaApiToken },
   });
@@ -66,12 +108,15 @@ async function provisionMetaApiAccount(
   if (listRes.ok) {
     const accounts = await listRes.json();
     const existing = accounts.find(
-      (a: any) => a.login === login && a.server === server && a.state !== 'DELETED'
+      (a: any) => String(a.login) === String(login) && a.server === server && a.state !== 'DELETED'
     );
-    if (existing) return existing._id;
+    if (existing) {
+      return { accountId: existing._id, region: existing.region || 'vint-hill' };
+    }
+  } else {
+    await listRes.text(); // consume body
   }
 
-  // Create new account
   const createRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
     method: 'POST',
     headers: {
@@ -97,12 +142,10 @@ async function provisionMetaApiAccount(
   }
 
   const created = await createRes.json();
-  return created.id || created._id;
+  return { accountId: created.id || created._id, region: created.region || 'vint-hill' };
 }
 
-// Wait for MetaAPI account to deploy and connect
-async function waitForConnection(metaApiToken: string, accountId: string, maxWaitMs = 60000): Promise<void> {
-  // Deploy
+async function waitForConnection(metaApiToken: string, accountId: string, maxWaitMs = 45000): Promise<void> {
   await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
     method: 'POST',
     headers: { 'auth-token': metaApiToken },
@@ -118,34 +161,64 @@ async function waitForConnection(metaApiToken: string, accountId: string, maxWai
       if (data.connectionStatus === 'CONNECTED' || data.state === 'DEPLOYED') {
         return;
       }
+    } else {
+      await res.text();
     }
     await new Promise(r => setTimeout(r, 3000));
   }
-  throw new Error('MetaAPI: Timeout esperando conexión MT5. Verifica servidor y credenciales.');
+  throw new Error('MetaAPI: Timeout esperando conexión MT5');
 }
 
-// Fetch history from MetaAPI
-async function fetchMT5History(metaApiToken: string, accountId: string): Promise<{ trades: MT5Trade[]; account: Record<string, unknown> }> {
-  const baseUrl = `https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}`;
-  const headers = { 'auth-token': metaApiToken };
+// ─── MT5 history via proxy ─────────────────────────────────────────────────
 
-  // Account info
-  const accRes = await fetch(`${baseUrl}/account-information`, { headers });
-  const accInfo = accRes.ok ? await accRes.json() : {};
+interface MT5Trade {
+  external_trade_id: string;
+  symbol: string;
+  side: string;
+  quantity: number;
+  entry_price: number;
+  exit_price: number | null;
+  entry_time: string;
+  exit_time: string | null;
+  commission: number;
+  swap: number;
+  profit: number;
+  status: string;
+  notes: string;
+}
 
-  // History deals (last 90 days)
+async function fetchMT5History(
+  fastApiUrl: string,
+  metaApiToken: string,
+  accountId: string,
+  region: string,
+): Promise<{ trades: MT5Trade[]; account: Record<string, unknown> }> {
+  // Account info via proxy
+  let accInfo: Record<string, unknown> = {};
+  try {
+    accInfo = await metaApiClientRequest(fastApiUrl, metaApiToken, accountId, region, 'account-information');
+  } catch (e) {
+    console.warn('[mt5-bridge] Account info error:', e);
+  }
+
+  // History deals via proxy (last 90 days)
   const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   const endDate = new Date().toISOString();
 
-  const histRes = await fetch(
-    `${baseUrl}/history-deals/time/${startDate}/${endDate}?limit=1000`,
-    { headers }
-  );
-  const deals = histRes.ok ? await histRes.json() : [];
+  let deals: Record<string, unknown>[] = [];
+  try {
+    const result = await metaApiClientRequest(
+      fastApiUrl, metaApiToken, accountId, region,
+      `history-deals/time/${startDate}/${endDate}?limit=1000`
+    );
+    deals = Array.isArray(result) ? result : [];
+  } catch (e) {
+    console.warn('[mt5-bridge] History error:', e);
+  }
 
   const trades: MT5Trade[] = (Array.isArray(deals) ? deals : [])
     .filter((d: any) => d.type === 'DEAL_TYPE_BUY' || d.type === 'DEAL_TYPE_SELL')
-    .filter((d: any) => d.entryType !== 'DEAL_ENTRY_IN' || d.profit !== 0) // skip partial entries with no PnL
+    .filter((d: any) => d.entryType !== 'DEAL_ENTRY_IN' || d.profit !== 0)
     .map((d: any) => ({
       external_trade_id: String(d.id || d.positionId || d.orderId),
       symbol: d.symbol || '',
@@ -177,6 +250,8 @@ async function fetchMT5History(metaApiToken: string, accountId: string): Promise
   };
 }
 
+// ─── Main handler ──────────────────────────────────────────────────────────
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -187,18 +262,22 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const encryptionKey = Deno.env.get('ENCRYPTION_KEY');
     const metaApiToken = Deno.env.get('METAAPI_TOKEN');
+    const fastApiUrl = Deno.env.get('FASTAPI_BASE_URL');
 
     if (!encryptionKey) {
-      return new Response(JSON.stringify({ error: 'Server configuration error: encryption key missing' }), {
+      return new Response(JSON.stringify({ error: 'Encryption key missing' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     if (!metaApiToken) {
-      return new Response(JSON.stringify({ 
-        error: 'MetaAPI no configurado. Contacta al administrador para habilitar la sincronización MT4/MT5.',
-        needs_config: true,
-      }), {
+      return new Response(JSON.stringify({ error: 'MetaAPI no configurado', needs_config: true }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!fastApiUrl) {
+      return new Response(JSON.stringify({ error: 'FastAPI proxy URL not configured' }), {
         status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -228,7 +307,6 @@ serve(async (req) => {
       });
     }
 
-    // Get connection
     const { data: conn, error: connError } = await supabase
       .from('user_broker_connections')
       .select(`*, broker:brokers(code, display_name)`)
@@ -242,43 +320,14 @@ serve(async (req) => {
       });
     }
 
-    // Decrypt credentials (mt5_server, mt5_login, mt5_password, mt5_platform)
-    // bytea columns: stored as hex of JSON {"0":byteVal,...} wrapping UTF-8 of base64
-    function unwrapByteaToBase64(raw: unknown): string {
-      if (!raw) return '';
-      const s = String(raw);
-      let text = s;
-      if (s.startsWith('\\x')) {
-        const hex = s.slice(2);
-        const bytes = new Uint8Array(hex.length / 2);
-        for (let i = 0; i < hex.length; i += 2) {
-          bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-        }
-        text = new TextDecoder().decode(bytes);
-      }
-      if (text.startsWith('{"') && text.includes('"0":')) {
-        try {
-          const obj = JSON.parse(text) as Record<string, number>;
-          const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-          const bytes = new Uint8Array(keys.length);
-          for (let i = 0; i < keys.length; i++) {
-            bytes[i] = obj[String(keys[i])];
-          }
-          return new TextDecoder().decode(bytes);
-        } catch { /* fall through */ }
-      }
-      return text;
-    }
-
     const encryptedStr = unwrapByteaToBase64(conn.encrypted_credentials);
     const ivStr = conn.credentials_iv ? unwrapByteaToBase64(conn.credentials_iv) : null;
-
     const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
 
-    console.log('[mt5-bridge] Credential keys found:', Object.keys(credentials));
+    console.log('[mt5-bridge] Credential keys:', Object.keys(credentials));
 
     if (!credentials.mt5_server || !credentials.mt5_login || !credentials.mt5_password) {
-      return new Response(JSON.stringify({ error: 'Credenciales MT4/MT5 incompletas. Reconecta tu cuenta.' }), {
+      return new Response(JSON.stringify({ error: 'Credenciales MT4/MT5 incompletas' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -286,21 +335,17 @@ serve(async (req) => {
     const platform = (credentials.mt5_platform || 'mt5') as 'mt4' | 'mt5';
     const brokerCode = conn.broker?.code || 'unknown';
 
-    // 1. Provision MetaAPI account
-    const metaAccountId = await provisionMetaApiAccount(
-      metaApiToken,
-      credentials.mt5_server,
-      credentials.mt5_login,
-      credentials.mt5_password,
-      platform,
-      brokerCode,
+    // 1. Provision
+    const { accountId: metaAccountId, region } = await provisionMetaApiAccount(
+      metaApiToken, credentials.mt5_server, credentials.mt5_login,
+      credentials.mt5_password, platform, brokerCode,
     );
 
     // 2. Wait for connection
     await waitForConnection(metaApiToken, metaAccountId);
 
-    // 3. Fetch history
-    const { trades, account } = await fetchMT5History(metaApiToken, metaAccountId);
+    // 3. Fetch history via FastAPI proxy
+    const { trades, account } = await fetchMT5History(fastApiUrl, metaApiToken, metaAccountId, region);
 
     // 4. Upsert trades
     let imported = 0;
@@ -308,12 +353,8 @@ serve(async (req) => {
     const batchId = `mt5_${brokerCode}_${Date.now()}`;
 
     if (trades.length > 0) {
-      const chunks: MT5Trade[][] = [];
       for (let i = 0; i < trades.length; i += 50) {
-        chunks.push(trades.slice(i, i + 50));
-      }
-
-      for (const chunk of chunks) {
+        const chunk = trades.slice(i, i + 50);
         const rows = chunk.map(t => ({
           user_id: user.id,
           broker_source: brokerCode,
@@ -349,11 +390,7 @@ serve(async (req) => {
     // 5. Update connection
     await supabase
       .from('user_broker_connections')
-      .update({
-        is_connected: true,
-        last_sync_at: new Date().toISOString(),
-        connection_error: null,
-      })
+      .update({ is_connected: true, last_sync_at: new Date().toISOString(), connection_error: null })
       .eq('id', connection_id);
 
     // 6. Audit
@@ -391,7 +428,7 @@ serve(async (req) => {
     }
 
     if (message.includes('401') || message.includes('auth') || message.includes('credentials')) {
-      return new Response(JSON.stringify({ error: 'Credenciales MT5 inválidas. Verifica servidor, login y contraseña.', needs_reconnect: true }), {
+      return new Response(JSON.stringify({ error: 'Credenciales MT5 inválidas.', needs_reconnect: true }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
