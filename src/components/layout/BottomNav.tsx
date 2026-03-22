@@ -39,7 +39,7 @@ export function BottomNav() {
   
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border safe-bottom">
-      <div className="flex items-center justify-around h-[52px]">
+      <div className="flex items-center justify-around h-[56px]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.href;
@@ -53,19 +53,32 @@ export function BottomNav() {
               onMouseEnter={onMouseEnter(item.href)}
               onTouchStart={onTouchStart(item.href)}
               className={cn(
-                'nav-link-compact flex flex-col items-center gap-0.5 min-w-[44px] min-h-[40px] justify-center px-1.5 py-0.5 text-[9px] font-medium transition-colors relative active:scale-95',
+                'nav-link-compact flex flex-col items-center gap-0.5 min-w-[48px] min-h-[44px] justify-center px-2 py-1 text-[9px] font-medium transition-all duration-300 relative active:scale-90',
                 isActive ? 'text-primary' : 'text-muted-foreground'
               )}
             >
-              <div className="relative">
-                <Icon className={cn('w-[22px] h-[22px]', isActive && 'text-primary')} />
+              {/* Active indicator pill */}
+              {isActive && (
+                <span className="absolute -top-[1px] left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full bg-primary shadow-[0_0_8px_2px_hsl(var(--primary)/0.6)]" />
+              )}
+              <div className={cn(
+                'relative flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300',
+                isActive && 'bg-primary/15 shadow-[0_0_12px_2px_hsl(var(--primary)/0.2)]'
+              )}>
+                <Icon className={cn(
+                  'w-[20px] h-[20px] transition-all duration-300',
+                  isActive && 'text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)] scale-110'
+                )} />
                 {showBadge && (
                   <span className="absolute -top-1 -right-1.5 min-w-[13px] h-3 px-0.5 flex items-center justify-center text-[8px] font-bold bg-destructive text-destructive-foreground rounded-full animate-pulse">
                     {badgeCount > 99 ? '99+' : badgeCount}
                   </span>
                 )}
               </div>
-              <span className="leading-none">{item.label}</span>
+              <span className={cn(
+                'leading-none transition-all duration-300',
+                isActive && 'font-semibold text-primary'
+              )}>{item.label}</span>
             </Link>
           );
         })}
