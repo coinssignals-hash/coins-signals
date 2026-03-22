@@ -7,14 +7,24 @@ import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { categories } from '@/data/coursesData';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowLeft, FileText, Video, Headphones, Play, Clock, CheckCircle,
-  BookOpen, Trophy, TrendingUp, BarChart3, Gem, Bitcoin, Flame,
-  ChevronRight, Star, Zap, GraduationCap, Sparkles
+  FileText, Video, Headphones, Play, Clock, CheckCircle,
+  ChevronRight, GraduationCap, Sparkles, ChevronLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 
-// categories imported from @/data/coursesData
+/* ─────────── HSL color per category (MarketSessions style) ─────────── */
+const CATEGORY_COLORS: Record<string, string> = {
+  inicio: '217 91% 60%',       // blue
+  forex: '190 80% 55%',        // cyan
+  acciones: '140 60% 50%',     // emerald
+  metales: '40 80% 55%',       // amber/gold
+  criptomonedas: '270 60% 60%', // purple
+};
+
+const getCatColor = (id: string) => CATEGORY_COLORS[id] || '210 70% 55%';
+
+/* ─────────── Helpers ─────────── */
 
 const getTypeIcon = (type: string, size = 'w-4 h-4') => {
   switch (type) {
@@ -31,10 +41,189 @@ const difficultyColor = (d: string) => {
   return 'bg-rose-500/15 text-rose-400 border-rose-500/30';
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.07, duration: 0.4, ease: 'easeOut' as const } }),
-};
+/* ─────────── Module Card (GlowCard style like SessionCard) ─────────── */
+
+function ModuleCard({
+  module,
+  idx,
+  color,
+  gradient,
+  isExpanded,
+  onToggle,
+  isLessonCompleted,
+  navigate,
+  t,
+}: {
+  module: (typeof categories)[0]['modules'][0];
+  idx: number;
+  color: string;
+  gradient: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  isLessonCompleted: (id: string) => boolean;
+  navigate: ReturnType<typeof useNavigate>;
+  t: (k: string) => string;
+}) {
+  const completedCount = module.lessons.filter(l => isLessonCompleted(l.id)).length;
+  const modulePercent = Math.round((completedCount / module.lessons.length) * 100);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: idx * 0.07, duration: 0.35 }}
+    >
+      <div
+        className="relative rounded-2xl overflow-hidden"
+        style={{
+          background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+          border: `1px solid hsl(${color} / ${isExpanded ? '0.35' : '0.2'})`,
+          boxShadow: isExpanded ? `0 4px 24px hsl(${color} / 0.1)` : undefined,
+        }}
+      >
+        {/* Top glow line */}
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
+        }} />
+        {/* Radial glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
+        }} />
+
+        <div className="relative">
+          {/* Header */}
+          <button
+            onClick={onToggle}
+            className="w-full text-left p-4 flex items-center gap-3"
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+              style={{
+                background: `linear-gradient(135deg, hsl(${color} / 0.2), hsl(${color} / 0.08))`,
+                border: `1px solid hsl(${color} / 0.25)`,
+                boxShadow: `0 4px 12px hsl(${color} / 0.1)`,
+              }}
+            >
+              {getTypeIcon(module.type, 'w-5 h-5')}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground truncate">{module.title}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', difficultyColor(module.difficulty))}>
+                  {module.difficulty}
+                </span>
+                <span className="text-[11px] text-muted-foreground">{module.lessons.length} {t('courses_lessons')}</span>
+                {completedCount > 0 && (
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary">
+                    {completedCount}/{module.lessons.length}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {modulePercent === 100 && (
+                <div className="w-7 h-7 rounded-full flex items-center justify-center"
+                  style={{ background: 'hsl(var(--bullish) / 0.15)', border: '1px solid hsl(var(--bullish) / 0.3)' }}>
+                  <CheckCircle className="w-4 h-4" style={{ color: 'hsl(var(--bullish))' }} />
+                </div>
+              )}
+              <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </motion.div>
+            </div>
+          </button>
+
+          {/* Progress bar */}
+          {completedCount > 0 && (
+            <div className="px-4 pb-1">
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `hsl(${color} / 0.1)` }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: `linear-gradient(90deg, hsl(${color} / 0.5), hsl(${color}))`,
+                    boxShadow: modulePercent > 50 ? `0 0 6px hsl(${color} / 0.3)` : undefined,
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${modulePercent}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Lessons */}
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="overflow-hidden"
+              >
+                <div className="px-4 pb-4 pt-2 space-y-1.5">
+                  {module.lessons.map((lesson, li) => {
+                    const completed = isLessonCompleted(lesson.id);
+                    return (
+                      <motion.div
+                        key={lesson.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: li * 0.05 }}
+                        onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
+                        className={cn(
+                          'flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all group',
+                          completed
+                            ? 'border shadow-sm'
+                            : 'hover:bg-muted/10'
+                        )}
+                        style={{
+                          background: completed ? `hsl(${color} / 0.06)` : undefined,
+                          borderColor: completed ? `hsl(${color} / 0.2)` : 'transparent',
+                        }}
+                      >
+                        <div className={cn(
+                          'w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold transition-all',
+                        )} style={{
+                          background: completed ? `hsl(${color})` : 'hsl(var(--muted) / 0.3)',
+                          color: completed ? 'hsl(var(--primary-foreground))' : 'hsl(var(--muted-foreground))',
+                          border: completed ? undefined : '1px solid hsl(var(--border))',
+                          boxShadow: completed ? `0 0 10px hsl(${color} / 0.3)` : undefined,
+                        }}>
+                          {completed ? <CheckCircle className="w-3.5 h-3.5" /> : li + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn('text-sm truncate', completed ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground')}>
+                            {lesson.title}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {getTypeIcon(lesson.type, 'w-3 h-3')}
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-2.5 h-2.5" /> {lesson.duration}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all"
+                          style={{
+                            background: 'hsl(var(--muted) / 0.15)',
+                            border: '1px solid hsl(var(--border) / 0.3)',
+                          }}>
+                          <Play className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground ml-0.5 transition-colors" />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─────────── Main Page ─────────── */
 
 export default function Courses() {
   const navigate = useNavigate();
@@ -50,7 +239,9 @@ export default function Courses() {
       podcast: all.filter(l => l.type === 'podcast').length,
     };
   }, []);
+
   const currentCategory = categories.find(c => c.id === activeCategory)!;
+  const color = getCatColor(activeCategory);
 
   const stats = useMemo(() => {
     const totalLessons = categories.flatMap(c => c.modules.flatMap(m => m.lessons)).length;
@@ -62,349 +253,220 @@ export default function Courses() {
     };
   }, [progress.totalCompletedLessons]);
 
+  // Category-level stats
+  const catStats = useMemo(() => {
+    const lessons = currentCategory.modules.flatMap(m => m.lessons);
+    const completed = lessons.filter(l => isLessonCompleted(l.id)).length;
+    return { total: lessons.length, completed, percentage: lessons.length > 0 ? Math.round((completed / lessons.length) * 100) : 0 };
+  }, [currentCategory, isLessonCompleted]);
+
   return (
     <PageShell>
       <Header />
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
+        {/* ── Hero Card (GlowCard style) ── */}
+        <div className="relative rounded-2xl overflow-hidden" style={{
+          background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+          border: `1px solid hsl(${color} / 0.2)`,
+        }}>
+          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
+          }} />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
+            background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
+          }} />
 
-      <main className="py-4 px-4 pb-28 space-y-5">
-        {/* Back */}
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          {t('courses_back')}
-        </Link>
-
-        {/* Hero Card — enhanced */}
-        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
-          <div className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden">
-            <div className="relative p-5 space-y-4 overflow-hidden">
-              {/* Decorative bg glow */}
-              <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-cyan-500/6 blur-3xl pointer-events-none" />
-
-              <div className="relative flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <motion.div
-                    className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 via-cyan-500/20 to-blue-600/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_hsl(217_91%_60%/0.15)]"
-                    whileHover={{ scale: 1.08, rotate: 3 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <GraduationCap className="w-6 h-6 text-primary" />
-                  </motion.div>
-                  <div>
-                    <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
-                      {t('courses_academy')}
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                    </h1>
-                    <p className="text-xs text-muted-foreground">{t('courses_master')}</p>
-                  </div>
+          <div className="relative p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                  background: `linear-gradient(135deg, hsl(${color} / 0.2), hsl(${color} / 0.08))`,
+                  border: `1px solid hsl(${color} / 0.25)`,
+                  boxShadow: `0 4px 12px hsl(${color} / 0.1)`,
+                }}>
+                  <GraduationCap className="w-5 h-5" style={{ color: `hsl(${color})` }} />
                 </div>
-                <div className="text-right">
-                  <motion.span
-                    className="text-2xl font-bold text-primary tabular-nums"
-                    key={stats.percentage}
-                    initial={{ scale: 1.2, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 200 }}
-                  >
-                    {stats.percentage}%
-                  </motion.span>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('courses_progress')}</p>
+                <div>
+                  <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
+                    {t('courses_academy')}
+                    <Sparkles className="w-4 h-4" style={{ color: `hsl(40 80% 55%)` }} />
+                  </h1>
+                  <p className="text-xs text-muted-foreground">{t('courses_master')}</p>
                 </div>
               </div>
-
-              {/* Progress Bar */}
-              <div className="relative space-y-1.5">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{stats.completed} {t('courses_lessons_of')} {stats.total} {t('courses_lessons')}</span>
-                  <span className="flex items-center gap-1 text-primary">
-                    <Flame className="w-3 h-3" />
-                    {stats.completed > 0 ? t('courses_in_progress') : t('courses_start_now')}
-                  </span>
-                </div>
-                <div className="h-2.5 rounded-full bg-secondary/60 overflow-hidden border border-border/20">
-                  <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-primary via-cyan-400 to-primary relative"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${stats.percentage}%` }}
-                    transition={{ duration: 1.2, ease: 'easeOut' }}
-                  >
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.15)_50%,transparent_100%)] animate-[shimmer_2s_ease-in-out_infinite]" />
-                  </motion.div>
-                </div>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="relative grid grid-cols-3 gap-3">
-                {[
-                  { icon: BookOpen, label: t('courses_courses'), value: categories.length, color: 'text-blue-400', bg: 'from-blue-500/10 to-blue-500/5' },
-                  { icon: Trophy, label: t('courses_completed'), value: stats.completed, color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5' },
-                  { icon: Star, label: t('courses_modules'), value: categories.reduce((a, c) => a + c.modules.length, 0), color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5' },
-                ].map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    custom={i}
-                    initial="hidden"
-                    animate="visible"
-                    variants={fadeUp}
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    className={cn(
-                      'text-center p-3 rounded-xl bg-gradient-to-b border border-border/30 cursor-default',
-                      stat.bg
-                    )}
-                  >
-                    <stat.icon className={cn('w-4 h-4 mx-auto mb-1.5', stat.color)} />
-                    <p className="text-lg font-bold text-foreground tabular-nums">{stat.value}</p>
-                    <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-                  </motion.div>
-                ))}
+              <div className="text-right">
+                <span className="text-2xl font-bold tabular-nums" style={{ color: `hsl(${color})` }}>
+                  {stats.percentage}%
+                </span>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('courses_progress')}</p>
               </div>
             </div>
-          </div>
-        </motion.div>
 
-        {/* Category Tabs — centered icon + label */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+            {/* Global progress bar */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>{stats.completed} / {stats.total} {t('courses_lessons')}</span>
+                <span className="font-bold" style={{ color: `hsl(${color})` }}>
+                  {stats.completed > 0 ? t('courses_in_progress') : t('courses_start_now')}
+                </span>
+              </div>
+              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'hsl(var(--muted) / 0.15)' }}>
+                <motion.div
+                  className="h-full rounded-full relative"
+                  style={{
+                    background: `linear-gradient(90deg, hsl(${color} / 0.5), hsl(${color}))`,
+                    boxShadow: `0 0 8px hsl(${color} / 0.4)`,
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${stats.percentage}%` }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                >
+                  {stats.percentage > 0 && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-foreground shadow-lg" />
+                  )}
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Stats grid (like SessionCard stats) */}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: t('courses_courses'), value: categories.length },
+                { label: t('courses_completed'), value: stats.completed },
+                { label: t('courses_modules'), value: categories.reduce((a, c) => a + c.modules.length, 0) },
+              ].map((stat) => (
+                <div key={stat.label} className="rounded-xl p-2.5 text-center" style={{
+                  background: 'hsl(var(--card) / 0.6)',
+                  border: '1px solid hsl(var(--border) / 0.5)',
+                }}>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1">{stat.label}</span>
+                  <span className="text-base font-bold tabular-nums" style={{ color: `hsl(${color})` }}>{stat.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Category Tabs (grid like MarketSessions) ── */}
+        <div className={cn('grid gap-1', categories.length <= 5 ? 'grid-cols-5' : 'grid-cols-5')}>
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isActive = activeCategory === cat.id;
+            const catColor = getCatColor(cat.id);
             return (
-              <motion.button
+              <button
                 key={cat.id}
                 onClick={() => { setActiveCategory(cat.id); setExpandedModule(null); }}
-                whileTap={{ scale: 0.95 }}
                 className={cn(
-                  'relative flex flex-col items-center justify-center gap-1 min-w-[68px] px-3 py-2.5 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-all border',
-                  isActive
-                    ? cn('bg-primary/15 border-primary/40 text-primary', cat.glow)
-                    : 'bg-secondary/40 border-border/30 text-muted-foreground hover:text-foreground hover:border-border hover:bg-secondary/60'
+                  'flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
+                  isActive ? 'text-foreground shadow-lg' : 'text-muted-foreground'
                 )}
+                style={{
+                  background: isActive
+                    ? `linear-gradient(135deg, hsl(${catColor} / 0.2), hsl(${catColor} / 0.08))`
+                    : 'hsl(var(--card) / 0.5)',
+                  border: `1px solid ${isActive ? `hsl(${catColor} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                  boxShadow: isActive ? `0 2px 8px hsl(${catColor} / 0.15)` : undefined,
+                }}
               >
-                <Icon className={cn('w-4 h-4', isActive && 'drop-shadow-[0_0_4px_currentColor]')} />
-                <span className="leading-none">{cat.name}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="categoryIndicator"
-                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-primary"
-                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  />
-                )}
-              </motion.button>
+                <Icon className="w-4 h-4" style={isActive ? { color: `hsl(${catColor})`, filter: `drop-shadow(0 0 4px hsl(${catColor} / 0.5))` } : undefined} />
+                <span className="truncate w-full text-center leading-none">{cat.name.length > 6 ? cat.name.slice(0, 5) : cat.name}</span>
+              </button>
             );
           })}
         </div>
 
-        {/* Modules — enhanced cards */}
+        {/* ── Category Progress ── */}
+        <div className="rounded-xl p-3" style={{
+          background: 'hsl(var(--card) / 0.4)',
+          border: '1px solid hsl(var(--border) / 0.4)',
+        }}>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-1.5">
+              <currentCategory.icon className="w-3.5 h-3.5" style={{ color: `hsl(${color})` }} />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{currentCategory.name}</span>
+            </div>
+            <span className="text-xs font-mono font-bold tabular-nums" style={{ color: `hsl(${color})` }}>
+              {catStats.completed}/{catStats.total} • {catStats.percentage}%
+            </span>
+          </div>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `hsl(${color} / 0.1)` }}>
+            <motion.div
+              className="h-full rounded-full"
+              style={{ background: `linear-gradient(90deg, hsl(${color} / 0.4), hsl(${color}))` }}
+              initial={{ width: 0 }}
+              animate={{ width: `${catStats.percentage}%` }}
+              transition={{ duration: 0.6 }}
+            />
+          </div>
+        </div>
+
+        {/* ── Modules ── */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -14 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
             className="space-y-3"
           >
             {currentCategory.modules.map((module, idx) => {
               const moduleKey = `${activeCategory}-${idx}`;
-              const isExpanded = expandedModule === moduleKey;
-              const completedCount = module.lessons.filter(l => isLessonCompleted(l.id)).length;
-              const modulePercent = Math.round((completedCount / module.lessons.length) * 100);
-
               return (
-                <motion.div
+                <ModuleCard
                   key={moduleKey}
-                  custom={idx}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeUp}
-                  className={cn(
-                    'rounded-xl border overflow-hidden backdrop-blur-sm transition-all duration-300',
-                    isExpanded
-                      ? 'border-primary/30 bg-card/80 shadow-[0_4px_24px_rgba(0,0,0,0.15)]'
-                      : 'border-border/40 bg-card/60 hover:border-border/60'
-                  )}
-                >
-                  {/* Module Header */}
-                  <button
-                    onClick={() => setExpandedModule(isExpanded ? null : moduleKey)}
-                    className="w-full text-left p-4 flex items-center gap-3 hover:bg-secondary/20 transition-all"
-                  >
-                    <motion.div
-                      className={cn(
-                        'w-11 h-11 rounded-xl flex items-center justify-center bg-gradient-to-br border border-white/5',
-                        currentCategory.gradient
-                      )}
-                      whileHover={{ rotate: 5, scale: 1.05 }}
-                    >
-                      {getTypeIcon(module.type, 'w-5 h-5')}
-                    </motion.div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-semibold text-foreground truncate">{module.title}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', difficultyColor(module.difficulty))}>
-                          {module.difficulty}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground">{module.lessons.length} {t('courses_lessons')}</span>
-                        {completedCount > 0 && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary">
-                            {completedCount}/{module.lessons.length}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {modulePercent === 100 && (
-                        <motion.div
-                          className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 300 }}
-                        >
-                          <CheckCircle className="w-4 h-4 text-emerald-400" />
-                        </motion.div>
-                      )}
-                      <motion.div
-                        animate={{ rotate: isExpanded ? 90 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                      </motion.div>
-                    </div>
-                  </button>
-
-                  {/* Progress bar */}
-                  {completedCount > 0 && (
-                    <div className="px-4 pb-0">
-                      <div className="h-1 rounded-full bg-secondary/60 overflow-hidden">
-                        <motion.div
-                          className="h-full rounded-full bg-gradient-to-r from-primary to-cyan-400"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${modulePercent}%` }}
-                          transition={{ duration: 0.7, ease: 'easeOut' }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Lessons */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-4 pb-4 pt-3 space-y-2">
-                          {module.lessons.map((lesson, lessonIdx) => {
-                            const completed = isLessonCompleted(lesson.id);
-                            return (
-                              <motion.div
-                                key={lesson.id}
-                                initial={{ opacity: 0, x: -12 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: lessonIdx * 0.06, duration: 0.3 }}
-                                onClick={() => navigate(`/courses/lesson/${lesson.id}`)}
-                                whileHover={{ x: 4 }}
-                                className={cn(
-                                  'flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all group',
-                                  completed
-                                    ? 'bg-primary/8 hover:bg-primary/12 border border-primary/20 shadow-[0_0_12px_hsl(217_91%_60%/0.06)]'
-                                    : 'bg-secondary/20 hover:bg-secondary/40 border border-transparent hover:border-border/30'
-                                )}
-                              >
-                                {/* Number / Check */}
-                                <div className={cn(
-                                  'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold transition-all',
-                                  completed
-                                    ? 'bg-primary text-primary-foreground shadow-[0_0_10px_hsl(217_91%_60%/0.3)]'
-                                    : 'bg-secondary border border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-foreground'
-                                )}>
-                                  {completed ? <CheckCircle className="w-3.5 h-3.5" /> : lessonIdx + 1}
-                                </div>
-
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                  <p className={cn(
-                                    'text-sm truncate transition-colors',
-                                    completed ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'
-                                  )}>
-                                    {lesson.title}
-                                  </p>
-                                  <div className="flex items-center gap-2 mt-0.5">
-                                    {getTypeIcon(lesson.type, 'w-3 h-3')}
-                                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                      <Clock className="w-2.5 h-2.5" />
-                                      {lesson.duration}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {/* Play button — enhanced */}
-                                <motion.div
-                                  className={cn(
-                                    'w-9 h-9 rounded-full flex items-center justify-center transition-all',
-                                    'bg-secondary/50 group-hover:bg-primary/20 border border-transparent group-hover:border-primary/30'
-                                  )}
-                                  whileHover={{ scale: 1.15 }}
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  <Play className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors ml-0.5" />
-                                </motion.div>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                  module={module}
+                  idx={idx}
+                  color={color}
+                  gradient={currentCategory.gradient}
+                  isExpanded={expandedModule === moduleKey}
+                  onToggle={() => setExpandedModule(expandedModule === moduleKey ? null : moduleKey)}
+                  isLessonCompleted={isLessonCompleted}
+                  navigate={navigate}
+                  t={t}
+                />
               );
             })}
           </motion.div>
         </AnimatePresence>
 
-        {/* Featured Cards — navigate to independent pages */}
-        <div className="grid grid-cols-2 gap-3">
-          <motion.div
-            whileHover={{ y: -3, scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate('/courses/media/videos')}
-            className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 via-blue-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden cursor-pointer"
-          >
-            <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-blue-500/8 blur-2xl" />
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center border border-blue-500/20">
-                <Video className="w-5 h-5 text-blue-400" />
+        {/* ── Featured Cards (Videos & Podcasts) ── */}
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { type: 'videos', icon: Video, label: t('courses_videos'), count: allByType.video, sublabel: t('courses_videos_available'), color: '217 91% 60%' },
+            { type: 'podcasts', icon: Headphones, label: t('courses_podcasts'), count: allByType.podcast, sublabel: t('courses_episodes'), color: '270 60% 60%' },
+          ].map(item => (
+            <motion.div
+              key={item.type}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate(`/courses/media/${item.type}`)}
+              className="relative rounded-2xl overflow-hidden cursor-pointer"
+              style={{
+                background: `linear-gradient(165deg, hsl(${item.color} / 0.08) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+                border: `1px solid hsl(${item.color} / 0.2)`,
+              }}
+            >
+              <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+                background: `linear-gradient(90deg, transparent, hsl(${item.color} / 0.5), transparent)`,
+              }} />
+              <div className="relative p-3.5 space-y-2">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                  background: `hsl(${item.color} / 0.12)`,
+                  border: `1px solid hsl(${item.color} / 0.2)`,
+                }}>
+                  <item.icon className="w-4.5 h-4.5" style={{ color: `hsl(${item.color})` }} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">{item.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{item.count} {item.sublabel}</p>
+                </div>
+                <div className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: `hsl(${item.color})` }}>
+                  <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
+                </div>
               </div>
-              <p className="text-sm font-bold text-foreground mt-2">{t('courses_videos')}</p>
-              <p className="text-[11px] text-muted-foreground">{allByType.video} {t('courses_videos_available')}</p>
-              <div className="flex items-center gap-1 text-[10px] text-blue-400 mt-1.5 font-medium">
-                <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -3, scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate('/courses/media/podcasts')}
-            className="rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-500/10 via-purple-900/5 to-transparent p-4 space-y-2.5 backdrop-blur-sm relative overflow-hidden cursor-pointer"
-          >
-            <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-purple-500/8 blur-2xl" />
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center border border-purple-500/20">
-                <Headphones className="w-5 h-5 text-purple-400" />
-              </div>
-              <p className="text-sm font-bold text-foreground mt-2">{t('courses_podcasts')}</p>
-              <p className="text-[11px] text-muted-foreground">{allByType.podcast} {t('courses_episodes')}</p>
-              <div className="flex items-center gap-1 text-[10px] text-purple-400 mt-1.5 font-medium">
-                <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ))}
         </div>
       </main>
     </PageShell>
