@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield, Monitor } from 'lucide-react';
+import { ArrowLeft, Check, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, Monitor } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
+import { useBrokerConnections } from '@/hooks/useBrokerConnections';
 import { useBrokerSync } from '@/hooks/useBrokerSync';
 import { useMT5Sync } from '@/hooks/useMT5Sync';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,6 +13,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
 import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
+import { APIConnectDialog } from '@/components/broker/APIConnectDialog';
 
 const ACCENT = '200 90% 58%';
 
@@ -38,15 +37,9 @@ export default function LinkBroker() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showMT5Dialog, setShowMT5Dialog] = useState(false);
   const [mt5Broker, setMT5Broker] = useState<BrokerCatalogItem | null>(null);
-
-  const [showConnectForm, setShowConnectForm] = useState(false);
-  const [selectedCatalogBroker, setSelectedCatalogBroker] = useState<BrokerCatalogItem | null>(null);
-  const [formData, setFormData] = useState({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [showApiSecret, setShowApiSecret] = useState(false);
-  const [isTestingConnection, setIsTestingConnection] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isLiveMode, setIsLiveMode] = useState(false);
+  const [showAPIDialog, setShowAPIDialog] = useState(false);
+  const [apiBroker, setAPIBroker] = useState<BrokerCatalogItem | null>(null);
+  
 
   const connectedBrokerCodes = connections
     .filter(c => c.is_connected && c.broker)
@@ -118,12 +111,8 @@ export default function LinkBroker() {
       navigate('/auth');
       return;
     }
-    setSelectedCatalogBroker(catalogBroker);
-    setFormData({
-      connectionName: `${catalogBroker.name} - ${isLiveMode ? 'Live' : 'Demo'}`,
-      apiKey: '', apiSecret: '', accountId: '', accessToken: '',
-    });
-    setShowConnectForm(true);
+    setAPIBroker(catalogBroker);
+    setShowAPIDialog(true);
   };
 
   const handleSyncBroker = async (catalogBroker: BrokerCatalogItem) => {
@@ -135,56 +124,33 @@ export default function LinkBroker() {
     }
   };
 
-  const handleTestConnection = async () => {
-    if (!selectedCatalogBroker) return;
-    setIsTestingConnection(true);
-    const result = await testConnection(
-      undefined,
-      selectedCatalogBroker.code,
-      {
-        api_key: formData.apiKey,
-        api_secret: formData.apiSecret,
-        account_id: formData.accountId || undefined,
-        access_token: formData.accessToken || undefined,
-      },
-      isLiveMode ? 'live' : 'demo'
-    );
-    setIsTestingConnection(false);
-
-    if (result.success) {
-      toast.success(result.message || 'Conexión exitosa');
-    } else {
-      toast.error(result.message || 'Error de conexión');
-    }
+  const handleAPITest = async (data: {
+    brokerCode: string;
+    credentials: { api_key?: string; api_secret?: string; account_id?: string; access_token?: string };
+    environment: 'demo' | 'live';
+  }) => {
+    const result = await testConnection(undefined, data.brokerCode, data.credentials, data.environment);
+    return result;
   };
 
-  const handleSaveConnection = async () => {
-    if (!selectedCatalogBroker || !user) return;
-    const dbBroker = brokers.find(b => b.code === selectedCatalogBroker.code);
+  const handleAPISave = async (data: {
+    broker: BrokerCatalogItem;
+    connectionName: string;
+    environment: 'demo' | 'live';
+    credentials: { api_key?: string; api_secret?: string; account_id?: string; access_token?: string };
+  }): Promise<boolean> => {
+    const dbBroker = brokers.find(b => b.code === data.broker.code);
     if (!dbBroker) {
       toast.error('Broker no encontrado en la base de datos');
-      return;
+      return false;
     }
-
-    setIsSaving(true);
     const connection = await createConnection(
       dbBroker.id,
-      formData.connectionName || `${selectedCatalogBroker.name} Account`,
-      isLiveMode ? 'live' : 'demo',
-      {
-        api_key: formData.apiKey,
-        api_secret: formData.apiSecret,
-        account_id: formData.accountId || undefined,
-        access_token: formData.accessToken || undefined,
-      }
+      data.connectionName,
+      data.environment,
+      data.credentials,
     );
-    setIsSaving(false);
-
-    if (connection) {
-      setShowConnectForm(false);
-      setSelectedCatalogBroker(null);
-      setFormData({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
-    }
+    return !!connection;
   };
 
   const handleDeleteConnection = async (connectionId: string) => {
@@ -422,175 +388,14 @@ export default function LinkBroker() {
           />
         </div>
 
-        {/* Connect Form Modal */}
-        {showConnectForm && selectedCatalogBroker && (
-          <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-end justify-center">
-            <div
-              className="w-full max-w-md rounded-t-2xl p-5 space-y-4 animate-in slide-in-from-bottom duration-200"
-              style={{
-                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.06) 0%, hsl(var(--card)) 30%, hsl(var(--background)) 100%)`,
-                borderTop: `1px solid hsl(${ACCENT} / 0.3)`,
-                borderLeft: `1px solid hsl(${ACCENT} / 0.15)`,
-                borderRight: `1px solid hsl(${ACCENT} / 0.15)`,
-              }}
-            >
-              {/* Top glow */}
-              <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-2xl" style={{ background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)` }} />
-
-              <div className="flex items-center justify-between">
-                <h3 className="text-foreground font-semibold flex items-center gap-2">
-                  <span className="text-xl">{selectedCatalogBroker.logoEmoji}</span>
-                  Conectar {selectedCatalogBroker.name}
-                </h3>
-                <button onClick={() => setShowConnectForm(false)} className="text-muted-foreground hover:text-foreground transition-colors">✕</button>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="text-muted-foreground text-xs mb-1 block">Nombre de conexión</label>
-                  <Input value={formData.connectionName} onChange={(e) => setFormData(p => ({ ...p, connectionName: e.target.value }))} placeholder="Mi cuenta Demo" className="h-9 text-sm" />
-                </div>
-
-                {['oanda', 'alpaca', 'pepperstone', 'avatrade', 'ic_markets', 'interactive_brokers', 'tradestation', 'tradovate'].includes(selectedCatalogBroker.code) && (
-                  <>
-                    <div>
-                      <label className="text-muted-foreground text-xs mb-1 block">
-                        {selectedCatalogBroker.code === 'tradestation' ? 'Access Token (OAuth)' : 'API Key'}
-                      </label>
-                      <div className="relative">
-                        <Input
-                          type={showApiKey ? 'text' : 'password'}
-                          value={selectedCatalogBroker.code === 'tradestation' ? formData.accessToken : formData.apiKey}
-                          onChange={(e) => setFormData(p => ({
-                            ...p,
-                            [selectedCatalogBroker.code === 'tradestation' ? 'accessToken' : 'apiKey']: e.target.value,
-                          }))}
-                          placeholder="Tu API key..."
-                          className="h-9 text-sm pr-9"
-                        />
-                        <button onClick={() => setShowApiKey(!showApiKey)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
-                          {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                        </button>
-                      </div>
-                    </div>
-
-                    {selectedCatalogBroker.code !== 'oanda' && selectedCatalogBroker.code !== 'tradestation' && (
-                      <div>
-                        <label className="text-muted-foreground text-xs mb-1 block">
-                          {selectedCatalogBroker.code === 'tradovate' ? 'Password' : 'API Secret'}
-                        </label>
-                        <div className="relative">
-                          <Input
-                            type={showApiSecret ? 'text' : 'password'}
-                            value={formData.apiSecret}
-                            onChange={(e) => setFormData(p => ({ ...p, apiSecret: e.target.value }))}
-                            placeholder="Tu secret..."
-                            className="h-9 text-sm pr-9"
-                          />
-                          <button onClick={() => setShowApiSecret(!showApiSecret)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
-                            {showApiSecret ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {(selectedCatalogBroker.code === 'oanda' || selectedCatalogBroker.code === 'tradovate') && (
-                      <div>
-                        <label className="text-muted-foreground text-xs mb-1 block">
-                          {selectedCatalogBroker.code === 'oanda' ? 'Account ID' : 'App ID (opcional)'}
-                        </label>
-                        <Input
-                          value={formData.accountId}
-                          onChange={(e) => setFormData(p => ({ ...p, accountId: e.target.value }))}
-                          placeholder={selectedCatalogBroker.code === 'oanda' ? '101-001-12345678-001' : 'TradeSync'}
-                          className="h-9 text-sm"
-                        />
-                      </div>
-                    )}
-
-                    {selectedCatalogBroker.code === 'interactive_brokers' && (
-                      <div
-                        className="p-2 rounded-lg"
-                        style={{
-                          background: 'hsl(45 80% 55% / 0.08)',
-                          border: '1px solid hsl(45 80% 55% / 0.25)',
-                        }}
-                      >
-                        <p className="text-[10px] text-amber-400 flex items-start gap-1.5">
-                          <AlertCircle className="w-3 h-3 flex-shrink-0 mt-0.5" />
-                          IBKR requiere TWS ejecutándose localmente. Las llamadas van a localhost:5000.
-                        </p>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* Environment toggle */}
-                <div
-                  className="flex items-center justify-between p-2 rounded-lg"
-                  style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}
-                >
-                  <span className="text-xs text-muted-foreground">Entorno</span>
-                  <div className="flex items-center gap-2">
-                    <span className={cn("text-xs", isLiveMode ? "text-amber-400 font-medium" : "text-muted-foreground")}>
-                      {isLiveMode ? '🔴 Live' : '🟢 Demo'}
-                    </span>
-                    <Switch checked={isLiveMode} onCheckedChange={setIsLiveMode} className="data-[state=checked]:bg-amber-600" />
-                  </div>
-                </div>
-
-                {isLiveMode && (
-                  <div
-                    className="p-2 rounded-lg"
-                    style={{
-                      background: 'hsl(45 80% 55% / 0.08)',
-                      border: '1px solid hsl(45 80% 55% / 0.25)',
-                    }}
-                  >
-                    <p className="text-[10px] text-amber-400">{t('lb_live_warning')}</p>
-                  </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleTestConnection}
-                    disabled={isTestingConnection || !formData.apiKey}
-                    className="flex-1 py-2.5 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 active:scale-95"
-                    style={{
-                      background: 'hsl(var(--card) / 0.8)',
-                      border: `1px solid hsl(${ACCENT} / 0.3)`,
-                      color: `hsl(${ACCENT})`,
-                    }}
-                  >
-                    {isTestingConnection ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                    {isTestingConnection ? 'Probando...' : 'Probar'}
-                  </button>
-                  <button
-                    onClick={handleSaveConnection}
-                    disabled={isSaving || !formData.apiKey}
-                    className="flex-1 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-95"
-                  >
-                    {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                    {isSaving ? 'Guardando...' : 'Conectar'}
-                  </button>
-                </div>
-
-                {/* Privacy notice */}
-                <div
-                  className="flex items-start gap-2 p-2.5 rounded-xl"
-                  style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}
-                >
-                  <Shield className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                  <p className="text-[9px] text-muted-foreground leading-relaxed">
-                    Credenciales cifradas AES-256-GCM. Solo lectura — no ejecutamos órdenes. Solo se almacenan en tu cuenta segura.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
+        {/* API Connect Dialog */}
+        <APIConnectDialog
+          open={showAPIDialog}
+          onOpenChange={setShowAPIDialog}
+          broker={apiBroker}
+          onTest={handleAPITest}
+          onSave={handleAPISave}
+        />
         {/* Import Modal */}
         <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
 
