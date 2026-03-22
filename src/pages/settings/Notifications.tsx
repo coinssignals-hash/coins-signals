@@ -26,18 +26,37 @@ export default function Notifications() {
     { type: 'alert', label: t('notif_critical_alert'), description: t('notif_critical_desc'), icon: AlertTriangle, color: 'text-yellow-500' },
   ];
   
-  const [settings, setSettings] = useState({
-    pushNotifications: true,
-    signalAlert: true,
-    whatsapp: true,
-    telegram: true,
-    sms: false,
-    email: true,
-    realTimeUpdate: true,
-    entryOperation: true,
-    takeProfit: true,
-    stopLoss: true,
-    brokerAccount: false,
+  // Keys stored in profile DB
+  const DB_KEYS = ['pushNotifications', 'signalAlert', 'email'] as const;
+  const DB_MAP: Record<string, keyof Pick<NonNullable<typeof profile>, 'push_notifications_enabled' | 'signal_alerts_enabled' | 'email_notifications_enabled'>> = {
+    pushNotifications: 'push_notifications_enabled',
+    signalAlert: 'signal_alerts_enabled',
+    email: 'email_notifications_enabled',
+  };
+
+  // Load persisted local settings
+  const loadLocalSettings = () => {
+    try {
+      const saved = localStorage.getItem('app-notification-settings');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  };
+
+  const [settings, setSettings] = useState(() => {
+    const localSaved = loadLocalSettings();
+    return {
+      pushNotifications: localSaved.pushNotifications ?? true,
+      signalAlert: localSaved.signalAlert ?? true,
+      whatsapp: localSaved.whatsapp ?? true,
+      telegram: localSaved.telegram ?? true,
+      sms: localSaved.sms ?? false,
+      email: localSaved.email ?? true,
+      realTimeUpdate: localSaved.realTimeUpdate ?? true,
+      entryOperation: localSaved.entryOperation ?? true,
+      takeProfit: localSaved.takeProfit ?? true,
+      stopLoss: localSaved.stopLoss ?? true,
+      brokerAccount: localSaved.brokerAccount ?? false,
+    };
   });
 
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -46,12 +65,24 @@ export default function Notifications() {
   const [whatsappSaved, setWhatsappSaved] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
 
+  // Sync from profile DB on load
   useEffect(() => {
     if (profile) {
       setWhatsappNumber(profile.whatsapp_number || '');
       setWhatsappEnabled(profile.whatsapp_notifications_enabled || false);
+      setSettings(prev => ({
+        ...prev,
+        pushNotifications: profile.push_notifications_enabled ?? prev.pushNotifications,
+        signalAlert: profile.signal_alerts_enabled ?? prev.signalAlert,
+        email: profile.email_notifications_enabled ?? prev.email,
+      }));
     }
   }, [profile]);
+
+  // Persist all settings changes
+  useEffect(() => {
+    localStorage.setItem('app-notification-settings', JSON.stringify(settings));
+  }, [settings]);
 
   useEffect(() => {
     enableAudio();
