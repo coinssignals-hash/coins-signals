@@ -54,30 +54,6 @@ function byteaToBytes(raw: unknown): Uint8Array {
   return new TextEncoder().encode(String(raw));
 }
 
-// Parse Supabase bytea (JSON string '{"0":99,...}' or hex '\x...') to plain string
-function parseByteaToString(raw: unknown): string {
-  if (!raw) return '';
-  const s = String(raw);
-  // JSON object format from Supabase JS client
-  if (s.startsWith('{"') && s.includes('"0":')) {
-    try {
-      const obj = JSON.parse(s) as Record<string, number>;
-      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-      return keys.map(k => String.fromCharCode(obj[String(k)])).join('');
-    } catch { /* fall through */ }
-  }
-  // Hex format
-  if (s.startsWith('\\x')) {
-    const hex = s.slice(2);
-    let result = '';
-    for (let i = 0; i < hex.length; i += 2) {
-      result += String.fromCharCode(parseInt(hex.substring(i, i + 2), 16));
-    }
-    return result;
-  }
-  return s;
-}
-
 // Decrypt AES-256-GCM encrypted credentials
 async function decryptCredentials(
   encryptedRaw: unknown,
@@ -85,10 +61,22 @@ async function decryptCredentials(
   keyStr: string
 ): Promise<Record<string, string>> {
   try {
-    const encB64 = parseByteaToString(encryptedRaw);
-    const ivB64 = ivRaw ? parseByteaToString(ivRaw) : null;
+    // Convert bytea to raw bytes, then decode as UTF-8 to get the base64 string
+    const encBytes = byteaToBytes(encryptedRaw);
+    const encB64 = new TextDecoder().decode(encBytes);
+    
+    const ivBytes = ivRaw ? byteaToBytes(ivRaw) : null;
+    const ivB64 = ivBytes && ivBytes.length > 0 ? new TextDecoder().decode(ivBytes) : null;
+
+    console.log('[broker-portfolio] decrypt debug:', {
+      encB64Len: encB64.length,
+      encB64First20: encB64.substring(0, 20),
+      ivB64Len: ivB64?.length || 0,
+      hasIv: !!ivB64,
+    });
 
     if (!ivB64) {
+      // Legacy XOR fallback
       const keyBytes = new TextEncoder().encode(keyStr);
       const encryptedBytes = Uint8Array.from(atob(encB64), c => c.charCodeAt(0));
       const decrypted = new Uint8Array(encryptedBytes.length);
@@ -98,6 +86,7 @@ async function decryptCredentials(
       return JSON.parse(new TextDecoder().decode(decrypted));
     }
 
+    // AES-GCM decryption
     const rawKey = new TextEncoder().encode(keyStr);
     const keyHash = await crypto.subtle.digest('SHA-256', rawKey);
     const cryptoKey = await crypto.subtle.importKey(
