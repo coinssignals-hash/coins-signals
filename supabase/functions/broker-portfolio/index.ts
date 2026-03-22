@@ -6,8 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Decode Supabase bytea hex string to UTF-8
+// Decode Supabase bytea to base64 string
 function decodeBytea(raw: unknown): string {
+  if (!raw) return '';
+  
+  // If it's already a string
   if (typeof raw === 'string') {
     // Supabase returns bytea as hex: \x4142...
     if (raw.startsWith('\\x')) {
@@ -20,9 +23,22 @@ function decodeBytea(raw: unknown): string {
     }
     return raw;
   }
+  
+  // Supabase JS client may return bytea as a JSON object { "0": byte, "1": byte, ... }
+  if (typeof raw === 'object' && raw !== null && !(raw instanceof Uint8Array)) {
+    const obj = raw as Record<string, number>;
+    const keys = Object.keys(obj).map(Number).sort((a, b) => a - b);
+    const bytes = new Uint8Array(keys.length);
+    for (let i = 0; i < keys.length; i++) {
+      bytes[i] = obj[String(keys[i])];
+    }
+    return new TextDecoder().decode(bytes);
+  }
+  
   if (raw instanceof Uint8Array) {
     return new TextDecoder().decode(raw);
   }
+  
   return String(raw);
 }
 
