@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -145,10 +145,10 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Navigation */}
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
         </div>
 
         {/* Day Tabs */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-1.5">
             <div className="flex gap-1">
               {DAY_OFFSETS.map(d => (
@@ -189,7 +189,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
               ))}
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Stats Overview */}
         {!isLoading && events.length > 0 && (
@@ -213,7 +213,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Currency Breakdown */}
         {!isLoading && currencies.length > 0 && (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2.5">
                 <Globe className="w-4 h-4 text-primary" />
@@ -247,11 +247,11 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                 ))}
               </div>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         )}
 
         {/* Impact Filter */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3 flex items-center gap-2 flex-wrap">
             <Zap className="w-4 h-4 text-primary shrink-0" />
             <span className="text-xs font-medium text-muted-foreground shrink-0">{t('ec_impact')}:</span>
@@ -282,26 +282,26 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
               );
             })}
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Events List */}
         {isLoading ? (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground">{t('ec_loading')}</p>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         ) : filtered.length === 0 ? (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-8 text-center">
               <CalendarDays className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
               <p className="text-sm text-muted-foreground">{t('ec_no_events')}</p>
               <p className="text-xs text-muted-foreground/60 mt-1">{t('ec_no_events_hint')}</p>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         ) : (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-0">
               {filtered.map((event, i) => {
                 const impact = IMPACT_CONFIG_LOCAL[event.impact] || IMPACT_CONFIG_LOCAL.Low;
@@ -462,7 +462,7 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
                 );
               })}
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         )}
 
         {/* Push Notification Toggle */}
@@ -494,14 +494,14 @@ Responde SOLO con: 1) Qué significa para ${event.currency}, 2) Pares afectados,
 
         {/* Warning */}
         {!isLoading && events.length > 0 && (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-3 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('ec_volatility_warning')}
               </p>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         )}
       </main>
     </PageShell>

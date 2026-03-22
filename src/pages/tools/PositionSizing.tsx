@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -59,9 +59,9 @@ export default function PositionSizing() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export default function PositionSizing() {
           </div>
         </div>
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -97,7 +97,7 @@ export default function PositionSizing() {
               </div>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {result && (
           <>
@@ -119,7 +119,7 @@ export default function PositionSizing() {
               );
             })()}
 
-            <GlowCard>
+            <ToolCard>
               <CardContent className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Layers className="w-4 h-4 text-primary" />{t('ps_optimal_size')}
@@ -138,35 +138,35 @@ export default function PositionSizing() {
                   ))}
                 </div>
               </CardContent>
-            </GlowCard>
+            </ToolCard>
 
             <div className="grid grid-cols-2 gap-3">
-              <GlowCard>
+              <ToolCard>
                 <CardContent className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ps_max_risk')}</p>
                   <p className="text-lg font-bold text-rose-400 tabular-nums">${result.riskAmount}</p>
                 </CardContent>
-              </GlowCard>
-              <GlowCard>
+              </ToolCard>
+              <ToolCard>
                 <CardContent className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">$/Pip</p>
                   <p className="text-lg font-bold text-primary tabular-nums">${result.maxLossPerPip}</p>
                 </CardContent>
-              </GlowCard>
+              </ToolCard>
             </div>
           </>
         )}
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('ps_info_text')}</p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

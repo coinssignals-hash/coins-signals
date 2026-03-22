@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -74,10 +74,10 @@ export default function PatternScreener() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function PatternScreener() {
         </div>
 
         {/* Patterns List */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-0">
             {filtered.length === 0 ? (
               <div className="p-8 text-center">
@@ -168,14 +168,14 @@ export default function PatternScreener() {
               ))
             )}
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
           <Clock className="w-3 h-3" />
           {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -184,7 +184,7 @@ export default function PatternScreener() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

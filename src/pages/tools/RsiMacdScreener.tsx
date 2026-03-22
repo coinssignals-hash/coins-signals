@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -135,10 +135,10 @@ export default function RsiMacdScreener() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Navigation */}
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function RsiMacdScreener() {
         </div>
 
         {/* Interval Selector */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3 flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground">{t('tp_rsi_timeframe')}</span>
             <div className="flex gap-1.5">
@@ -177,7 +177,7 @@ export default function RsiMacdScreener() {
               ))}
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Stats Summary */}
         {!isLoading && results.length > 0 && (
@@ -208,7 +208,7 @@ export default function RsiMacdScreener() {
         )}
 
         {/* Scan Info */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" />
@@ -216,25 +216,25 @@ export default function RsiMacdScreener() {
             </div>
             <span className="text-sm font-bold text-primary tabular-nums">{SCAN_PAIRS.length}</span>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Results */}
         {isLoading ? (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-12 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground">{t('tp_scanning').replace('{count}', String(SCAN_PAIRS.length))}</p>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         ) : filtered.length === 0 ? (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-8 text-center">
               <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
               <p className="text-sm text-muted-foreground">{t('tp_no_results_filter')}</p>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         ) : (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-0">
               {filtered.map((r, i) => {
                 const rsiConf = signalConfig[r.rsiSignal];
@@ -287,7 +287,7 @@ export default function RsiMacdScreener() {
                 );
               })}
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         )}
       </main>
     </PageShell>

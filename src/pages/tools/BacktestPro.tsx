@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -138,10 +138,10 @@ export default function BacktestPro() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function BacktestPro() {
         </div>
 
         {/* Global Config */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -170,7 +170,7 @@ export default function BacktestPro() {
               </div>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Strategy Cards */}
         {strategies.map((strat, idx) => (
@@ -218,7 +218,7 @@ export default function BacktestPro() {
         {results && (
           <>
             {/* Equity Chart */}
-            <GlowCard>
+            <ToolCard>
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_equity_curves')}</h3>
                 <div className="h-56">
@@ -236,10 +236,10 @@ export default function BacktestPro() {
                   </ResponsiveContainer>
                 </div>
               </CardContent>
-            </GlowCard>
+            </ToolCard>
 
             {/* Comparison Table */}
-            <GlowCard>
+            <ToolCard>
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_comparison')}</h3>
                 <div className="overflow-x-auto">
@@ -277,11 +277,11 @@ export default function BacktestPro() {
                   </table>
                 </div>
               </CardContent>
-            </GlowCard>
+            </ToolCard>
           </>
         )}
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -290,7 +290,7 @@ export default function BacktestPro() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, forwardRef } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -117,9 +117,9 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
           </div>
         </div>
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('rr_trade_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -183,7 +183,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
               {t('rr_calculate_btn') || 'Calcular Riesgo / Recompensa'}
             </Button>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {result && (() => {
           const riskVal = parseFloat(result.riskPips);
@@ -210,7 +210,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
             </Card>
 
             {/* Visual bar chart */}
-            <GlowCard>
+            <ToolCard>
               <CardContent className="p-4 space-y-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
                   {t('rr_visual') || 'Proporción Visual'}
@@ -259,25 +259,25 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                   </div>
                 </div>
               </CardContent>
-            </GlowCard>
+            </ToolCard>
 
             <div className="grid grid-cols-2 gap-3">
-              <GlowCard>
+              <ToolCard>
                 <CardContent className="p-3 text-center">
                   <ShieldAlert className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-xs text-muted-foreground">{t('rr_risk')}</p>
                   <p className="text-sm font-bold text-rose-400 tabular-nums">{result.riskPips} pips</p>
                   <p className="text-xs text-rose-400/70 tabular-nums">${result.riskAmount}</p>
                 </CardContent>
-              </GlowCard>
-              <GlowCard>
+              </ToolCard>
+              <ToolCard>
                 <CardContent className="p-3 text-center">
                   <Target className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
                   <p className="text-xs text-muted-foreground">{t('rr_reward')}</p>
                   <p className="text-sm font-bold text-emerald-400 tabular-nums">{result.rewardPips} pips</p>
                   <p className="text-xs text-emerald-400/70 tabular-nums">${result.potentialProfit}</p>
                 </CardContent>
-              </GlowCard>
+              </ToolCard>
             </div>
 
             {/* Optimal Lot Size */}
@@ -315,14 +315,14 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
           );
         })()}
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('rr_info_text')}</p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

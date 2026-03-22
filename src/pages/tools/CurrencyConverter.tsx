@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, ArrowUpDown, TrendingUp, TrendingDown, Loader2, RefreshCw } from 'lucide-react';
@@ -397,7 +397,7 @@ export default function CurrencyConverter() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-4 space-y-4">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Back + title */}
         <div className="flex items-center gap-3">
           <Link to="/tools" className="text-primary hover:text-primary/80 transition-colors">
@@ -414,7 +414,7 @@ export default function CurrencyConverter() {
         </p>
 
         {/* ──── Converter Card ──── */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-0">
             {/* FROM */}
             <div className="p-4 border-b border-border space-y-3">
@@ -583,7 +583,7 @@ export default function CurrencyConverter() {
               )}
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Calculate button */}
         <button

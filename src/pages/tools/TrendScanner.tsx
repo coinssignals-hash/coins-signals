@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -75,10 +75,10 @@ export default function TrendScanner() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Navigation */}
         <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </Link>
           <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export default function TrendScanner() {
         </div>
 
         {/* Scan Info */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" />
@@ -105,7 +105,7 @@ export default function TrendScanner() {
             </div>
             <span className="text-sm font-bold text-primary tabular-nums">{FOREX_PAIRS.length}</span>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Stats Summary — clickable filters */}
         <div className="grid grid-cols-3 gap-2">
@@ -130,7 +130,7 @@ export default function TrendScanner() {
         </div>
 
         {/* Pairs List */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-0">
             {/* Table Header */}
             <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
@@ -210,7 +210,7 @@ export default function TrendScanner() {
               </div>
             ))}
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Last update */}
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
@@ -219,7 +219,7 @@ export default function TrendScanner() {
         </div>
 
         {/* Info */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
@@ -228,7 +228,7 @@ export default function TrendScanner() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );
