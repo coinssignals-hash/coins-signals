@@ -139,7 +139,7 @@ export default function PipCalculator() {
                 <span className="text-xs text-muted-foreground">{t('pip_position_size')}</span>
                 <span className="text-sm font-mono font-semibold text-foreground">{result.positionSize.toLocaleString()}</span>
               </div>
-              <div className="h-px" style={{ background: "hsl(var(--border) / 0.3)" }} />
+              <div className="h-px" style={{ background: `hsl(${ACCENT} / 0.15)` }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_value_per_pip')}</span>
                 <span className="text-base font-mono font-bold text-foreground">${result.pipValue.toFixed(2)} {accountCurrency}</span>
