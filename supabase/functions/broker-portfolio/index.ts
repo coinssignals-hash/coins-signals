@@ -6,6 +6,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Decode Supabase bytea hex string to UTF-8
+function decodeBytea(raw: unknown): string {
+  if (typeof raw === 'string') {
+    // Supabase returns bytea as hex: \x4142...
+    if (raw.startsWith('\\x')) {
+      const hex = raw.slice(2);
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      }
+      return new TextDecoder().decode(bytes);
+    }
+    return raw;
+  }
+  if (raw instanceof Uint8Array) {
+    return new TextDecoder().decode(raw);
+  }
+  return String(raw);
+}
+
 // Decrypt credentials
 function decryptCredentials(encrypted: string, key: string): Record<string, string> {
   try {
@@ -50,6 +70,9 @@ interface Position {
   unrealized_pnl: number;
   unrealized_pnl_percent: number;
   side: 'long' | 'short';
+  commission?: number;
+  swap?: number;
+  spread?: number;
 }
 
 async function fetchAlpacaAccount(credentials: Record<string, string>, environment: string): Promise<Partial<AccountData>> {
@@ -58,7 +81,6 @@ async function fetchAlpacaAccount(credentials: Record<string, string>, environme
     : 'https://paper-api.alpaca.markets';
 
   try {
-    // Fetch account
     const accountRes = await fetch(`${baseUrl}/v2/account`, {
       headers: {
         'APCA-API-KEY-ID': credentials.api_key,
@@ -66,13 +88,9 @@ async function fetchAlpacaAccount(credentials: Record<string, string>, environme
       },
     });
 
-    if (!accountRes.ok) {
-      throw new Error('Failed to fetch Alpaca account');
-    }
-
+    if (!accountRes.ok) throw new Error('Failed to fetch Alpaca account');
     const account = await accountRes.json();
 
-    // Fetch positions
     const positionsRes = await fetch(`${baseUrl}/v2/positions`, {
       headers: {
         'APCA-API-KEY-ID': credentials.api_key,
@@ -116,7 +134,6 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
     : 'https://api-fxpractice.oanda.com';
 
   try {
-    // Get accounts list first
     const accountsRes = await fetch(`${baseUrl}/v3/accounts`, {
       headers: {
         'Authorization': `Bearer ${credentials.api_key}`,
@@ -124,18 +141,11 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
       },
     });
 
-    if (!accountsRes.ok) {
-      throw new Error('Failed to fetch OANDA accounts');
-    }
-
+    if (!accountsRes.ok) throw new Error('Failed to fetch OANDA accounts');
     const accountsData = await accountsRes.json();
     const accountId = credentials.account_id || accountsData.accounts?.[0]?.id;
+    if (!accountId) throw new Error('No OANDA account found');
 
-    if (!accountId) {
-      throw new Error('No OANDA account found');
-    }
-
-    // Fetch account details
     const accountRes = await fetch(`${baseUrl}/v3/accounts/${accountId}`, {
       headers: {
         'Authorization': `Bearer ${credentials.api_key}`,
@@ -143,10 +153,7 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
       },
     });
 
-    if (!accountRes.ok) {
-      throw new Error('Failed to fetch OANDA account details');
-    }
-
+    if (!accountRes.ok) throw new Error('Failed to fetch OANDA account details');
     const { account } = await accountRes.json();
 
     const positions: Position[] = (account.positions || [])
@@ -195,6 +202,165 @@ async function fetchOandaAccount(credentials: Record<string, string>, environmen
   } catch (error) {
     console.error('OANDA fetch error:', error);
     return { error: error instanceof Error ? error.message : 'Failed to fetch OANDA data' };
+  }
+}
+
+async function fetchMetaApiAccount(credentials: Record<string, string>, config: Record<string, unknown>): Promise<Partial<AccountData>> {
+  const metaApiToken = Deno.env.get('METAAPI_TOKEN');
+  if (!metaApiToken) {
+    return { error: 'MetaAPI token not configured' };
+  }
+
+  try {
+    const login = credentials.login || credentials.mt_login;
+    const password = credentials.password || credentials.mt_password;
+    const server = credentials.server || credentials.mt_server;
+    const platform = (config?.platform as string) || 'mt5';
+
+    if (!login || !password || !server) {
+      return { error: 'MT5 credentials incomplete' };
+    }
+
+    // Step 1: Find or provision the MetaAPI account
+    const listRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+      headers: { 'auth-token': metaApiToken },
+    });
+
+    let accountId: string | null = null;
+
+    if (listRes.ok) {
+      const accounts = await listRes.json();
+      const match = accounts.find((a: Record<string, unknown>) =>
+        String(a.login) === String(login) && a.server === server
+      );
+      if (match) {
+        accountId = match._id;
+        // Ensure it's deployed
+        if (match.state !== 'DEPLOYED') {
+          await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+            method: 'POST',
+            headers: { 'auth-token': metaApiToken },
+          });
+          // Wait for deployment
+          await new Promise(r => setTimeout(r, 3000));
+        }
+      }
+    }
+
+    if (!accountId) {
+      // Create new MetaAPI account
+      const createRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+        method: 'POST',
+        headers: {
+          'auth-token': metaApiToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: `${server}-${login}`,
+          type: 'cloud',
+          login: String(login),
+          password,
+          server,
+          platform,
+          magic: 0,
+        }),
+      });
+
+      if (!createRes.ok) {
+        const err = await createRes.text();
+        console.error('MetaAPI create error:', err);
+        return { error: 'Failed to provision MetaAPI account' };
+      }
+
+      const created = await createRes.json();
+      accountId = created.id;
+
+      // Deploy
+      await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+        method: 'POST',
+        headers: { 'auth-token': metaApiToken },
+      });
+
+      // Wait for deployment
+      await new Promise(r => setTimeout(r, 5000));
+    }
+
+    // Step 2: Get account information
+    const infoRes = await fetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/account-information`, {
+      headers: { 'auth-token': metaApiToken },
+    });
+
+    if (!infoRes.ok) {
+      const errText = await infoRes.text();
+      console.error('MetaAPI account info error:', infoRes.status, errText);
+      // If not connected yet, return partial data
+      if (infoRes.status === 404 || infoRes.status === 502) {
+        return {
+          error: 'Account connecting... try again in a few seconds',
+          cash_balance: 0,
+          equity: 0,
+          positions: [],
+        };
+      }
+      return { error: `MetaAPI error: ${infoRes.status}` };
+    }
+
+    const info = await infoRes.json();
+
+    // Step 3: Get open positions
+    const posRes = await fetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/positions`, {
+      headers: { 'auth-token': metaApiToken },
+    });
+
+    const positionsData = posRes.ok ? await posRes.json() : [];
+
+    const positions: Position[] = (positionsData || []).map((p: Record<string, unknown>) => {
+      const volume = Number(p.volume || 0);
+      const openPrice = Number(p.openPrice || 0);
+      const currentPrice = Number(p.currentPrice || 0);
+      const profit = Number(p.profit || 0);
+      const swap = Number(p.swap || 0);
+      const commission = Number(p.commission || 0);
+      const type = String(p.type || 'POSITION_TYPE_BUY');
+      const isLong = type.includes('BUY');
+      const marketValue = volume * currentPrice;
+      const costBasis = volume * openPrice;
+      const pnlPercent = costBasis > 0 ? (profit / costBasis) * 100 : 0;
+
+      return {
+        symbol: String(p.symbol || ''),
+        quantity: volume,
+        average_entry_price: openPrice,
+        current_price: currentPrice,
+        market_value: marketValue,
+        unrealized_pnl: profit,
+        unrealized_pnl_percent: pnlPercent,
+        side: isLong ? 'long' as const : 'short' as const,
+        swap,
+        commission,
+      };
+    });
+
+    const balance = Number(info.balance || 0);
+    const equity = Number(info.equity || 0);
+    const margin = Number(info.margin || 0);
+    const freeMargin = Number(info.freeMargin || 0);
+    const unrealizedPnl = equity - balance;
+
+    return {
+      cash_balance: balance,
+      equity,
+      buying_power: freeMargin,
+      unrealized_pnl: unrealizedPnl,
+      realized_pnl_today: Number(info.todayProfit || 0),
+      margin_used: margin,
+      margin_available: freeMargin,
+      currency: String(info.currency || 'USD'),
+      positions,
+    };
+  } catch (error) {
+    console.error('MetaAPI fetch error:', error);
+    return { error: error instanceof Error ? error.message : 'Failed to fetch MT5 data' };
   }
 }
 
@@ -262,9 +428,10 @@ serve(async (req) => {
 
     // Fetch data from each connected broker
     const accountPromises = connections.map(async (conn): Promise<AccountData> => {
-      const encryptedStr = new TextDecoder().decode(conn.encrypted_credentials);
+      const encryptedStr = decodeBytea(conn.encrypted_credentials);
       const credentials = decryptCredentials(encryptedStr, encryptionKey);
       const brokerCode = conn.broker?.code;
+      const config = (conn.config || {}) as Record<string, unknown>;
 
       let accountData: Partial<AccountData> = {};
 
@@ -275,16 +442,25 @@ serve(async (req) => {
         case 'oanda':
           accountData = await fetchOandaAccount(credentials, conn.environment);
           break;
+        case 'metatrader5':
+        case 'metatrader4':
+          accountData = await fetchMetaApiAccount(credentials, config);
+          break;
         default:
-          accountData = { 
-            error: 'Broker not supported for live data',
-            cash_balance: 0,
-            equity: 0,
-            positions: [],
-          };
+          // Check config for MT5 platform hint
+          if (config.platform === 'mt5' || config.platform === 'mt4') {
+            accountData = await fetchMetaApiAccount(credentials, config);
+          } else {
+            accountData = { 
+              error: `Broker "${brokerCode}" not supported for live data`,
+              cash_balance: 0,
+              equity: 0,
+              positions: [],
+            };
+          }
       }
 
-      // Save snapshot
+      // Save snapshot on success
       if (!accountData.error) {
         await supabase.from('account_snapshots').insert({
           user_id: user.id,
@@ -301,7 +477,6 @@ serve(async (req) => {
           snapshot_data: accountData,
         });
 
-        // Update connection last sync
         await supabase
           .from('user_broker_connections')
           .update({ last_sync_at: new Date().toISOString(), is_connected: true })
@@ -311,7 +486,7 @@ serve(async (req) => {
       return {
         connection_id: conn.id,
         broker_code: brokerCode || 'unknown',
-        broker_name: conn.broker?.display_name || conn.connection_name,
+        broker_name: conn.connection_name || conn.broker?.display_name || 'Unknown',
         environment: conn.environment,
         cash_balance: accountData.cash_balance || 0,
         equity: accountData.equity || 0,

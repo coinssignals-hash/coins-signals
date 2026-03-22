@@ -308,12 +308,79 @@ export default function Portfolio() {
           </GlowCard>
         )}
 
+        {/* Connected Accounts */}
+        {!loading && accounts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
+          >
+            <SectionTitle
+              icon={<Wallet className="w-3.5 h-3.5" style={{ color: 'hsl(200 70% 55%)' }} />}
+              label={t('portfolio_accounts') || 'Cuentas'}
+              badge={`${accounts.length}`}
+            />
+            <div className="space-y-2">
+              {accounts.map((acc) => (
+                <GlowCard key={acc.connection_id} color={acc.error ? '0 70% 50%' : '200 70% 55%'}>
+                  <div className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{
+                          background: acc.error
+                            ? 'linear-gradient(135deg, hsl(0 70% 50% / 0.2), hsl(0 70% 50% / 0.08))'
+                            : 'linear-gradient(135deg, hsl(200 70% 55% / 0.2), hsl(200 70% 55% / 0.08))',
+                          border: `1px solid ${acc.error ? 'hsl(0 70% 50% / 0.25)' : 'hsl(200 70% 55% / 0.25)'}`,
+                        }}>
+                          <Wallet className="w-4 h-4" style={{ color: acc.error ? 'hsl(0 70% 55%)' : 'hsl(200 70% 55%)' }} />
+                        </div>
+                        <div>
+                          <span className="text-sm font-medium text-foreground">{acc.broker_name}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider" style={{
+                              background: acc.environment === 'live' ? 'hsl(142 60% 55% / 0.12)' : 'hsl(45 80% 55% / 0.12)',
+                              color: acc.environment === 'live' ? 'hsl(142 60% 55%)' : 'hsl(45 80% 55%)',
+                            }}>
+                              {acc.environment === 'live' ? 'REAL' : 'DEMO'}
+                            </span>
+                            {acc.error && (
+                              <span className="text-[9px] text-red-400">{acc.error}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {!acc.error && (
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-foreground tabular-nums">{formatCurrency(acc.equity, acc.currency)}</p>
+                          <p className="text-[10px] text-muted-foreground">{acc.currency}</p>
+                        </div>
+                      )}
+                    </div>
+                    {!acc.error && (
+                      <div className="grid grid-cols-4 gap-2 mt-2">
+                        <DetailItem label="Balance" value={formatCurrency(acc.cash_balance, acc.currency)} />
+                        <DetailItem label="Margen" value={formatCurrency(acc.margin_used, acc.currency)} />
+                        <DetailItem label="Libre" value={formatCurrency(acc.margin_available, acc.currency)} />
+                        <DetailItem
+                          label="P&L Hoy"
+                          value={`${acc.realized_pnl_today >= 0 ? '+' : ''}${formatCurrency(acc.realized_pnl_today, acc.currency)}`}
+                          valueColor={acc.realized_pnl_today >= 0 ? 'text-primary' : 'text-destructive'}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </GlowCard>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Open Positions List */}
         {!loading && allPositions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.24 }}
+            transition={{ duration: 0.25, delay: 0.28 }}
           >
              <SectionTitle
                icon={<TrendingUp className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />}
