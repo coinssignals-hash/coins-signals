@@ -7,6 +7,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
   Copy,
   ChevronDown,
   Activity } from
