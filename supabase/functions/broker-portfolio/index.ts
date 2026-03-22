@@ -455,8 +455,15 @@ serve(async (req) => {
     // Fetch data from each connected broker
     const accountPromises = connections.map(async (conn): Promise<AccountData> => {
       const encryptedStr = decodeBytea(conn.encrypted_credentials);
-      const ivStr = conn.credentials_iv ? decodeBytea(conn.credentials_iv) : null;
+      const rawIv = conn.credentials_iv;
+      const ivStr = rawIv ? decodeBytea(rawIv) : null;
+      
+      console.log('[broker-portfolio] Connection:', conn.id, 'broker:', conn.broker?.code, 
+        'has_iv:', !!rawIv, 'iv_decoded:', ivStr?.substring(0, 20),
+        'encrypted_preview:', encryptedStr?.substring(0, 30));
+      
       const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
+      console.log('[broker-portfolio] Credential keys:', Object.keys(credentials));
       const brokerCode = conn.broker?.code;
       const config = (conn.config || {}) as Record<string, unknown>;
 
