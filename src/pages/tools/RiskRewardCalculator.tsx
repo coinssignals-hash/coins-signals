@@ -27,6 +27,8 @@ const PAIRS = [
   { symbol: 'XAU/USD', pipSize: 0.01, pipValue: 1 },
 ];
 
+const ACCENT = '235 85% 65%';
+
 interface Result {
   riskPips: string;
   rewardPips: string;
