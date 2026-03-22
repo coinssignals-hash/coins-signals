@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { motion, useTransform, useMotionValue } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart, Loader2, Building2, Coins, ShieldCheck, Globe, MessageSquare, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart, Loader2, Building2, Coins, ShieldCheck, Globe, MessageSquare, ThumbsUp, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
