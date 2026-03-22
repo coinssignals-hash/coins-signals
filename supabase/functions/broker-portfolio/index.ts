@@ -327,7 +327,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
         accountId = match._id;
         // Ensure it's deployed
         if (match.state !== 'DEPLOYED') {
-          await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+          await metaFetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
             method: 'POST',
             headers: { 'auth-token': metaApiToken },
           });
@@ -339,7 +339,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
 
     if (!accountId) {
       // Create new MetaAPI account
-      const createRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+      const createRes = await metaFetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
         method: 'POST',
         headers: {
           'auth-token': metaApiToken,
@@ -366,7 +366,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
       accountId = created.id;
 
       // Deploy
-      await fetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
+      await metaFetch(`https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/deploy`, {
         method: 'POST',
         headers: { 'auth-token': metaApiToken },
       });
@@ -376,7 +376,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     }
 
     // Step 2: Get account information
-    const infoRes = await fetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/account-information`, {
+    const infoRes = await metaFetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/account-information`, {
       headers: { 'auth-token': metaApiToken },
     });
 
@@ -398,7 +398,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     const info = await infoRes.json();
 
     // Step 3: Get open positions
-    const posRes = await fetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/positions`, {
+    const posRes = await metaFetch(`https://mt-client-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts/${accountId}/positions`, {
       headers: { 'auth-token': metaApiToken },
     });
 
