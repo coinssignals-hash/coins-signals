@@ -308,128 +308,135 @@ export default function Signals() {
         </div>
 
         {/* Unified Nav Bar — day tabs + source filter in one row */}
-        <div className="flex items-center gap-1 px-3 py-2">
-          {/* Day tabs — take available space */}
-          <div className="flex gap-0.5 flex-1 min-w-0">
-            {[
-              { key: 'yesterday' as DayTab, label: t('signals_yesterday'), abbr: 'Ayer', icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
-              { key: 'today' as DayTab, label: t('signals_today'), abbr: 'Hoy', icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
-              { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), abbr: 'Mañ', icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
-              { key: 'all' as DayTab, label: t('signals_all'), abbr: 'All', icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
-                className={cn(
-                  "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all flex-1 justify-center whitespace-nowrap active:scale-95",
-                  dayTab === tab.key
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                )}
-              >
-                {tab.icon}
-                <span className="hidden sm:inline">{tab.abbr}</span>
-                {tab.count > 0 && (
-                  <span className="bg-white/20 text-[9px] px-1 py-px rounded-full leading-none">{tab.count}</span>
-                )}
-              </button>
-            ))}
+        <div className="flex items-center gap-1.5 px-3 py-2">
+          {/* Day tabs — scrollable on small screens */}
+          <ScrollArea className="flex-1 min-w-0">
+            <div className="flex gap-1">
+              {[
+                { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
+                { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
+                { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
+                { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
+                  className={cn(
+                    "flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center whitespace-nowrap active:scale-95 min-w-0",
+                    dayTab === tab.key
+                      ? "bg-primary text-primary-foreground shadow-[0_0_10px_hsl(var(--primary)/0.25)]"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  )}
+                >
+                  {tab.icon}
+                  <span className="text-[10px]">{tab.label}</span>
+                  {tab.count > 0 && (
+                    <span className={cn(
+                      "text-[8px] min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center font-bold leading-none",
+                      dayTab === tab.key ? "bg-white/20" : "bg-primary/15 text-primary"
+                    )}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
 
-            {/* Calendar */}
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              {/* Calendar */}
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center active:scale-95",
+                      dayTab === 'calendar'
+                        ? "bg-primary text-primary-foreground shadow-[0_0_10px_hsl(var(--primary)/0.25)]"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    )}
+                  >
+                    <CalendarIcon className="w-3.5 h-3.5" />
+                    {dayTab === 'calendar' && calendarDate
+                      ? <span className="text-[10px]">{format(calendarDate, 'd MMM', { locale: dateLocale })}</span>
+                      : null}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover border-border" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={calendarDate}
+                    onSelect={(date) => {
+                      setCalendarDate(date);
+                      setDayTab('calendar');
+                      setCalendarOpen(false);
+                    }}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                    locale={dateLocale}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+
+          {/* Right action buttons */}
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Source filter */}
+            <Popover>
               <PopoverTrigger asChild>
                 <button
                   className={cn(
-                    "flex items-center gap-0.5 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center active:scale-95",
-                    dayTab === 'calendar'
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    "flex items-center gap-0.5 p-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border",
+                    sourceFilter === 'ai-center'
+                      ? "bg-accent/15 text-accent-foreground border-accent/30"
+                      : sourceFilter === 'server'
+                        ? "bg-primary/15 text-primary border-primary/30"
+                        : "bg-secondary/50 text-foreground border-border/50"
                   )}
                 >
-                  <CalendarIcon className="w-3.5 h-3.5" />
-                  {dayTab === 'calendar' && calendarDate
-                    ? <span className="hidden sm:inline">{format(calendarDate, 'd MMM', { locale: dateLocale })}</span>
-                    : null}
+                  {sourceFilter === 'ai-center' ? <Brain className="w-3.5 h-3.5" /> : sourceFilter === 'server' ? <TrendingUp className="w-3.5 h-3.5" /> : <Filter className="w-3.5 h-3.5" />}
+                  <ChevronDown className="w-2.5 h-2.5 opacity-50" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-popover border-border" align="end">
-                <Calendar
-                  mode="single"
-                  selected={calendarDate}
-                  onSelect={(date) => {
-                    setCalendarDate(date);
-                    setDayTab('calendar');
-                    setCalendarOpen(false);
-                  }}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
-                  locale={dateLocale}
-                />
+              <PopoverContent className="w-36 p-1 bg-card border-border" align="end" sideOffset={4}>
+                {([
+                  { key: 'all' as SourceFilter, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" /> },
+                  { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+                  { key: 'ai-center' as SourceFilter, label: 'AI Center', icon: <Brain className="w-3.5 h-3.5" /> },
+                ]).map((opt) => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setSourceFilter(opt.key)}
+                    className={cn(
+                      "w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-xs font-medium transition-colors",
+                      sourceFilter === opt.key
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    )}
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </button>
+                ))}
               </PopoverContent>
             </Popover>
+
+            {/* Advanced filters toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "relative p-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border",
+                showFilters || activeFilterCount > 0
+                  ? "bg-primary/15 text-primary border-primary/30 shadow-[0_0_8px_hsl(var(--primary)/0.2)]"
+                  : "bg-secondary/50 text-foreground border-border/50"
+              )}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
           </div>
-
-          {/* Separator */}
-          <div className="w-px h-5 bg-border/40 mx-0.5 shrink-0" />
-
-          {/* Source filter dropdown */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
-                  sourceFilter === 'ai-center'
-                    ? "bg-accent/15 text-accent-foreground border-accent/30"
-                    : sourceFilter === 'server'
-                      ? "bg-primary/15 text-primary border-primary/30"
-                      : "bg-secondary/50 text-foreground border-border/50"
-                )}
-              >
-                {sourceFilter === 'ai-center' ? <Brain className="w-3 h-3" /> : sourceFilter === 'server' ? <TrendingUp className="w-3 h-3" /> : null}
-                {sourceFilter === 'all' ? 'Src' : sourceFilter === 'server' ? 'Srv' : 'AI'}
-                <ChevronDown className="w-3 h-3 opacity-50" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-36 p-1 bg-card border-border" align="end" sideOffset={4}>
-              {([
-                { key: 'all' as SourceFilter, label: t('signals_all'), icon: null },
-                { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3.5 h-3.5" /> },
-                { key: 'ai-center' as SourceFilter, label: 'AI Center', icon: <Brain className="w-3.5 h-3.5" /> },
-              ]).map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setSourceFilter(opt.key)}
-                  className={cn(
-                    "w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-xs font-medium transition-colors",
-                    sourceFilter === opt.key
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  )}
-                >
-                  {opt.icon}
-                  {opt.label}
-                </button>
-              ))}
-            </PopoverContent>
-          </Popover>
-
-          {/* Advanced filters toggle */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={cn(
-              "relative flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border shrink-0",
-              showFilters || activeFilterCount > 0
-                ? "bg-primary/15 text-primary border-primary/30 shadow-[0_0_8px_hsl(var(--primary)/0.2)]"
-                : "bg-secondary/50 text-foreground border-border/50"
-            )}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            {activeFilterCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
         </div>
 
         {/* Advanced Filters Panel */}
