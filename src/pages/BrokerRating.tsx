@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { motion, useTransform, useMotionValue } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart, Loader2, Building2, Coins, ShieldCheck, Globe, MessageSquare, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Search, TrendingUp, BarChart3, Gem, Bitcoin, Star, Check, X, ChevronDown, ChevronUp, GitCompare, CheckCircle2, XCircle, ArrowUpDown, Landmark, CandlestickChart, Loader2, Building2, Coins, ShieldCheck, Globe, MessageSquare, ThumbsUp, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
@@ -77,6 +77,18 @@ export default function BrokerRating() {
   const [brokersToCompare, setBrokersToCompare] = useState<NormalizedBroker[]>([]);
   const [showComparePanel, setShowComparePanel] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption | ''>('');
+  
+  // Advanced filters
+  const [advDepositMax, setAdvDepositMax] = useState('');
+  const [advRatingMin, setAdvRatingMin] = useState('');
+  const [advRegulation, setAdvRegulation] = useState('');
+  const [advLeverage, setAdvLeverage] = useState('');
+  const [advPlatform, setAdvPlatform] = useState('');
+
+  const hasActiveAdvFilters = !!(advDepositMax || advRatingMin || advRegulation || advLeverage || advPlatform);
+  const clearAdvancedFilters = () => {
+    setAdvDepositMax(''); setAdvRatingMin(''); setAdvRegulation(''); setAdvLeverage(''); setAdvPlatform('');
+  };
 
   const { brokers, loading, error } = useBrokerData(selectedRegion);
   const { results: globalResults, loading: globalLoading } = useGlobalBrokerSearch(isGlobalSearch ? globalSearchTerm : '');
@@ -119,7 +131,13 @@ export default function BrokerRating() {
       const matchesCategory = !selectedCategory || broker.instruments.some(i =>
         i.toLowerCase().includes(selectedCategory.toLowerCase())
       );
-      return matchesSearch && matchesCategory;
+      // Advanced filters
+      const matchesDeposit = !advDepositMax || parseNumeric(broker.depositMin) <= parseNumeric(advDepositMax);
+      const matchesRating = !advRatingMin || broker.rating >= parseFloat(advRatingMin);
+      const matchesRegulation = !advRegulation || broker.regulations.some(r => r.toLowerCase().includes(advRegulation.toLowerCase()));
+      const matchesLeverage = !advLeverage || (broker.leverage && broker.leverage.includes(advLeverage));
+      const matchesPlatform = !advPlatform || broker.platform.some(p => p.toLowerCase().includes(advPlatform.toLowerCase()));
+      return matchesSearch && matchesCategory && matchesDeposit && matchesRating && matchesRegulation && matchesLeverage && matchesPlatform;
     })
     .sort((a, b) => {
       if (!sortBy) return b.rating - a.rating;
@@ -311,6 +329,131 @@ export default function BrokerRating() {
                 );
               })}
             </div>
+
+            {/* Advanced search toggle */}
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className={`mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-medium transition-all ${
+                showAdvancedFilters || hasActiveAdvFilters
+                  ? 'bg-primary/15 text-primary border border-primary/30'
+                  : 'bg-secondary/60 text-muted-foreground hover:bg-secondary border border-transparent'
+              }`}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              {showAdvancedFilters ? 'Ocultar filtros avanzados' : 'Búsqueda avanzada'}
+              {hasActiveAdvFilters && !showAdvancedFilters && (
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              )}
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showAdvancedFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="mt-3 overflow-hidden"
+              >
+                <div
+                  className="relative rounded-xl p-4 space-y-4"
+                  style={{
+                    background: 'linear-gradient(165deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
+                    border: '1px solid hsl(var(--primary) / 0.15)',
+                  }}
+                >
+                  <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-xl" style={{
+                    background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5), transparent)',
+                  }} />
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <SlidersHorizontal className="w-4 h-4 text-primary" />
+                      Filtros avanzados
+                    </h4>
+                    {hasActiveAdvFilters && (
+                      <button
+                        onClick={clearAdvancedFilters}
+                        className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded-lg bg-secondary/50"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        Limpiar
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Depósito máximo</label>
+                      <Select value={advDepositMax} onValueChange={setAdvDepositMax}>
+                        <SelectTrigger className="bg-secondary/70 border-border/50 h-9 text-xs rounded-xl"><SelectValue placeholder="Sin límite" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="50">$50</SelectItem>
+                          <SelectItem value="100">$100</SelectItem>
+                          <SelectItem value="200">$200</SelectItem>
+                          <SelectItem value="500">$500</SelectItem>
+                          <SelectItem value="1000">$1,000</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Rating mínimo</label>
+                      <Select value={advRatingMin} onValueChange={setAdvRatingMin}>
+                        <SelectTrigger className="bg-secondary/70 border-border/50 h-9 text-xs rounded-xl"><SelectValue placeholder="Cualquiera" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="3">⭐ 3.0+</SelectItem>
+                          <SelectItem value="3.5">⭐ 3.5+</SelectItem>
+                          <SelectItem value="4">⭐ 4.0+</SelectItem>
+                          <SelectItem value="4.5">⭐ 4.5+</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Regulación</label>
+                      <Select value={advRegulation} onValueChange={setAdvRegulation}>
+                        <SelectTrigger className="bg-secondary/70 border-border/50 h-9 text-xs rounded-xl"><SelectValue placeholder="Todas" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="FCA">FCA</SelectItem>
+                          <SelectItem value="CySEC">CySEC</SelectItem>
+                          <SelectItem value="ASIC">ASIC</SelectItem>
+                          <SelectItem value="SEC">SEC</SelectItem>
+                          <SelectItem value="CNBV">CNBV</SelectItem>
+                          <SelectItem value="SFC">SFC</SelectItem>
+                          <SelectItem value="CNV">CNV</SelectItem>
+                          <SelectItem value="CVM">CVM</SelectItem>
+                          <SelectItem value="CMF">CMF</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Apalancamiento</label>
+                      <Select value={advLeverage} onValueChange={setAdvLeverage}>
+                        <SelectTrigger className="bg-secondary/70 border-border/50 h-9 text-xs rounded-xl"><SelectValue placeholder="Cualquiera" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1:30">Hasta 1:30</SelectItem>
+                          <SelectItem value="1:100">Hasta 1:100</SelectItem>
+                          <SelectItem value="1:200">Hasta 1:200</SelectItem>
+                          <SelectItem value="1:500">Hasta 1:500</SelectItem>
+                          <SelectItem value="1:1000">Hasta 1:1000</SelectItem>
+                          <SelectItem value="1:2000">Hasta 1:2000</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5 col-span-2">
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Plataforma</label>
+                      <Select value={advPlatform} onValueChange={setAdvPlatform}>
+                        <SelectTrigger className="bg-secondary/70 border-border/50 h-9 text-xs rounded-xl"><SelectValue placeholder="Todas las plataformas" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="mt4">MetaTrader 4</SelectItem>
+                          <SelectItem value="mt5">MetaTrader 5</SelectItem>
+                          <SelectItem value="ctrader">cTrader</SelectItem>
+                          <SelectItem value="tradingview">TradingView</SelectItem>
+                          <SelectItem value="propia">Plataforma propia</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </CardContent>
         </GlowCard>
 
