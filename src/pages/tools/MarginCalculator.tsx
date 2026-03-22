@@ -80,7 +80,7 @@ export default function MarginCalculator() {
           </div>
         </div>
 
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -122,7 +122,7 @@ export default function MarginCalculator() {
           </CardContent>
         </ToolCard>
 
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Shield className="w-4 h-4 text-primary" />
@@ -142,7 +142,7 @@ export default function MarginCalculator() {
           </CardContent>
         </ToolCard>
 
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Percent className="w-4 h-4 text-primary" />
@@ -157,7 +157,7 @@ export default function MarginCalculator() {
                 <span className="text-xs text-muted-foreground">{t('margin_position_value')}</span>
                 <span className="text-sm font-mono font-semibold text-foreground">${result.positionValueUSD.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
               </div>
-              <div className="h-px bg-border" />
+              <div className="h-px" style={{ background: "hsl(var(--border) / 0.3)" }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('margin_required')}</span>
                 <span className="text-base font-mono font-bold text-foreground">${result.requiredMargin.toFixed(2)}</span>
@@ -179,7 +179,7 @@ export default function MarginCalculator() {
           </div>
         )}
 
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border">
+        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-[11px] text-muted-foreground leading-relaxed">{t('margin_info_text')}</p>
         </div>

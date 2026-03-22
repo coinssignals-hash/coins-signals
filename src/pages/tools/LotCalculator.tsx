@@ -71,7 +71,7 @@ export default function LotCalculator() {
           </div>
         </div>
 
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -103,7 +103,7 @@ export default function LotCalculator() {
           </CardContent>
         </ToolCard>
 
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingDown className="w-4 h-4 text-primary" />
@@ -116,7 +116,7 @@ export default function LotCalculator() {
           </CardContent>
         </ToolCard>
 
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Calculator className="w-4 h-4 text-primary" />
@@ -127,7 +127,7 @@ export default function LotCalculator() {
                 <span className="text-xs text-muted-foreground">{t('lot_standard')}</span>
                 <span className="text-base font-mono font-bold text-foreground">{result.lotSize.toFixed(2)}</span>
               </div>
-              <div className="h-px bg-border" />
+              <div className="h-px" style={{ background: "hsl(var(--border) / 0.3)" }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('lot_mini')}</span>
                 <span className="text-sm font-mono font-semibold text-muted-foreground">{result.miniLots.toFixed(2)}</span>
@@ -136,7 +136,7 @@ export default function LotCalculator() {
                 <span className="text-xs text-muted-foreground">{t('lot_micro')}</span>
                 <span className="text-sm font-mono font-semibold text-muted-foreground">{result.microLots.toFixed(2)}</span>
               </div>
-              <div className="h-px bg-border" />
+              <div className="h-px" style={{ background: "hsl(var(--border) / 0.3)" }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('lot_units')}</span>
                 <span className="text-sm font-mono font-semibold text-muted-foreground">{Math.round(result.units).toLocaleString()}</span>
@@ -149,7 +149,7 @@ export default function LotCalculator() {
           </CardContent>
         </ToolCard>
 
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border">
+        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-[11px] text-muted-foreground leading-relaxed">{t('lot_info_text')}</p>
         </div>

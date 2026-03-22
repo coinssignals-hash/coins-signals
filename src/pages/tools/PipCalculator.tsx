@@ -82,7 +82,7 @@ export default function PipCalculator() {
         </div>
 
         <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_parameters')}</h2>
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -131,7 +131,7 @@ export default function PipCalculator() {
         </ToolCard>
 
         <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_result')}</h2>
-        <ToolCard className="mb-4">
+        <ToolCard className="mb-3">
           <CardContent className="p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -142,7 +142,7 @@ export default function PipCalculator() {
                 <span className="text-xs text-muted-foreground">{t('pip_position_size')}</span>
                 <span className="text-sm font-mono font-semibold text-foreground">{result.positionSize.toLocaleString()}</span>
               </div>
-              <div className="h-px bg-border" />
+              <div className="h-px" style={{ background: "hsl(var(--border) / 0.3)" }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_value_per_pip')}</span>
                 <span className="text-base font-mono font-bold text-foreground">${result.pipValue.toFixed(2)} {accountCurrency}</span>
@@ -157,7 +157,7 @@ export default function PipCalculator() {
           </CardContent>
         </ToolCard>
 
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border">
+        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-[11px] text-muted-foreground leading-relaxed">{t('pip_info_text')}</p>
         </div>
