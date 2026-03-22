@@ -6,39 +6,109 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Decode Supabase bytea hex string to UTF-8
-function decodeBytea(raw: unknown): string {
+// Convert raw Supabase bytea value to Uint8Array
+function byteaToBytes(raw: unknown): Uint8Array {
+  if (!raw) return new Uint8Array(0);
+  
+  if (raw instanceof Uint8Array) return raw;
+  
   if (typeof raw === 'string') {
-    // Supabase returns bytea as hex: \x4142...
+    // Hex format: \x4142...
     if (raw.startsWith('\\x')) {
       const hex = raw.slice(2);
       const bytes = new Uint8Array(hex.length / 2);
       for (let i = 0; i < hex.length; i += 2) {
         bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
       }
-      return new TextDecoder().decode(bytes);
+      return bytes;
     }
-    return raw;
+    // JSON object string: '{"0":53,"1":120,...}'
+    if (raw.startsWith('{"')) {
+      try {
+        const obj = JSON.parse(raw) as Record<string, number>;
+        const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+        const bytes = new Uint8Array(keys.length);
+        for (let i = 0; i < keys.length; i++) {
+          bytes[i] = obj[String(keys[i])];
+        }
+        return bytes;
+      } catch { /* fall through */ }
+    }
+    // Plain text (legacy) — encode to bytes
+    return new TextEncoder().encode(raw);
   }
-  if (raw instanceof Uint8Array) {
-    return new TextDecoder().decode(raw);
+  
+  // Object form: { "0": byte, "1": byte, ... }
+  if (typeof raw === 'object' && raw !== null) {
+    const obj = raw as Record<string, number>;
+    const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+    if (keys.length > 0) {
+      const bytes = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        bytes[i] = obj[String(keys[i])];
+      }
+      return bytes;
+    }
   }
-  return String(raw);
+  
+  return new TextEncoder().encode(String(raw));
 }
 
-// Decrypt credentials
-function decryptCredentials(encrypted: string, key: string): Record<string, string> {
-  try {
-    const keyBytes = new TextEncoder().encode(key);
-    const encryptedBytes = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
-    const decrypted = new Uint8Array(encryptedBytes.length);
-    
-    for (let i = 0; i < encryptedBytes.length; i++) {
-      decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+// Parse Supabase bytea (JSON string '{"0":99,...}' or hex '\x...') to plain string
+function parseByteaToString(raw: unknown): string {
+  if (!raw) return '';
+  const s = String(raw);
+  // JSON object format from Supabase JS client
+  if (s.startsWith('{"') && s.includes('"0":')) {
+    try {
+      const obj = JSON.parse(s) as Record<string, number>;
+      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+      return keys.map(k => String.fromCharCode(obj[String(k)])).join('');
+    } catch { /* fall through */ }
+  }
+  // Hex format
+  if (s.startsWith('\\x')) {
+    const hex = s.slice(2);
+    let result = '';
+    for (let i = 0; i < hex.length; i += 2) {
+      result += String.fromCharCode(parseInt(hex.substring(i, i + 2), 16));
     }
-    
+    return result;
+  }
+  return s;
+}
+
+// Decrypt AES-256-GCM encrypted credentials
+async function decryptCredentials(
+  encryptedRaw: unknown,
+  ivRaw: unknown,
+  keyStr: string
+): Promise<Record<string, string>> {
+  try {
+    const encB64 = parseByteaToString(encryptedRaw);
+    const ivB64 = ivRaw ? parseByteaToString(ivRaw) : null;
+
+    if (!ivB64) {
+      const keyBytes = new TextEncoder().encode(keyStr);
+      const encryptedBytes = Uint8Array.from(atob(encB64), c => c.charCodeAt(0));
+      const decrypted = new Uint8Array(encryptedBytes.length);
+      for (let i = 0; i < encryptedBytes.length; i++) {
+        decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+      }
+      return JSON.parse(new TextDecoder().decode(decrypted));
+    }
+
+    const rawKey = new TextEncoder().encode(keyStr);
+    const keyHash = await crypto.subtle.digest('SHA-256', rawKey);
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw', keyHash, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+    );
+    const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+    const encryptedData = Uint8Array.from(atob(encB64), c => c.charCodeAt(0));
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, encryptedData);
     return JSON.parse(new TextDecoder().decode(decrypted));
-  } catch {
+  } catch (e) {
+    console.error('Decryption error:', e);
     return {};
   }
 }
@@ -212,10 +282,12 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
   }
 
   try {
-    const login = credentials.login || credentials.mt_login;
-    const password = credentials.password || credentials.mt_password;
-    const server = credentials.server || credentials.mt_server;
-    const platform = (config?.platform as string) || 'mt5';
+    const login = credentials.mt5_login || credentials.mt_login || credentials.login;
+    const password = credentials.mt5_password || credentials.mt_password || credentials.password;
+    const server = credentials.mt5_server || credentials.mt_server || credentials.server;
+    const platform = (config?.platform as string) || credentials.mt5_platform || 'mt5';
+
+    console.log('[broker-portfolio] MT creds check:', { login: !!login, password: !!password, server: !!server, keys: Object.keys(credentials) });
 
     if (!login || !password || !server) {
       return { error: 'MT5 credentials incomplete' };
@@ -428,8 +500,12 @@ serve(async (req) => {
 
     // Fetch data from each connected broker
     const accountPromises = connections.map(async (conn): Promise<AccountData> => {
-      const encryptedStr = decodeBytea(conn.encrypted_credentials);
-      const credentials = decryptCredentials(encryptedStr, encryptionKey);
+      const credentials = await decryptCredentials(
+        conn.encrypted_credentials, 
+        conn.credentials_iv, 
+        encryptionKey
+      );
+      console.log('[broker-portfolio] Credential keys:', Object.keys(credentials));
       const brokerCode = conn.broker?.code;
       const config = (conn.config || {}) as Record<string, unknown>;
 
