@@ -61,6 +61,20 @@ async function decryptCredentials(
   keyStr: string
 ): Promise<Record<string, string>> {
   try {
+    // Log raw types and values for debugging
+    console.log('[broker-portfolio] RAW encrypted type:', typeof encryptedRaw, 
+      'constructor:', encryptedRaw?.constructor?.name,
+      'isArray:', Array.isArray(encryptedRaw));
+    
+    if (typeof encryptedRaw === 'string') {
+      console.log('[broker-portfolio] RAW encrypted string first 50:', encryptedRaw.substring(0, 50));
+    } else if (typeof encryptedRaw === 'object' && encryptedRaw !== null) {
+      const keys = Object.keys(encryptedRaw as Record<string, unknown>);
+      console.log('[broker-portfolio] RAW encrypted obj keys count:', keys.length, 'first 5:', keys.slice(0, 5));
+    }
+    
+    console.log('[broker-portfolio] RAW iv type:', typeof ivRaw, 'truthy:', !!ivRaw);
+
     // Convert bytea to raw bytes, then decode as UTF-8 to get the base64 string
     const encBytes = byteaToBytes(encryptedRaw);
     const encB64 = new TextDecoder().decode(encBytes);
@@ -68,12 +82,8 @@ async function decryptCredentials(
     const ivBytes = ivRaw ? byteaToBytes(ivRaw) : null;
     const ivB64 = ivBytes && ivBytes.length > 0 ? new TextDecoder().decode(ivBytes) : null;
 
-    console.log('[broker-portfolio] decrypt debug:', {
-      encB64Len: encB64.length,
-      encB64First20: encB64.substring(0, 20),
-      ivB64Len: ivB64?.length || 0,
-      hasIv: !!ivB64,
-    });
+    console.log('[broker-portfolio] decoded encB64 len:', encB64.length, 'first20:', encB64.substring(0, 20));
+    console.log('[broker-portfolio] decoded ivB64:', ivB64 ? `len=${ivB64.length} first20=${ivB64.substring(0, 20)}` : 'null');
 
     if (!ivB64) {
       // Legacy XOR fallback
