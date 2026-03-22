@@ -142,7 +142,7 @@ export default function PipCalculator() {
               <div className="h-px" style={{ background: `hsl(${ACCENT} / 0.15)` }} />
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_value_per_pip')}</span>
-                <span className="text-base font-mono font-bold text-foreground">${result.pipValue.toFixed(2)} {accountCurrency}</span>
+                <span className="text-base font-mono font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>${result.pipValue.toFixed(2)} {accountCurrency}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('pip_total_value')} ({pips} pips)</span>
