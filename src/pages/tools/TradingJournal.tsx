@@ -69,14 +69,30 @@ export default function TradingJournal() {
   const [userId, setUserId] = useState<string | null>(null);
   const [filterPair, setFilterPair] = useState<string>('all');
   const [filterResult, setFilterResult] = useState<string>('all');
+  const [filterPeriod, setFilterPeriod] = useState<'all' | 'week' | 'month'>('all');
+  const [periodAnchor, setPeriodAnchor] = useState<Date>(new Date());
+
+  const periodRange = useMemo(() => {
+    if (filterPeriod === 'week') {
+      return { start: startOfWeek(periodAnchor, { weekStartsOn: 1 }), end: endOfWeek(periodAnchor, { weekStartsOn: 1 }) };
+    }
+    if (filterPeriod === 'month') {
+      return { start: startOfMonth(periodAnchor), end: endOfMonth(periodAnchor) };
+    }
+    return null;
+  }, [filterPeriod, periodAnchor]);
 
   const filteredEntries = useMemo(() => {
     return entries.filter(e => {
       if (filterPair !== 'all' && e.pair !== filterPair) return false;
       if (filterResult !== 'all' && e.result !== filterResult) return false;
+      if (periodRange) {
+        const d = parseISO(e.date);
+        if (!isWithinInterval(d, { start: periodRange.start, end: periodRange.end })) return false;
+      }
       return true;
     });
-  }, [entries, filterPair, filterResult]);
+  }, [entries, filterPair, filterResult, periodRange]);
 
   // Form state
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
