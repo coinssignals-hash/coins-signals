@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Plus, Check, Eye, EyeOff, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, FileSpreadsheet, Shield, Monitor } from 'lucide-react';
+import { ArrowLeft, Check, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, LogIn, Monitor } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useBrokerConnections, Broker, BrokerConnection } from '@/hooks/useBrokerConnections';
@@ -15,6 +14,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
 import { BrokerCatalog, BrokerCatalogItem } from '@/components/broker/BrokerCatalog';
 import { MT5ConnectDialog } from '@/components/broker/MT5ConnectDialog';
+import { APIConnectDialog } from '@/components/broker/APIConnectDialog';
 
 const ACCENT = '200 90% 58%';
 
