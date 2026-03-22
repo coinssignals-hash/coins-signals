@@ -135,7 +135,17 @@ export function useSignals(selectedDate?: string) {
 
   const error = queryError ? (queryError instanceof Error ? queryError.message : 'Error al cargar señales') : null;
 
-  // Realtime subscription for live updates
+  // Track if initial data has loaded to avoid toasting on first render
+  const initialLoadRef = useRef(true);
+  useEffect(() => {
+    if (!loading) {
+      // Delay clearing so we skip the first realtime event if it fires immediately
+      const timer = setTimeout(() => { initialLoadRef.current = false; }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
+
+  // Realtime subscription for live updates + in-app toast notifications
   useEffect(() => {
     const channel = supabase
       .channel('trading-signals-changes')
@@ -152,9 +162,34 @@ export function useSignals(selectedDate?: string) {
 
               if (payload.eventType === 'INSERT') {
                 const newSignal = mapDbSignalToTradingSignal(payload.new as DbSignal);
+
+                // Show in-app toast for new signals (skip initial load)
+                if (!initialLoadRef.current) {
+                  const actionText = newSignal.action === 'BUY' ? '🟢 COMPRAR' : '🔴 VENDER';
+                  const soundType = newSignal.action === 'BUY' ? 'buy' as const : 'sell' as const;
+                  playNotificationSound(soundType);
+                  toast({
+                    title: `📈 Nueva Señal: ${newSignal.currencyPair}`,
+                    description: `${actionText} @ ${newSignal.entryPrice} · Probabilidad ${newSignal.probability}%`,
+                    duration: 8000,
+                  });
+                }
+
                 return [newSignal, ...old];
               } else if (payload.eventType === 'UPDATE') {
                 const updatedSignal = mapDbSignalToTradingSignal(payload.new as DbSignal);
+
+                // Notify when a signal is closed
+                if (!initialLoadRef.current && updatedSignal.closedResult) {
+                  const resultText = updatedSignal.closedResult === 'tp_hit' ? '✅ TP Alcanzado' : '❌ SL Tocado';
+                  playNotificationSound(updatedSignal.closedResult === 'tp_hit' ? 'pattern_bullish' : 'pattern_bearish');
+                  toast({
+                    title: `${resultText}: ${updatedSignal.currencyPair}`,
+                    description: `Cerrada @ ${updatedSignal.closedPrice}`,
+                    duration: 6000,
+                  });
+                }
+
                 return old.map((s) => s.id === updatedSignal.id ? updatedSignal : s);
               } else if (payload.eventType === 'DELETE') {
                 const deletedId = (payload.old as { id: string }).id;
