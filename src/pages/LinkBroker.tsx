@@ -70,7 +70,11 @@ export default function LinkBroker() {
     connectionName: string;
     environment: 'demo' | 'live';
   }) => {
-    const dbBroker = brokers.find(b => b.code === data.broker.code);
+    // MT5 catalog brokers (exness, xm, etc.) map to the generic metatrader4/metatrader5 DB entry
+    const platformCode = data.platform === 'mt4' ? 'metatrader4' : 'metatrader5';
+    const dbBroker = brokers.find(b => b.code === data.broker.code)
+      || brokers.find(b => b.code === platformCode);
+
     if (!dbBroker) {
       toast.error('Broker no encontrado en la base de datos');
       return;
@@ -85,7 +89,8 @@ export default function LinkBroker() {
         mt5_login: data.login,
         mt5_password: data.password,
         mt5_platform: data.platform,
-      }
+      },
+      { catalog_broker_code: data.broker.code, catalog_broker_name: data.broker.name }
     );
 
     if (connection) {
