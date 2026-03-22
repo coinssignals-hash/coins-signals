@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 
-from app.routers import news, analysis, ai, metaapi_proxy
+from app.routers import news, analysis, ai, metaapi_proxy, cache_stats
 from app.services.database import Database
 from app.services.cache import Cache
 
