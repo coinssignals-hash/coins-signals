@@ -1165,11 +1165,16 @@ const News = () => {
                 }
                 
                 {/* News List */}
-                <StaggerList className="space-y-3">
-                  {otherNews.map((newsItem, index) =>
-                  <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
+                <VirtualizedList
+                  items={otherNews}
+                  initialCount={5}
+                  batchSize={3}
+                  keyExtractor={(item) => item.id}
+                  renderItem={(newsItem, index) => (
+                    <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
                   )}
-                </StaggerList>
+                  className="space-y-3"
+                />
               </div>
               }
           </>
