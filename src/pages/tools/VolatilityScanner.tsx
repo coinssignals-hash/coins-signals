@@ -113,9 +113,9 @@ export default function VolatilityScanner() {
         </div>
 
         {/* Data Table */}
-        <ToolCard>
-          <CardContent className="p-0">
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2]">
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5" style={{ background: `hsl(${ACCENT} / 0.06)`, borderBottom: '1px solid hsl(var(--border) / 0.3)' }}>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('tp_pair')}</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-right w-14">ATR14</span>
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider text-center w-14">Vol%</span>
