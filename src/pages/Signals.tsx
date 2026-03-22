@@ -437,7 +437,7 @@ export default function Signals() {
           <div className="px-3 pb-2 space-y-2 animate-in slide-in-from-top-2 duration-200">
             {/* Pair filter */}
             <div className="space-y-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Par</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_pair')}</span>
               <ScrollArea className="w-full">
                 <div className="flex gap-1 pb-1">
                   <button
