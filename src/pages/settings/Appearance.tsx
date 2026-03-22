@@ -13,6 +13,7 @@ import type { Language } from '@/i18n/translations';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 const ACCENT_COLOR_IDS = ['blue', 'cyan', 'green', 'amber', 'rose', 'violet'] as const;
 const ACCENT_COLORS_META: Record<string, { hsl: string; preview: string }> = {

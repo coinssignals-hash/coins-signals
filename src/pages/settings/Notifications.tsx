@@ -89,7 +89,12 @@ export default function Notifications() {
   }, []);
 
   const toggleSetting = (key: keyof typeof settings) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+    const newValue = !settings[key];
+    setSettings(prev => ({ ...prev, [key]: newValue }));
+    // Persist DB-backed keys to profile
+    if (key in DB_MAP && user) {
+      updateProfile({ [DB_MAP[key]]: newValue } as any);
+    }
   };
 
   const handleSoundToggle = () => {
