@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Loader2, Shield, Server } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Shield, Server, Zap } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
@@ -24,6 +24,18 @@ interface Props {
     environment: 'demo' | 'live';
   }) => Promise<void>;
 }
+
+const BROKER_ACCENT: Record<string, string> = {
+  exness: '185 80% 55%',
+  oanda: '42 90% 55%',
+  vantage: '340 75% 55%',
+  pepperstone: '0 75% 55%',
+  icmarkets: '210 80% 55%',
+  xtb: '145 70% 50%',
+  xm: '25 85% 55%',
+  fxpro: '260 70% 60%',
+  tradovate: '200 75% 55%',
+};
 
 export function MT5ConnectDialog({ open, onOpenChange, broker, onSave }: Props) {
   const [server, setServer] = useState('');
@@ -60,123 +72,197 @@ export function MT5ConnectDialog({ open, onOpenChange, broker, onSave }: Props) 
 
   if (!broker) return null;
 
+  const accent = BROKER_ACCENT[broker.code] || '210 70% 55%';
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span className="text-xl">{broker.logoEmoji}</span>
-            Conectar {broker.name} vía MT4/MT5
-          </DialogTitle>
-          <DialogDescription>
-            Ingresa tus credenciales de MetaTrader para sincronizar operaciones automáticamente.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className="max-w-md border-0 p-0 overflow-hidden rounded-2xl"
+        style={{
+          background: `linear-gradient(165deg, hsl(${accent} / 0.10) 0%, hsl(var(--card)) 35%, hsl(var(--background)) 100%)`,
+          boxShadow: `0 0 60px -15px hsl(${accent} / 0.25), 0 25px 50px -12px rgba(0,0,0,0.5)`,
+        }}
+      >
+        {/* Top glow line */}
+        <div
+          className="absolute top-0 inset-x-0 h-[2px]"
+          style={{ background: `linear-gradient(90deg, transparent, hsl(${accent} / 0.8), transparent)` }}
+        />
 
-        <div className="space-y-4 pt-2">
-          {/* Platform selector */}
-          <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
-            <Label className="text-xs text-muted-foreground flex-1">Plataforma</Label>
-            <div className="flex gap-1">
-              {(['mt4', 'mt5'] as const).map(p => (
-                <button
-                  key={p}
-                  onClick={() => setPlatform(p)}
-                  className={cn(
-                    'px-3 py-1.5 rounded-md text-xs font-semibold transition-colors',
-                    platform === p
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {p.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </div>
+        {/* Radial glow */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-56 h-40 rounded-full opacity-15 pointer-events-none"
+          style={{ background: `radial-gradient(ellipse, hsl(${accent} / 0.5), transparent 70%)` }}
+        />
 
-          {/* Server */}
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Servidor</Label>
-            <div className="relative">
-              <Server className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <Input
-                value={server}
-                onChange={e => setServer(e.target.value)}
-                placeholder="ej: Exness-MT5Real6"
-                className="h-9 text-sm pl-9"
-              />
-            </div>
-            <p className="text-[10px] text-muted-foreground">
-              Encuéntralo en tu terminal MT{platform === 'mt5' ? '5' : '4'} → Archivo → Conectar → nombre del servidor.
-            </p>
-          </div>
-
-          {/* Login */}
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Login (Número de cuenta)</Label>
-            <Input
-              value={login}
-              onChange={e => setLogin(e.target.value)}
-              placeholder="ej: 12345678"
-              className="h-9 text-sm"
-              inputMode="numeric"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Contraseña (Investor/Read-only recomendada)</Label>
-            <div className="relative">
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Tu contraseña MT5..."
-                className="h-9 text-sm pr-9"
-              />
-              <button
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+        <div className="relative p-6">
+          <DialogHeader className="mb-5">
+            <DialogTitle className="flex items-center gap-3 text-base">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold"
+                style={{
+                  background: `linear-gradient(135deg, hsl(${accent} / 0.25), hsl(${accent} / 0.08))`,
+                  border: `1px solid hsl(${accent} / 0.3)`,
+                }}
               >
-                {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              </button>
+                {broker.logoEmoji}
+              </div>
+              <span>Conectar {broker.name} vía MT4/MT5</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground mt-1">
+              Ingresa tus credenciales de MetaTrader para sincronizar operaciones automáticamente.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Platform selector */}
+            <div
+              className="flex items-center gap-3 p-3 rounded-xl"
+              style={{
+                background: `hsl(${accent} / 0.05)`,
+                border: `1px solid hsl(${accent} / 0.12)`,
+              }}
+            >
+              <Label className="text-xs text-muted-foreground flex-1 tracking-wider uppercase font-medium">Plataforma</Label>
+              <div className="flex gap-1">
+                {(['mt4', 'mt5'] as const).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPlatform(p)}
+                    className={cn(
+                      'px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200',
+                      platform === p
+                        ? 'text-white shadow-lg'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    style={platform === p ? {
+                      background: `linear-gradient(135deg, hsl(${accent}), hsl(${accent} / 0.7))`,
+                      boxShadow: `0 4px 15px hsl(${accent} / 0.3)`,
+                    } : {
+                      background: 'hsl(var(--secondary) / 0.5)',
+                    }}
+                  >
+                    {p.toUpperCase()}
+                  </button>
+                ))}
+              </div>
             </div>
-            <p className="text-[10px] text-amber-400">
-              💡 Usa la contraseña de solo lectura (Investor) para máxima seguridad.
-            </p>
-          </div>
 
-          {/* Environment */}
-          <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
-            <span className="text-xs text-muted-foreground">Entorno</span>
-            <div className="flex items-center gap-2">
-              <span className={cn("text-xs", isLive ? "text-amber-400 font-medium" : "text-muted-foreground")}>
-                {isLive ? '🔴 Live' : '🟢 Demo'}
-              </span>
-              <Switch checked={isLive} onCheckedChange={setIsLive} className="data-[state=checked]:bg-amber-600" />
+            {/* Server */}
+            <div className="space-y-1.5">
+              <Label className="text-[10px] text-muted-foreground tracking-wider uppercase font-medium">Servidor</Label>
+              <div className="relative">
+                <Server
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+                  style={{ color: `hsl(${accent})` }}
+                />
+                <Input
+                  value={server}
+                  onChange={e => setServer(e.target.value)}
+                  placeholder="ej: Exness-MT5Real6"
+                  className="h-10 text-sm pl-9 rounded-xl border-border/50 bg-secondary/30 focus:border-primary"
+                  style={{ '--tw-ring-color': `hsl(${accent} / 0.3)` } as React.CSSProperties}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground/70">
+                Encuéntralo en tu terminal MT{platform === 'mt5' ? '5' : '4'} → Archivo → Conectar → nombre del servidor.
+              </p>
             </div>
-          </div>
 
-          {/* Actions */}
-          <Button
-            onClick={handleSave}
-            disabled={!canSave || saving}
-            className="w-full"
-          >
-            {saving ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Conectando...</>
-            ) : (
-              'Guardar y conectar'
-            )}
-          </Button>
+            {/* Login */}
+            <div className="space-y-1.5">
+              <Label className="text-[10px] text-muted-foreground tracking-wider uppercase font-medium">Login (Número de cuenta)</Label>
+              <Input
+                value={login}
+                onChange={e => setLogin(e.target.value)}
+                placeholder="ej: 12345678"
+                className="h-10 text-sm rounded-xl border-border/50 bg-secondary/30 focus:border-primary"
+                inputMode="numeric"
+              />
+            </div>
 
-          {/* Security note */}
-          <div className="flex items-start gap-1.5">
-            <Shield className="w-3 h-3 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <p className="text-[9px] text-muted-foreground leading-relaxed">
-              Credenciales cifradas AES-256-GCM. Solo lectura — no ejecutamos órdenes. La sincronización se realiza vía MetaAPI de forma segura.
-            </p>
+            {/* Password */}
+            <div className="space-y-1.5">
+              <Label className="text-[10px] text-muted-foreground tracking-wider uppercase font-medium">
+                Contraseña (Investor/Read-only recomendada)
+              </Label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Tu contraseña MT5..."
+                  className="h-10 text-sm pr-10 rounded-xl border-border/50 bg-secondary/30 focus:border-primary"
+                />
+                <button
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Zap className="w-3 h-3" style={{ color: `hsl(42 90% 55%)` }} />
+                <p className="text-[10px]" style={{ color: `hsl(42 90% 55%)` }}>
+                  Usa la contraseña de solo lectura (Investor) para máxima seguridad.
+                </p>
+              </div>
+            </div>
+
+            {/* Environment */}
+            <div
+              className="flex items-center justify-between p-3 rounded-xl"
+              style={{
+                background: `hsl(${accent} / 0.05)`,
+                border: `1px solid hsl(${accent} / 0.12)`,
+              }}
+            >
+              <span className="text-[10px] text-muted-foreground tracking-wider uppercase font-medium">Entorno</span>
+              <div className="flex items-center gap-2">
+                <span className={cn(
+                  "text-xs font-semibold",
+                  isLive ? "text-red-400" : "text-emerald-400"
+                )}>
+                  {isLive ? '🔴 Live' : '🟢 Demo'}
+                </span>
+                <Switch checked={isLive} onCheckedChange={setIsLive} className="data-[state=checked]:bg-red-600" />
+              </div>
+            </div>
+
+            {/* Action button */}
+            <button
+              onClick={handleSave}
+              disabled={!canSave || saving}
+              className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: canSave
+                  ? `linear-gradient(135deg, hsl(${accent}), hsl(${accent} / 0.7))`
+                  : 'hsl(var(--secondary))',
+                boxShadow: canSave ? `0 6px 20px hsl(${accent} / 0.35)` : 'none',
+              }}
+            >
+              {saving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Conectando...
+                </span>
+              ) : (
+                'Guardar y conectar'
+              )}
+            </button>
+
+            {/* Security note */}
+            <div
+              className="flex items-start gap-2 p-3 rounded-xl"
+              style={{
+                background: `hsl(${accent} / 0.04)`,
+                border: `1px solid hsl(${accent} / 0.08)`,
+              }}
+            >
+              <Shield className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: `hsl(${accent} / 0.6)` }} />
+              <p className="text-[9px] text-muted-foreground/70 leading-relaxed">
+                Credenciales cifradas AES-256-GCM. Solo lectura — no ejecutamos órdenes. La sincronización se realiza vía MetaAPI de forma segura.
+              </p>
+            </div>
           </div>
         </div>
       </DialogContent>
