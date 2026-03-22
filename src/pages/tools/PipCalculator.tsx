@@ -151,10 +151,10 @@ export default function PipCalculator() {
                 </span>
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
-        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: "hsl(var(--card) / 0.6)", border: "1px solid hsl(var(--border) / 0.5)" }}>
+        <div className="flex items-start gap-2 p-3 rounded-xl" style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.5)' }}>
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-[11px] text-muted-foreground leading-relaxed">{t('pip_info_text')}</p>
         </div>
