@@ -89,6 +89,10 @@ export default function Signals() {
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showAICenter, setShowAICenter] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [pairFilter, setPairFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [probFilter, setProbFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     return localStorage.getItem('signals-view-mode') as ViewMode || 'full';
   });
