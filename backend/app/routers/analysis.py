@@ -6,12 +6,13 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
+from app.services.cache_decorator import cached
 
 router = APIRouter()
 
 # Models
 class SentimentData(BaseModel):
-    overall: str  # bullish, bearish, neutral
+    overall: str
     score: float
     retail_sentiment: float
     institutional_sentiment: float
@@ -19,7 +20,7 @@ class SentimentData(BaseModel):
     technical_sentiment: float
 
 class PredictionData(BaseModel):
-    direction: str  # up, down, sideways
+    direction: str
     target_price: float
     confidence: float
     timeframe: str
@@ -28,8 +29,8 @@ class PredictionData(BaseModel):
 
 class TechnicalLevel(BaseModel):
     price: float
-    type: str  # support, resistance
-    strength: str  # strong, moderate, weak
+    type: str
+    strength: str
     touches: int
 
 class TechnicalLevels(BaseModel):
@@ -48,7 +49,7 @@ class PreviousDayData(BaseModel):
     range_pips: float
 
 class Recommendation(BaseModel):
-    action: str  # buy, sell, hold
+    action: str
     entry_price: float
     stop_loss: float
     take_profit: float
@@ -92,7 +93,7 @@ class EconomicEvent(BaseModel):
     name: str
     currency: str
     datetime: str
-    impact: str  # high, medium, low
+    impact: str
     actual: Optional[str] = None
     forecast: Optional[str] = None
     previous: Optional[str] = None
@@ -343,66 +344,68 @@ def get_economic_events(symbol: str, date_str: str) -> List[dict]:
     
     return events
 
-# Endpoints
+# Endpoints — all wrapped with Redis cache
+
 @router.get("/full/{symbol}")
+@cached("analysis:full", ttl=600)  # 10 min
 async def get_full_analysis(symbol: str):
     """Get complete market analysis for a symbol"""
     return get_sample_analysis(symbol)
 
 @router.get("/sentiment/{symbol}")
+@cached("analysis:sentiment", ttl=300)  # 5 min
 async def get_sentiment(symbol: str):
-    """Get market sentiment for a symbol"""
     analysis = get_sample_analysis(symbol)
     return analysis["sentiment"]
 
 @router.get("/prediction/{symbol}")
+@cached("analysis:prediction", ttl=600)  # 10 min
 async def get_prediction(symbol: str):
-    """Get price prediction for a symbol"""
     analysis = get_sample_analysis(symbol)
     return analysis["prediction"]
 
 @router.get("/technical-levels/{symbol}")
+@cached("analysis:tech", ttl=300)  # 5 min
 async def get_technical_levels(symbol: str):
-    """Get technical support/resistance levels"""
     analysis = get_sample_analysis(symbol)
     return analysis["technical_levels"]
 
 @router.get("/previous-day/{symbol}")
+@cached("analysis:prevday", ttl=1800)  # 30 min
 async def get_previous_day(symbol: str):
-    """Get previous day trading data"""
     analysis = get_sample_analysis(symbol)
     return analysis["previous_day"]
 
 @router.get("/recommendations/{symbol}")
+@cached("analysis:reco", ttl=600)  # 10 min
 async def get_recommendations(symbol: str):
-    """Get strategic trading recommendations"""
     analysis = get_sample_analysis(symbol)
     return analysis["recommendations"]
 
 @router.get("/conclusions/{symbol}")
+@cached("analysis:conclusions", ttl=600)  # 10 min
 async def get_conclusions(symbol: str):
-    """Get market conclusions and outlook"""
     analysis = get_sample_analysis(symbol)
     return analysis["conclusions"]
 
 @router.get("/monetary-policies/{symbol}")
+@cached("analysis:monetary", ttl=3600)  # 1 hour
 async def get_monetary_policies_endpoint(symbol: str):
-    """Get monetary policies for currencies in the symbol"""
     return get_monetary_policies(symbol)
 
 @router.get("/major-news/{symbol}")
+@cached("analysis:majornews", ttl=300)  # 5 min
 async def get_major_news(symbol: str):
-    """Get major news affecting the symbol"""
     analysis = get_sample_analysis(symbol)
     return analysis["major_news"]
 
 @router.get("/relevant-news/{symbol}")
+@cached("analysis:relevnews", ttl=300)  # 5 min
 async def get_relevant_news(symbol: str):
-    """Get relevant news for the symbol"""
     analysis = get_sample_analysis(symbol)
     return analysis["relevant_news"]
 
 @router.get("/economic-events/{symbol}/{date_str}")
+@cached("analysis:events", ttl=900)  # 15 min
 async def get_economic_events_endpoint(symbol: str, date_str: str):
-    """Get economic events for a symbol on a specific date"""
     return get_economic_events(symbol, date_str)
