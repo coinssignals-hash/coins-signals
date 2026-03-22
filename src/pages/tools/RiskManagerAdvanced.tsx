@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -126,20 +126,20 @@ export default function RiskManagerAdvanced() {
         {/* Alerts */}
         {alerts.length > 0 && (
           <Card className="bg-destructive/10 border-destructive/30">
-            <CardContent className="p-3 space-y-1">
+            <div className="p-3 space-y-1">
               {alerts.map((a, i) => (
                 <div key={i} className="flex items-start gap-2">
                   <AlertTriangle className="w-3.5 h-3.5 text-destructive shrink-0 mt-0.5" />
                   <p className="text-xs text-destructive">{a}</p>
                 </div>
               ))}
-            </CardContent>
+            </div>
           </Card>
         )}
 
         {/* Global Limits */}
         <ToolCard>
-          <CardContent className="p-4">
+          <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_global_limits')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -151,7 +151,7 @@ export default function RiskManagerAdvanced() {
                 <Input type="number" step="0.5" value={weeklyMaxLoss} onChange={e => setWeeklyMaxLoss(+e.target.value)} className="mt-1" />
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Overview Stats */}
@@ -162,10 +162,10 @@ export default function RiskManagerAdvanced() {
             { label: t('tp_risk_pct'), value: `${riskPercent.toFixed(1)}%`, color: riskPercent > dailyMaxLoss ? 'text-destructive' : 'text-emerald-400' },
           ].map(s => (
             <Card key={s.label} className="bg-card border-border">
-              <CardContent className="p-3 text-center">
+              <div className="p-3 text-center">
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
                 <p className={cn('text-sm font-bold tabular-nums mt-1', s.color)}>{s.value}</p>
-              </CardContent>
+              </div>
             </Card>
           ))}
         </div>
@@ -173,7 +173,7 @@ export default function RiskManagerAdvanced() {
         {/* Exposure Pie */}
         {pieData.length > 0 && (
           <ToolCard>
-            <CardContent className="p-4">
+            <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-2">{t('tp_exposure_by_pair')}</h3>
               <div className="h-40">
                 <ResponsiveContainer width="100%" height="100%">
@@ -187,7 +187,7 @@ export default function RiskManagerAdvanced() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </CardContent>
+            </div>
           </ToolCard>
         )}
 
@@ -197,7 +197,7 @@ export default function RiskManagerAdvanced() {
           const accRiskPct = account.balance > 0 ? (accRisk / account.balance) * 100 : 0;
           return (
             <Card key={account.id} className="bg-card border-border">
-              <CardContent className="p-4 space-y-3">
+              <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <Input
                     value={account.name}
@@ -246,20 +246,20 @@ export default function RiskManagerAdvanced() {
                     })}
                   </div>
                 )}
-              </CardContent>
+              </div>
             </Card>
           );
         })}
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_risk_manager_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -137,7 +137,7 @@ export default function InstitutionalCalendar() {
             const isExpanded = expandedId === evt.id;
             return (
               <Card key={evt.id} className="bg-card border-border">
-                <CardContent className="p-0">
+                <div className="p-0">
                   <button className="w-full flex items-center justify-between p-4" onClick={() => setExpandedId(isExpanded ? null : evt.id)}>
                     <div className="flex items-center gap-3">
                       <div className="text-center w-12">
@@ -239,21 +239,21 @@ export default function InstitutionalCalendar() {
                       </div>
                     </div>
                   )}
-                </CardContent>
+                </div>
               </Card>
             );
           })}
         </div>
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_inst_cal_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

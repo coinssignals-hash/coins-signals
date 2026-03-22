@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -129,7 +129,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
         </div>
 
         <ToolCard>
-          <CardContent className="p-4 space-y-4">
+          <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('rr_trade_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -182,7 +182,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
               <Calculator className="w-4 h-4" />
               {t('rr_calculate_btn') || 'Calcular Riesgo / Recompensa'}
             </Button>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {result && (() => {
@@ -198,7 +198,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
               result.isGoodRatio ? 'bg-emerald-500/5 border-emerald-500/20' :
               result.isAcceptable ? 'bg-amber-500/5 border-amber-500/20' : 'bg-rose-500/5 border-rose-500/20'
             )}>
-              <CardContent className="p-4 text-center space-y-2">
+              <div className="p-4 text-center space-y-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('rr_ratio')}</p>
                 <p className={cn('text-4xl font-bold tabular-nums',
                   result.isGoodRatio ? 'text-emerald-400' : result.isAcceptable ? 'text-amber-400' : 'text-rose-400'
@@ -206,12 +206,12 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                 <span className={cn('inline-block text-[10px] px-2.5 py-1 rounded-full font-semibold',
                   result.isGoodRatio ? 'bg-emerald-500/15 text-emerald-400' : result.isAcceptable ? 'bg-amber-500/15 text-amber-400' : 'bg-rose-500/15 text-rose-400'
                 )}>{result.verdict}</span>
-              </CardContent>
+              </div>
             </Card>
 
             {/* Visual bar chart */}
             <ToolCard>
-              <CardContent className="p-4 space-y-3">
+              <div className="p-4 space-y-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
                   {t('rr_visual') || 'Proporción Visual'}
                 </p>
@@ -258,31 +258,31 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                     <span>{rewardPct.toFixed(0)}% {t('rr_reward') || 'Recompensa'}</span>
                   </div>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
 
             <div className="grid grid-cols-2 gap-3">
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <ShieldAlert className="w-4 h-4 mx-auto mb-1 text-rose-400" />
                   <p className="text-xs text-muted-foreground">{t('rr_risk')}</p>
                   <p className="text-sm font-bold text-rose-400 tabular-nums">{result.riskPips} pips</p>
                   <p className="text-xs text-rose-400/70 tabular-nums">${result.riskAmount}</p>
-                </CardContent>
+                </div>
               </ToolCard>
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <Target className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
                   <p className="text-xs text-muted-foreground">{t('rr_reward')}</p>
                   <p className="text-sm font-bold text-emerald-400 tabular-nums">{result.rewardPips} pips</p>
                   <p className="text-xs text-emerald-400/70 tabular-nums">${result.potentialProfit}</p>
-                </CardContent>
+                </div>
               </ToolCard>
             </div>
 
             {/* Optimal Lot Size */}
             <Card className="bg-card border-primary/20">
-              <CardContent className="p-4 space-y-3">
+              <div className="p-4 space-y-3">
                 <div className="flex items-center gap-2 justify-center">
                   <Layers className="w-4 h-4 text-primary" />
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -309,19 +309,19 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                 <p className="text-[10px] text-muted-foreground text-center">
                   {t('rr_lot_info') || `Basado en ${riskPercent}% de riesgo ($${result.riskAmount}) sobre ${result.riskPips} pips de SL`}
                 </p>
-              </CardContent>
+              </div>
             </Card>
           </>
           );
         })()}
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('rr_info_text')}</p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

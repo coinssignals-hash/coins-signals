@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -158,7 +158,7 @@ export default function BacktestPro() {
 
         {/* Global Config */}
         <ToolCard>
-          <CardContent className="p-4">
+          <div className="p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs text-muted-foreground">{t('tp_initial_capital')}</Label>
@@ -169,13 +169,13 @@ export default function BacktestPro() {
                 <Input type="number" value={months} onChange={e => setMonths(+e.target.value)} className="mt-1" />
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Strategy Cards */}
         {strategies.map((strat, idx) => (
           <Card key={strat.id} className="bg-card border-border" style={{ borderLeftColor: strat.color, borderLeftWidth: 3 }}>
-            <CardContent className="p-4 space-y-3">
+            <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Input
                   value={strat.name}
@@ -206,7 +206,7 @@ export default function BacktestPro() {
                   <Input type="number" step="0.5" value={strat.riskPercent} onChange={e => updateStrategy(strat.id, 'riskPercent', +e.target.value)} className="h-8 text-xs mt-0.5" />
                 </div>
               </div>
-            </CardContent>
+            </div>
           </Card>
         ))}
 
@@ -219,7 +219,7 @@ export default function BacktestPro() {
           <>
             {/* Equity Chart */}
             <ToolCard>
-              <CardContent className="p-4">
+              <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_equity_curves')}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
@@ -235,12 +235,12 @@ export default function BacktestPro() {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
 
             {/* Comparison Table */}
             <ToolCard>
-              <CardContent className="p-4">
+              <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_comparison')}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -276,20 +276,20 @@ export default function BacktestPro() {
                     </tbody>
                   </table>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
           </>
         )}
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_backtest_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

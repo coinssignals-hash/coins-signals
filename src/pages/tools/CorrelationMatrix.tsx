@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -83,7 +83,7 @@ export default function CorrelationMatrix() {
 
         {/* Matrix Grid */}
         <ToolCard>
-          <CardContent className="p-2 overflow-x-auto">
+          <div className="p-2 overflow-x-auto">
             <table className="w-full min-w-[600px]">
               <thead>
                 <tr>
@@ -117,12 +117,12 @@ export default function CorrelationMatrix() {
                 ))}
               </tbody>
             </table>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Legend */}
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <p className="text-[10px] text-muted-foreground mb-2 font-medium">{t('tp_correlation_scale')}</p>
             <div className="flex gap-1 items-center">
               {[
@@ -138,12 +138,12 @@ export default function CorrelationMatrix() {
                 </div>
               ))}
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Top Correlations */}
         <ToolCard>
-          <CardContent className="p-4 space-y-2">
+          <div className="p-4 space-y-2">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_strongest_correlations')}</h3>
             {highlights.map((h, i) => (
               <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
@@ -156,18 +156,18 @@ export default function CorrelationMatrix() {
                 </span>
               </div>
             ))}
-          </CardContent>
+          </div>
         </ToolCard>
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_correlation_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

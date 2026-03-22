@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -98,13 +98,13 @@ export default function TrendScanner() {
 
         {/* Scan Info */}
         <ToolCard>
-          <CardContent className="p-3 flex items-center justify-between">
+          <div className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-foreground">{t('tp_pairs_scanned')}</span>
             </div>
             <span className="text-sm font-bold text-primary tabular-nums">{FOREX_PAIRS.length}</span>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Stats Summary — clickable filters */}
@@ -119,11 +119,11 @@ export default function TrendScanner() {
                 'border transition-colors',
                 filter === s.key ? 'bg-primary/10 border-primary/40' : 'bg-card border-border'
               )}>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <s.icon className={cn('w-4 h-4 mx-auto mb-1', s.color)} />
                   <p className={cn('text-xl font-bold tabular-nums', s.color)}>{s.value}</p>
                   <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                </CardContent>
+                </div>
               </Card>
             </button>
           ))}
@@ -131,7 +131,7 @@ export default function TrendScanner() {
 
         {/* Pairs List */}
         <ToolCard>
-          <CardContent className="p-0">
+          <div className="p-0">
             {/* Table Header */}
             <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-4 py-2.5 border-b border-border">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('tp_pair')}</span>
@@ -209,7 +209,7 @@ export default function TrendScanner() {
                 </div>
               </div>
             ))}
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Last update */}
@@ -220,14 +220,14 @@ export default function TrendScanner() {
 
         {/* Info */}
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_trend_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

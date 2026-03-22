@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -157,7 +157,7 @@ export default function MonteCarloSimulation() {
 
         {/* Parameters */}
         <ToolCard>
-          <CardContent className="p-4 space-y-4">
+          <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_monte_carlo_params')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -193,14 +193,14 @@ export default function MonteCarloSimulation() {
               <Play className="w-4 h-4" />
               {running ? t('tp_simulating') : t('tp_run_simulations').replace('{count}', String(simulations))}
             </Button>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {result && (
           <>
             {/* Equity Projection Chart */}
             <ToolCard>
-              <CardContent className="p-4">
+              <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_capital_projection')}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
@@ -222,12 +222,12 @@ export default function MonteCarloSimulation() {
                   <span className="text-primary/60">■ P25-P75</span>
                   <span className="text-primary/30">■ P5-P95</span>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
 
             {/* Distribution */}
             <ToolCard>
-              <CardContent className="p-4">
+              <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_distribution')}</h3>
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
@@ -238,12 +238,12 @@ export default function MonteCarloSimulation() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
 
             {/* Stats */}
             <ToolCard>
-              <CardContent className="p-4 space-y-3">
+              <div className="p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-foreground">{t('tp_key_stats')}</h3>
                 {[
                   { label: t('tp_median_final'), value: `$${result.median.toLocaleString()}`, color: result.median > capital ? 'text-emerald-400' : 'text-rose-400' },
@@ -258,18 +258,18 @@ export default function MonteCarloSimulation() {
                     <span className={cn('text-sm font-bold tabular-nums', s.color)}>{s.value}</span>
                   </div>
                 ))}
-              </CardContent>
+              </div>
             </ToolCard>
 
             <ToolCard>
-              <CardContent className="p-3">
+              <div className="p-3">
                 <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_monte_carlo_info')}
               </p>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
           </>
         )}

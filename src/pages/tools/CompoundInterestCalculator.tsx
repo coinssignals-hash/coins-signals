@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -56,7 +56,7 @@ export default function CompoundInterestCalculator() {
         </div>
 
         <ToolCard>
-          <CardContent className="p-4 space-y-4">
+          <div className="p-4 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t('tool_parameters')}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -82,23 +82,23 @@ export default function CompoundInterestCalculator() {
                 <Input type="number" step="0.5" min="0" value={withdrawalPercent} onChange={e => setWithdrawalPercent(e.target.value)} className="bg-secondary border-border text-foreground" />
               </div>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {result && (
           <>
             <Card className="bg-emerald-500/5 border border-emerald-500/20">
-              <CardContent className="p-4 text-center space-y-1">
+              <div className="p-4 text-center space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('ci_final_balance')}</p>
                 <p className="text-3xl font-bold text-emerald-400 tabular-nums">${Number(result.finalBalance).toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">
                   {t('ci_total_return')}: <span className="text-emerald-400 font-semibold">{result.totalReturnPct}%</span>
                 </p>
-              </CardContent>
+              </div>
             </Card>
 
             <ToolCard>
-              <CardContent className="p-4">
+              <div className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary" />{t('ci_growth_curve')}
                 </h3>
@@ -128,42 +128,42 @@ export default function CompoundInterestCalculator() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </CardContent>
+              </div>
             </ToolCard>
 
             <div className="grid grid-cols-3 gap-2">
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <DollarSign className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ci_profit')}</p>
                   <p className="text-sm font-bold text-emerald-400 tabular-nums">${Number(result.totalGain).toLocaleString()}</p>
-                </CardContent>
+                </div>
               </ToolCard>
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <Calendar className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-[10px] text-muted-foreground">{t('ci_deposited')}</p>
                   <p className="text-sm font-bold text-foreground tabular-nums">${Number(result.totalDeposited).toLocaleString()}</p>
-                </CardContent>
+                </div>
               </ToolCard>
               <ToolCard>
-                <CardContent className="p-3 text-center">
+                <div className="p-3 text-center">
                   <Percent className="w-4 h-4 mx-auto mb-1 text-amber-400" />
                   <p className="text-[10px] text-muted-foreground">{t('ci_return')}</p>
                   <p className="text-sm font-bold text-amber-400 tabular-nums">{result.totalReturnPct}%</p>
-                </CardContent>
+                </div>
               </ToolCard>
             </div>
           </>
         )}
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">{t('ci_info_text')}</p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

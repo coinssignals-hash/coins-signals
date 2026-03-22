@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -215,7 +215,7 @@ export default function OrderFlowAnalysis() {
 
         {/* Institutional Positioning */}
         <ToolCard>
-          <CardContent className="p-4 space-y-3">
+          <div className="p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_institutional_positioning')}</h3>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-emerald-500/30 rounded-l-lg h-8 flex items-center justify-end pr-2" style={{ width: `${selected.longPercent}%` }}>
@@ -235,12 +235,12 @@ export default function OrderFlowAnalysis() {
                 {selected.change > 0 ? '+' : ''}{selected.change}% {t('tp_change_label')}
               </span>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Volume Profile */}
         <ToolCard>
-          <CardContent className="p-4">
+          <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_volume_profile')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -254,12 +254,12 @@ export default function OrderFlowAnalysis() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* Delta Table */}
         <ToolCard>
-          <CardContent className="p-4">
+          <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_delta_by_level')}</h3>
             <div className="space-y-0.5 max-h-60 overflow-y-auto">
               {selected.levels.map((l, i) => (
@@ -280,12 +280,12 @@ export default function OrderFlowAnalysis() {
                 </div>
               ))}
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
 
         {/* All Pairs Summary */}
         <ToolCard>
-          <CardContent className="p-4">
+          <div className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_multi_pair_summary')}</h3>
             {data.slice(0, 10).map(d => (
               <div key={d.pair} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
@@ -301,18 +301,18 @@ export default function OrderFlowAnalysis() {
                 </div>
               </div>
             ))}
-          </CardContent>
+          </div>
         </ToolCard>
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_order_flow_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>

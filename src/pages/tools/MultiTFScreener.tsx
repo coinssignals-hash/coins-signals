@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -36,7 +36,7 @@ const SignalDot = ({ signal }: { signal: Signal }) => (
 
 const PairCardSkeleton = () => (
   <ToolCard>
-    <CardContent className="p-4">
+    <div className="p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Skeleton className="w-4 h-4 rounded" />
@@ -55,7 +55,7 @@ const PairCardSkeleton = () => (
           </div>
         </div>
       </div>
-    </CardContent>
+    </div>
   </ToolCard>
 );
 
@@ -195,7 +195,7 @@ export default function MultiTFScreener() {
         {/* Currency Strength Meter */}
         {currencyStrength.length > 0 && (
           <ToolCard>
-            <CardContent className="p-4 space-y-3">
+            <div className="p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-primary" />
                 <p className="text-xs font-bold text-foreground">{t('mtf_currency_strength')}</p>
@@ -222,17 +222,17 @@ export default function MultiTFScreener() {
                   </div>
                 ))}
               </div>
-            </CardContent>
+            </div>
           </ToolCard>
         )}
         {/* Error */}
         {error && !loading && data.length === 0 && (
           <Card className="bg-card border-destructive/30">
-            <CardContent className="p-4 text-center space-y-2">
+            <div className="p-4 text-center space-y-2">
               <p className="text-sm text-destructive">{t('mtf_error')}</p>
               <p className="text-xs text-muted-foreground">{error}</p>
               <Button size="sm" variant="outline" onClick={() => fetchData(true)}>{t('mtf_retry')}</Button>
-            </CardContent>
+            </div>
           </Card>
         )}
 
@@ -247,7 +247,7 @@ export default function MultiTFScreener() {
         <div className="space-y-2">
           {filtered.map(pair => (
             <Card key={pair.pair} className="bg-card border-border">
-              <CardContent className="p-0">
+              <div className="p-0">
                 <button
                   className="w-full flex items-center justify-between p-4"
                   onClick={() => setExpandedPair(expandedPair === pair.pair ? null : pair.pair)}
@@ -321,20 +321,20 @@ export default function MultiTFScreener() {
                     </div>
                   </div>
                 )}
-              </CardContent>
+              </div>
             </Card>
           ))}
         </div>
 
         <ToolCard>
-          <CardContent className="p-3">
+          <div className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('mtf_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>
