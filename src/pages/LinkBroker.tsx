@@ -112,12 +112,8 @@ export default function LinkBroker() {
       navigate('/auth');
       return;
     }
-    setSelectedCatalogBroker(catalogBroker);
-    setFormData({
-      connectionName: `${catalogBroker.name} - ${isLiveMode ? 'Live' : 'Demo'}`,
-      apiKey: '', apiSecret: '', accountId: '', accessToken: '',
-    });
-    setShowConnectForm(true);
+    setAPIBroker(catalogBroker);
+    setShowAPIDialog(true);
   };
 
   const handleSyncBroker = async (catalogBroker: BrokerCatalogItem) => {
@@ -129,56 +125,33 @@ export default function LinkBroker() {
     }
   };
 
-  const handleTestConnection = async () => {
-    if (!selectedCatalogBroker) return;
-    setIsTestingConnection(true);
-    const result = await testConnection(
-      undefined,
-      selectedCatalogBroker.code,
-      {
-        api_key: formData.apiKey,
-        api_secret: formData.apiSecret,
-        account_id: formData.accountId || undefined,
-        access_token: formData.accessToken || undefined,
-      },
-      isLiveMode ? 'live' : 'demo'
-    );
-    setIsTestingConnection(false);
-
-    if (result.success) {
-      toast.success(result.message || 'Conexión exitosa');
-    } else {
-      toast.error(result.message || 'Error de conexión');
-    }
+  const handleAPITest = async (data: {
+    brokerCode: string;
+    credentials: { api_key?: string; api_secret?: string; account_id?: string; access_token?: string };
+    environment: 'demo' | 'live';
+  }) => {
+    const result = await testConnection(undefined, data.brokerCode, data.credentials, data.environment);
+    return result;
   };
 
-  const handleSaveConnection = async () => {
-    if (!selectedCatalogBroker || !user) return;
-    const dbBroker = brokers.find(b => b.code === selectedCatalogBroker.code);
+  const handleAPISave = async (data: {
+    broker: BrokerCatalogItem;
+    connectionName: string;
+    environment: 'demo' | 'live';
+    credentials: { api_key?: string; api_secret?: string; account_id?: string; access_token?: string };
+  }): Promise<boolean> => {
+    const dbBroker = brokers.find(b => b.code === data.broker.code);
     if (!dbBroker) {
       toast.error('Broker no encontrado en la base de datos');
-      return;
+      return false;
     }
-
-    setIsSaving(true);
     const connection = await createConnection(
       dbBroker.id,
-      formData.connectionName || `${selectedCatalogBroker.name} Account`,
-      isLiveMode ? 'live' : 'demo',
-      {
-        api_key: formData.apiKey,
-        api_secret: formData.apiSecret,
-        account_id: formData.accountId || undefined,
-        access_token: formData.accessToken || undefined,
-      }
+      data.connectionName,
+      data.environment,
+      data.credentials,
     );
-    setIsSaving(false);
-
-    if (connection) {
-      setShowConnectForm(false);
-      setSelectedCatalogBroker(null);
-      setFormData({ connectionName: '', apiKey: '', apiSecret: '', accountId: '', accessToken: '' });
-    }
+    return !!connection;
   };
 
   const handleDeleteConnection = async (connectionId: string) => {
