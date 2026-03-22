@@ -4,17 +4,11 @@ import { SignalCardV2Badges } from "./SignalCardV2Badges";
 import { SignalCardV2Strategy } from "./SignalCardV2Strategy";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import {
-  TrendingUp,
-  ShieldCheck,
-  Flame,
   Copy,
-  TrendingDown,
-  Minus,
   ChevronDown,
-  Info,
   Activity } from
 "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";

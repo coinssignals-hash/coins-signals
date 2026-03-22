@@ -72,13 +72,51 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/~oauth/, /\.json$/],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/fkaziwfwangiwnduxymf\.supabase\.co\/.*/i,
+            // Supabase API — network first with fast fallback
+            urlPattern: /^https:\/\/fkaziwfwangiwnduxymf\.supabase\.co\/rest\/.*/i,
             handler: "NetworkFirst",
             options: {
-              cacheName: "supabase-cache",
+              cacheName: "supabase-rest-cache",
+              networkTimeoutSeconds: 5,
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+            },
+          },
+          {
+            // Edge Functions — stale while revalidate for faster perceived performance
+            urlPattern: /^https:\/\/fkaziwfwangiwnduxymf\.supabase\.co\/functions\/.*/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "edge-functions-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24,
+                maxAgeSeconds: 60 * 5, // 5 min
+              },
+            },
+          },
+          {
+            // External CDN images (flags, avatars)
+            urlPattern: /^https:\/\/(flagcdn\.com|i\.pravatar\.cc)\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "cdn-images",
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+          {
+            // Local JSON data files
+            urlPattern: /\/data\/brokers\/.+\.json$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "broker-data",
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
             },
           },
