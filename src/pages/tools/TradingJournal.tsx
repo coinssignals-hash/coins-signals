@@ -582,6 +582,88 @@ export default function TradingJournal() {
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('journal_history')}</span>
           </div>
 
+          {/* Period Tabs */}
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1 flex-1">
+              {([
+                { key: 'all' as const, label: 'Todos' },
+                { key: 'week' as const, label: 'Semana' },
+                { key: 'month' as const, label: 'Mes' },
+              ]).map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => { setFilterPeriod(tab.key); setPeriodAnchor(new Date()); }}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-95',
+                    filterPeriod === tab.key
+                      ? 'text-foreground shadow-lg'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                  )}
+                  style={filterPeriod === tab.key ? {
+                    background: `linear-gradient(135deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.1))`,
+                    border: `1px solid hsl(${ACCENT} / 0.3)`,
+                    boxShadow: `0 2px 8px hsl(${ACCENT} / 0.2)`,
+                  } : { border: '1px solid transparent' }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Period Navigation */}
+            {filterPeriod !== 'all' && (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPeriodAnchor(prev => filterPeriod === 'week' ? subWeeks(prev, 1) : subMonths(prev, 1))}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-secondary/50 transition-colors"
+                  style={{ border: `1px solid hsl(${ACCENT} / 0.2)` }}
+                >
+                  <ChevronLeft className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <span className="text-[10px] font-medium text-muted-foreground tabular-nums min-w-[80px] text-center">
+                  {periodRange && filterPeriod === 'week'
+                    ? `${format(periodRange.start, 'dd MMM', { locale: dateLocale })} – ${format(periodRange.end, 'dd MMM', { locale: dateLocale })}`
+                    : periodRange ? format(periodAnchor, 'MMMM yyyy', { locale: dateLocale }) : ''}
+                </span>
+                <button
+                  onClick={() => setPeriodAnchor(prev => filterPeriod === 'week' ? addWeeks(prev, 1) : addMonths(prev, 1))}
+                  disabled={filterPeriod === 'week' ? addWeeks(periodAnchor, 1) > new Date() : addMonths(periodAnchor, 1) > new Date()}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-secondary/50 transition-colors disabled:opacity-30"
+                  style={{ border: `1px solid hsl(${ACCENT} / 0.2)` }}
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Period Stats Summary */}
+          {filterPeriod !== 'all' && filteredEntries.length > 0 && (() => {
+            const wins = filteredEntries.filter(e => e.result === 'win').length;
+            const total = filteredEntries.length;
+            const pipsSum = filteredEntries.reduce((s, e) => {
+              const p = parseFloat(e.pips) || 0;
+              return s + (e.result === 'loss' ? -Math.abs(p) : p);
+            }, 0);
+            return (
+              <div className="flex gap-2">
+                {[
+                  { label: 'Trades', value: total, color: ACCENT },
+                  { label: 'Win Rate', value: `${total > 0 ? ((wins / total) * 100).toFixed(0) : 0}%`, color: ACCENT_GREEN },
+                  { label: 'Pips', value: `${pipsSum >= 0 ? '+' : ''}${pipsSum.toFixed(1)}`, color: pipsSum >= 0 ? ACCENT_GREEN : ACCENT_ROSE },
+                ].map(s => (
+                  <div key={s.label} className="flex-1 rounded-lg p-2 text-center" style={{
+                    background: `linear-gradient(165deg, hsl(${s.color} / 0.1), hsl(${s.color} / 0.03))`,
+                    border: `1px solid hsl(${s.color} / 0.15)`,
+                  }}>
+                    <p className="text-sm font-bold tabular-nums" style={{ color: `hsl(${s.color})` }}>{s.value}</p>
+                    <p className="text-[9px] text-muted-foreground">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
           {/* Filters */}
           {entries.length > 0 && (
             <JournalFilters
