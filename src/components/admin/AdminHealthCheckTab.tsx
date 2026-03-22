@@ -5,8 +5,6 @@ import { RefreshCw, CheckCircle2, XCircle, Clock, SkipForward, Activity, Server,
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { RedisCacheStatsPanel } from './RedisCacheStatsPanel';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 interface ServiceCheck {
   name: string;
