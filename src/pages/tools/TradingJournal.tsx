@@ -60,7 +60,7 @@ export default function TradingJournal() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
-  const { checkAndUnlockAchievements } = useAchievements();
+  const { checkAndUnlockAchievements, unlockedCodes, getProgress: achievementGetProgress } = useAchievements();
   const [entries, setEntries] = useState<TradeEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
