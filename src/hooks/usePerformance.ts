@@ -331,6 +331,7 @@ export function useDailyActivityData(selectedWeek: Date, dateRange?: { from?: Da
 
   return useQuery({
     queryKey: ['daily-activity', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2,
     queryFn: async () => {
       const { data: signals, error } = await supabase
         .from('trading_signals')
