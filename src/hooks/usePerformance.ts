@@ -132,6 +132,8 @@ export function usePerformance(selectedWeek: Date, dateRange?: { from?: Date; to
 
   return useQuery({
     queryKey: ['performance', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2, // 2 min stale time
+    gcTime: 1000 * 60 * 10, // 10 min garbage collection
     queryFn: async (): Promise<WeeklyPerformance> => {
       const { data: signals, error } = await supabase
         .from('trading_signals')
@@ -233,6 +235,7 @@ export function useSessionPerformance(selectedWeek: Date, dateRange?: { from?: D
 
   return useQuery({
     queryKey: ['session-performance', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2,
     queryFn: async (): Promise<SessionPerformance[]> => {
       const { data: signals, error } = await supabase
         .from('trading_signals')
@@ -274,6 +277,7 @@ export function useCurrencyPairPerformance(selectedWeek: Date, dateRange?: { fro
 
   return useQuery({
     queryKey: ['currency-pair-performance', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2,
     queryFn: async (): Promise<CurrencyPairPerformance[]> => {
       const { data: signals, error } = await supabase
         .from('trading_signals')
@@ -327,6 +331,7 @@ export function useDailyActivityData(selectedWeek: Date, dateRange?: { from?: Da
 
   return useQuery({
     queryKey: ['daily-activity', startDate.toISOString(), endDate.toISOString()],
+    staleTime: 1000 * 60 * 2,
     queryFn: async () => {
       const { data: signals, error } = await supabase
         .from('trading_signals')

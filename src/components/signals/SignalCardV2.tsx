@@ -1,17 +1,17 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, memo } from "react";
+import { SignalCardV2Header } from "./SignalCardV2Header";
+import { SignalCardV2Badges } from "./SignalCardV2Badges";
+import { SignalCardV2Strategy } from "./SignalCardV2Strategy";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import {
   TrendingUp,
-  ShieldCheck,
-  Flame,
-  Copy,
   TrendingDown,
   Minus,
+  Copy,
   ChevronDown,
-  Info,
   Activity } from
 "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
@@ -32,7 +32,6 @@ import bullBg from "@/assets/brand-logo-bg.svg";
 import chartSignal from "@/assets/chart-signal.jpg";
 import brandLogo from "@/assets/g174.svg";
 
-import pinbarPattern from "@/assets/pinbar-pattern.png";
 import { format } from "date-fns";
 import { useDateLocale } from "@/hooks/useDateLocale";
 import {
@@ -451,51 +450,15 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
         }
 
         <div className="relative px-3 pt-0 pb-2 flex items-center justify-between -mt-3">
-          <div className="flex items-center gap-2.5 relative z-10">
-            <div className="relative w-20 h-14 flex-shrink-0">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-20">
-                <img src={`https://flagcdn.com/w160/${baseFlag}.png`} alt={baseCurrency} className="w-full h-full object-cover" />
-              </div>
-              <div className="absolute left-6 sm:left-7 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white/20 shadow-lg z-10">
-                <img src={`https://flagcdn.com/w160/${quoteFlag}.png`} alt={quoteCurrency} className="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-lg sm:text-xl font-bold text-white tracking-wide">{displayPair}</span>
-              <div className="flex items-center gap-1">
-                {/* Long/Short position badge */}
-                <div
-                  className={cn(
-                    "inline-flex items-center gap-0.5 px-1 py-px rounded text-[8px] font-bold uppercase tracking-wider w-fit",
-                    action === "BUY" ?
-                    "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" :
-                    "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                  )}>
-                  
-                  {action === "BUY" ?
-                  <TrendingUp className="w-2.5 h-2.5" /> :
-
-                  <TrendingDown className="w-2.5 h-2.5" />
-                  }
-                  {action === "BUY" ? t('signal_long') : t('signal_short')}
-                </div>
-                {/* AI source badge */}
-                {signal?.source === 'ai-center' && (
-                  <div className="inline-flex items-center gap-0.5 px-1 py-px rounded text-[8px] font-bold uppercase tracking-wider w-fit"
-                    style={{
-                      background: 'hsla(270, 80%, 55%, 0.15)',
-                      color: 'hsl(270, 80%, 70%)',
-                      border: '1px solid hsla(270, 60%, 55%, 0.3)',
-                    }}
-                  >
-                    <Sparkles className="w-2.5 h-2.5" />
-                    AI
-                  </div>
-                )}
-                {/* Journal button moved to top-left */}
-              </div>
-            </div>
-          </div>
+          <SignalCardV2Header
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            baseFlag={baseFlag}
+            quoteFlag={quoteFlag}
+            displayPair={displayPair}
+            action={action}
+            source={signal?.source}
+          />
           <div className="flex items-center gap-2 relative z-10">
             {/* Live status to the left of circle */}
             <div className="flex flex-col gap-0.5 items-end text-right">
@@ -606,58 +569,14 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
 
         {/* Middle section - 3 badges */}
-        <div className="relative px-3 pb-2">
-          <div className="flex gap-1.5">
-            {[
-            {
-              label: trend === "bullish" ? t('signal_bullish') : t('signal_bearish'),
-              icon: trend === "bullish" ?
-              <TrendingUp className="w-4 h-4 text-green-400" /> :
-              <TrendingDown className="w-4 h-4 text-red-400" />,
-              value: `${probability}%`,
-              valueClass: "text-cyan-200"
-            },
-            {
-              label: action === "BUY" ? t('signal_buy') : t('signal_sell'),
-              icon: <ShieldCheck className="w-4 h-4 text-cyan-400" />,
-              value: action === "BUY" ? t('signal_buy') : t('signal_sell'),
-              valueClass: action === "BUY" ? "text-green-400" : "text-red-400"
-            },
-            {
-              label: t('signal_risk'),
-              icon: riskLoading ?
-              <Loader2 className="w-4 h-4 text-orange-400 animate-spin" /> :
-              <Flame className="w-4 h-4 text-orange-400" />,
-              value: riskLoading ? '...' : aiRisk ? `${aiRisk.score}%` : `${riskPercent}%`,
-              valueClass: aiRisk ?
-              aiRisk.level === 'low' ? 'text-green-400' :
-              aiRisk.level === 'medium' ? 'text-yellow-400' :
-              aiRisk.level === 'high' ? 'text-orange-400' :
-              'text-red-400' :
-              'text-cyan-200'
-            }].
-            map((badge) =>
-            <div
-              key={badge.label}
-              className="flex-1 relative rounded-lg overflow-hidden flex flex-col items-center justify-center py-1.5 gap-0 min-h-[44px]"
-              style={{
-                background: "linear-gradient(180deg, hsl(210, 100%, 8%) 0%, hsl(200, 80%, 12%) 100%)",
-                border: "1px solid hsla(200, 60%, 35%, 0.3)"
-              }}>
-
-                <div
-                className="absolute top-0 left-[15%] right-[15%] h-[1px]"
-                style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
-
-                <span className="text-[8px] sm:text-[9px] text-cyan-300/60 uppercase tracking-wider">{badge.label}</span>
-                <div className="flex items-center gap-1">
-                  {badge.icon}
-                  <span className={cn("font-bold text-xs sm:text-sm", badge.valueClass)}>{badge.value}</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <SignalCardV2Badges
+          trend={trend}
+          probability={probability}
+          action={action}
+          riskLoading={riskLoading}
+          aiRisk={aiRisk}
+          riskPercent={riskPercent}
+        />
 
         {/* Entry price bar */}
         <div
@@ -794,163 +713,11 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
 
             {/* Strategy Guidance Panel */}
-            <div
-            className="mx-2 sm:mx-3 mb-3 rounded-lg relative overflow-hidden"
-            style={{
-              background: "linear-gradient(180deg, hsl(210, 100%, 6%) 0%, hsl(205, 80%, 10%) 100%)",
-              border: "1px solid hsla(200, 60%, 35%, 0.3)"
-            }}>
-
-              <div
-              className="absolute top-0 left-[10%] right-[10%] h-[1px]"
-              style={{ background: "radial-gradient(ellipse at center, hsl(195, 100%, 54%) 0%, transparent 70%)" }} />
-
-              <div className="p-3">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <p className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider text-center">
-                    {t('signal_strategy')}
-                  </p>
-                  {strategyLoading &&
-                <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />
-                }
-                  {aiStrategy && !strategyLoading &&
-                <span className="text-[8px] text-emerald-400/70 uppercase tracking-wider">IA</span>
-                }
-                </div>
-
-                  <div className="grid grid-cols-2 gap-1.5 mb-2.5">
-                    {/* Duración */}
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
-                        style={{
-                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
-                        }}>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_duration')}</span>
-                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
-                          </div>
-                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.duration.value ?? "Intradía"}</span>
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">📊 {aiStrategy?.duration.value ?? "Intradía"}</p>
-                        <p className="leading-relaxed">{aiStrategy?.duration.explanation ?? "Operaciones que se abren y cierran dentro del mismo día de trading, reduciendo riesgo de gaps nocturnos."}</p>
-                        <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          {t('signal_analysis_for')} {currencyPair}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-
-                    {/* Enfoque */}
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
-                        style={{
-                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
-                        }}>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_approach')}</span>
-                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
-                          </div>
-                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.approach.value ?? "Smart Money"}</span>
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">🏦 {aiStrategy?.approach.value ?? "Smart Money"}</p>
-                        <p className="leading-relaxed">{aiStrategy?.approach.explanation ?? "Estrategia basada en seguir el flujo de capital institucional, identificando zonas de liquidez y bloques de órdenes."}</p>
-                        <div className="mt-2 pt-2 border-t border-cyan-500/10 text-[10px] text-cyan-300/50">
-                          {t('signal_market_structure')}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-
-                    {/* Mejor Sesión */}
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
-                        style={{
-                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
-                        }}>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_session')}</span>
-                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
-                          </div>
-                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.session.value ?? "New York"}</span>
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕐 {aiStrategy?.session.value ?? "New York"}</p>
-                        <p className="leading-relaxed">{aiStrategy?.session.explanation ?? "Sesión con mayor volumen y liquidez para este par."}</p>
-                      </PopoverContent>
-                    </Popover>
-
-                    {/* Mejor Hora */}
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <div
-                        className="rounded-lg p-2.5 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
-                        style={{
-                          background: "linear-gradient(135deg, hsla(210, 80%, 12%, 0.8) 0%, hsla(200, 60%, 15%, 0.6) 100%)",
-                          border: "1px solid hsla(200, 60%, 35%, 0.2)"
-                        }}>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_best_time')}</span>
-                            <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
-                          </div>
-                          <span className="text-xs font-bold text-cyan-100">{aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</span>
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent side="top" className="max-w-[260px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                        <p className="font-bold text-yellow-400 mb-1.5 text-xs">⏰ {aiStrategy?.bestTime.value ?? "10:00 – 14:00"}</p>
-                        <p className="leading-relaxed">{aiStrategy?.bestTime.explanation ?? "Rango horario con mayor actividad y mejores oportunidades."}</p>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Velas de Confirmación - full width with diagram */}
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <div
-                      className="rounded-lg p-3 cursor-pointer relative overflow-hidden group active:scale-95 transition-transform"
-                      style={{
-                        background: "linear-gradient(135deg, hsla(210, 80%, 10%, 0.9) 0%, hsla(200, 60%, 14%, 0.7) 100%)",
-                        border: "1px solid hsla(200, 60%, 35%, 0.25)"
-                      }}>
-                        <div className="flex items-start gap-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-1.5 mb-1.5">
-                              <span className="text-[9px] text-cyan-300/60 uppercase tracking-wider">{t('signal_strategy_candle')}</span>
-                              <Info className="w-2.5 h-2.5 text-cyan-400/40 group-hover:text-cyan-300 transition-colors" />
-                            </div>
-                            <span className="text-xs font-bold text-cyan-100 block">{aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</span>
-                            <span className="text-[9px] text-cyan-300/40 mt-0.5 block">{t('signal_tap_diagram')}</span>
-                          </div>
-                          <div
-                          className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0"
-                          style={{ border: "1px solid hsla(200, 60%, 35%, 0.2)" }}>
-                            <img src={pinbarPattern} alt={aiStrategy?.confirmationCandle.value ?? "Pin Bar"} className="w-full h-full object-cover" draggable={false} />
-                          </div>
-                        </div>
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent side="top" className="max-w-[280px] bg-[hsl(225,25%,10%)] border-cyan-500/20 text-[11px] text-cyan-100 p-3 shadow-xl shadow-black/40">
-                      <p className="font-bold text-yellow-400 mb-1.5 text-xs">🕯️ {aiStrategy?.confirmationCandle.value ?? "Pin Bar"}</p>
-                      <p className="leading-relaxed mb-2">{aiStrategy?.confirmationCandle.explanation ?? "Vela con mecha larga y cuerpo pequeño que indica rechazo del precio en una zona clave."}</p>
-                      <img src={pinbarPattern} alt={t('signal_candle_pattern')} className="w-full rounded-md border border-cyan-500/20 mb-1.5" draggable={false} />
-                      <div className="text-[10px] text-cyan-300/50 text-center">
-                        {t('signal_sr_confluence')}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-              </div>
-            </div>
+            <SignalCardV2Strategy
+              currencyPair={currencyPair}
+              strategy={aiStrategy}
+              loading={strategyLoading}
+            />
 
             {/* Per-currency AI impact scoring */}
             <div className="relative px-2 sm:px-3 pb-3">

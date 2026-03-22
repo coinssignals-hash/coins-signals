@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { StaggerList } from '@/components/layout/StaggerList';
 import { DateTabs } from '@/components/news/DateTabs';
 import { CurrencyFilter } from '@/components/news/CurrencyFilter';
+import { VirtualizedList } from '@/components/ui/VirtualizedList';
 import { useRealNewsByDate, RealNewsItem } from '@/hooks/useRealNews';
 import { useNewsHistoricalImpactCached, MonthlyImpact } from '@/hooks/useNewsHistoricalImpact';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -1165,11 +1165,16 @@ const News = () => {
                 }
                 
                 {/* News List */}
-                <StaggerList className="space-y-3">
-                  {otherNews.map((newsItem, index) =>
-                  <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
+                <VirtualizedList
+                  items={otherNews}
+                  initialCount={5}
+                  batchSize={3}
+                  keyExtractor={(item) => item.id}
+                  renderItem={(newsItem, index) => (
+                    <ModernNewsCard key={newsItem.id} news={newsItem} index={index} translateHook={newsTranslateHook} />
                   )}
-                </StaggerList>
+                  className="space-y-3"
+                />
               </div>
               }
           </>
