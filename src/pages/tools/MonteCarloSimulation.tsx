@@ -144,7 +144,7 @@ export default function MonteCarloSimulation() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6 space-y-5">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center gap-3">
           <Link to="/tools" className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />

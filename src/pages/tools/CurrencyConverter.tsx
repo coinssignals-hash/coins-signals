@@ -397,7 +397,7 @@ export default function CurrencyConverter() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-4 space-y-4">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Back + title */}
         <div className="flex items-center gap-3">
           <Link to="/tools" className="text-primary hover:text-primary/80 transition-colors">

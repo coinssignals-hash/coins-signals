@@ -70,7 +70,7 @@ export default function PipCalculator() {
   return (
     <PageShell>
       <Header />
-      <main className="container py-6">
+      <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center gap-3 mb-6">
           <Link to="/tools" className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-muted-foreground" />
