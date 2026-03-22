@@ -237,74 +237,8 @@ export default function Signals() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
-      <div className="relative w-full max-w-2xl min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl">
+      <div className="relative w-full max-w-lg min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl mx-auto">
       <Header />
-      {/* Signal Controls Bar */}
-      <div className="sticky top-14 z-30 bg-[hsl(222,45%,7%)]/95 backdrop-blur-sm border-b border-primary/20 px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
         </div>
 
         {/* Unified Nav Bar — day tabs + source filter in one row */}
