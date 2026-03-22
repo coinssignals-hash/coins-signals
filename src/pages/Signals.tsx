@@ -239,7 +239,6 @@ export default function Signals() {
     <div className="min-h-screen bg-[hsl(225,45%,3%)] flex justify-center">
       <div className="relative w-full max-w-lg min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl mx-auto">
       <Header />
-        </div>
 
         {/* Unified Nav Bar — day tabs + source filter in one row */}
         <div className="flex items-center gap-1.5 px-3 py-2">
