@@ -5,6 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
 };
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
