@@ -437,7 +437,7 @@ export default function Signals() {
           <div className="px-3 pb-2 space-y-2 animate-in slide-in-from-top-2 duration-200">
             {/* Pair filter */}
             <div className="space-y-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Par</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_pair')}</span>
               <ScrollArea className="w-full">
                 <div className="flex gap-1 pb-1">
                   <button
@@ -449,7 +449,7 @@ export default function Signals() {
                         : "bg-muted/30 text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    Todos
+                    {t('sf_all')}
                   </button>
                   {availablePairs.map((pair) => (
                     <button
@@ -474,14 +474,14 @@ export default function Signals() {
             <div className="flex gap-3">
               {/* Status filter */}
               <div className="space-y-1 flex-1">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Estado</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_status')}</span>
                 <div className="flex gap-1 flex-wrap">
                   {[
-                    { key: 'all', label: 'Todos', color: '' },
-                    { key: 'active', label: 'Activa', color: 'text-emerald-400' },
-                    { key: 'pending', label: 'Pendiente', color: 'text-amber-400' },
-                    { key: 'completed', label: 'Cerrada', color: 'text-sky-400' },
-                    { key: 'cancelled', label: 'Cancelada', color: 'text-red-400' },
+                    { key: 'all', label: t('sf_all'), color: '' },
+                    { key: 'active', label: t('sf_active'), color: 'text-emerald-400' },
+                    { key: 'pending', label: t('sf_pending'), color: 'text-amber-400' },
+                    { key: 'completed', label: t('sf_completed'), color: 'text-sky-400' },
+                    { key: 'cancelled', label: t('sf_cancelled'), color: 'text-red-400' },
                   ].map((s) => (
                     <button
                       key={s.key}
@@ -502,13 +502,13 @@ export default function Signals() {
 
             {/* Probability filter */}
             <div className="space-y-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Probabilidad</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_probability')}</span>
               <div className="flex gap-1">
                 {[
-                  { key: 'all', label: 'Todas' },
-                  { key: 'high', label: '≥ 80%' },
-                  { key: 'medium', label: '60-79%' },
-                  { key: 'low', label: '< 60%' },
+                  { key: 'all', label: t('sf_all_f') },
+                  { key: 'high', label: t('sf_high') },
+                  { key: 'medium', label: t('sf_medium') },
+                  { key: 'low', label: t('sf_low') },
                 ].map((p) => (
                   <button
                     key={p.key}
@@ -533,7 +533,7 @@ export default function Signals() {
                 className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 font-medium px-1"
               >
                 <X className="w-3 h-3" />
-                Limpiar filtros ({activeFilterCount})
+                {t('sf_clear')} ({activeFilterCount})
               </button>
             )}
           </div>

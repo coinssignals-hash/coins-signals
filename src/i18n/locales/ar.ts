@@ -2112,6 +2112,19 @@ const ar: TranslationKeys = {
   rm_title: 'مدير المخاطر',
   rm_main_account: 'الحساب الرئيسي',
   rm_demo_account: 'حساب تجريبي',
+  sf_pair: 'الزوج',
+  sf_status: 'الحالة',
+  sf_probability: 'الاحتمالية',
+  sf_all: 'الكل',
+  sf_all_f: 'الكل',
+  sf_active: 'نشطة',
+  sf_pending: 'معلقة',
+  sf_completed: 'مغلقة',
+  sf_cancelled: 'ملغاة',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'مسح الفلاتر',
 };
 
 export default ar;

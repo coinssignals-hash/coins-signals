@@ -2112,6 +2112,19 @@ const nl: TranslationKeys = {
   rm_title: 'Risicobeheer',
   rm_main_account: 'Hoofdrekening',
   rm_demo_account: 'Demorekening',
+  sf_pair: 'Paar',
+  sf_status: 'Status',
+  sf_probability: 'Waarschijnlijkheid',
+  sf_all: 'Alle',
+  sf_all_f: 'Alle',
+  sf_active: 'Actief',
+  sf_pending: 'In afwachting',
+  sf_completed: 'Gesloten',
+  sf_cancelled: 'Geannuleerd',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Filters wissen',
 };
 
 export default nl;

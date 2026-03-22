@@ -2112,6 +2112,19 @@ const mt: TranslationKeys = {
   rm_title: 'Maniġer tar-Riskju',
   rm_main_account: 'Kont Prinċipali',
   rm_demo_account: 'Kont Demo',
+  sf_pair: 'Par',
+  sf_status: 'Stat',
+  sf_probability: 'Probabilità',
+  sf_all: 'Kollha',
+  sf_all_f: 'Kollha',
+  sf_active: 'Attiva',
+  sf_pending: 'Pendenti',
+  sf_completed: 'Magħluqa',
+  sf_cancelled: 'Ikkanċellata',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Ħassar il-filtri',
 };
 
 export default mt;

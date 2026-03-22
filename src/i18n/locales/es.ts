@@ -2118,6 +2118,19 @@ const es: TranslationKeys = {
   rm_title: 'Gestor de Riesgo',
   rm_main_account: 'Cuenta Principal',
   rm_demo_account: 'Cuenta Demo',
+  sf_pair: 'Par',
+  sf_status: 'Estado',
+  sf_probability: 'Probabilidad',
+  sf_all: 'Todos',
+  sf_all_f: 'Todas',
+  sf_active: 'Activa',
+  sf_pending: 'Pendiente',
+  sf_completed: 'Cerrada',
+  sf_cancelled: 'Cancelada',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Limpiar filtros',
 };
 
 export default es;

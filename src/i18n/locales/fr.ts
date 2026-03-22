@@ -1921,6 +1921,19 @@ const fr: TranslationKeys = {
   rm_title: 'Gestionnaire de Risque',
   rm_main_account: 'Compte Principal',
   rm_demo_account: 'Compte Démo',
+  sf_pair: 'Paire',
+  sf_status: 'Statut',
+  sf_probability: 'Probabilité',
+  sf_all: 'Tous',
+  sf_all_f: 'Toutes',
+  sf_active: 'Active',
+  sf_pending: 'En attente',
+  sf_completed: 'Fermée',
+  sf_cancelled: 'Annulée',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Effacer les filtres',
 };
 
 export default fr;

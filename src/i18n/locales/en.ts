@@ -2117,6 +2117,19 @@ const en: TranslationKeys = {
   rm_title: 'Risk Manager',
   rm_main_account: 'Main Account',
   rm_demo_account: 'Demo Account',
+  sf_pair: 'Pair',
+  sf_status: 'Status',
+  sf_probability: 'Probability',
+  sf_all: 'All',
+  sf_all_f: 'All',
+  sf_active: 'Active',
+  sf_pending: 'Pending',
+  sf_completed: 'Closed',
+  sf_cancelled: 'Cancelled',
+  sf_high: '≥ 80%',
+  sf_medium: '60-79%',
+  sf_low: '< 60%',
+  sf_clear: 'Clear filters',
 };
 
 export default en;
