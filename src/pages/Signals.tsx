@@ -502,13 +502,13 @@ export default function Signals() {
 
             {/* Probability filter */}
             <div className="space-y-1">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">Probabilidad</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold px-1">{t('sf_probability')}</span>
               <div className="flex gap-1">
                 {[
-                  { key: 'all', label: 'Todas' },
-                  { key: 'high', label: '≥ 80%' },
-                  { key: 'medium', label: '60-79%' },
-                  { key: 'low', label: '< 60%' },
+                  { key: 'all', label: t('sf_all_f') },
+                  { key: 'high', label: t('sf_high') },
+                  { key: 'medium', label: t('sf_medium') },
+                  { key: 'low', label: t('sf_low') },
                 ].map((p) => (
                   <button
                     key={p.key}
