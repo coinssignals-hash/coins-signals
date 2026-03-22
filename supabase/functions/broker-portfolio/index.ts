@@ -54,28 +54,38 @@ function byteaToBytes(raw: unknown): Uint8Array {
   return new TextEncoder().encode(String(raw));
 }
 
-// Parse Supabase bytea (JSON string '{"0":99,...}' or hex '\x...') to plain string
-function parseByteaToString(raw: unknown): string {
+// Extract base64 string from double-wrapped bytea
+// Storage flow: base64str -> TextEncoder -> Uint8Array -> Supabase serializes as JSON {"0":99,"1":55,...} -> stored as bytea
+// Read flow: bytea -> hex \x7b2230... -> decode hex -> JSON string -> parse JSON -> byte values -> decode UTF-8 -> base64 string
+function unwrapByteaToBase64(raw: unknown): string {
   if (!raw) return '';
   const s = String(raw);
-  // JSON object format from Supabase JS client
-  if (s.startsWith('{"') && s.includes('"0":')) {
-    try {
-      const obj = JSON.parse(s) as Record<string, number>;
-      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-      return keys.map(k => String.fromCharCode(obj[String(k)])).join('');
-    } catch { /* fall through */ }
-  }
-  // Hex format
+  
+  // Step 1: If hex-encoded, decode to text first
+  let text = s;
   if (s.startsWith('\\x')) {
     const hex = s.slice(2);
-    let result = '';
+    const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
-      result += String.fromCharCode(parseInt(hex.substring(i, i + 2), 16));
+      bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
     }
-    return result;
+    text = new TextDecoder().decode(bytes);
   }
-  return s;
+  
+  // Step 2: If the text is a JSON object like {"0":99,"1":55,...}, parse it to extract byte values
+  if (text.startsWith('{"') && text.includes('"0":')) {
+    try {
+      const obj = JSON.parse(text) as Record<string, number>;
+      const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+      const bytes = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        bytes[i] = obj[String(keys[i])];
+      }
+      return new TextDecoder().decode(bytes);
+    } catch { /* fall through */ }
+  }
+  
+  return text;
 }
 
 // Decrypt AES-256-GCM encrypted credentials
@@ -85,8 +95,11 @@ async function decryptCredentials(
   keyStr: string
 ): Promise<Record<string, string>> {
   try {
-    const encB64 = parseByteaToString(encryptedRaw);
-    const ivB64 = ivRaw ? parseByteaToString(ivRaw) : null;
+    const encB64 = unwrapByteaToBase64(encryptedRaw);
+    const ivB64 = ivRaw ? unwrapByteaToBase64(ivRaw) : null;
+
+    console.log('[broker-portfolio] unwrapped encB64 len:', encB64.length, 'first30:', encB64.substring(0, 30));
+    console.log('[broker-portfolio] unwrapped ivB64:', ivB64 ? `len=${ivB64.length}` : 'null');
 
     if (!ivB64) {
       const keyBytes = new TextEncoder().encode(keyStr);

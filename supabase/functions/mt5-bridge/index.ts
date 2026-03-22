@@ -243,24 +243,35 @@ serve(async (req) => {
     }
 
     // Decrypt credentials (mt5_server, mt5_login, mt5_password, mt5_platform)
-    // bytea columns from Supabase come as hex strings (\x...) or base64
-    function decodeBytea(val: unknown): string {
-      if (!val) return '';
-      const s = typeof val === 'string' ? val : new TextDecoder().decode(val as Uint8Array);
-      // PostgREST returns bytea as hex: \x<hex>
+    // bytea columns: stored as hex of JSON {"0":byteVal,...} wrapping UTF-8 of base64
+    function unwrapByteaToBase64(raw: unknown): string {
+      if (!raw) return '';
+      const s = String(raw);
+      let text = s;
       if (s.startsWith('\\x')) {
         const hex = s.slice(2);
         const bytes = new Uint8Array(hex.length / 2);
         for (let i = 0; i < hex.length; i += 2) {
           bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
         }
-        return new TextDecoder().decode(bytes);
+        text = new TextDecoder().decode(bytes);
       }
-      return s;
+      if (text.startsWith('{"') && text.includes('"0":')) {
+        try {
+          const obj = JSON.parse(text) as Record<string, number>;
+          const keys = Object.keys(obj).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+          const bytes = new Uint8Array(keys.length);
+          for (let i = 0; i < keys.length; i++) {
+            bytes[i] = obj[String(keys[i])];
+          }
+          return new TextDecoder().decode(bytes);
+        } catch { /* fall through */ }
+      }
+      return text;
     }
 
-    const encryptedStr = decodeBytea(conn.encrypted_credentials);
-    const ivStr = conn.credentials_iv ? decodeBytea(conn.credentials_iv) : null;
+    const encryptedStr = unwrapByteaToBase64(conn.encrypted_credentials);
+    const ivStr = conn.credentials_iv ? unwrapByteaToBase64(conn.credentials_iv) : null;
 
     const credentials = await decryptCredentials(encryptedStr, ivStr, encryptionKey);
 
