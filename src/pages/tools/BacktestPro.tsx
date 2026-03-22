@@ -142,15 +142,11 @@ export default function BacktestPro() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <Workflow className="w-5 h-5 " style={{ color: `hsl(${ACCENT})` }} />
-              <h1 className="text-lg font-bold text-foreground">{t('bt_title')}</h1>
-            </div>
-          </div>
+        <ToolPageHeader
+          icon={<Workflow className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('bt_title')}
+          accent={ACCENT}
+        />
           {strategies.length < 4 && (
             <Button variant="outline" size="sm" onClick={addStrategy} className="gap-1 text-xs">
               <Plus className="w-3 h-3" /> {t('tp_backtest_strategy')}

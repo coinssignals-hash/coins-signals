@@ -79,24 +79,11 @@ export default function TrendScanner() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Navigation */}
-        <div className="flex items-center gap-3">
-          <Link to="/tools" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{ background: "hsl(var(--card) / 0.85)", border: "1px solid hsl(var(--border) / 0.6)", boxShadow: "0 2px 8px hsl(0 0% 0% / 0.3)" }}>
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">{t('tools_trend_scanner_title')}</h1>
-          </div>
-          <div className="ml-auto">
-            <button
-              onClick={refresh}
-              disabled={loading}
-              className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent transition-colors"
-            >
-              <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
-            </button>
-          </div>
-        </div>
+        <ToolPageHeader
+          icon={<TrendingUp className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('tools_trend_scanner_title')}
+          accent={ACCENT}
+        />
 
         {/* Scan Info */}
         <ToolCard accent={ACCENT}>
