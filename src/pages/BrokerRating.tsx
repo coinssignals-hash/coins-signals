@@ -131,7 +131,13 @@ export default function BrokerRating() {
       const matchesCategory = !selectedCategory || broker.instruments.some(i =>
         i.toLowerCase().includes(selectedCategory.toLowerCase())
       );
-      return matchesSearch && matchesCategory;
+      // Advanced filters
+      const matchesDeposit = !advDepositMax || parseNumeric(broker.depositMin) <= parseNumeric(advDepositMax);
+      const matchesRating = !advRatingMin || broker.rating >= parseFloat(advRatingMin);
+      const matchesRegulation = !advRegulation || broker.regulations.some(r => r.toLowerCase().includes(advRegulation.toLowerCase()));
+      const matchesLeverage = !advLeverage || (broker.leverage && broker.leverage.includes(advLeverage));
+      const matchesPlatform = !advPlatform || broker.platform.some(p => p.toLowerCase().includes(advPlatform.toLowerCase()));
+      return matchesSearch && matchesCategory && matchesDeposit && matchesRating && matchesRegulation && matchesLeverage && matchesPlatform;
     })
     .sort((a, b) => {
       if (!sortBy) return b.rating - a.rating;
