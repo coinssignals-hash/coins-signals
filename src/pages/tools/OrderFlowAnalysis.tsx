@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -214,7 +214,7 @@ export default function OrderFlowAnalysis() {
         </div>
 
         {/* Institutional Positioning */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_institutional_positioning')}</h3>
             <div className="flex items-center gap-2">
@@ -236,10 +236,10 @@ export default function OrderFlowAnalysis() {
               </span>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Volume Profile */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_volume_profile')}</h3>
             <div className="h-64">
@@ -255,10 +255,10 @@ export default function OrderFlowAnalysis() {
               </ResponsiveContainer>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Delta Table */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_delta_by_level')}</h3>
             <div className="space-y-0.5 max-h-60 overflow-y-auto">
@@ -281,10 +281,10 @@ export default function OrderFlowAnalysis() {
               ))}
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* All Pairs Summary */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_multi_pair_summary')}</h3>
             {data.slice(0, 10).map(d => (
@@ -302,9 +302,9 @@ export default function OrderFlowAnalysis() {
               </div>
             ))}
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -313,7 +313,7 @@ export default function OrderFlowAnalysis() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

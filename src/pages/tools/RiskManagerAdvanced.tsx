@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -138,7 +138,7 @@ export default function RiskManagerAdvanced() {
         )}
 
         {/* Global Limits */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('tp_global_limits')}</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -152,7 +152,7 @@ export default function RiskManagerAdvanced() {
               </div>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Overview Stats */}
         <div className="grid grid-cols-3 gap-2">
@@ -172,7 +172,7 @@ export default function RiskManagerAdvanced() {
 
         {/* Exposure Pie */}
         {pieData.length > 0 && (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-4">
               <h3 className="text-sm font-semibold text-foreground mb-2">{t('tp_exposure_by_pair')}</h3>
               <div className="h-40">
@@ -188,7 +188,7 @@ export default function RiskManagerAdvanced() {
                 </ResponsiveContainer>
               </div>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         )}
 
         {/* Account Cards */}
@@ -251,7 +251,7 @@ export default function RiskManagerAdvanced() {
           );
         })}
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -260,7 +260,7 @@ export default function RiskManagerAdvanced() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

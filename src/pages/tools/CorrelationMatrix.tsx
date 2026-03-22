@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Layers, RefreshCw, Info } from 'lucide-react';
@@ -82,7 +82,7 @@ export default function CorrelationMatrix() {
         </div>
 
         {/* Matrix Grid */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-2 overflow-x-auto">
             <table className="w-full min-w-[600px]">
               <thead>
@@ -118,10 +118,10 @@ export default function CorrelationMatrix() {
               </tbody>
             </table>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Legend */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <p className="text-[10px] text-muted-foreground mb-2 font-medium">{t('tp_correlation_scale')}</p>
             <div className="flex gap-1 items-center">
@@ -139,10 +139,10 @@ export default function CorrelationMatrix() {
               ))}
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {/* Top Correlations */}
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-4 space-y-2">
             <h3 className="text-sm font-semibold text-foreground">{t('tp_strongest_correlations')}</h3>
             {highlights.map((h, i) => (
@@ -157,9 +157,9 @@ export default function CorrelationMatrix() {
               </div>
             ))}
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -168,7 +168,7 @@ export default function CorrelationMatrix() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

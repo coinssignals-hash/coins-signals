@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -80,7 +80,7 @@ export default function MarginCalculator() {
           </div>
         </div>
 
-        <GlowCard className="mb-4">
+        <ToolCard className="mb-4">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -120,9 +120,9 @@ export default function MarginCalculator() {
               <Input type="number" value={accountBalance} onChange={e => setAccountBalance(e.target.value)} min="0" step="100" />
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
-        <GlowCard className="mb-4">
+        <ToolCard className="mb-4">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Shield className="w-4 h-4 text-primary" />
@@ -140,9 +140,9 @@ export default function MarginCalculator() {
             </div>
             <p className="text-[10px] text-muted-foreground mt-1 text-right">{result.marginUsedPercent.toFixed(1)}% {t('margin_balance_used')}</p>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
-        <GlowCard className="mb-4">
+        <ToolCard className="mb-4">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Percent className="w-4 h-4 text-primary" />
@@ -168,7 +168,7 @@ export default function MarginCalculator() {
               </div>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         {marginStatus !== 'safe' && (
           <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border mb-4">

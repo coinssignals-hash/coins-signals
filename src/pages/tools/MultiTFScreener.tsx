@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -35,7 +35,7 @@ const SignalDot = ({ signal }: { signal: Signal }) => (
 );
 
 const PairCardSkeleton = () => (
-  <GlowCard>
+  <ToolCard>
     <CardContent className="p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -56,7 +56,7 @@ const PairCardSkeleton = () => (
         </div>
       </div>
     </CardContent>
-  </GlowCard>
+  </ToolCard>
 );
 
 const PAIR_CATEGORIES_KEYS: Record<string, { key: string; pairs: string[] }> = {
@@ -194,7 +194,7 @@ export default function MultiTFScreener() {
 
         {/* Currency Strength Meter */}
         {currencyStrength.length > 0 && (
-          <GlowCard>
+          <ToolCard>
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-primary" />
@@ -223,7 +223,7 @@ export default function MultiTFScreener() {
                 ))}
               </div>
             </CardContent>
-          </GlowCard>
+          </ToolCard>
         )}
         {/* Error */}
         {error && !loading && data.length === 0 && (
@@ -326,7 +326,7 @@ export default function MultiTFScreener() {
           ))}
         </div>
 
-        <GlowCard>
+        <ToolCard>
           <CardContent className="p-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -335,7 +335,7 @@ export default function MultiTFScreener() {
               </p>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
       </main>
     </PageShell>
   );

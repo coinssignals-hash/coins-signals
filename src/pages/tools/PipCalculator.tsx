@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -82,7 +82,7 @@ export default function PipCalculator() {
         </div>
 
         <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_parameters')}</h2>
-        <GlowCard className="mb-4">
+        <ToolCard className="mb-4">
           <CardContent className="p-4 space-y-4">
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('tool_currency_pair')}</Label>
@@ -128,10 +128,10 @@ export default function PipCalculator() {
               </Select>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         <h2 className="text-sm font-semibold text-primary mb-3">{t('tool_result')}</h2>
-        <GlowCard className="mb-4">
+        <ToolCard className="mb-4">
           <CardContent className="p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -155,7 +155,7 @@ export default function PipCalculator() {
               </div>
             </div>
           </CardContent>
-        </GlowCard>
+        </ToolCard>
 
         <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 border border-border">
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />

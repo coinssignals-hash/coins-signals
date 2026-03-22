@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAchievements } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
-import { GlowCard } from '@/components/ui/glow-card';
+import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -261,7 +261,7 @@ export default function TradingJournal() {
               <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
             </div>
           </div>
-          <GlowCard color={ACCENT}>
+          <ToolCard color={ACCENT}>
             <div className="p-8 text-center space-y-3">
               <LogIn className="w-10 h-10 mx-auto opacity-60" style={{ color: `hsl(${ACCENT})` }} />
               <p className="text-sm text-foreground font-medium">{t('journal_login_required')}</p>
@@ -270,7 +270,7 @@ export default function TradingJournal() {
                 <LogIn className="w-4 h-4 mr-2" /> {t('drawer_login')}
               </Button>
             </div>
-          </GlowCard>
+          </ToolCard>
         </main>
       </PageShell>
     );
@@ -307,18 +307,18 @@ export default function TradingJournal() {
             { label: t('journal_losses'), value: stats.losses, icon: TrendingDown, color: ACCENT_ROSE },
             { label: t('journal_win_rate'), value: `${stats.winRate}%`, icon: Target, color: ACCENT_AMBER },
           ].map((s, i) => (
-            <GlowCard key={s.label} color={s.color}>
+            <ToolCard key={s.label} color={s.color}>
               <div className="p-3 text-center">
                 <s.icon className="w-4 h-4 mx-auto mb-1" style={{ color: `hsl(${s.color})` }} />
                 <p className="text-lg font-bold" style={{ color: `hsl(${s.color})` }}>{s.value}</p>
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
               </div>
-            </GlowCard>
+            </ToolCard>
           ))}
         </motion.div>
 
         {/* Total Pips */}
-        <GlowCard color={ACCENT}>
+        <ToolCard color={ACCENT}>
           <div className="p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
@@ -332,7 +332,7 @@ export default function TradingJournal() {
               {parseFloat(stats.totalPips) >= 0 ? '+' : ''}{stats.totalPips}
             </span>
           </div>
-        </GlowCard>
+        </ToolCard>
 
         {/* Performance Charts */}
         {entries.length >= 2 && (() => {
@@ -363,7 +363,7 @@ export default function TradingJournal() {
             <div className="space-y-4">
               {/* Equity Curve */}
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: 0.08 }}>
-                <GlowCard color={ACCENT}>
+                <ToolCard color={ACCENT}>
                   <div className="p-4 space-y-3">
                     <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} /> Curva de Equity (Pips)
@@ -385,12 +385,12 @@ export default function TradingJournal() {
                       </ResponsiveContainer>
                     </div>
                   </div>
-                </GlowCard>
+                </ToolCard>
               </motion.div>
 
               <div className="grid grid-cols-2 gap-3">
                 {/* Pair Distribution */}
-                <GlowCard color="270 60% 55%">
+                <ToolCard color="270 60% 55%">
                   <div className="p-4 space-y-2">
                     <h3 className="text-[11px] font-semibold text-foreground">{t('tj_pair_distribution')}</h3>
                     <div className="h-32">
@@ -412,10 +412,10 @@ export default function TradingJournal() {
                       ))}
                     </div>
                   </div>
-                </GlowCard>
+                </ToolCard>
 
                 {/* Weekly Pips */}
-                <GlowCard color={ACCENT_AMBER}>
+                <ToolCard color={ACCENT_AMBER}>
                   <div className="p-4 space-y-2">
                     <h3 className="text-[11px] font-semibold text-foreground">Pips/Semana</h3>
                     <div className="h-32">
@@ -431,7 +431,7 @@ export default function TradingJournal() {
                       </ResponsiveContainer>
                     </div>
                   </div>
-                </GlowCard>
+                </ToolCard>
               </div>
             </div>
           );
@@ -452,7 +452,7 @@ export default function TradingJournal() {
 
         {/* New Trade Form */}
         {showForm && (
-          <GlowCard color={ACCENT}>
+          <ToolCard color={ACCENT}>
             <div className="p-4 space-y-4">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <FileText className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
@@ -555,7 +555,7 @@ export default function TradingJournal() {
                 {editingId ? t('journal_update_trade') : t('journal_save_trade')}
               </Button>
             </div>
-          </GlowCard>
+          </ToolCard>
         )}
 
         {/* Trade History */}
@@ -577,13 +577,13 @@ export default function TradingJournal() {
           )}
 
           {entries.length === 0 ? (
-            <GlowCard color={ACCENT}>
+            <ToolCard color={ACCENT}>
               <div className="p-8 text-center">
                 <BookOpen className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-40" />
                 <p className="text-sm text-muted-foreground">{t('journal_no_trades')}</p>
                 <p className="text-xs text-muted-foreground/60 mt-1">Comienza registrando tu primera operación</p>
               </div>
-            </GlowCard>
+            </ToolCard>
           ) : (
             <>
               {filteredEntries.length === 0 ? (
@@ -640,7 +640,7 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <GlowCard
+            <ToolCard
               color={entryColor}
               className={cn(
                 'cursor-pointer transition-all duration-200',
@@ -708,7 +708,7 @@ function JournalSignalsList({ entries, onEdit, onDelete, dateLocale }: JournalSi
                   </div>
                 </div>
               </div>
-            </GlowCard>
+            </ToolCard>
 
             <AnimatePresence>
               {expandedId === entry.id && (
