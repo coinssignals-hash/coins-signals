@@ -161,15 +161,15 @@ export default function VolatilityScanner() {
           {t('tp_updated')}: {lastUpdate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
         </div>
 
-        <ToolCard>
-          <CardContent className="p-3">
+        <ToolCard accent={ACCENT}>
+          <div className="relative z-[2] p-3">
             <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 shrink-0 mt-0.5" style={{ color: `hsl(${ACCENT})` }} />
               <p className="text-[11px] text-muted-foreground leading-relaxed">
                 {t('tp_volatility_info')}
               </p>
             </div>
-          </CardContent>
+          </div>
         </ToolCard>
       </main>
     </PageShell>
