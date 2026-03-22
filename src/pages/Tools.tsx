@@ -124,8 +124,8 @@ function FeaturedCarousel({
       </div>
       <div
         ref={scrollRef}
-        className="flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory"
-        style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
+        className="flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide"
+        style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}
       >
         {carouselItems.map((tool, i) => {
           const ToolIcon = tool.icon;
