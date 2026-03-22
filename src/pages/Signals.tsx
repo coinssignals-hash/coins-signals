@@ -240,135 +240,158 @@ export default function Signals() {
       <div className="relative w-full max-w-lg min-h-screen bg-gradient-to-b from-[hsl(222,45%,7%)] via-[hsl(218,52%,8%)] to-[hsl(222,45%,7%)] pb-20 shadow-2xl mx-auto">
       <Header />
 
-        {/* Unified Nav Bar — day tabs + source filter in one row */}
-        <div className="flex items-center gap-1.5 px-3 py-2">
-          {/* Day tabs — scrollable on small screens */}
-          <ScrollArea className="flex-1 min-w-0">
-            <div className="flex gap-1">
-              {[
-                { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-3.5 h-3.5" />, count: yesterdaySignals.length },
-                { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-3.5 h-3.5" />, count: todaySignals.length },
-                { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-3.5 h-3.5" />, count: tomorrowSignals.length },
-                { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" />, count: 0 },
-              ].map((tab) => (
+        {/* Session-style Day Tabs */}
+        <div className="px-3 pt-3 pb-1">
+          <div className="grid grid-cols-5 gap-1">
+            {[
+              { key: 'yesterday' as DayTab, label: t('signals_yesterday'), icon: <History className="w-4 h-4" />, count: yesterdaySignals.length, color: '220 70% 55%' },
+              { key: 'today' as DayTab, label: t('signals_today'), icon: <TrendingUp className="w-4 h-4" />, count: todaySignals.length, color: '160 70% 45%' },
+              { key: 'tomorrow' as DayTab, label: t('signals_tomorrow'), icon: <Clock className="w-4 h-4" />, count: tomorrowSignals.length, color: '45 80% 55%' },
+              { key: 'all' as DayTab, label: t('signals_all'), icon: <LayoutGrid className="w-4 h-4" />, count: 0, color: '270 60% 55%' },
+            ].map((tab) => {
+              const isSelected = dayTab === tab.key;
+              return (
                 <button
                   key={tab.key}
                   onClick={() => { setDayTab(tab.key); setCalendarDate(undefined); }}
                   className={cn(
-                    "flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center whitespace-nowrap active:scale-95 min-w-0",
-                    dayTab === tab.key
-                      ? "bg-primary text-primary-foreground shadow-[0_0_10px_hsl(var(--primary)/0.25)]"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    "flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all active:scale-95",
+                    isSelected ? "text-foreground" : "text-muted-foreground"
                   )}
+                  style={{
+                    background: isSelected
+                      ? `linear-gradient(135deg, hsl(${tab.color} / 0.2), hsl(${tab.color} / 0.08))`
+                      : 'hsl(var(--card) / 0.5)',
+                    border: `1px solid ${isSelected ? `hsl(${tab.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                    boxShadow: isSelected ? `0 2px 8px hsl(${tab.color} / 0.15)` : undefined,
+                  }}
                 >
                   {tab.icon}
-                  <span className="text-[10px]">{tab.label}</span>
+                  <span className="truncate w-full text-center text-[10px]">{tab.label}</span>
                   {tab.count > 0 && (
-                    <span className={cn(
-                      "text-[8px] min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center font-bold leading-none",
-                      dayTab === tab.key ? "bg-white/20" : "bg-primary/15 text-primary"
-                    )}>
+                    <span className="text-[8px] font-bold tabular-nums leading-none px-1.5 py-0.5 rounded-full"
+                      style={{
+                        background: isSelected ? `hsl(${tab.color} / 0.2)` : 'hsl(var(--muted) / 0.3)',
+                        color: isSelected ? `hsl(${tab.color})` : undefined,
+                      }}
+                    >
                       {tab.count}
                     </span>
                   )}
                 </button>
-              ))}
+              );
+            })}
 
-              {/* Calendar */}
-              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <button
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] font-medium transition-all justify-center active:scale-95",
-                      dayTab === 'calendar'
-                        ? "bg-primary text-primary-foreground shadow-[0_0_10px_hsl(var(--primary)/0.25)]"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    )}
-                  >
-                    <CalendarIcon className="w-3.5 h-3.5" />
-                    {dayTab === 'calendar' && calendarDate
-                      ? <span className="text-[10px]">{format(calendarDate, 'd MMM', { locale: dateLocale })}</span>
-                      : null}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover border-border" align="end">
-                  <Calendar
-                    mode="single"
-                    selected={calendarDate}
-                    onSelect={(date) => {
-                      setCalendarDate(date);
-                      setDayTab('calendar');
-                      setCalendarOpen(false);
-                    }}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                    locale={dateLocale}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-
-          {/* Right action buttons */}
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Source filter */}
-            <Popover>
+            {/* Calendar tab */}
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button
                   className={cn(
-                    "flex items-center gap-0.5 p-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border",
-                    sourceFilter === 'ai-center'
-                      ? "bg-accent/15 text-accent-foreground border-accent/30"
-                      : sourceFilter === 'server'
-                        ? "bg-primary/15 text-primary border-primary/30"
-                        : "bg-secondary/50 text-foreground border-border/50"
+                    "flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all active:scale-95",
+                    dayTab === 'calendar' ? "text-foreground" : "text-muted-foreground"
                   )}
+                  style={{
+                    background: dayTab === 'calendar'
+                      ? 'linear-gradient(135deg, hsl(200 80% 55% / 0.2), hsl(200 80% 55% / 0.08))'
+                      : 'hsl(var(--card) / 0.5)',
+                    border: `1px solid ${dayTab === 'calendar' ? 'hsl(200 80% 55% / 0.35)' : 'hsl(var(--border) / 0.3)'}`,
+                    boxShadow: dayTab === 'calendar' ? '0 2px 8px hsl(200 80% 55% / 0.15)' : undefined,
+                  }}
                 >
-                  {sourceFilter === 'ai-center' ? <Brain className="w-3.5 h-3.5" /> : sourceFilter === 'server' ? <TrendingUp className="w-3.5 h-3.5" /> : <Filter className="w-3.5 h-3.5" />}
-                  <ChevronDown className="w-2.5 h-2.5 opacity-50" />
+                  <CalendarIcon className="w-4 h-4" />
+                  <span className="text-[10px]">
+                    {dayTab === 'calendar' && calendarDate
+                      ? format(calendarDate, 'd MMM', { locale: dateLocale })
+                      : '📅'}
+                  </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-36 p-1 bg-card border-border" align="end" sideOffset={4}>
-                {([
-                  { key: 'all' as SourceFilter, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" /> },
-                  { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3.5 h-3.5" /> },
-                  { key: 'ai-center' as SourceFilter, label: 'AI Center', icon: <Brain className="w-3.5 h-3.5" /> },
-                ]).map((opt) => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setSourceFilter(opt.key)}
-                    className={cn(
-                      "w-full flex items-center gap-2 px-2.5 py-2 rounded-md text-xs font-medium transition-colors",
-                      sourceFilter === opt.key
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    )}
-                  >
-                    {opt.icon}
-                    {opt.label}
-                  </button>
-                ))}
+              <PopoverContent className="w-auto p-0 bg-popover border-border" align="end">
+                <Calendar
+                  mode="single"
+                  selected={calendarDate}
+                  onSelect={(date) => {
+                    setCalendarDate(date);
+                    setDayTab('calendar');
+                    setCalendarOpen(false);
+                  }}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                  locale={dateLocale}
+                />
               </PopoverContent>
             </Popover>
+          </div>
+        </div>
 
-            {/* Advanced filters toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={cn(
-                "relative p-1.5 rounded-lg text-[11px] font-medium transition-all active:scale-95 border",
-                showFilters || activeFilterCount > 0
-                  ? "bg-primary/15 text-primary border-primary/30 shadow-[0_0_8px_hsl(var(--primary)/0.2)]"
-                  : "bg-secondary/50 text-foreground border-border/50"
-              )}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              {activeFilterCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
+        {/* Action bar — source + filters */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5">
+          {/* Source filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95",
+                )}
+                style={{
+                  background: sourceFilter !== 'all'
+                    ? 'linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.05))'
+                    : 'hsl(var(--card) / 0.5)',
+                  border: `1px solid ${sourceFilter !== 'all' ? 'hsl(var(--primary) / 0.3)' : 'hsl(var(--border) / 0.3)'}`,
+                }}
+              >
+                {sourceFilter === 'ai-center' ? <Brain className="w-3.5 h-3.5" /> : sourceFilter === 'server' ? <TrendingUp className="w-3.5 h-3.5" /> : <Filter className="w-3.5 h-3.5" />}
+                <span>{sourceFilter === 'all' ? t('signals_all') : sourceFilter === 'server' ? 'Server' : 'AI'}</span>
+                <ChevronDown className="w-2.5 h-2.5 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-40 p-1.5 bg-card border-border rounded-xl" align="start" sideOffset={4}>
+              {([
+                { key: 'all' as SourceFilter, label: t('signals_all'), icon: <LayoutGrid className="w-3.5 h-3.5" /> },
+                { key: 'server' as SourceFilter, label: 'Server', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+                { key: 'ai-center' as SourceFilter, label: 'AI Center', icon: <Brain className="w-3.5 h-3.5" /> },
+              ]).map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setSourceFilter(opt.key)}
+                  className={cn(
+                    "w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors",
+                    sourceFilter === opt.key
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+                  )}
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+
+          <div className="flex-1" />
+
+          {/* Advanced filters toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={cn(
+              "relative flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95",
+            )}
+            style={{
+              background: showFilters || activeFilterCount > 0
+                ? 'linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.05))'
+                : 'hsl(var(--card) / 0.5)',
+              border: `1px solid ${showFilters || activeFilterCount > 0 ? 'hsl(var(--primary) / 0.3)' : 'hsl(var(--border) / 0.3)'}`,
+              boxShadow: activeFilterCount > 0 ? '0 0 8px hsl(var(--primary) / 0.15)' : undefined,
+            }}
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>{t('sf_status')}</span>
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
           </div>
         </div>
 
