@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { RefreshCw, CheckCircle2, XCircle, Clock, SkipForward, Activity, Server, Database, Shield, HardDrive, Zap, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { RedisCacheStatsPanel } from './RedisCacheStatsPanel';
 
 interface ServiceCheck {
   name: string;
@@ -139,7 +140,9 @@ export function AdminHealthCheckTab() {
         </div>
       )}
 
-      {/* Last check */}
+      {/* Redis Cache Stats */}
+      <RedisCacheStatsPanel />
+
       {dataUpdatedAt > 0 && (
         <p className="text-[10px] text-white/20 text-center">
           Última verificación: {new Date(dataUpdatedAt).toLocaleString()}
