@@ -348,12 +348,19 @@ export default function LinkBroker() {
                     <div className="flex items-center gap-1">
                       {conn.is_connected && (
                         <button
-                          onClick={() => syncBroker(conn.id)}
-                          disabled={isSyncing(conn.id)}
+                          onClick={() => {
+                            const isMT5 = conn.connection_name?.includes('MT');
+                            if (isMT5) {
+                              syncMT5(conn.id);
+                            } else {
+                              syncBroker(conn.id);
+                            }
+                          }}
+                          disabled={isSyncing(conn.id) || isMT5Syncing(conn.id)}
                           className="w-7 h-7 rounded-lg flex items-center justify-center transition-all active:scale-90"
                           style={{ background: 'hsl(var(--card) / 0.8)', border: '1px solid hsl(var(--border) / 0.4)' }}
                         >
-                          {isSyncing(conn.id)
+                          {(isSyncing(conn.id) || isMT5Syncing(conn.id))
                             ? <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
                             : <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
                           }
