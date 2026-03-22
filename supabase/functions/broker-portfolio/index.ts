@@ -294,6 +294,11 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     return { error: 'MetaAPI token not configured' };
   }
 
+  // Create HTTP client that trusts MetaAPI certificates
+  const httpClient = Deno.createHttpClient({ caCerts: [] });
+  const metaFetch = (url: string, opts: RequestInit = {}) =>
+    fetch(url, { ...opts, client: httpClient } as RequestInit);
+
   try {
     const login = credentials.mt5_login || credentials.mt_login || credentials.login;
     const password = credentials.mt5_password || credentials.mt_password || credentials.password;
@@ -307,7 +312,7 @@ async function fetchMetaApiAccount(credentials: Record<string, string>, config: 
     }
 
     // Step 1: Find or provision the MetaAPI account
-    const listRes = await fetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
+    const listRes = await metaFetch('https://mt-provisioning-api-v1.agiliumtrade.agiliumtrade.ai/users/current/accounts', {
       headers: { 'auth-token': metaApiToken },
     });
 
