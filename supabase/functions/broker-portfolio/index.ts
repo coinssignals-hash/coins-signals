@@ -21,18 +21,32 @@ function decodeBytea(raw: unknown): string {
       }
       return new TextDecoder().decode(bytes);
     }
+    // Supabase JS client may serialize bytea as JSON object string: '{"0":53,"1":120,...}'
+    if (raw.startsWith('{"0":')) {
+      try {
+        const obj = JSON.parse(raw) as Record<string, number>;
+        const keys = Object.keys(obj).map(Number).sort((a, b) => a - b);
+        const bytes = new Uint8Array(keys.length);
+        for (let i = 0; i < keys.length; i++) {
+          bytes[i] = obj[String(keys[i])];
+        }
+        return new TextDecoder().decode(bytes);
+      } catch { /* fall through */ }
+    }
     return raw;
   }
   
-  // Supabase JS client may return bytea as a JSON object { "0": byte, "1": byte, ... }
+  // Handle object form { "0": byte, "1": byte, ... }
   if (typeof raw === 'object' && raw !== null && !(raw instanceof Uint8Array)) {
     const obj = raw as Record<string, number>;
     const keys = Object.keys(obj).map(Number).sort((a, b) => a - b);
-    const bytes = new Uint8Array(keys.length);
-    for (let i = 0; i < keys.length; i++) {
-      bytes[i] = obj[String(keys[i])];
+    if (keys.length > 0) {
+      const bytes = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        bytes[i] = obj[String(keys[i])];
+      }
+      return new TextDecoder().decode(bytes);
     }
-    return new TextDecoder().decode(bytes);
   }
   
   if (raw instanceof Uint8Array) {
