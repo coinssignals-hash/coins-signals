@@ -151,7 +151,71 @@ function AIChatSection({ onBack, userName, t }: { onBack: () => void; userName: 
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [escalated, setEscalated] = useState(false);
+  const [playingId, setPlayingId] = useState<number | null>(null);
+  const [loadingTtsId, setLoadingTtsId] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+
+  const playTTS = useCallback(async (msgId: number, text: string) => {
+    // Stop if already playing this message
+    if (playingId === msgId) {
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setPlayingId(null);
+      return;
+    }
+    // Stop any current audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setPlayingId(null);
+    }
+
+    setLoadingTtsId(msgId);
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ text: text.slice(0, 4000) }),
+        }
+      );
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Error de voz' }));
+        throw new Error(err.error || 'Error generando audio');
+      }
+
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      setPlayingId(msgId);
+
+      audio.onended = () => {
+        setPlayingId(null);
+        audioRef.current = null;
+        URL.revokeObjectURL(url);
+      };
+      audio.onerror = () => {
+        setPlayingId(null);
+        audioRef.current = null;
+        URL.revokeObjectURL(url);
+      };
+
+      await audio.play();
+    } catch (e) {
+      console.error('TTS error:', e);
+      toast({ title: 'Error de voz', description: e instanceof Error ? e.message : 'No se pudo reproducir', variant: 'destructive' });
+    } finally {
+      setLoadingTtsId(null);
+    }
+  }, [playingId]);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
@@ -315,7 +379,25 @@ function AIChatSection({ onBack, userName, t }: { onBack: () => void; userName: 
                   ) : (
                     <p className="text-xs text-foreground leading-relaxed">{msg.text}</p>
                   )}
-                  <p className="text-[9px] text-muted-foreground mt-1 text-right">{msg.time}</p>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-[9px] text-muted-foreground">{msg.time}</p>
+                    {msg.from === 'bot' && msg.text && msg.text.length > 3 && (
+                      <button
+                        onClick={() => playTTS(msg.id, msg.text)}
+                        disabled={loadingTtsId === msg.id}
+                        className="p-0.5 rounded hover:bg-primary/10 transition-colors"
+                        title={playingId === msg.id ? 'Detener' : 'Escuchar'}
+                      >
+                        {loadingTtsId === msg.id ? (
+                          <span className="w-3.5 h-3.5 border border-primary/50 border-t-primary rounded-full animate-spin inline-block" />
+                        ) : playingId === msg.id ? (
+                          <MicOff className="w-3.5 h-3.5 text-primary" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}
