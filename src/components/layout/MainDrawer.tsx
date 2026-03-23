@@ -86,7 +86,6 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       title: t('drawer_cat_help'),
       items: [
         { icon: MessageCircle, label: t('drawer_contact_support'), href: '/support' },
-        { icon: Info, label: t('drawer_about_us'), href: '/about' },
       ],
     },
   ];
