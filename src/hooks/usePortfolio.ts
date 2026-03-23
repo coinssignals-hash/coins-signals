@@ -2,6 +2,34 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
+const CACHE_KEY = 'portfolio-cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+interface PortfolioCache {
+  accounts: AccountData[];
+  summary: PortfolioSummary;
+  timestamp: number;
+}
+
+function loadCache(): PortfolioCache | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached: PortfolioCache = JSON.parse(raw);
+    if (Date.now() - cached.timestamp > CACHE_TTL) return null;
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function saveCache(accounts: AccountData[], summary: PortfolioSummary) {
+  try {
+    const data: PortfolioCache = { accounts, summary, timestamp: Date.now() };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch { /* ignore quota errors */ }
+}
+
 export interface Position {
   symbol: string;
   quantity: number;
@@ -81,15 +109,16 @@ const DEMO_SUMMARY: PortfolioSummary = {
 
 export function usePortfolio() {
   const { session } = useAuth();
-  const [accounts, setAccounts] = useState<AccountData[]>([]);
-  const [summary, setSummary] = useState<PortfolioSummary>({
+  const cached = useRef(loadCache());
+  const [accounts, setAccounts] = useState<AccountData[]>(cached.current?.accounts ?? []);
+  const [summary, setSummary] = useState<PortfolioSummary>(cached.current?.summary ?? {
     total_equity: 0,
     total_cash: 0,
     total_unrealized_pnl: 0,
     total_realized_pnl: 0,
     total_positions: 0,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cached.current);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [isLive, setIsLive] = useState(false);
@@ -118,15 +147,21 @@ export function usePortfolio() {
 
       if (fetchError) throw fetchError;
 
-      setAccounts(data.accounts || []);
-      setSummary(data.summary || {
+      const newAccounts = data.accounts || [];
+      const newSummary = data.summary || {
         total_equity: 0,
         total_cash: 0,
         total_unrealized_pnl: 0,
         total_realized_pnl: 0,
         total_positions: 0,
-      });
+      };
+
+      setAccounts(newAccounts);
+      setSummary(newSummary);
       setLastRefresh(new Date());
+
+      // Persist to localStorage cache
+      saveCache(newAccounts, newSummary);
       
       // Trigger live indicator
       setIsLive(true);
@@ -134,6 +169,7 @@ export function usePortfolio() {
       liveTimeoutRef.current = setTimeout(() => setIsLive(false), 2000);
     } catch (err) {
       console.error('Error fetching portfolio:', err);
+      // Only set error, do NOT clear existing accounts/summary so cached data stays visible
       setError(err instanceof Error ? err.message : 'Failed to fetch portfolio');
     } finally {
       setLoading(false);
