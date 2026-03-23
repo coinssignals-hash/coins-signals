@@ -24,6 +24,7 @@ interface Message {
   content: string;
   channel: string;
   created_at: string;
+  metadata: any;
 }
 
 const channelIcons: Record<string, string> = {

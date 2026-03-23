@@ -39,6 +39,7 @@ const TAB_TITLES: Record<string, string> = {
   documents: 'Documentos de Usuarios',
   'forum-suggestions': 'Sugerencias del Foro',
   referrals: 'Referidos',
+  support: 'Soporte IA',
 };
 
 export default function Admin() {
