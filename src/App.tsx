@@ -34,7 +34,7 @@ const LessonDetail = lazy(() => import("./pages/LessonDetail"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Install = lazy(() => import("./pages/Install"));
 const Performance = lazy(() => import("./pages/Performance"));
-const About = lazy(() => import("./pages/About"));
+
 const BrokerRating = lazy(() => import("./pages/BrokerRating"));
 const LinkBroker = lazy(() => import("./pages/LinkBroker"));
 const Analysis = lazy(() => import("./pages/Analysis"));
