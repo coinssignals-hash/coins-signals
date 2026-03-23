@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import {
   MessageCircle, Send, Upload, MapPin, Phone, Mail,
   ChevronDown, ChevronUp, Search, Clock, CheckCircle2,
   AlertCircle, HelpCircle, Headphones, Shield, CreditCard,
   BarChart3, Globe, ExternalLink, Bot, User, Paperclip,
-  Sparkles, ArrowRight, X
+  Sparkles, ArrowRight, X, Mic, MicOff, Volume2
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -42,7 +43,7 @@ export default function Support() {
         <AnimatePresence mode="wait">
           {section === 'main' && <MainSection key="main" onNavigate={setSection} t={t} />}
           {section === 'faq' && <FAQSection key="faq" onBack={() => setSection('main')} t={t} />}
-          {section === 'chat' && <ChatSection key="chat" onBack={() => setSection('main')} userName={profile?.first_name || 'Trader'} t={t} />}
+          {section === 'chat' && <AIChatSection key="chat" onBack={() => setSection('main')} userName={profile?.first_name || 'Trader'} t={t} />}
           {section === 'ticket' && <TicketSection key="ticket" onBack={() => setSection('main')} t={t} />}
         </AnimatePresence>
       </main>
@@ -50,6 +51,7 @@ export default function Support() {
   );
 }
 
+/* ─── Main Section ─── */
 function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (k: string) => string }) {
   const legalItems = [
     { key: 'support_terms' }, { key: 'support_privacy' }, { key: 'support_risk_notice' }, { key: 'support_refund_policy' },
@@ -66,27 +68,18 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">{t('support_find_help')}</p>
           <div className="grid grid-cols-3 gap-2">
-            <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-[10px] text-muted-foreground">{t('support_chat_active')}</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-[10px] text-muted-foreground">{t('support_email_time')}</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
-              <Globe className="w-3.5 h-3.5 text-primary" />
-              <span className="text-[10px] text-muted-foreground">24/7</span>
-            </div>
+            <StatusBadge icon={<CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />} label={t('support_chat_active')} />
+            <StatusBadge icon={<Clock className="w-3.5 h-3.5 text-amber-400" />} label={t('support_email_time')} />
+            <StatusBadge icon={<Globe className="w-3.5 h-3.5 text-primary" />} label="24/7" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => onNavigate('chat')}>
-              <MessageCircle className="w-6 h-6 text-primary" />
-              <span className="text-xs">{t('support_live_chat')}</span>
+              <Bot className="w-6 h-6 text-primary" />
+              <span className="text-xs">Chat IA en vivo</span>
             </Button>
             <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => window.open('https://wa.me/34600000000?text=Hola,%20necesito%20ayuda', '_blank')}>
               <Send className="w-6 h-6 text-primary" />
-              <span className="text-xs">Whatsapp</span>
+              <span className="text-xs">WhatsApp</span>
             </Button>
           </div>
           <div className="grid grid-cols-4 gap-2">
@@ -111,7 +104,7 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
       <GlowCard>
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_channels')}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <ContactRow icon={MessageCircle} title={t('support_live_chat')} detail={t('support_chat_live_hours')} color="text-emerald-400" />
+          <ContactRow icon={MessageCircle} title="Chat IA en vivo" detail="Respuestas instantáneas con IA" color="text-emerald-400" />
           <ContactRow icon={Phone} title="WhatsApp Business" detail="+34 600 000 000" color="text-green-400" onClick={() => window.open('https://wa.me/34600000000', '_blank')} />
           <ContactRow icon={Mail} title="Email" detail="soporte@ecosignal.ai" color="text-primary" onClick={() => window.open('mailto:soporte@ecosignal.ai', '_blank')} />
           <ContactRow icon={Send} title="Telegram" detail="@ecosignal_ai" color="text-[hsl(200,80%,50%)]" onClick={() => window.open('https://t.me/ecosignal_ai', '_blank')} />
@@ -149,6 +142,251 @@ function MainSection({ onNavigate, t }: { onNavigate: (s: Section) => void; t: (
   );
 }
 
+/* ─── AI Chat Section (Real Streaming) ─── */
+function AIChatSection({ onBack, userName, t }: { onBack: () => void; userName: string; t: (k: string) => string }) {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { id: 1, from: 'bot', text: `¡Hola ${userName}! 👋 Soy el asistente de IA de Coins Signals. ¿En qué puedo ayudarte hoy?`, time: getNow() },
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [escalated, setEscalated] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+
+  const sendMessage = useCallback(async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userText = input.trim();
+    const userMsg: ChatMessage = { id: Date.now(), from: 'user', text: userText, time: getNow() };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsLoading(true);
+
+    // Build messages array for the API
+    const apiMessages = messages
+      .filter(m => m.id !== 1) // skip greeting
+      .map(m => ({ role: m.from === 'user' ? 'user' as const : 'assistant' as const, content: m.text }));
+    apiMessages.push({ role: 'user', content: userText });
+
+    try {
+      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/support-chat`;
+
+      const resp = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: apiMessages,
+          conversationId,
+          channel: 'web',
+        }),
+      });
+
+      if (!resp.ok) {
+        if (resp.status === 429) {
+          throw new Error('Demasiadas solicitudes. Intenta de nuevo en unos segundos.');
+        }
+        if (resp.status === 402) {
+          throw new Error('Servicio temporalmente no disponible.');
+        }
+        throw new Error('Error al conectar con el asistente');
+      }
+
+      // Get conversation ID from header
+      const newConvId = resp.headers.get('X-Conversation-Id');
+      if (newConvId) setConversationId(newConvId);
+
+      // Stream the response
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error('No stream available');
+
+      const decoder = new TextDecoder();
+      let assistantText = '';
+      let textBuffer = '';
+      const botMsgId = Date.now() + 1;
+
+      // Add empty bot message
+      setMessages(prev => [...prev, { id: botMsgId, from: 'bot', text: '', time: getNow() }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              assistantText += content;
+              const cleanText = assistantText.replace('[ESCALATE]', '').trim();
+              setMessages(prev =>
+                prev.map(m => m.id === botMsgId ? { ...m, text: cleanText } : m)
+              );
+            }
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Check for escalation
+      if (assistantText.includes('[ESCALATE]')) {
+        setEscalated(true);
+        toast({
+          title: '🔔 Escalamiento activado',
+          description: 'Tu caso ha sido escalado a un agente humano. Te contactaremos pronto.',
+        });
+      }
+    } catch (e) {
+      console.error('Chat error:', e);
+      const errMsg = e instanceof Error ? e.message : 'Error de conexión';
+      setMessages(prev => [...prev, {
+        id: Date.now() + 2,
+        from: 'bot',
+        text: `⚠️ ${errMsg}. Puedes intentar de nuevo o contactarnos por WhatsApp.`,
+        time: getNow(),
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [input, isLoading, messages, conversationId]);
+
+  return (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+      <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">{t('support_back')}</Button>
+      <GlowCard>
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <Bot className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-sm text-foreground">Coins Signals AI</CardTitle>
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] text-emerald-400">
+                  {escalated ? '🔔 Escalado a agente' : isLoading ? 'Pensando...' : t('support_online')}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Badge variant="outline" className="text-[9px] border-primary/30 text-primary">
+                <Sparkles className="w-3 h-3 mr-0.5" /> AI + Voz
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="h-[340px] overflow-y-auto space-y-2 pr-1">
+            {messages.map(msg => (
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`max-w-[85%] rounded-xl px-3 py-2 ${
+                  msg.from === 'user'
+                    ? 'bg-primary/20 border border-primary/30'
+                    : 'bg-secondary border border-border/50'
+                }`}>
+                  {msg.from === 'bot' ? (
+                    <div className="text-xs text-foreground leading-relaxed prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_li]:my-0">
+                      <ReactMarkdown>{msg.text || '...'}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-foreground leading-relaxed">{msg.text}</p>
+                  )}
+                  <p className="text-[9px] text-muted-foreground mt-1 text-right">{msg.time}</p>
+                </div>
+              </motion.div>
+            ))}
+            {isLoading && messages[messages.length - 1]?.from === 'user' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                <div className="bg-secondary border border-border/50 rounded-xl px-4 py-2.5 flex gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </motion.div>
+            )}
+            <div ref={endRef} />
+          </div>
+
+          {/* Quick actions */}
+          {messages.length <= 2 && (
+            <div className="flex flex-wrap gap-1.5">
+              {['¿Cómo funcionan las señales?', '¿Planes y precios?', '¿Cómo cambio mi suscripción?', 'Tengo un problema técnico'].map(q => (
+                <button
+                  key={q}
+                  onClick={() => { setInput(q); }}
+                  className="text-[10px] bg-primary/10 border border-primary/20 text-primary rounded-full px-2.5 py-1 hover:bg-primary/20 transition-colors"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2 pt-2 border-t border-border/30">
+            <Input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && sendMessage()}
+              placeholder={escalated ? 'Un agente te responderá pronto...' : t('support_write_message')}
+              className="flex-1 bg-secondary border-border"
+              disabled={isLoading}
+            />
+            <Button size="icon" onClick={sendMessage} disabled={!input.trim() || isLoading}>
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {escalated && (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 text-center"
+            >
+              <p className="text-xs text-amber-400">
+                🔔 Tu caso ha sido escalado. Un agente revisará tu conversación y te contactará por este chat o por WhatsApp.
+              </p>
+            </motion.div>
+          )}
+        </CardContent>
+      </GlowCard>
+    </motion.div>
+  );
+}
+
+/* ─── Sub-components ─── */
+function StatusBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center gap-1.5 bg-secondary rounded-lg px-2 py-2 border border-border/50">
+      {icon}
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
 function SocialBtn({ label, color, icon, onClick }: { label: string; color: string; icon: React.ReactNode; onClick: () => void }) {
   return (
     <button onClick={onClick} className="flex flex-col items-center gap-1.5 bg-secondary border border-border/50 rounded-xl py-3 hover:bg-secondary/80 transition-colors">
@@ -168,6 +406,7 @@ function ContactRow({ icon: Icon, title, detail, color, onClick }: any) {
   );
 }
 
+/* ─── FAQ Section ─── */
 function FAQSection({ onBack, t }: { onBack: () => void; t: (k: string) => string }) {
   const [searchQ, setSearchQ] = useState('');
   const [openIdx, setOpenIdx] = useState<string | null>(null);
@@ -235,83 +474,7 @@ function FAQSection({ onBack, t }: { onBack: () => void; t: (k: string) => strin
   );
 }
 
-function ChatSection({ onBack, userName, t }: { onBack: () => void; userName: string; t: (k: string) => string }) {
-  const botResponses: Record<string, string> = {
-    hola: t('support_bot_hello'),
-    señal: t('support_bot_signal'), signal: t('support_bot_signal'),
-    pago: t('support_bot_payment'), payment: t('support_bot_payment'),
-    cuenta: t('support_bot_account'), account: t('support_bot_account'),
-    default: t('support_bot_default'),
-  };
-
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 1, from: 'bot', text: t('support_chat_greeting').replace('{name}', userName), time: getNow() },
-  ]);
-  const [input, setInput] = useState('');
-  const [typing, setTyping] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
-
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    const userMsg: ChatMessage = { id: Date.now(), from: 'user', text: input.trim(), time: getNow() };
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setTyping(true);
-    const lower = input.toLowerCase();
-    const key = Object.keys(botResponses).find(k => lower.includes(k)) || 'default';
-    setTimeout(() => {
-      setTyping(false);
-      setMessages(prev => [...prev, { id: Date.now() + 1, from: 'bot', text: botResponses[key], time: getNow() }]);
-    }, 1200 + Math.random() * 800);
-  };
-
-  return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-      <Button variant="ghost" size="sm" onClick={onBack} className="text-xs text-muted-foreground -ml-2">{t('support_back')}</Button>
-      <GlowCard>
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"><Bot className="w-4 h-4 text-primary" /></div>
-            <div className="flex-1">
-              <CardTitle className="text-sm text-foreground">EcoSignal AI Assistant</CardTitle>
-              <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /><span className="text-[10px] text-emerald-400">{t('support_online')}</span></div>
-            </div>
-            <Badge variant="outline" className="text-[9px] border-primary/30 text-primary"><Sparkles className="w-3 h-3 mr-0.5" /> AI</Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="h-[340px] overflow-y-auto space-y-2 pr-1">
-            {messages.map(msg => (
-              <motion.div key={msg.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-xl px-3 py-2 ${msg.from === 'user' ? 'bg-primary/20 border border-primary/30' : 'bg-secondary border border-border/50'}`}>
-                  <p className="text-xs text-foreground leading-relaxed">{msg.text}</p>
-                  <p className="text-[9px] text-muted-foreground mt-1 text-right">{msg.time}</p>
-                </div>
-              </motion.div>
-            ))}
-            {typing && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                <div className="bg-secondary border border-border/50 rounded-xl px-4 py-2.5 flex gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
-              </motion.div>
-            )}
-            <div ref={endRef} />
-          </div>
-          <div className="flex gap-2 pt-2 border-t border-border/30">
-            <Input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()} placeholder={t('support_write_message')} className="flex-1 bg-secondary border-border" />
-            <Button size="icon" onClick={sendMessage} disabled={!input.trim()}><Send className="w-4 h-4" /></Button>
-          </div>
-        </CardContent>
-      </GlowCard>
-    </motion.div>
-  );
-}
-
+/* ─── Ticket Section ─── */
 function TicketSection({ onBack, t }: { onBack: () => void; t: (k: string) => string }) {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [subject, setSubject] = useState('');
@@ -347,10 +510,6 @@ function TicketSection({ onBack, t }: { onBack: () => void; t: (k: string) => st
         <CardHeader><CardTitle className="text-sm text-primary">{t('support_send_request')}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">{t('support_send_request_desc')}</p>
-          <div className="space-y-1">
-            <label className="text-xs text-muted-foreground">{t('support_search_help')}</label>
-            <Input placeholder={t('support_write_message')} className="bg-secondary border-border" />
-          </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">{t('support_subject')}</label>
             <div className="flex flex-wrap gap-2">
@@ -392,15 +551,6 @@ function TicketSection({ onBack, t }: { onBack: () => void; t: (k: string) => st
               </span>
             ) : (<><Send className="w-4 h-4 mr-2" />{t('support_ticket_send')}</>)}
           </Button>
-        </CardContent>
-      </GlowCard>
-
-      <GlowCard>
-        <CardHeader><CardTitle className="text-sm text-primary">{t('support_recent_tickets')}</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          <TicketRow id="TK-4821" topic={t('support_topic_signals')} status="resolved" date="05 Mar" summary="EUR/USD" />
-          <TicketRow id="TK-4798" topic={t('support_topic_payments')} status="open" date="03 Mar" summary="Subscription" />
-          <TicketRow id="TK-4756" topic={t('support_topic_account')} status="resolved" date="28 Feb" summary="KYC" />
         </CardContent>
       </GlowCard>
     </motion.div>
