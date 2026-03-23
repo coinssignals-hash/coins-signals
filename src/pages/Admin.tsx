@@ -20,6 +20,7 @@ import { AdminHealthCheckTab } from '@/components/admin/AdminHealthCheckTab';
 import { AdminModerationTab } from '@/components/admin/AdminModerationTab';
 import { AdminForumSuggestionsTab } from '@/components/admin/AdminForumSuggestionsTab';
 import { AdminReferralsTab } from '@/components/admin/AdminReferralsTab';
+import { AdminSupportTab } from '@/components/admin/AdminSupportTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +39,7 @@ const TAB_TITLES: Record<string, string> = {
   documents: 'Documentos de Usuarios',
   'forum-suggestions': 'Sugerencias del Foro',
   referrals: 'Referidos',
+  support: 'Soporte IA',
 };
 
 export default function Admin() {
@@ -106,6 +108,7 @@ export default function Admin() {
       case 'documents': return <AdminDocumentsTab />;
       case 'forum-suggestions': return <AdminForumSuggestionsTab />;
       case 'referrals': return <AdminReferralsTab />;
+      case 'support': return <AdminSupportTab />;
       default: return <AdminDashboardTab />;
     }
   };
