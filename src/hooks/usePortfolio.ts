@@ -109,15 +109,16 @@ const DEMO_SUMMARY: PortfolioSummary = {
 
 export function usePortfolio() {
   const { session } = useAuth();
-  const [accounts, setAccounts] = useState<AccountData[]>([]);
-  const [summary, setSummary] = useState<PortfolioSummary>({
+  const cached = useRef(loadCache());
+  const [accounts, setAccounts] = useState<AccountData[]>(cached.current?.accounts ?? []);
+  const [summary, setSummary] = useState<PortfolioSummary>(cached.current?.summary ?? {
     total_equity: 0,
     total_cash: 0,
     total_unrealized_pnl: 0,
     total_realized_pnl: 0,
     total_positions: 0,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cached.current);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [isLive, setIsLive] = useState(false);
