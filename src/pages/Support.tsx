@@ -379,7 +379,25 @@ function AIChatSection({ onBack, userName, t }: { onBack: () => void; userName: 
                   ) : (
                     <p className="text-xs text-foreground leading-relaxed">{msg.text}</p>
                   )}
-                  <p className="text-[9px] text-muted-foreground mt-1 text-right">{msg.time}</p>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-[9px] text-muted-foreground">{msg.time}</p>
+                    {msg.from === 'bot' && msg.text && msg.text.length > 3 && (
+                      <button
+                        onClick={() => playTTS(msg.id, msg.text)}
+                        disabled={loadingTtsId === msg.id}
+                        className="p-0.5 rounded hover:bg-primary/10 transition-colors"
+                        title={playingId === msg.id ? 'Detener' : 'Escuchar'}
+                      >
+                        {loadingTtsId === msg.id ? (
+                          <span className="w-3.5 h-3.5 border border-primary/50 border-t-primary rounded-full animate-spin inline-block" />
+                        ) : playingId === msg.id ? (
+                          <MicOff className="w-3.5 h-3.5 text-primary" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}
