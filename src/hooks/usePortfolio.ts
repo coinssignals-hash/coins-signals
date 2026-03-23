@@ -147,15 +147,21 @@ export function usePortfolio() {
 
       if (fetchError) throw fetchError;
 
-      setAccounts(data.accounts || []);
-      setSummary(data.summary || {
+      const newAccounts = data.accounts || [];
+      const newSummary = data.summary || {
         total_equity: 0,
         total_cash: 0,
         total_unrealized_pnl: 0,
         total_realized_pnl: 0,
         total_positions: 0,
-      });
+      };
+
+      setAccounts(newAccounts);
+      setSummary(newSummary);
       setLastRefresh(new Date());
+
+      // Persist to localStorage cache
+      saveCache(newAccounts, newSummary);
       
       // Trigger live indicator
       setIsLive(true);
@@ -163,6 +169,7 @@ export function usePortfolio() {
       liveTimeoutRef.current = setTimeout(() => setIsLive(false), 2000);
     } catch (err) {
       console.error('Error fetching portfolio:', err);
+      // Only set error, do NOT clear existing accounts/summary so cached data stays visible
       setError(err instanceof Error ? err.message : 'Failed to fetch portfolio');
     } finally {
       setLoading(false);
