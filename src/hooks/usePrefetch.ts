@@ -14,7 +14,7 @@ const routeImports: Record<string, () => Promise<unknown>> = {
   '/subscriptions': () => import('@/pages/Subscriptions'),
   '/auth': () => import('@/pages/Auth'),
   '/install': () => import('@/pages/Install'),
-  '/about': () => import('@/pages/About'),
+  
   '/broker-rating': () => import('@/pages/BrokerRating'),
   '/monitoring': () => import('@/pages/Monitoring'),
 };

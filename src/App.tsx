@@ -34,7 +34,7 @@ const LessonDetail = lazy(() => import("./pages/LessonDetail"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Install = lazy(() => import("./pages/Install"));
 const Performance = lazy(() => import("./pages/Performance"));
-const About = lazy(() => import("./pages/About"));
+
 const BrokerRating = lazy(() => import("./pages/BrokerRating"));
 const LinkBroker = lazy(() => import("./pages/LinkBroker"));
 const Analysis = lazy(() => import("./pages/Analysis"));
@@ -145,7 +145,7 @@ function AnimatedRoutes() {
           <Route path="/install" element={<Install />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/performance" element={<Performance />} />
-          <Route path="/about" element={<About />} />
+          
           <Route path="/broker-rating" element={<BrokerRating />} />
           <Route path="/link-broker" element={<LinkBroker />} />
           <Route path="/portfolio" element={<SubscriptionGate requiredTier="premium" featureName="Portfolio Multi-Broker"><Portfolio /></SubscriptionGate>} />
