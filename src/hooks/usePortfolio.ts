@@ -2,6 +2,34 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
+const CACHE_KEY = 'portfolio-cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+interface PortfolioCache {
+  accounts: AccountData[];
+  summary: PortfolioSummary;
+  timestamp: number;
+}
+
+function loadCache(): PortfolioCache | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached: PortfolioCache = JSON.parse(raw);
+    if (Date.now() - cached.timestamp > CACHE_TTL) return null;
+    return cached;
+  } catch {
+    return null;
+  }
+}
+
+function saveCache(accounts: AccountData[], summary: PortfolioSummary) {
+  try {
+    const data: PortfolioCache = { accounts, summary, timestamp: Date.now() };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch { /* ignore quota errors */ }
+}
+
 export interface Position {
   symbol: string;
   quantity: number;
