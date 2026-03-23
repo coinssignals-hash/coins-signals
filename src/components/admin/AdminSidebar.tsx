@@ -43,6 +43,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'documents', label: 'Documentos', icon: FileText },
   { id: 'forum-suggestions', label: 'Sugerencias Foro', icon: Vote },
   { id: 'referrals', label: 'Referidos', icon: Gift },
+  { id: 'support', label: 'Soporte IA', icon: HeartPulse },
 ];
 
 interface AdminSidebarProps {
