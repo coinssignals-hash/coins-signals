@@ -189,7 +189,7 @@ export default function DailyChallenges() {
                   </motion.div>
                 )}
               </div>
-            </div>
+            </GlowSection>
           </motion.div>
         </AnimatePresence>
 

@@ -30,13 +30,8 @@ export default function Glossary() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        {/* Hero */}
-        <div className="relative rounded-2xl overflow-hidden" style={{
-          background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-          border: `1px solid hsl(${color} / 0.2)`,
-        }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)` }} />
-          <div className="relative p-4">
+        <GlowSection color={color}>
+          <div className="p-4">
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
                 background: `linear-gradient(135deg, hsl(${color} / 0.2), hsl(${color} / 0.08))`,
@@ -63,7 +58,7 @@ export default function Glossary() {
               />
             </div>
           </div>
-        </div>
+        </GlowSection>
 
         {/* Category tabs */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
