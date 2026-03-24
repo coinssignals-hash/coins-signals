@@ -3,8 +3,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
-import { ArrowLeft, Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Activity, Loader2, RefreshCw, TrendingUp, TrendingDown, Minus, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

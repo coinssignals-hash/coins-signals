@@ -100,73 +100,73 @@ export default function MultiTFScreener() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center justify-between">
         <ToolPageHeader
           icon={<ScanSearch className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
           title={t('mtf_title')}
           accent={ACCENT}
-        />
-          <div className="flex items-center gap-2">
-            {data.length > 0 && (
-              <span className="flex items-center gap-1 text-[9px] text-emerald-400">
-                <Wifi className="w-3 h-3" /> {t('mtf_live')}
-              </span>
-            )}
-            {error && (
-              <span className="flex items-center gap-1 text-[9px] text-amber-400">
-                <WifiOff className="w-3 h-3" /> {t('mtf_offline')}
-              </span>
-            )}
-            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Settings2 className="w-4 h-4 text-muted-foreground" />
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[8px] flex items-center justify-center font-bold">
-                    {selectedPairs.length}
-                  </span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle className="text-foreground">{t('mtf_customize_pairs')}</SheetTitle>
-                </SheetHeader>
-                <div className="space-y-4 mt-4">
-                  {Object.entries(PAIR_CATEGORIES_KEYS).map(([key, { key: catKey, pairs }]) => (
-                    <div key={key}>
-                      <p className="text-xs font-semibold text-muted-foreground mb-2">{catKey === 'mtf_metals' ? t('mtf_metals') : catKey}</p>
-                      <div className="grid grid-cols-3 gap-1.5">
-                        {pairs.map(pair => {
-                          const active = selectedPairs.includes(pair);
-                          return (
-                            <button
-                              key={pair}
-                              onClick={() => togglePair(pair)}
-                              className={cn(
-                                'flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
-                                active
-                                  ? 'bg-primary/15 border-primary/30 text-foreground'
-                                  : 'bg-secondary/50 border-border text-muted-foreground'
-                              )}
-                            >
-                              <span>{pair}</span>
-                              {active && <Check className="w-3 h-3 text-primary" />}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                  <Button className="w-full" onClick={applyAndClose}>
-                    {t('mtf_analyze_pairs').replace('{count}', String(selectedPairs.length))}
+          action={
+            <div className="flex items-center gap-2">
+              {data.length > 0 && (
+                <span className="flex items-center gap-1 text-[9px] text-emerald-400">
+                  <Wifi className="w-3 h-3" /> {t('mtf_live')}
+                </span>
+              )}
+              {error && (
+                <span className="flex items-center gap-1 text-[9px] text-amber-400">
+                  <WifiOff className="w-3 h-3" /> {t('mtf_offline')}
+                </span>
+              )}
+              <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Settings2 className="w-4 h-4 text-muted-foreground" />
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[8px] flex items-center justify-center font-bold">
+                      {selectedPairs.length}
+                    </span>
                   </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
-            <Button variant="ghost" size="icon" onClick={() => fetchData(true, selectedPairs)} disabled={loading}>
-              <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
-            </Button>
-          </div>
-        </div>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle className="text-foreground">{t('mtf_customize_pairs')}</SheetTitle>
+                  </SheetHeader>
+                  <div className="space-y-4 mt-4">
+                    {Object.entries(PAIR_CATEGORIES_KEYS).map(([key, { key: catKey, pairs }]) => (
+                      <div key={key}>
+                        <p className="text-xs font-semibold text-muted-foreground mb-2">{catKey === 'mtf_metals' ? t('mtf_metals') : catKey}</p>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {pairs.map(pair => {
+                            const active = selectedPairs.includes(pair);
+                            return (
+                              <button
+                                key={pair}
+                                onClick={() => togglePair(pair)}
+                                className={cn(
+                                  'flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
+                                  active
+                                    ? 'bg-primary/15 border-primary/30 text-foreground'
+                                    : 'bg-secondary/50 border-border text-muted-foreground'
+                                )}
+                              >
+                                <span>{pair}</span>
+                                {active && <Check className="w-3 h-3 text-primary" />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                    <Button className="w-full" onClick={applyAndClose}>
+                      {t('mtf_analyze_pairs').replace('{count}', String(selectedPairs.length))}
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+              <Button variant="ghost" size="icon" onClick={() => fetchData(true, selectedPairs)} disabled={loading}>
+                <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
+              </Button>
+            </div>
+          }
+        />
 
         {/* Bias Filter */}
         <div className="flex gap-1 p-1 rounded-lg bg-muted/50">
