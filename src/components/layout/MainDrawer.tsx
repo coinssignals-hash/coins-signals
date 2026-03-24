@@ -129,6 +129,24 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     navigate('/');
   };
 
+  const handleForceUpdate = async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(r => r.unregister()));
+      }
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+      }
+      toast({ title: t('drawer_update_success') || '✅ App actualizada', description: t('drawer_update_success_desc') || 'Caché limpiada. Recargando...' });
+      onOpenChange(false);
+      setTimeout(() => window.location.reload(), 800);
+    } catch {
+      window.location.reload();
+    }
+  };
+
   const getInitials = () => {
     if (!user?.email) return 'U';
     return user.email.substring(0, 2).toUpperCase();
