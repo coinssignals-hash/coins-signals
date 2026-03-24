@@ -132,17 +132,8 @@ export default function DailyChallenges() {
         {/* Challenge Card */}
         <AnimatePresence mode="wait">
           <motion.div key={challenge.id} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-            <div className="relative rounded-2xl overflow-hidden" style={{
-              background: `linear-gradient(165deg, hsl(270 70% 55% / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-              border: `1px solid hsl(270 70% 55% / 0.2)`,
-            }}>
-              <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-                background: `linear-gradient(90deg, transparent, hsl(270 70% 55% / 0.6), transparent)`,
-              }} />
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-15 pointer-events-none" style={{
-                background: `radial-gradient(circle, hsl(270 70% 55% / 0.4), transparent 70%)`,
-              }} />
-              <div className="relative p-4 space-y-4">
+            <GlowSection color="270 70% 55%">
+              <div className="p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
