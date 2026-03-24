@@ -286,19 +286,9 @@ export default function LinkBroker() {
               </div>
             </div>
 
-            {/* Connection cards — session style */}
-            <div
-              className="relative rounded-2xl overflow-hidden"
-              style={{
-                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-                border: `1px solid hsl(${ACCENT} / 0.2)`,
-              }}
-            >
-              <div className="absolute top-0 inset-x-0 h-[2px] z-[1]" style={{ background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)` }} />
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle, hsl(${ACCENT} / 0.4), transparent 70%)` }} />
-
+            <GlowSection color={ACCENT}>
               <div
-                className="relative z-[2] px-3 py-2 flex items-center gap-1.5"
+                className="px-3 py-2 flex items-center gap-1.5"
                 style={{ background: `hsl(${ACCENT} / 0.06)`, borderBottom: '1px solid hsl(var(--border) / 0.3)' }}
               >
                 <Monitor className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
@@ -306,7 +296,7 @@ export default function LinkBroker() {
                 <span className="ml-auto text-[10px] font-bold tabular-nums" style={{ color: `hsl(${ACCENT})` }}>{connections.length}</span>
               </div>
 
-              <div className="relative z-[2]">
+              <div>
                 {connections.map((conn, i) => (
                   <div
                     key={conn.id}
