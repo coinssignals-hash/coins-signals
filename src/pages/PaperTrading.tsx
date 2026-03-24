@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageShell } from '@/components/layout/PageShell';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { DollarSign, TrendingUp, TrendingDown, RotateCcw, History, Wallet, BarChart3 } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, RotateCcw, Wallet, BarChart3, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
