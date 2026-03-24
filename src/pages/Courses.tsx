@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Badge } from '@/components/ui/badge';
+import { GlowSection } from '@/components/ui/glow-section';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { categories } from '@/data/coursesData';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,23 +74,9 @@ function ModuleCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: idx * 0.07, duration: 0.35 }}
     >
-      <div
-        className="relative rounded-2xl overflow-hidden"
-        style={{
-          background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-          border: `1px solid hsl(${color} / ${isExpanded ? '0.35' : '0.2'})`,
-          boxShadow: isExpanded ? `0 4px 24px hsl(${color} / 0.1)` : undefined,
-        }}
+      <GlowSection
+        color={color}
       >
-        {/* Top glow line */}
-        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-          background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-        }} />
-        {/* Radial glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
-          background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
-        }} />
-
         <div className="relative">
           {/* Header */}
           <button
@@ -218,7 +205,7 @@ function ModuleCard({
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </GlowSection>
     </motion.div>
   );
 }
@@ -265,18 +252,8 @@ export default function Courses() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* ── Hero Card (GlowCard style) ── */}
-        <div className="relative rounded-2xl overflow-hidden" style={{
-          background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-          border: `1px solid hsl(${color} / 0.2)`,
-        }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-            background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-          }} />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
-            background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
-          }} />
-
-          <div className="relative p-4 space-y-3">
+        <GlowSection color={color}>
+          <div className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
@@ -345,7 +322,7 @@ export default function Courses() {
               ))}
             </div>
           </div>
-        </div>
+        </GlowSection>
 
         {/* ── Category Tabs (grid like MarketSessions) ── */}
         <div className={cn('grid gap-1', categories.length <= 5 ? 'grid-cols-5' : 'grid-cols-5')}>
@@ -441,30 +418,25 @@ export default function Courses() {
               key={item.type}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate(`/courses/media/${item.type}`)}
-              className="relative rounded-2xl overflow-hidden cursor-pointer"
-              style={{
-                background: `linear-gradient(165deg, hsl(${item.color} / 0.08) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
-                border: `1px solid hsl(${item.color} / 0.2)`,
-              }}
+              className="cursor-pointer"
             >
-              <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-                background: `linear-gradient(90deg, transparent, hsl(${item.color} / 0.5), transparent)`,
-              }} />
-              <div className="relative p-3.5 space-y-2">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
-                  background: `hsl(${item.color} / 0.12)`,
-                  border: `1px solid hsl(${item.color} / 0.2)`,
-                }}>
-                  <item.icon className="w-4.5 h-4.5" style={{ color: `hsl(${item.color})` }} />
+              <GlowSection color={item.color}>
+                <div className="p-3.5 space-y-2">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                    background: `hsl(${item.color} / 0.12)`,
+                    border: `1px solid hsl(${item.color} / 0.2)`,
+                  }}>
+                    <item.icon className="w-4.5 h-4.5" style={{ color: `hsl(${item.color})` }} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{item.label}</p>
+                    <p className="text-[11px] text-muted-foreground">{item.count} {item.sublabel}</p>
+                  </div>
+                  <div className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: `hsl(${item.color})` }}>
+                    <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{item.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{item.count} {item.sublabel}</p>
-                </div>
-                <div className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: `hsl(${item.color})` }}>
-                  <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
-                </div>
-              </div>
+              </GlowSection>
             </motion.div>
           ))}
         </div>
