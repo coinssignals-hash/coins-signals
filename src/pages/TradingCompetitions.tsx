@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import {
   Trophy, Swords, Clock, Users, Gift, Star, Flame, Target,
-  Medal, Crown, Timer, ChevronRight, Zap, Lock
+  Medal, Crown, Timer, ChevronRight, Zap, Lock, Shield, CheckCircle2
 } from 'lucide-react';
 
 type CompStatus = 'active' | 'upcoming' | 'ended';
