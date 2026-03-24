@@ -105,14 +105,13 @@ export default function Glossary() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.3) }}
               >
-                <button
+                 <button
                   onClick={() => setExpandedTerm(isExpanded ? null : term.id)}
-                  className="w-full text-left rounded-xl overflow-hidden transition-all"
-                  style={{
-                    background: `linear-gradient(165deg, hsl(${termColor} / ${isExpanded ? '0.08' : '0.03'}) 0%, hsl(var(--card)) 60%)`,
-                    border: `1px solid hsl(${termColor} / ${isExpanded ? '0.3' : '0.12'})`,
-                  }}
+                  className="w-full text-left"
                 >
+                  <GlowSection color={termColor} style={{
+                    borderColor: isExpanded ? `hsl(${termColor} / 0.3)` : `hsl(${termColor} / 0.12)`,
+                  }}>
                   <div className="p-3 flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ background: `hsl(${termColor})` }} />
                     <div className="flex-1 min-w-0">
