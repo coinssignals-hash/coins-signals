@@ -118,9 +118,15 @@ export default function TradingPsychology() {
     return { avgDiscipline, planFollowed, planRate: (planFollowed / entries.length) * 100, topEmotion, topMistakes, emotionWinRate };
   }, [entries]);
 
+  const navigate = useNavigate();
+
   return (
-    <PageShell title={t('trading_psychology_title') || 'Psicología de Trading'} backTo="/tools">
+    <PageShell>
       <div className="space-y-4 px-4 pb-24">
+        <div className="flex items-center gap-3 pt-4">
+          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
+          <h1 className="text-base font-bold text-foreground">{t('trading_psychology_title') || 'Psicología de Trading'}</h1>
+        </div>
         {/* Add entry button */}
         <Button onClick={() => setShowForm(!showForm)} className="w-full" size="sm">
           <Plus className="w-4 h-4 mr-2" /> Registrar Sesión

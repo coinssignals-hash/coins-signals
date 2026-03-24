@@ -152,9 +152,15 @@ export default function PerformanceReport() {
   // Pad start of calendar
   const firstDayOfWeek = (getDay(startOfMonth(currentMonth)) + 6) % 7; // Monday = 0
 
+  const navigate = useNavigate();
+
   return (
-    <PageShell title={t('performance_report_title') || 'Reporte de Rendimiento'} backTo="/tools">
+    <PageShell>
       <div className="space-y-4 px-4 pb-24">
+        <div className="flex items-center gap-3 pt-4">
+          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
+          <h1 className="text-base font-bold text-foreground">{t('performance_report_title') || 'Reporte de Rendimiento'}</h1>
+        </div>
         {/* Month navigator */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(m => subMonths(m, 1))}>
