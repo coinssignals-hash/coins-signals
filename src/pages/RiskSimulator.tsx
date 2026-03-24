@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageShell } from '@/components/layout/PageShell';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Card } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { ShieldAlert, TrendingUp, TrendingDown, BarChart3, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface SimResult {
