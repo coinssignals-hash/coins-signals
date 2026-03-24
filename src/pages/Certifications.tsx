@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { learningPaths } from '@/data/learningPathsData';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { GlowSection } from '@/components/ui/glow-section';
 import { motion } from 'framer-motion';
 import { Award, Lock, CheckCircle, Sparkles, GraduationCap } from 'lucide-react';
 
