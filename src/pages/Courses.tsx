@@ -251,24 +251,44 @@ export default function Courses() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        {/* ── Hero Card (GlowCard style) ── */}
-        <GlowSection color={color}>
-          <div className="p-4 space-y-3">
+        {/* Premium Hero Header */}
+        <div className="relative overflow-hidden rounded-2xl" style={{
+          background: `linear-gradient(165deg, hsl(${color} / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+          border: `1px solid hsl(${color} / 0.2)`,
+        }}>
+          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
+          }} />
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{
+            background: `radial-gradient(circle, hsl(${color}), transparent 70%)`,
+          }} />
+          <div className="relative p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                <button
+                  onClick={() => navigate(-1)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+                  style={{
+                    background: 'hsl(var(--card) / 0.85)',
+                    border: '1px solid hsl(var(--border) / 0.6)',
+                    boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+                  }}
+                >
+                  <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
                   background: `linear-gradient(135deg, hsl(${color} / 0.2), hsl(${color} / 0.08))`,
-                  border: `1px solid hsl(${color} / 0.25)`,
-                  boxShadow: `0 4px 12px hsl(${color} / 0.1)`,
+                  border: `1px solid hsl(${color} / 0.3)`,
+                  boxShadow: `0 0 12px hsl(${color} / 0.15)`,
                 }}>
                   <GraduationCap className="w-5 h-5" style={{ color: `hsl(${color})` }} />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-foreground flex items-center gap-1.5">
+                  <h1 className="text-base font-bold text-foreground flex items-center gap-1.5">
                     {t('courses_academy')}
                     <Sparkles className="w-4 h-4" style={{ color: `hsl(40 80% 55%)` }} />
                   </h1>
-                  <p className="text-xs text-muted-foreground">{t('courses_master')}</p>
+                  <p className="text-[10px] text-muted-foreground">{t('courses_master')}</p>
                 </div>
               </div>
               <div className="text-right">
@@ -305,7 +325,7 @@ export default function Courses() {
               </div>
             </div>
 
-            {/* Stats grid (like SessionCard stats) */}
+            {/* Stats grid */}
             <div className="grid grid-cols-3 gap-2">
               {[
                 { label: t('courses_courses'), value: categories.length },
@@ -322,7 +342,7 @@ export default function Courses() {
               ))}
             </div>
           </div>
-        </GlowSection>
+        </div>
 
         {/* ── Category Tabs (grid like MarketSessions) ── */}
         <div className={cn('grid gap-1', categories.length <= 5 ? 'grid-cols-5' : 'grid-cols-5')}>
