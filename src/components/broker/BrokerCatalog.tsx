@@ -6,6 +6,7 @@ import {
   Zap, Shield, Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GlowSection } from '@/components/ui/glow-section';
 import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 
 export interface BrokerCatalogItem {
