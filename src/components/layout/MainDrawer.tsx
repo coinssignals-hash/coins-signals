@@ -84,6 +84,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
         { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
         { icon: Download, label: t('drawer_install_app'), href: '/install' },
+        { icon: RefreshCw, label: t('drawer_update_app') || 'Actualizar App', href: '#update-app' },
       ],
     },
     {
