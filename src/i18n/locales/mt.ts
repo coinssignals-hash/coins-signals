@@ -2140,6 +2140,13 @@ const mt: TranslationKeys = {
   candle_replay_title: 'Candle Replay',
   daily_challenges_title: 'Sfidi ta\' Kuljum',
   risk_simulator_title: 'Simulatur tar-Riskju',
+  drawer_cat_analytics: 'Traċċar',
+  drawer_performance_report: 'Rapport tal-Prestazzjoni',
+  drawer_trading_psychology: 'Psikoloġija',
+  drawer_risk_dashboard: 'Dashboard tar-Riskju',
+  performance_report_title: 'Rapport tal-Prestazzjoni',
+  trading_psychology_title: 'Psikoloġija tan-Negozjar',
+  risk_dashboard_title: 'Dashboard tar-Riskju',
 };
 
 export default mt;

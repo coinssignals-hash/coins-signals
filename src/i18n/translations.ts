@@ -91,6 +91,14 @@ export type TranslationKeys = {
   candle_replay_title: string;
   daily_challenges_title: string;
   risk_simulator_title: string;
+  // Phase 3 - Analytics
+  drawer_cat_analytics: string;
+  drawer_performance_report: string;
+  drawer_trading_psychology: string;
+  drawer_risk_dashboard: string;
+  performance_report_title: string;
+  trading_psychology_title: string;
+  risk_dashboard_title: string;
   // Settings page
   settings_title: string;
   settings_profile: string;
