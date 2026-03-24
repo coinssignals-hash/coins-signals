@@ -7,9 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Scale, Target, ShieldAlert, Info, Calculator, Layers } from 'lucide-react';
+import { Scale, Target, ShieldAlert, Info, Calculator, Layers } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 
@@ -279,7 +278,7 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
             </div>
 
             {/* Optimal Lot Size */}
-            <div className="bg-card border-primary/20">
+            <ToolCard accent={ACCENT}>
               <div className="p-4 space-y-3">
                 <div className="flex items-center gap-2 justify-center">
                   <Layers className="w-4 h-4 text-primary" />
@@ -288,27 +287,26 @@ const RiskRewardCalculator = forwardRef<HTMLDivElement>(function RiskRewardCalcu
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground mb-1">{t('rr_lot_standard')}</p>
-                    <p className="text-lg font-bold text-primary tabular-nums">{result.optimalLots}</p>
-                    <p className="text-[9px] text-muted-foreground">{t('rr_100k_units')}</p>
-                  </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground mb-1">{t('rr_lot_mini')}</p>
-                    <p className="text-lg font-bold text-primary tabular-nums">{result.miniLots}</p>
-                    <p className="text-[9px] text-muted-foreground">{t('rr_10k_units')}</p>
-                  </div>
-                  <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 text-center">
-                    <p className="text-[10px] text-muted-foreground mb-1">{t('rr_lot_micro')}</p>
-                    <p className="text-lg font-bold text-primary tabular-nums">{result.microLots}</p>
-                    <p className="text-[9px] text-muted-foreground">{t('rr_1k_units')}</p>
-                  </div>
+                  {[
+                    { label: t('rr_lot_standard'), value: result.optimalLots, sub: t('rr_100k_units') },
+                    { label: t('rr_lot_mini'), value: result.miniLots, sub: t('rr_10k_units') },
+                    { label: t('rr_lot_micro'), value: result.microLots, sub: t('rr_1k_units') },
+                  ].map(l => (
+                    <div key={l.label} className="rounded-lg p-3 text-center" style={{
+                      background: `hsl(${ACCENT} / 0.06)`,
+                      border: `1px solid hsl(${ACCENT} / 0.15)`,
+                    }}>
+                      <p className="text-[10px] text-muted-foreground mb-1">{l.label}</p>
+                      <p className="text-lg font-bold text-primary tabular-nums">{l.value}</p>
+                      <p className="text-[9px] text-muted-foreground">{l.sub}</p>
+                    </div>
+                  ))}
                 </div>
                 <p className="text-[10px] text-muted-foreground text-center">
                   {t('rr_lot_info') || `Basado en ${riskPercent}% de riesgo ($${result.riskAmount}) sobre ${result.riskPips} pips de SL`}
                 </p>
               </div>
-            </div>
+            </ToolCard>
           </>
           );
         })()}
