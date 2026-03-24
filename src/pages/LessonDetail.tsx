@@ -422,6 +422,20 @@ export default function LessonDetail() {
           </div>
         </div>
 
+        {/* Quiz Section - show if module has a quiz and all lessons are completed */}
+        {(() => {
+          const quiz = moduleQuizzes[lesson.module];
+          if (!quiz) return null;
+          const allModuleLessonsCompleted = lesson.lessons.every(l => isLessonCompleted(l.id));
+          if (!allModuleLessonsCompleted) return null;
+          return (
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground px-1">📝 Quiz del módulo</h3>
+              <QuizModule quiz={quiz} color="217 91% 60%" />
+            </div>
+          );
+        })()}
+
         {/* Resources */}
         {lesson.resources.length > 0 && (
           <div className="rounded-xl border border-border/40 bg-card/60 overflow-hidden">
