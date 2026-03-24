@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui/card';
+import { GlowSection } from '@/components/ui/glow-section';
 import { Wallet, BarChart3, TrendingUp } from 'lucide-react';
 
 interface Props {
@@ -10,23 +10,19 @@ interface Props {
 export function PaperStatsRow({ balance, totalPnl, winRate }: Props) {
   return (
     <div className="grid grid-cols-3 gap-2">
-      <Card className="p-3 bg-card border-border text-center">
-        <Wallet className="h-4 w-4 mx-auto mb-1 text-primary" />
-        <p className="text-[10px] text-muted-foreground">Balance</p>
-        <p className="text-sm font-bold text-foreground">${balance.toFixed(2)}</p>
-      </Card>
-      <Card className="p-3 bg-card border-border text-center">
-        <BarChart3 className="h-4 w-4 mx-auto mb-1 text-accent" />
-        <p className="text-[10px] text-muted-foreground">P&L Total</p>
-        <p className={`text-sm font-bold ${totalPnl >= 0 ? 'text-[hsl(var(--bullish))]' : 'text-[hsl(var(--bearish))]'}`}>
-          ${totalPnl.toFixed(2)}
-        </p>
-      </Card>
-      <Card className="p-3 bg-card border-border text-center">
-        <TrendingUp className="h-4 w-4 mx-auto mb-1 text-[hsl(var(--bullish))]" />
-        <p className="text-[10px] text-muted-foreground">Win Rate</p>
-        <p className="text-sm font-bold text-foreground">{winRate.toFixed(0)}%</p>
-      </Card>
+      {[
+        { label: 'Balance', value: `$${balance.toFixed(2)}`, icon: Wallet, color: '270 70% 60%' },
+        { label: 'P&L Total', value: `$${totalPnl.toFixed(2)}`, icon: BarChart3, color: totalPnl >= 0 ? '160 84% 39%' : '0 84% 60%' },
+        { label: 'Win Rate', value: `${winRate.toFixed(0)}%`, icon: TrendingUp, color: '160 84% 39%' },
+      ].map(s => (
+        <GlowSection key={s.label} color={s.color}>
+          <div className="p-3 text-center">
+            <s.icon className="h-4 w-4 mx-auto mb-1" style={{ color: `hsl(${s.color})` }} />
+            <p className="text-[10px] text-muted-foreground">{s.label}</p>
+            <p className="text-sm font-bold text-foreground">{s.value}</p>
+          </div>
+        </GlowSection>
+      ))}
     </div>
   );
 }

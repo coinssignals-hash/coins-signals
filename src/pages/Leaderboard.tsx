@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp, Flame, Target, Star, Users, AlertCircle } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 import { useLeaderboard, LeaderboardPeriod, LeaderboardCategory } from '@/hooks/useLeaderboard';
 
 const ACCENT = '45 95% 55%';
@@ -23,20 +24,6 @@ const COUNTRY_FLAGS: Record<string, string> = {
 };
 const getFlag = (c: string | null) => c ? COUNTRY_FLAGS[c.toUpperCase().trim()] || '🌍' : '🌍';
 const getInitials = (a: string) => a.substring(0, 2).toUpperCase();
-
-function GlowSection({ color = ACCENT, children, className = '' }: { color?: string; children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`relative rounded-2xl overflow-hidden ${className}`} style={{
-      background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-      border: `1px solid hsl(${color} / 0.2)`,
-    }}>
-      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-        background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-      }} />
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
 
 export default function Leaderboard() {
   const { t } = useTranslation();

@@ -13,6 +13,7 @@ import {
   Copy, Users, TrendingUp, Eye, EyeOff,
   DollarSign, Percent, Zap, CheckCircle2
 } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 
 interface TopTrader {
   id: string; alias: string; avatar: string; country: string;
@@ -35,20 +36,6 @@ const TRADERS: TopTrader[] = [
 const RISK_COLORS: Record<string, string> = { low: '160 84% 39%', medium: '45 95% 55%', high: '0 84% 60%' };
 const RISK_LABELS: Record<string, string> = { low: 'Bajo', medium: 'Medio', high: 'Alto' };
 const ACCENT = '190 90% 50%';
-
-function GlowSection({ color = ACCENT, children, className = '' }: { color?: string; children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`relative rounded-2xl overflow-hidden ${className}`} style={{
-      background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-      border: `1px solid hsl(${color} / 0.2)`,
-    }}>
-      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-        background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-      }} />
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
 
 export default function CopyTrading() {
   const { t } = useTranslation();
