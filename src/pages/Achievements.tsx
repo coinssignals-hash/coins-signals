@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Trophy, Lock, CheckCircle2, LogIn, Zap, Star } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useAchievements, ACHIEVEMENTS, Achievement, ACHIEVEMENT_CATEGORIES, RequirementType } from '@/hooks/useAchievements';
