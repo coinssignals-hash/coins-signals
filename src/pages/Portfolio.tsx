@@ -89,46 +89,77 @@ export default function Portfolio() {
           </div>
         )}
 
-        {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="w-5 h-5" />
+        {/* Premium Hero Header */}
+        <div className="relative overflow-hidden rounded-2xl" style={{
+          background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+          border: `1px solid hsl(${ACCENT} / 0.2)`,
+        }}>
+          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)`,
+          }} />
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{
+            background: `radial-gradient(circle, hsl(${ACCENT}), transparent 70%)`,
+          }} />
+          <div className="relative flex items-center gap-3 px-3 py-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+              style={{
+                background: 'hsl(var(--card) / 0.85)',
+                border: '1px solid hsl(var(--border) / 0.6)',
+                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </button>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{t('portfolio_trading')}</span>
-              </div>
-              <h1 className="text-xl font-bold text-foreground">{t('portfolio_title')}</h1>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+              background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+              border: `1px solid hsl(${ACCENT} / 0.3)`,
+              boxShadow: `0 0 12px hsl(${ACCENT} / 0.15)`,
+            }}>
+              <Wallet className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {isDemo && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider" style={{
-                background: 'hsl(45 80% 55% / 0.15)',
-                color: 'hsl(45 80% 55%)',
-              }}>
-                DEMO
-              </span>
-            )}
-            {isLive && !isDemo && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1" style={{
-                background: `hsl(${ACCENT} / 0.15)`,
-                color: `hsl(${ACCENT})`,
-              }}>
-                <Radio className="w-3 h-3 animate-pulse" />
-                LIVE
-              </span>
-            )}
-            {lastRefresh && (
-              <span className="text-muted-foreground text-[10px] flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {formatTime(lastRefresh)}
-              </span>
-            )}
-            <button onClick={refetch} disabled={loading} className="p-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50">
-              <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
-            </button>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('portfolio_trading')}</p>
+              <h1 className="text-base font-bold text-foreground truncate">{t('portfolio_title')}</h1>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {isDemo && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider" style={{
+                  background: 'hsl(45 80% 55% / 0.15)',
+                  color: 'hsl(45 80% 55%)',
+                }}>
+                  DEMO
+                </span>
+              )}
+              {isLive && !isDemo && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1" style={{
+                  background: `hsl(${ACCENT} / 0.15)`,
+                  color: `hsl(${ACCENT})`,
+                }}>
+                  <Radio className="w-3 h-3 animate-pulse" />
+                  LIVE
+                </span>
+              )}
+              {lastRefresh && (
+                <span className="text-muted-foreground text-[10px] flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {formatTime(lastRefresh)}
+                </span>
+              )}
+              <button
+                onClick={refetch}
+                disabled={loading}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm disabled:opacity-50"
+                style={{
+                  background: 'hsl(var(--card) / 0.85)',
+                  border: '1px solid hsl(var(--border) / 0.6)',
+                  boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+                }}
+              >
+                <RefreshCw className={cn("w-4 h-4 text-muted-foreground", loading && "animate-spin")} />
+              </button>
+            </div>
           </div>
         </div>
 
