@@ -2,18 +2,18 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Palette, Eye, Type, Globe, Zap, Minimize2, Sparkles } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GlowSection } from '@/components/ui/glow-section';
 import { Switch } from '@/components/ui/switch';
+import { ArrowLeft, Palette, Eye, Type, Globe, Zap, Minimize2, Sparkles, RotateCcw } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation, LANGUAGE_LABELS, LANGUAGE_FLAGS } from '@/i18n/LanguageContext';
 import type { Language } from '@/i18n/translations';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+
+const ACCENT = '271 76% 53%';
 
 const ACCENT_COLOR_IDS = ['blue', 'cyan', 'green', 'amber', 'rose', 'violet'] as const;
 const ACCENT_COLORS_META: Record<string, { hsl: string; preview: string }> = {
@@ -26,12 +26,8 @@ const ACCENT_COLORS_META: Record<string, { hsl: string; preview: string }> = {
 };
 
 const ACCENT_LABEL_KEYS: Record<string, string> = {
-  blue: 'appearance_color_blue',
-  cyan: 'appearance_color_cyan',
-  green: 'appearance_color_green',
-  amber: 'appearance_color_amber',
-  rose: 'appearance_color_rose',
-  violet: 'appearance_color_violet',
+  blue: 'appearance_color_blue', cyan: 'appearance_color_cyan', green: 'appearance_color_green',
+  amber: 'appearance_color_amber', rose: 'appearance_color_rose', violet: 'appearance_color_violet',
 };
 
 const FONT_SCALE_LABEL_KEYS = [
@@ -91,13 +87,7 @@ export default function Appearance() {
   const [compactMode, setCompactMode] = useState(() => localStorage.getItem('app-compact-mode') === 'true');
   const { language, setLanguage, t } = useTranslation();
 
-  // Load timezone from profile if available
-  useEffect(() => {
-    if (profile?.timezone) {
-      setTimezone(profile.timezone);
-      localStorage.setItem('app-timezone', profile.timezone);
-    }
-  }, [profile]);
+  useEffect(() => { if (profile?.timezone) { setTimezone(profile.timezone); localStorage.setItem('app-timezone', profile.timezone); } }, [profile]);
 
   useEffect(() => {
     document.documentElement.classList.remove('contrast-low', 'high-contrast', 'contrast-high');
@@ -112,22 +102,11 @@ export default function Appearance() {
   useEffect(() => { applyAccentColor(accentColor); }, [accentColor]);
   useEffect(() => { applyReducedMotion(reducedMotion); }, [reducedMotion]);
   useEffect(() => { applyCompactMode(compactMode); }, [compactMode]);
-  useEffect(() => {
-    localStorage.setItem('app-timezone', timezone);
-    // Sync timezone to profile DB for authenticated users
-    if (user) {
-      updateProfile({ timezone } as any);
-    }
-  }, [timezone, user, updateProfile]);
+  useEffect(() => { localStorage.setItem('app-timezone', timezone); if (user) updateProfile({ timezone } as any); }, [timezone, user, updateProfile]);
 
   const handleResetAll = useCallback(() => {
-    setFontSize('100');
-    setContrastLevel('normal');
-    setLargeText(false);
-    setAccentColor('blue');
-    setReducedMotion(false);
-    setCompactMode(false);
-    setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Bogota');
+    setFontSize('100'); setContrastLevel('normal'); setLargeText(false); setAccentColor('blue');
+    setReducedMotion(false); setCompactMode(false); setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Bogota');
     toast.success(t('appearance_prefs_restored'));
   }, [t]);
 
@@ -143,32 +122,55 @@ export default function Appearance() {
   return (
     <PageShell>
       <Header />
-      <main className="py-4 px-4 pb-28 space-y-4">
-        <div className="flex items-center gap-3 mb-2">
-          <Link to="/settings">
-            <Button variant="ghost" size="icon" className="shrink-0"><ArrowLeft className="w-5 h-5" /></Button>
-          </Link>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold text-foreground">{t('appearance_title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('appearance_subtitle')}</p>
-          </div>
-          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={handleResetAll}>
-            {t('appearance_reset')}
-          </Button>
-        </div>
 
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${ACCENT} / 0.4), transparent 70%)`,
+        }} />
+        <div className="relative px-4 pt-5 pb-4">
+          <div className="flex items-center gap-3">
+            <Link to="/settings" className="p-2 rounded-xl transition-all active:scale-95" style={{
+              background: 'hsl(var(--muted) / 0.5)', backdropFilter: 'blur(8px)', border: `1px solid hsl(${ACCENT} / 0.15)`,
+            }}>
+              <ArrowLeft className="w-4 h-4 text-foreground" />
+            </Link>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+              background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
+              border: `1px solid hsl(${ACCENT} / 0.3)`, boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
+            }}>
+              <Palette className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+            </div>
+            <div className="flex-1">
+              <h1 className="text-lg font-bold text-foreground">{t('appearance_title')}</h1>
+              <p className="text-xs text-muted-foreground">{t('appearance_subtitle')}</p>
+            </div>
+            <button onClick={handleResetAll} className="p-2 rounded-xl transition-all active:scale-95" style={{
+              background: 'hsl(var(--muted) / 0.3)', border: `1px solid hsl(${ACCENT} / 0.1)`,
+            }}>
+              <RotateCcw className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <main className="px-4 py-4 pb-28 space-y-4">
         {/* Theme & Language */}
-        <GlowCard>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Palette className="w-4 h-4" />{t('appearance_prefs')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <GlowSection color={ACCENT}>
+          <div className="p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Palette className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+              <span className="text-sm font-semibold text-foreground">{t('appearance_prefs')}</span>
+            </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_language')}</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_language')}</label>
               <Select value={language} onValueChange={(v) => { setLanguage(v as Language); toast.success(t('appearance_lang_updated')); }}>
-                <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-background/50 border-white/10"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {(Object.keys(LANGUAGE_LABELS) as Language[]).map((lang) => (
                     <SelectItem key={lang} value={lang}>{LANGUAGE_FLAGS[lang]} {LANGUAGE_LABELS[lang]}</SelectItem>
@@ -177,81 +179,72 @@ export default function Appearance() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                 <Globe className="w-3 h-3" /> {t('appearance_timezone_label')}
               </label>
               <Select value={timezone} onValueChange={setTimezone}>
-                <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-background/50 border-white/10"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {TIMEZONES.map(tz => (
-                    <SelectItem key={tz.value} value={tz.value}>{tz.label} ({tz.offset})</SelectItem>
-                  ))}
+                  {TIMEZONES.map(tz => (<SelectItem key={tz.value} value={tz.value}>{tz.label} ({tz.offset})</SelectItem>))}
                 </SelectContent>
               </Select>
               <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                 {t('appearance_current_time')} <span className="text-foreground tabular-nums font-medium">{currentTime}</span>
               </p>
             </div>
-          </CardContent>
-        </GlowCard>
+          </div>
+        </GlowSection>
 
         {/* Color Accent */}
-        <GlowCard>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />{t('appearance_accent_color')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <GlowSection color={ACCENT}>
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+              <span className="text-sm font-semibold text-foreground">{t('appearance_accent_color')}</span>
+            </div>
             <div className="grid grid-cols-6 gap-2">
               {ACCENT_COLOR_IDS.map(id => {
                 const meta = ACCENT_COLORS_META[id];
                 const label = t(ACCENT_LABEL_KEYS[id]);
                 return (
-                  <motion.button
-                    key={id}
-                    whileTap={{ scale: 0.9 }}
+                  <motion.button key={id} whileTap={{ scale: 0.9 }}
                     onClick={() => { setAccentColor(id); toast.success(`${t('appearance_accent_color')}: ${label}`); }}
-                    className={cn(
-                      'flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all',
-                      accentColor === id ? 'border-foreground/30 bg-secondary/60 shadow-md' : 'border-transparent hover:bg-secondary/30'
+                    className={cn('flex flex-col items-center gap-1.5 p-2 rounded-xl border transition-all',
+                      accentColor === id ? 'bg-white/5 shadow-md' : 'border-transparent hover:bg-white/[0.02]'
                     )}
+                    style={{ borderColor: accentColor === id ? `hsl(${meta.hsl} / 0.4)` : undefined }}
                   >
-                    <div className={cn(
-                      'w-8 h-8 rounded-full border-2 transition-all',
-                      meta.preview,
-                      accentColor === id ? 'border-foreground/50 scale-110 shadow-[0_0_12px_currentColor]' : 'border-transparent'
-                    )} />
+                    <div className={cn('w-8 h-8 rounded-full border-2 transition-all', meta.preview,
+                      accentColor === id ? 'scale-110' : 'border-transparent'
+                    )} style={{ borderColor: accentColor === id ? `hsl(${meta.hsl} / 0.6)` : undefined, boxShadow: accentColor === id ? `0 0 12px hsl(${meta.hsl} / 0.3)` : undefined }} />
                     <span className="text-[9px] text-muted-foreground">{label}</span>
                   </motion.button>
                 );
               })}
             </div>
             <p className="text-[11px] text-muted-foreground mt-2">{t('appearance_accent_desc')}</p>
-          </CardContent>
-        </GlowCard>
+          </div>
+        </GlowSection>
 
         {/* Typography */}
-        <GlowCard>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Type className="w-4 h-4" />{t('appearance_typography')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <GlowSection color={ACCENT}>
+          <div className="p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Type className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+              <span className="text-sm font-semibold text-foreground">{t('appearance_typography')}</span>
+            </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_font_scale')}</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_font_scale')}</label>
               <div className="grid grid-cols-4 gap-2">
                 {FONT_SCALE_LABEL_KEYS.map(scale => (
-                  <button
-                    key={scale.value}
-                    onClick={() => setFontSize(scale.value)}
-                    className={cn(
-                      'rounded-xl border px-2 py-2.5 text-center transition-all',
-                      fontSize === scale.value
-                        ? 'bg-primary/15 text-primary border-primary/40 shadow-[0_0_12px_hsl(var(--primary)/0.15)]'
-                        : 'bg-secondary text-secondary-foreground border-border hover:bg-accent/10'
-                    )}
+                  <button key={scale.value} onClick={() => setFontSize(scale.value)}
+                    className="rounded-xl px-2 py-2.5 text-center transition-all"
+                    style={{
+                      background: fontSize === scale.value ? `hsl(${ACCENT} / 0.12)` : 'hsl(var(--muted) / 0.3)',
+                      border: `1px solid ${fontSize === scale.value ? `hsl(${ACCENT} / 0.35)` : 'hsl(var(--border))'}`,
+                      color: fontSize === scale.value ? `hsl(${ACCENT})` : undefined,
+                      boxShadow: fontSize === scale.value ? `0 0 12px hsl(${ACCENT} / 0.1)` : undefined,
+                    }}
                   >
                     <span className="text-xs font-bold block">{scale.desc}</span>
                     <span className="text-[9px] text-muted-foreground">{t(scale.labelKey)}</span>
@@ -259,43 +252,40 @@ export default function Appearance() {
                 ))}
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/30">
+            <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: `hsl(${ACCENT} / 0.04)`, border: `1px solid hsl(${ACCENT} / 0.1)` }}>
               <div>
                 <p className="text-sm font-medium text-foreground">{t('appearance_large_text')}</p>
                 <p className="text-[11px] text-muted-foreground">{t('appearance_large_text_desc')}</p>
               </div>
               <Switch checked={largeText} onCheckedChange={setLargeText} />
             </div>
-            <div className="p-3 rounded-xl bg-secondary/20 border border-border/30 space-y-1">
+            <div className="p-3 rounded-xl space-y-1" style={{ background: `hsl(${ACCENT} / 0.03)`, border: `1px solid hsl(${ACCENT} / 0.08)` }}>
               <p className="text-xs text-muted-foreground uppercase tracking-wider">{t('appearance_preview')}</p>
               <p className="text-foreground">{t('appearance_preview_normal')}</p>
               <p className="text-sm text-muted-foreground">{t('appearance_preview_secondary')}</p>
               <p className="text-xs text-muted-foreground">{t('appearance_preview_tiny')}</p>
             </div>
-          </CardContent>
-        </GlowCard>
+          </div>
+        </GlowSection>
 
         {/* Accessibility */}
-        <GlowCard>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-primary flex items-center gap-2">
-              <Eye className="w-4 h-4" />{t('appearance_accessibility')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <GlowSection color={ACCENT}>
+          <div className="p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Eye className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+              <span className="text-sm font-semibold text-foreground">{t('appearance_accessibility')}</span>
+            </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_contrast_level')}</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{t('appearance_contrast_level')}</label>
               <div className="grid grid-cols-4 gap-2">
                 {contrastOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setContrastLevel(opt.value)}
-                    className={cn(
-                      'rounded-xl border px-2 py-2.5 text-center transition-all',
-                      contrastLevel === opt.value
-                        ? 'bg-primary/15 text-primary border-primary/40 shadow-[0_0_12px_hsl(var(--primary)/0.15)]'
-                        : 'bg-secondary text-secondary-foreground border-border hover:bg-accent/10'
-                    )}
+                  <button key={opt.value} onClick={() => setContrastLevel(opt.value)}
+                    className="rounded-xl px-2 py-2.5 text-center transition-all"
+                    style={{
+                      background: contrastLevel === opt.value ? `hsl(${ACCENT} / 0.12)` : 'hsl(var(--muted) / 0.3)',
+                      border: `1px solid ${contrastLevel === opt.value ? `hsl(${ACCENT} / 0.35)` : 'hsl(var(--border))'}`,
+                      color: contrastLevel === opt.value ? `hsl(${ACCENT})` : undefined,
+                    }}
                   >
                     <span className="text-base block mb-0.5">{opt.icon}</span>
                     <span className="text-[10px] font-medium">{t(opt.labelKey)}</span>
@@ -309,7 +299,7 @@ export default function Appearance() {
                 {contrastLevel === 'high' && t('appearance_contrast_desc_high')}
               </p>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/30">
+            <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: `hsl(${ACCENT} / 0.04)`, border: `1px solid hsl(${ACCENT} / 0.1)` }}>
               <div>
                 <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
                   <Zap className="w-3.5 h-3.5 text-muted-foreground" /> {t('appearance_reduce_motion')}
@@ -318,7 +308,7 @@ export default function Appearance() {
               </div>
               <Switch checked={reducedMotion} onCheckedChange={setReducedMotion} />
             </div>
-            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/30">
+            <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: `hsl(${ACCENT} / 0.04)`, border: `1px solid hsl(${ACCENT} / 0.1)` }}>
               <div>
                 <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
                   <Minimize2 className="w-3.5 h-3.5 text-muted-foreground" /> {t('appearance_compact_mode')}
@@ -327,8 +317,8 @@ export default function Appearance() {
               </div>
               <Switch checked={compactMode} onCheckedChange={setCompactMode} />
             </div>
-          </CardContent>
-        </GlowCard>
+          </div>
+        </GlowSection>
       </main>
     </PageShell>
   );

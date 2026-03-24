@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/glow-card';
+import { GlowSection } from '@/components/ui/glow-section';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -19,6 +18,8 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useDateLocale } from '@/hooks/useDateLocale';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+const ACCENT = '270 70% 60%';
 
 // ── Password Change ──────────────────────────────────────────────
 function PasswordChangeCard() {
@@ -42,52 +43,39 @@ function PasswordChangeCard() {
 
   const strength = passwordStrength(newPassword);
   const strengthLabel = ['', t('sec_very_weak'), t('sec_weak'), t('sec_acceptable'), t('sec_strong'), t('sec_very_strong')][strength] || '';
-  const strengthColor = ['', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-green-400'][strength] || '';
+  const strengthColors = ['', 'hsl(0 84% 60%)', 'hsl(25 95% 53%)', 'hsl(48 96% 53%)', 'hsl(142 71% 45%)', 'hsl(142 76% 36%)'];
 
   const handleChange = async () => {
-    if (newPassword !== confirmPassword) {
-      toast.error(t('sec_pw_mismatch'));
-      return;
-    }
-    if (strength < 3) {
-      toast.error(t('sec_password_weak') || t('sec_weak'));
-      return;
-    }
+    if (newPassword !== confirmPassword) { toast.error(t('sec_pw_mismatch')); return; }
+    if (strength < 3) { toast.error(t('sec_password_weak') || t('sec_weak')); return; }
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user?.email) throw new Error('No user');
       const { error: signInErr } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
-      if (signInErr) {
-        toast.error(t('sec_current_incorrect') || t('sec_current_pw'));
-        setLoading(false);
-        return;
-      }
+      if (signInErr) { toast.error(t('sec_current_incorrect') || t('sec_current_pw')); setLoading(false); return; }
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
       toast.success(t('sec_password_updated') || 'Contraseña actualizada correctamente');
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
     } catch (err: any) {
       toast.error(err.message || (t('sec_password_error') || 'Error al actualizar la contraseña'));
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <GlowCard>
-      <CardHeader>
-        <CardTitle className="text-sm text-primary flex items-center gap-2">
-          <Lock className="w-4 h-4" />{t('sec_change_password')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <GlowSection color={ACCENT}>
+      <div className="p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+          <span className="text-sm font-semibold text-foreground">{t('sec_change_password')}</span>
+        </div>
         <p className="text-xs text-muted-foreground">{t('sec_password_hint')}</p>
         <div className="space-y-3">
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">{t('sec_current_pw')}</label>
             <div className="relative">
-              <Input type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" className="bg-secondary border-border pr-10" />
+              <Input type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" className="bg-background/50 border-white/10 pr-10" />
               <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -96,29 +84,32 @@ function PasswordChangeCard() {
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">{t('sec_new_pw')}</label>
             <div className="relative">
-              <Input type={showNew ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="bg-secondary border-border pr-10" />
+              <Input type={showNew ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="bg-background/50 border-white/10 pr-10" />
               <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                 {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {newPassword && (
               <div className="space-y-1 mt-2">
-                <div className="flex gap-1">{[1,2,3,4,5].map((i) => (<div key={i} className={`h-1 flex-1 rounded-full ${i <= strength ? strengthColor : 'bg-secondary'}`} />))}</div>
+                <div className="flex gap-1">{[1,2,3,4,5].map((i) => (<div key={i} className="h-1 flex-1 rounded-full" style={{ background: i <= strength ? strengthColors[strength] : 'hsl(var(--muted))' }} />))}</div>
                 <p className="text-xs text-muted-foreground">{strengthLabel}</p>
               </div>
             )}
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">{t('sec_confirm_pw')}</label>
-            <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="bg-secondary border-border" />
+            <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="bg-background/50 border-white/10" />
             {confirmPassword && newPassword !== confirmPassword && (<p className="text-xs text-destructive mt-1">{t('sec_pw_mismatch')}</p>)}
           </div>
-          <Button onClick={handleChange} disabled={loading || !currentPassword || !newPassword || !confirmPassword} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}{t('sec_update_pw')}
-          </Button>
+          <button onClick={handleChange} disabled={loading || !currentPassword || !newPassword || !confirmPassword} className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97] disabled:opacity-40" style={{
+            background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+            boxShadow: `0 0 15px hsl(${ACCENT} / 0.2)`,
+          }}>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('sec_update_pw')}
+          </button>
         </div>
-      </CardContent>
-    </GlowCard>
+      </div>
+    </GlowSection>
   );
 }
 
@@ -148,40 +139,41 @@ function TwoFactorCard() {
   const copyRecoveryCodes = () => { navigator.clipboard.writeText(recoveryCodes.join('\n')); setCopied(true); toast.success(t('sec_codes_copied') || 'Códigos copiados al portapapeles'); setTimeout(() => setCopied(false), 2000); };
 
   return (
-    <GlowCard>
-      <CardHeader>
-        <CardTitle className="text-sm text-primary flex items-center gap-2">
-          <Mail className="w-4 h-4" />{t('sec_2fa_title')}
-          {mfaEnabled && <Badge variant="outline" className="text-emerald-400 border-emerald-400/30 text-[10px]">{t('sec_2fa_active')}</Badge>}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <GlowSection color={ACCENT}>
+      <div className="p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <Mail className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+          <span className="text-sm font-semibold text-foreground">{t('sec_2fa_title')}</span>
+          {mfaEnabled && <Badge className="text-[10px] ml-auto" style={{ background: 'hsl(142 71% 45% / 0.15)', color: 'hsl(142 71% 45%)', border: '1px solid hsl(142 71% 45% / 0.3)' }}>{t('sec_2fa_active')}</Badge>}
+        </div>
         <p className="text-xs text-muted-foreground">{t('sec_2fa_desc')}</p>
         <div className="flex items-center justify-between">
           <span className="text-sm text-foreground">{t('sec_2fa_enable')}</span>
-          <Switch checked={mfaEnabled} onCheckedChange={handleToggle} className="data-[state=checked]:bg-primary" />
+          <Switch checked={mfaEnabled} onCheckedChange={handleToggle} />
         </div>
         {showSetup && !mfaEnabled && (
-          <div className="space-y-3 p-3 rounded-lg bg-secondary/50 border border-border">
+          <div className="space-y-3 p-3 rounded-lg" style={{ background: `hsl(${ACCENT} / 0.05)`, border: `1px solid hsl(${ACCENT} / 0.15)` }}>
             <p className="text-xs text-muted-foreground">{t('sec_2fa_code_desc')}</p>
-            <Input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" className="bg-secondary border-border text-center text-lg tracking-[0.5em] font-mono" maxLength={6} />
-            <Button onClick={handleVerify} disabled={loading} className="w-full bg-primary text-primary-foreground">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}{t('sec_2fa_verify')}
-            </Button>
+            <Input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" className="bg-background/50 border-white/10 text-center text-lg tracking-[0.5em] font-mono" maxLength={6} />
+            <button onClick={handleVerify} disabled={loading} className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97] disabled:opacity-40" style={{
+              background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+            }}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : t('sec_2fa_verify')}
+            </button>
           </div>
         )}
         {recoveryCodes.length > 0 && (
           <div className="space-y-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
             <div className="flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-destructive" /><span className="text-xs font-semibold text-destructive">{t('sec_recovery_codes')}</span></div>
             <p className="text-xs text-muted-foreground">{t('sec_recovery_desc')}</p>
-            <div className="grid grid-cols-2 gap-1.5">{recoveryCodes.map((code, i) => (<code key={i} className="text-xs font-mono bg-secondary px-2 py-1 rounded text-foreground">{code}</code>))}</div>
-            <Button variant="outline" size="sm" onClick={copyRecoveryCodes} className="w-full">
-              {copied ? <Check className="w-3 h-3 mr-2" /> : <Copy className="w-3 h-3 mr-2" />}{copied ? t('sec_copied') : t('sec_copy_codes')}
-            </Button>
+            <div className="grid grid-cols-2 gap-1.5">{recoveryCodes.map((code, i) => (<code key={i} className="text-xs font-mono px-2 py-1 rounded text-foreground" style={{ background: `hsl(${ACCENT} / 0.08)` }}>{code}</code>))}</div>
+            <button onClick={copyRecoveryCodes} className="w-full py-2 rounded-lg text-xs font-medium transition-all" style={{ border: `1px solid hsl(${ACCENT} / 0.3)`, color: `hsl(${ACCENT})` }}>
+              {copied ? <><Check className="w-3 h-3 inline mr-1" />{t('sec_copied')}</> : <><Copy className="w-3 h-3 inline mr-1" />{t('sec_copy_codes')}</>}
+            </button>
           </div>
         )}
-      </CardContent>
-    </GlowCard>
+      </div>
+    </GlowSection>
   );
 }
 
@@ -213,37 +205,52 @@ function SessionManagerCard() {
     catch { toast.error(t('sec_close_sessions_error') || 'Error al cerrar sesiones'); }
   };
 
-  const DeviceIcon = ({ device }: { device: string }) => device === 'mobile' ? <Smartphone className="w-5 h-5 text-primary" /> : <Monitor className="w-5 h-5 text-primary" />;
+  const DeviceIcon = ({ device }: { device: string }) => device === 'mobile' ? <Smartphone className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} /> : <Monitor className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />;
 
   return (
-    <GlowCard>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-sm text-primary flex items-center gap-2"><Globe className="w-4 h-4" />{t('sec_sessions')}</CardTitle>
-        {sessions.length > 1 && (<Button variant="ghost" size="sm" onClick={revokeAll} className="text-destructive text-xs h-7"><LogOut className="w-3 h-3 mr-1" />{t('sec_close_all')}</Button>)}
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <GlowSection color={ACCENT}>
+      <div className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Globe className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+            <span className="text-sm font-semibold text-foreground">{t('sec_sessions')}</span>
+          </div>
+          {sessions.length > 1 && (
+            <button onClick={revokeAll} className="text-xs text-destructive flex items-center gap-1 hover:underline">
+              <LogOut className="w-3 h-3" />{t('sec_close_all')}
+            </button>
+          )}
+        </div>
         {sessions.map((session) => (
-          <div key={session.id} className={`flex items-center justify-between p-3 rounded-lg border ${session.isCurrent ? 'border-primary/30 bg-primary/5' : 'border-border bg-secondary/30'}`}>
+          <div key={session.id} className="flex items-center justify-between p-3 rounded-xl" style={{
+            background: session.isCurrent ? `hsl(${ACCENT} / 0.06)` : 'hsl(var(--muted) / 0.3)',
+            border: `1px solid ${session.isCurrent ? `hsl(${ACCENT} / 0.2)` : 'hsl(var(--border))'}`,
+          }}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center"><DeviceIcon device={session.device} /></div>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15), hsl(${ACCENT} / 0.05))`,
+                border: `1px solid hsl(${ACCENT} / 0.15)`,
+              }}>
+                <DeviceIcon device={session.device} />
+              </div>
               <div>
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-foreground">{session.browser} · {session.os}</p>
-                  {session.isCurrent && (<Badge variant="outline" className="text-emerald-400 border-emerald-400/30 text-[10px]">{t('sec_current')}</Badge>)}
+                  {session.isCurrent && (<span className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: 'hsl(142 71% 45% / 0.15)', color: 'hsl(142 71% 45%)', border: '1px solid hsl(142 71% 45% / 0.2)' }}>{t('sec_current')}</span>)}
                 </div>
                 <p className="text-xs text-muted-foreground">{session.location}</p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">{t('sec_last_activity')} {format(session.lastActive, "dd MMM, HH:mm", { locale: dateLocale })}</p>
               </div>
             </div>
             {!session.isCurrent && (
-              <Button variant="ghost" size="icon" onClick={() => revokeSession(session.id)} disabled={revoking === session.id} className="text-destructive hover:text-destructive h-8 w-8">
+              <button onClick={() => revokeSession(session.id)} disabled={revoking === session.id} className="text-destructive h-8 w-8 flex items-center justify-center rounded-lg hover:bg-destructive/10 transition-colors">
                 {revoking === session.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
-              </Button>
+              </button>
             )}
           </div>
         ))}
-      </CardContent>
-    </GlowCard>
+      </div>
+    </GlowSection>
   );
 }
 
@@ -278,15 +285,20 @@ function SecurityActivityCard() {
   };
 
   return (
-    <GlowCard>
-      <CardHeader><CardTitle className="text-sm text-primary flex items-center gap-2"><Clock className="w-4 h-4" />{t('sec_activity')}</CardTitle></CardHeader>
-      <CardContent>
+    <GlowSection color={ACCENT}>
+      <div className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+          <span className="text-sm font-semibold text-foreground">{t('sec_activity')}</span>
+        </div>
         {loading ? (<div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>) : (
           <div className="space-y-2">
             {displayLogs.map((log) => (
-              <div key={log.id} className="flex items-start gap-3 p-2.5 rounded-lg bg-secondary/30">
-                <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center ${log.success ? 'bg-emerald-500/10' : 'bg-destructive/10'}`}>
-                  {log.success ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
+              <div key={log.id} className="flex items-start gap-3 p-2.5 rounded-lg" style={{ background: `hsl(${ACCENT} / 0.04)` }}>
+                <div className={`mt-0.5 w-6 h-6 rounded-full flex items-center justify-center`} style={{
+                  background: log.success ? 'hsl(142 71% 45% / 0.1)' : 'hsl(0 84% 60% / 0.1)',
+                }}>
+                  {log.success ? <CheckCircle2 className="w-3.5 h-3.5" style={{ color: 'hsl(142 71% 45%)' }} /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-foreground">{actionLabels[log.action] || log.action}</p>
@@ -297,8 +309,8 @@ function SecurityActivityCard() {
             ))}
           </div>
         )}
-      </CardContent>
-    </GlowCard>
+      </div>
+    </GlowSection>
   );
 }
 
@@ -312,16 +324,19 @@ function BiometricCard() {
   };
 
   return (
-    <GlowCard>
-      <CardHeader><CardTitle className="text-sm text-primary flex items-center gap-2"><Fingerprint className="w-4 h-4" />{t('sec_biometric_title')}</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
+    <GlowSection color={ACCENT}>
+      <div className="p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <Fingerprint className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+          <span className="text-sm font-semibold text-foreground">{t('sec_biometric_title')}</span>
+        </div>
         <p className="text-xs text-muted-foreground">{t('sec_biometric_desc')}</p>
         <div className="flex items-center justify-between">
           <span className="text-sm text-foreground">{t('sec_biometric_enable')}</span>
-          <Switch checked={enabled} onCheckedChange={handleToggle} className="data-[state=checked]:bg-primary" />
+          <Switch checked={enabled} onCheckedChange={handleToggle} />
         </div>
-      </CardContent>
-    </GlowCard>
+      </div>
+    </GlowSection>
   );
 }
 
@@ -333,30 +348,62 @@ export default function Security() {
   return (
     <PageShell>
       <Header />
-      <main className="py-6 px-4 max-w-xl mx-auto">
-        <div className="flex items-center gap-4 mb-6">
-          <Link to="/settings"><Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button></Link>
-          <div>
-            <h1 className="text-xl font-bold text-foreground flex items-center gap-2"><Shield className="w-5 h-5 text-primary" />{t('sec_title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('sec_subtitle')}</p>
+
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${ACCENT} / 0.4), transparent 70%)`,
+        }} />
+        <div className="relative px-4 pt-5 pb-4">
+          <div className="flex items-center gap-3">
+            <Link to="/settings" className="p-2 rounded-xl transition-all active:scale-95" style={{
+              background: 'hsl(var(--muted) / 0.5)',
+              backdropFilter: 'blur(8px)',
+              border: `1px solid hsl(${ACCENT} / 0.15)`,
+            }}>
+              <ArrowLeft className="w-4 h-4 text-foreground" />
+            </Link>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+              background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
+              border: `1px solid hsl(${ACCENT} / 0.3)`,
+              boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
+            }}>
+              <Shield className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{t('sec_title')}</h1>
+              <p className="text-xs text-muted-foreground">{t('sec_subtitle')}</p>
+            </div>
           </div>
         </div>
+      </div>
+
+      <main className="px-4 py-4 space-y-4">
         {!isAuthenticated ? (
-          <GlowCard>
-            <CardContent className="py-8 text-center space-y-3">
+          <GlowSection color={ACCENT}>
+            <div className="p-8 text-center space-y-3">
               <Lock className="w-10 h-10 text-muted-foreground mx-auto" />
               <p className="text-sm text-muted-foreground">{t('sec_login_required')}</p>
-              <Link to="/auth"><Button className="bg-primary text-primary-foreground">{t('sec_login_btn')}</Button></Link>
-            </CardContent>
-          </GlowCard>
+              <Link to="/auth">
+                <button className="px-6 py-2 rounded-xl text-sm font-semibold text-white" style={{
+                  background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+                }}>{t('sec_login_btn')}</button>
+              </Link>
+            </div>
+          </GlowSection>
         ) : (
-          <div className="space-y-4">
+          <>
             <PasswordChangeCard />
             <TwoFactorCard />
             <SessionManagerCard />
             <BiometricCard />
             <SecurityActivityCard />
-          </div>
+          </>
         )}
       </main>
     </PageShell>
