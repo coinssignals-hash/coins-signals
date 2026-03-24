@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { GlowCard } from '@/components/ui/glow-card';
+import { GlowSection } from '@/components/ui/glow-section';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
