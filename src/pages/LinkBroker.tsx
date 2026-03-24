@@ -357,7 +357,7 @@ export default function LinkBroker() {
                       >
                         <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                       </button>
-                    </div>
+            </GlowSection>
                   </div>
                 ))}
               </div>
