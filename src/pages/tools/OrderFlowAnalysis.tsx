@@ -4,9 +4,8 @@ import { Header } from '@/components/layout/Header';
 
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Zap, RefreshCw, Info, ChevronDown, Search } from 'lucide-react';
+import { Zap, RefreshCw, Info, ChevronDown, Search } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslation } from '@/i18n/LanguageContext';
 import {
