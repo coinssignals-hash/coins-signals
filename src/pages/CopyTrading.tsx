@@ -82,13 +82,9 @@ export default function CopyTrading() {
             const riskColor = RISK_COLORS[trader.riskScore];
             return (
               <motion.div key={trader.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-                <div className="relative rounded-2xl overflow-hidden" style={{
-                  background: `linear-gradient(165deg, hsl(${isFollowing ? '160 84% 39%' : ACCENT} / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-                  border: `1px solid hsl(${isFollowing ? '160 84% 39%' : 'var(--border)'} / ${isFollowing ? '0.35' : '0.3'})`,
+                <GlowSection color={isFollowing ? '160 84% 39%' : ACCENT} style={{
+                  borderColor: isFollowing ? `hsl(160 84% 39% / 0.35)` : undefined,
                 }}>
-                  {isFollowing && <div className="absolute top-0 inset-x-0 h-[1px]" style={{
-                    background: 'linear-gradient(90deg, transparent, hsl(160 84% 39% / 0.5), transparent)',
-                  }} />}
                   <div className="relative p-3 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
@@ -171,7 +167,7 @@ export default function CopyTrading() {
                       )}
                     </AnimatePresence>
                   </div>
-                </div>
+                </GlowSection>
               </motion.div>
             );
           })}

@@ -23,10 +23,7 @@ export function PaperTradeHistory({ history }: Props) {
         const isJpy = trade.symbol.includes('JPY');
         const pnlColor = trade.pnl >= 0 ? '160 84% 39%' : '0 84% 60%';
         return (
-          <div key={trade.id} className="relative rounded-2xl overflow-hidden" style={{
-            background: `linear-gradient(165deg, hsl(${pnlColor} / 0.04) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-            border: `1px solid hsl(${pnlColor} / 0.15)`,
-          }}>
+          <GlowSection key={trade.id} color={pnlColor}>
             <div className="relative p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -49,7 +46,7 @@ export function PaperTradeHistory({ history }: Props) {
                 <span className="text-[10px] text-muted-foreground">{trade.closedAt}</span>
               </div>
             </div>
-          </div>
+          </GlowSection>
         );
       })}
     </div>
