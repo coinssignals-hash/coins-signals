@@ -4,6 +4,7 @@ import { ArrowLeft, Check, Loader2, Trash2, RefreshCw, AlertCircle, BarChart3, L
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { cn } from '@/lib/utils';
+import { GlowSection } from '@/components/ui/glow-section';
 import { toast } from 'sonner';
 import { useBrokerConnections } from '@/hooks/useBrokerConnections';
 import { useBrokerSync } from '@/hooks/useBrokerSync';
