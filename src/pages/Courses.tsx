@@ -76,11 +76,6 @@ function ModuleCard({
     >
       <GlowSection
         color={color}
-        className={cn(isExpanded && 'shadow-lg')}
-        style={{
-          borderColor: isExpanded ? `hsl(${color} / 0.35)` : undefined,
-          boxShadow: isExpanded ? `0 4px 24px hsl(${color} / 0.1)` : undefined,
-        }}
       >
         <div className="relative">
           {/* Header */}
