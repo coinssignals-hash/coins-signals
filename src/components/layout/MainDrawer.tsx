@@ -11,7 +11,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert
+  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw
 } from 'lucide-react';
 import { LanguageQuickSelect } from './LanguageQuickSelect';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
@@ -84,6 +84,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: Bell, label: t('drawer_notifications'), href: '/settings/notifications' },
         { icon: Palette, label: t('drawer_appearance'), href: '/settings/appearance' },
         { icon: Download, label: t('drawer_install_app'), href: '/install' },
+        { icon: RefreshCw, label: t('drawer_update_app') || 'Actualizar App', href: '#update-app' },
       ],
     },
     {
@@ -126,6 +127,24 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
     toast({ title: t('drawer_session_closed'), description: t('drawer_session_closed_desc') });
     onOpenChange(false);
     navigate('/');
+  };
+
+  const handleForceUpdate = async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(r => r.unregister()));
+      }
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+      }
+      toast({ title: t('drawer_update_success') || '✅ App actualizada', description: t('drawer_update_success_desc') || 'Caché limpiada. Recargando...' });
+      onOpenChange(false);
+      setTimeout(() => window.location.reload(), 800);
+    } catch {
+      window.location.reload();
+    }
   };
 
   const getInitials = () => {
@@ -230,8 +249,22 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
                 const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
 
-                return (
-                  <Link
+                  return item.href === '#update-app' ? (
+                    <button
+                      key={item.href}
+                      onClick={() => { onOpenChange(false); handleForceUpdate(); }}
+                      className={cn(
+                        'group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all relative w-full text-left',
+                        'text-white/50 hover:text-white/80 hover:bg-white/[0.03]'
+                      )}
+                    >
+                      <div className="relative flex items-center justify-center w-5">
+                        <Icon className="w-[18px] h-[18px] transition-colors group-hover:text-white/60" />
+                      </div>
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
                     key={item.href}
                     to={item.href}
                     onClick={() => onOpenChange(false)}
@@ -266,8 +299,9 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                     </div>
                     {item.label}
                   </Link>
-                );
-              })}
+                  );
+                })}
+
             </div>
           ))}
         </nav>
