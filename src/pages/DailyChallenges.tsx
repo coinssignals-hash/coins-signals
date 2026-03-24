@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Trophy, Target, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GlowSection } from '@/components/ui/glow-section';
 
 interface Challenge {
   id: string;
