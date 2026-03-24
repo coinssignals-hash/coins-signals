@@ -176,7 +176,7 @@ export default function StrategyBuilder() {
   };
 
   return (
-    <PageShell title={t('strategy_builder_title') || 'Constructor de Estrategias'}>
+    <PageShell>
       <div className="space-y-4 pb-24">
         {/* Header */}
         <Card className="bg-card/80 backdrop-blur border-border/50">

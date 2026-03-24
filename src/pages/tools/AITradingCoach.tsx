@@ -139,7 +139,7 @@ REGLAS:
   };
 
   return (
-    <PageShell title={t('ai_coach_title') || 'Coach IA de Trading'}>
+    <PageShell>
       <div className="flex flex-col h-[calc(100vh-130px)]">
         {/* Stats bar */}
         <div className="flex items-center gap-3 mb-3">

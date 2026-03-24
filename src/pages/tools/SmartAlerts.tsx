@@ -118,7 +118,7 @@ export default function SmartAlerts() {
   };
 
   return (
-    <PageShell title={t('smart_alerts_title') || 'Alertas Inteligentes'}>
+    <PageShell>
       <div className="space-y-4 pb-24">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
