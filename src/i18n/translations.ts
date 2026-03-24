@@ -75,6 +75,9 @@ export type TranslationKeys = {
   drawer_appearance: string;
   drawer_language_tz: string;
   drawer_install_app: string;
+  drawer_learning_paths: string;
+  drawer_glossary: string;
+  drawer_certifications: string;
   drawer_update_app: string;
   drawer_update_success: string;
   drawer_update_success_desc: string;
