@@ -386,21 +386,9 @@ export function BrokerCatalog({
         const color = BROKER_COLORS[broker.code] || '210 70% 55%';
 
         return (
-          <div
-            key={broker.code}
-            className="relative rounded-2xl overflow-hidden transition-all"
-            style={{
-              background: `linear-gradient(165deg, hsl(${color} / ${isExpanded ? '0.12' : '0.06'}) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-              border: `1px solid hsl(${color} / ${isExpanded ? '0.35' : '0.15'})`,
-            }}
-          >
-            {/* Top glow line */}
-            <div
-              className="absolute top-0 inset-x-0 h-[2px] z-[1]"
-              style={{
-                background: `linear-gradient(90deg, transparent, hsl(${color} / ${isExpanded ? '0.8' : '0.4'}), transparent)`,
-              }}
-            />
+          <div key={broker.code}>
+            <GlowSection color={color}>
+            {/* Top glow line is provided by GlowSection */}
 
             {isExpanded && (
               <div
