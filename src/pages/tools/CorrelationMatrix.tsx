@@ -3,9 +3,8 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Layers, RefreshCw, Info } from 'lucide-react';
+import { Layers, RefreshCw, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/LanguageContext';
 
