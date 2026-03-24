@@ -299,8 +299,9 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                     </div>
                     {item.label}
                   </Link>
-                );
-              })}
+                  );
+                })}
+
             </div>
           ))}
         </nav>
