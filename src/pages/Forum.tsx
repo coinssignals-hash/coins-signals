@@ -821,26 +821,52 @@ export default function Forum() {
 
   const isInChat = view === 'chat' || view === 'dm-chat';
 
+  const ACCENT = '210 70% 55%';
+
   return (
     <PageShell bottomPadding showBottomNav>
       <Header />
-      <main className={cn("container space-y-4", isInChat ? "py-2 pb-0 flex flex-col overflow-hidden" : "py-4")}
+      <main className={cn("container space-y-4 max-w-lg mx-auto px-3", isInChat ? "py-2 pb-0 flex flex-col overflow-hidden" : "py-3")}
         style={isInChat ? { height: 'calc(100dvh - 190px)' } : undefined}
       >
-        {/* Title */}
+        {/* Premium Hero Header */}
         {(view === 'channels' || view === 'dms' || view === 'favorites') && (
-          <div className="flex items-center gap-3">
-            <Link to="/" className="text-primary hover:text-primary/80 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <h1 className="text-lg font-bold text-foreground italic">
-              <MessageCircle className="w-5 h-5 inline mr-2" />
-              Comunidad
-            </h1>
-            <span className="ml-auto text-[10px] text-muted-foreground">
-              <Users className="w-3 h-3 inline mr-0.5" />
-              En línea
-            </span>
+          <div className="relative rounded-2xl overflow-hidden" style={{
+            background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+            border: `1px solid hsl(${ACCENT} / 0.2)`,
+          }}>
+            <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+              background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)`,
+            }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-15 pointer-events-none" style={{
+              background: `radial-gradient(circle, hsl(${ACCENT} / 0.4), transparent 70%)`,
+            }} />
+            <div className="relative p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Link to="/" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{
+                    background: 'hsl(var(--card) / 0.85)',
+                    border: '1px solid hsl(var(--border) / 0.6)',
+                    boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+                  }}>
+                    <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                    background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+                    border: `1px solid hsl(${ACCENT} / 0.25)`,
+                    boxShadow: `0 4px 12px hsl(${ACCENT} / 0.1)`,
+                  }}>
+                    <MessageCircle className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-bold text-foreground">Comunidad</h1>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <Users className="w-2.5 h-2.5" /> En línea
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
