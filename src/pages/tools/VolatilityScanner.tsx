@@ -68,16 +68,16 @@ export default function VolatilityScanner() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center justify-between">
-          <ToolPageHeader
-            icon={<Gauge className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
-            title={t('tools_volatility_title')}
-            accent={ACCENT}
-          />
-          <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
-            <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
-          </Button>
-        </div>
+        <ToolPageHeader
+          icon={<Gauge className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
+          title={t('tools_volatility_title')}
+          accent={ACCENT}
+          action={
+            <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
+              <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+            </Button>
+          }
+        />
 
         {/* Summary */}
         <div className="grid grid-cols-3 gap-2">

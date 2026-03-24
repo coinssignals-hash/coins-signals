@@ -4,9 +4,8 @@ import { Header } from '@/components/layout/Header';
 
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, CandlestickChart, RefreshCw, TrendingUp, TrendingDown, Info, Clock, Zap, Eye } from 'lucide-react';
+import { CandlestickChart, RefreshCw, TrendingUp, TrendingDown, Info, Clock, Zap, Eye } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 interface PatternResult {
@@ -77,16 +76,16 @@ export default function PatternScreener() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center justify-between">
         <ToolPageHeader
           icon={<CandlestickChart className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
           title={t('tools_pattern_screener_title')}
           accent={ACCENT}
+          action={
+            <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
+              <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+            </Button>
+          }
         />
-          <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} className="text-muted-foreground">
-            <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
-          </Button>
-        </div>
 
         {/* Summary */}
         <div className="grid grid-cols-4 gap-2">

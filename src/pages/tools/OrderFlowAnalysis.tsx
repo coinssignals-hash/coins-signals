@@ -4,9 +4,8 @@ import { Header } from '@/components/layout/Header';
 
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Zap, RefreshCw, Info, ChevronDown, Search } from 'lucide-react';
+import { Zap, RefreshCw, Info, ChevronDown, Search } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslation } from '@/i18n/LanguageContext';
 import {
@@ -124,16 +123,16 @@ export default function OrderFlowAnalysis() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        <div className="flex items-center justify-between">
         <ToolPageHeader
           icon={<Zap className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
           title={t('tp_order_flow')}
           accent={ACCENT}
+          action={
+            <Button variant="ghost" size="icon" onClick={refresh} disabled={loading}>
+              <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
+            </Button>
+          }
         />
-          <Button variant="ghost" size="icon" onClick={refresh} disabled={loading}>
-            <RefreshCw className={cn('w-4 h-4 text-muted-foreground', loading && 'animate-spin')} />
-          </Button>
-        </div>
 
         {/* Pair Selector */}
         <div className="flex items-center gap-2 flex-wrap">

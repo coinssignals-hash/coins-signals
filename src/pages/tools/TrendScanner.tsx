@@ -4,10 +4,9 @@ import { Header } from '@/components/layout/Header';
 
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
-  ArrowLeft, TrendingUp, TrendingDown, Minus, RefreshCw,
+  TrendingUp, TrendingDown, Minus, RefreshCw,
   Activity, BarChart3, Clock, Zap
 } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';

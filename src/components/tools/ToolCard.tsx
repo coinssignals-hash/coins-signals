@@ -71,12 +71,14 @@ interface ToolHeaderProps {
   title: string;
   subtitle?: string;
   accent?: string;
+  /** Optional action element (e.g. refresh button) rendered at the right */
+  action?: React.ReactNode;
 }
 
 /**
  * Consistent back button + title for tool pages, matching MarketSessions style.
  */
-export function ToolPageHeader({ icon, title, subtitle, accent }: ToolHeaderProps) {
+export function ToolPageHeader({ icon, title, subtitle, accent, action }: ToolHeaderProps) {
   const color = accent || '210 70% 55%';
   return (
     <div className="relative overflow-hidden rounded-2xl mb-1" style={{
@@ -109,7 +111,7 @@ export function ToolPageHeader({ icon, title, subtitle, accent }: ToolHeaderProp
             <path d="m15 18-6-6 6-6"/>
           </svg>
         </a>
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{
             background: `hsl(${color} / 0.12)`,
             border: `1px solid hsl(${color} / 0.25)`,
@@ -117,11 +119,12 @@ export function ToolPageHeader({ icon, title, subtitle, accent }: ToolHeaderProp
           }}>
             {icon}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="text-base font-bold text-foreground truncate">{title}</h1>
             {subtitle && <p className="text-[10px] text-muted-foreground truncate">{subtitle}</p>}
           </div>
         </div>
+        {action && <div className="shrink-0">{action}</div>}
       </div>
     </div>
   );
