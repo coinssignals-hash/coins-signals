@@ -160,17 +160,10 @@ export default function Achievements() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative rounded-2xl overflow-hidden mb-5"
-              style={{
-                background: 'linear-gradient(165deg, hsl(45 90% 55% / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-                border: '1px solid hsl(45 90% 55% / 0.2)',
-              }}
+              className="mb-5"
             >
-              <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-                background: 'linear-gradient(90deg, transparent, hsl(45 90% 55% / 0.7), transparent)',
-              }} />
-
-              <div className="p-5">
+              <GlowSection color="45 90% 55%">
+                <div className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{

@@ -203,20 +203,14 @@ export default function DailyChallenges() {
         )}
 
         {answered.size === DAILY_CHALLENGES.length && (
-          <div className="relative rounded-2xl overflow-hidden text-center" style={{
-            background: `linear-gradient(165deg, hsl(${ACCENT} / 0.1) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-            border: `1px solid hsl(${ACCENT} / 0.3)`,
-          }}>
-            <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-              background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
-            }} />
-            <div className="relative p-6 space-y-2">
+          <GlowSection color={ACCENT} className="text-center">
+            <div className="p-6 space-y-2">
               <Trophy className="h-10 w-10 mx-auto" style={{ color: `hsl(${ACCENT})` }} />
               <p className="text-lg font-bold text-foreground">¡Retos completados!</p>
               <p className="text-sm text-muted-foreground">Has ganado {totalXP} XP hoy</p>
               <p className="text-xs text-muted-foreground">Vuelve mañana para nuevos retos</p>
             </div>
-          </div>
+          </GlowSection>
         )}
       </div>
     </PageShell>
