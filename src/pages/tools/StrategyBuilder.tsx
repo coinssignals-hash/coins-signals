@@ -429,7 +429,8 @@ export default function StrategyBuilder() {
         {/* Backtest Results */}
         <AnimatePresence>
           {backtestResult && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
+              {/* Stats grid */}
               <Card className="bg-card/80 backdrop-blur border-emerald-500/30">
                 <CardHeader className="p-3 pb-0">
                   <CardTitle className="text-sm flex items-center gap-2">
@@ -437,7 +438,7 @@ export default function StrategyBuilder() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     {[
                       { label: 'Trades', value: backtestResult.totalTrades, color: '' },
                       { label: 'Win Rate', value: `${((backtestResult.wins / backtestResult.totalTrades) * 100).toFixed(1)}%`, color: 'text-emerald-400' },
@@ -452,6 +453,95 @@ export default function StrategyBuilder() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Equity Curve */}
+              <Card className="bg-card/80 backdrop-blur border-border/50">
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs text-muted-foreground">Curva de Equity</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 pt-0">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis dataKey="trade" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} tickFormatter={v => `$${(v / 1000).toFixed(1)}k`} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                        formatter={(v: number) => [`$${v.toLocaleString()}`, 'Equity']}
+                        labelFormatter={l => `Trade #${l}`}
+                      />
+                      <ReferenceLine y={10000} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" opacity={0.5} />
+                      <Area type="monotone" dataKey="equity" stroke="hsl(160, 84%, 39%)" fill="url(#eqGrad)" strokeWidth={2} dot={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Drawdown Chart */}
+              <Card className="bg-card/80 backdrop-blur border-border/50">
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs text-muted-foreground">Drawdown (%)</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 pt-0">
+                  <ResponsiveContainer width="100%" height={120}>
+                    <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis dataKey="trade" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} reversed tickFormatter={v => `-${v}%`} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                        formatter={(v: number) => [`-${v.toFixed(2)}%`, 'Drawdown']}
+                        labelFormatter={l => `Trade #${l}`}
+                      />
+                      <Area type="monotone" dataKey="drawdown" stroke="hsl(0, 84%, 60%)" fill="url(#ddGrad)" strokeWidth={1.5} dot={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Monthly Returns */}
+              <Card className="bg-card/80 backdrop-blur border-border/50">
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs text-muted-foreground">P&L Mensual</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 pt-0">
+                  <ResponsiveContainer width="100%" height={130}>
+                    <BarChart data={backtestResult.monthlyReturns} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis dataKey="month" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} tickFormatter={v => `$${v}`} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                        formatter={(v: number) => [`$${v.toFixed(2)}`, 'P&L']}
+                      />
+                      <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" opacity={0.5} />
+                      <Bar
+                        dataKey="pnl"
+                        radius={[4, 4, 0, 0]}
+                        fill="hsl(160, 84%, 39%)"
+                        // Color bars based on positive/negative
+                        shape={(props: any) => {
+                          const { x, y, width, height, payload } = props;
+                          const fill = payload.pnl >= 0 ? 'hsl(160, 84%, 39%)' : 'hsl(0, 84%, 60%)';
+                          return <rect x={x} y={y} width={width} height={height} fill={fill} rx={3} />;
+                        }}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
             </motion.div>
