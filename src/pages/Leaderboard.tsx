@@ -165,11 +165,8 @@ export default function Leaderboard() {
               const tierColor = TIER_COLORS[trader.tier] || ACCENT;
               return (
                 <motion.div key={trader.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}>
-                  <div className="relative rounded-2xl overflow-hidden" style={{
-                    background: `linear-gradient(165deg, hsl(${tierColor} / 0.04) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-                    border: `1px solid hsl(${tierColor} / 0.15)`,
-                  }}>
-                    <div className="relative p-3 flex items-center gap-3">
+                  <GlowSection color={tierColor}>
+                    <div className="p-3 flex items-center gap-3">
                       <div className="text-sm font-bold text-muted-foreground w-6 text-center">{trader.rank}</div>
                       <Avatar className="w-9 h-9">
                         {trader.avatar_url && <AvatarImage src={trader.avatar_url} />}
@@ -201,7 +198,7 @@ export default function Leaderboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </GlowSection>
                 </motion.div>
               );
             })}

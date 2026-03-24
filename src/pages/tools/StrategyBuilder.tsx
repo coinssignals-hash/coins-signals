@@ -152,12 +152,8 @@ export default function StrategyBuilder() {
               const ruleColor = rule.action === 'BUY' ? '160 84% 39%' : '0 84% 60%';
               return (
                 <motion.div key={rule.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -100 }} layout>
-                  <div className="relative rounded-2xl overflow-hidden" style={{
-                    background: `linear-gradient(165deg, hsl(${ruleColor} / 0.06) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
-                    border: `1px solid hsl(${ruleColor} / 0.2)`,
-                    borderLeft: `4px solid hsl(${ruleColor})`,
-                  }}>
-                    <div className="relative">
+                  <GlowSection color={ruleColor}>
+                    <div className="relative" style={{ borderLeft: `4px solid hsl(${ruleColor})` }}>
                       <div className="p-3 pb-0">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -223,7 +219,7 @@ export default function StrategyBuilder() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </GlowSection>
                 </motion.div>
               );
             })}

@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
+import { GlowSection } from '@/components/ui/glow-section';
 
 interface ToolCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -14,13 +15,12 @@ interface ToolCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 /**
  * MarketSessions-style premium card for tool pages.
- * Mimics the SessionCard gradient, top glow line and radial glow.
+ * Uses the shared GlowSection component for consistent styling.
  */
 export function ToolCard({ children, className, accent, header, premium = true, ...props }: ToolCardProps) {
-  const color = accent || '210 70% 55%'; // default blue accent like sessions
+  const color = accent || '210 70% 55%';
 
   if (!premium) {
-    // Simple translucent fallback
     return (
       <div
         className={cn('rounded-xl border overflow-hidden', className)}
@@ -44,34 +44,11 @@ export function ToolCard({ children, className, accent, header, premium = true, 
   }
 
   return (
-    <div
-      className={cn('relative rounded-2xl overflow-hidden', className)}
-      style={{
-        background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-        border: `1px solid hsl(${color} / 0.2)`,
-      }}
-      {...props}
-    >
-      {/* Top glow line */}
-      <div
-        className="absolute top-0 inset-x-0 h-[2px] z-[1]"
-        style={{
-          background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-        }}
-      />
-
-      {/* Subtle radial glow */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none"
-        style={{
-          background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
-        }}
-      />
-
+    <GlowSection color={color} className={className}>
       {/* Header */}
       {header && (
         <div
-          className="relative z-[2] px-3 py-2 flex items-center gap-1.5"
+          className="px-3 py-2 flex items-center gap-1.5"
           style={{
             background: `hsl(${color} / 0.06)`,
             borderBottom: '1px solid hsl(var(--border) / 0.3)',
@@ -82,10 +59,10 @@ export function ToolCard({ children, className, accent, header, premium = true, 
       )}
 
       {/* Content */}
-      <div className="relative z-[2]">
+      <div>
         {children}
       </div>
-    </div>
+    </GlowSection>
   );
 }
 
@@ -139,7 +116,6 @@ interface ToolSectionProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function ToolSection({ children, accent, className, ...props }: ToolSectionProps) {
-  const color = accent || '210 70% 55%';
   return (
     <div
       className={cn('rounded-xl p-3', className)}

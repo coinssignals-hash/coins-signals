@@ -6,6 +6,7 @@ import {
   Zap, Shield, Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GlowSection } from '@/components/ui/glow-section';
 import { ScrollFadeTabs } from '@/components/ui/ScrollFadeTabs';
 
 export interface BrokerCatalogItem {
@@ -385,21 +386,9 @@ export function BrokerCatalog({
         const color = BROKER_COLORS[broker.code] || '210 70% 55%';
 
         return (
-          <div
-            key={broker.code}
-            className="relative rounded-2xl overflow-hidden transition-all"
-            style={{
-              background: `linear-gradient(165deg, hsl(${color} / ${isExpanded ? '0.12' : '0.06'}) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-              border: `1px solid hsl(${color} / ${isExpanded ? '0.35' : '0.15'})`,
-            }}
-          >
-            {/* Top glow line */}
-            <div
-              className="absolute top-0 inset-x-0 h-[2px] z-[1]"
-              style={{
-                background: `linear-gradient(90deg, transparent, hsl(${color} / ${isExpanded ? '0.8' : '0.4'}), transparent)`,
-              }}
-            />
+          <div key={broker.code}>
+            <GlowSection color={color}>
+            {/* Top glow line is provided by GlowSection */}
 
             {isExpanded && (
               <div
@@ -614,19 +603,14 @@ export function BrokerCatalog({
                 </motion.div>
               )}
             </AnimatePresence>
+          </GlowSection>
           </div>
         );
       })}
 
       {/* Generic CSV */}
-      <div
-        className="relative rounded-2xl overflow-hidden"
-        style={{
-          background: 'linear-gradient(165deg, hsl(var(--muted) / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-          border: '1px solid hsl(var(--border) / 0.3)',
-        }}
-      >
-        <div className="relative z-[2] p-3 flex items-center justify-between">
+      <GlowSection color="var(--muted)">
+        <div className="p-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
@@ -656,7 +640,7 @@ export function BrokerCatalog({
             </span>
           </button>
         </div>
-      </div>
+      </GlowSection>
     </div>
   );
 }

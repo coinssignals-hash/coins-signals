@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { learningPaths } from '@/data/learningPathsData';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { GlowSection } from '@/components/ui/glow-section';
 import { motion } from 'framer-motion';
 import { Award, Lock, CheckCircle, Sparkles, GraduationCap } from 'lucide-react';
 
@@ -25,13 +26,8 @@ export default function Certifications() {
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        {/* Hero */}
-        <div className="relative rounded-2xl overflow-hidden" style={{
-          background: 'linear-gradient(165deg, hsl(40 80% 55% / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-          border: '1px solid hsl(40 80% 55% / 0.2)',
-        }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, hsl(40 80% 55% / 0.7), transparent)' }} />
-          <div className="relative p-4">
+        <GlowSection color="40 80% 55%">
+          <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
@@ -53,7 +49,7 @@ export default function Certifications() {
               </div>
             </div>
           </div>
-        </div>
+        </GlowSection>
 
         {/* Certificates */}
         <div className="space-y-3">

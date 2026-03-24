@@ -98,14 +98,8 @@ export default function TradingCompetitions() {
 
             return (
               <motion.div key={comp.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-                <div className="relative rounded-2xl overflow-hidden" style={{
-                  background: `linear-gradient(165deg, hsl(${typeColor} / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-                  border: `1px solid hsl(${typeColor} / 0.2)`,
-                }}>
-                  <div className="absolute top-0 inset-x-0 h-[1px]" style={{
-                    background: `linear-gradient(90deg, transparent, hsl(${typeColor} / 0.5), transparent)`,
-                  }} />
-                  <div className="relative p-4 space-y-3">
+                <GlowSection color={typeColor}>
+                  <div className="p-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         <div className="p-2 rounded-xl" style={{ background: `hsl(${typeColor} / 0.1)` }}>
@@ -187,7 +181,7 @@ export default function TradingCompetitions() {
                       </Button>
                     )}
                   </div>
-                </div>
+                </GlowSection>
               </motion.div>
             );
           })}
