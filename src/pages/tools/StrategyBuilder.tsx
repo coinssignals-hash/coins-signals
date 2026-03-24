@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,9 +12,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart } from 'recharts';
 import {
   Plus, Trash2, Play, Save, TrendingUp, TrendingDown, Layers,
-  BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy
+  BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Blocks, ArrowLeft
 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
+import { useNavigate } from 'react-router-dom';
 
 type ConditionOperator = 'crosses_above' | 'crosses_below' | 'greater_than' | 'less_than' | 'equals';
 type LogicGate = 'AND' | 'OR';
@@ -48,6 +48,7 @@ const defaultStrategy: Strategy = {
 
 export default function StrategyBuilder() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [strategy, setStrategy] = useState<Strategy>({ ...defaultStrategy, name: '' });
   const [savedStrategies, setSavedStrategies] = useState<Strategy[]>([]);
   const [backtestResult, setBacktestResult] = useState<null | {
@@ -113,16 +114,75 @@ export default function StrategyBuilder() {
   return (
     <PageShell>
       <Header />
+
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
+      }}>
+        {/* Top glow line */}
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
+        }} />
+        {/* Radial glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)`,
+        }} />
+
+        <div className="relative px-4 py-5">
+          <div className="flex items-center gap-3 mb-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
+              style={{
+                background: `hsl(${ACCENT} / 0.1)`,
+                border: `1px solid hsl(${ACCENT} / 0.2)`,
+              }}
+            >
+              <ArrowLeft className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
+                border: `1px solid hsl(${ACCENT} / 0.3)`,
+                boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
+              }}>
+                <Blocks className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">
+                  {t('drawer_strategy_builder') || 'Constructor de Estrategias'}
+                </h1>
+                <p className="text-[11px] text-muted-foreground">
+                  Diseña, prueba y optimiza tu sistema de trading
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom separator */}
+        <div className="h-px" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.3), transparent)`,
+        }} />
+      </div>
+
       <div className="max-w-lg mx-auto space-y-4 pb-24 px-4 pt-4">
-        {/* Header */}
+        {/* Strategy name + pairs */}
         <GlowSection color={ACCENT}>
           <div className="p-4 space-y-3">
-            <Input placeholder="Nombre de la estrategia..." value={strategy.name} onChange={e => setStrategy(s => ({ ...s, name: e.target.value }))} className="text-lg font-bold bg-background/40 border-border/30" />
+            <Input
+              placeholder="Nombre de la estrategia..."
+              value={strategy.name}
+              onChange={e => setStrategy(s => ({ ...s, name: e.target.value }))}
+              className="text-lg font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0 px-0"
+              style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }}
+            />
             <div className="flex flex-wrap gap-2">
               {PAIRS.map(p => (
-                <Badge key={p} className="cursor-pointer transition-all text-xs" style={strategy.pairs.includes(p) ? {
+                <Badge key={p} className="cursor-pointer transition-all text-xs active:scale-95" style={strategy.pairs.includes(p) ? {
                   background: `hsl(${ACCENT} / 0.2)`, color: `hsl(${ACCENT})`, border: `1px solid hsl(${ACCENT} / 0.4)`,
-                } : { background: 'hsl(var(--muted))', color: 'hsl(var(--muted-foreground))', border: '1px solid transparent' }}
+                  boxShadow: `0 0 8px hsl(${ACCENT} / 0.15)`,
+                } : { background: 'hsl(var(--muted) / 0.5)', color: 'hsl(var(--muted-foreground))', border: '1px solid transparent' }}
                   onClick={() => setStrategy(s => ({ ...s, pairs: s.pairs.includes(p) ? s.pairs.filter(x => x !== p) : [...s.pairs, p] }))}>
                   {p}
                 </Badge>
@@ -131,19 +191,36 @@ export default function StrategyBuilder() {
           </div>
         </GlowSection>
 
-        {/* Rules */}
+        {/* Rules Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-              <Layers className="w-4 h-4" /> REGLAS DE TRADING
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Layers className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+              {t('strategy_rules') || 'REGLAS DE TRADING'}
             </h3>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => addRule('BUY')} className="rounded-lg" style={{ color: 'hsl(160 84% 39%)', borderColor: 'hsl(160 84% 39% / 0.3)' }}>
-                <TrendingUp className="w-3 h-3 mr-1" /> Buy
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => addRule('SELL')} className="rounded-lg" style={{ color: 'hsl(0 84% 60%)', borderColor: 'hsl(0 84% 60% / 0.3)' }}>
-                <TrendingDown className="w-3 h-3 mr-1" /> Sell
-              </Button>
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => addRule('BUY')}
+                className="flex items-center gap-1 px-2.5 h-7 rounded-lg text-[11px] font-semibold transition-all active:scale-95"
+                style={{
+                  background: 'hsl(160 84% 39% / 0.1)',
+                  border: '1px solid hsl(160 84% 39% / 0.25)',
+                  color: 'hsl(160 84% 39%)',
+                }}
+              >
+                <TrendingUp className="w-3 h-3" /> Buy
+              </button>
+              <button
+                onClick={() => addRule('SELL')}
+                className="flex items-center gap-1 px-2.5 h-7 rounded-lg text-[11px] font-semibold transition-all active:scale-95"
+                style={{
+                  background: 'hsl(0 84% 60% / 0.1)',
+                  border: '1px solid hsl(0 84% 60% / 0.25)',
+                  color: 'hsl(0 84% 60%)',
+                }}
+              >
+                <TrendingDown className="w-3 h-3" /> Sell
+              </button>
             </div>
           </div>
 
@@ -153,22 +230,23 @@ export default function StrategyBuilder() {
               return (
                 <motion.div key={rule.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -100 }} layout>
                   <GlowSection color={ruleColor}>
-                    <div className="relative" style={{ borderLeft: `4px solid hsl(${ruleColor})` }}>
+                    <div className="relative" style={{ borderLeft: `3px solid hsl(${ruleColor})` }}>
                       <div className="p-3 pb-0">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
-                            <Badge className="text-xs" style={{
+                            <GripVertical className="w-4 h-4 text-muted-foreground/40 cursor-grab" />
+                            <Badge className="text-[10px] font-bold" style={{
                               background: `hsl(${ruleColor} / 0.2)`, color: `hsl(${ruleColor})`,
+                              boxShadow: `0 0 8px hsl(${ruleColor} / 0.1)`,
                             }}>{rule.action}</Badge>
                             <span className="text-sm font-medium text-foreground">{rule.name}</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => toggleCollapse(rule.id)}>
+                          <div className="flex items-center gap-0.5">
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground" onClick={() => toggleCollapse(rule.id)}>
                               {rule.collapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => removeRule(rule.id)}>
-                              <Trash2 className="w-4 h-4" />
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive/70" onClick={() => removeRule(rule.id)}>
+                              <Trash2 className="w-3.5 h-3.5" />
                             </Button>
                           </div>
                         </div>
@@ -177,10 +255,10 @@ export default function StrategyBuilder() {
                       {!rule.collapsed && (
                         <div className="p-3 space-y-2">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs text-muted-foreground">Lógica:</span>
-                            <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid hsl(var(--border) / 0.3)' }}>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Lógica:</span>
+                            <div className="flex rounded-lg overflow-hidden" style={{ border: `1px solid hsl(${ruleColor} / 0.2)` }}>
                               {(['AND', 'OR'] as LogicGate[]).map(g => (
-                                <button key={g} className="px-3 py-1 text-xs font-bold transition-colors"
+                                <button key={g} className="px-3 py-1 text-[11px] font-bold transition-colors"
                                   style={rule.logic === g ? { background: `hsl(${ruleColor} / 0.2)`, color: `hsl(${ruleColor})` } : { color: 'hsl(var(--muted-foreground))' }}
                                   onClick={() => setStrategy(s => ({ ...s, rules: s.rules.map(r => r.id === rule.id ? { ...r, logic: g } : r) }))}>
                                   {g}
@@ -192,9 +270,10 @@ export default function StrategyBuilder() {
                           {rule.conditions.map((cond, ci) => (
                             <motion.div key={cond.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                               className="flex flex-wrap items-center gap-2 p-2 rounded-xl" style={{
-                                background: 'hsl(var(--background) / 0.4)', border: '1px solid hsl(var(--border) / 0.2)',
+                                background: `linear-gradient(165deg, hsl(${ruleColor} / 0.04), hsl(var(--background) / 0.4))`,
+                                border: `1px solid hsl(${ruleColor} / 0.1)`,
                               }}>
-                              {ci > 0 && <Badge variant="outline" className="text-[10px]">{rule.logic}</Badge>}
+                              {ci > 0 && <Badge variant="outline" className="text-[10px]" style={{ borderColor: `hsl(${ruleColor} / 0.3)`, color: `hsl(${ruleColor})` }}>{rule.logic}</Badge>}
                               <Select value={cond.indicator} onValueChange={v => updateCondition(rule.id, cond.id, 'indicator', v)}>
                                 <SelectTrigger className="w-[100px] h-8 text-xs bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
                                 <SelectContent>{INDICATORS.map(i => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}</SelectContent>
@@ -208,14 +287,16 @@ export default function StrategyBuilder() {
                                 <SelectTrigger className="w-[65px] h-8 text-xs bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
                                 <SelectContent>{TIMEFRAMES.map(tf => <SelectItem key={tf} value={tf}>{tf}</SelectItem>)}</SelectContent>
                               </Select>
-                              <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => removeCondition(rule.id, cond.id)}>
+                              <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive/60" onClick={() => removeCondition(rule.id, cond.id)}>
                                 <Trash2 className="w-3 h-3" />
                               </Button>
                             </motion.div>
                           ))}
-                          <Button size="sm" variant="ghost" className="text-xs" onClick={() => addCondition(rule.id)}>
-                            <Plus className="w-3 h-3 mr-1" /> Condición
-                          </Button>
+                          <button className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg transition-colors"
+                            style={{ color: `hsl(${ruleColor})` }}
+                            onClick={() => addCondition(rule.id)}>
+                            <Plus className="w-3 h-3" /> Condición
+                          </button>
                         </div>
                       )}
                     </div>
@@ -226,31 +307,46 @@ export default function StrategyBuilder() {
           </AnimatePresence>
 
           {strategy.rules.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground text-sm">
-              <Layers className="w-8 h-8 mx-auto mb-2 opacity-40" />
-              Agrega reglas de BUY o SELL para construir tu estrategia
-            </div>
+            <GlowSection color="210 50% 40%">
+              <div className="text-center py-10 px-4">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-2xl flex items-center justify-center" style={{
+                  background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15), hsl(var(--background)))`,
+                  border: `1px solid hsl(${ACCENT} / 0.15)`,
+                }}>
+                  <Layers className="w-6 h-6" style={{ color: `hsl(${ACCENT} / 0.5)` }} />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Agrega reglas de <span style={{ color: 'hsl(160 84% 39%)' }}>BUY</span> o <span style={{ color: 'hsl(0 84% 60%)' }}>SELL</span> para construir tu estrategia
+                </p>
+              </div>
+            </GlowSection>
           )}
         </div>
 
         {/* Risk Management */}
         <GlowSection color="45 95% 55%">
           <div className="p-3">
-            <div className="text-sm font-semibold flex items-center gap-2 mb-3 text-foreground">
-              <Zap className="w-4 h-4" style={{ color: 'hsl(45 95% 55%)' }} /> Gestión de Riesgo
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{
+                background: 'hsl(45 95% 55% / 0.15)',
+                boxShadow: '0 0 10px hsl(45 95% 55% / 0.1)',
+              }}>
+                <Zap className="w-3.5 h-3.5" style={{ color: 'hsl(45 95% 55%)' }} />
+              </div>
+              <span className="text-sm font-semibold text-foreground">Gestión de Riesgo</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground">Riesgo/Trade (%)</label>
-                <Input type="number" value={strategy.riskPerTrade} onChange={e => setStrategy(s => ({ ...s, riskPerTrade: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30" />
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Riesgo/Trade (%)</label>
+                <Input type="number" value={strategy.riskPerTrade} onChange={e => setStrategy(s => ({ ...s, riskPerTrade: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30 mt-1" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">TP Ratio</label>
-                <Input type="number" value={strategy.takeProfitRatio} step={0.5} onChange={e => setStrategy(s => ({ ...s, takeProfitRatio: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30" />
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">TP Ratio</label>
+                <Input type="number" value={strategy.takeProfitRatio} step={0.5} onChange={e => setStrategy(s => ({ ...s, takeProfitRatio: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30 mt-1" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Stop Loss</label>
-                <div className="flex gap-1">
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Stop Loss</label>
+                <div className="flex gap-1 mt-1">
                   <Select value={strategy.stopLossType} onValueChange={(v: any) => setStrategy(s => ({ ...s, stopLossType: v }))}>
                     <SelectTrigger className="h-8 text-xs w-[80px] bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -262,7 +358,7 @@ export default function StrategyBuilder() {
                   <Input type="number" value={strategy.stopLossValue} onChange={e => setStrategy(s => ({ ...s, stopLossValue: +e.target.value }))} className="h-8 text-sm flex-1 bg-background/40 border-border/30" />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 pt-4">
                 <Switch checked={strategy.trailingStop} onCheckedChange={v => setStrategy(s => ({ ...s, trailingStop: v }))} />
                 <span className="text-xs text-foreground">Trailing Stop</span>
               </div>
@@ -270,17 +366,31 @@ export default function StrategyBuilder() {
           </div>
         </GlowSection>
 
-        {/* Action buttons */}
+        {/* Action buttons — glassmorphic */}
         <div className="flex gap-2">
-          <Button className="flex-1 rounded-xl" variant="outline" onClick={saveStrategy} style={{ borderColor: 'hsl(var(--border) / 0.3)' }}>
-            <Save className="w-4 h-4 mr-1" /> Guardar
-          </Button>
-          <Button className="flex-1 rounded-xl" onClick={runBacktest} style={{
-            background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(190 90% 50%))`,
-            border: `1px solid hsl(${ACCENT} / 0.4)`,
-          }}>
-            <Play className="w-4 h-4 mr-1" /> Backtest
-          </Button>
+          <button
+            onClick={saveStrategy}
+            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-semibold transition-all active:scale-[0.97]"
+            style={{
+              background: 'hsl(var(--card) / 0.6)',
+              border: '1px solid hsl(var(--border) / 0.3)',
+              backdropFilter: 'blur(8px)',
+              color: 'hsl(var(--foreground))',
+            }}
+          >
+            <Save className="w-4 h-4" /> Guardar
+          </button>
+          <button
+            onClick={runBacktest}
+            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold text-white transition-all active:scale-[0.97]"
+            style={{
+              background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(190 90% 45%))`,
+              border: `1px solid hsl(${ACCENT} / 0.5)`,
+              boxShadow: `0 0 20px hsl(${ACCENT} / 0.25), inset 0 1px 0 hsl(0 0% 100% / 0.1)`,
+            }}
+          >
+            <Play className="w-4 h-4" /> Backtest
+          </button>
         </div>
 
         {/* Backtest Results */}
@@ -289,8 +399,14 @@ export default function StrategyBuilder() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
               <GlowSection color={ACCENT}>
                 <div className="p-3">
-                  <div className="text-sm font-semibold flex items-center gap-2 mb-3 text-foreground">
-                    <BarChart3 className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} /> Resultados Backtest
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{
+                      background: `hsl(${ACCENT} / 0.15)`,
+                      boxShadow: `0 0 10px hsl(${ACCENT} / 0.1)`,
+                    }}>
+                      <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground">Resultados Backtest</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {[
@@ -301,8 +417,11 @@ export default function StrategyBuilder() {
                       { label: 'Max DD', value: `${backtestResult.maxDrawdown}%`, color: '0 84% 60%' },
                       { label: 'Net P&L', value: `$${backtestResult.netPnl}`, color: backtestResult.netPnl > 0 ? '160 84% 39%' : '0 84% 60%' },
                     ].map(item => (
-                      <div key={item.label} className="rounded-xl p-2 text-center" style={{ background: 'hsl(var(--background) / 0.4)', border: '1px solid hsl(var(--border) / 0.2)' }}>
-                        <div className="text-[10px] text-muted-foreground">{item.label}</div>
+                      <div key={item.label} className="rounded-xl p-2 text-center" style={{
+                        background: 'linear-gradient(165deg, hsl(var(--card) / 0.6), hsl(var(--background) / 0.4))',
+                        border: '1px solid hsl(var(--border) / 0.15)',
+                      }}>
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.label}</div>
                         <div className="text-sm font-bold" style={item.color ? { color: `hsl(${item.color})` } : {}}>{item.value}</div>
                       </div>
                     ))}
@@ -312,7 +431,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="210 80% 55%">
                 <div className="p-3">
-                  <div className="text-xs text-muted-foreground mb-2">Curva de Equity</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Curva de Equity</div>
                   <ResponsiveContainer width="100%" height={180}>
                     <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs><linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0.4} /><stop offset="95%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0} /></linearGradient></defs>
@@ -329,7 +448,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="0 84% 60%">
                 <div className="p-3">
-                  <div className="text-xs text-muted-foreground mb-2">Drawdown (%)</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Drawdown (%)</div>
                   <ResponsiveContainer width="100%" height={120}>
                     <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs><linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.4} /><stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} /></linearGradient></defs>
@@ -345,7 +464,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="270 70% 60%">
                 <div className="p-3">
-                  <div className="text-xs text-muted-foreground mb-2">P&L Mensual</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">P&L Mensual</div>
                   <ResponsiveContainer width="100%" height={130}>
                     <BarChart data={backtestResult.monthlyReturns} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -369,13 +488,22 @@ export default function StrategyBuilder() {
         {savedStrategies.length > 0 && (
           <GlowSection color="210 80% 55%">
             <div className="p-3">
-              <div className="text-sm font-semibold mb-3 text-foreground">Estrategias Guardadas ({savedStrategies.length})</div>
+              <div className="text-sm font-semibold mb-3 text-foreground flex items-center gap-2">
+                <Save className="w-3.5 h-3.5" style={{ color: 'hsl(210 80% 55%)' }} />
+                Estrategias Guardadas
+                <Badge className="text-[10px]" style={{ background: 'hsl(210 80% 55% / 0.15)', color: 'hsl(210 80% 55%)' }}>
+                  {savedStrategies.length}
+                </Badge>
+              </div>
               <div className="space-y-2">
                 {savedStrategies.map((s, i) => (
-                  <div key={i} className="flex items-center justify-between p-2 rounded-xl" style={{ background: 'hsl(var(--background) / 0.4)', border: '1px solid hsl(var(--border) / 0.2)' }}>
+                  <div key={i} className="flex items-center justify-between p-2.5 rounded-xl transition-colors" style={{
+                    background: 'linear-gradient(165deg, hsl(var(--card) / 0.5), hsl(var(--background) / 0.4))',
+                    border: '1px solid hsl(var(--border) / 0.15)',
+                  }}>
                     <div>
                       <div className="text-sm font-medium text-foreground">{s.name}</div>
-                      <div className="text-xs text-muted-foreground">{s.rules.length} reglas · {s.pairs.join(', ')}</div>
+                      <div className="text-[11px] text-muted-foreground">{s.rules.length} reglas · {s.pairs.join(', ')}</div>
                     </div>
                     <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setStrategy({ ...s })}>
                       <Copy className="w-3 h-3" />
