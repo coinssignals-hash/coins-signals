@@ -91,7 +91,7 @@ export type TranslationKeys = {
   candle_replay_title: string;
   daily_challenges_title: string;
   risk_simulator_title: string;
-  // Settings
+  // Settings page
   settings_title: string;
   settings_profile: string;
   settings_personal_info: string;
