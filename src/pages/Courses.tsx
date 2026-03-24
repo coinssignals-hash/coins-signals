@@ -252,18 +252,8 @@ export default function Courses() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* ── Hero Card (GlowCard style) ── */}
-        <div className="relative rounded-2xl overflow-hidden" style={{
-          background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-          border: `1px solid hsl(${color} / 0.2)`,
-        }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-            background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-          }} />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-20 pointer-events-none" style={{
-            background: `radial-gradient(circle, hsl(${color} / 0.4), transparent 70%)`,
-          }} />
-
-          <div className="relative p-4 space-y-3">
+        <GlowSection color={color}>
+          <div className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
