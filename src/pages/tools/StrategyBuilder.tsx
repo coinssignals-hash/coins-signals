@@ -159,13 +159,50 @@ export default function StrategyBuilder() {
     }
     const total = 80 + Math.floor(Math.random() * 120);
     const wr = 0.4 + Math.random() * 0.25;
-    const wins = Math.round(total * wr);
-    const losses = total - wins;
-    const pf = 1 + Math.random() * 1.8;
-    const dd = 5 + Math.random() * 15;
-    const net = (wins * strategy.takeProfitRatio - losses) * strategy.stopLossValue * 0.1;
-    const sharpe = 0.5 + Math.random() * 2;
-    setBacktestResult({ totalTrades: total, wins, losses, profitFactor: +pf.toFixed(2), maxDrawdown: +dd.toFixed(1), netPnl: +net.toFixed(2), sharpe: +sharpe.toFixed(2) });
+    const riskAmt = 10000 * (strategy.riskPerTrade / 100);
+    const rr = strategy.takeProfitRatio;
+
+    // Generate equity curve
+    let balance = 10000;
+    let peak = balance;
+    let maxDD = 0;
+    let wins = 0;
+    let losses = 0;
+    let totalWinAmt = 0;
+    let totalLossAmt = 0;
+    const equityCurve: { trade: number; equity: number; drawdown: number; pnl: number }[] = [
+      { trade: 0, equity: 10000, drawdown: 0, pnl: 0 },
+    ];
+    const monthlyPnl: number[] = Array(12).fill(0);
+
+    for (let i = 0; i < total; i++) {
+      const isWin = Math.random() < wr;
+      const slippage = (Math.random() - 0.5) * riskAmt * 0.1;
+      const pnl = isWin ? riskAmt * rr + slippage : -(riskAmt + slippage * 0.5);
+      balance += pnl;
+      if (isWin) { wins++; totalWinAmt += pnl; } else { losses++; totalLossAmt += Math.abs(pnl); }
+      if (balance > peak) peak = balance;
+      const dd = peak > 0 ? ((peak - balance) / peak) * 100 : 0;
+      if (dd > maxDD) maxDD = dd;
+      equityCurve.push({ trade: i + 1, equity: +balance.toFixed(2), drawdown: +dd.toFixed(2), pnl: +pnl.toFixed(2) });
+      monthlyPnl[i % 12] += pnl;
+    }
+
+    const pf = totalLossAmt > 0 ? +(totalWinAmt / totalLossAmt).toFixed(2) : 99;
+    const net = +(balance - 10000).toFixed(2);
+    const returns = equityCurve.slice(1).map(e => e.pnl);
+    const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+    const stdDev = Math.sqrt(returns.reduce((s, r) => s + (r - avgReturn) ** 2, 0) / returns.length);
+    const sharpe = stdDev > 0 ? +((avgReturn / stdDev) * Math.sqrt(252)).toFixed(2) : 0;
+
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const monthlyReturns = months.map((m, i) => ({ month: m, pnl: +monthlyPnl[i].toFixed(2) }));
+
+    setBacktestResult({
+      totalTrades: total, wins, losses, profitFactor: pf,
+      maxDrawdown: +maxDD.toFixed(1), netPnl: net, sharpe,
+      equityCurve, monthlyReturns,
+    });
     toast({ title: 'Backtest completado' });
   };
 
