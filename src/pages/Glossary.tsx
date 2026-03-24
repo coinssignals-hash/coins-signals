@@ -5,6 +5,7 @@ import { glossaryTerms, glossaryCategories } from '@/data/glossaryData';
 import { GlowSection } from '@/components/ui/glow-section';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, BookOpen, ChevronDown, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function Glossary() {
   const [search, setSearch] = useState('');
