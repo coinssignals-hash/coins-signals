@@ -784,6 +784,7 @@ export default function TradingJournal() {
               )}
             </>
           )}
+        </div>
         </>)}
       </main>
     </PageShell>
