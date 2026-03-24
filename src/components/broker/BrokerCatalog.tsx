@@ -609,14 +609,8 @@ export function BrokerCatalog({
       })}
 
       {/* Generic CSV */}
-      <div
-        className="relative rounded-2xl overflow-hidden"
-        style={{
-          background: 'linear-gradient(165deg, hsl(var(--muted) / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-          border: '1px solid hsl(var(--border) / 0.3)',
-        }}
-      >
-        <div className="relative z-[2] p-3 flex items-center justify-between">
+      <GlowSection color="var(--muted)">
+        <div className="p-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
@@ -646,7 +640,7 @@ export function BrokerCatalog({
             </span>
           </button>
         </div>
-      </div>
+      </GlowSection>
     </div>
   );
 }
