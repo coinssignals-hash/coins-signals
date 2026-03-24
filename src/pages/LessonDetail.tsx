@@ -274,12 +274,51 @@ export default function LessonDetail() {
     <PageShell>
       <Header />
 
-      <main className="py-4 px-4 pb-28 space-y-4">
-        {/* Back */}
-        <Link to="/courses" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          {t('lesson_back')}
-        </Link>
+      <main className="py-3 px-3 pb-28 max-w-lg mx-auto space-y-4">
+        {/* Premium Hero Header */}
+        <div className="relative overflow-hidden rounded-2xl" style={{
+          background: `linear-gradient(165deg, hsl(190 80% 55% / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+          border: `1px solid hsl(190 80% 55% / 0.2)`,
+        }}>
+          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, hsl(190 80% 55% / 0.7), transparent)`,
+          }} />
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{
+            background: `radial-gradient(circle, hsl(190 80% 55%), transparent 70%)`,
+          }} />
+          <div className="relative flex items-center gap-3 px-3 py-3">
+            <Link
+              to="/courses"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+              style={{
+                background: 'hsl(var(--card) / 0.85)',
+                border: '1px solid hsl(var(--border) / 0.6)',
+                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+            </Link>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+              background: `linear-gradient(135deg, hsl(190 80% 55% / 0.2), hsl(190 80% 55% / 0.08))`,
+              border: `1px solid hsl(190 80% 55% / 0.3)`,
+              boxShadow: `0 0 12px hsl(190 80% 55% / 0.15)`,
+            }}>
+              <BookOpen className="w-5 h-5" style={{ color: 'hsl(190 80% 55%)' }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{lesson.module}</p>
+              <h1 className="text-sm font-bold text-foreground truncate">{lesson.title}</h1>
+            </div>
+            {isCompleted && (
+              <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{
+                background: 'hsl(142 60% 50% / 0.15)',
+                border: '1px solid hsl(142 60% 50% / 0.3)',
+              }}>
+                <CheckCircle className="w-4 h-4" style={{ color: 'hsl(142 60% 50%)' }} />
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Media Player */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
