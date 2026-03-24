@@ -194,7 +194,7 @@ export default function Forum() {
         const displayOptB = translatedTopic?.option_b || topic.option_b;
 
         return (
-        <GlowCard color="210 70% 55%">
+        <GlowSection color="210 70% 55%">
           {/* Image area with admin upload */}
           <div className="relative">
             {topic.image_url ? (
@@ -267,7 +267,7 @@ export default function Forum() {
               })}
             </div>
           </CardContent>
-        </GlowCard>
+        </GlowSection>
         );
       })()}
 
@@ -275,7 +275,7 @@ export default function Forum() {
       {showPastTopics ? (
         <PastTopicsBrowser onClose={() => setShowPastTopics(false)} />
       ) : (
-        <GlowCard color="210 70% 55%" className="rounded-xl">
+        <GlowSection color="210 70% 55%" className="rounded-xl">
           <button
             onClick={() => setShowPastTopics(true)}
             className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -283,14 +283,14 @@ export default function Forum() {
             <Calendar className="w-3.5 h-3.5" />
             Ver temas anteriores
           </button>
-        </GlowCard>
+        </GlowSection>
       )}
 
       {/* Tomorrow's Suggestions */}
       <TomorrowSuggestions />
 
       {/* Tabs: Channels / DMs / Favorites */}
-      <GlowCard color="210 70% 55%" className="rounded-xl">
+      <GlowSection color="210 70% 55%" className="rounded-xl">
         <div className="flex gap-2 p-1.5">
           <button
             onClick={() => setView('channels')}
@@ -314,7 +314,7 @@ export default function Forum() {
             <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
           </button>
         </div>
-      </GlowCard>
+      </GlowSection>
 
       {/* Channel list */}
       {channelsLoading ? (
@@ -322,7 +322,7 @@ export default function Forum() {
       ) : (
         <div className="space-y-2">
           {channels.map(ch => (
-            <GlowCard key={ch.id} color="210 70% 55%" className="rounded-xl">
+            <GlowSection key={ch.id} color="210 70% 55%" className="rounded-xl">
               <button
                 onClick={() => openChannel(ch.id, ch.name, ch.icon)}
                 className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
@@ -334,7 +334,7 @@ export default function Forum() {
                 </div>
                 <Hash className="w-4 h-4 text-muted-foreground" />
               </button>
-            </GlowCard>
+            </GlowSection>
           ))}
         </div>
       )}
@@ -344,7 +344,7 @@ export default function Forum() {
   // ═══ DM CONVERSATIONS LIST ═══
   const renderDMsView = () => (
     <div className="space-y-4">
-      <GlowCard color="210 70% 55%" className="rounded-xl">
+      <GlowSection color="210 70% 55%" className="rounded-xl">
         <div className="flex gap-2 p-1.5">
           <button
             onClick={() => setView('channels')}
@@ -362,29 +362,29 @@ export default function Forum() {
             <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
           </button>
         </div>
-      </GlowCard>
+      </GlowSection>
 
       {!user ? (
-        <GlowCard color="210 70% 55%">
+        <GlowSection color="210 70% 55%">
           <div className="p-6 text-center space-y-2">
             <Users className="w-8 h-8 text-muted-foreground mx-auto" />
             <p className="text-sm text-muted-foreground">Inicia sesión para ver tus mensajes directos</p>
             <Link to="/auth" className="text-xs text-primary font-bold hover:underline">Iniciar Sesión</Link>
           </div>
-        </GlowCard>
+        </GlowSection>
       ) : convosLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : conversations.length === 0 ? (
-        <GlowCard color="210 70% 55%">
+        <GlowSection color="210 70% 55%">
           <div className="p-6 text-center">
             <MessageCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">No tienes conversaciones aún</p>
           </div>
-        </GlowCard>
+        </GlowSection>
       ) : (
         <div className="space-y-2">
           {conversations.map(c => (
-            <GlowCard key={c.user_id} color="210 70% 55%" className="rounded-xl">
+            <GlowSection key={c.user_id} color="210 70% 55%" className="rounded-xl">
               <button
                 onClick={() => openDM(c.user_id, c.user_name)}
                 className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
@@ -404,7 +404,7 @@ export default function Forum() {
                   <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5">{c.unread_count}</Badge>
                 )}
               </button>
-            </GlowCard>
+            </GlowSection>
           ))}
         </div>
       )}
@@ -849,7 +849,7 @@ export default function Forum() {
         {view === 'favorites' && (
           <div className="space-y-4">
             {/* Tabs */}
-            <GlowCard color="210 70% 55%" className="rounded-xl">
+            <GlowSection color="210 70% 55%" className="rounded-xl">
               <div className="flex gap-2 p-1.5">
                 <button onClick={() => setView('channels')} className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">
                   <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
@@ -861,7 +861,7 @@ export default function Forum() {
                   <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
                 </button>
               </div>
-            </GlowCard>
+            </GlowSection>
             <FavoriteUsersPanel
               favorites={favorites}
               loading={favsLoading}
