@@ -322,7 +322,7 @@ export default function Courses() {
               ))}
             </div>
           </div>
-        </div>
+        </GlowSection>
 
         {/* ── Category Tabs (grid like MarketSessions) ── */}
         <div className={cn('grid gap-1', categories.length <= 5 ? 'grid-cols-5' : 'grid-cols-5')}>
