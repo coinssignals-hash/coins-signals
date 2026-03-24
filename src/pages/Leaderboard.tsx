@@ -198,11 +198,11 @@ export default function Leaderboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </GlowSection>
                 </motion.div>
               );
             })}
-                  </GlowSection>
+          </div>
         )}
       </div>
     </PageShell>

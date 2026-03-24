@@ -181,7 +181,7 @@ export default function TradingCompetitions() {
                       </Button>
                     )}
                   </div>
-                </div>
+                </GlowSection>
               </motion.div>
             );
           })}
