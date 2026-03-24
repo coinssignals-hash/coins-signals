@@ -178,37 +178,52 @@ export default function LinkBroker() {
       <Header />
 
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        {/* Header — glassmorphism back button like MarketSessions */}
-        <div className="flex items-center gap-3 mb-1">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
-            style={{
-              background: 'hsl(var(--card) / 0.85)',
-              border: '1px solid hsl(var(--border) / 0.6)',
-              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
-            }}
-          >
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <Monitor className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
-            <div className="min-w-0">
+        {/* Premium Hero Header */}
+        <div className="relative overflow-hidden rounded-2xl" style={{
+          background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+          border: `1px solid hsl(${ACCENT} / 0.2)`,
+        }}>
+          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)`,
+          }} />
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{
+            background: `radial-gradient(circle, hsl(${ACCENT}), transparent 70%)`,
+          }} />
+          <div className="relative flex items-center gap-3 px-3 py-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+              style={{
+                background: 'hsl(var(--card) / 0.85)',
+                border: '1px solid hsl(var(--border) / 0.6)',
+                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+              background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+              border: `1px solid hsl(${ACCENT} / 0.3)`,
+              boxShadow: `0 0 12px hsl(${ACCENT} / 0.15)`,
+            }}>
+              <Monitor className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+            </div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-base font-bold text-foreground truncate">{t('lb_manage_accounts')}</h1>
               <p className="text-[10px] text-muted-foreground truncate">{t('lb_invest_safely')}</p>
             </div>
+            <button
+              onClick={() => refetch()}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+              style={{
+                background: 'hsl(var(--card) / 0.85)',
+                border: '1px solid hsl(var(--border) / 0.6)',
+                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+              }}
+            >
+              <RefreshCw className={cn("w-4 h-4 text-muted-foreground", loading && "animate-spin")} />
+            </button>
           </div>
-          <button
-            onClick={() => refetch()}
-            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
-            style={{
-              background: 'hsl(var(--card) / 0.85)',
-              border: '1px solid hsl(var(--border) / 0.6)',
-              boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
-            }}
-          >
-            <RefreshCw className={cn("w-4 h-4 text-muted-foreground", loading && "animate-spin")} />
-          </button>
         </div>
 
         {/* Auth banner */}
