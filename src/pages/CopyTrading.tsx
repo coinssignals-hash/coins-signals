@@ -13,6 +13,7 @@ import {
   Copy, Users, TrendingUp, Eye, EyeOff,
   DollarSign, Percent, Zap, CheckCircle2
 } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 
 interface TopTrader {
   id: string; alias: string; avatar: string; country: string;

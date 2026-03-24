@@ -15,6 +15,7 @@ import {
   Plus, Trash2, Play, Save, TrendingUp, TrendingDown, Layers,
   BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy
 } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 
 type ConditionOperator = 'crosses_above' | 'crosses_below' | 'greater_than' | 'less_than' | 'equals';
 type LogicGate = 'AND' | 'OR';

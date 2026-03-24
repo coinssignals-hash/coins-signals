@@ -11,6 +11,7 @@ import {
   Trophy, Swords, Clock, Users, Gift, Target,
   Medal, Timer, Zap, Lock, Shield, CheckCircle2
 } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 
 type CompStatus = 'active' | 'upcoming' | 'ended';
 

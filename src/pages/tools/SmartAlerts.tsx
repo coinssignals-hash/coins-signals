@@ -13,6 +13,7 @@ import {
   Bell, BellRing, Plus, Trash2, Zap, TrendingUp, TrendingDown,
   Activity, Clock, AlertTriangle, Volume2, VolumeX
 } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 
 type AlertType = 'price' | 'indicator' | 'pattern' | 'news' | 'volatility';
 type AlertStatus = 'active' | 'triggered' | 'paused';

@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp, Flame, Target, Star, Users, AlertCircle } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
 import { useLeaderboard, LeaderboardPeriod, LeaderboardCategory } from '@/hooks/useLeaderboard';
 
 const ACCENT = '45 95% 55%';
