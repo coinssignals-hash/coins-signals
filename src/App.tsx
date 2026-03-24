@@ -188,6 +188,10 @@ function AnimatedRoutes() {
           <Route path="/tools/institutional-calendar" element={<InstitutionalCalendar />} />
           <Route path="/tools/market-sessions" element={<MarketSessions />} />
           <Route path="/forum" element={<Forum />} />
+          <Route path="/tools/paper-trading" element={<PaperTrading />} />
+          <Route path="/tools/candle-replay" element={<CandleReplay />} />
+          <Route path="/tools/daily-challenges" element={<DailyChallenges />} />
+          <Route path="/tools/risk-simulator" element={<RiskSimulator />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
