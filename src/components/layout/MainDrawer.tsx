@@ -249,8 +249,22 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
                 const showNewsBadge = item.href === '/news' && newsCount > 0 && !isActive;
                 const showSavedBadge = item.href === '/news/saved' && savedNewsCount > 0;
 
-                return (
-                  <Link
+                  return item.href === '#update-app' ? (
+                    <button
+                      key={item.href}
+                      onClick={() => { onOpenChange(false); handleForceUpdate(); }}
+                      className={cn(
+                        'group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all relative w-full text-left',
+                        'text-white/50 hover:text-white/80 hover:bg-white/[0.03]'
+                      )}
+                    >
+                      <div className="relative flex items-center justify-center w-5">
+                        <Icon className="w-[18px] h-[18px] transition-colors group-hover:text-white/60" />
+                      </div>
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
                     key={item.href}
                     to={item.href}
                     onClick={() => onOpenChange(false)}
