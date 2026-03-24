@@ -315,6 +315,37 @@ export default function TradingJournal() {
           </div>
         </div>
 
+        {/* Tab Bar */}
+        <div className="flex rounded-xl overflow-hidden" style={{ border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+          {([
+            { key: 'journal' as const, label: '📊 Diario', icon: BookOpen },
+            { key: 'psychology' as const, label: '🧠 Psicología', icon: Brain },
+            { key: 'coach' as const, label: '✨ Coach IA', icon: Sparkles },
+          ]).map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              className="flex-1 px-3 py-2 text-xs font-bold transition-all"
+              style={{
+                background: activeTab === tab.key ? `hsl(${ACCENT} / 0.15)` : 'hsl(var(--secondary))',
+                color: activeTab === tab.key ? `hsl(${ACCENT})` : 'hsl(var(--muted-foreground))',
+              }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Psychology Tab */}
+        {activeTab === 'psychology' && (
+          <PsychologyTracker entries={psychEntries} onEntriesChange={setPsychEntries} />
+        )}
+
+        {/* Coach IA Tab */}
+        {activeTab === 'coach' && (
+          <JournalCoach journalEntries={entries} psychologyEntries={psychEntries} />
+        )}
+
+        {/* Journal Tab */}
+        {activeTab === 'journal' && (<>
+
         {/* Stats Overview */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
