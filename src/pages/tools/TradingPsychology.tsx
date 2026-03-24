@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { PageShell } from '@/components/layout/PageShell';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
