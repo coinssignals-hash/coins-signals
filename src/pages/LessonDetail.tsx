@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { QuizModule } from '@/components/courses/QuizModule';
+import { moduleQuizzes } from '@/data/quizData';
 
 interface Lesson { id: string; title: string; duration: string; }
 
