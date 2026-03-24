@@ -153,6 +153,7 @@ export default function Glossary() {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  </GlowSection>
                 </button>
               </motion.div>
             );

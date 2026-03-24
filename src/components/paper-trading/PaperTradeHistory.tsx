@@ -46,7 +46,7 @@ export function PaperTradeHistory({ history }: Props) {
                 <span className="text-[10px] text-muted-foreground">{trade.closedAt}</span>
               </div>
             </div>
-          </div>
+          </GlowSection>
         );
       })}
     </div>

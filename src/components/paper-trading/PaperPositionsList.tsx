@@ -56,7 +56,7 @@ export function PaperPositionsList({ positions, getPnl, onClose }: Props) {
                 </Button>
               </div>
             </div>
-          </div>
+           </GlowSection>
         );
       })}
     </div>

@@ -167,7 +167,7 @@ export default function CopyTrading() {
                       )}
                     </AnimatePresence>
                   </div>
-                </div>
+                </GlowSection>
               </motion.div>
             );
           })}

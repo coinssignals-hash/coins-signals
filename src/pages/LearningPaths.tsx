@@ -180,7 +180,7 @@ export default function LearningPaths() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </GlowSection>
               </motion.div>
             );
           })}
