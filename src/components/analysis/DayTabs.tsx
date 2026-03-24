@@ -61,15 +61,13 @@ export function DayTabs({ selectedDay, onSelectDay, onAICenter, onRefresh, isLoa
           </button>
         )}
 
-        {onRefresh && (
-          <button
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="flex items-center justify-center w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 active:scale-90 transition-all duration-200 disabled:opacity-50"
-            title={t('analysis_refresh')}>
-            <RefreshCw className={cn('w-3.5 h-3.5 text-cyan-400', isLoading && 'animate-spin')} />
-          </button>
-        )}
+        <button
+          onClick={() => navigate('/tools/strategy-builder')}
+          className="flex items-center justify-center gap-0.5 px-1.5 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 active:scale-90 transition-all duration-200"
+          title={t('drawer_strategy_builder') || 'Constructor de Estrategias'}>
+          <Blocks className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="text-[9px] font-semibold text-cyan-300 tracking-wide">{t('drawer_strategy_builder') || 'Estrategias'}</span>
+        </button>
       </div>
 
       {open && (
