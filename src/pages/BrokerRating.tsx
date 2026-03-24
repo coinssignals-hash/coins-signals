@@ -443,7 +443,7 @@ export default function BrokerRating() {
                       </Select>
                     </div>
                   </div>
-                </div>
+                </GlowSection>
               </motion.div>
             )}
           </CardContent>
