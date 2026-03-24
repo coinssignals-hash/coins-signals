@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import {
   Trophy, Swords, Clock, Users, Gift, Target,
-  Medal, Timer, Zap, Lock, Shield, CheckCircle2
+  Medal, Timer, Zap, Lock, Shield, CheckCircle2, ArrowLeft
 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
+import { useNavigate } from 'react-router-dom';
 
 type CompStatus = 'active' | 'upcoming' | 'ended';
 
@@ -44,6 +44,7 @@ const ACCENT = '45 95% 55%';
 
 export default function TradingCompetitions() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | CompStatus>('all');
   const [joined, setJoined] = useState<Record<string, boolean>>({ '1': true, '2': true });
 
@@ -54,6 +55,50 @@ export default function TradingCompetitions() {
   return (
     <PageShell>
       <Header />
+
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)`,
+        }} />
+
+        <div className="relative px-4 py-5">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
+              style={{ background: `hsl(${ACCENT} / 0.1)`, border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+              <ArrowLeft className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
+                border: `1px solid hsl(${ACCENT} / 0.3)`,
+                boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
+              }}>
+                <Swords className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">
+                  {t('drawer_competitions') || 'Competencias'}
+                </h1>
+                <p className="text-[11px] text-muted-foreground">
+                  Torneos de trading y desafíos competitivos
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="h-px" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.3), transparent)`,
+        }} />
+      </div>
+
       <div className="max-w-lg mx-auto space-y-4 pb-24 px-4 pt-4">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
@@ -64,23 +109,32 @@ export default function TradingCompetitions() {
           ].map(s => (
             <GlowSection key={s.label} color={s.color}>
               <div className="p-3 text-center">
-                <s.icon className="w-5 h-5 mx-auto mb-1" style={{ color: `hsl(${s.color})` }} />
+                <div className="w-7 h-7 mx-auto mb-1.5 rounded-lg flex items-center justify-center" style={{
+                  background: `hsl(${s.color} / 0.15)`,
+                  boxShadow: `0 0 10px hsl(${s.color} / 0.1)`,
+                }}>
+                  <s.icon className="w-4 h-4" style={{ color: `hsl(${s.color})` }} />
+                </div>
                 <div className="text-lg font-bold text-foreground">{s.value}</div>
-                <div className="text-[10px] text-muted-foreground">{s.label}</div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
               </div>
             </GlowSection>
           ))}
         </div>
 
-        {/* Filter */}
-        <div className="flex rounded-xl p-1" style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border) / 0.3)' }}>
+        {/* Filter — glassmorphic */}
+        <div className="flex rounded-xl p-1" style={{
+          background: 'hsl(var(--card) / 0.6)',
+          border: '1px solid hsl(var(--border) / 0.15)',
+          backdropFilter: 'blur(8px)',
+        }}>
           {([['all', 'Todos'], ['active', 'Activos'], ['upcoming', 'Próximos'], ['ended', 'Finalizados']] as const).map(([key, label]) => (
             <button key={key}
               className="flex-1 py-2 text-[11px] font-semibold rounded-lg transition-all"
               style={filter === key ? {
-                background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+                background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
                 color: 'hsl(var(--primary-foreground))',
-                boxShadow: `0 2px 8px hsl(${ACCENT} / 0.3)`,
+                boxShadow: `0 2px 10px hsl(${ACCENT} / 0.3)`,
               } : { color: 'hsl(var(--muted-foreground))' }}
               onClick={() => setFilter(key)}
             >{label}</button>
@@ -99,26 +153,33 @@ export default function TradingCompetitions() {
             return (
               <motion.div key={comp.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
                 <GlowSection color={typeColor}>
-                  <div className="p-4 space-y-3">
+                  <div className="p-4 space-y-3" style={{ borderLeft: `3px solid hsl(${typeColor})` }}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-xl" style={{ background: `hsl(${typeColor} / 0.1)` }}>
-                          <Icon className="w-5 h-5" style={{ color: `hsl(${typeColor})` }} />
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{
+                          background: `hsl(${typeColor} / 0.15)`,
+                          boxShadow: `0 0 10px hsl(${typeColor} / 0.1)`,
+                        }}>
+                          <Icon className="w-4 h-4" style={{ color: `hsl(${typeColor})` }} />
                         </div>
                         <div>
                           <div className="text-sm font-bold leading-tight text-foreground">{comp.name}</div>
                           <div className="text-[10px] text-muted-foreground mt-0.5">{comp.description}</div>
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-[9px] shrink-0" style={{
+                      <Badge variant="outline" className="text-[9px] shrink-0 font-semibold" style={{
                         borderColor: `hsl(${statusCfg.color} / 0.4)`,
                         color: `hsl(${statusCfg.color})`,
                         background: `hsl(${statusCfg.color} / 0.1)`,
                       }}>{statusCfg.label}</Badge>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs" style={{ color: `hsl(${ACCENT})` }}>
-                      <Gift className="w-3 h-3" /> {comp.prizePool}
+                    <div className="flex items-center gap-2 text-xs rounded-lg px-2.5 py-1.5" style={{
+                      background: `hsl(${ACCENT} / 0.06)`,
+                      border: `1px solid hsl(${ACCENT} / 0.1)`,
+                      color: `hsl(${ACCENT})`,
+                    }}>
+                      <Gift className="w-3.5 h-3.5" /> <span className="font-semibold">{comp.prizePool}</span>
                     </div>
 
                     <div className="flex items-center justify-between text-[10px] text-muted-foreground">
@@ -131,14 +192,16 @@ export default function TradingCompetitions() {
                     <Progress value={fillPct} className="h-1.5" />
 
                     {comp.myRank && joined[comp.id] && (
-                      <div className="flex items-center justify-between p-2 rounded-xl" style={{
-                        background: `hsl(${typeColor} / 0.05)`,
-                        border: `1px solid hsl(${typeColor} / 0.2)`,
+                      <div className="flex items-center justify-between p-2.5 rounded-xl" style={{
+                        background: `linear-gradient(165deg, hsl(${typeColor} / 0.08), hsl(var(--background) / 0.4))`,
+                        border: `1px solid hsl(${typeColor} / 0.15)`,
                       }}>
-                        <span className="text-xs text-foreground">Tu posición</span>
+                        <span className="text-xs text-foreground font-medium">Tu posición</span>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">#{comp.myRank}</Badge>
-                          <span className="text-xs font-bold" style={{ color: `hsl(160 84% 39%)` }}>
+                          <Badge variant="outline" className="text-xs font-bold" style={{
+                            borderColor: `hsl(${typeColor} / 0.3)`, color: `hsl(${typeColor})`,
+                          }}>#{comp.myRank}</Badge>
+                          <span className="text-xs font-bold" style={{ color: 'hsl(160 84% 39%)' }}>
                             {comp.type === 'pnl' && `$${comp.myScore?.toLocaleString()}`}
                             {comp.type === 'winrate' && `${comp.myScore}%`}
                           </span>
@@ -147,22 +210,25 @@ export default function TradingCompetitions() {
                     )}
 
                     {comp.topPlayers.length > 0 && (
-                      <div className="space-y-1">
+                      <div className="space-y-1 rounded-xl p-2" style={{
+                        background: 'hsl(var(--background) / 0.3)',
+                        border: '1px solid hsl(var(--border) / 0.1)',
+                      }}>
                         {comp.topPlayers.map((p, pi) => (
-                          <div key={pi} className="flex items-center justify-between text-xs py-1">
+                          <div key={pi} className="flex items-center justify-between text-xs py-1 px-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground w-4">{pi === 0 ? '🥇' : pi === 1 ? '🥈' : '🥉'}</span>
-                              <span className="text-foreground">{p.alias}</span>
+                              <span className="w-5 text-center">{pi === 0 ? '🥇' : pi === 1 ? '🥈' : '🥉'}</span>
+                              <span className="text-foreground font-medium">{p.alias}</span>
                               <span className="text-[10px]">{p.country}</span>
                             </div>
-                            <span className="font-bold font-mono text-foreground">{p.score}</span>
+                            <span className="font-bold font-mono" style={{ color: `hsl(${typeColor})` }}>{p.score}</span>
                           </div>
                         ))}
                       </div>
                     )}
 
                     {comp.rules.length > 0 && (
-                      <div className="text-[10px] text-muted-foreground space-y-0.5 border-t pt-2" style={{ borderColor: 'hsl(var(--border) / 0.2)' }}>
+                      <div className="text-[10px] text-muted-foreground space-y-0.5 border-t pt-2" style={{ borderColor: `hsl(${typeColor} / 0.1)` }}>
                         {comp.rules.map((r, ri) => (
                           <div key={ri} className="flex items-center gap-1">
                             <span style={{ color: `hsl(${typeColor})` }}>•</span> {r}
@@ -172,13 +238,22 @@ export default function TradingCompetitions() {
                     )}
 
                     {comp.status !== 'ended' && (
-                      <Button className="w-full h-9 text-xs rounded-xl" onClick={() => !joined[comp.id] && joinComp(comp.id)} disabled={joined[comp.id]}
-                        style={joined[comp.id] ? { background: 'hsl(var(--muted))', color: 'hsl(var(--muted-foreground))' } : {
-                          background: `linear-gradient(135deg, hsl(${typeColor}), hsl(${typeColor} / 0.8))`,
-                          border: `1px solid hsl(${typeColor} / 0.4)`,
+                      <button
+                        className="w-full flex items-center justify-center gap-1 h-9 text-xs font-bold rounded-xl transition-all active:scale-[0.97]"
+                        onClick={() => !joined[comp.id] && joinComp(comp.id)}
+                        disabled={joined[comp.id]}
+                        style={joined[comp.id] ? {
+                          background: 'hsl(var(--muted) / 0.5)',
+                          color: 'hsl(var(--muted-foreground))',
+                          border: '1px solid hsl(var(--border) / 0.15)',
+                        } : {
+                          background: `linear-gradient(165deg, hsl(${typeColor}), hsl(${typeColor} / 0.8))`,
+                          border: `1px solid hsl(${typeColor} / 0.5)`,
+                          boxShadow: `0 0 15px hsl(${typeColor} / 0.2)`,
+                          color: 'white',
                         }}>
-                        {joined[comp.id] ? <><CheckCircle2 className="w-3 h-3 mr-1" /> Inscrito</> : comp.tier === 'premium' ? <><Lock className="w-3 h-3 mr-1" /> Inscribirse (Premium)</> : <><Swords className="w-3 h-3 mr-1" /> Participar</>}
-                      </Button>
+                        {joined[comp.id] ? <><CheckCircle2 className="w-3 h-3" /> Inscrito</> : comp.tier === 'premium' ? <><Lock className="w-3 h-3" /> Inscribirse (Premium)</> : <><Swords className="w-3 h-3" /> Participar</>}
+                      </button>
                     )}
                   </div>
                 </GlowSection>
