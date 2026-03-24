@@ -5,8 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, LineChart, TrendingUp, DollarSign, Calendar, Info, Percent } from 'lucide-react';
+import { LineChart, TrendingUp, DollarSign, Calendar, Info, Percent } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTranslation } from '@/i18n/LanguageContext';
 

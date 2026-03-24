@@ -7,9 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Scale, Target, ShieldAlert, Info, Calculator, Layers } from 'lucide-react';
+import { Scale, Target, ShieldAlert, Info, Calculator, Layers } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { toast } from 'sonner';
 

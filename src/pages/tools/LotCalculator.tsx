@@ -5,8 +5,7 @@ import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calculator, ArrowLeft, Info, TrendingDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Calculator, Info, TrendingDown } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
 

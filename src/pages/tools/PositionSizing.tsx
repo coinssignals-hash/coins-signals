@@ -6,9 +6,8 @@ import { ToolCard, ToolPageHeader } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Target, ShieldAlert, DollarSign, Layers, Info } from 'lucide-react';
+import { Target, ShieldAlert, DollarSign, Layers, Info } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 const PAIRS = [
