@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAchievements, ACHIEVEMENTS } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
+import { JournalCoach } from '@/components/journal/JournalCoach';
+import { PsychologyTracker, loadPsychEntries, type PsychEntry } from '@/components/journal/PsychologyTracker';
 import { Header } from '@/components/layout/Header';
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
@@ -16,7 +18,7 @@ import {
   ArrowLeft, BookOpen, Plus, Trash2, TrendingUp, TrendingDown,
   Calendar, DollarSign, Target, ShieldAlert, FileText, BarChart3,
   Loader2, LogIn, Pencil, Clock, Play, CheckCircle2, XCircle, ChevronDown,
-  ChevronLeft, ChevronRight, Trophy
+  ChevronLeft, ChevronRight, Trophy, Brain, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSymbolVisual } from '@/components/analysis/symbolVisuals';
@@ -71,6 +73,8 @@ export default function TradingJournal() {
   const [filterResult, setFilterResult] = useState<string>('all');
   const [filterPeriod, setFilterPeriod] = useState<'all' | 'week' | 'month'>('all');
   const [periodAnchor, setPeriodAnchor] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState<'journal' | 'psychology' | 'coach'>('journal');
+  const [psychEntries, setPsychEntries] = useState<PsychEntry[]>(loadPsychEntries);
 
   const periodRange = useMemo(() => {
     if (filterPeriod === 'week') {
@@ -310,6 +314,37 @@ export default function TradingJournal() {
             <h1 className="text-lg font-bold text-foreground">{t('journal_title')}</h1>
           </div>
         </div>
+
+        {/* Tab Bar */}
+        <div className="flex rounded-xl overflow-hidden" style={{ border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+          {([
+            { key: 'journal' as const, label: '📊 Diario', icon: BookOpen },
+            { key: 'psychology' as const, label: '🧠 Psicología', icon: Brain },
+            { key: 'coach' as const, label: '✨ Coach IA', icon: Sparkles },
+          ]).map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              className="flex-1 px-3 py-2 text-xs font-bold transition-all"
+              style={{
+                background: activeTab === tab.key ? `hsl(${ACCENT} / 0.15)` : 'hsl(var(--secondary))',
+                color: activeTab === tab.key ? `hsl(${ACCENT})` : 'hsl(var(--muted-foreground))',
+              }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Psychology Tab */}
+        {activeTab === 'psychology' && (
+          <PsychologyTracker entries={psychEntries} onEntriesChange={setPsychEntries} />
+        )}
+
+        {/* Coach IA Tab */}
+        {activeTab === 'coach' && (
+          <JournalCoach journalEntries={entries} psychologyEntries={psychEntries} />
+        )}
+
+        {/* Journal Tab */}
+        {activeTab === 'journal' && (<>
 
         {/* Stats Overview */}
         <motion.div
@@ -750,6 +785,7 @@ export default function TradingJournal() {
             </>
           )}
         </div>
+        </>)}
       </main>
     </PageShell>
   );
