@@ -69,6 +69,9 @@ const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCale
 const MarketSessions = lazy(() => import("./pages/tools/MarketSessions"));
 const CurrencyConverter = lazy(() => import("./pages/tools/CurrencyConverter"));
 const Forum = lazy(() => import("./pages/Forum"));
+const Glossary = lazy(() => import("./pages/Glossary"));
+const LearningPathsPage = lazy(() => import("./pages/LearningPaths"));
+const Certifications = lazy(() => import("./pages/Certifications"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
