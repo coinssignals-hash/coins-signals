@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart, ComposedChart } from 'recharts';
 import {
   Plus, Trash2, Play, Save, TrendingUp, TrendingDown, ArrowRight, Layers,
   BarChart3, Activity, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Download
@@ -96,6 +97,8 @@ export default function StrategyBuilder() {
   const [backtestResult, setBacktestResult] = useState<null | {
     totalTrades: number; wins: number; losses: number; profitFactor: number;
     maxDrawdown: number; netPnl: number; sharpe: number;
+    equityCurve: { trade: number; equity: number; drawdown: number; pnl: number }[];
+    monthlyReturns: { month: string; pnl: number }[];
   }>(null);
 
   const addRule = (action: 'BUY' | 'SELL') => {
@@ -156,13 +159,50 @@ export default function StrategyBuilder() {
     }
     const total = 80 + Math.floor(Math.random() * 120);
     const wr = 0.4 + Math.random() * 0.25;
-    const wins = Math.round(total * wr);
-    const losses = total - wins;
-    const pf = 1 + Math.random() * 1.8;
-    const dd = 5 + Math.random() * 15;
-    const net = (wins * strategy.takeProfitRatio - losses) * strategy.stopLossValue * 0.1;
-    const sharpe = 0.5 + Math.random() * 2;
-    setBacktestResult({ totalTrades: total, wins, losses, profitFactor: +pf.toFixed(2), maxDrawdown: +dd.toFixed(1), netPnl: +net.toFixed(2), sharpe: +sharpe.toFixed(2) });
+    const riskAmt = 10000 * (strategy.riskPerTrade / 100);
+    const rr = strategy.takeProfitRatio;
+
+    // Generate equity curve
+    let balance = 10000;
+    let peak = balance;
+    let maxDD = 0;
+    let wins = 0;
+    let losses = 0;
+    let totalWinAmt = 0;
+    let totalLossAmt = 0;
+    const equityCurve: { trade: number; equity: number; drawdown: number; pnl: number }[] = [
+      { trade: 0, equity: 10000, drawdown: 0, pnl: 0 },
+    ];
+    const monthlyPnl: number[] = Array(12).fill(0);
+
+    for (let i = 0; i < total; i++) {
+      const isWin = Math.random() < wr;
+      const slippage = (Math.random() - 0.5) * riskAmt * 0.1;
+      const pnl = isWin ? riskAmt * rr + slippage : -(riskAmt + slippage * 0.5);
+      balance += pnl;
+      if (isWin) { wins++; totalWinAmt += pnl; } else { losses++; totalLossAmt += Math.abs(pnl); }
+      if (balance > peak) peak = balance;
+      const dd = peak > 0 ? ((peak - balance) / peak) * 100 : 0;
+      if (dd > maxDD) maxDD = dd;
+      equityCurve.push({ trade: i + 1, equity: +balance.toFixed(2), drawdown: +dd.toFixed(2), pnl: +pnl.toFixed(2) });
+      monthlyPnl[i % 12] += pnl;
+    }
+
+    const pf = totalLossAmt > 0 ? +(totalWinAmt / totalLossAmt).toFixed(2) : 99;
+    const net = +(balance - 10000).toFixed(2);
+    const returns = equityCurve.slice(1).map(e => e.pnl);
+    const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+    const stdDev = Math.sqrt(returns.reduce((s, r) => s + (r - avgReturn) ** 2, 0) / returns.length);
+    const sharpe = stdDev > 0 ? +((avgReturn / stdDev) * Math.sqrt(252)).toFixed(2) : 0;
+
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const monthlyReturns = months.map((m, i) => ({ month: m, pnl: +monthlyPnl[i].toFixed(2) }));
+
+    setBacktestResult({
+      totalTrades: total, wins, losses, profitFactor: pf,
+      maxDrawdown: +maxDD.toFixed(1), netPnl: net, sharpe,
+      equityCurve, monthlyReturns,
+    });
     toast({ title: 'Backtest completado' });
   };
 
@@ -389,7 +429,8 @@ export default function StrategyBuilder() {
         {/* Backtest Results */}
         <AnimatePresence>
           {backtestResult && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-3">
+              {/* Stats grid */}
               <Card className="bg-card/80 backdrop-blur border-emerald-500/30">
                 <CardHeader className="p-3 pb-0">
                   <CardTitle className="text-sm flex items-center gap-2">
@@ -397,7 +438,7 @@ export default function StrategyBuilder() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     {[
                       { label: 'Trades', value: backtestResult.totalTrades, color: '' },
                       { label: 'Win Rate', value: `${((backtestResult.wins / backtestResult.totalTrades) * 100).toFixed(1)}%`, color: 'text-emerald-400' },
@@ -412,6 +453,95 @@ export default function StrategyBuilder() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Equity Curve */}
+              <Card className="bg-card/80 backdrop-blur border-border/50">
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs text-muted-foreground">Curva de Equity</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 pt-0">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis dataKey="trade" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} tickFormatter={v => `$${(v / 1000).toFixed(1)}k`} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                        formatter={(v: number) => [`$${v.toLocaleString()}`, 'Equity']}
+                        labelFormatter={l => `Trade #${l}`}
+                      />
+                      <ReferenceLine y={10000} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" opacity={0.5} />
+                      <Area type="monotone" dataKey="equity" stroke="hsl(160, 84%, 39%)" fill="url(#eqGrad)" strokeWidth={2} dot={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Drawdown Chart */}
+              <Card className="bg-card/80 backdrop-blur border-border/50">
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs text-muted-foreground">Drawdown (%)</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 pt-0">
+                  <ResponsiveContainer width="100%" height={120}>
+                    <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis dataKey="trade" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} reversed tickFormatter={v => `-${v}%`} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                        formatter={(v: number) => [`-${v.toFixed(2)}%`, 'Drawdown']}
+                        labelFormatter={l => `Trade #${l}`}
+                      />
+                      <Area type="monotone" dataKey="drawdown" stroke="hsl(0, 84%, 60%)" fill="url(#ddGrad)" strokeWidth={1.5} dot={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Monthly Returns */}
+              <Card className="bg-card/80 backdrop-blur border-border/50">
+                <CardHeader className="p-3 pb-1">
+                  <CardTitle className="text-xs text-muted-foreground">P&L Mensual</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 pt-0">
+                  <ResponsiveContainer width="100%" height={130}>
+                    <BarChart data={backtestResult.monthlyReturns} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis dataKey="month" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} axisLine={false} tickFormatter={v => `$${v}`} />
+                      <Tooltip
+                        contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
+                        formatter={(v: number) => [`$${v.toFixed(2)}`, 'P&L']}
+                      />
+                      <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" opacity={0.5} />
+                      <Bar
+                        dataKey="pnl"
+                        radius={[4, 4, 0, 0]}
+                        fill="hsl(160, 84%, 39%)"
+                        // Color bars based on positive/negative
+                        shape={(props: any) => {
+                          const { x, y, width, height, payload } = props;
+                          const fill = payload.pnl >= 0 ? 'hsl(160, 84%, 39%)' : 'hsl(0, 84%, 60%)';
+                          return <rect x={x} y={y} width={width} height={height} fill={fill} rx={3} />;
+                        }}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
             </motion.div>
