@@ -107,6 +107,14 @@ export type TranslationKeys = {
   strategy_builder_title: string;
   smart_alerts_title: string;
   ai_coach_title: string;
+  // Phase 5 - Social & Competition
+  drawer_cat_social: string;
+  drawer_leaderboard: string;
+  drawer_copy_trading: string;
+  drawer_competitions: string;
+  leaderboard_title: string;
+  copy_trading_title: string;
+  competitions_title: string;
   // Settings page
   settings_title: string;
   settings_profile: string;

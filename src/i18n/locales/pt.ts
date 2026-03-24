@@ -1951,6 +1951,13 @@ const pt: TranslationKeys = {
   strategy_builder_title: 'Construtor de Estratégias',
   smart_alerts_title: 'Alertas Inteligentes',
   ai_coach_title: 'Coach IA de Trading',
+  drawer_cat_social: 'Social & Competições',
+  drawer_leaderboard: 'Classificação',
+  drawer_copy_trading: 'Copy Trading',
+  drawer_competitions: 'Competições',
+  leaderboard_title: 'Classificação',
+  copy_trading_title: 'Copy Trading',
+  competitions_title: 'Competições de Trading',
 };
 
 export default pt;

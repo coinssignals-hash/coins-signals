@@ -2154,6 +2154,13 @@ const mt: TranslationKeys = {
   strategy_builder_title: 'Bennej ta\' Strateġiji',
   smart_alerts_title: 'Twissijiet Intelliġenti',
   ai_coach_title: 'Coach IA tat-Trading',
+  drawer_cat_social: 'Soċjali & Kompetizzjonijiet',
+  drawer_leaderboard: 'Klassifika',
+  drawer_copy_trading: 'Copy Trading',
+  drawer_competitions: 'Kompetizzjonijiet',
+  leaderboard_title: 'Klassifika',
+  copy_trading_title: 'Copy Trading',
+  competitions_title: 'Kompetizzjonijiet tat-Trading',
 };
 
 export default mt;

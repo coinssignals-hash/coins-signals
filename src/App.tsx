@@ -82,6 +82,9 @@ const RiskDashboard = lazy(() => import("./pages/tools/RiskDashboard"));
 const StrategyBuilder = lazy(() => import("./pages/tools/StrategyBuilder"));
 const SmartAlerts = lazy(() => import("./pages/tools/SmartAlerts"));
 const AITradingCoach = lazy(() => import("./pages/tools/AITradingCoach"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const CopyTrading = lazy(() => import("./pages/CopyTrading"));
+const TradingCompetitions = lazy(() => import("./pages/TradingCompetitions"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -204,6 +207,9 @@ function AnimatedRoutes() {
           <Route path="/tools/strategy-builder" element={<StrategyBuilder />} />
           <Route path="/tools/smart-alerts" element={<SmartAlerts />} />
           <Route path="/tools/ai-coach" element={<AITradingCoach />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/copy-trading" element={<CopyTrading />} />
+          <Route path="/competitions" element={<TradingCompetitions />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

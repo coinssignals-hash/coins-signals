@@ -11,7 +11,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route, Gamepad2, CandlestickChart, Target, Swords, LineChart, HeartPulse, Blocks, BellRing, GraduationCap
+  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route, Gamepad2, CandlestickChart, Target, Swords, LineChart, HeartPulse, Blocks, BellRing, GraduationCap, Crown, Copy, Medal
 } from 'lucide-react';
 import { LanguageQuickSelect } from './LanguageQuickSelect';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
@@ -78,6 +78,15 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: Blocks, label: t('drawer_strategy_builder') || 'Constructor de Estrategias', href: '/tools/strategy-builder' },
         { icon: BellRing, label: t('drawer_smart_alerts') || 'Alertas Inteligentes', href: '/tools/smart-alerts' },
         { icon: GraduationCap, label: t('drawer_ai_coach') || 'Coach IA', href: '/tools/ai-coach' },
+      ],
+    },
+    {
+      title: t('drawer_cat_social') || 'Social & Competencias',
+      color: '30 90% 50%',
+      items: [
+        { icon: Crown, label: t('drawer_leaderboard') || 'Leaderboard', href: '/leaderboard' },
+        { icon: Copy, label: t('drawer_copy_trading') || 'Copy Trading', href: '/copy-trading' },
+        { icon: Medal, label: t('drawer_competitions') || 'Competencias', href: '/competitions' },
       ],
     },
     {
