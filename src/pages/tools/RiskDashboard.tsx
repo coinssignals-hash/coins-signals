@@ -117,8 +117,12 @@ export default function RiskDashboard() {
 
   if (!metrics) {
     return (
-      <PageShell title={t('risk_dashboard_title') || 'Dashboard de Riesgo'} backTo="/tools">
+      <PageShell>
         <div className="px-4 pb-24">
+          <div className="flex items-center gap-3 pt-4 mb-4">
+            <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
+            <h1 className="text-base font-bold text-foreground">{t('risk_dashboard_title') || 'Dashboard de Riesgo'}</h1>
+          </div>
           <Card className="bg-card border-border">
             <CardContent className="py-10 text-center">
               <ShieldAlert className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
