@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageShell } from '@/components/layout/PageShell';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Target, Clock, CheckCircle2, XCircle, Zap } from 'lucide-react';
+import { Trophy, Target, CheckCircle2, XCircle, Zap, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Challenge {
