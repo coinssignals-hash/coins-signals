@@ -1,10 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageShell } from '@/components/layout/PageShell';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, SkipForward, RotateCcw, TrendingUp, TrendingDown, Eye } from 'lucide-react';
+import { Play, Pause, SkipForward, RotateCcw, TrendingUp, TrendingDown, Eye, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Candle {
