@@ -2140,6 +2140,13 @@ const de: TranslationKeys = {
   candle_replay_title: 'Candle Replay',
   daily_challenges_title: 'Tägliche Herausforderungen',
   risk_simulator_title: 'Risikosimulator',
+  drawer_cat_analytics: 'Tracking',
+  drawer_performance_report: 'Leistungsbericht',
+  drawer_trading_psychology: 'Psychologie',
+  drawer_risk_dashboard: 'Risiko-Dashboard',
+  performance_report_title: 'Leistungsbericht',
+  trading_psychology_title: 'Trading-Psychologie',
+  risk_dashboard_title: 'Risiko-Dashboard',
 };
 
 export default de;
