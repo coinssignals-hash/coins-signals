@@ -82,6 +82,15 @@ export type TranslationKeys = {
   drawer_update_success: string;
   drawer_update_success_desc: string;
   drawer_new: string;
+  drawer_cat_training: string;
+  drawer_paper_trading: string;
+  drawer_candle_replay: string;
+  drawer_daily_challenges: string;
+  drawer_risk_simulator: string;
+  paper_trading_title: string;
+  candle_replay_title: string;
+  daily_challenges_title: string;
+  risk_simulator_title: string;
   // Settings
   settings_title: string;
   settings_profile: string;
