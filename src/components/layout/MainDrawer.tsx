@@ -81,6 +81,15 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       ],
     },
     {
+      title: t('drawer_cat_social') || 'Social & Competencias',
+      color: '30 90% 50%',
+      items: [
+        { icon: Crown, label: t('drawer_leaderboard') || 'Leaderboard', href: '/leaderboard' },
+        { icon: Copy, label: t('drawer_copy_trading') || 'Copy Trading', href: '/copy-trading' },
+        { icon: Medal, label: t('drawer_competitions') || 'Competencias', href: '/competitions' },
+      ],
+    },
+    {
       title: t('drawer_cat_learn'),
       color: '217 91% 60%',
       items: [
