@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { learningPaths } from '@/data/learningPathsData';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { GlowSection } from '@/components/ui/glow-section';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Route, CheckCircle, ChevronRight, Lock, Sparkles, Clock, BookOpen, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -32,12 +33,8 @@ export default function LearningPaths() {
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
         {/* Hero */}
-        <div className="relative rounded-2xl overflow-hidden" style={{
-          background: 'linear-gradient(165deg, hsl(217 91% 60% / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-          border: '1px solid hsl(217 91% 60% / 0.2)',
-        }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, hsl(217 91% 60% / 0.7), transparent)' }} />
-          <div className="relative p-4">
+        <GlowSection color="217 91% 60%">
+          <div className="p-4">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
                 background: 'linear-gradient(135deg, hsl(217 91% 60% / 0.2), hsl(217 91% 60% / 0.08))',
@@ -53,7 +50,7 @@ export default function LearningPaths() {
               </div>
             </div>
           </div>
-        </div>
+        </GlowSection>
 
         {/* Path cards */}
         <div className="space-y-3">
