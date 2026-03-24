@@ -2131,6 +2131,15 @@ const mt: TranslationKeys = {
   sf_medium: '60-79%',
   sf_low: '< 60%',
   sf_clear: 'Ħassar il-filtri',
+  drawer_cat_training: 'Taħriġ',
+  drawer_paper_trading: 'Paper Trading',
+  drawer_candle_replay: 'Candle Replay',
+  drawer_daily_challenges: 'Sfidi ta\' Kuljum',
+  drawer_risk_simulator: 'Simulatur tar-Riskju',
+  paper_trading_title: 'Paper Trading',
+  candle_replay_title: 'Candle Replay',
+  daily_challenges_title: 'Sfidi ta\' Kuljum',
+  risk_simulator_title: 'Simulatur tar-Riskju',
 };
 
 export default mt;
