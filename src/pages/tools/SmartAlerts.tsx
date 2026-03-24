@@ -183,14 +183,8 @@ export default function SmartAlerts() {
 
               return (
                 <motion.div key={alert.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -80 }} layout>
-                  <div className="relative rounded-2xl overflow-hidden" style={{
-                    background: `linear-gradient(165deg, hsl(${alertColor} / ${isActive ? '0.06' : '0.02'}) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-                    border: `1px solid hsl(${alertColor} / ${isActive ? '0.25' : '0.1'})`,
-                  }}>
-                    {isActive && <div className="absolute top-0 inset-x-0 h-[1px]" style={{
-                      background: `linear-gradient(90deg, transparent, hsl(${alertColor} / 0.5), transparent)`,
-                    }} />}
-                    <div className="relative p-3">
+                  <GlowSection color={alertColor}>
+                    <div className="p-3">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <div className="p-1.5 rounded-xl" style={{ background: `hsl(${alertColor} / 0.1)` }}>
