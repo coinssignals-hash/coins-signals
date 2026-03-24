@@ -99,8 +99,12 @@ export default function DailyChallenges() {
   };
 
   return (
-    <PageShell title={t('daily_challenges_title') || 'Retos Diarios'} backTo="/tools">
-      <div className="space-y-4 pb-24">
+    <PageShell>
+      <div className="space-y-4 pb-24 px-4 pt-4">
+        <div className="flex items-center gap-3 mb-2">
+          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
+          <h1 className="text-lg font-bold text-foreground">{t('daily_challenges_title') || 'Retos Diarios'}</h1>
+        </div>
         {/* Header Stats */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

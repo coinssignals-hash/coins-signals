@@ -94,8 +94,12 @@ export default function PaperTrading() {
   const winRate = history.length > 0 ? (history.filter(t => t.pnl > 0).length / history.length * 100) : 0;
 
   return (
-    <PageShell title={t('paper_trading_title') || 'Paper Trading'} backTo="/tools">
-      <div className="space-y-4 pb-24">
+    <PageShell>
+      <div className="space-y-4 pb-24 px-4 pt-4">
+        <div className="flex items-center gap-3 mb-2">
+          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
+          <h1 className="text-lg font-bold text-foreground">{t('paper_trading_title') || 'Paper Trading'}</h1>
+        </div>
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-2">
           <Card className="p-3 bg-card border-border text-center">
