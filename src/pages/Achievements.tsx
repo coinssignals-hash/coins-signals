@@ -99,7 +99,7 @@ function AchievementCard({ achievement, unlocked, progress }: { achievement: Ach
             </p>
           )}
         </div>
-      </div>
+      </GlowSection>
     </motion.div>
   );
 }
