@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAchievements, ACHIEVEMENTS } from '@/hooks/useAchievements';
 import { PageShell } from '@/components/layout/PageShell';
+import { JournalCoach } from '@/components/journal/JournalCoach';
+import { PsychologyTracker, loadPsychEntries, type PsychEntry } from '@/components/journal/PsychologyTracker';
 import { Header } from '@/components/layout/Header';
 import { ToolCard } from '@/components/tools/ToolCard';
 import { Input } from '@/components/ui/input';
