@@ -2131,6 +2131,15 @@ const nl: TranslationKeys = {
   sf_medium: '60-79%',
   sf_low: '< 60%',
   sf_clear: 'Filters wissen',
+  drawer_cat_training: 'Training',
+  drawer_paper_trading: 'Paper Trading',
+  drawer_candle_replay: 'Candle Replay',
+  drawer_daily_challenges: 'Dagelijkse Uitdagingen',
+  drawer_risk_simulator: 'Risicosimulator',
+  paper_trading_title: 'Paper Trading',
+  candle_replay_title: 'Candle Replay',
+  daily_challenges_title: 'Dagelijkse Uitdagingen',
+  risk_simulator_title: 'Risicosimulator',
 };
 
 export default nl;

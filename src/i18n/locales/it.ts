@@ -2131,6 +2131,15 @@ const it: TranslationKeys = {
   sf_medium: '60-79%',
   sf_low: '< 60%',
   sf_clear: 'Cancella filtri',
+  drawer_cat_training: 'Allenamento',
+  drawer_paper_trading: 'Paper Trading',
+  drawer_candle_replay: 'Candle Replay',
+  drawer_daily_challenges: 'Sfide Giornaliere',
+  drawer_risk_simulator: 'Simulatore di Rischio',
+  paper_trading_title: 'Paper Trading',
+  candle_replay_title: 'Candle Replay',
+  daily_challenges_title: 'Sfide Giornaliere',
+  risk_simulator_title: 'Simulatore di Rischio',
 };
 
 export default it;

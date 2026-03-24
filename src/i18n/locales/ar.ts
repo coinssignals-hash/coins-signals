@@ -2131,6 +2131,15 @@ const ar: TranslationKeys = {
   sf_medium: '60-79%',
   sf_low: '< 60%',
   sf_clear: 'مسح الفلاتر',
+  drawer_cat_training: 'التدريب',
+  drawer_paper_trading: 'التداول الورقي',
+  drawer_candle_replay: 'إعادة الشموع',
+  drawer_daily_challenges: 'التحديات اليومية',
+  drawer_risk_simulator: 'محاكي المخاطر',
+  paper_trading_title: 'التداول الورقي',
+  candle_replay_title: 'إعادة الشموع',
+  daily_challenges_title: 'التحديات اليومية',
+  risk_simulator_title: 'محاكي المخاطر',
 };
 
 export default ar;
