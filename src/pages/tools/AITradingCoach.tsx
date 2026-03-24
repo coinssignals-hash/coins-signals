@@ -2,15 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import {
   Brain, Send, Sparkles, TrendingUp, Shield, Target, BookOpen,
-  MessageCircle, Loader2, User, Lightbulb, BarChart3
+  MessageCircle, Loader2, User, Lightbulb, BarChart3, ArrowLeft
 } from 'lucide-react';
+import { GlowSection } from '@/components/ui/glow-section';
+import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
 
 interface Message {
   id: string;
@@ -32,6 +33,7 @@ const QUICK_PROMPTS = [
 
 export default function AITradingCoach() {
   const { t, language } = useTranslation();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0', role: 'assistant',
@@ -116,69 +118,123 @@ export default function AITradingCoach() {
   return (
     <PageShell>
       <Header />
-      <div className="max-w-lg mx-auto flex flex-col h-[calc(100vh-130px)] px-4 pt-3">
-        {/* Stats bar */}
-        <div className="flex items-center gap-3 mb-3">
-          <Badge variant="outline" className="text-xs rounded-lg" style={{
-            borderColor: `hsl(${ACCENT} / 0.3)`, color: `hsl(${ACCENT})`,
-          }}>
-            <MessageCircle className="w-3 h-3 mr-1" /> {sessionStats.questions} consultas
-          </Badge>
-          <Badge variant="outline" className="text-xs rounded-lg" style={{
-            borderColor: `hsl(${ACCENT} / 0.3)`, color: `hsl(${ACCENT})`,
-          }}>
-            <Sparkles className="w-3 h-3 mr-1" /> {sessionStats.tips} consejos
-          </Badge>
+
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)`,
+        }} />
+
+        <div className="relative px-4 py-4">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
+              style={{ background: `hsl(${ACCENT} / 0.1)`, border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+              <ArrowLeft className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
+                border: `1px solid hsl(${ACCENT} / 0.3)`,
+                boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
+              }}>
+                <Brain className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">
+                  {t('drawer_ai_coach') || 'Coach IA'}
+                </h1>
+                <p className="text-[11px] text-muted-foreground">
+                  Tu mentor de trading personalizado
+                </p>
+              </div>
+            </div>
+            <div className="ml-auto flex items-center gap-1.5">
+              <Badge variant="outline" className="text-[10px] font-semibold" style={{
+                borderColor: `hsl(${ACCENT} / 0.3)`, color: `hsl(${ACCENT})`,
+                background: `hsl(${ACCENT} / 0.08)`,
+              }}>
+                <MessageCircle className="w-2.5 h-2.5 mr-0.5" /> {sessionStats.questions}
+              </Badge>
+              <Badge variant="outline" className="text-[10px] font-semibold" style={{
+                borderColor: `hsl(160 84% 39% / 0.3)`, color: `hsl(160 84% 39%)`,
+                background: `hsl(160 84% 39% / 0.08)`,
+              }}>
+                <Sparkles className="w-2.5 h-2.5 mr-0.5" /> {sessionStats.tips}
+              </Badge>
+            </div>
+          </div>
         </div>
 
+        <div className="h-px" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.3), transparent)`,
+        }} />
+      </div>
+
+      <div className="max-w-lg mx-auto flex flex-col h-[calc(100vh-195px)] px-4 pt-3">
         {/* Quick prompts */}
         {messages.length <= 1 && (
           <div className="grid grid-cols-2 gap-2 mb-3">
             {QUICK_PROMPTS.map((qp, i) => (
-              <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                className="flex items-center gap-2 p-2.5 rounded-xl text-left transition-colors"
-                style={{
-                  background: 'hsl(var(--card) / 0.8)',
-                  border: '1px solid hsl(var(--border) / 0.3)',
-                }}
-                onClick={() => sendMessage(qp.prompt)}
-              >
-                <qp.icon className="w-4 h-4 shrink-0" style={{ color: `hsl(${ACCENT})` }} />
-                <span className="text-xs font-medium leading-tight text-foreground">{qp.label}</span>
-              </motion.button>
+              <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
+                <GlowSection color={ACCENT} className="h-full">
+                  <button className="flex items-center gap-2 p-2.5 w-full text-left active:scale-[0.97] transition-transform"
+                    onClick={() => sendMessage(qp.prompt)}>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{
+                      background: `hsl(${ACCENT} / 0.15)`,
+                      boxShadow: `0 0 8px hsl(${ACCENT} / 0.1)`,
+                    }}>
+                      <qp.icon className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+                    </div>
+                    <span className="text-xs font-medium leading-tight text-foreground">{qp.label}</span>
+                  </button>
+                </GlowSection>
+              </motion.div>
             ))}
           </div>
         )}
 
         {/* Chat messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 mb-3 pr-1 scrollbar-hide">
           <AnimatePresence>
             {messages.map(msg => (
               <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1" style={{
-                    background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.7))`,
+                  <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-1" style={{
+                    background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.7))`,
+                    boxShadow: `0 0 12px hsl(${ACCENT} / 0.3)`,
                   }}>
                     <Brain className="w-4 h-4 text-white" />
                   </div>
                 )}
-                <div className={`max-w-[85%] rounded-2xl px-3 py-2 ${msg.role === 'user' ? 'rounded-tr-sm' : 'rounded-tl-sm'}`} style={
-                  msg.role === 'user'
-                    ? { background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`, color: 'white' }
-                    : { background: 'hsl(var(--card))', border: '1px solid hsl(var(--border) / 0.3)' }
-                }>
-                  {msg.role === 'assistant' ? (
-                    <div className="prose prose-sm prose-invert max-w-none text-sm [&>p]:mb-2 [&>ul]:mb-2 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm">
+                {msg.role === 'assistant' ? (
+                  <GlowSection color={ACCENT} className="max-w-[85%] rounded-tl-sm">
+                    <div className="px-3 py-2 prose prose-sm prose-invert max-w-none text-sm [&>p]:mb-2 [&>ul]:mb-2 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
-                  ) : (
-                    <p className="text-sm">{msg.content}</p>
-                  )}
-                </div>
+                  </GlowSection>
+                ) : (
+                  <div className="max-w-[85%] rounded-2xl rounded-tr-sm px-3 py-2 relative overflow-hidden" style={{
+                    background: `linear-gradient(165deg, hsl(${ACCENT}) 0%, hsl(${ACCENT} / 0.8) 100%)`,
+                  }}>
+                    <div className="absolute top-0 inset-x-0 h-[1px]" style={{
+                      background: `linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.4), transparent)`,
+                    }} />
+                    <p className="text-sm text-white relative">{msg.content}</p>
+                  </div>
+                )}
                 {msg.role === 'user' && (
-                  <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0 mt-1">
-                    <User className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-1" style={{
+                    background: 'hsl(var(--muted) / 0.5)',
+                    border: '1px solid hsl(var(--border) / 0.2)',
+                  }}>
+                    <User className="w-3.5 h-3.5 text-muted-foreground" />
                   </div>
                 )}
               </motion.div>
@@ -186,27 +242,42 @@ export default function AITradingCoach() {
           </AnimatePresence>
           {isLoading && messages[messages.length - 1]?.role === 'user' && (
             <div className="flex gap-2 items-center">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{
-                background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.7))`,
+              <div className="w-7 h-7 rounded-xl flex items-center justify-center" style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.7))`,
+                boxShadow: `0 0 12px hsl(${ACCENT} / 0.3)`,
               }}>
                 <Brain className="w-4 h-4 text-white" />
               </div>
-              <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                <Loader2 className="w-4 h-4 animate-spin" /> Pensando...
+              <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: `hsl(${ACCENT})` }} /> Pensando...
               </div>
             </div>
           )}
         </div>
 
-        {/* Input */}
+        {/* Input — glassmorphic */}
         <div className="flex gap-2 items-center pb-2">
-          <Input value={input} onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage(input)}
-            placeholder="Pregunta a tu coach..." className="flex-1 h-10 rounded-xl bg-background/40 border-border/30" disabled={isLoading} />
-          <Button size="icon" className="h-10 w-10 rounded-xl" onClick={() => sendMessage(input)} disabled={isLoading || !input.trim()}
-            style={{ background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))` }}>
-            <Send className="w-4 h-4" />
-          </Button>
+          <div className="flex-1 relative" style={{
+            background: 'hsl(var(--card) / 0.6)',
+            borderRadius: '0.75rem',
+            border: `1px solid hsl(${ACCENT} / 0.15)`,
+            backdropFilter: 'blur(8px)',
+          }}>
+            <Input value={input} onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage(input)}
+              placeholder="Pregunta a tu coach..."
+              className="h-10 bg-transparent border-0 focus-visible:ring-0 text-sm"
+              disabled={isLoading} />
+          </div>
+          <button onClick={() => sendMessage(input)} disabled={isLoading || !input.trim()}
+            className="h-10 w-10 rounded-xl flex items-center justify-center transition-all active:scale-90 disabled:opacity-40"
+            style={{
+              background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+              border: `1px solid hsl(${ACCENT} / 0.5)`,
+              boxShadow: `0 0 15px hsl(${ACCENT} / 0.2)`,
+            }}>
+            <Send className="w-4 h-4 text-white" />
+          </button>
         </div>
       </div>
     </PageShell>
