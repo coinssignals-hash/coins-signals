@@ -43,6 +43,7 @@ const INITIAL_BALANCE = 10000;
 
 export default function PaperTrading() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [balance, setBalance] = useState(INITIAL_BALANCE);
   const [positions, setPositions] = useState<Position[]>([]);
   const [history, setHistory] = useState<TradeHistory[]>([]);

@@ -69,6 +69,7 @@ const SCENARIOS = [
 
 export default function CandleReplay() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [candles, setCandles] = useState<Candle[]>(() => generateCandles(60));
   const [revealed, setRevealed] = useState(10);
   const [playing, setPlaying] = useState(false);
