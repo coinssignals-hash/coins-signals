@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, GitCompare } from 'lucide-react';
+import { ArrowLeft, GitCompare, Search } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { BrokerCard, BrokerData } from '@/components/broker/BrokerCard';
@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from '@/i18n/LanguageContext';
+
+const ACCENT = '200 70% 55%';
 
 export default function Broker() {
   const navigate = useNavigate();
