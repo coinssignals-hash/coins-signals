@@ -418,30 +418,25 @@ export default function Courses() {
               key={item.type}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate(`/courses/media/${item.type}`)}
-              className="relative rounded-2xl overflow-hidden cursor-pointer"
-              style={{
-                background: `linear-gradient(165deg, hsl(${item.color} / 0.08) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
-                border: `1px solid hsl(${item.color} / 0.2)`,
-              }}
+              className="cursor-pointer"
             >
-              <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-                background: `linear-gradient(90deg, transparent, hsl(${item.color} / 0.5), transparent)`,
-              }} />
-              <div className="relative p-3.5 space-y-2">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
-                  background: `hsl(${item.color} / 0.12)`,
-                  border: `1px solid hsl(${item.color} / 0.2)`,
-                }}>
-                  <item.icon className="w-4.5 h-4.5" style={{ color: `hsl(${item.color})` }} />
+              <GlowSection color={item.color}>
+                <div className="p-3.5 space-y-2">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                    background: `hsl(${item.color} / 0.12)`,
+                    border: `1px solid hsl(${item.color} / 0.2)`,
+                  }}>
+                    <item.icon className="w-4.5 h-4.5" style={{ color: `hsl(${item.color})` }} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{item.label}</p>
+                    <p className="text-[11px] text-muted-foreground">{item.count} {item.sublabel}</p>
+                  </div>
+                  <div className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: `hsl(${item.color})` }}>
+                    <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{item.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{item.count} {item.sublabel}</p>
-                </div>
-                <div className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: `hsl(${item.color})` }}>
-                  <ChevronRight className="w-3 h-3" /> {t('courses_view_all')}
-                </div>
-              </div>
+              </GlowSection>
             </motion.div>
           ))}
         </div>
