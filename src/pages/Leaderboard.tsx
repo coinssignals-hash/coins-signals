@@ -1,62 +1,54 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
+import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
-import {
-  Trophy, TrendingUp, Flame, Target, Star, Users, AlertCircle,
-} from 'lucide-react';
+import { Trophy, TrendingUp, Flame, Target, Star, Users, AlertCircle } from 'lucide-react';
 import { useLeaderboard, LeaderboardPeriod, LeaderboardCategory } from '@/hooks/useLeaderboard';
 
+const ACCENT = '45 95% 55%';
+
 const TIER_COLORS: Record<string, string> = {
-  bronze: 'text-amber-700',
-  silver: 'text-slate-400',
-  gold: 'text-amber-400',
-  diamond: 'text-cyan-400',
-  legendary: 'text-purple-400',
+  bronze: '30 60% 45%', silver: '220 10% 60%', gold: '45 95% 55%',
+  diamond: '190 90% 55%', legendary: '270 70% 60%',
 };
-
-const TIER_BG: Record<string, string> = {
-  bronze: 'bg-amber-900/20 border-amber-700/30',
-  silver: 'bg-slate-800/30 border-slate-500/30',
-  gold: 'bg-amber-900/20 border-amber-400/30',
-  diamond: 'bg-cyan-900/20 border-cyan-400/30',
-  legendary: 'bg-purple-900/20 border-purple-400/30',
-};
-
 const COUNTRY_FLAGS: Record<string, string> = {
   AR: '🇦🇷', BR: '🇧🇷', CL: '🇨🇱', CO: '🇨🇴', MX: '🇲🇽', PE: '🇵🇪',
   UY: '🇺🇾', US: '🇺🇸', GB: '🇬🇧', DE: '🇩🇪', FR: '🇫🇷', ES: '🇪🇸',
   IT: '🇮🇹', NL: '🇳🇱', JP: '🇯🇵', AU: '🇦🇺', CA: '🇨🇦',
 };
+const getFlag = (c: string | null) => c ? COUNTRY_FLAGS[c.toUpperCase().trim()] || '🌍' : '🌍';
+const getInitials = (a: string) => a.substring(0, 2).toUpperCase();
 
-function getFlag(country: string | null): string {
-  if (!country) return '🌍';
-  const code = country.toUpperCase().trim();
-  return COUNTRY_FLAGS[code] || '🌍';
-}
-
-function getInitials(alias: string): string {
-  return alias.substring(0, 2).toUpperCase();
+function GlowSection({ color = ACCENT, children, className = '' }: { color?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`relative rounded-2xl overflow-hidden ${className}`} style={{
+      background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+      border: `1px solid hsl(${color} / 0.2)`,
+    }}>
+      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+        background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
+      }} />
+      <div className="relative">{children}</div>
+    </div>
+  );
 }
 
 export default function Leaderboard() {
   const { t } = useTranslation();
   const [period, setPeriod] = useState<LeaderboardPeriod>('alltime');
   const [category, setCategory] = useState<LeaderboardCategory>('pnl');
-
   const { traders, total, loading, error } = useLeaderboard(period, category);
 
   const top3 = traders.slice(0, 3);
   const rest = traders.slice(3);
-
   const podiumOrder = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
   const podiumHeights = [100, 130, 80];
   const podiumLabels = ['🥈', '🥇', '🥉'];
-  const podiumColors = ['border-slate-400/50', 'border-amber-400/50', 'border-amber-700/50'];
 
   const formatValue = (trader: typeof traders[0]) => {
     switch (category) {
@@ -69,33 +61,38 @@ export default function Leaderboard() {
 
   return (
     <PageShell>
-      <div className="space-y-4 pb-24">
+      <Header />
+      <div className="max-w-lg mx-auto space-y-4 pb-24 px-4 pt-4">
         {/* Period tabs */}
-        <div className="flex bg-muted rounded-xl p-1">
+        <div className="flex rounded-xl p-1" style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border) / 0.3)' }}>
           {([['weekly', 'Semanal'], ['monthly', 'Mensual'], ['alltime', 'Histórico']] as const).map(([key, label]) => (
-            <button
-              key={key}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${period === key ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground'}`}
+            <button key={key}
+              className="flex-1 py-2 text-xs font-semibold rounded-lg transition-all"
+              style={period === key ? {
+                background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
+                color: 'hsl(var(--primary-foreground))',
+                boxShadow: `0 2px 8px hsl(${ACCENT} / 0.3)`,
+              } : { color: 'hsl(var(--muted-foreground))' }}
               onClick={() => setPeriod(key)}
-            >
-              {label}
-            </button>
+            >{label}</button>
           ))}
         </div>
 
         {/* Category filter */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {([
-            { key: 'pnl' as const, icon: TrendingUp, label: 'P&L' },
-            { key: 'winrate' as const, icon: Target, label: 'Win Rate' },
-            { key: 'streak' as const, icon: Flame, label: 'Racha' },
-            { key: 'signals' as const, icon: Star, label: 'Trades' },
+            { key: 'pnl' as const, icon: TrendingUp, label: 'P&L', color: '160 84% 39%' },
+            { key: 'winrate' as const, icon: Target, label: 'Win Rate', color: '210 80% 55%' },
+            { key: 'streak' as const, icon: Flame, label: 'Racha', color: '25 95% 55%' },
+            { key: 'signals' as const, icon: Star, label: 'Trades', color: '45 95% 55%' },
           ]).map(cat => (
-            <button
-              key={cat.key}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                category === cat.key ? 'bg-primary/20 border border-primary/40 text-primary' : 'bg-muted text-muted-foreground'
-              }`}
+            <button key={cat.key}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all"
+              style={category === cat.key ? {
+                background: `hsl(${cat.color} / 0.15)`,
+                border: `1px solid hsl(${cat.color} / 0.4)`,
+                color: `hsl(${cat.color})`,
+              } : { background: 'hsl(var(--muted))', border: '1px solid transparent', color: 'hsl(var(--muted-foreground))' }}
               onClick={() => setCategory(cat.key)}
             >
               <cat.icon className="w-3 h-3" /> {cat.label}
@@ -103,15 +100,12 @@ export default function Leaderboard() {
           ))}
         </div>
 
-        {/* Total participants */}
         {total > 0 && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Users className="w-3 h-3" />
-            <span>{total} traders participando</span>
+            <Users className="w-3 h-3" /> <span>{total} traders participando</span>
           </div>
         )}
 
-        {/* Loading state */}
         {loading && (
           <div className="space-y-3 pt-4">
             <div className="flex items-end justify-center gap-3">
@@ -123,60 +117,55 @@ export default function Leaderboard() {
                 </div>
               ))}
             </div>
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 rounded-lg" />
-            ))}
+            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 rounded-lg" />)}
           </div>
         )}
 
-        {/* Error state */}
         {error && !loading && (
-          <Card className="bg-destructive/10 border-destructive/30">
-            <CardContent className="p-4 flex items-center gap-3 text-sm">
-              <AlertCircle className="w-5 h-5 text-destructive" />
-              <span>Error al cargar el leaderboard. Intenta de nuevo.</span>
-            </CardContent>
-          </Card>
+          <GlowSection color="0 84% 60%">
+            <div className="p-4 flex items-center gap-3 text-sm">
+              <AlertCircle className="w-5 h-5" style={{ color: 'hsl(0 84% 60%)' }} />
+              <span className="text-foreground">Error al cargar el leaderboard. Intenta de nuevo.</span>
+            </div>
+          </GlowSection>
         )}
 
-        {/* Empty state */}
         {!loading && !error && traders.length === 0 && (
-          <Card className="bg-muted/50 border-border/40">
-            <CardContent className="p-8 text-center space-y-2">
-              <Trophy className="w-10 h-10 mx-auto text-muted-foreground/50" />
+          <GlowSection color={ACCENT}>
+            <div className="p-8 text-center space-y-2">
+              <Trophy className="w-10 h-10 mx-auto" style={{ color: `hsl(${ACCENT} / 0.5)` }} />
               <p className="text-sm text-muted-foreground">No hay datos de trading aún</p>
               <p className="text-xs text-muted-foreground/70">Importa tus operaciones desde el Portfolio para aparecer en el ranking</p>
-            </CardContent>
-          </Card>
+            </div>
+          </GlowSection>
         )}
 
         {/* Podium */}
         {!loading && top3.length >= 3 && (
           <div className="flex items-end justify-center gap-3 pt-4 pb-2">
             {podiumOrder.map((trader, i) => trader && (
-              <motion.div
-                key={trader.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.15 }}
-                className="flex flex-col items-center"
-              >
+              <motion.div key={trader.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.15 }}
+                className="flex flex-col items-center">
                 <div className="text-2xl mb-1">{podiumLabels[i]}</div>
-                <div className={`relative p-0.5 rounded-full border-2 ${podiumColors[i]}`}>
+                <div className="relative p-0.5 rounded-full" style={{ border: `2px solid hsl(${TIER_COLORS[trader.tier] || ACCENT} / 0.5)` }}>
                   <Avatar className="w-12 h-12">
                     {trader.avatar_url && <AvatarImage src={trader.avatar_url} />}
-                    <AvatarFallback className={`text-xs font-bold ${TIER_BG[trader.tier]}`}>
-                      {getInitials(trader.alias)}
-                    </AvatarFallback>
+                    <AvatarFallback className="text-xs font-bold" style={{
+                      background: `hsl(${TIER_COLORS[trader.tier] || ACCENT} / 0.15)`,
+                    }}>{getInitials(trader.alias)}</AvatarFallback>
                   </Avatar>
                   <span className="absolute -bottom-1 -right-1 text-sm">{getFlag(trader.country)}</span>
                 </div>
-                <div className="text-xs font-bold mt-1 text-center max-w-[80px] truncate">{trader.alias}</div>
-                <div className={`text-[10px] font-mono ${category === 'pnl' ? (trader.pnl > 0 ? 'text-emerald-400' : 'text-red-400') : 'text-foreground'}`}>
-                  {formatValue(trader)}
-                </div>
-                <div className="w-16 rounded-t-lg mt-2 bg-gradient-to-t from-primary/30 to-primary/10 border border-primary/20 border-b-0"
-                  style={{ height: podiumHeights[i] }} />
+                <div className="text-xs font-bold mt-1 text-center max-w-[80px] truncate text-foreground">{trader.alias}</div>
+                <div className="text-[10px] font-mono" style={{
+                  color: category === 'pnl' ? (trader.pnl > 0 ? 'hsl(160 84% 39%)' : 'hsl(0 84% 60%)') : 'hsl(var(--foreground))',
+                }}>{formatValue(trader)}</div>
+                <div className="w-16 rounded-t-lg mt-2" style={{
+                  height: podiumHeights[i],
+                  background: `linear-gradient(to top, hsl(${ACCENT} / 0.3), hsl(${ACCENT} / 0.05))`,
+                  border: `1px solid hsl(${ACCENT} / 0.2)`,
+                  borderBottom: 'none',
+                }} />
               </motion.div>
             ))}
           </div>
@@ -185,51 +174,50 @@ export default function Leaderboard() {
         {/* Rankings list */}
         {!loading && (
           <div className="space-y-2">
-            {rest.map((trader, i) => (
-              <motion.div
-                key={trader.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.03 }}
-              >
-                <Card className="bg-card/70 backdrop-blur border-border/40 hover:border-primary/30 transition-colors">
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="text-sm font-bold text-muted-foreground w-6 text-center">{trader.rank}</div>
-                    <Avatar className="w-9 h-9">
-                      {trader.avatar_url && <AvatarImage src={trader.avatar_url} />}
-                      <AvatarFallback className={`text-[10px] font-bold ${TIER_BG[trader.tier]}`}>
-                        {getInitials(trader.alias)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-medium truncate">{trader.alias}</span>
-                        <span className="text-xs">{getFlag(trader.country)}</span>
-                        <Badge variant="outline" className={`text-[9px] px-1 py-0 ${TIER_COLORS[trader.tier]}`}>
-                          {trader.tier}
-                        </Badge>
+            {rest.map((trader, i) => {
+              const tierColor = TIER_COLORS[trader.tier] || ACCENT;
+              return (
+                <motion.div key={trader.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}>
+                  <div className="relative rounded-2xl overflow-hidden" style={{
+                    background: `linear-gradient(165deg, hsl(${tierColor} / 0.04) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
+                    border: `1px solid hsl(${tierColor} / 0.15)`,
+                  }}>
+                    <div className="relative p-3 flex items-center gap-3">
+                      <div className="text-sm font-bold text-muted-foreground w-6 text-center">{trader.rank}</div>
+                      <Avatar className="w-9 h-9">
+                        {trader.avatar_url && <AvatarImage src={trader.avatar_url} />}
+                        <AvatarFallback className="text-[10px] font-bold" style={{
+                          background: `hsl(${tierColor} / 0.15)`,
+                        }}>{getInitials(trader.alias)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-medium truncate text-foreground">{trader.alias}</span>
+                          <span className="text-xs">{getFlag(trader.country)}</span>
+                          <Badge variant="outline" className="text-[9px] px-1 py-0" style={{
+                            color: `hsl(${tierColor})`, borderColor: `hsl(${tierColor} / 0.4)`,
+                          }}>{trader.tier}</Badge>
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                          <span>{trader.trades} trades</span><span>·</span>
+                          <span>W{trader.winners}/L{trader.losers}</span><span>·</span>
+                          <span>{trader.symbolsTraded} pares</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span>{trader.trades} trades</span>
-                        <span>·</span>
-                        <span>W{trader.winners}/L{trader.losers}</span>
-                        <span>·</span>
-                        <span>{trader.symbolsTraded} pares</span>
+                      <div className="text-right">
+                        <div className="text-sm font-bold" style={{
+                          color: category === 'pnl' ? (trader.pnl > 0 ? 'hsl(160 84% 39%)' : 'hsl(0 84% 60%)') : 'hsl(var(--foreground))',
+                        }}>{formatValue(trader)}</div>
+                        <div className="text-[10px] text-muted-foreground">
+                          {category !== 'winrate' && `WR ${trader.winRate}%`}
+                          {category === 'winrate' && `${trader.trades} ops`}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className={`text-sm font-bold ${category === 'pnl' ? (trader.pnl > 0 ? 'text-emerald-400' : 'text-red-400') : 'text-foreground'}`}>
-                        {formatValue(trader)}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground">
-                        {category !== 'winrate' && `WR ${trader.winRate}%`}
-                        {category === 'winrate' && `${trader.trades} ops`}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
