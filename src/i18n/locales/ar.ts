@@ -2147,6 +2147,13 @@ const ar: TranslationKeys = {
   performance_report_title: 'تقرير الأداء',
   trading_psychology_title: 'علم نفس التداول',
   risk_dashboard_title: 'لوحة المخاطر',
+  drawer_cat_strategy: 'الاستراتيجيات والذكاء الاصطناعي',
+  drawer_strategy_builder: 'منشئ الاستراتيجيات',
+  drawer_smart_alerts: 'تنبيهات ذكية',
+  drawer_ai_coach: 'مدرب ذكاء اصطناعي',
+  strategy_builder_title: 'منشئ الاستراتيجيات',
+  smart_alerts_title: 'تنبيهات ذكية',
+  ai_coach_title: 'مدرب تداول بالذكاء الاصطناعي',
 };
 
 export default ar;

@@ -2147,6 +2147,13 @@ const mt: TranslationKeys = {
   performance_report_title: 'Rapport tal-Prestazzjoni',
   trading_psychology_title: 'Psikoloġija tan-Negozjar',
   risk_dashboard_title: 'Dashboard tar-Riskju',
+  drawer_cat_strategy: 'Strateġiji & IA',
+  drawer_strategy_builder: 'Bennej ta\' Strateġiji',
+  drawer_smart_alerts: 'Twissijiet Intelliġenti',
+  drawer_ai_coach: 'Coach IA',
+  strategy_builder_title: 'Bennej ta\' Strateġiji',
+  smart_alerts_title: 'Twissijiet Intelliġenti',
+  ai_coach_title: 'Coach IA tat-Trading',
 };
 
 export default mt;

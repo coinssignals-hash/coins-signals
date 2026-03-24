@@ -1952,6 +1952,13 @@ const fr: TranslationKeys = {
   performance_report_title: 'Rapport de Performance',
   trading_psychology_title: 'Psychologie de Trading',
   risk_dashboard_title: 'Tableau de Bord Risque',
+  drawer_cat_strategy: 'Stratégies & IA',
+  drawer_strategy_builder: 'Constructeur de Stratégies',
+  drawer_smart_alerts: 'Alertes Intelligentes',
+  drawer_ai_coach: 'Coach IA',
+  strategy_builder_title: 'Constructeur de Stratégies',
+  smart_alerts_title: 'Alertes Intelligentes',
+  ai_coach_title: 'Coach IA de Trading',
 };
 
 export default fr;
