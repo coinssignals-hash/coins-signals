@@ -66,14 +66,10 @@ export default function LearningPaths() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: pi * 0.1 }}
               >
-                <div className="relative rounded-2xl overflow-hidden" style={{
-                  background: `linear-gradient(165deg, hsl(${path.color} / 0.08) 0%, hsl(var(--card)) 40%)`,
-                  border: `1px solid hsl(${path.color} / ${isExpanded ? '0.35' : '0.2'})`,
+                <GlowSection color={path.color} style={{
+                  borderColor: isExpanded ? `hsl(${path.color} / 0.35)` : undefined,
                   boxShadow: isExpanded ? `0 4px 24px hsl(${path.color} / 0.1)` : undefined,
                 }}>
-                  <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-                    background: `linear-gradient(90deg, transparent, hsl(${path.color} / 0.7), transparent)`,
-                  }} />
 
                   {/* Path Header */}
                   <button onClick={() => setExpandedPath(isExpanded ? null : path.id)} className="w-full text-left p-4">
