@@ -202,7 +202,7 @@ export default function Leaderboard() {
                 </motion.div>
               );
             })}
-          </div>
+                  </GlowSection>
         )}
       </div>
     </PageShell>
