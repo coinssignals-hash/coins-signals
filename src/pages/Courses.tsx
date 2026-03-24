@@ -210,7 +210,7 @@ function ModuleCard({
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </GlowSection>
     </motion.div>
   );
 }
