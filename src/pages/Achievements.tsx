@@ -222,6 +222,7 @@ export default function Achievements() {
                   </div>
                 )}
               </div>
+              </GlowSection>
             </motion.div>
 
             {/* ─── Category Filter ─── */}
