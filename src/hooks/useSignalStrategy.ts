@@ -29,8 +29,16 @@ interface SignalInput {
 
 // In-memory cache keyed by signal fingerprint
 const strategyCache = new Map<string, { strategy: SignalStrategy; timestamp: number }>();
-const CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 const LS_PREFIX = 'sig-strategy-';
+
+/** Synchronously resolve from memory or localStorage */
+function resolveFromCache(signal: SignalInput, language: string): SignalStrategy | null {
+  const key = getCacheKey(signal) + `-${language}`;
+  const mem = strategyCache.get(key);
+  if (mem && Date.now() - mem.timestamp < CACHE_TTL) return mem.strategy;
+  return getFromStorage(key);
+}
 
 function getCacheKey(signal: SignalInput): string {
   return `${signal.currencyPair}-${signal.entryPrice}-${signal.takeProfit}-${signal.stopLoss}`;
@@ -60,11 +68,15 @@ function saveToStorage(key: string, strategy: SignalStrategy) {
 }
 
 export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) {
-  const [strategy, setStrategy] = useState<SignalStrategy | null>(null);
+  const { language } = useTranslation();
+  const [strategy, setStrategy] = useState<SignalStrategy | null>(() =>
+    signal ? resolveFromCache(signal, language) : null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fetchedRef = useRef<string | null>(null);
-  const { language } = useTranslation();
+  const fetchedRef = useRef<string | null>(
+    signal && resolveFromCache(signal, language) ? getCacheKey(signal) + `-${language}` : null
+  );
 
   const fetchStrategy = useCallback(async () => {
     if (!signal || !enabled) return;
