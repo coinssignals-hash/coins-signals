@@ -201,6 +201,9 @@ function AnimatedRoutes() {
           <Route path="/tools/performance-report" element={<PerformanceReport />} />
           <Route path="/tools/trading-psychology" element={<TradingPsychology />} />
           <Route path="/tools/risk-dashboard" element={<RiskDashboard />} />
+          <Route path="/tools/strategy-builder" element={<StrategyBuilder />} />
+          <Route path="/tools/smart-alerts" element={<SmartAlerts />} />
+          <Route path="/tools/ai-coach" element={<AITradingCoach />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

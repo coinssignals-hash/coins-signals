@@ -72,6 +72,15 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       ],
     },
     {
+      title: t('drawer_cat_strategy') || 'Estrategias & IA',
+      color: '280 80% 55%',
+      items: [
+        { icon: Blocks, label: t('drawer_strategy_builder') || 'Constructor de Estrategias', href: '/tools/strategy-builder' },
+        { icon: BellRing, label: t('drawer_smart_alerts') || 'Alertas Inteligentes', href: '/tools/smart-alerts' },
+        { icon: GraduationCap, label: t('drawer_ai_coach') || 'Coach IA', href: '/tools/ai-coach' },
+      ],
+    },
+    {
       title: t('drawer_cat_learn'),
       color: '217 91% 60%',
       items: [
