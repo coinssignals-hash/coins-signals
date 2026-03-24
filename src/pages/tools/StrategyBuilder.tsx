@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart, ComposedChart } from 'recharts';
 import {
   Plus, Trash2, Play, Save, TrendingUp, TrendingDown, ArrowRight, Layers,
   BarChart3, Activity, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Download
