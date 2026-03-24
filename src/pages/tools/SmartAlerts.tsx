@@ -221,7 +221,7 @@ export default function SmartAlerts() {
                         </Button>
                       </div>
                     </div>
-                  </div>
+                  </GlowSection>
                 </motion.div>
               );
             })}

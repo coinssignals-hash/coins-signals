@@ -219,7 +219,7 @@ export default function StrategyBuilder() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </GlowSection>
                 </motion.div>
               );
             })}
