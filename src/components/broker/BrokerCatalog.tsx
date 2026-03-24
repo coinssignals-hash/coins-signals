@@ -605,6 +605,7 @@ export function BrokerCatalog({
             </AnimatePresence>
           </GlowSection>
           </div>
+        );
       })}
 
       {/* Generic CSV */}
