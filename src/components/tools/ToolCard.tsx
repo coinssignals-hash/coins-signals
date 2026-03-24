@@ -71,6 +71,8 @@ interface ToolHeaderProps {
   title: string;
   subtitle?: string;
   accent?: string;
+  /** Optional action element (e.g. refresh button) rendered at the right */
+  action?: React.ReactNode;
 }
 
 /**
