@@ -73,6 +73,8 @@ export default function TradingJournal() {
   const [filterResult, setFilterResult] = useState<string>('all');
   const [filterPeriod, setFilterPeriod] = useState<'all' | 'week' | 'month'>('all');
   const [periodAnchor, setPeriodAnchor] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState<'journal' | 'psychology' | 'coach'>('journal');
+  const [psychEntries, setPsychEntries] = useState<PsychEntry[]>(loadPsychEntries);
 
   const periodRange = useMemo(() => {
     if (filterPeriod === 'week') {
