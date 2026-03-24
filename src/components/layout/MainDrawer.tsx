@@ -66,6 +66,9 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: CandlestickChart, label: t('drawer_candle_replay') || 'Candle Replay', href: '/tools/candle-replay' },
         { icon: Target, label: t('drawer_daily_challenges') || 'Retos Diarios', href: '/tools/daily-challenges' },
         { icon: Swords, label: t('drawer_risk_simulator') || 'Simulador de Riesgo', href: '/tools/risk-simulator' },
+        { icon: LineChart, label: t('drawer_performance_report') || 'Reporte de Rendimiento', href: '/tools/performance-report' },
+        { icon: HeartPulse, label: t('drawer_trading_psychology') || 'Psicología', href: '/tools/trading-psychology' },
+        { icon: ShieldAlert, label: t('drawer_risk_dashboard') || 'Dashboard de Riesgo', href: '/tools/risk-dashboard' },
       ],
     },
     {

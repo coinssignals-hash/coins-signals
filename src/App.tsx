@@ -195,6 +195,9 @@ function AnimatedRoutes() {
           <Route path="/tools/candle-replay" element={<CandleReplay />} />
           <Route path="/tools/daily-challenges" element={<DailyChallenges />} />
           <Route path="/tools/risk-simulator" element={<RiskSimulator />} />
+          <Route path="/tools/performance-report" element={<PerformanceReport />} />
+          <Route path="/tools/trading-psychology" element={<TradingPsychology />} />
+          <Route path="/tools/risk-dashboard" element={<RiskDashboard />} />
           <Route path="/admin" element={isAdminAllowed() ? <Admin /> : <NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
