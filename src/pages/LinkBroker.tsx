@@ -213,15 +213,8 @@ export default function LinkBroker() {
 
         {/* Auth banner */}
         {!user && (
-          <div
-            className="relative rounded-2xl overflow-hidden"
-            style={{
-              background: `linear-gradient(165deg, hsl(45 80% 55% / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-              border: '1px solid hsl(45 80% 55% / 0.2)',
-            }}
-          >
-            <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, hsl(45 80% 55% / 0.7), transparent)' }} />
-            <div className="relative z-[2] p-4 flex items-start gap-3">
+          <GlowSection color="45 80% 55%">
+            <div className="p-4 flex items-start gap-3">
               <LogIn className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-amber-200 text-sm font-medium">{t('lb_preview_mode')}</p>
@@ -238,7 +231,7 @@ export default function LinkBroker() {
                 </button>
               </div>
             </div>
-          </div>
+          </GlowSection>
         )}
 
         {/* Connected accounts summary */}
