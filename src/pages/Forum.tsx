@@ -4,7 +4,7 @@ import { TomorrowSuggestions } from '@/components/forum/TomorrowSuggestions';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
-import { GlowCard } from '@/components/ui/glow-card';
+import { GlowSection } from '@/components/ui/glow-section';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
