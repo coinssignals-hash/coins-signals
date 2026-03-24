@@ -4,7 +4,7 @@ import { TomorrowSuggestions } from '@/components/forum/TomorrowSuggestions';
 import { PageShell } from '@/components/layout/PageShell';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
-import { GlowCard } from '@/components/ui/glow-card';
+import { GlowSection } from '@/components/ui/glow-section';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -194,7 +194,7 @@ export default function Forum() {
         const displayOptB = translatedTopic?.option_b || topic.option_b;
 
         return (
-        <GlowCard color="210 70% 55%">
+        <GlowSection color="210 70% 55%">
           {/* Image area with admin upload */}
           <div className="relative">
             {topic.image_url ? (
@@ -267,7 +267,7 @@ export default function Forum() {
               })}
             </div>
           </CardContent>
-        </GlowCard>
+        </GlowSection>
         );
       })()}
 
@@ -275,7 +275,7 @@ export default function Forum() {
       {showPastTopics ? (
         <PastTopicsBrowser onClose={() => setShowPastTopics(false)} />
       ) : (
-        <GlowCard color="210 70% 55%" className="rounded-xl">
+        <GlowSection color="210 70% 55%" className="rounded-xl">
           <button
             onClick={() => setShowPastTopics(true)}
             className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -283,14 +283,14 @@ export default function Forum() {
             <Calendar className="w-3.5 h-3.5" />
             Ver temas anteriores
           </button>
-        </GlowCard>
+        </GlowSection>
       )}
 
       {/* Tomorrow's Suggestions */}
       <TomorrowSuggestions />
 
       {/* Tabs: Channels / DMs / Favorites */}
-      <GlowCard color="210 70% 55%" className="rounded-xl">
+      <GlowSection color="210 70% 55%" className="rounded-xl">
         <div className="flex gap-2 p-1.5">
           <button
             onClick={() => setView('channels')}
@@ -314,7 +314,7 @@ export default function Forum() {
             <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
           </button>
         </div>
-      </GlowCard>
+      </GlowSection>
 
       {/* Channel list */}
       {channelsLoading ? (
@@ -322,7 +322,7 @@ export default function Forum() {
       ) : (
         <div className="space-y-2">
           {channels.map(ch => (
-            <GlowCard key={ch.id} color="210 70% 55%" className="rounded-xl">
+            <GlowSection key={ch.id} color="210 70% 55%" className="rounded-xl">
               <button
                 onClick={() => openChannel(ch.id, ch.name, ch.icon)}
                 className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
@@ -334,7 +334,7 @@ export default function Forum() {
                 </div>
                 <Hash className="w-4 h-4 text-muted-foreground" />
               </button>
-            </GlowCard>
+            </GlowSection>
           ))}
         </div>
       )}
@@ -344,7 +344,7 @@ export default function Forum() {
   // ═══ DM CONVERSATIONS LIST ═══
   const renderDMsView = () => (
     <div className="space-y-4">
-      <GlowCard color="210 70% 55%" className="rounded-xl">
+      <GlowSection color="210 70% 55%" className="rounded-xl">
         <div className="flex gap-2 p-1.5">
           <button
             onClick={() => setView('channels')}
@@ -362,29 +362,29 @@ export default function Forum() {
             <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
           </button>
         </div>
-      </GlowCard>
+      </GlowSection>
 
       {!user ? (
-        <GlowCard color="210 70% 55%">
+        <GlowSection color="210 70% 55%">
           <div className="p-6 text-center space-y-2">
             <Users className="w-8 h-8 text-muted-foreground mx-auto" />
             <p className="text-sm text-muted-foreground">Inicia sesión para ver tus mensajes directos</p>
             <Link to="/auth" className="text-xs text-primary font-bold hover:underline">Iniciar Sesión</Link>
           </div>
-        </GlowCard>
+        </GlowSection>
       ) : convosLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : conversations.length === 0 ? (
-        <GlowCard color="210 70% 55%">
+        <GlowSection color="210 70% 55%">
           <div className="p-6 text-center">
             <MessageCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">No tienes conversaciones aún</p>
           </div>
-        </GlowCard>
+        </GlowSection>
       ) : (
         <div className="space-y-2">
           {conversations.map(c => (
-            <GlowCard key={c.user_id} color="210 70% 55%" className="rounded-xl">
+            <GlowSection key={c.user_id} color="210 70% 55%" className="rounded-xl">
               <button
                 onClick={() => openDM(c.user_id, c.user_name)}
                 className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
@@ -404,7 +404,7 @@ export default function Forum() {
                   <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5">{c.unread_count}</Badge>
                 )}
               </button>
-            </GlowCard>
+            </GlowSection>
           ))}
         </div>
       )}
@@ -424,9 +424,15 @@ export default function Forum() {
     return (
       <div className="flex flex-col flex-1 min-h-0">
         {/* Chat header */}
-        <div className="flex items-center gap-2 pb-2 sm:pb-3 border-b border-border mb-2">
-          <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="text-primary active:scale-95 transition-transform">
-            <ArrowLeft className="w-5 h-5" />
+        <div className="flex items-center gap-2 pb-2 sm:pb-3 mb-2 rounded-xl px-3 py-2" style={{
+          background: `linear-gradient(165deg, hsl(${ACCENT} / 0.08) 0%, hsl(var(--card)) 100%)`,
+          border: `1px solid hsl(${ACCENT} / 0.15)`,
+        }}>
+          <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90" style={{
+            background: 'hsl(var(--card) / 0.85)',
+            border: '1px solid hsl(var(--border) / 0.6)',
+          }}>
+            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <h2 className="text-sm sm:text-base font-bold text-foreground truncate">{title}</h2>
           {/* Language filter toggle - only in channel chat */}
@@ -436,9 +442,12 @@ export default function Forum() {
               className={cn(
                 "ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors active:scale-95",
                 languageFilter
-                  ? "bg-primary/10 border-primary/30 text-primary"
-                  : "bg-secondary border-border text-muted-foreground hover:text-foreground"
+                  ? "border-primary/30 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground"
               )}
+              style={{
+                background: languageFilter ? `hsl(${ACCENT} / 0.1)` : 'hsl(var(--card) / 0.6)',
+              }}
             >
               <Globe className="w-3 h-3" />
               {languageFilter ? (LANGUAGE_FLAGS as any)[languageFilter] : '🌐'}
@@ -821,26 +830,52 @@ export default function Forum() {
 
   const isInChat = view === 'chat' || view === 'dm-chat';
 
+  const ACCENT = '210 70% 55%';
+
   return (
     <PageShell bottomPadding showBottomNav>
       <Header />
-      <main className={cn("container space-y-4", isInChat ? "py-2 pb-0 flex flex-col overflow-hidden" : "py-4")}
+      <main className={cn("container space-y-4 max-w-lg mx-auto px-3", isInChat ? "py-2 pb-0 flex flex-col overflow-hidden" : "py-3")}
         style={isInChat ? { height: 'calc(100dvh - 190px)' } : undefined}
       >
-        {/* Title */}
+        {/* Premium Hero Header */}
         {(view === 'channels' || view === 'dms' || view === 'favorites') && (
-          <div className="flex items-center gap-3">
-            <Link to="/" className="text-primary hover:text-primary/80 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <h1 className="text-lg font-bold text-foreground italic">
-              <MessageCircle className="w-5 h-5 inline mr-2" />
-              Comunidad
-            </h1>
-            <span className="ml-auto text-[10px] text-muted-foreground">
-              <Users className="w-3 h-3 inline mr-0.5" />
-              En línea
-            </span>
+          <div className="relative rounded-2xl overflow-hidden" style={{
+            background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
+            border: `1px solid hsl(${ACCENT} / 0.2)`,
+          }}>
+            <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+              background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)`,
+            }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-32 rounded-full opacity-15 pointer-events-none" style={{
+              background: `radial-gradient(circle, hsl(${ACCENT} / 0.4), transparent 70%)`,
+            }} />
+            <div className="relative p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Link to="/" className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm" style={{
+                    background: 'hsl(var(--card) / 0.85)',
+                    border: '1px solid hsl(var(--border) / 0.6)',
+                    boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
+                  }}>
+                    <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                    background: `linear-gradient(135deg, hsl(${ACCENT} / 0.2), hsl(${ACCENT} / 0.08))`,
+                    border: `1px solid hsl(${ACCENT} / 0.25)`,
+                    boxShadow: `0 4px 12px hsl(${ACCENT} / 0.1)`,
+                  }}>
+                    <MessageCircle className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-bold text-foreground">Comunidad</h1>
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <Users className="w-2.5 h-2.5" /> En línea
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -849,7 +884,7 @@ export default function Forum() {
         {view === 'favorites' && (
           <div className="space-y-4">
             {/* Tabs */}
-            <GlowCard color="210 70% 55%" className="rounded-xl">
+            <GlowSection color="210 70% 55%" className="rounded-xl">
               <div className="flex gap-2 p-1.5">
                 <button onClick={() => setView('channels')} className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">
                   <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
@@ -861,7 +896,7 @@ export default function Forum() {
                   <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
                 </button>
               </div>
-            </GlowCard>
+            </GlowSection>
             <FavoriteUsersPanel
               favorites={favorites}
               loading={favsLoading}
