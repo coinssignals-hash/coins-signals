@@ -109,15 +109,8 @@ export default function DailyChallenges() {
     <PageShell>
       <Header />
       <div className="max-w-lg mx-auto space-y-4 pb-24 px-4 pt-4">
-        {/* Stats bar */}
-        <div className="relative rounded-2xl overflow-hidden" style={{
-          background: `linear-gradient(165deg, hsl(${ACCENT} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-          border: `1px solid hsl(${ACCENT} / 0.2)`,
-        }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-            background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.7), transparent)`,
-          }} />
-          <div className="relative p-4">
+        <GlowSection color={ACCENT}>
+          <div className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold text-foreground">{t('daily_challenges_title') || 'Retos Diarios'}</h2>
               <span className="text-xs text-muted-foreground">{currentIndex + 1}/{DAILY_CHALLENGES.length}</span>
@@ -134,7 +127,7 @@ export default function DailyChallenges() {
             </div>
             <Progress value={progress} className="h-2" />
           </div>
-        </div>
+        </GlowSection>
 
         {/* Challenge Card */}
         <AnimatePresence mode="wait">
