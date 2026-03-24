@@ -112,6 +112,7 @@ export default function RiskDashboard() {
   const { t } = useTranslation();
   const { trades } = useImportedTrades();
   const [showDD, setShowDD] = useState(false);
+  const navigate = useNavigate();
 
   const metrics = useMemo(() => calcRiskMetrics(trades), [trades]);
 
