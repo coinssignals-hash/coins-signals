@@ -70,6 +70,7 @@ const diffColor = { easy: 'bg-[hsl(var(--bullish))]/20 text-[hsl(var(--bullish))
 
 export default function DailyChallenges() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState<Set<string>>(new Set());

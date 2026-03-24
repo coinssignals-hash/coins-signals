@@ -20,6 +20,7 @@ interface SimResult {
 
 export default function RiskSimulator() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [balance, setBalance] = useState('10000');
   const [riskPercent, setRiskPercent] = useState([2]);
   const [winRate, setWinRate] = useState([55]);
