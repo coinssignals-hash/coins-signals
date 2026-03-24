@@ -2140,6 +2140,13 @@ const ar: TranslationKeys = {
   candle_replay_title: 'إعادة الشموع',
   daily_challenges_title: 'التحديات اليومية',
   risk_simulator_title: 'محاكي المخاطر',
+  drawer_cat_analytics: 'التتبع',
+  drawer_performance_report: 'تقرير الأداء',
+  drawer_trading_psychology: 'علم النفس',
+  drawer_risk_dashboard: 'لوحة المخاطر',
+  performance_report_title: 'تقرير الأداء',
+  trading_psychology_title: 'علم نفس التداول',
+  risk_dashboard_title: 'لوحة المخاطر',
 };
 
 export default ar;
