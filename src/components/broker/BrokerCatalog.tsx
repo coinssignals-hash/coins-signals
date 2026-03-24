@@ -603,8 +603,8 @@ export function BrokerCatalog({
                 </motion.div>
               )}
             </AnimatePresence>
+          </GlowSection>
           </div>
-        );
       })}
 
       {/* Generic CSV */}
