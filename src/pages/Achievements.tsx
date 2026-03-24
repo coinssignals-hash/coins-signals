@@ -31,28 +31,13 @@ function AchievementCard({ achievement, unlocked, progress }: { achievement: Ach
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative rounded-xl overflow-hidden transition-all"
-      style={{
-        background: unlocked
-          ? `linear-gradient(165deg, hsl(45 90% 55% / 0.1) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`
-          : `linear-gradient(165deg, hsl(${color} / 0.04) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-        border: unlocked
-          ? `1px solid hsl(45 90% 55% / 0.3)`
-          : `1px solid hsl(${color} / 0.12)`,
-      }}
     >
-      {/* Top glow line */}
-      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-        background: unlocked
-          ? `linear-gradient(90deg, transparent, hsl(45 90% 55% / 0.7), transparent)`
-          : `linear-gradient(90deg, transparent, hsl(${color} / 0.3), transparent)`,
-      }} />
-
-      {unlocked && (
-        <div className="absolute -top-1 -right-1 rounded-full p-1" style={{ background: 'hsl(45 90% 55%)' }}>
-          <CheckCircle2 className="w-3 h-3" style={{ color: 'hsl(45 90% 15%)' }} />
-        </div>
-      )}
+      <GlowSection color={unlocked ? '45 90% 55%' : color} className="transition-all">
+        {unlocked && (
+          <div className="absolute -top-1 -right-1 rounded-full p-1 z-10" style={{ background: 'hsl(45 90% 55%)' }}>
+            <CheckCircle2 className="w-3 h-3" style={{ color: 'hsl(45 90% 15%)' }} />
+          </div>
+        )}
 
       <div className="flex gap-3 p-3.5">
         {/* Avatar or Icon */}
