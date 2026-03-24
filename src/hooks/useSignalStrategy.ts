@@ -68,11 +68,15 @@ function saveToStorage(key: string, strategy: SignalStrategy) {
 }
 
 export function useSignalStrategy(signal: SignalInput | null, enabled: boolean) {
-  const [strategy, setStrategy] = useState<SignalStrategy | null>(null);
+  const { language } = useTranslation();
+  const [strategy, setStrategy] = useState<SignalStrategy | null>(() =>
+    signal ? resolveFromCache(signal, language) : null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fetchedRef = useRef<string | null>(null);
-  const { language } = useTranslation();
+  const fetchedRef = useRef<string | null>(
+    signal && resolveFromCache(signal, language) ? getCacheKey(signal) + `-${language}` : null
+  );
 
   const fetchStrategy = useCallback(async () => {
     if (!signal || !enabled) return;
