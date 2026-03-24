@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { QuizModule } from '@/components/courses/QuizModule';
+import { moduleQuizzes } from '@/data/quizData';
 
 interface Lesson { id: string; title: string; duration: string; }
 
@@ -419,6 +421,20 @@ export default function LessonDetail() {
             })}
           </div>
         </div>
+
+        {/* Quiz Section - show if module has a quiz and all lessons are completed */}
+        {(() => {
+          const quiz = moduleQuizzes[lesson.module];
+          if (!quiz) return null;
+          const allModuleLessonsCompleted = lesson.lessons.every(l => isLessonCompleted(l.id));
+          if (!allModuleLessonsCompleted) return null;
+          return (
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground px-1">📝 Quiz del módulo</h3>
+              <QuizModule quiz={quiz} color="217 91% 60%" />
+            </div>
+          );
+        })()}
 
         {/* Resources */}
         {lesson.resources.length > 0 && (

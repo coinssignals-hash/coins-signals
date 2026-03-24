@@ -20,6 +20,7 @@ const fr: TranslationKeys = {
   drawer_cat_trading: 'Trading', drawer_cat_broker: 'Courtier', drawer_cat_learn: 'Apprentissage', drawer_cat_account: 'Compte', drawer_cat_help: 'Aide',
   drawer_notifications: 'Notifications', drawer_appearance: 'Apparence',
   drawer_language_tz: 'Langue et fuseau horaire', drawer_install_app: 'Installer l\'appli',
+  drawer_learning_paths: 'Parcours d\'apprentissage', drawer_glossary: 'Glossaire', drawer_certifications: 'Certifications',
   drawer_update_app: 'Mettre à jour l\'appli', drawer_update_success: '✅ Appli mise à jour', drawer_update_success_desc: 'Cache vidé. Rechargement...',
   drawer_new: 'nouvelles',
   settings_title: 'Paramètres', settings_profile: 'Profil',

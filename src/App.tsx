@@ -69,6 +69,9 @@ const InstitutionalCalendar = lazy(() => import("./pages/tools/InstitutionalCale
 const MarketSessions = lazy(() => import("./pages/tools/MarketSessions"));
 const CurrencyConverter = lazy(() => import("./pages/tools/CurrencyConverter"));
 const Forum = lazy(() => import("./pages/Forum"));
+const Glossary = lazy(() => import("./pages/Glossary"));
+const LearningPathsPage = lazy(() => import("./pages/LearningPaths"));
+const Certifications = lazy(() => import("./pages/Certifications"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -141,6 +144,9 @@ function AnimatedRoutes() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/media/:type" element={<MediaLibrary />} />
           <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
+          <Route path="/glossary" element={<Glossary />} />
+          <Route path="/learning-paths" element={<LearningPathsPage />} />
+          <Route path="/certifications" element={<Certifications />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/install" element={<Install />} />
           <Route path="/onboarding" element={<Onboarding />} />

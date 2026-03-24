@@ -11,7 +11,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw
+  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route
 } from 'lucide-react';
 import { LanguageQuickSelect } from './LanguageQuickSelect';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
@@ -63,6 +63,9 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
       color: '217 91% 60%',
       items: [
         { icon: BookOpen, label: t('drawer_courses_tutorials'), href: '/courses' },
+        { icon: Route, label: t('drawer_learning_paths') || 'Rutas de Aprendizaje', href: '/learning-paths' },
+        { icon: BookOpen, label: t('drawer_glossary') || 'Glosario', href: '/glossary' },
+        { icon: Trophy, label: t('drawer_certifications') || 'Certificaciones', href: '/certifications' },
         { icon: MessageCircle, label: t('drawer_community'), href: '/forum' },
       ],
     },
