@@ -356,16 +356,7 @@ export default function BrokerRating() {
                 transition={{ duration: 0.25 }}
                 className="mt-3 overflow-hidden"
               >
-                <div
-                  className="relative rounded-xl p-4 space-y-4"
-                  style={{
-                    background: 'linear-gradient(165deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)',
-                    border: '1px solid hsl(var(--primary) / 0.15)',
-                  }}
-                >
-                  <div className="absolute top-0 inset-x-0 h-[2px] rounded-t-xl" style={{
-                    background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5), transparent)',
-                  }} />
+                <GlowSection color="var(--primary)" className="rounded-xl p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <SlidersHorizontal className="w-4 h-4 text-primary" />
