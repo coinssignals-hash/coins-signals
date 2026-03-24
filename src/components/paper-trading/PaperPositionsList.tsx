@@ -28,10 +28,7 @@ export function PaperPositionsList({ positions, getPnl, onClose }: Props) {
         const isJpy = pos.symbol.includes('JPY');
         const pnlColor = pnl >= 0 ? '160 84% 39%' : '0 84% 60%';
         return (
-          <div key={pos.id} className="relative rounded-2xl overflow-hidden" style={{
-            background: `linear-gradient(165deg, hsl(${pnlColor} / 0.05) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-            border: `1px solid hsl(${pnlColor} / 0.2)`,
-          }}>
+           <GlowSection color={pnlColor}>
             <div className="relative p-3">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
