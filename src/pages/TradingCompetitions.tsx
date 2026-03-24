@@ -41,20 +41,6 @@ const STATUS_CONFIG: Record<CompStatus, { label: string; color: string }> = {
 };
 const ACCENT = '45 95% 55%';
 
-function GlowSection({ color = ACCENT, children, className = '' }: { color?: string; children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`relative rounded-2xl overflow-hidden ${className}`} style={{
-      background: `linear-gradient(165deg, hsl(${color} / 0.08) 0%, hsl(var(--card)) 40%, hsl(var(--background)) 100%)`,
-      border: `1px solid hsl(${color} / 0.2)`,
-    }}>
-      <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-        background: `linear-gradient(90deg, transparent, hsl(${color} / 0.7), transparent)`,
-      }} />
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
-
 export default function TradingCompetitions() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<'all' | CompStatus>('all');
