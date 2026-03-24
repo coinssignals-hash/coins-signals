@@ -99,6 +99,14 @@ export type TranslationKeys = {
   performance_report_title: string;
   trading_psychology_title: string;
   risk_dashboard_title: string;
+  // Phase 4 - Strategy & AI
+  drawer_cat_strategy: string;
+  drawer_strategy_builder: string;
+  drawer_smart_alerts: string;
+  drawer_ai_coach: string;
+  strategy_builder_title: string;
+  smart_alerts_title: string;
+  ai_coach_title: string;
   // Settings page
   settings_title: string;
   settings_profile: string;

@@ -11,7 +11,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route, Gamepad2, CandlestickChart, Target, Swords, LineChart, HeartPulse
+  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route, Gamepad2, CandlestickChart, Target, Swords, LineChart, HeartPulse, Blocks, BellRing, GraduationCap
 } from 'lucide-react';
 import { LanguageQuickSelect } from './LanguageQuickSelect';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
@@ -69,6 +69,15 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: LineChart, label: t('drawer_performance_report') || 'Reporte de Rendimiento', href: '/tools/performance-report' },
         { icon: HeartPulse, label: t('drawer_trading_psychology') || 'Psicología', href: '/tools/trading-psychology' },
         { icon: ShieldAlert, label: t('drawer_risk_dashboard') || 'Dashboard de Riesgo', href: '/tools/risk-dashboard' },
+      ],
+    },
+    {
+      title: t('drawer_cat_strategy') || 'Estrategias & IA',
+      color: '280 80% 55%',
+      items: [
+        { icon: Blocks, label: t('drawer_strategy_builder') || 'Constructor de Estrategias', href: '/tools/strategy-builder' },
+        { icon: BellRing, label: t('drawer_smart_alerts') || 'Alertas Inteligentes', href: '/tools/smart-alerts' },
+        { icon: GraduationCap, label: t('drawer_ai_coach') || 'Coach IA', href: '/tools/ai-coach' },
       ],
     },
     {

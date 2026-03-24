@@ -2147,6 +2147,13 @@ const nl: TranslationKeys = {
   performance_report_title: 'Prestatierapport',
   trading_psychology_title: 'Trading Psychologie',
   risk_dashboard_title: 'Risico Dashboard',
+  drawer_cat_strategy: 'Strategieën & AI',
+  drawer_strategy_builder: 'Strategiebouwer',
+  drawer_smart_alerts: 'Slimme Meldingen',
+  drawer_ai_coach: 'AI Coach',
+  strategy_builder_title: 'Strategiebouwer',
+  smart_alerts_title: 'Slimme Meldingen',
+  ai_coach_title: 'AI Trading Coach',
 };
 
 export default nl;
