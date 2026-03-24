@@ -1959,6 +1959,13 @@ const fr: TranslationKeys = {
   strategy_builder_title: 'Constructeur de Stratégies',
   smart_alerts_title: 'Alertes Intelligentes',
   ai_coach_title: 'Coach IA de Trading',
+  drawer_cat_social: 'Social & Compétitions',
+  drawer_leaderboard: 'Classement',
+  drawer_copy_trading: 'Copy Trading',
+  drawer_competitions: 'Compétitions',
+  leaderboard_title: 'Classement',
+  copy_trading_title: 'Copy Trading',
+  competitions_title: 'Compétitions de Trading',
 };
 
 export default fr;

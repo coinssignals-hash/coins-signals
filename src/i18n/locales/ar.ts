@@ -2154,6 +2154,13 @@ const ar: TranslationKeys = {
   strategy_builder_title: 'منشئ الاستراتيجيات',
   smart_alerts_title: 'تنبيهات ذكية',
   ai_coach_title: 'مدرب تداول بالذكاء الاصطناعي',
+  drawer_cat_social: 'اجتماعي ومسابقات',
+  drawer_leaderboard: 'لوحة المتصدرين',
+  drawer_copy_trading: 'نسخ التداول',
+  drawer_competitions: 'المسابقات',
+  leaderboard_title: 'لوحة المتصدرين',
+  copy_trading_title: 'نسخ التداول',
+  competitions_title: 'مسابقات التداول',
 };
 
 export default ar;

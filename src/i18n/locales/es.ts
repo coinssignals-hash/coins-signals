@@ -2160,6 +2160,13 @@ const es: TranslationKeys = {
   strategy_builder_title: 'Constructor de Estrategias',
   smart_alerts_title: 'Alertas Inteligentes',
   ai_coach_title: 'Coach IA de Trading',
+  drawer_cat_social: 'Social & Competencias',
+  drawer_leaderboard: 'Leaderboard',
+  drawer_copy_trading: 'Copy Trading',
+  drawer_competitions: 'Competencias',
+  leaderboard_title: 'Leaderboard',
+  copy_trading_title: 'Copy Trading',
+  competitions_title: 'Competencias de Trading',
 };
 
 export default es;

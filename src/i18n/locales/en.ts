@@ -2159,6 +2159,13 @@ const en: TranslationKeys = {
   strategy_builder_title: 'Strategy Builder',
   smart_alerts_title: 'Smart Alerts',
   ai_coach_title: 'AI Trading Coach',
+  drawer_cat_social: 'Social & Competitions',
+  drawer_leaderboard: 'Leaderboard',
+  drawer_copy_trading: 'Copy Trading',
+  drawer_competitions: 'Competitions',
+  leaderboard_title: 'Leaderboard',
+  copy_trading_title: 'Copy Trading',
+  competitions_title: 'Trading Competitions',
 };
 
 export default en;

@@ -2154,6 +2154,13 @@ const nl: TranslationKeys = {
   strategy_builder_title: 'Strategiebouwer',
   smart_alerts_title: 'Slimme Meldingen',
   ai_coach_title: 'AI Trading Coach',
+  drawer_cat_social: 'Sociaal & Wedstrijden',
+  drawer_leaderboard: 'Ranglijst',
+  drawer_copy_trading: 'Copy Trading',
+  drawer_competitions: 'Wedstrijden',
+  leaderboard_title: 'Ranglijst',
+  copy_trading_title: 'Copy Trading',
+  competitions_title: 'Trading Wedstrijden',
 };
 
 export default nl;
