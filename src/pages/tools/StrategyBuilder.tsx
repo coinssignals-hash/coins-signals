@@ -97,6 +97,8 @@ export default function StrategyBuilder() {
   const [backtestResult, setBacktestResult] = useState<null | {
     totalTrades: number; wins: number; losses: number; profitFactor: number;
     maxDrawdown: number; netPnl: number; sharpe: number;
+    equityCurve: { trade: number; equity: number; drawdown: number; pnl: number }[];
+    monthlyReturns: { month: string; pnl: number }[];
   }>(null);
 
   const addRule = (action: 'BUY' | 'SELL') => {
