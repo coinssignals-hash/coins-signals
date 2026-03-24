@@ -144,6 +144,9 @@ function AnimatedRoutes() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/media/:type" element={<MediaLibrary />} />
           <Route path="/courses/lesson/:lessonId" element={<LessonDetail />} />
+          <Route path="/glossary" element={<Glossary />} />
+          <Route path="/learning-paths" element={<LearningPathsPage />} />
+          <Route path="/certifications" element={<Certifications />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/install" element={<Install />} />
           <Route path="/onboarding" element={<Onboarding />} />
