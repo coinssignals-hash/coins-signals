@@ -424,9 +424,15 @@ export default function Forum() {
     return (
       <div className="flex flex-col flex-1 min-h-0">
         {/* Chat header */}
-        <div className="flex items-center gap-2 pb-2 sm:pb-3 border-b border-border mb-2">
-          <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="text-primary active:scale-95 transition-transform">
-            <ArrowLeft className="w-5 h-5" />
+        <div className="flex items-center gap-2 pb-2 sm:pb-3 mb-2 rounded-xl px-3 py-2" style={{
+          background: `linear-gradient(165deg, hsl(${ACCENT} / 0.08) 0%, hsl(var(--card)) 100%)`,
+          border: `1px solid hsl(${ACCENT} / 0.15)`,
+        }}>
+          <button onClick={() => setView(isDM ? 'dms' : 'channels')} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90" style={{
+            background: 'hsl(var(--card) / 0.85)',
+            border: '1px solid hsl(var(--border) / 0.6)',
+          }}>
+            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <h2 className="text-sm sm:text-base font-bold text-foreground truncate">{title}</h2>
           {/* Language filter toggle - only in channel chat */}
@@ -436,9 +442,12 @@ export default function Forum() {
               className={cn(
                 "ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium border transition-colors active:scale-95",
                 languageFilter
-                  ? "bg-primary/10 border-primary/30 text-primary"
-                  : "bg-secondary border-border text-muted-foreground hover:text-foreground"
+                  ? "border-primary/30 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground"
               )}
+              style={{
+                background: languageFilter ? `hsl(${ACCENT} / 0.1)` : 'hsl(var(--card) / 0.6)',
+              }}
             >
               <Globe className="w-3 h-3" />
               {languageFilter ? (LANGUAGE_FLAGS as any)[languageFilter] : '🌐'}
