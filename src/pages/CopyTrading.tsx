@@ -216,7 +216,8 @@ export default function CopyTrading() {
             );
           })}
         </div>
-      </div>
+        </div>
+      </main>
     </PageShell>
   );
 }
