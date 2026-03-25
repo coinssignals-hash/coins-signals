@@ -201,14 +201,46 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
         </div>
       </div>
 
+      {/* Signal prefill banner */}
+      {prefillSide && (
+        <div className="rounded-xl p-3 flex items-center gap-3" style={{
+          background: prefillSide === 'buy'
+            ? 'linear-gradient(135deg, hsl(160 84% 39% / 0.1), hsl(160 84% 39% / 0.03))'
+            : 'linear-gradient(135deg, hsl(0 84% 55% / 0.1), hsl(0 84% 55% / 0.03))',
+          border: prefillSide === 'buy'
+            ? '1px solid hsl(160 84% 39% / 0.3)'
+            : '1px solid hsl(0 84% 55% / 0.3)',
+        }}>
+          <SignalIcon className="w-4 h-4 shrink-0" style={{ color: prefillSide === 'buy' ? 'hsl(160 84% 50%)' : 'hsl(0 84% 60%)' }} />
+          <div className="flex-1">
+            <p className="text-[10px] font-bold" style={{ color: prefillSide === 'buy' ? 'hsl(160 84% 50%)' : 'hsl(0 84% 60%)' }}>
+              Señal pre-cargada · {prefillSide === 'buy' ? 'COMPRA' : 'VENTA'}
+            </p>
+            <p className="text-[9px] text-muted-foreground">SL y TP configurados desde la señal</p>
+          </div>
+        </div>
+      )}
+
       {/* Buy / Sell buttons */}
       <div className="grid grid-cols-2 gap-3">
-        <Button onClick={() => handleOpen('buy')} className="h-14 text-base font-bold rounded-xl text-white"
-          style={{ background: 'linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 45%))', border: '1px solid hsl(160 84% 39% / 0.4)' }}>
+        <Button onClick={() => { handleOpen('buy'); setPrefillSide(null); }} className="h-14 text-base font-bold rounded-xl text-white"
+          style={{
+            background: prefillSide === 'buy'
+              ? 'linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 50%))'
+              : 'linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 45%))',
+            border: '1px solid hsl(160 84% 39% / 0.4)',
+            boxShadow: prefillSide === 'buy' ? '0 0 20px hsl(160 84% 39% / 0.3)' : 'none',
+          }}>
           <TrendingUp className="mr-2 h-5 w-5" /> COMPRAR
         </Button>
-        <Button onClick={() => handleOpen('sell')} className="h-14 text-base font-bold rounded-xl text-white"
-          style={{ background: 'linear-gradient(135deg, hsl(0 84% 55%), hsl(0 84% 60%))', border: '1px solid hsl(0 84% 55% / 0.4)' }}>
+        <Button onClick={() => { handleOpen('sell'); setPrefillSide(null); }} className="h-14 text-base font-bold rounded-xl text-white"
+          style={{
+            background: prefillSide === 'sell'
+              ? 'linear-gradient(135deg, hsl(0 84% 55%), hsl(0 84% 65%))'
+              : 'linear-gradient(135deg, hsl(0 84% 55%), hsl(0 84% 60%))',
+            border: '1px solid hsl(0 84% 55% / 0.4)',
+            boxShadow: prefillSide === 'sell' ? '0 0 20px hsl(0 84% 55% / 0.3)' : 'none',
+          }}>
           <TrendingDown className="mr-2 h-5 w-5" /> VENDER
         </Button>
       </div>
