@@ -146,10 +146,12 @@ export default function RiskDashboard() {
   return (
     <PageShell>
       <div className="space-y-4 px-4 pb-24">
-        <div className="flex items-center gap-3 pt-4">
-          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
-          <h1 className="text-base font-bold text-foreground">{t('risk_dashboard_title') || 'Dashboard de Riesgo'}</h1>
-        </div>
+        <ToolPageHeader
+          icon={<ShieldAlert className="w-5 h-5" style={{ color: 'hsl(0 70% 55%)' }} />}
+          title={t('risk_dashboard_title') || 'Dashboard de Riesgo'}
+          subtitle={`Basado en ${metrics.totalTrades} operaciones`}
+          accent="0 70% 55%"
+        />
         {/* Risk Level Banner */}
         <Card className={cn("border-border", riskLevel === 'critical' ? 'bg-red-500/5 border-red-500/30' : riskLevel === 'high' ? 'bg-orange-500/5 border-orange-500/30' : 'bg-card')}>
           <CardContent className="p-3">

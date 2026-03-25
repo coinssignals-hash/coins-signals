@@ -156,10 +156,12 @@ export default function PerformanceReport() {
   return (
     <PageShell>
       <div className="space-y-4 px-4 pb-24">
-        <div className="flex items-center gap-3 pt-4">
-          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
-          <h1 className="text-base font-bold text-foreground">{t('performance_report_title') || 'Reporte de Rendimiento'}</h1>
-        </div>
+        <ToolPageHeader
+          icon={<Calendar className="w-5 h-5" style={{ color: 'hsl(30 80% 55%)' }} />}
+          title={t('performance_report_title') || 'Reporte de Rendimiento'}
+          subtitle="Análisis mensual de operaciones"
+          accent="30 80% 55%"
+        />
         {/* Month navigator */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(m => subMonths(m, 1))}>

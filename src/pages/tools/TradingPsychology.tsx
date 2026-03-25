@@ -124,10 +124,12 @@ export default function TradingPsychology() {
   return (
     <PageShell>
       <div className="space-y-4 px-4 pb-24">
-        <div className="flex items-center gap-3 pt-4">
-          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
-          <h1 className="text-base font-bold text-foreground">{t('trading_psychology_title') || 'Psicología de Trading'}</h1>
-        </div>
+        <ToolPageHeader
+          icon={<Brain className="w-5 h-5" style={{ color: 'hsl(270 70% 60%)' }} />}
+          title={t('trading_psychology_title') || 'Psicología de Trading'}
+          subtitle="Registro emocional y disciplina"
+          accent="270 70% 60%"
+        />
         {/* Add entry button */}
         <Button onClick={() => setShowForm(!showForm)} className="w-full" size="sm">
           <Plus className="w-4 h-4 mr-2" /> Registrar Sesión
