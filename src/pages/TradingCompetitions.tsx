@@ -14,6 +14,7 @@ import {
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
 import { ToolPageHeader } from '@/components/tools/ToolCard';
+import { CompetitionWinnersBanner } from '@/components/competitions/CompetitionWinnersBanner';
 
 type CompStatus = 'active' | 'upcoming' | 'ended';
 
@@ -111,6 +112,9 @@ export default function TradingCompetitions() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Hall of Fame - Published Winners */}
+        <CompetitionWinnersBanner />
 
         {/* Filter — glassmorphic */}
         <div className="flex rounded-xl p-1" style={{

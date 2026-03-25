@@ -21,6 +21,7 @@ import { AdminModerationTab } from '@/components/admin/AdminModerationTab';
 import { AdminForumSuggestionsTab } from '@/components/admin/AdminForumSuggestionsTab';
 import { AdminReferralsTab } from '@/components/admin/AdminReferralsTab';
 import { AdminSupportTab } from '@/components/admin/AdminSupportTab';
+import { AdminCompetitionRankingsTab } from '@/components/admin/AdminCompetitionRankingsTab';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -40,6 +41,7 @@ const TAB_TITLES: Record<string, string> = {
   'forum-suggestions': 'Sugerencias del Foro',
   referrals: 'Referidos',
   support: 'Soporte IA',
+  'competition-rankings': 'Rankings de Competencia',
 };
 
 export default function Admin() {
@@ -109,6 +111,7 @@ export default function Admin() {
       case 'forum-suggestions': return <AdminForumSuggestionsTab />;
       case 'referrals': return <AdminReferralsTab />;
       case 'support': return <AdminSupportTab />;
+      case 'competition-rankings': return <AdminCompetitionRankingsTab />;
       default: return <AdminDashboardTab />;
     }
   };

@@ -17,6 +17,7 @@ import {
   HeartPulse,
   Vote,
   Gift,
+  Trophy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -43,6 +44,7 @@ const ADMIN_TABS: AdminTab[] = [
   { id: 'documents', label: 'Documentos', icon: FileText },
   { id: 'forum-suggestions', label: 'Sugerencias Foro', icon: Vote },
   { id: 'referrals', label: 'Referidos', icon: Gift },
+  { id: 'competition-rankings', label: 'Rankings', icon: Trophy },
   { id: 'support', label: 'Soporte IA', icon: HeartPulse },
 ];
 

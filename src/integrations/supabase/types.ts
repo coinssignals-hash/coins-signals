@@ -283,6 +283,140 @@ export type Database = {
         }
         Relationships: []
       }
+      competition_rankings: {
+        Row: {
+          admin_notes: string | null
+          badge_awarded: string | null
+          calculated_at: string
+          composite_score: number
+          consistency_score: number | null
+          created_at: string
+          id: string
+          max_drawdown: number | null
+          period_end: string
+          period_label: string
+          period_start: string
+          period_type: string
+          prize_description: string | null
+          rank: number | null
+          status: string
+          total_pnl: number
+          total_trades: number
+          updated_at: string
+          user_id: string
+          win_rate: number
+          winning_trades: number
+        }
+        Insert: {
+          admin_notes?: string | null
+          badge_awarded?: string | null
+          calculated_at?: string
+          composite_score?: number
+          consistency_score?: number | null
+          created_at?: string
+          id?: string
+          max_drawdown?: number | null
+          period_end: string
+          period_label: string
+          period_start: string
+          period_type: string
+          prize_description?: string | null
+          rank?: number | null
+          status?: string
+          total_pnl?: number
+          total_trades?: number
+          updated_at?: string
+          user_id: string
+          win_rate?: number
+          winning_trades?: number
+        }
+        Update: {
+          admin_notes?: string | null
+          badge_awarded?: string | null
+          calculated_at?: string
+          composite_score?: number
+          consistency_score?: number | null
+          created_at?: string
+          id?: string
+          max_drawdown?: number | null
+          period_end?: string
+          period_label?: string
+          period_start?: string
+          period_type?: string
+          prize_description?: string | null
+          rank?: number | null
+          status?: string
+          total_pnl?: number
+          total_trades?: number
+          updated_at?: string
+          user_id?: string
+          win_rate?: number
+          winning_trades?: number
+        }
+        Relationships: []
+      }
+      competition_winners: {
+        Row: {
+          badge: string | null
+          composite_score: number
+          created_at: string
+          id: string
+          period_label: string
+          period_type: string
+          prize: string | null
+          published_at: string
+          published_by: string | null
+          rank: number
+          ranking_id: string
+          total_pnl: number
+          total_trades: number
+          user_id: string
+          win_rate: number
+        }
+        Insert: {
+          badge?: string | null
+          composite_score?: number
+          created_at?: string
+          id?: string
+          period_label: string
+          period_type: string
+          prize?: string | null
+          published_at?: string
+          published_by?: string | null
+          rank?: number
+          ranking_id: string
+          total_pnl?: number
+          total_trades?: number
+          user_id: string
+          win_rate?: number
+        }
+        Update: {
+          badge?: string | null
+          composite_score?: number
+          created_at?: string
+          id?: string
+          period_label?: string
+          period_type?: string
+          prize?: string | null
+          published_at?: string
+          published_by?: string | null
+          rank?: number
+          ranking_id?: string
+          total_pnl?: number
+          total_trades?: number
+          user_id?: string
+          win_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_winners_ranking_id_fkey"
+            columns: ["ranking_id"]
+            isOneToOne: false
+            referencedRelation: "competition_rankings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_progress: {
         Row: {
           completed: boolean
