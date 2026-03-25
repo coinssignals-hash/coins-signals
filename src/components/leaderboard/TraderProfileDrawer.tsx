@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { GlowSection } from '@/components/ui/glow-section';
 import { LeaderboardTrader } from '@/hooks/useLeaderboard';
 import { TIER_COLORS, getFlag, getInitials } from './leaderboard-utils';
-import { TrendingUp, TrendingDown, Target, Flame, BarChart3, Activity, Clock, Layers, Eye, EyeOff, Copy, Zap, UserPlus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Flame, BarChart3, Activity, Clock, Layers, Eye, EyeOff, Copy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { AreaChart, Area, ResponsiveContainer, Tooltip, YAxis } from 'recharts';
 
 interface Props {
   trader: LeaderboardTrader | null;
@@ -45,9 +46,28 @@ function generateDemoTrades(trader: LeaderboardTrader) {
 
 const COPY_ACCENT = '190 90% 50%';
 
+function generateEquityCurve(trader: LeaderboardTrader) {
+  const points = 60;
+  let equity = 1000;
+  const data = [];
+  const dailyGain = trader.pnl / points;
+
+  for (let i = 0; i < points; i++) {
+    const variance = (Math.random() - 0.4) * (trader.pnl / 8);
+    equity += dailyGain * 0.3 + variance;
+    equity = Math.max(equity, 200);
+    data.push({
+      day: i + 1,
+      equity: +equity.toFixed(0),
+    });
+  }
+  return data;
+}
+
 export function TraderProfileDrawer({ trader, open, onClose }: Props) {
   const navigate = useNavigate();
   const demoTrades = useMemo(() => trader ? generateDemoTrades(trader) : [], [trader]);
+  const equityCurve = useMemo(() => trader ? generateEquityCurve(trader) : [], [trader]);
   const [isFollowing, setIsFollowing] = useState(false);
 
   if (!trader) return null;
@@ -152,6 +172,57 @@ export function TraderProfileDrawer({ trader, open, onClose }: Props) {
                 <Copy className="w-3.5 h-3.5" /> Copiar Trades
               </button>
             </div>
+
+            {/* ── Equity Curve ── */}
+            <GlowSection color={tierColor} className="!rounded-xl">
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                    <Activity className="w-3 h-3" style={{ color: `hsl(${tierColor})` }} />
+                    CURVA DE EQUITY
+                  </h4>
+                  <span className="text-[10px] font-mono tabular-nums" style={{
+                    color: trader.pnl > 0 ? 'hsl(160 84% 39%)' : 'hsl(0 84% 60%)',
+                  }}>
+                    {trader.pnl > 0 ? '+' : ''}{((trader.pnl / 1000) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="h-24 rounded-lg overflow-hidden" style={{ background: 'hsl(var(--background) / 0.3)' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={equityCurve} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                      <defs>
+                        <linearGradient id={`eq-${trader.id}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={trader.pnl > 0 ? 'hsl(160,84%,39%)' : 'hsl(0,84%,60%)'} stopOpacity={0.35} />
+                          <stop offset="95%" stopColor={trader.pnl > 0 ? 'hsl(160,84%,39%)' : 'hsl(0,84%,60%)'} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <YAxis domain={['dataMin', 'dataMax']} hide />
+                      <Tooltip
+                        contentStyle={{
+                          background: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border) / 0.3)',
+                          borderRadius: '8px',
+                          fontSize: '10px',
+                          padding: '4px 8px',
+                          backdropFilter: 'blur(8px)',
+                        }}
+                        labelFormatter={(v) => `Día ${v}`}
+                        formatter={(value: number) => [`$${value.toLocaleString()}`, 'Equity']}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="equity"
+                        stroke={trader.pnl > 0 ? 'hsl(160,84%,39%)' : 'hsl(0,84%,60%)'}
+                        fill={`url(#eq-${trader.id})`}
+                        strokeWidth={1.5}
+                        dot={false}
+                        animationDuration={800}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </GlowSection>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-2">
