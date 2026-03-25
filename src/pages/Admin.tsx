@@ -111,6 +111,7 @@ export default function Admin() {
       case 'forum-suggestions': return <AdminForumSuggestionsTab />;
       case 'referrals': return <AdminReferralsTab />;
       case 'support': return <AdminSupportTab />;
+      case 'competition-rankings': return <AdminCompetitionRankingsTab />;
       default: return <AdminDashboardTab />;
     }
   };
