@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, RotateCcw, Shield, Target, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, RotateCcw, Shield, Target, Zap, Zap as SignalIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { InstrumentSelector } from './InstrumentSelector';
 import { INSTRUMENTS, type Instrument } from '@/hooks/usePaperTrading';
+import type { SignalPrefill } from '@/pages/PaperTrading';
 
 const ACCENT = '270 70% 60%';
 const LEVERAGE_OPTIONS = [1, 5, 10, 20, 50, 100, 200, 500];
@@ -19,9 +20,11 @@ interface Props {
   }) => false | object;
   onReset: () => void;
   balance: number;
+  signalPrefill?: SignalPrefill | null;
+  onPrefillConsumed?: () => void;
 }
 
-export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance }: Props) {
+export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance, signalPrefill, onPrefillConsumed }: Props) {
   const [selectedSymbol, setSelectedSymbol] = useState(instruments[0]?.symbol ?? 'EUR/USD');
   const [lotSize, setLotSize] = useState('0.01');
   const [leverage, setLeverage] = useState(100);
@@ -30,6 +33,32 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance 
   const [tpEnabled, setTpEnabled] = useState(false);
   const [slPips, setSlPips] = useState('50');
   const [tpPips, setTpPips] = useState('100');
+  const [prefillSide, setPrefillSide] = useState<'buy' | 'sell' | null>(null);
+  const prefillApplied = useRef(false);
+
+  // Apply signal prefill
+  useEffect(() => {
+    if (signalPrefill && !prefillApplied.current) {
+      prefillApplied.current = true;
+      const inst = INSTRUMENTS.find(i => i.symbol === signalPrefill.symbol);
+      if (inst) {
+        setSelectedSymbol(signalPrefill.symbol);
+        setSlEnabled(true);
+        setTpEnabled(true);
+        // Calculate pips from prices
+        const slPipsVal = Math.abs(signalPrefill.entryPrice - signalPrefill.stopLoss) / inst.pipSize;
+        const tpPipsVal = Math.abs(signalPrefill.takeProfit - signalPrefill.entryPrice) / inst.pipSize;
+        setSlPips(Math.round(slPipsVal).toString());
+        setTpPips(Math.round(tpPipsVal).toString());
+        setPrefillSide(signalPrefill.side);
+        toast({
+          title: '📊 Señal cargada',
+          description: `${signalPrefill.symbol} · ${signalPrefill.side === 'buy' ? 'Compra' : 'Venta'} · SL: ${Math.round(slPipsVal)} pips · TP: ${Math.round(tpPipsVal)} pips`,
+        });
+      }
+      onPrefillConsumed?.();
+    }
+  }, [signalPrefill]);
 
   const inst = INSTRUMENTS.find(i => i.symbol === selectedSymbol) || INSTRUMENTS[0];
   const currentPrice = prices[selectedSymbol] ?? 0;
