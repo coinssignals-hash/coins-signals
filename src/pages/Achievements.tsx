@@ -137,17 +137,37 @@ export default function Achievements() {
   return (
     <PageShell>
       <Header />
-      <main className="min-h-screen pb-24 px-4">
-        {/* Back & Title */}
-        <div className="flex items-center gap-3 py-4">
-          <button onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5" style={{ color: 'hsl(45 90% 55%)' }} />
-            <h1 className="text-xl font-bold text-foreground">Logros</h1>
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: 'linear-gradient(165deg, hsl(45 90% 55% / 0.15) 0%, hsl(var(--background)) 50%)',
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: 'linear-gradient(90deg, transparent, hsl(45 90% 55% / 0.8), transparent)',
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
+          background: 'radial-gradient(circle, hsl(45 90% 55% / 0.5), transparent 70%)',
+        }} />
+        <div className="relative px-4 py-4">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
+              style={{ background: 'hsl(45 90% 55% / 0.1)', border: '1px solid hsl(45 90% 55% / 0.2)' }}>
+              <ArrowLeft className="w-4 h-4" style={{ color: 'hsl(45 90% 55%)' }} />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                background: 'linear-gradient(165deg, hsl(45 90% 55% / 0.25), hsl(45 90% 55% / 0.08))',
+                border: '1px solid hsl(45 90% 55% / 0.3)',
+                boxShadow: '0 0 20px hsl(45 90% 55% / 0.15)',
+              }}>
+                <Trophy className="w-5 h-5" style={{ color: 'hsl(45 90% 55%)' }} />
+              </div>
+              <h1 className="text-lg font-bold text-foreground tracking-tight">Logros</h1>
+            </div>
           </div>
         </div>
+      </div>
+      <main className="min-h-screen pb-24 px-4">
 
         {!user ? (
           <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">

@@ -79,7 +79,9 @@ const SavedNews = () => {
             </AlertDialog>
           )}
         </div>
+      </div>
 
+      <main className="px-4 space-y-6 pb-24">
         {/* Info banner */}
         <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-sm text-muted-foreground">
           <p>{t('saved_info')}</p>

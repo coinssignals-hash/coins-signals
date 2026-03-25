@@ -4,6 +4,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Activity } from 'lucide-react';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 import { PaperStatsRow } from '@/components/paper-trading/PaperStatsRow';
 import { PaperTradePanel } from '@/components/paper-trading/PaperTradePanel';
