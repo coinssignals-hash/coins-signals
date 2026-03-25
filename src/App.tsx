@@ -75,7 +75,7 @@ const Certifications = lazy(() => import("./pages/Certifications"));
 const PaperTrading = lazy(() => import("./pages/PaperTrading"));
 const CandleReplay = lazy(() => import("./pages/CandleReplay"));
 const DailyChallenges = lazy(() => import("./pages/DailyChallenges"));
-const RiskSimulator = lazy(() => import("./pages/RiskSimulator"));
+
 const StrategyBuilder = lazy(() => import("./pages/tools/StrategyBuilder"));
 const SmartAlerts = lazy(() => import("./pages/tools/SmartAlerts"));
 const AITradingCoach = lazy(() => import("./pages/tools/AITradingCoach"));
@@ -197,7 +197,7 @@ function AnimatedRoutes() {
           <Route path="/tools/paper-trading" element={<PaperTrading />} />
           <Route path="/tools/candle-replay" element={<CandleReplay />} />
           <Route path="/tools/daily-challenges" element={<DailyChallenges />} />
-          <Route path="/tools/risk-simulator" element={<RiskSimulator />} />
+          
           <Route path="/tools/strategy-builder" element={<StrategyBuilder />} />
           <Route path="/tools/smart-alerts" element={<SmartAlerts />} />
           <Route path="/tools/ai-coach" element={<AITradingCoach />} />

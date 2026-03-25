@@ -11,7 +11,7 @@ import { useTranslation } from '@/i18n/LanguageContext';
 import {
   User as UserIcon, FileText, Gift, Link2, Shield, BookOpen, Trophy,
   TrendingUp, BarChart3, MessageCircle, Info, LogOut, LogIn,
-  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route, Gamepad2, CandlestickChart, Target, Swords, LineChart, HeartPulse, Blocks, BellRing, GraduationCap, Crown, Copy, Medal
+  Bell, BellOff, Palette, Globe, Cloud, Download, Brain, Newspaper, Archive, Wallet, ShieldAlert, RefreshCw, Route, Gamepad2, CandlestickChart, Target, LineChart, HeartPulse, Blocks, BellRing, GraduationCap, Crown, Copy, Medal
 } from 'lucide-react';
 import { LanguageQuickSelect } from './LanguageQuickSelect';
 import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
@@ -65,7 +65,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: Gamepad2, label: t('drawer_paper_trading') || 'Paper Trading', href: '/tools/paper-trading' },
         { icon: CandlestickChart, label: t('drawer_candle_replay') || 'Candle Replay', href: '/tools/candle-replay' },
         { icon: Target, label: t('drawer_daily_challenges') || 'Retos Diarios', href: '/tools/daily-challenges' },
-        { icon: Swords, label: t('drawer_risk_simulator') || 'Simulador de Riesgo', href: '/tools/risk-simulator' },
+        
       ],
     },
     {
