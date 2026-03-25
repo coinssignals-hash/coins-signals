@@ -19,21 +19,17 @@ export default function PaperTrading() {
   const [tab, setTab] = useState<'trade' | 'positions' | 'history'>('trade');
   const {
     balance, positions, history, prices, totalPnl, winRate,
-    pairs, openPosition, closePosition, resetAccount, getPositionPnl,
+    instruments, openPosition, closePosition, resetAccount, getPositionPnl,
   } = usePaperTrading();
 
   return (
     <PageShell>
       <Header />
-      {/* ── Premium Hero Header ── */}
       <div className="relative overflow-hidden" style={{
         background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
       }}>
         <div className="absolute top-0 inset-x-0 h-[2px]" style={{
           background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
-        }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
-          background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)`,
         }} />
         <div className="relative px-4 py-4">
           <div className="flex items-center gap-3">
@@ -61,7 +57,6 @@ export default function PaperTrading() {
       <div className="max-w-lg mx-auto space-y-4 pb-24 px-4 pt-4">
         <PaperStatsRow balance={balance} totalPnl={totalPnl} winRate={winRate} />
 
-        {/* Tab bar */}
         <div className="flex rounded-xl p-1" style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border) / 0.3)' }}>
           {(['trade', 'positions', 'history'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
@@ -78,7 +73,7 @@ export default function PaperTrading() {
 
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            {tab === 'trade' && <PaperTradePanel pairs={pairs} prices={prices} onOpen={openPosition} onReset={resetAccount} />}
+            {tab === 'trade' && <PaperTradePanel instruments={instruments} prices={prices} onOpen={openPosition} onReset={resetAccount} balance={balance} />}
             {tab === 'positions' && <PaperPositionsList positions={positions} getPnl={getPositionPnl} onClose={closePosition} />}
             {tab === 'history' && <PaperTradeHistory history={history} />}
           </motion.div>
