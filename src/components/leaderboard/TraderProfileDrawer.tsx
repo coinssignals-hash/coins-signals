@@ -46,9 +46,28 @@ function generateDemoTrades(trader: LeaderboardTrader) {
 
 const COPY_ACCENT = '190 90% 50%';
 
+function generateEquityCurve(trader: LeaderboardTrader) {
+  const points = 60;
+  let equity = 1000;
+  const data = [];
+  const dailyGain = trader.pnl / points;
+
+  for (let i = 0; i < points; i++) {
+    const variance = (Math.random() - 0.4) * (trader.pnl / 8);
+    equity += dailyGain * 0.3 + variance;
+    equity = Math.max(equity, 200);
+    data.push({
+      day: i + 1,
+      equity: +equity.toFixed(0),
+    });
+  }
+  return data;
+}
+
 export function TraderProfileDrawer({ trader, open, onClose }: Props) {
   const navigate = useNavigate();
   const demoTrades = useMemo(() => trader ? generateDemoTrades(trader) : [], [trader]);
+  const equityCurve = useMemo(() => trader ? generateEquityCurve(trader) : [], [trader]);
   const [isFollowing, setIsFollowing] = useState(false);
 
   if (!trader) return null;
