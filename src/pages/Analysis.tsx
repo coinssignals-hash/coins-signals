@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Bell, Clock, Zap, WifiOff,
-  LineChart, Landmark, Brain, Target } from
+  LineChart, Landmark, Brain, Target, Settings2, ChevronRight } from
 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
@@ -152,7 +152,18 @@ export default function Analysis() {
             </SheetTrigger>
             <SheetContent className="w-[85vw] max-w-[380px] bg-[#0a1628] border-cyan-900/40">
               <SheetHeader><SheetTitle className="text-white">{t('analysis_alerts')}</SheetTitle></SheetHeader>
-              <div className="mt-4"><Suspense fallback={<SectionLoader />}><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></Suspense></div>
+              <div className="mt-4 space-y-4">
+                <Suspense fallback={<SectionLoader />}><AlertsPanel config={alertConfig} onConfigChange={setAlertConfig} /></Suspense>
+                <Button
+                  variant="outline"
+                  className="w-full border-cyan-800/30 bg-cyan-500/5 hover:bg-cyan-500/15 text-cyan-300 text-xs gap-2"
+                  onClick={() => navigate('/tools/smart-alerts')}
+                >
+                  <Settings2 className="w-3.5 h-3.5" />
+                  {t('analysis_more_settings') || 'Más configuraciones y notificaciones'}
+                  <ChevronRight className="w-3.5 h-3.5 ml-auto" />
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
