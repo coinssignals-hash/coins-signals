@@ -151,7 +151,7 @@ export default function PerformanceReport() {
   // Pad start of calendar
   const firstDayOfWeek = (getDay(startOfMonth(currentMonth)) + 6) % 7; // Monday = 0
 
-  const navigate = useNavigate();
+  // navigate removed - ToolPageHeader handles back navigation
 
   return (
     <PageShell>
