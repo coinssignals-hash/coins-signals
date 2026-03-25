@@ -76,9 +76,6 @@ const PaperTrading = lazy(() => import("./pages/PaperTrading"));
 const CandleReplay = lazy(() => import("./pages/CandleReplay"));
 const DailyChallenges = lazy(() => import("./pages/DailyChallenges"));
 const RiskSimulator = lazy(() => import("./pages/RiskSimulator"));
-const PerformanceReport = lazy(() => import("./pages/tools/PerformanceReport"));
-const TradingPsychology = lazy(() => import("./pages/tools/TradingPsychology"));
-const RiskDashboard = lazy(() => import("./pages/tools/RiskDashboard"));
 const StrategyBuilder = lazy(() => import("./pages/tools/StrategyBuilder"));
 const SmartAlerts = lazy(() => import("./pages/tools/SmartAlerts"));
 const AITradingCoach = lazy(() => import("./pages/tools/AITradingCoach"));
@@ -201,9 +198,6 @@ function AnimatedRoutes() {
           <Route path="/tools/candle-replay" element={<CandleReplay />} />
           <Route path="/tools/daily-challenges" element={<DailyChallenges />} />
           <Route path="/tools/risk-simulator" element={<RiskSimulator />} />
-          <Route path="/tools/performance-report" element={<PerformanceReport />} />
-          <Route path="/tools/trading-psychology" element={<TradingPsychology />} />
-          <Route path="/tools/risk-dashboard" element={<RiskDashboard />} />
           <Route path="/tools/strategy-builder" element={<StrategyBuilder />} />
           <Route path="/tools/smart-alerts" element={<SmartAlerts />} />
           <Route path="/tools/ai-coach" element={<AITradingCoach />} />
