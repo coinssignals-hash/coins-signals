@@ -67,13 +67,20 @@ export default function TradingCompetitions() {
 
       <div className="space-y-4 pb-24">
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-2">
+        <motion.div className="grid grid-cols-3 gap-2"
+          initial="hidden" animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        >
           {[
             { label: 'Activas', value: Object.values(joined).filter(Boolean).length, icon: Swords, color: '45 95% 55%' },
             { label: 'Top 10', value: 2, icon: Medal, color: '160 84% 39%' },
             { label: 'Ganados', value: 0, icon: Trophy, color: '270 70% 60%' },
           ].map(s => (
-            <GlowSection key={s.label} color={s.color}>
+            <motion.div key={s.label}
+              variants={{ hidden: { opacity: 0, scale: 0.85, y: 12 }, visible: { opacity: 1, scale: 1, y: 0 } }}
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+            >
+            <GlowSection color={s.color}>
               <div className="p-3 text-center">
                 <div className="w-7 h-7 mx-auto mb-1.5 rounded-lg flex items-center justify-center" style={{
                   background: `hsl(${s.color} / 0.15)`,
@@ -85,8 +92,9 @@ export default function TradingCompetitions() {
                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
               </div>
             </GlowSection>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Filter — glassmorphic */}
         <div className="flex rounded-xl p-1" style={{
