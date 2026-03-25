@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, TrendingDown, RotateCcw, Shield, Target, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, RotateCcw, Shield, Target, Zap, Zap as SignalIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { InstrumentSelector } from './InstrumentSelector';
 import { INSTRUMENTS, type Instrument } from '@/hooks/usePaperTrading';
+import type { SignalPrefill } from '@/pages/PaperTrading';
 
 const ACCENT = '270 70% 60%';
 const LEVERAGE_OPTIONS = [1, 5, 10, 20, 50, 100, 200, 500];
@@ -19,9 +20,11 @@ interface Props {
   }) => false | object;
   onReset: () => void;
   balance: number;
+  signalPrefill?: SignalPrefill | null;
+  onPrefillConsumed?: () => void;
 }
 
-export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance }: Props) {
+export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance, signalPrefill, onPrefillConsumed }: Props) {
   const [selectedSymbol, setSelectedSymbol] = useState(instruments[0]?.symbol ?? 'EUR/USD');
   const [lotSize, setLotSize] = useState('0.01');
   const [leverage, setLeverage] = useState(100);
@@ -30,6 +33,32 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance 
   const [tpEnabled, setTpEnabled] = useState(false);
   const [slPips, setSlPips] = useState('50');
   const [tpPips, setTpPips] = useState('100');
+  const [prefillSide, setPrefillSide] = useState<'buy' | 'sell' | null>(null);
+  const prefillApplied = useRef(false);
+
+  // Apply signal prefill
+  useEffect(() => {
+    if (signalPrefill && !prefillApplied.current) {
+      prefillApplied.current = true;
+      const inst = INSTRUMENTS.find(i => i.symbol === signalPrefill.symbol);
+      if (inst) {
+        setSelectedSymbol(signalPrefill.symbol);
+        setSlEnabled(true);
+        setTpEnabled(true);
+        // Calculate pips from prices
+        const slPipsVal = Math.abs(signalPrefill.entryPrice - signalPrefill.stopLoss) / inst.pipSize;
+        const tpPipsVal = Math.abs(signalPrefill.takeProfit - signalPrefill.entryPrice) / inst.pipSize;
+        setSlPips(Math.round(slPipsVal).toString());
+        setTpPips(Math.round(tpPipsVal).toString());
+        setPrefillSide(signalPrefill.side);
+        toast({
+          title: '📊 Señal cargada',
+          description: `${signalPrefill.symbol} · ${signalPrefill.side === 'buy' ? 'Compra' : 'Venta'} · SL: ${Math.round(slPipsVal)} pips · TP: ${Math.round(tpPipsVal)} pips`,
+        });
+      }
+      onPrefillConsumed?.();
+    }
+  }, [signalPrefill]);
 
   const inst = INSTRUMENTS.find(i => i.symbol === selectedSymbol) || INSTRUMENTS[0];
   const currentPrice = prices[selectedSymbol] ?? 0;
@@ -172,14 +201,46 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance 
         </div>
       </div>
 
+      {/* Signal prefill banner */}
+      {prefillSide && (
+        <div className="rounded-xl p-3 flex items-center gap-3" style={{
+          background: prefillSide === 'buy'
+            ? 'linear-gradient(135deg, hsl(160 84% 39% / 0.1), hsl(160 84% 39% / 0.03))'
+            : 'linear-gradient(135deg, hsl(0 84% 55% / 0.1), hsl(0 84% 55% / 0.03))',
+          border: prefillSide === 'buy'
+            ? '1px solid hsl(160 84% 39% / 0.3)'
+            : '1px solid hsl(0 84% 55% / 0.3)',
+        }}>
+          <SignalIcon className="w-4 h-4 shrink-0" style={{ color: prefillSide === 'buy' ? 'hsl(160 84% 50%)' : 'hsl(0 84% 60%)' }} />
+          <div className="flex-1">
+            <p className="text-[10px] font-bold" style={{ color: prefillSide === 'buy' ? 'hsl(160 84% 50%)' : 'hsl(0 84% 60%)' }}>
+              Señal pre-cargada · {prefillSide === 'buy' ? 'COMPRA' : 'VENTA'}
+            </p>
+            <p className="text-[9px] text-muted-foreground">SL y TP configurados desde la señal</p>
+          </div>
+        </div>
+      )}
+
       {/* Buy / Sell buttons */}
       <div className="grid grid-cols-2 gap-3">
-        <Button onClick={() => handleOpen('buy')} className="h-14 text-base font-bold rounded-xl text-white"
-          style={{ background: 'linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 45%))', border: '1px solid hsl(160 84% 39% / 0.4)' }}>
+        <Button onClick={() => { handleOpen('buy'); setPrefillSide(null); }} className="h-14 text-base font-bold rounded-xl text-white"
+          style={{
+            background: prefillSide === 'buy'
+              ? 'linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 50%))'
+              : 'linear-gradient(135deg, hsl(160 84% 39%), hsl(160 84% 45%))',
+            border: '1px solid hsl(160 84% 39% / 0.4)',
+            boxShadow: prefillSide === 'buy' ? '0 0 20px hsl(160 84% 39% / 0.3)' : 'none',
+          }}>
           <TrendingUp className="mr-2 h-5 w-5" /> COMPRAR
         </Button>
-        <Button onClick={() => handleOpen('sell')} className="h-14 text-base font-bold rounded-xl text-white"
-          style={{ background: 'linear-gradient(135deg, hsl(0 84% 55%), hsl(0 84% 60%))', border: '1px solid hsl(0 84% 55% / 0.4)' }}>
+        <Button onClick={() => { handleOpen('sell'); setPrefillSide(null); }} className="h-14 text-base font-bold rounded-xl text-white"
+          style={{
+            background: prefillSide === 'sell'
+              ? 'linear-gradient(135deg, hsl(0 84% 55%), hsl(0 84% 65%))'
+              : 'linear-gradient(135deg, hsl(0 84% 55%), hsl(0 84% 60%))',
+            border: '1px solid hsl(0 84% 55% / 0.4)',
+            boxShadow: prefillSide === 'sell' ? '0 0 20px hsl(0 84% 55% / 0.3)' : 'none',
+          }}>
           <TrendingDown className="mr-2 h-5 w-5" /> VENDER
         </Button>
       </div>

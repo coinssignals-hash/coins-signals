@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, memo } from "react";
+import { useNavigate } from "react-router-dom";
 import { SignalCardV2Header } from "./SignalCardV2Header";
 import { SignalCardV2Badges } from "./SignalCardV2Badges";
 import { SignalCardV2Strategy } from "./SignalCardV2Strategy";
@@ -12,7 +13,8 @@ import {
   Minus,
   Copy,
   ChevronDown,
-  Activity } from
+  Activity,
+  PlayCircle } from
 "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
@@ -245,6 +247,7 @@ function PriceAge({ timestamp, agoLabel }: {timestamp: number; agoLabel: string;
 // --- Main Card ---
 export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
   // S/R toggle now managed internally by CandlestickChart
   const { t, language } = useTranslation();
 
@@ -738,12 +741,44 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
 
             {/* Bottom accent line */}
             <div
-            className="mx-3 mb-3 h-[3px] rounded-full"
+            className="mx-3 mb-1 h-[3px] rounded-full"
             style={{
               background: action === "BUY" ?
               "linear-gradient(90deg, hsl(135, 80%, 45%) 0%, hsl(135, 60%, 30%) 30%, hsl(135, 80%, 50%) 60%, hsl(135, 90%, 55%) 100%)" :
               "linear-gradient(90deg, hsl(0, 80%, 45%) 0%, hsl(0, 60%, 30%) 30%, hsl(0, 80%, 50%) 60%, hsl(0, 90%, 55%) 100%)"
             }} />
+
+            {/* Operar en Demo button */}
+            {status !== 'completed' && status !== 'cancelled' && (
+              <div className="mx-3 mb-3">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const params = new URLSearchParams({
+                      symbol: currencyPair,
+                      side: action.toLowerCase(),
+                      sl: String(stopLoss),
+                      tp: String(takeProfit),
+                      entry: String(entryPrice),
+                    });
+                    navigate(`/tools/paper-trading?${params.toString()}`);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-[0.97]"
+                  style={{
+                    background: action === 'BUY'
+                      ? 'linear-gradient(135deg, hsl(160, 84%, 39% / 0.2), hsl(160, 84%, 39% / 0.08))'
+                      : 'linear-gradient(135deg, hsl(0, 84%, 55% / 0.2), hsl(0, 84%, 55% / 0.08))',
+                    border: action === 'BUY'
+                      ? '1px solid hsl(160, 84%, 39% / 0.4)'
+                      : '1px solid hsl(0, 84%, 55% / 0.4)',
+                    color: action === 'BUY' ? 'hsl(160, 84%, 50%)' : 'hsl(0, 84%, 60%)',
+                  }}
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  {t('paper_demo_trade') || 'Operar en Demo'}
+                </button>
+              </div>
+            )}
 
           </div>
         }

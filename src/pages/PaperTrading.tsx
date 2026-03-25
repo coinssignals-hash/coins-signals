@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Activity } from 'lucide-react';
-import { usePaperTrading } from '@/hooks/usePaperTrading';
+import { usePaperTrading, INSTRUMENTS } from '@/hooks/usePaperTrading';
 import { PaperStatsRow } from '@/components/paper-trading/PaperStatsRow';
 import { PaperTradePanel } from '@/components/paper-trading/PaperTradePanel';
 import { PaperPositionsList } from '@/components/paper-trading/PaperPositionsList';
@@ -13,14 +13,48 @@ import { PaperTradeHistory } from '@/components/paper-trading/PaperTradeHistory'
 
 const ACCENT = '270 70% 60%';
 
+export interface SignalPrefill {
+  symbol: string;
+  side: 'buy' | 'sell';
+  stopLoss: number;
+  takeProfit: number;
+  entryPrice: number;
+}
+
 export default function PaperTrading() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState<'trade' | 'positions' | 'history'>('trade');
   const {
     balance, positions, history, prices, totalPnl, winRate,
     instruments, openPosition, closePosition, resetAccount, getPositionPnl,
   } = usePaperTrading();
+
+  // Read signal prefill from URL params
+  const [signalPrefill, setSignalPrefill] = useState<SignalPrefill | null>(null);
+
+  useEffect(() => {
+    const symbol = searchParams.get('symbol');
+    const side = searchParams.get('side');
+    const sl = searchParams.get('sl');
+    const tp = searchParams.get('tp');
+    const entry = searchParams.get('entry');
+
+    if (symbol && side && sl && tp && entry) {
+      // Make sure the symbol exists in instruments, if not use as-is
+      const matchedInst = INSTRUMENTS.find(i => i.symbol === symbol);
+      setSignalPrefill({
+        symbol: matchedInst?.symbol ?? symbol,
+        side: side as 'buy' | 'sell',
+        stopLoss: parseFloat(sl),
+        takeProfit: parseFloat(tp),
+        entryPrice: parseFloat(entry),
+      });
+      // Clear params so they don't persist on refresh
+      setSearchParams({}, { replace: true });
+    }
+  }, []);
 
   return (
     <PageShell>
@@ -73,7 +107,7 @@ export default function PaperTrading() {
 
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            {tab === 'trade' && <PaperTradePanel instruments={instruments} prices={prices} onOpen={openPosition} onReset={resetAccount} balance={balance} />}
+            {tab === 'trade' && <PaperTradePanel instruments={instruments} prices={prices} onOpen={openPosition} onReset={resetAccount} balance={balance} signalPrefill={signalPrefill} onPrefillConsumed={() => setSignalPrefill(null)} />}
             {tab === 'positions' && <PaperPositionsList positions={positions} getPnl={getPositionPnl} onClose={closePosition} />}
             {tab === 'history' && <PaperTradeHistory history={history} />}
           </motion.div>
