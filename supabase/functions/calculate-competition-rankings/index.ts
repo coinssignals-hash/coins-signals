@@ -156,6 +156,33 @@ Deno.serve(async (req) => {
         .from("competition_rankings")
         .insert(rankings);
       if (insertErr) throw insertErr;
+
+      // Send push notification to all users about new rankings
+      const top3 = rankings.slice(0, 3);
+      const profilesMap = new Map((profilesRes.data || []).map(p => [p.id, p.alias || "Trader"]));
+      const top3Names = top3.map(r => profilesMap.get(r.user_id) || "Trader");
+      const periodName = periodType === "weekly" ? "Semanal" : periodType === "monthly" ? "Mensual" : "General";
+
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            title: `📊 Rankings ${periodName} actualizados`,
+            body: `Top 3: ${top3Names.join(", ")}. ¡Revisa tu posición!`,
+            url: "/competitions",
+            tag: "competition-rankings-update",
+          }),
+        });
+        console.log("Rankings notification sent");
+      } catch (notifErr) {
+        console.error("Failed to send rankings notification:", notifErr);
+      }
     }
 
     return new Response(
