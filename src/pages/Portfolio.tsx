@@ -475,6 +475,7 @@ export default function Portfolio() {
 
         {/* Import Modal */}
         <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
+        <BrokerTradeModal />
       </main>
     </PageShell>
   );
