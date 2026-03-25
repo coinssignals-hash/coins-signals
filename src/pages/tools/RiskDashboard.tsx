@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageShell } from '@/components/layout/PageShell';
+import { ToolPageHeader } from '@/components/tools/ToolCard';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { useNavigate } from 'react-router-dom';
