@@ -235,12 +235,12 @@ export default function TradingCompetitions() {
                         {joined[comp.id] ? <><CheckCircle2 className="w-3 h-3" /> Inscrito</> : comp.tier === 'premium' ? <><Lock className="w-3 h-3" /> Inscribirse (Premium)</> : <><Swords className="w-3 h-3" /> Participar</>}
                       </button>
                     )}
-        </motion.div>
+                  </div>
                 </GlowSection>
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
       </main>
     </PageShell>
