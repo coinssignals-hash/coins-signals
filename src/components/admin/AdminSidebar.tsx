@@ -17,6 +17,7 @@ import {
   HeartPulse,
   Vote,
   Gift,
+  Trophy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
