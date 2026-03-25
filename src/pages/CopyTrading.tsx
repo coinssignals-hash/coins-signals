@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
+import { ToolPageHeader } from '@/components/tools/ToolCard';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -10,11 +11,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import {
   Copy, Users, TrendingUp, Eye, EyeOff,
-  DollarSign, Percent, Zap, CheckCircle2, ArrowLeft
+  DollarSign, Percent, Zap, CheckCircle2
 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
 interface TopTrader {
   id: string; alias: string; avatar: string; country: string;
