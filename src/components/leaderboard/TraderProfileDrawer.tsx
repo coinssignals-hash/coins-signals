@@ -1,11 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { GlowSection } from '@/components/ui/glow-section';
 import { LeaderboardTrader } from '@/hooks/useLeaderboard';
 import { TIER_COLORS, getFlag, getInitials } from './leaderboard-utils';
-import { TrendingUp, TrendingDown, Target, Flame, BarChart3, Activity, Clock, Layers } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Flame, BarChart3, Activity, Clock, Layers, Eye, EyeOff, Copy, Zap, UserPlus } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   trader: LeaderboardTrader | null;
@@ -13,7 +15,6 @@ interface Props {
   onClose: () => void;
 }
 
-// Generate demo trade history for a trader
 function generateDemoTrades(trader: LeaderboardTrader) {
   const symbols = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'EUR/GBP', 'USD/CAD', 'NZD/USD', 'GBP/JPY'];
   const trades = [];
@@ -42,8 +43,12 @@ function generateDemoTrades(trader: LeaderboardTrader) {
   return trades.sort((a, b) => (a.pnl > b.pnl ? -1 : 1));
 }
 
+const COPY_ACCENT = '190 90% 50%';
+
 export function TraderProfileDrawer({ trader, open, onClose }: Props) {
+  const navigate = useNavigate();
   const demoTrades = useMemo(() => trader ? generateDemoTrades(trader) : [], [trader]);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   if (!trader) return null;
 
@@ -61,8 +66,29 @@ export function TraderProfileDrawer({ trader, open, onClose }: Props) {
     { icon: Layers, label: 'Pares', value: `${trader.symbolsTraded}`, color: '190 80% 50%' },
   ];
 
+  const handleFollow = () => {
+    setIsFollowing(prev => {
+      const next = !prev;
+      toast({
+        title: next ? '✅ Siguiendo a ' + trader.alias : '❌ Dejaste de seguir a ' + trader.alias,
+        description: next ? 'Recibirás notificaciones de sus operaciones' : undefined,
+      });
+      return next;
+    });
+  };
+
+  const handleCopyTrading = () => {
+    onClose();
+    // Navigate to copy trading page — the trader info is encoded for pre-selection
+    navigate('/copy-trading', { state: { preselectedTrader: trader.alias } });
+    toast({
+      title: '🚀 Configurar Copy Trading',
+      description: `Configura la copia de ${trader.alias} en Copy Trading`,
+    });
+  };
+
   return (
-    <Drawer open={open} onOpenChange={(o) => !o && onClose()}>
+    <Drawer open={open} onOpenChange={(o) => { if (!o) { onClose(); setIsFollowing(false); } }}>
       <DrawerContent className="max-h-[85vh]">
         <div className="overflow-y-auto pb-8">
           {/* Header */}
@@ -96,6 +122,37 @@ export function TraderProfileDrawer({ trader, open, onClose }: Props) {
           </DrawerHeader>
 
           <div className="px-4 space-y-3">
+            {/* ── Follow / Copy Buttons ── */}
+            <div className="flex gap-2">
+              <button
+                onClick={handleFollow}
+                className="flex-1 flex items-center justify-center gap-1.5 h-10 text-xs font-semibold rounded-xl transition-all active:scale-[0.97]"
+                style={isFollowing ? {
+                  background: 'hsl(160 84% 39% / 0.12)',
+                  border: '1px solid hsl(160 84% 39% / 0.3)',
+                  color: 'hsl(160 84% 39%)',
+                } : {
+                  background: 'hsl(var(--card) / 0.6)',
+                  border: '1px solid hsl(var(--border) / 0.2)',
+                  backdropFilter: 'blur(8px)',
+                  color: 'hsl(var(--foreground) / 0.8)',
+                }}
+              >
+                {isFollowing ? <><EyeOff className="w-3.5 h-3.5" /> Siguiendo</> : <><Eye className="w-3.5 h-3.5" /> Seguir</>}
+              </button>
+              <button
+                onClick={handleCopyTrading}
+                className="flex-1 flex items-center justify-center gap-1.5 h-10 text-xs font-bold text-white rounded-xl transition-all active:scale-[0.97]"
+                style={{
+                  background: `linear-gradient(165deg, hsl(160 84% 39%), hsl(${COPY_ACCENT}))`,
+                  border: '1px solid hsl(160 84% 39% / 0.4)',
+                  boxShadow: '0 0 12px hsl(160 84% 39% / 0.2)',
+                }}
+              >
+                <Copy className="w-3.5 h-3.5" /> Copiar Trades
+              </button>
+            </div>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-2">
               {stats.map((stat, i) => (
