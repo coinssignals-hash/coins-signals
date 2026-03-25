@@ -170,6 +170,29 @@ export function AdminCompetitionRankingsTab() {
         await updateStatus(w.id, 'published');
       }
       toast({ title: '🏆 Ganadores publicados', description: `Top ${topN} publicados para todos los usuarios` });
+
+      // Send push notification to all users
+      const winnerAlias = winners.map(w => {
+        const p = profiles[w.user_id];
+        return p?.alias || 'Trader';
+      });
+      const periodLabel = winners[0]?.period_label || '';
+      const notifTitle = `🏆 ¡Ganadores ${periodLabel}!`;
+      const notifBody = `Top ${topN}: ${winnerAlias.slice(0, 3).join(', ')}. ¡Mira los resultados!`;
+
+      try {
+        await supabase.functions.invoke('send-push-notification', {
+          body: {
+            title: notifTitle,
+            body: notifBody,
+            url: '/competitions',
+            tag: 'competition-winners',
+          },
+        });
+        toast({ title: '📢 Notificación enviada a todos los usuarios' });
+      } catch (pushErr: any) {
+        toast({ title: 'Push fallido', description: pushErr.message, variant: 'destructive' });
+      }
     }
   };
 
