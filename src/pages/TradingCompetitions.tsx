@@ -65,6 +65,7 @@ export default function TradingCompetitions() {
     setJoined(prev => ({ ...prev, [id]: true }));
     toast({ title: '🎉 ¡Inscrito en la competencia!' });
     fireConfetti();
+    if (navigator.vibrate) navigator.vibrate([50, 30, 80]);
   };
   const daysRemaining = (end: string) => Math.max(0, Math.ceil((new Date(end).getTime() - Date.now()) / 86400000));
 
