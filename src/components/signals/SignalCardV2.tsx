@@ -247,6 +247,7 @@ function PriceAge({ timestamp, agoLabel }: {timestamp: number; agoLabel: string;
 // --- Main Card ---
 export function SignalCardV2({ signal, className }: SignalCardV2Props) {
   const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
   // S/R toggle now managed internally by CandlestickChart
   const { t, language } = useTranslation();
 
