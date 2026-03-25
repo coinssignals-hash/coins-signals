@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { GlowSection } from '@/components/ui/glow-section';
 import { LeaderboardTrader } from '@/hooks/useLeaderboard';
 import { TIER_COLORS, getFlag, getInitials } from './leaderboard-utils';
-import { TrendingUp, TrendingDown, Target, Flame, BarChart3, Activity, Clock, Layers, Eye, EyeOff, Copy, Zap, UserPlus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Flame, BarChart3, Activity, Clock, Layers, Eye, EyeOff, Copy } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { AreaChart, Area, ResponsiveContainer, Tooltip, YAxis } from 'recharts';
 
 interface Props {
   trader: LeaderboardTrader | null;
