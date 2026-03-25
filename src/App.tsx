@@ -75,7 +75,7 @@ const Certifications = lazy(() => import("./pages/Certifications"));
 const PaperTrading = lazy(() => import("./pages/PaperTrading"));
 const CandleReplay = lazy(() => import("./pages/CandleReplay"));
 const DailyChallenges = lazy(() => import("./pages/DailyChallenges"));
-const RiskSimulator = lazy(() => import("./pages/RiskSimulator"));
+
 const StrategyBuilder = lazy(() => import("./pages/tools/StrategyBuilder"));
 const SmartAlerts = lazy(() => import("./pages/tools/SmartAlerts"));
 const AITradingCoach = lazy(() => import("./pages/tools/AITradingCoach"));
