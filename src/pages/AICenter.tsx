@@ -2,7 +2,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { AICenter as AICenterPanel } from '@/components/signals/ai-center/AICenter';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Brain } from 'lucide-react';
 import { useTranslation } from '@/i18n/LanguageContext';
 
 export default function AICenter() {
