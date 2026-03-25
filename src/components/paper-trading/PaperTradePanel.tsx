@@ -36,7 +36,7 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
   const [prefillSide, setPrefillSide] = useState<'buy' | 'sell' | null>(null);
   const prefillApplied = useRef(false);
 
-  // Apply signal prefill
+  // Apply signal prefill and auto-execute
   useEffect(() => {
     if (signalPrefill && !prefillApplied.current) {
       prefillApplied.current = true;
@@ -51,14 +51,46 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
         setSlPips(Math.round(slPipsVal).toString());
         setTpPips(Math.round(tpPipsVal).toString());
         setPrefillSide(signalPrefill.side);
-        toast({
-          title: '📊 Señal cargada',
-          description: `${signalPrefill.symbol} · ${signalPrefill.side === 'buy' ? 'Compra' : 'Venta'} · SL: ${Math.round(slPipsVal)} pips · TP: ${Math.round(tpPipsVal)} pips`,
-        });
+
+        // Auto-execute the trade after a short delay for prices to load
+        const autoExecTimer = setTimeout(() => {
+          const currentP = prices[signalPrefill.symbol] ?? signalPrefill.entryPrice;
+          const lotsVal = parseFloat(lotSize) || 0.01;
+          const unitsVal = Math.round(lotsVal * 100000);
+          const slPrice = signalPrefill.side === 'buy'
+            ? currentP - Math.round(slPipsVal) * inst.pipSize
+            : currentP + Math.round(slPipsVal) * inst.pipSize;
+          const tpPrice = signalPrefill.side === 'buy'
+            ? currentP + Math.round(tpPipsVal) * inst.pipSize
+            : currentP - Math.round(tpPipsVal) * inst.pipSize;
+
+          const result = onOpen(signalPrefill.symbol, signalPrefill.side, unitsVal, {
+            lotSize: lotsVal,
+            leverage,
+            stopLoss: slPrice,
+            takeProfit: tpPrice,
+            orderType: 'market',
+          });
+
+          if (result !== false) {
+            toast({
+              title: `📊 Señal ejecutada · ${signalPrefill.side === 'buy' ? '🟢 Compra' : '🔴 Venta'}`,
+              description: `${signalPrefill.symbol} · SL: ${Math.round(slPipsVal)} pips · TP: ${Math.round(tpPipsVal)} pips`,
+            });
+            // Notify parent to switch to positions tab
+            onPrefillConsumed?.();
+          } else {
+            toast({ title: 'Margen insuficiente', description: 'No se pudo abrir la posición automáticamente', variant: 'destructive' });
+            onPrefillConsumed?.();
+          }
+          setPrefillSide(null);
+        }, 500);
+
+        return () => clearTimeout(autoExecTimer);
       }
       onPrefillConsumed?.();
     }
-  }, [signalPrefill]);
+  }, [signalPrefill, prices]);
 
   const inst = INSTRUMENTS.find(i => i.symbol === selectedSymbol) || INSTRUMENTS[0];
   const currentPrice = prices[selectedSymbol] ?? 0;

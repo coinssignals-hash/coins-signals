@@ -107,7 +107,7 @@ export default function PaperTrading() {
 
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            {tab === 'trade' && <PaperTradePanel instruments={instruments} prices={prices} onOpen={openPosition} onReset={resetAccount} balance={balance} signalPrefill={signalPrefill} onPrefillConsumed={() => setSignalPrefill(null)} />}
+            {tab === 'trade' && <PaperTradePanel instruments={instruments} prices={prices} onOpen={openPosition} onReset={resetAccount} balance={balance} signalPrefill={signalPrefill} onPrefillConsumed={() => { setSignalPrefill(null); setTab('positions'); }} />}
             {tab === 'positions' && <PaperPositionsList positions={positions} getPnl={getPositionPnl} onClose={closePosition} />}
             {tab === 'history' && <PaperTradeHistory history={history} />}
           </motion.div>
