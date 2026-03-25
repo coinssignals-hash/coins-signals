@@ -37,7 +37,7 @@ const OPERATORS: { value: ConditionOperator; label: string }[] = [
   { value: 'greater_than', label: '> Mayor que' }, { value: 'less_than', label: '< Menor que' }, { value: 'equals', label: '= Igual a' },
 ];
 const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1'];
-const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'EUR/GBP', 'XAU/USD'];
+
 const uid = () => crypto.randomUUID();
 const ACCENT = '160 84% 39%';
 
