@@ -4,6 +4,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Activity } from 'lucide-react';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 import { PaperStatsRow } from '@/components/paper-trading/PaperStatsRow';
 import { PaperTradePanel } from '@/components/paper-trading/PaperTradePanel';
@@ -24,6 +25,39 @@ export default function PaperTrading() {
   return (
     <PageShell>
       <Header />
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
+          background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)`,
+        }} />
+        <div className="relative px-4 py-4">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
+              style={{ background: `hsl(${ACCENT} / 0.1)`, border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+              <ArrowLeft className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
+                border: `1px solid hsl(${ACCENT} / 0.3)`,
+                boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
+              }}>
+                <Activity className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">{t('paper_trading_title') || 'Paper Trading'}</h1>
+                <p className="text-[11px] text-muted-foreground">Practica sin riesgo</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="max-w-lg mx-auto space-y-4 pb-24 px-4 pt-4">
         <PaperStatsRow balance={balance} totalPnl={totalPnl} winRate={winRate} />
 

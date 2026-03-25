@@ -7,10 +7,9 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageShell } from '@/components/layout/PageShell';
+import { ToolPageHeader } from '@/components/tools/ToolCard';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { useImportedTrades, ImportedTrade } from '@/hooks/useImportedTrades';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, subMonths, addMonths, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -152,15 +151,17 @@ export default function PerformanceReport() {
   // Pad start of calendar
   const firstDayOfWeek = (getDay(startOfMonth(currentMonth)) + 6) % 7; // Monday = 0
 
-  const navigate = useNavigate();
+  // navigate removed - ToolPageHeader handles back navigation
 
   return (
     <PageShell>
       <div className="space-y-4 px-4 pb-24">
-        <div className="flex items-center gap-3 pt-4">
-          <button onClick={() => navigate('/tools')} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
-          <h1 className="text-base font-bold text-foreground">{t('performance_report_title') || 'Reporte de Rendimiento'}</h1>
-        </div>
+        <ToolPageHeader
+          icon={<Calendar className="w-5 h-5" style={{ color: 'hsl(30 80% 55%)' }} />}
+          title={t('performance_report_title') || 'Reporte de Rendimiento'}
+          subtitle="Análisis mensual de operaciones"
+          accent="30 80% 55%"
+        />
         {/* Month navigator */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(m => subMonths(m, 1))}>

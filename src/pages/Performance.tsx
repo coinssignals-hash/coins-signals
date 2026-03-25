@@ -148,22 +148,48 @@ export default function Performance() {
     <PageShell>
       <Header />
       
-      <main className="py-6 px-4 space-y-5">
-        {/* Top Bar */}
-        <div className="flex items-center justify-between">
+      {/* ── Premium Hero Header ── */}
+      <div className="relative overflow-hidden" style={{
+        background: 'linear-gradient(165deg, hsl(210 80% 55% / 0.15) 0%, hsl(var(--background)) 50%)',
+      }}>
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+          background: 'linear-gradient(90deg, transparent, hsl(210 80% 55% / 0.8), transparent)',
+        }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
+          background: 'radial-gradient(circle, hsl(210 80% 55% / 0.5), transparent 70%)',
+        }} />
+        <div className="relative px-4 py-4">
           <div className="flex items-center gap-3">
             <Link to="/">
-              <Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button>
+              <button className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
+                style={{ background: 'hsl(210 80% 55% / 0.1)', border: '1px solid hsl(210 80% 55% / 0.2)' }}>
+                <ArrowLeft className="w-4 h-4" style={{ color: 'hsl(210 80% 55%)' }} />
+              </button>
             </Link>
-            <h1 className="text-xl font-bold text-foreground">{t('perf_title')}</h1>
-          </div>
-          {isLoading && (
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs text-primary">{t('common_loading')}</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
+                background: 'linear-gradient(165deg, hsl(210 80% 55% / 0.25), hsl(210 80% 55% / 0.08))',
+                border: '1px solid hsl(210 80% 55% / 0.3)',
+                boxShadow: '0 0 20px hsl(210 80% 55% / 0.15)',
+              }}>
+                <BarChart3 className="w-5 h-5" style={{ color: 'hsl(210 80% 55%)' }} />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">{t('perf_title')}</h1>
+                <p className="text-[11px] text-muted-foreground">Rendimiento semanal de señales</p>
+              </div>
             </div>
-          )}
+            {isLoading && (
+              <div className="ml-auto flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-xs text-primary">{t('common_loading')}</span>
+              </div>
+            )}
+          </div>
         </div>
+      </div>
+
+      <main className="py-4 px-4 space-y-5">
 
         {/* Week Filter */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
