@@ -113,6 +113,9 @@ export default function TradingCompetitions() {
           ))}
         </motion.div>
 
+        {/* Hall of Fame - Published Winners */}
+        <CompetitionWinnersBanner />
+
         {/* Filter — glassmorphic */}
         <div className="flex rounded-xl p-1" style={{
           background: 'hsl(var(--card) / 0.6)',
