@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Bell, Clock, Zap, WifiOff,
-  LineChart, Landmark, Brain, Target } from
+  LineChart, Landmark, Brain, Target, Settings2, ChevronRight } from
 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/i18n/LanguageContext';
