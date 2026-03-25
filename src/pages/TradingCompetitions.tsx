@@ -51,7 +51,21 @@ export default function TradingCompetitions() {
   const [joined, setJoined] = useState<Record<string, boolean>>({ '1': true, '2': true });
 
   const filtered = filter === 'all' ? COMPETITIONS : COMPETITIONS.filter(c => c.status === filter);
-  const joinComp = (id: string) => { setJoined(prev => ({ ...prev, [id]: true })); toast({ title: '🎉 ¡Inscrito en la competencia!' }); };
+  const fireConfetti = useCallback(() => {
+    const end = Date.now() + 600;
+    const colors = ['#FFD700', '#FF6B35', '#00E676', '#00BCD4', '#E040FB'];
+    (function frame() {
+      confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.7 }, colors });
+      confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+  }, []);
+
+  const joinComp = (id: string) => {
+    setJoined(prev => ({ ...prev, [id]: true }));
+    toast({ title: '🎉 ¡Inscrito en la competencia!' });
+    fireConfetti();
+  };
   const daysRemaining = (end: string) => Math.max(0, Math.ceil((new Date(end).getTime() - Date.now()) / 86400000));
 
   return (
