@@ -41,6 +41,7 @@ const TAB_TITLES: Record<string, string> = {
   'forum-suggestions': 'Sugerencias del Foro',
   referrals: 'Referidos',
   support: 'Soporte IA',
+  'competition-rankings': 'Rankings de Competencia',
 };
 
 export default function Admin() {
