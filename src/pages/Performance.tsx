@@ -5,10 +5,8 @@ import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { GlowCard } from '@/components/ui/glow-card';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
-  ArrowLeft, 
   TrendingUp, 
   Target, 
   Zap, 
@@ -19,7 +17,7 @@ import {
   Calendar,
   ShieldAlert,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { WeeklySummary } from '@/components/performance/WeeklySummary';
@@ -39,6 +37,24 @@ import {
   useDailyActivityData,
   type PerformanceSignal 
 } from '@/hooks/usePerformance';
+
+/* ─────────── Tab config (MarketSessions style) ─────────── */
+
+interface TabConfig {
+  key: string;
+  label: string;
+  emoji: string;
+  color: string;
+  shortLabel: string;
+}
+
+const TABS: TabConfig[] = [
+  { key: 'signals', label: 'Señales', emoji: '📊', color: '210 80% 55%', shortLabel: 'Señales' },
+  { key: 'report', label: 'Reporte', emoji: '📅', color: '30 80% 55%', shortLabel: 'Reporte' },
+  { key: 'risk', label: 'Riesgo', emoji: '🛡️', color: '0 70% 55%', shortLabel: 'Riesgo' },
+];
+
+/* ─────────── Helpers ─────────── */
 
 const transformSignal = (signal: PerformanceSignal): SignalData => {
   const datetime = new Date(signal.datetime);
@@ -82,17 +98,27 @@ const defaultCurrencyPairs = [
   { pair: 'GBP USD', currentPrice: 1.2650, change: 0, highPrice: 1.2700, lowPrice: 1.2600, totalSignals: 0 },
 ];
 
-type PerformanceTab = 'signals' | 'report' | 'risk';
+const SWIPE_THRESHOLD = 50;
 
 export default function Performance() {
   const { t } = useTranslation();
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState(new Date());
-  const [activeTab, setActiveTab] = useState<PerformanceTab>('signals');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [swipeDir, setSwipeDir] = useState<1 | -1>(1);
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
     from: undefined,
     to: undefined,
   });
+
+  const activeTab = TABS[activeIndex];
+
+  const goNext = () => {
+    if (activeIndex < TABS.length - 1) { setSwipeDir(1); setActiveIndex(i => i + 1); }
+  };
+  const goPrev = () => {
+    if (activeIndex > 0) { setSwipeDir(-1); setActiveIndex(i => i - 1); }
+  };
 
   const { data: performance, isLoading: isLoadingPerformance } = usePerformance(
     selectedWeek, 
@@ -151,238 +177,217 @@ export default function Performance() {
     ? Math.abs(weeklyData.pipsGained / weeklyData.pipsLost).toFixed(1) 
     : '∞';
 
-  const tabs: { key: PerformanceTab; label: string; icon: React.ReactNode }[] = [
-    { key: 'signals', label: 'Señales', icon: <BarChart3 className="w-3.5 h-3.5" /> },
-    { key: 'report', label: 'Reporte', icon: <Calendar className="w-3.5 h-3.5" /> },
-    { key: 'risk', label: 'Riesgo', icon: <ShieldAlert className="w-3.5 h-3.5" /> },
-  ];
-
   return (
     <PageShell>
       <Header />
-      
-      {/* ── Premium Hero Header ── */}
-      <div className="relative overflow-hidden" style={{
-        background: 'linear-gradient(165deg, hsl(210 80% 55% / 0.15) 0%, hsl(var(--background)) 50%)',
-      }}>
-        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-          background: 'linear-gradient(90deg, transparent, hsl(210 80% 55% / 0.8), transparent)',
-        }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
-          background: 'radial-gradient(circle, hsl(210 80% 55% / 0.5), transparent 70%)',
-        }} />
-        <div className="relative px-4 py-4">
-          <div className="flex items-center gap-3">
-            <Link to="/">
-              <button className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
-                style={{ background: 'hsl(210 80% 55% / 0.1)', border: '1px solid hsl(210 80% 55% / 0.2)' }}>
-                <ArrowLeft className="w-4 h-4" style={{ color: 'hsl(210 80% 55%)' }} />
-              </button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
-                background: 'linear-gradient(165deg, hsl(210 80% 55% / 0.25), hsl(210 80% 55% / 0.08))',
-                border: '1px solid hsl(210 80% 55% / 0.3)',
-                boxShadow: '0 0 20px hsl(210 80% 55% / 0.15)',
-              }}>
-                <BarChart3 className="w-5 h-5" style={{ color: 'hsl(210 80% 55%)' }} />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground tracking-tight">{t('perf_title')}</h1>
-                <p className="text-[11px] text-muted-foreground">Rendimiento semanal de señales</p>
-              </div>
-            </div>
-            {isLoading && activeTab === 'signals' && (
-              <div className="ml-auto flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs text-primary">{t('common_loading')}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <main className="container py-3 max-w-lg mx-auto px-3">
 
-      {/* ── Tab Navigation ── */}
-      <div className="px-4 pt-3 pb-1">
-        <div className="flex gap-1 bg-muted/50 rounded-lg p-0.5">
-          {tabs.map(tab => (
+        {/* ── MarketSessions-style Tab Grid ── */}
+        <div className="grid grid-cols-3 gap-1.5 mb-3">
+          {TABS.map((tab, i) => {
+            const isSelected = i === activeIndex;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
+                className={cn(
+                  'flex flex-col items-center gap-0.5 py-2.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
+                  isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
+                )}
+                style={{
+                  background: isSelected
+                    ? `linear-gradient(135deg, hsl(${tab.color} / 0.2), hsl(${tab.color} / 0.08))`
+                    : 'hsl(var(--card) / 0.5)',
+                  border: `1px solid ${isSelected ? `hsl(${tab.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                  boxShadow: isSelected ? `0 2px 8px hsl(${tab.color} / 0.15)` : undefined,
+                }}
+              >
+                <span className="text-base leading-none">{tab.emoji}</span>
+                <span className="truncate w-full text-center">{tab.shortLabel}</span>
+                {isSelected && (
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ── Swipeable Content Area ── */}
+        <div className="relative overflow-hidden touch-pan-y">
+          <AnimatePresence mode="wait" custom={swipeDir}>
+            <motion.div
+              key={activeTab.key}
+              custom={swipeDir}
+              initial={{ opacity: 0, x: swipeDir * 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -swipeDir * 60 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.12}
+              onDragEnd={(_e, info) => {
+                if (info.offset.x < -SWIPE_THRESHOLD && activeIndex < TABS.length - 1) goNext();
+                else if (info.offset.x > SWIPE_THRESHOLD && activeIndex > 0) goPrev();
+              }}
+              style={{ cursor: 'grab' }}
+              className="space-y-5"
+            >
+
+              {/* ════════════════════════════════════════ */}
+              {/* TAB: Señales                             */}
+              {/* ════════════════════════════════════════ */}
+              {activeTab.key === 'signals' && (
+                <>
+                  {/* Week Filter */}
+                  <WeekFilter 
+                    selectedWeek={selectedWeek}
+                    onWeekChange={setSelectedWeek}
+                    dateRange={dateRange}
+                    onDateRangeChange={setDateRange}
+                  />
+
+                  {/* Quick Stats Grid */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { icon: Target, label: t('perf_signals'), value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+                      { icon: TrendingUp, label: t('perf_net_pips'), value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+                      { icon: Zap, label: t('perf_avg_signal'), value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
+                      { icon: ShieldCheck, label: t('perf_rr_ratio'), value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+                    ].map((stat, i) => (
+                      <Card key={i} className="bg-card border-border">
+                        <CardContent className="p-3 text-center">
+                          <div className={`w-8 h-8 rounded-lg ${stat.bg} mx-auto mb-1.5 flex items-center justify-center`}>
+                            <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                          </div>
+                          <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
+                          <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Precision Gauge + Streak */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {isLoadingPerformance ? (
+                      <>
+                        <Skeleton className="h-44 rounded-xl" />
+                        <Skeleton className="h-44 rounded-xl" />
+                      </>
+                    ) : (
+                      <>
+                        <PrecisionGauge 
+                          successRate={weeklyData.successRate} 
+                          totalSignals={weeklyData.totalSignals}
+                          successfulSignals={weeklyData.successfulSignals}
+                          lostSignals={weeklyData.lostSignals}
+                        />
+                        <StreakWidget 
+                          pipsGained={weeklyData.pipsGained}
+                          pipsLost={weeklyData.pipsLost}
+                          successRate={weeklyData.successRate}
+                          weekNumber={weeklyData.weekNumber}
+                        />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Weekly Summary */}
+                  {isLoadingPerformance ? (
+                    <Skeleton className="h-36 rounded-xl" />
+                  ) : (
+                    <WeeklySummary {...weeklyData} />
+                  )}
+
+                  {/* Daily Breakdown Table */}
+                  {isLoadingPerformance ? (
+                    <Skeleton className="h-64 rounded-xl" />
+                  ) : dailyData.length > 0 ? (
+                    <DailyBreakdownTable 
+                      data={dailyData} 
+                      weekTotal={weekTotal}
+                      expandedDay={expandedDay}
+                      onToggleDay={handleToggleDay}
+                    />
+                  ) : (
+                    <GlowCard>
+                      <CardContent className="p-8 text-center">
+                        <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">{t('perf_no_signals_this_week')}</p>
+                      </CardContent>
+                    </GlowCard>
+                  )}
+
+                  {/* Signals List (when day is expanded) */}
+                  {expandedDay && expandedDaySignals.length > 0 && (
+                    <SignalsList signals={expandedDaySignals} />
+                  )}
+
+                  {/* Daily Activity Chart */}
+                  {isLoadingActivity || isLoadingSessions ? (
+                    <Skeleton className="h-52 rounded-xl" />
+                  ) : (
+                    <DailyActivityChart 
+                      data={dailyActivityData || defaultDailyActivityData} 
+                      sessions={sessionData || defaultSessionData}
+                    />
+                  )}
+
+                  {/* Currency Pairs Section */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Award className="w-4 h-4 text-amber-400" />
+                      <h3 className="text-sm font-bold text-foreground">{t('perf_most_active_pairs')}</h3>
+                    </div>
+                    {isLoadingPairs ? (
+                      <div className="grid grid-cols-1 gap-3">
+                        <Skeleton className="h-44 rounded-xl" />
+                        <Skeleton className="h-44 rounded-xl" />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-3">
+                        {(currencyPairs && currencyPairs.length > 0 ? currencyPairs : defaultCurrencyPairs).map((pair) => (
+                          <CurrencyPairCard key={pair.pair} {...pair} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* ════════════════════════════════════════ */}
+              {/* TAB: Reporte de Rendimiento               */}
+              {/* ════════════════════════════════════════ */}
+              {activeTab.key === 'report' && (
+                <PerformanceReportSection />
+              )}
+
+              {/* ════════════════════════════════════════ */}
+              {/* TAB: Dashboard de Riesgo                  */}
+              {/* ════════════════════════════════════════ */}
+              {activeTab.key === 'risk' && (
+                <RiskDashboardSection />
+              )}
+
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* ── Dot indicators (MarketSessions style) ── */}
+        <div className="flex items-center justify-center gap-1.5 mt-4 pb-2">
+          {TABS.map((tab, i) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-1.5 text-[11px] py-2 rounded-md font-medium transition-all",
-                activeTab === tab.key
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
+              onClick={() => { setSwipeDir(i > activeIndex ? 1 : -1); setActiveIndex(i); }}
+              className="transition-all rounded-full"
+              style={{
+                width: i === activeIndex ? 18 : 6,
+                height: 6,
+                background: i === activeIndex ? `hsl(${tab.color})` : 'hsl(var(--muted-foreground) / 0.2)',
+                boxShadow: i === activeIndex ? `0 0 6px hsl(${tab.color} / 0.4)` : undefined,
+              }}
+            />
           ))}
         </div>
-      </div>
-
-      <main className="py-4 px-4 space-y-5">
-
-        {/* ════════════════════════════════════════ */}
-        {/* TAB: Señales (original content)          */}
-        {/* ════════════════════════════════════════ */}
-        {activeTab === 'signals' && (
-          <>
-            {/* Week Filter */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <WeekFilter 
-                selectedWeek={selectedWeek}
-                onWeekChange={setSelectedWeek}
-                dateRange={dateRange}
-                onDateRangeChange={setDateRange}
-              />
-            </motion.div>
-
-            {/* Quick Stats Grid */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ delay: 0.15 }}
-              className="grid grid-cols-4 gap-2"
-            >
-              {[
-                { icon: Target, label: t('perf_signals'), value: weeklyData.totalSignals, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-                { icon: TrendingUp, label: t('perf_net_pips'), value: netPips >= 0 ? `+${netPips}` : `${netPips}`, color: netPips >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: netPips >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
-                { icon: Zap, label: t('perf_avg_signal'), value: `${avgPipsPerSignal > 0 ? '+' : ''}${avgPipsPerSignal}`, color: avgPipsPerSignal >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: avgPipsPerSignal >= 0 ? 'bg-emerald-400/10' : 'bg-rose-400/10' },
-                { icon: ShieldCheck, label: t('perf_rr_ratio'), value: riskRewardRatio, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-              ].map((stat, i) => (
-                <Card key={i} className="bg-card border-border">
-                  <CardContent className="p-3 text-center">
-                    <div className={`w-8 h-8 rounded-lg ${stat.bg} mx-auto mb-1.5 flex items-center justify-center`}>
-                      <stat.icon className={`w-4 h-4 ${stat.color}`} />
-                    </div>
-                    <div className={`text-lg font-bold tabular-nums ${stat.color}`}>{stat.value}</div>
-                    <div className="text-[10px] text-muted-foreground">{stat.label}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </motion.div>
-
-            {/* Precision Gauge + Streak */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ delay: 0.2 }}
-              className="grid grid-cols-2 gap-3"
-            >
-              {isLoadingPerformance ? (
-                <>
-                  <Skeleton className="h-44 rounded-xl" />
-                  <Skeleton className="h-44 rounded-xl" />
-                </>
-              ) : (
-                <>
-                  <PrecisionGauge 
-                    successRate={weeklyData.successRate} 
-                    totalSignals={weeklyData.totalSignals}
-                    successfulSignals={weeklyData.successfulSignals}
-                    lostSignals={weeklyData.lostSignals}
-                  />
-                  <StreakWidget 
-                    pipsGained={weeklyData.pipsGained}
-                    pipsLost={weeklyData.pipsLost}
-                    successRate={weeklyData.successRate}
-                    weekNumber={weeklyData.weekNumber}
-                  />
-                </>
-              )}
-            </motion.div>
-
-            {/* Weekly Summary */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-              {isLoadingPerformance ? (
-                <Skeleton className="h-36 rounded-xl" />
-              ) : (
-                <WeeklySummary {...weeklyData} />
-              )}
-            </motion.div>
-
-            {/* Daily Breakdown Table */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              {isLoadingPerformance ? (
-                <Skeleton className="h-64 rounded-xl" />
-              ) : dailyData.length > 0 ? (
-                <DailyBreakdownTable 
-                  data={dailyData} 
-                  weekTotal={weekTotal}
-                  expandedDay={expandedDay}
-                  onToggleDay={handleToggleDay}
-                />
-              ) : (
-                <GlowCard>
-                  <CardContent className="p-8 text-center">
-                    <Activity className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">{t('perf_no_signals_this_week')}</p>
-                  </CardContent>
-                </GlowCard>
-              )}
-            </motion.div>
-
-            {/* Signals List (when day is expanded) */}
-            {expandedDay && expandedDaySignals.length > 0 && (
-              <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
-                <SignalsList signals={expandedDaySignals} />
-              </motion.div>
-            )}
-
-            {/* Daily Activity Chart */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-              {isLoadingActivity || isLoadingSessions ? (
-                <Skeleton className="h-52 rounded-xl" />
-              ) : (
-                <DailyActivityChart 
-                  data={dailyActivityData || defaultDailyActivityData} 
-                  sessions={sessionData || defaultSessionData}
-                />
-              )}
-            </motion.div>
-
-            {/* Currency Pairs Section */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <div className="flex items-center gap-2 mb-3">
-                <Award className="w-4 h-4 text-amber-400" />
-                <h3 className="text-sm font-bold text-foreground">{t('perf_most_active_pairs')}</h3>
-              </div>
-              {isLoadingPairs ? (
-                <div className="grid grid-cols-1 gap-3">
-                  <Skeleton className="h-44 rounded-xl" />
-                  <Skeleton className="h-44 rounded-xl" />
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-3">
-                  {(currencyPairs && currencyPairs.length > 0 ? currencyPairs : defaultCurrencyPairs).map((pair) => (
-                    <CurrencyPairCard key={pair.pair} {...pair} />
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </>
-        )}
-
-        {/* ════════════════════════════════════════ */}
-        {/* TAB: Reporte de Rendimiento               */}
-        {/* ════════════════════════════════════════ */}
-        {activeTab === 'report' && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <PerformanceReportSection />
-          </motion.div>
-        )}
-
-        {/* ════════════════════════════════════════ */}
-        {/* TAB: Dashboard de Riesgo                  */}
-        {/* ════════════════════════════════════════ */}
-        {activeTab === 'risk' && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <RiskDashboardSection />
-          </motion.div>
-        )}
 
         <div className="h-20" />
       </main>
