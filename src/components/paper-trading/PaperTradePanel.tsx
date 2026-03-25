@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingUp, TrendingDown, RotateCcw, Shield, Target, Zap } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { InstrumentSelector } from './InstrumentSelector';
@@ -110,23 +111,18 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance 
           <label className="text-[10px] text-muted-foreground font-medium mb-1 flex items-center gap-1">
             <Zap className="w-3 h-3" /> Apalancamiento
           </label>
-          <div className="flex flex-wrap gap-1">
-            {LEVERAGE_OPTIONS.map(lev => (
-              <button key={lev} onClick={() => setLeverage(lev)}
-                className="px-2 py-1 rounded text-[10px] font-bold transition-all"
-                style={leverage === lev ? {
-                  background: `hsl(${ACCENT} / 0.2)`,
-                  color: `hsl(${ACCENT})`,
-                  border: `1px solid hsl(${ACCENT} / 0.4)`,
-                } : {
-                  background: 'hsl(var(--muted) / 0.3)',
-                  color: 'hsl(var(--muted-foreground))',
-                  border: '1px solid transparent',
-                }}>
-                x{lev}
-              </button>
-            ))}
-          </div>
+          <Select value={String(leverage)} onValueChange={v => setLeverage(Number(v))}>
+            <SelectTrigger className="h-9 text-sm bg-background/40 border-border/30">
+              <SelectValue placeholder="Leverage" />
+            </SelectTrigger>
+            <SelectContent>
+              {LEVERAGE_OPTIONS.map(lev => (
+                <SelectItem key={lev} value={String(lev)}>
+                  x{lev}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
