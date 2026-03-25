@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart } from 'recharts';
 import {
   Plus, Trash2, Play, Save, TrendingUp, TrendingDown, Layers,
-  BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Blocks, ArrowLeft
+  BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Blocks, ArrowLeft, X
 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
