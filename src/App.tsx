@@ -197,7 +197,7 @@ function AnimatedRoutes() {
           <Route path="/tools/paper-trading" element={<PaperTrading />} />
           <Route path="/tools/candle-replay" element={<CandleReplay />} />
           <Route path="/tools/daily-challenges" element={<DailyChallenges />} />
-          <Route path="/tools/risk-simulator" element={<RiskSimulator />} />
+          
           <Route path="/tools/strategy-builder" element={<StrategyBuilder />} />
           <Route path="/tools/smart-alerts" element={<SmartAlerts />} />
           <Route path="/tools/ai-coach" element={<AITradingCoach />} />

@@ -65,7 +65,7 @@ export function MainDrawer({ open, onOpenChange }: MainDrawerProps) {
         { icon: Gamepad2, label: t('drawer_paper_trading') || 'Paper Trading', href: '/tools/paper-trading' },
         { icon: CandlestickChart, label: t('drawer_candle_replay') || 'Candle Replay', href: '/tools/candle-replay' },
         { icon: Target, label: t('drawer_daily_challenges') || 'Retos Diarios', href: '/tools/daily-challenges' },
-        { icon: Swords, label: t('drawer_risk_simulator') || 'Simulador de Riesgo', href: '/tools/risk-simulator' },
+        
       ],
     },
     {
