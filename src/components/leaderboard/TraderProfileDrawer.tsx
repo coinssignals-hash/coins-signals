@@ -173,6 +173,57 @@ export function TraderProfileDrawer({ trader, open, onClose }: Props) {
               </button>
             </div>
 
+            {/* ── Equity Curve ── */}
+            <GlowSection color={tierColor} className="!rounded-xl">
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                    <Activity className="w-3 h-3" style={{ color: `hsl(${tierColor})` }} />
+                    CURVA DE EQUITY
+                  </h4>
+                  <span className="text-[10px] font-mono tabular-nums" style={{
+                    color: trader.pnl > 0 ? 'hsl(160 84% 39%)' : 'hsl(0 84% 60%)',
+                  }}>
+                    {trader.pnl > 0 ? '+' : ''}{((trader.pnl / 1000) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="h-24 rounded-lg overflow-hidden" style={{ background: 'hsl(var(--background) / 0.3)' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={equityCurve} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                      <defs>
+                        <linearGradient id={`eq-${trader.id}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={trader.pnl > 0 ? 'hsl(160,84%,39%)' : 'hsl(0,84%,60%)'} stopOpacity={0.35} />
+                          <stop offset="95%" stopColor={trader.pnl > 0 ? 'hsl(160,84%,39%)' : 'hsl(0,84%,60%)'} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <YAxis domain={['dataMin', 'dataMax']} hide />
+                      <Tooltip
+                        contentStyle={{
+                          background: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border) / 0.3)',
+                          borderRadius: '8px',
+                          fontSize: '10px',
+                          padding: '4px 8px',
+                          backdropFilter: 'blur(8px)',
+                        }}
+                        labelFormatter={(v) => `Día ${v}`}
+                        formatter={(value: number) => [`$${value.toLocaleString()}`, 'Equity']}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="equity"
+                        stroke={trader.pnl > 0 ? 'hsl(160,84%,39%)' : 'hsl(0,84%,60%)'}
+                        fill={`url(#eq-${trader.id})`}
+                        strokeWidth={1.5}
+                        dot={false}
+                        animationDuration={800}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </GlowSection>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-2">
               {stats.map((stat, i) => (
