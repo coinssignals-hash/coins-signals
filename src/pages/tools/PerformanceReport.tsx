@@ -7,10 +7,9 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageShell } from '@/components/layout/PageShell';
+import { ToolPageHeader } from '@/components/tools/ToolCard';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { useImportedTrades, ImportedTrade } from '@/hooks/useImportedTrades';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, subMonths, addMonths, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
