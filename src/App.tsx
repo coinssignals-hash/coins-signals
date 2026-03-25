@@ -144,7 +144,7 @@ function AnimatedRoutes() {
           <Route path="/settings/personal" element={<PersonalInfo />} />
           <Route path="/settings/documents" element={<Documents />} />
           <Route path="/settings/security" element={<Security />} />
-          <Route path="/settings/notifications" element={<Notifications />} />
+          <Route path="/settings/notifications" element={<SmartAlerts />} />
           <Route path="/settings/appearance" element={<Appearance />} />
           <Route path="/settings/language" element={<Appearance />} />
           <Route path="/referrals" element={<Referrals />} />
