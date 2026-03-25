@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PortfolioHistoryChart } from '@/components/portfolio/PortfolioHistoryChart';
 import { TradeAnalytics } from '@/components/portfolio/TradeAnalytics';
 import { TradeImportModal } from '@/components/portfolio/TradeImportModal';
+import { BrokerTradeModal } from '@/components/portfolio/BrokerTradeModal';
 
 /* ─── Theme color for Portfolio (green accent in HSL) ─── */
 const ACCENT = '142 70% 45%';
@@ -474,6 +475,7 @@ export default function Portfolio() {
 
         {/* Import Modal */}
         <TradeImportModal open={showImportModal} onOpenChange={setShowImportModal} />
+        <BrokerTradeModal />
       </main>
     </PageShell>
   );
