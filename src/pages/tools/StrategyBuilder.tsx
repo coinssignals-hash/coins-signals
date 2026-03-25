@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { useTranslation } from '@/i18n/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SymbolSearch } from '@/components/analysis/SymbolSearch';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
@@ -12,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart } from 'recharts';
 import {
   Plus, Trash2, Play, Save, TrendingUp, TrendingDown, Layers,
-  BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Blocks, ArrowLeft
+  BarChart3, Zap, GripVertical, ChevronDown, ChevronUp, Copy, Blocks, ArrowLeft, X
 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +37,7 @@ const OPERATORS: { value: ConditionOperator; label: string }[] = [
   { value: 'greater_than', label: '> Mayor que' }, { value: 'less_than', label: '< Menor que' }, { value: 'equals', label: '= Igual a' },
 ];
 const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1'];
-const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CHF', 'NZD/USD', 'EUR/GBP', 'XAU/USD'];
+
 const uid = () => crypto.randomUUID();
 const ACCENT = '160 84% 39%';
 
@@ -177,16 +178,29 @@ export default function StrategyBuilder() {
               className="text-lg font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0 px-0"
               style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }}
             />
-            <div className="flex flex-wrap gap-2">
-              {PAIRS.map(p => (
-                <Badge key={p} className="cursor-pointer transition-all text-xs active:scale-95" style={strategy.pairs.includes(p) ? {
-                  background: `hsl(${ACCENT} / 0.2)`, color: `hsl(${ACCENT})`, border: `1px solid hsl(${ACCENT} / 0.4)`,
-                  boxShadow: `0 0 8px hsl(${ACCENT} / 0.15)`,
-                } : { background: 'hsl(var(--muted) / 0.5)', color: 'hsl(var(--muted-foreground))', border: '1px solid transparent' }}
-                  onClick={() => setStrategy(s => ({ ...s, pairs: s.pairs.includes(p) ? s.pairs.filter(x => x !== p) : [...s.pairs, p] }))}>
-                  {p}
-                </Badge>
-              ))}
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Instrumentos</span>
+              <SymbolSearch
+                value=""
+                onChange={(symbol) => {
+                  if (!strategy.pairs.includes(symbol)) {
+                    setStrategy(s => ({ ...s, pairs: [...s.pairs, symbol] }));
+                  }
+                }}
+                className="w-full"
+              />
+              <div className="flex flex-wrap gap-1.5">
+                {strategy.pairs.map(p => (
+                  <Badge key={p} className="cursor-pointer transition-all text-xs active:scale-95 gap-1" style={{
+                    background: `hsl(${ACCENT} / 0.2)`, color: `hsl(${ACCENT})`, border: `1px solid hsl(${ACCENT} / 0.4)`,
+                    boxShadow: `0 0 8px hsl(${ACCENT} / 0.15)`,
+                  }}
+                    onClick={() => setStrategy(s => ({ ...s, pairs: s.pairs.filter(x => x !== p) }))}>
+                    {p}
+                    <X className="w-3 h-3 opacity-60" />
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
         </GlowSection>
