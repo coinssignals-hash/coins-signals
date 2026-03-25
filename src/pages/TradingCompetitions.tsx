@@ -14,6 +14,7 @@ import {
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
 import { ToolPageHeader } from '@/components/tools/ToolCard';
+import { CompetitionWinnersBanner } from '@/components/competitions/CompetitionWinnersBanner';
 
 type CompStatus = 'active' | 'upcoming' | 'ended';
 
