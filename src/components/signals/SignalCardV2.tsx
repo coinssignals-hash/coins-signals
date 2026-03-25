@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, memo } from "react";
+import { useNavigate } from "react-router-dom";
 import { SignalCardV2Header } from "./SignalCardV2Header";
 import { SignalCardV2Badges } from "./SignalCardV2Badges";
 import { SignalCardV2Strategy } from "./SignalCardV2Strategy";
@@ -12,7 +13,8 @@ import {
   Minus,
   Copy,
   ChevronDown,
-  Activity } from
+  Activity,
+  PlayCircle } from
 "lucide-react";
 import { useRestPrice } from "@/hooks/useRestPrice";
 import { useSignalStrategy } from "@/hooks/useSignalStrategy";
