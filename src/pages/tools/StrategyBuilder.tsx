@@ -178,16 +178,29 @@ export default function StrategyBuilder() {
               className="text-lg font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0 px-0"
               style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }}
             />
-            <div className="flex flex-wrap gap-2">
-              {PAIRS.map(p => (
-                <Badge key={p} className="cursor-pointer transition-all text-xs active:scale-95" style={strategy.pairs.includes(p) ? {
-                  background: `hsl(${ACCENT} / 0.2)`, color: `hsl(${ACCENT})`, border: `1px solid hsl(${ACCENT} / 0.4)`,
-                  boxShadow: `0 0 8px hsl(${ACCENT} / 0.15)`,
-                } : { background: 'hsl(var(--muted) / 0.5)', color: 'hsl(var(--muted-foreground))', border: '1px solid transparent' }}
-                  onClick={() => setStrategy(s => ({ ...s, pairs: s.pairs.includes(p) ? s.pairs.filter(x => x !== p) : [...s.pairs, p] }))}>
-                  {p}
-                </Badge>
-              ))}
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Instrumentos</span>
+              <SymbolSearch
+                value=""
+                onChange={(symbol) => {
+                  if (!strategy.pairs.includes(symbol)) {
+                    setStrategy(s => ({ ...s, pairs: [...s.pairs, symbol] }));
+                  }
+                }}
+                className="w-full"
+              />
+              <div className="flex flex-wrap gap-1.5">
+                {strategy.pairs.map(p => (
+                  <Badge key={p} className="cursor-pointer transition-all text-xs active:scale-95 gap-1" style={{
+                    background: `hsl(${ACCENT} / 0.2)`, color: `hsl(${ACCENT})`, border: `1px solid hsl(${ACCENT} / 0.4)`,
+                    boxShadow: `0 0 8px hsl(${ACCENT} / 0.15)`,
+                  }}
+                    onClick={() => setStrategy(s => ({ ...s, pairs: s.pairs.filter(x => x !== p) }))}>
+                    {p}
+                    <X className="w-3 h-3 opacity-60" />
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
         </GlowSection>
