@@ -748,9 +748,9 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
               "linear-gradient(90deg, hsl(0, 80%, 45%) 0%, hsl(0, 60%, 30%) 30%, hsl(0, 80%, 50%) 60%, hsl(0, 90%, 55%) 100%)"
             }} />
 
-            {/* Operar en Demo button */}
+            {/* Trade action buttons */}
             {status !== 'completed' && status !== 'cancelled' && (
-              <div className="mx-3 mb-3">
+              <div className="mx-3 mb-3 flex gap-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -763,7 +763,29 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     });
                     navigate(`/tools/paper-trading?${params.toString()}`);
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-[0.97]"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all active:scale-[0.97]"
+                  style={{
+                    background: 'linear-gradient(135deg, hsl(270, 70%, 50% / 0.2), hsl(270, 70%, 50% / 0.08))',
+                    border: '1px solid hsl(270, 70%, 50% / 0.4)',
+                    color: 'hsl(270, 70%, 65%)',
+                  }}
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  {t('paper_demo_trade') || 'Demo'}
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const params = new URLSearchParams({
+                      symbol: currencyPair,
+                      side: action.toLowerCase(),
+                      sl: String(stopLoss),
+                      tp: String(takeProfit),
+                      entry: String(entryPrice),
+                    });
+                    navigate(`/portfolio?trade=${params.toString()}`);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all active:scale-[0.97]"
                   style={{
                     background: action === 'BUY'
                       ? 'linear-gradient(135deg, hsl(160, 84%, 39% / 0.2), hsl(160, 84%, 39% / 0.08))'
@@ -774,8 +796,8 @@ export function SignalCardV2({ signal, className }: SignalCardV2Props) {
                     color: action === 'BUY' ? 'hsl(160, 84%, 50%)' : 'hsl(0, 84%, 60%)',
                   }}
                 >
-                  <PlayCircle className="w-4 h-4" />
-                  {t('paper_demo_trade') || 'Operar en Demo'}
+                  <Activity className="w-4 h-4" />
+                  {t('signal_broker_trade') || 'Broker'}
                 </button>
               </div>
             )}
