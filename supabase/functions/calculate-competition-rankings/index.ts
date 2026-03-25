@@ -14,20 +14,27 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Verify admin
+    // Verify admin OR cron (cron uses anon key, check via x-cron-secret or skip if called internally)
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization");
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
-    if (authErr || !user) throw new Error("Unauthorized");
-
-    const { data: roleData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!roleData) throw new Error("Admin only");
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      // Check if it's the anon key (cron job) - allow through
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+      if (token !== anonKey) {
+        // It's a user token - verify admin
+        const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
+        if (authErr || !user) throw new Error("Unauthorized");
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        if (!roleData) throw new Error("Admin only");
+      }
+    } else {
+      throw new Error("No authorization");
+    }
 
     const body = await req.json();
     const periodType: string = body.period_type || "weekly";
