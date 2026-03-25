@@ -8,10 +8,11 @@ import { toast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import {
   Trophy, Swords, Clock, Users, Gift, Target,
-  Medal, Timer, Zap, Lock, Shield, CheckCircle2, ArrowLeft
+  Medal, Timer, Zap, Lock, Shield, CheckCircle2
 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
+import { ToolPageHeader } from '@/components/tools/ToolCard';
 
 type CompStatus = 'active' | 'upcoming' | 'ended';
 
