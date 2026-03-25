@@ -116,8 +116,11 @@ export default function TradingCompetitions() {
         </div>
 
         {/* Competition cards */}
-        <div className="space-y-3">
-          {filtered.map((comp, i) => {
+        <motion.div className="space-y-3"
+          initial="hidden" animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.25 } } }}
+        >
+          {filtered.map((comp) => {
             const Icon = TYPE_ICONS[comp.type];
             const typeColor = TYPE_COLORS[comp.type];
             const statusCfg = STATUS_CONFIG[comp.status];
@@ -125,7 +128,10 @@ export default function TradingCompetitions() {
             const fillPct = (comp.participants / comp.maxParticipants) * 100;
 
             return (
-              <motion.div key={comp.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
+              <motion.div key={comp.id}
+                variants={{ hidden: { opacity: 0, y: 20, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1 } }}
+                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+              >
                 <GlowSection color={typeColor}>
                   <div className="p-4 space-y-3" style={{ borderLeft: `3px solid hsl(${typeColor})` }}>
                     <div className="flex items-start justify-between">
