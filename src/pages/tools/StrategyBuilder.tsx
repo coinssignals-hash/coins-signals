@@ -32,9 +32,9 @@ const INDICATORS = [
   { value: 'stochastic_k', label: 'Stochastic %K' }, { value: 'stochastic_d', label: 'Stochastic %D' },
   { value: 'atr', label: 'ATR' }, { value: 'adx', label: 'ADX' }, { value: 'price', label: 'Price' }, { value: 'volume', label: 'Volume' },
 ];
-const OPERATORS: { value: ConditionOperator; label: string }[] = [
-  { value: 'crosses_above', label: '↗ Cruza arriba' }, { value: 'crosses_below', label: '↘ Cruza abajo' },
-  { value: 'greater_than', label: '> Mayor que' }, { value: 'less_than', label: '< Menor que' }, { value: 'equals', label: '= Igual a' },
+const OPERATOR_KEYS: { value: ConditionOperator; labelKey: string }[] = [
+  { value: 'crosses_above', labelKey: 'sb_crosses_above' }, { value: 'crosses_below', labelKey: 'sb_crosses_below' },
+  { value: 'greater_than', labelKey: 'sb_greater_than' }, { value: 'less_than', labelKey: 'sb_less_than' }, { value: 'equals', labelKey: 'sb_equals' },
 ];
 const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1'];
 
@@ -61,7 +61,7 @@ export default function StrategyBuilder() {
 
   const addRule = (action: 'BUY' | 'SELL') => {
     const rule: StrategyRule = {
-      id: uid(), name: `${action === 'BUY' ? 'Entrada' : 'Salida'} ${strategy.rules.length + 1}`,
+      id: uid(), name: `${action === 'BUY' ? t('sb_entry') : t('sb_exit')} ${strategy.rules.length + 1}`,
       conditions: [{ id: uid(), indicator: 'rsi', operator: 'less_than', value: '30', timeframe: 'H1' }],
       logic: 'AND', action, collapsed: false,
     };
@@ -74,7 +74,7 @@ export default function StrategyBuilder() {
   const updateCondition = (ruleId: string, condId: string, field: keyof Condition, val: string) => setStrategy(s => ({ ...s, rules: s.rules.map(r => r.id === ruleId ? { ...r, conditions: r.conditions.map(c => c.id === condId ? { ...c, [field]: val } : c) } : r) }));
 
   const runBacktest = () => {
-    if (strategy.rules.length === 0) { toast({ title: 'Agrega al menos una regla', variant: 'destructive' }); return; }
+    if (strategy.rules.length === 0) { toast({ title: t('sb_add_rule_error'), variant: 'destructive' }); return; }
     const total = 80 + Math.floor(Math.random() * 120);
     const wr = 0.4 + Math.random() * 0.25;
     const riskAmt = 10000 * (strategy.riskPerTrade / 100);
@@ -103,13 +103,13 @@ export default function StrategyBuilder() {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const monthlyReturns = months.map((m, i) => ({ month: m, pnl: +monthlyPnl[i].toFixed(2) }));
     setBacktestResult({ totalTrades: total, wins, losses, profitFactor: pf, maxDrawdown: +maxDD.toFixed(1), netPnl: net, sharpe, equityCurve, monthlyReturns });
-    toast({ title: 'Backtest completado' });
+    toast({ title: t('sb_backtest_complete') });
   };
 
   const saveStrategy = () => {
-    if (!strategy.name.trim()) { toast({ title: 'Ingresa un nombre para la estrategia', variant: 'destructive' }); return; }
+    if (!strategy.name.trim()) { toast({ title: t('sb_name_required'), variant: 'destructive' }); return; }
     setSavedStrategies(prev => [...prev.filter(s => s.name !== strategy.name), { ...strategy }]);
-    toast({ title: `Estrategia "${strategy.name}" guardada` });
+    toast({ title: `${t('sb_strategy_saved')}: "${strategy.name}"` });
   };
 
   return (
@@ -154,7 +154,7 @@ export default function StrategyBuilder() {
                   {t('drawer_strategy_builder') || 'Constructor de Estrategias'}
                 </h1>
                 <p className="text-[11px] text-muted-foreground">
-                  Diseña, prueba y optimiza tu sistema de trading
+                  {t('sb_subtitle')}
                 </p>
               </div>
             </div>
@@ -172,14 +172,14 @@ export default function StrategyBuilder() {
         <GlowSection color={ACCENT}>
           <div className="p-4 space-y-3">
             <Input
-              placeholder="Nombre de la estrategia..."
+              placeholder={t('sb_strategy_name')}
               value={strategy.name}
               onChange={e => setStrategy(s => ({ ...s, name: e.target.value }))}
               className="text-lg font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0 px-0"
               style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }}
             />
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Instrumentos</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t('sb_instruments')}</span>
               <SymbolSearch
                 value=""
                 onChange={(symbol) => {
@@ -269,7 +269,7 @@ export default function StrategyBuilder() {
                       {!rule.collapsed && (
                         <div className="p-3 space-y-2">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Lógica:</span>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('sb_logic')}:</span>
                             <div className="flex rounded-lg overflow-hidden" style={{ border: `1px solid hsl(${ruleColor} / 0.2)` }}>
                               {(['AND', 'OR'] as LogicGate[]).map(g => (
                                 <button key={g} className="px-3 py-1 text-[11px] font-bold transition-colors"
@@ -294,7 +294,7 @@ export default function StrategyBuilder() {
                               </Select>
                               <Select value={cond.operator} onValueChange={v => updateCondition(rule.id, cond.id, 'operator', v)}>
                                 <SelectTrigger className="w-[130px] h-8 text-xs bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
-                                <SelectContent>{OPERATORS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                                <SelectContent>{OPERATOR_KEYS.map(o => <SelectItem key={o.value} value={o.value}>{t(o.labelKey)}</SelectItem>)}</SelectContent>
                               </Select>
                               <Input className="w-[70px] h-8 text-xs bg-background/40 border-border/30" value={cond.value} onChange={e => updateCondition(rule.id, cond.id, 'value', e.target.value)} />
                               <Select value={cond.timeframe} onValueChange={v => updateCondition(rule.id, cond.id, 'timeframe', v)}>
@@ -309,7 +309,7 @@ export default function StrategyBuilder() {
                           <button className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg transition-colors"
                             style={{ color: `hsl(${ruleColor})` }}
                             onClick={() => addCondition(rule.id)}>
-                            <Plus className="w-3 h-3" /> Condición
+                            <Plus className="w-3 h-3" /> {t('sb_condition')}
                           </button>
                         </div>
                       )}
@@ -330,7 +330,7 @@ export default function StrategyBuilder() {
                   <Layers className="w-6 h-6" style={{ color: `hsl(${ACCENT} / 0.5)` }} />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Agrega reglas de <span style={{ color: 'hsl(160 84% 39%)' }}>BUY</span> o <span style={{ color: 'hsl(0 84% 60%)' }}>SELL</span> para construir tu estrategia
+                  {t('sb_add_rules_hint')}
                 </p>
               </div>
             </GlowSection>
@@ -347,11 +347,11 @@ export default function StrategyBuilder() {
               }}>
                 <Zap className="w-3.5 h-3.5" style={{ color: 'hsl(45 95% 55%)' }} />
               </div>
-              <span className="text-sm font-semibold text-foreground">Gestión de Riesgo</span>
+              <span className="text-sm font-semibold text-foreground">{t('sb_risk_management')}</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Riesgo/Trade (%)</label>
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('sb_risk_per_trade')}</label>
                 <Input type="number" value={strategy.riskPerTrade} onChange={e => setStrategy(s => ({ ...s, riskPerTrade: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30 mt-1" />
               </div>
               <div>
@@ -359,7 +359,7 @@ export default function StrategyBuilder() {
                 <Input type="number" value={strategy.takeProfitRatio} step={0.5} onChange={e => setStrategy(s => ({ ...s, takeProfitRatio: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30 mt-1" />
               </div>
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Stop Loss</label>
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('sb_stop_loss')}</label>
                 <div className="flex gap-1 mt-1">
                   <Select value={strategy.stopLossType} onValueChange={(v: any) => setStrategy(s => ({ ...s, stopLossType: v }))}>
                     <SelectTrigger className="h-8 text-xs w-[80px] bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
@@ -374,7 +374,7 @@ export default function StrategyBuilder() {
               </div>
               <div className="flex items-center gap-2 pt-4">
                 <Switch checked={strategy.trailingStop} onCheckedChange={v => setStrategy(s => ({ ...s, trailingStop: v }))} />
-                <span className="text-xs text-foreground">Trailing Stop</span>
+                <span className="text-xs text-foreground">{t('sb_trailing_stop')}</span>
               </div>
             </div>
           </div>
@@ -392,7 +392,7 @@ export default function StrategyBuilder() {
               color: 'hsl(var(--foreground))',
             }}
           >
-            <Save className="w-4 h-4" /> Guardar
+            <Save className="w-4 h-4" /> {t('sb_save')}
           </button>
           <button
             onClick={runBacktest}
@@ -420,7 +420,7 @@ export default function StrategyBuilder() {
                     }}>
                       <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
                     </div>
-                    <span className="text-sm font-semibold text-foreground">Resultados Backtest</span>
+                    <span className="text-sm font-semibold text-foreground">{t('sb_backtest_results')}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {[
@@ -445,7 +445,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="210 80% 55%">
                 <div className="p-3">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Curva de Equity</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t('sb_equity_curve')}</div>
                   <ResponsiveContainer width="100%" height={180}>
                     <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs><linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0.4} /><stop offset="95%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0} /></linearGradient></defs>
@@ -462,7 +462,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="0 84% 60%">
                 <div className="p-3">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Drawdown (%)</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t('sb_drawdown')} (%)</div>
                   <ResponsiveContainer width="100%" height={120}>
                     <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs><linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.4} /><stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} /></linearGradient></defs>
@@ -478,7 +478,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="270 70% 60%">
                 <div className="p-3">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">P&L Mensual</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t('sb_monthly_pnl')}</div>
                   <ResponsiveContainer width="100%" height={130}>
                     <BarChart data={backtestResult.monthlyReturns} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -504,7 +504,7 @@ export default function StrategyBuilder() {
             <div className="p-3">
               <div className="text-sm font-semibold mb-3 text-foreground flex items-center gap-2">
                 <Save className="w-3.5 h-3.5" style={{ color: 'hsl(210 80% 55%)' }} />
-                Estrategias Guardadas
+                 {t('sb_saved_strategies')}
                 <Badge className="text-[10px]" style={{ background: 'hsl(210 80% 55% / 0.15)', color: 'hsl(210 80% 55%)' }}>
                   {savedStrategies.length}
                 </Badge>
@@ -517,7 +517,7 @@ export default function StrategyBuilder() {
                   }}>
                     <div>
                       <div className="text-sm font-medium text-foreground">{s.name}</div>
-                      <div className="text-[11px] text-muted-foreground">{s.rules.length} reglas · {s.pairs.join(', ')}</div>
+                      <div className="text-[11px] text-muted-foreground">{s.rules.length} {t('sb_rules_count')} · {s.pairs.join(', ')}</div>
                     </div>
                     <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setStrategy({ ...s })}>
                       <Copy className="w-3 h-3" />

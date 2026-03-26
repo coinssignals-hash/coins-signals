@@ -38,10 +38,10 @@ type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
 /* MarketSessions-style tab config */
-const FORUM_TABS = [
-  { key: 'channels' as ForumView, emoji: '💬', label: 'Canales', color: '210 70% 55%' },
-  { key: 'dms' as ForumView, emoji: '✉️', label: 'DMs', color: '270 70% 60%' },
-  { key: 'favorites' as ForumView, emoji: '⭐', label: 'Amigos', color: '45 90% 55%' },
+const FORUM_TAB_KEYS = [
+  { key: 'channels' as ForumView, emoji: '💬', labelKey: 'forum_channels', color: '210 70% 55%' },
+  { key: 'dms' as ForumView, emoji: '✉️', labelKey: 'forum_dms', color: '270 70% 60%' },
+  { key: 'favorites' as ForumView, emoji: '⭐', labelKey: 'forum_friends', color: '45 90% 55%' },
 ];
 
 export default function Forum() {
@@ -102,8 +102,8 @@ export default function Forum() {
   const handleTopicImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !topic) return;
-    if (!file.type.startsWith('image/')) { toast.error('Solo se permiten imágenes'); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error('Máximo 5MB'); return; }
+    if (!file.type.startsWith('image/')) { toast.error(t('forum_only_images')); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error(t('forum_max_5mb')); return; }
 
     setTopicImageUploading(true);
     try {
@@ -117,9 +117,9 @@ export default function Forum() {
 
       await supabase.from('forum_daily_topics').update({ image_url: imageUrl }).eq('id', topic.id);
       refetchTopic();
-      toast.success('Imagen del tema actualizada');
+      toast.success(t('forum_topic_image_updated'));
     } catch (err: any) {
-      toast.error('Error al subir imagen: ' + err.message);
+      toast.error(t('forum_image_upload_error'));
     } finally {
       setTopicImageUploading(false);
       if (topicImageRef.current) topicImageRef.current.value = '';
@@ -142,8 +142,8 @@ export default function Forum() {
   const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) { toast.error('Solo se permiten imágenes'); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error('La imagen no puede superar 5MB'); return; }
+    if (!file.type.startsWith('image/')) { toast.error(t('forum_only_images')); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error(t('forum_max_5mb')); return; }
     const preview = URL.createObjectURL(file);
     setPendingImage({ file, preview });
     if (imageInputRef.current) imageInputRef.current.value = '';
@@ -154,7 +154,7 @@ export default function Forum() {
     const ext = file.name.split('.').pop() || 'jpg';
     const path = `${user.id}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from('forum-images').upload(path, file);
-    if (error) { toast.error('Error al subir imagen'); return null; }
+    if (error) { toast.error(t('forum_image_upload_error')); return null; }
     const { data } = supabase.storage.from('forum-images').getPublicUrl(path);
     return data.publicUrl;
   };
@@ -162,7 +162,7 @@ export default function Forum() {
   const handleSend = async () => {
     const text = messageInput.trim();
     if (!text && !pendingSignalId && !pendingImage) return;
-    if (!user) { toast.error('Inicia sesión para enviar mensajes'); return; }
+    if (!user) { toast.error(t('forum_login_to_send')); return; }
 
     let imageUrl: string | undefined;
     if (pendingImage) {
@@ -186,8 +186,8 @@ export default function Forum() {
   };
 
   const handleReport = async (msgId: string) => {
-    await reportMessage(msgId, 'Contenido inapropiado');
-    toast.success('Mensaje reportado');
+    await reportMessage(msgId, t('forum_inappropriate'));
+    toast.success(t('forum_reported'));
   };
 
   // ═══ CHANNELS LIST VIEW ═══
@@ -309,7 +309,7 @@ export default function Forum() {
 
       {/* MarketSessions-style Tab Grid */}
       <div className="grid grid-cols-3 gap-1.5">
-        {FORUM_TABS.map(tab => {
+        {FORUM_TAB_KEYS.map(tab => {
           const isSelected = view === tab.key;
           return (
             <button
@@ -328,7 +328,7 @@ export default function Forum() {
               }}
             >
               <span className="text-base leading-none">{tab.emoji}</span>
-              <span>{tab.label}</span>
+              <span>{t(tab.labelKey)}</span>
               {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
             </button>
           );
@@ -380,7 +380,7 @@ export default function Forum() {
     <div className="space-y-4">
       {/* MarketSessions-style Tab Grid */}
       <div className="grid grid-cols-3 gap-1.5">
-        {FORUM_TABS.map(tab => {
+        {FORUM_TAB_KEYS.map(tab => {
           const isSelected = (tab.key === 'dms' && view === 'dms');
           return (
             <button
@@ -399,7 +399,7 @@ export default function Forum() {
               }}
             >
               <span className="text-base leading-none">{tab.emoji}</span>
-              <span>{tab.label}</span>
+              <span>{t(tab.labelKey)}</span>
               {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
             </button>
           );
@@ -937,7 +937,7 @@ export default function Forum() {
           <div className="space-y-4">
             {/* MarketSessions-style Tab Grid */}
             <div className="grid grid-cols-3 gap-1.5">
-              {FORUM_TABS.map(tab => {
+              {FORUM_TAB_KEYS.map(tab => {
                 const isSelected = tab.key === 'favorites';
                 return (
                   <button
@@ -956,7 +956,7 @@ export default function Forum() {
                     }}
                   >
                     <span className="text-base leading-none">{tab.emoji}</span>
-                    <span>{tab.label}</span>
+                    <span>{t(tab.labelKey)}</span>
                     {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
                   </button>
                 );

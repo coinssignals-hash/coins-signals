@@ -33,20 +33,20 @@ interface SmartAlert {
   recurrence: 'once' | 'recurring';
 }
 
-const ALERT_TYPES: { value: AlertType; label: string; icon: any; color: string }[] = [
-  { value: 'price', label: 'Precio', icon: TrendingUp, color: '160 84% 39%' },
-  { value: 'indicator', label: 'Indicador', icon: Activity, color: '210 80% 55%' },
-  { value: 'pattern', label: 'Patrón', icon: Zap, color: '45 95% 55%' },
-  { value: 'news', label: 'Noticias', icon: Bell, color: '270 70% 60%' },
-  { value: 'volatility', label: 'Volatilidad', icon: AlertTriangle, color: '0 84% 60%' },
+const ALERT_TYPE_KEYS: { value: AlertType; labelKey: string; icon: any; color: string }[] = [
+  { value: 'price', labelKey: 'sa_price', icon: TrendingUp, color: '160 84% 39%' },
+  { value: 'indicator', labelKey: 'sa_indicator', icon: Activity, color: '210 80% 55%' },
+  { value: 'pattern', labelKey: 'sa_pattern', icon: Zap, color: '45 95% 55%' },
+  { value: 'news', labelKey: 'sa_news', icon: Bell, color: '270 70% 60%' },
+  { value: 'volatility', labelKey: 'sa_volatility', icon: AlertTriangle, color: '0 84% 60%' },
 ];
 
-const CONDITIONS: Record<AlertType, string[]> = {
-  price: ['Precio cruza arriba de', 'Precio cruza abajo de', 'Precio entre rango', 'Cambio % en'],
-  indicator: ['RSI cruza arriba de', 'RSI cruza abajo de', 'MACD cruce alcista', 'MACD cruce bajista', 'EMA cruce dorado', 'EMA cruce muerte'],
-  pattern: ['Doble techo detectado', 'Doble suelo detectado', 'Hombro-Cabeza-Hombro', 'Triángulo ascendente', 'Doji en soporte', 'Engulfing alcista'],
-  news: ['Noticia alto impacto', 'Decisión tasa interés', 'NFP/Empleo', 'PIB publicación', 'CPI/Inflación'],
-  volatility: ['ATR supera', 'Bollinger squeeze', 'Expansión volatilidad', 'Rango diario supera'],
+const CONDITION_KEYS: Record<AlertType, string[]> = {
+  price: ['sa_price_crosses_above', 'sa_price_crosses_below', 'sa_price_between', 'sa_price_change_pct'],
+  indicator: ['sa_rsi_crosses_above', 'sa_rsi_crosses_below', 'sa_macd_bullish', 'sa_macd_bearish', 'sa_ema_golden', 'sa_ema_death'],
+  pattern: ['sa_double_top', 'sa_double_bottom', 'sa_head_shoulders', 'sa_ascending_triangle', 'sa_doji_support', 'sa_engulfing_bullish'],
+  news: ['sa_high_impact_news', 'sa_interest_rate', 'sa_nfp', 'sa_gdp', 'sa_cpi'],
+  volatility: ['sa_atr_exceeds', 'sa_bollinger_squeeze', 'sa_volatility_expansion', 'sa_daily_range_exceeds'],
 };
 
 const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'XAU/USD', 'BTC/USD', 'US500', 'NAS100'];
@@ -290,8 +290,8 @@ function NotificationSettingsTab() {
 function SmartAlertsTab() {
   const { t } = useTranslation();
   const [alerts, setAlerts] = useState<SmartAlert[]>([
-    { id: '1', name: 'RSI Oversold EUR/USD', type: 'indicator', pair: 'EUR/USD', condition: 'RSI cruza abajo de', value: '30', timeframe: 'H1', status: 'active', sound: true, push: true, createdAt: new Date(), recurrence: 'recurring' },
-    { id: '2', name: 'Gold Price Alert', type: 'price', pair: 'XAU/USD', condition: 'Precio cruza arriba de', value: '2450', timeframe: 'M15', status: 'triggered', sound: true, push: true, createdAt: new Date(Date.now() - 86400000), triggeredAt: new Date(Date.now() - 3600000), recurrence: 'once' },
+    { id: '1', name: 'RSI Oversold EUR/USD', type: 'indicator', pair: 'EUR/USD', condition: 'sa_rsi_crosses_below', value: '30', timeframe: 'H1', status: 'active', sound: true, push: true, createdAt: new Date(), recurrence: 'recurring' },
+    { id: '2', name: 'Gold Price Alert', type: 'price', pair: 'XAU/USD', condition: 'sa_price_crosses_above', value: '2450', timeframe: 'M15', status: 'triggered', sound: true, push: true, createdAt: new Date(Date.now() - 86400000), triggeredAt: new Date(Date.now() - 3600000), recurrence: 'once' },
   ]);
   const [showCreate, setShowCreate] = useState(false);
   const [newAlert, setNewAlert] = useState<Partial<SmartAlert>>({
@@ -299,9 +299,9 @@ function SmartAlertsTab() {
   });
 
   const createAlert = () => {
-    if (!newAlert.condition || !newAlert.value) { toastHook({ title: 'Completa todos los campos', variant: 'destructive' }); return; }
+    if (!newAlert.condition || !newAlert.value) { toastHook({ title: t('sa_complete_fields'), variant: 'destructive' }); return; }
     const alert: SmartAlert = {
-      id: crypto.randomUUID(), name: newAlert.name || `${newAlert.pair} ${newAlert.condition}`,
+      id: crypto.randomUUID(), name: newAlert.name || `${newAlert.pair} ${t(newAlert.condition!)}`,
       type: newAlert.type as AlertType, pair: newAlert.pair!, condition: newAlert.condition!, value: newAlert.value!,
       timeframe: newAlert.timeframe!, status: 'active', sound: newAlert.sound!, push: newAlert.push!,
       createdAt: new Date(), recurrence: newAlert.recurrence as 'once' | 'recurring',
@@ -309,11 +309,11 @@ function SmartAlertsTab() {
     setAlerts(prev => [alert, ...prev]);
     setShowCreate(false);
     setNewAlert({ type: 'price', pair: 'EUR/USD', condition: '', value: '', timeframe: 'H1', sound: true, push: true, recurrence: 'once', name: '' });
-    toastHook({ title: 'Alerta creada ✓' });
+    toastHook({ title: t('sa_alert_created') });
   };
 
   const toggleStatus = (id: string) => setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: a.status === 'active' ? 'paused' : 'active' } : a));
-  const deleteAlert = (id: string) => { setAlerts(prev => prev.filter(a => a.id !== id)); toastHook({ title: 'Alerta eliminada' }); };
+  const deleteAlert = (id: string) => { setAlerts(prev => prev.filter(a => a.id !== id)); toastHook({ title: t('sa_alert_deleted') }); };
 
   const activeCount = alerts.filter(a => a.status === 'active').length;
   const triggeredCount = alerts.filter(a => a.status === 'triggered').length;
@@ -323,9 +323,9 @@ function SmartAlertsTab() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'Activas', value: activeCount, icon: BellRing, color: '160 84% 39%' },
-          { label: 'Disparadas', value: triggeredCount, icon: Zap, color: '45 95% 55%' },
-          { label: 'Total', value: alerts.length, icon: Bell, color: '210 80% 55%' },
+          { label: t('sa_active'), value: activeCount, icon: BellRing, color: '160 84% 39%' },
+          { label: t('sa_triggered'), value: triggeredCount, icon: Zap, color: '45 95% 55%' },
+          { label: t('sa_total'), value: alerts.length, icon: Bell, color: '210 80% 55%' },
         ].map(s => (
           <GlowSection key={s.label} color={s.color}>
             <div className="p-3 text-center">
@@ -350,7 +350,7 @@ function SmartAlertsTab() {
           border: `1px solid hsl(${ACCENT} / 0.5)`,
           boxShadow: `0 0 20px hsl(${ACCENT} / 0.25), inset 0 1px 0 hsl(0 0% 100% / 0.1)`,
         }}>
-        <Plus className="w-4 h-4" /> Nueva Alerta Inteligente
+        <Plus className="w-4 h-4" /> {t('sa_new_alert')}
       </button>
 
       {/* Create form */}
@@ -359,11 +359,11 @@ function SmartAlertsTab() {
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
             <GlowSection color={ACCENT}>
               <div className="p-4 space-y-3">
-                <Input placeholder="Nombre de la alerta (opcional)" value={newAlert.name} onChange={e => setNewAlert(a => ({ ...a, name: e.target.value }))}
+                <Input placeholder={t('sa_alert_name_placeholder')} value={newAlert.name} onChange={e => setNewAlert(a => ({ ...a, name: e.target.value }))}
                   className="h-9 border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0"
                   style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }} />
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-                  {ALERT_TYPES.map(at => (
+                  {ALERT_TYPE_KEYS.map(at => (
                     <button key={at.value}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap active:scale-95"
                       style={{
@@ -374,7 +374,7 @@ function SmartAlertsTab() {
                       }}
                       onClick={() => setNewAlert(a => ({ ...a, type: at.value, condition: '' }))}
                     >
-                      <at.icon className="w-3 h-3" /> {at.label}
+                      <at.icon className="w-3 h-3" /> {t(at.labelKey)}
                     </button>
                   ))}
                 </div>
@@ -389,10 +389,10 @@ function SmartAlertsTab() {
                   </Select>
                 </div>
                 <Select value={newAlert.condition} onValueChange={v => setNewAlert(a => ({ ...a, condition: v }))}>
-                  <SelectTrigger className="h-9 text-xs bg-background/40 border-border/30"><SelectValue placeholder="Condición..." /></SelectTrigger>
-                  <SelectContent>{(CONDITIONS[newAlert.type as AlertType] || []).map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="h-9 text-xs bg-background/40 border-border/30"><SelectValue placeholder={t('sa_condition_placeholder')} /></SelectTrigger>
+                  <SelectContent>{(CONDITION_KEYS[newAlert.type as AlertType] || []).map(key => <SelectItem key={key} value={key}>{t(key)}</SelectItem>)}</SelectContent>
                 </Select>
-                <Input placeholder="Valor (ej: 1.0850, 30, etc.)" value={newAlert.value} onChange={e => setNewAlert(a => ({ ...a, value: e.target.value }))} className="h-9 bg-background/40 border-border/30" />
+                <Input placeholder={t('sa_value_placeholder')} value={newAlert.value} onChange={e => setNewAlert(a => ({ ...a, value: e.target.value }))} className="h-9 bg-background/40 border-border/30" />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -407,8 +407,8 @@ function SmartAlertsTab() {
                   <Select value={newAlert.recurrence} onValueChange={v => setNewAlert(a => ({ ...a, recurrence: v as any }))}>
                     <SelectTrigger className="h-8 text-xs w-[110px] bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="once">Una vez</SelectItem>
-                      <SelectItem value="recurring">Recurrente</SelectItem>
+                      <SelectItem value="once">{t('sa_once')}</SelectItem>
+                      <SelectItem value="recurring">{t('sa_recurring')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -419,7 +419,7 @@ function SmartAlertsTab() {
                     border: `1px solid hsl(${ACCENT} / 0.4)`,
                     boxShadow: `0 0 15px hsl(${ACCENT} / 0.2)`,
                   }}>
-                  <Zap className="w-4 h-4" /> Crear Alerta
+                  <Zap className="w-4 h-4" /> {t('sa_create_alert')}
                 </button>
               </div>
             </GlowSection>
@@ -431,11 +431,11 @@ function SmartAlertsTab() {
       <div className="space-y-2">
         <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
           <Bell className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
-          ALERTAS CONFIGURADAS
+          {t('sa_configured_alerts')}
         </h3>
         <AnimatePresence mode="popLayout">
           {alerts.map(alert => {
-            const typeInfo = ALERT_TYPES.find(at => at.value === alert.type);
+            const typeInfo = ALERT_TYPE_KEYS.find(at => at.value === alert.type);
             const Icon = typeInfo?.icon || Bell;
             const alertColor = typeInfo?.color || ACCENT;
             const isActive = alert.status === 'active';
@@ -462,19 +462,19 @@ function SmartAlertsTab() {
                         color: `hsl(${isActive ? '160 84% 39%' : alert.status === 'triggered' ? '45 95% 55%' : 'var(--muted-foreground)'})`,
                         background: `hsl(${isActive ? '160 84% 39%' : alert.status === 'triggered' ? '45 95% 55%' : 'var(--muted)'} / 0.1)`,
                       }}>
-                        {alert.status === 'active' ? '● Activa' : alert.status === 'triggered' ? '⚡ Disparada' : '⏸ Pausa'}
+                        {alert.status === 'active' ? t('sa_status_active') : alert.status === 'triggered' ? t('sa_status_triggered') : t('sa_status_paused')}
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground mb-2 rounded-lg px-2.5 py-1.5" style={{
                       background: 'linear-gradient(165deg, hsl(var(--card) / 0.5), hsl(var(--background) / 0.3))',
                       border: '1px solid hsl(var(--border) / 0.1)',
                     }}>
-                      {alert.condition} <span className="font-mono font-bold text-foreground">{alert.value}</span>
+                      {t(alert.condition)} <span className="font-mono font-bold text-foreground">{alert.value}</span>
                       {alert.recurrence === 'recurring' && <Badge variant="outline" className="ml-2 text-[9px]" style={{ borderColor: `hsl(${alertColor} / 0.3)`, color: `hsl(${alertColor})` }}>↻</Badge>}
                     </div>
                     {alert.triggeredAt && (
                       <div className="text-[10px] flex items-center gap-1 mb-2" style={{ color: 'hsl(45 95% 55%)' }}>
-                        <Clock className="w-3 h-3" /> Disparada: {alert.triggeredAt.toLocaleString()}
+                        <Clock className="w-3 h-3" /> {t('sa_triggered_at')}: {alert.triggeredAt.toLocaleString()}
                       </div>
                     )}
                     <div className="flex justify-end gap-1">
@@ -485,7 +485,7 @@ function SmartAlertsTab() {
                           border: '1px solid hsl(var(--border) / 0.2)',
                           color: 'hsl(var(--foreground) / 0.7)',
                         }}>
-                        {alert.status === 'active' ? 'Pausar' : 'Activar'}
+                        {alert.status === 'active' ? t('sa_pause_btn') : t('sa_activate_btn')}
                       </button>
                       <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive/60 rounded-lg" onClick={() => deleteAlert(alert.id)}>
                         <Trash2 className="w-3 h-3" />
@@ -554,7 +554,7 @@ export default function SmartAlerts() {
                   {t('drawer_smart_alerts') || 'Alertas y Notificaciones'}
                 </h1>
                 <p className="text-[11px] text-muted-foreground">
-                  Alertas inteligentes y configuración de notificaciones
+                  {t('sa_desc')}
                 </p>
               </div>
             </div>

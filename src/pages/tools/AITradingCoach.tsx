@@ -22,29 +22,36 @@ interface Message {
 
 const ACCENT = '270 70% 60%';
 
-const QUICK_PROMPTS = [
-  { icon: TrendingUp, label: 'Analiza mi último trade', prompt: 'Analiza mi último trade en EUR/USD donde entré en 1.0850 con SL en 1.0820 y TP en 1.0910. ¿Fue una buena entrada?' },
-  { icon: Shield, label: 'Revisar gestión de riesgo', prompt: 'Revisa mi gestión de riesgo: arriesgo 2% por trade, uso ratio 1:2, y tengo un drawdown actual del 8%. ¿Qué mejoras sugieres?' },
-  { icon: Target, label: 'Plan de trading semanal', prompt: 'Ayúdame a crear un plan de trading para esta semana. Me enfoco en EUR/USD y GBP/USD en temporalidades H1 y H4.' },
-  { icon: BookOpen, label: 'Ejercicio de disciplina', prompt: 'Dame un ejercicio práctico para mejorar mi disciplina de trading y evitar el overtrading.' },
-  { icon: Lightbulb, label: 'Mentalidad ganadora', prompt: 'Estoy en una racha perdedora de 5 trades. ¿Cómo puedo recuperar la confianza sin hacer revenge trading?' },
-  { icon: BarChart3, label: 'Optimizar estrategia', prompt: 'Mi estrategia tiene un win rate del 55% con ratio R:R de 1.5:1. ¿Cómo puedo optimizarla para mejorar la expectativa?' },
+const QUICK_PROMPT_KEYS = [
+  { icon: TrendingUp, labelKey: 'ac_prompt_analyze', promptKey: 'ac_prompt_analyze_full' },
+  { icon: Shield, labelKey: 'ac_prompt_risk', promptKey: 'ac_prompt_risk_full' },
+  { icon: Target, labelKey: 'ac_prompt_plan', promptKey: 'ac_prompt_plan_full' },
+  { icon: BookOpen, labelKey: 'ac_prompt_discipline', promptKey: 'ac_prompt_discipline_full' },
+  { icon: Lightbulb, labelKey: 'ac_prompt_mindset', promptKey: 'ac_prompt_mindset_full' },
+  { icon: BarChart3, labelKey: 'ac_prompt_optimize', promptKey: 'ac_prompt_optimize_full' },
 ];
 
 export default function AITradingCoach() {
   const { t, language } = useTranslation();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0', role: 'assistant',
-      content: '¡Hola! 👋 Soy tu **Coach de Trading con IA**. Puedo ayudarte con:\n\n- 📊 **Análisis de trades** — revisemos tus operaciones\n- 🛡️ **Gestión de riesgo** — optimicemos tu estrategia\n- 🧠 **Psicología** — trabajemos tu mentalidad\n- 📋 **Plan de trading** — creemos uno juntos\n- 🎯 **Mejora continua** — identifiquemos áreas de crecimiento\n\n¿En qué puedo ayudarte hoy?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionStats, setSessionStats] = useState({ questions: 0, tips: 0 });
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Initialize welcome message with translation
+  useEffect(() => {
+    if (!initialized) {
+      setMessages([{
+        id: '0', role: 'assistant',
+        content: t('ac_welcome_full'),
+        timestamp: new Date(),
+      }]);
+      setInitialized(true);
+    }
+  }, [t, initialized]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -109,7 +116,7 @@ export default function AITradingCoach() {
       }
       setSessionStats(s => ({ ...s, tips: s.tips + 1 }));
     } catch {
-      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: 'Lo siento, no pude procesar tu consulta en este momento. Intenta de nuevo en unos segundos. 🔄', timestamp: new Date() }]);
+      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: t('ac_error_message'), timestamp: new Date() }]);
     } finally {
       setIsLoading(false);
     }
@@ -150,7 +157,7 @@ export default function AITradingCoach() {
                   {t('drawer_ai_coach') || 'Coach IA'}
                 </h1>
                 <p className="text-[11px] text-muted-foreground">
-                  Tu mentor de trading personalizado
+                  {t('ac_subtitle')}
                 </p>
               </div>
             </div>
@@ -180,18 +187,18 @@ export default function AITradingCoach() {
         {/* Quick prompts */}
         {messages.length <= 1 && (
           <div className="grid grid-cols-2 gap-2 mb-3">
-            {QUICK_PROMPTS.map((qp, i) => (
+            {QUICK_PROMPT_KEYS.map((qp, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
                 <GlowSection color={ACCENT} className="h-full">
                   <button className="flex items-center gap-2 p-2.5 w-full text-left active:scale-[0.97] transition-transform"
-                    onClick={() => sendMessage(qp.prompt)}>
+                    onClick={() => sendMessage(t(qp.promptKey))}>
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{
                       background: `hsl(${ACCENT} / 0.15)`,
                       boxShadow: `0 0 8px hsl(${ACCENT} / 0.1)`,
                     }}>
                       <qp.icon className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
                     </div>
-                    <span className="text-xs font-medium leading-tight text-foreground">{qp.label}</span>
+                    <span className="text-xs font-medium leading-tight text-foreground">{t(qp.labelKey)}</span>
                   </button>
                 </GlowSection>
               </motion.div>
@@ -249,7 +256,7 @@ export default function AITradingCoach() {
                 <Brain className="w-4 h-4 text-white" />
               </div>
               <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
-                <Loader2 className="w-4 h-4 animate-spin" style={{ color: `hsl(${ACCENT})` }} /> Pensando...
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: `hsl(${ACCENT})` }} /> {t('ac_thinking')}
               </div>
             </div>
           )}
@@ -265,7 +272,7 @@ export default function AITradingCoach() {
           }}>
             <Input value={input} onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage(input)}
-              placeholder="Pregunta a tu coach..."
+              placeholder={t('ac_ask_placeholder')}
               className="h-10 bg-transparent border-0 focus-visible:ring-0 text-sm"
               disabled={isLoading} />
           </div>
