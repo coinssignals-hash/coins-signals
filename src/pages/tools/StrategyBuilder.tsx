@@ -154,7 +154,8 @@ export default function StrategyBuilder() {
                   {t('drawer_strategy_builder') || 'Constructor de Estrategias'}
                 </h1>
                 <p className="text-[11px] text-muted-foreground">
-                  Diseña, prueba y optimiza tu sistema de trading
+                  {t('sb_subtitle')}
+                </p>
                 </p>
               </div>
             </div>
