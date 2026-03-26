@@ -479,7 +479,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="270 70% 60%">
                 <div className="p-3">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">P&L Mensual</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t('sb_monthly_pnl')}</div>
                   <ResponsiveContainer width="100%" height={130}>
                     <BarChart data={backtestResult.monthlyReturns} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
