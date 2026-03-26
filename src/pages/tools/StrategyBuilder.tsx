@@ -393,7 +393,7 @@ export default function StrategyBuilder() {
               color: 'hsl(var(--foreground))',
             }}
           >
-            <Save className="w-4 h-4" /> Guardar
+            <Save className="w-4 h-4" /> {t('sb_save')}
           </button>
           <button
             onClick={runBacktest}
