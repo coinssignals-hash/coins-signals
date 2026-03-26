@@ -260,7 +260,7 @@ export default function AITradingCoach() {
           }}>
             <Input value={input} onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage(input)}
-              placeholder="Pregunta a tu coach..."
+              placeholder={t('ac_ask_placeholder')}
               className="h-10 bg-transparent border-0 focus-visible:ring-0 text-sm"
               disabled={isLoading} />
           </div>
