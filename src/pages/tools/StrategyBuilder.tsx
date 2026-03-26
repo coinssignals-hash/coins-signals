@@ -463,7 +463,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="0 84% 60%">
                 <div className="p-3">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Drawdown (%)</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t('sb_drawdown')} (%)</div>
                   <ResponsiveContainer width="100%" height={120}>
                     <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs><linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.4} /><stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} /></linearGradient></defs>
