@@ -234,8 +234,13 @@ export default function Forum() {
 
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <Vote className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{
+                background: 'linear-gradient(135deg, hsl(45 90% 55% / 0.2), hsl(45 90% 55% / 0.08))',
+                border: '1px solid hsl(45 90% 55% / 0.3)',
+              }}>
+                <Vote className="w-4 h-4" style={{ color: 'hsl(45 90% 55%)' }} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(45 90% 55%)' }}>
                 {language === 'es' ? 'Tema del Día' : language === 'en' ? 'Topic of the Day' : language === 'pt' ? 'Tema do Dia' : language === 'fr' ? 'Sujet du Jour' : language === 'de' ? 'Thema des Tages' : language === 'it' ? 'Tema del Giorno' : language === 'ar' ? 'موضوع اليوم' : 'Tema del Día'}
               </span>
               {topicTranslating && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
