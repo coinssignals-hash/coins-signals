@@ -421,7 +421,7 @@ export default function StrategyBuilder() {
                     }}>
                       <BarChart3 className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
                     </div>
-                    <span className="text-sm font-semibold text-foreground">Resultados Backtest</span>
+                    <span className="text-sm font-semibold text-foreground">{t('sb_backtest_results')}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     {[
