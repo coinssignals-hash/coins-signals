@@ -32,9 +32,9 @@ const INDICATORS = [
   { value: 'stochastic_k', label: 'Stochastic %K' }, { value: 'stochastic_d', label: 'Stochastic %D' },
   { value: 'atr', label: 'ATR' }, { value: 'adx', label: 'ADX' }, { value: 'price', label: 'Price' }, { value: 'volume', label: 'Volume' },
 ];
-const OPERATORS: { value: ConditionOperator; label: string }[] = [
-  { value: 'crosses_above', label: '↗ Cruza arriba' }, { value: 'crosses_below', label: '↘ Cruza abajo' },
-  { value: 'greater_than', label: '> Mayor que' }, { value: 'less_than', label: '< Menor que' }, { value: 'equals', label: '= Igual a' },
+const OPERATOR_KEYS: { value: ConditionOperator; labelKey: string }[] = [
+  { value: 'crosses_above', labelKey: 'sb_crosses_above' }, { value: 'crosses_below', labelKey: 'sb_crosses_below' },
+  { value: 'greater_than', labelKey: 'sb_greater_than' }, { value: 'less_than', labelKey: 'sb_less_than' }, { value: 'equals', labelKey: 'sb_equals' },
 ];
 const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1'];
 
