@@ -359,7 +359,7 @@ function SmartAlertsTab() {
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
             <GlowSection color={ACCENT}>
               <div className="p-4 space-y-3">
-                <Input placeholder="Nombre de la alerta (opcional)" value={newAlert.name} onChange={e => setNewAlert(a => ({ ...a, name: e.target.value }))}
+                <Input placeholder={t('sa_alert_name_placeholder')} value={newAlert.name} onChange={e => setNewAlert(a => ({ ...a, name: e.target.value }))}
                   className="h-9 border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0"
                   style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }} />
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
