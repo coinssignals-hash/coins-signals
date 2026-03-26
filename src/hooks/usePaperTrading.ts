@@ -164,6 +164,7 @@ export function usePaperTrading() {
         }
         return next;
       });
+      tickCount.current++;
     }, 2000);
     return () => clearInterval(iv);
   }, []);
