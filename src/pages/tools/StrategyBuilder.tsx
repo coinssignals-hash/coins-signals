@@ -310,7 +310,7 @@ export default function StrategyBuilder() {
                           <button className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg transition-colors"
                             style={{ color: `hsl(${ruleColor})` }}
                             onClick={() => addCondition(rule.id)}>
-                            <Plus className="w-3 h-3" /> Condición
+                            <Plus className="w-3 h-3" /> {t('sb_condition')}
                           </button>
                         </div>
                       )}
