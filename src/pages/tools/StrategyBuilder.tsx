@@ -107,9 +107,9 @@ export default function StrategyBuilder() {
   };
 
   const saveStrategy = () => {
-    if (!strategy.name.trim()) { toast({ title: 'Ingresa un nombre para la estrategia', variant: 'destructive' }); return; }
+    if (!strategy.name.trim()) { toast({ title: t('sb_name_required'), variant: 'destructive' }); return; }
     setSavedStrategies(prev => [...prev.filter(s => s.name !== strategy.name), { ...strategy }]);
-    toast({ title: `Estrategia "${strategy.name}" guardada` });
+    toast({ title: `${t('sb_strategy_saved')}: "${strategy.name}"` });
   };
 
   return (
