@@ -295,7 +295,7 @@ export default function StrategyBuilder() {
                               </Select>
                               <Select value={cond.operator} onValueChange={v => updateCondition(rule.id, cond.id, 'operator', v)}>
                                 <SelectTrigger className="w-[130px] h-8 text-xs bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
-                                <SelectContent>{OPERATORS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                                <SelectContent>{OPERATOR_KEYS.map(o => <SelectItem key={o.value} value={o.value}>{t(o.labelKey)}</SelectItem>)}</SelectContent>
                               </Select>
                               <Input className="w-[70px] h-8 text-xs bg-background/40 border-border/30" value={cond.value} onChange={e => updateCondition(rule.id, cond.id, 'value', e.target.value)} />
                               <Select value={cond.timeframe} onValueChange={v => updateCondition(rule.id, cond.id, 'timeframe', v)}>
