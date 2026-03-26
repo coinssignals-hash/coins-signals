@@ -145,7 +145,7 @@ export default function AITradingCoach() {
                   {t('drawer_ai_coach') || 'Coach IA'}
                 </h1>
                 <p className="text-[11px] text-muted-foreground">
-                  Tu mentor de trading personalizado
+                  {t('ac_subtitle')}
                 </p>
               </div>
             </div>
