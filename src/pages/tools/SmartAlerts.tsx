@@ -323,9 +323,9 @@ function SmartAlertsTab() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'Activas', value: activeCount, icon: BellRing, color: '160 84% 39%' },
-          { label: 'Disparadas', value: triggeredCount, icon: Zap, color: '45 95% 55%' },
-          { label: 'Total', value: alerts.length, icon: Bell, color: '210 80% 55%' },
+          { label: t('sa_active'), value: activeCount, icon: BellRing, color: '160 84% 39%' },
+          { label: t('sa_triggered'), value: triggeredCount, icon: Zap, color: '45 95% 55%' },
+          { label: t('sa_total'), value: alerts.length, icon: Bell, color: '210 80% 55%' },
         ].map(s => (
           <GlowSection key={s.label} color={s.color}>
             <div className="p-3 text-center">
