@@ -201,9 +201,9 @@ export default function Forum() {
         const displayOptB = translatedTopic?.option_b || topic.option_b;
 
         return (
-        <GlowSection color="210 70% 55%">
+        <GlowSection color="45 90% 55%">
           {/* Image area with admin upload */}
-          <div className="relative">
+          <div className="relative rounded-t-xl overflow-hidden">
             {topic.image_url ? (
               <img
                 src={topic.image_url}
