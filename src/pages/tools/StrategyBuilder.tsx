@@ -348,7 +348,7 @@ export default function StrategyBuilder() {
               }}>
                 <Zap className="w-3.5 h-3.5" style={{ color: 'hsl(45 95% 55%)' }} />
               </div>
-              <span className="text-sm font-semibold text-foreground">Gestión de Riesgo</span>
+              <span className="text-sm font-semibold text-foreground">{t('sb_risk_management')}</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
