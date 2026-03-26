@@ -74,7 +74,7 @@ export default function StrategyBuilder() {
   const updateCondition = (ruleId: string, condId: string, field: keyof Condition, val: string) => setStrategy(s => ({ ...s, rules: s.rules.map(r => r.id === ruleId ? { ...r, conditions: r.conditions.map(c => c.id === condId ? { ...c, [field]: val } : c) } : r) }));
 
   const runBacktest = () => {
-    if (strategy.rules.length === 0) { toast({ title: 'Agrega al menos una regla', variant: 'destructive' }); return; }
+    if (strategy.rules.length === 0) { toast({ title: t('sb_add_rule_error'), variant: 'destructive' }); return; }
     const total = 80 + Math.floor(Math.random() * 120);
     const wr = 0.4 + Math.random() * 0.25;
     const riskAmt = 10000 * (strategy.riskPerTrade / 100);
