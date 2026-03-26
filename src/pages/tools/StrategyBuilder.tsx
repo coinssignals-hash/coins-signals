@@ -61,7 +61,7 @@ export default function StrategyBuilder() {
 
   const addRule = (action: 'BUY' | 'SELL') => {
     const rule: StrategyRule = {
-      id: uid(), name: `${action === 'BUY' ? 'Entrada' : 'Salida'} ${strategy.rules.length + 1}`,
+      id: uid(), name: `${action === 'BUY' ? t('sb_entry') : t('sb_exit')} ${strategy.rules.length + 1}`,
       conditions: [{ id: uid(), indicator: 'rsi', operator: 'less_than', value: '30', timeframe: 'H1' }],
       logic: 'AND', action, collapsed: false,
     };
