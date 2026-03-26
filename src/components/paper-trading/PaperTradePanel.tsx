@@ -207,11 +207,21 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
             <span className="text-[10px] font-semibold" style={{ color: 'hsl(0 84% 60%)' }}>Stop Loss</span>
           </label>
           {slEnabled && (
-            <div className="flex items-center gap-1">
-              <Input type="number" value={slPips} onChange={e => setSlPips(e.target.value)}
-                className="text-xs h-7 bg-background/40 border-border/20" />
-              <span className="text-[9px] text-muted-foreground whitespace-nowrap">pips</span>
-            </div>
+            <>
+              <div className="flex items-center gap-1">
+                <Input type="number" value={slPips} onChange={e => setSlPips(e.target.value)}
+                  className="text-xs h-7 bg-background/40 border-border/20" />
+                <span className="text-[9px] text-muted-foreground whitespace-nowrap">pips</span>
+              </div>
+              <div className="mt-1 px-1">
+                <p className="text-[9px] font-mono" style={{ color: 'hsl(0 84% 60% / 0.8)' }}>
+                  ≈ ${((parseInt(slPips) || 50) * inst.pipSize * (parseFloat(lotSize) || 0.01) * 100000).toFixed(2)}
+                </p>
+                <p className="text-[8px] text-muted-foreground">
+                  Precio: {(currentPrice - (parseInt(slPips) || 50) * inst.pipSize).toFixed(inst.decimals)}
+                </p>
+              </div>
+            </>
           )}
         </div>
         <div className="rounded-lg p-2.5" style={{ background: 'hsl(160 84% 39% / 0.05)', border: '1px solid hsl(160 84% 39% / 0.15)' }}>
@@ -224,11 +234,21 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
             <span className="text-[10px] font-semibold" style={{ color: 'hsl(160 84% 39%)' }}>Take Profit</span>
           </label>
           {tpEnabled && (
-            <div className="flex items-center gap-1">
-              <Input type="number" value={tpPips} onChange={e => setTpPips(e.target.value)}
-                className="text-xs h-7 bg-background/40 border-border/20" />
-              <span className="text-[9px] text-muted-foreground whitespace-nowrap">pips</span>
-            </div>
+            <>
+              <div className="flex items-center gap-1">
+                <Input type="number" value={tpPips} onChange={e => setTpPips(e.target.value)}
+                  className="text-xs h-7 bg-background/40 border-border/20" />
+                <span className="text-[9px] text-muted-foreground whitespace-nowrap">pips</span>
+              </div>
+              <div className="mt-1 px-1">
+                <p className="text-[9px] font-mono" style={{ color: 'hsl(160 84% 39% / 0.8)' }}>
+                  ≈ ${((parseInt(tpPips) || 100) * inst.pipSize * (parseFloat(lotSize) || 0.01) * 100000).toFixed(2)}
+                </p>
+                <p className="text-[8px] text-muted-foreground">
+                  Precio: {(currentPrice + (parseInt(tpPips) || 100) * inst.pipSize).toFixed(inst.decimals)}
+                </p>
+              </div>
+            </>
           )}
         </div>
       </div>

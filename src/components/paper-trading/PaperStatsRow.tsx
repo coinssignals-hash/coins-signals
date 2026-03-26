@@ -9,20 +9,35 @@ interface Props {
 
 export function PaperStatsRow({ balance, totalPnl, winRate }: Props) {
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {[
-        { label: 'Balance', value: `$${balance.toFixed(2)}`, icon: Wallet, color: '270 70% 60%' },
-        { label: 'P&L Total', value: `$${totalPnl.toFixed(2)}`, icon: BarChart3, color: totalPnl >= 0 ? '160 84% 39%' : '0 84% 60%' },
-        { label: 'Win Rate', value: `${winRate.toFixed(0)}%`, icon: TrendingUp, color: '160 84% 39%' },
-      ].map(s => (
-        <GlowSection key={s.label} color={s.color}>
-          <div className="p-3 text-center">
-            <s.icon className="h-4 w-4 mx-auto mb-1" style={{ color: `hsl(${s.color})` }} />
-            <p className="text-[10px] text-muted-foreground">{s.label}</p>
-            <p className="text-sm font-bold text-foreground">{s.value}</p>
+    <div className="space-y-2">
+      {/* Big Balance Display */}
+      <GlowSection color="270 70% 60%">
+        <div className="p-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <Wallet className="h-5 w-5" style={{ color: 'hsl(270 70% 60%)' }} />
+            <p className="text-xs text-muted-foreground font-medium">Balance</p>
           </div>
-        </GlowSection>
-      ))}
+          <p className="text-3xl font-extrabold font-mono text-foreground tracking-tight">
+            ${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+        </div>
+      </GlowSection>
+
+      {/* P&L and Win Rate */}
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          { label: 'P&L Total', value: `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}`, icon: BarChart3, color: totalPnl >= 0 ? '160 84% 39%' : '0 84% 60%' },
+          { label: 'Win Rate', value: `${winRate.toFixed(0)}%`, icon: TrendingUp, color: '160 84% 39%' },
+        ].map(s => (
+          <GlowSection key={s.label} color={s.color}>
+            <div className="p-3 text-center">
+              <s.icon className="h-4 w-4 mx-auto mb-1" style={{ color: `hsl(${s.color})` }} />
+              <p className="text-[10px] text-muted-foreground">{s.label}</p>
+              <p className="text-sm font-bold text-foreground">{s.value}</p>
+            </div>
+          </GlowSection>
+        ))}
+      </div>
     </div>
   );
 }
