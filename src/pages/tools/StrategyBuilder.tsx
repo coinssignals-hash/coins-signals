@@ -331,7 +331,7 @@ export default function StrategyBuilder() {
                   <Layers className="w-6 h-6" style={{ color: `hsl(${ACCENT} / 0.5)` }} />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Agrega reglas de <span style={{ color: 'hsl(160 84% 39%)' }}>BUY</span> o <span style={{ color: 'hsl(0 84% 60%)' }}>SELL</span> para construir tu estrategia
+                  Agrega reglas de <span style={{ color: 'hsl(160 84% 39%)' }}>BUY</span> o <span style={{ color: 'hsl(0 84% 60%)' }}>SELL</span> {t('sb_add_rules_hint').replace('Agrega reglas de BUY o SELL para construir tu estrategia', '').length > 0 ? '' : ''}
                 </p>
               </div>
             </GlowSection>
