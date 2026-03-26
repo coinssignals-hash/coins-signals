@@ -22,13 +22,13 @@ interface Message {
 
 const ACCENT = '270 70% 60%';
 
-const QUICK_PROMPTS = [
-  { icon: TrendingUp, label: 'Analiza mi último trade', prompt: 'Analiza mi último trade en EUR/USD donde entré en 1.0850 con SL en 1.0820 y TP en 1.0910. ¿Fue una buena entrada?' },
-  { icon: Shield, label: 'Revisar gestión de riesgo', prompt: 'Revisa mi gestión de riesgo: arriesgo 2% por trade, uso ratio 1:2, y tengo un drawdown actual del 8%. ¿Qué mejoras sugieres?' },
-  { icon: Target, label: 'Plan de trading semanal', prompt: 'Ayúdame a crear un plan de trading para esta semana. Me enfoco en EUR/USD y GBP/USD en temporalidades H1 y H4.' },
-  { icon: BookOpen, label: 'Ejercicio de disciplina', prompt: 'Dame un ejercicio práctico para mejorar mi disciplina de trading y evitar el overtrading.' },
-  { icon: Lightbulb, label: 'Mentalidad ganadora', prompt: 'Estoy en una racha perdedora de 5 trades. ¿Cómo puedo recuperar la confianza sin hacer revenge trading?' },
-  { icon: BarChart3, label: 'Optimizar estrategia', prompt: 'Mi estrategia tiene un win rate del 55% con ratio R:R de 1.5:1. ¿Cómo puedo optimizarla para mejorar la expectativa?' },
+const QUICK_PROMPT_KEYS = [
+  { icon: TrendingUp, labelKey: 'ac_prompt_analyze', promptKey: 'ac_prompt_analyze_full' },
+  { icon: Shield, labelKey: 'ac_prompt_risk', promptKey: 'ac_prompt_risk_full' },
+  { icon: Target, labelKey: 'ac_prompt_plan', promptKey: 'ac_prompt_plan_full' },
+  { icon: BookOpen, labelKey: 'ac_prompt_discipline', promptKey: 'ac_prompt_discipline_full' },
+  { icon: Lightbulb, labelKey: 'ac_prompt_mindset', promptKey: 'ac_prompt_mindset_full' },
+  { icon: BarChart3, labelKey: 'ac_prompt_optimize', promptKey: 'ac_prompt_optimize_full' },
 ];
 
 export default function AITradingCoach() {
