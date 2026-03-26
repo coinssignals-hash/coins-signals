@@ -169,8 +169,9 @@ export function usePaperTrading() {
     return () => clearInterval(iv);
   }, []);
 
-  // Auto SL/TP check
+  // Auto SL/TP check - skip first 2 ticks after reload to let prices stabilize
   useEffect(() => {
+    if (tickCount.current < 2) return;
     setPositions(prev => {
       let changed = false;
       const remaining: PaperPosition[] = [];
