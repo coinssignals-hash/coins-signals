@@ -431,7 +431,7 @@ function SmartAlertsTab() {
       <div className="space-y-2">
         <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
           <Bell className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
-          ALERTAS CONFIGURADAS
+          {t('sa_configured_alerts')}
         </h3>
         <AnimatePresence mode="popLayout">
           {alerts.map(alert => {
