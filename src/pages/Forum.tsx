@@ -38,10 +38,10 @@ type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
 /* MarketSessions-style tab config */
-const FORUM_TABS = [
-  { key: 'channels' as ForumView, emoji: '💬', label: 'Canales', color: '210 70% 55%' },
-  { key: 'dms' as ForumView, emoji: '✉️', label: 'DMs', color: '270 70% 60%' },
-  { key: 'favorites' as ForumView, emoji: '⭐', label: 'Amigos', color: '45 90% 55%' },
+const FORUM_TAB_KEYS = [
+  { key: 'channels' as ForumView, emoji: '💬', labelKey: 'forum_channels', color: '210 70% 55%' },
+  { key: 'dms' as ForumView, emoji: '✉️', labelKey: 'forum_dms', color: '270 70% 60%' },
+  { key: 'favorites' as ForumView, emoji: '⭐', labelKey: 'forum_friends', color: '45 90% 55%' },
 ];
 
 export default function Forum() {
