@@ -180,7 +180,7 @@ export default function StrategyBuilder() {
               style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }}
             />
             <div className="space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Instrumentos</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t('sb_instruments')}</span>
               <SymbolSearch
                 value=""
                 onChange={(symbol) => {
