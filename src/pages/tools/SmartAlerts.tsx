@@ -389,10 +389,10 @@ function SmartAlertsTab() {
                   </Select>
                 </div>
                 <Select value={newAlert.condition} onValueChange={v => setNewAlert(a => ({ ...a, condition: v }))}>
-                  <SelectTrigger className="h-9 text-xs bg-background/40 border-border/30"><SelectValue placeholder="Condición..." /></SelectTrigger>
-                  <SelectContent>{(CONDITIONS[newAlert.type as AlertType] || []).map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="h-9 text-xs bg-background/40 border-border/30"><SelectValue placeholder={t('sa_condition_placeholder')} /></SelectTrigger>
+                  <SelectContent>{(CONDITION_KEYS[newAlert.type as AlertType] || []).map(key => <SelectItem key={key} value={key}>{t(key)}</SelectItem>)}</SelectContent>
                 </Select>
-                <Input placeholder="Valor (ej: 1.0850, 30, etc.)" value={newAlert.value} onChange={e => setNewAlert(a => ({ ...a, value: e.target.value }))} className="h-9 bg-background/40 border-border/30" />
+                <Input placeholder={t('sa_value_placeholder')} value={newAlert.value} onChange={e => setNewAlert(a => ({ ...a, value: e.target.value }))} className="h-9 bg-background/40 border-border/30" />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
