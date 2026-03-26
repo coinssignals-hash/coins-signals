@@ -173,7 +173,7 @@ export default function StrategyBuilder() {
         <GlowSection color={ACCENT}>
           <div className="p-4 space-y-3">
             <Input
-              placeholder="Nombre de la estrategia..."
+              placeholder={t('sb_strategy_name')}
               value={strategy.name}
               onChange={e => setStrategy(s => ({ ...s, name: e.target.value }))}
               className="text-lg font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0 px-0"
