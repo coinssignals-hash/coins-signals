@@ -505,7 +505,7 @@ export default function StrategyBuilder() {
             <div className="p-3">
               <div className="text-sm font-semibold mb-3 text-foreground flex items-center gap-2">
                 <Save className="w-3.5 h-3.5" style={{ color: 'hsl(210 80% 55%)' }} />
-                Estrategias Guardadas
+                 Estrategias Guardadas
                 <Badge className="text-[10px]" style={{ background: 'hsl(210 80% 55% / 0.15)', color: 'hsl(210 80% 55%)' }}>
                   {savedStrategies.length}
                 </Badge>
