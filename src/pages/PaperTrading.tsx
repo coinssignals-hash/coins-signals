@@ -31,7 +31,6 @@ export default function PaperTrading() {
     instruments, openPosition, closePosition, resetAccount, getPositionPnl,
   } = usePaperTrading();
 
-  // Read signal prefill from URL params
   const [signalPrefill, setSignalPrefill] = useState<SignalPrefill | null>(null);
 
   useEffect(() => {
@@ -42,7 +41,6 @@ export default function PaperTrading() {
     const entry = searchParams.get('entry');
 
     if (symbol && side && sl && tp && entry) {
-      // Make sure the symbol exists in instruments, if not use as-is
       const matchedInst = INSTRUMENTS.find(i => i.symbol === symbol);
       setSignalPrefill({
         symbol: matchedInst?.symbol ?? symbol,
@@ -51,7 +49,6 @@ export default function PaperTrading() {
         takeProfit: parseFloat(tp),
         entryPrice: parseFloat(entry),
       });
-      // Clear params so they don't persist on refresh
       setSearchParams({}, { replace: true });
     }
   }, []);
@@ -82,7 +79,7 @@ export default function PaperTrading() {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-foreground tracking-tight">{t('paper_trading_title') || 'Paper Trading'}</h1>
-                <p className="text-[11px] text-muted-foreground">Practica sin riesgo</p>
+                <p className="text-[11px] text-muted-foreground">{t('pt_practice_no_risk')}</p>
               </div>
             </div>
           </div>
@@ -92,15 +89,15 @@ export default function PaperTrading() {
         <PaperStatsRow balance={balance} totalPnl={totalPnl} winRate={winRate} />
 
         <div className="flex rounded-xl p-1" style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border) / 0.3)' }}>
-          {(['trade', 'positions', 'history'] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)}
+          {(['trade', 'positions', 'history'] as const).map(tabKey => (
+            <button key={tabKey} onClick={() => setTab(tabKey)}
               className="flex-1 py-2 text-xs font-semibold rounded-lg transition-all"
-              style={tab === t ? {
+              style={tab === tabKey ? {
                 background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
                 color: 'white',
                 boxShadow: `0 2px 8px hsl(${ACCENT} / 0.3)`,
               } : { color: 'hsl(var(--muted-foreground))' }}>
-              {t === 'trade' ? 'Operar' : t === 'positions' ? `Posiciones (${positions.length})` : `Historial (${history.length})`}
+              {tabKey === 'trade' ? t('pt_trade_tab') : tabKey === 'positions' ? `${t('pt_positions_tab')} (${positions.length})` : `${t('pt_history_tab')} (${history.length})`}
             </button>
           ))}
         </div>

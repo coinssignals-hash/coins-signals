@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrendingUp, TrendingDown, RotateCcw, Shield, Target, Zap, Zap as SignalIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { InstrumentSelector } from './InstrumentSelector';
 import { INSTRUMENTS, type Instrument } from '@/hooks/usePaperTrading';
 import type { SignalPrefill } from '@/pages/PaperTrading';
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance, signalPrefill, onPrefillConsumed }: Props) {
+  const { t } = useTranslation();
   const [selectedSymbol, setSelectedSymbol] = useState(instruments[0]?.symbol ?? 'EUR/USD');
   const [lotSize, setLotSize] = useState('0.01');
   const [leverage, setLeverage] = useState(100);
@@ -36,7 +38,6 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
   const [prefillSide, setPrefillSide] = useState<'buy' | 'sell' | null>(null);
   const prefillApplied = useRef(false);
 
-  // Apply signal prefill and auto-execute
   useEffect(() => {
     if (signalPrefill && !prefillApplied.current) {
       prefillApplied.current = true;
@@ -45,14 +46,12 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
         setSelectedSymbol(signalPrefill.symbol);
         setSlEnabled(true);
         setTpEnabled(true);
-        // Calculate pips from prices
         const slPipsVal = Math.abs(signalPrefill.entryPrice - signalPrefill.stopLoss) / inst.pipSize;
         const tpPipsVal = Math.abs(signalPrefill.takeProfit - signalPrefill.entryPrice) / inst.pipSize;
         setSlPips(Math.round(slPipsVal).toString());
         setTpPips(Math.round(tpPipsVal).toString());
         setPrefillSide(signalPrefill.side);
 
-        // Auto-execute the trade after a short delay for prices to load
         const autoExecTimer = setTimeout(() => {
           const currentP = prices[signalPrefill.symbol] ?? signalPrefill.entryPrice;
           const lotsVal = parseFloat(lotSize) || 0.01;
@@ -65,22 +64,18 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
             : currentP - Math.round(tpPipsVal) * inst.pipSize;
 
           const result = onOpen(signalPrefill.symbol, signalPrefill.side, unitsVal, {
-            lotSize: lotsVal,
-            leverage,
-            stopLoss: slPrice,
-            takeProfit: tpPrice,
-            orderType: 'market',
+            lotSize: lotsVal, leverage,
+            stopLoss: slPrice, takeProfit: tpPrice, orderType: 'market',
           });
 
           if (result !== false) {
             toast({
-              title: `📊 Señal ejecutada · ${signalPrefill.side === 'buy' ? '🟢 Compra' : '🔴 Venta'}`,
+              title: `📊 ${t('pt_open_position')} · ${signalPrefill.side === 'buy' ? `🟢 ${t('pt_side_buy')}` : `🔴 ${t('pt_side_sell')}`}`,
               description: `${signalPrefill.symbol} · SL: ${Math.round(slPipsVal)} pips · TP: ${Math.round(tpPipsVal)} pips`,
             });
-            // Notify parent to switch to positions tab
             onPrefillConsumed?.();
           } else {
-            toast({ title: 'Margen insuficiente', description: 'No se pudo abrir la posición automáticamente', variant: 'destructive' });
+            toast({ title: t('pt_confirm_reset'), variant: 'destructive' });
             onPrefillConsumed?.();
           }
           setPrefillSide(null);
@@ -100,102 +95,87 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
 
   const getSLPrice = (side: 'buy' | 'sell') => {
     const pips = parseInt(slPips) || 50;
-    return side === 'buy'
-      ? currentPrice - pips * inst.pipSize
-      : currentPrice + pips * inst.pipSize;
+    return side === 'buy' ? currentPrice - pips * inst.pipSize : currentPrice + pips * inst.pipSize;
   };
 
   const getTPPrice = (side: 'buy' | 'sell') => {
     const pips = parseInt(tpPips) || 100;
-    return side === 'buy'
-      ? currentPrice + pips * inst.pipSize
-      : currentPrice - pips * inst.pipSize;
+    return side === 'buy' ? currentPrice + pips * inst.pipSize : currentPrice - pips * inst.pipSize;
   };
 
   const handleOpen = (side: 'buy' | 'sell') => {
     const result = onOpen(selectedSymbol, side, units, {
-      lotSize: lots,
-      leverage,
+      lotSize: lots, leverage,
       stopLoss: slEnabled ? getSLPrice(side) : null,
       takeProfit: tpEnabled ? getTPPrice(side) : null,
       orderType,
     });
     if (result === false) {
-      toast({ title: 'Margen insuficiente', description: `Necesitas $${margin.toFixed(2)} de margen`, variant: 'destructive' });
+      toast({ title: t('pt_confirm_reset'), variant: 'destructive' });
     } else {
       toast({
-        title: `${side === 'buy' ? '🟢 Compra' : '🔴 Venta'} abierta`,
-        description: `${selectedSymbol} · ${lots} lotes · Apal. x${leverage}`,
+        title: `${side === 'buy' ? `🟢 ${t('pt_side_buy')}` : `🔴 ${t('pt_side_sell')}`}`,
+        description: `${selectedSymbol} · ${lots} ${t('pt_lot_size')} · x${leverage}`,
       });
     }
   };
 
   return (
     <div className="space-y-3">
-      {/* Instrument Selector */}
       <InstrumentSelector selected={selectedSymbol} prices={prices} onSelect={setSelectedSymbol} />
 
-      {/* Price Display */}
       <GlowSection color={ACCENT}>
         <div className="p-4 text-center">
           <p className="text-xs text-muted-foreground mb-1">{inst.name}</p>
           <p className="text-3xl font-mono font-bold text-foreground">
             {currentPrice.toFixed(inst.decimals)}
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1">Precio simulado · actualiza cada 2s</p>
         </div>
       </GlowSection>
 
-      {/* Order Type */}
       <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid hsl(var(--border) / 0.3)' }}>
-        {(['market', 'limit'] as const).map(t => (
-          <button key={t} onClick={() => setOrderType(t)}
+        {(['market', 'limit'] as const).map(ot => (
+          <button key={ot} onClick={() => setOrderType(ot)}
             className="flex-1 py-2 text-xs font-semibold transition-all"
-            style={orderType === t ? {
-              background: `hsl(${ACCENT} / 0.15)`,
-              color: `hsl(${ACCENT})`,
+            style={orderType === ot ? {
+              background: `hsl(${ACCENT} / 0.15)`, color: `hsl(${ACCENT})`,
             } : { color: 'hsl(var(--muted-foreground))', background: 'hsl(var(--muted) / 0.3)' }}>
-            {t === 'market' ? '⚡ Mercado' : '📋 Límite'}
+            {ot === 'market' ? `⚡ ${t('pt_open_position').split(' ')[0] || 'Market'}` : '📋 Limit'}
           </button>
         ))}
       </div>
 
-      {/* Lot Size & Leverage */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[10px] text-muted-foreground font-medium mb-1 block">📦 Tamaño Lote</label>
+          <label className="text-[10px] text-muted-foreground font-medium mb-1 block">📦 {t('pt_lot_size')}</label>
           <Input type="number" step="0.01" min="0.01" value={lotSize} onChange={e => setLotSize(e.target.value)}
             className="text-sm bg-background/40 border-border/30 h-9" />
-          <p className="text-[9px] text-muted-foreground mt-0.5">{units.toLocaleString()} unidades</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">{units.toLocaleString()} units</p>
         </div>
         <div>
           <label className="text-[10px] text-muted-foreground font-medium mb-1 flex items-center gap-1">
-            <Zap className="w-3 h-3" /> Apalancamiento
+            <Zap className="w-3 h-3" /> Leverage
           </label>
           <Select value={String(leverage)} onValueChange={v => setLeverage(Number(v))}>
             <SelectTrigger className="h-9 text-sm bg-background/40 border-border/30">
-              <SelectValue placeholder="Leverage" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {LEVERAGE_OPTIONS.map(lev => (
-                <SelectItem key={lev} value={String(lev)}>
-                  x{lev}
-                </SelectItem>
+                <SelectItem key={lev} value={String(lev)}>x{lev}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Margin info */}
       <div className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ background: 'hsl(var(--muted) / 0.3)', border: '1px solid hsl(var(--border) / 0.2)' }}>
-        <span className="text-[10px] text-muted-foreground">Margen requerido</span>
+        <span className="text-[10px] text-muted-foreground">Margin</span>
         <span className={`text-xs font-bold font-mono ${margin > balance ? 'text-destructive' : 'text-foreground'}`}>
           ${margin.toFixed(2)}
         </span>
       </div>
 
-      {/* SL / TP */}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-lg p-2.5" style={{ background: 'hsl(0 84% 60% / 0.05)', border: '1px solid hsl(0 84% 60% / 0.15)' }}>
           <label className="flex items-center gap-1.5 mb-1.5 cursor-pointer" onClick={() => setSlEnabled(!slEnabled)}>
@@ -218,7 +198,7 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
                   ≈ ${((parseInt(slPips) || 50) * inst.pipSize * (parseFloat(lotSize) || 0.01) * 100000).toFixed(2)}
                 </p>
                 <p className="text-[8px] text-muted-foreground">
-                  Precio: {(currentPrice - (parseInt(slPips) || 50) * inst.pipSize).toFixed(inst.decimals)}
+                  {t('pt_price')}: {(currentPrice - (parseInt(slPips) || 50) * inst.pipSize).toFixed(inst.decimals)}
                 </p>
               </div>
             </>
@@ -245,7 +225,7 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
                   ≈ ${((parseInt(tpPips) || 100) * inst.pipSize * (parseFloat(lotSize) || 0.01) * 100000).toFixed(2)}
                 </p>
                 <p className="text-[8px] text-muted-foreground">
-                  Precio: {(currentPrice + (parseInt(tpPips) || 100) * inst.pipSize).toFixed(inst.decimals)}
+                  {t('pt_price')}: {(currentPrice + (parseInt(tpPips) || 100) * inst.pipSize).toFixed(inst.decimals)}
                 </p>
               </div>
             </>
@@ -253,7 +233,6 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
         </div>
       </div>
 
-      {/* Signal prefill banner */}
       {prefillSide && (
         <div className="rounded-xl p-3 flex items-center gap-3" style={{
           background: prefillSide === 'buy'
@@ -266,14 +245,12 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
           <SignalIcon className="w-4 h-4 shrink-0" style={{ color: prefillSide === 'buy' ? 'hsl(160 84% 50%)' : 'hsl(0 84% 60%)' }} />
           <div className="flex-1">
             <p className="text-[10px] font-bold" style={{ color: prefillSide === 'buy' ? 'hsl(160 84% 50%)' : 'hsl(0 84% 60%)' }}>
-              Señal pre-cargada · {prefillSide === 'buy' ? 'COMPRA' : 'VENTA'}
+              Signal · {prefillSide === 'buy' ? t('pt_side_buy').toUpperCase() : t('pt_side_sell').toUpperCase()}
             </p>
-            <p className="text-[9px] text-muted-foreground">SL y TP configurados desde la señal</p>
           </div>
         </div>
       )}
 
-      {/* Buy / Sell buttons */}
       <div className="grid grid-cols-2 gap-3">
         <Button onClick={() => { handleOpen('buy'); setPrefillSide(null); }} className="h-14 text-base font-bold rounded-xl text-white"
           style={{
@@ -283,7 +260,7 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
             border: '1px solid hsl(160 84% 39% / 0.4)',
             boxShadow: prefillSide === 'buy' ? '0 0 20px hsl(160 84% 39% / 0.3)' : 'none',
           }}>
-          <TrendingUp className="mr-2 h-5 w-5" /> COMPRAR
+          <TrendingUp className="mr-2 h-5 w-5" /> {t('pt_side_buy').toUpperCase()}
         </Button>
         <Button onClick={() => { handleOpen('sell'); setPrefillSide(null); }} className="h-14 text-base font-bold rounded-xl text-white"
           style={{
@@ -293,13 +270,13 @@ export function PaperTradePanel({ instruments, prices, onOpen, onReset, balance,
             border: '1px solid hsl(0 84% 55% / 0.4)',
             boxShadow: prefillSide === 'sell' ? '0 0 20px hsl(0 84% 55% / 0.3)' : 'none',
           }}>
-          <TrendingDown className="mr-2 h-5 w-5" /> VENDER
+          <TrendingDown className="mr-2 h-5 w-5" /> {t('pt_side_sell').toUpperCase()}
         </Button>
       </div>
 
-      <Button variant="outline" onClick={() => { onReset(); toast({ title: 'Cuenta reseteada', description: 'Balance restaurado a $10,000' }); }}
+      <Button variant="outline" onClick={() => { onReset(); toast({ title: t('pt_reset_account') }); }}
         className="w-full rounded-xl border-border/30 text-muted-foreground">
-        <RotateCcw className="mr-2 h-4 w-4" /> Resetear Cuenta
+        <RotateCcw className="mr-2 h-4 w-4" /> {t('pt_reset_account')}
       </Button>
     </div>
   );

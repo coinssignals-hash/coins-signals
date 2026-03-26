@@ -7,10 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
-import {
-  Trophy, Swords, Clock, Users, Gift, Target,
-  Medal, Timer, Zap, Lock, Shield, CheckCircle2
-} from 'lucide-react';
+import { Trophy, Swords, Clock, Users, Gift, Target, Medal, Timer, Zap, Lock, Shield, CheckCircle2 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
 import { ToolPageHeader } from '@/components/tools/ToolCard';
@@ -38,11 +35,6 @@ const COMPETITIONS: Competition[] = [
 
 const TYPE_ICONS: Record<string, any> = { pnl: Trophy, winrate: Target, consistency: Shield, speed: Zap };
 const TYPE_COLORS: Record<string, string> = { pnl: '45 95% 55%', winrate: '160 84% 39%', consistency: '210 80% 55%', speed: '0 84% 60%' };
-const STATUS_CONFIG: Record<CompStatus, { label: string; color: string }> = {
-  active: { label: '🟢 En curso', color: '160 84% 39%' },
-  upcoming: { label: '🔜 Próximo', color: '210 80% 55%' },
-  ended: { label: '✅ Finalizado', color: 'var(--muted-foreground)' },
-};
 const ACCENT = '45 95% 55%';
 
 export default function TradingCompetitions() {
@@ -50,6 +42,12 @@ export default function TradingCompetitions() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | CompStatus>('all');
   const [joined, setJoined] = useState<Record<string, boolean>>({ '1': true, '2': true });
+
+  const STATUS_CONFIG: Record<CompStatus, { label: string; color: string }> = {
+    active: { label: t('tc_status_active'), color: '160 84% 39%' },
+    upcoming: { label: t('tc_status_upcoming'), color: '210 80% 55%' },
+    ended: { label: t('tc_status_ended'), color: 'var(--muted-foreground)' },
+  };
 
   const filtered = filter === 'all' ? COMPETITIONS : COMPETITIONS.filter(c => c.status === filter);
   const fireConfetti = useCallback(() => {
@@ -64,7 +62,7 @@ export default function TradingCompetitions() {
 
   const joinComp = (id: string) => {
     setJoined(prev => ({ ...prev, [id]: true }));
-    toast({ title: '🎉 ¡Inscrito en la competencia!' });
+    toast({ title: `🎉 ${t('tc_enrolled_toast')}` });
     fireConfetti();
     if (navigator.vibrate) navigator.vibrate([50, 30, 80]);
   };
@@ -73,36 +71,29 @@ export default function TradingCompetitions() {
   return (
     <PageShell>
       <Header />
-
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-4">
         <ToolPageHeader
           icon={<Swords className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
           title={t('drawer_competitions') || 'Competencias'}
-          subtitle="Torneos de trading y desafíos competitivos"
+          subtitle={t('tc_subtitle')}
           accent={ACCENT}
         />
 
       <div className="space-y-4 pb-24">
-        {/* Stats */}
         <motion.div className="grid grid-cols-3 gap-2"
           initial="hidden" animate="visible"
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
-        >
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}>
           {[
-            { label: 'Activas', value: Object.values(joined).filter(Boolean).length, icon: Swords, color: '45 95% 55%' },
-            { label: 'Top 10', value: 2, icon: Medal, color: '160 84% 39%' },
-            { label: 'Ganados', value: 0, icon: Trophy, color: '270 70% 60%' },
+            { label: t('tc_active_count'), value: Object.values(joined).filter(Boolean).length, icon: Swords, color: '45 95% 55%' },
+            { label: t('tc_top10'), value: 2, icon: Medal, color: '160 84% 39%' },
+            { label: t('tc_won'), value: 0, icon: Trophy, color: '270 70% 60%' },
           ].map(s => (
             <motion.div key={s.label}
               variants={{ hidden: { opacity: 0, scale: 0.85, y: 12 }, visible: { opacity: 1, scale: 1, y: 0 } }}
-              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            >
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}>
             <GlowSection color={s.color}>
               <div className="p-3 text-center">
-                <div className="w-7 h-7 mx-auto mb-1.5 rounded-lg flex items-center justify-center" style={{
-                  background: `hsl(${s.color} / 0.15)`,
-                  boxShadow: `0 0 10px hsl(${s.color} / 0.1)`,
-                }}>
+                <div className="w-7 h-7 mx-auto mb-1.5 rounded-lg flex items-center justify-center" style={{ background: `hsl(${s.color} / 0.15)`, boxShadow: `0 0 10px hsl(${s.color} / 0.1)` }}>
                   <s.icon className="w-4 h-4" style={{ color: `hsl(${s.color})` }} />
                 </div>
                 <div className="text-lg font-bold text-foreground">{s.value}</div>
@@ -113,33 +104,19 @@ export default function TradingCompetitions() {
           ))}
         </motion.div>
 
-        {/* Hall of Fame - Published Winners */}
         <CompetitionWinnersBanner />
 
-        {/* Filter — glassmorphic */}
-        <div className="flex rounded-xl p-1" style={{
-          background: 'hsl(var(--card) / 0.6)',
-          border: '1px solid hsl(var(--border) / 0.15)',
-          backdropFilter: 'blur(8px)',
-        }}>
-          {([['all', 'Todos'], ['active', 'Activos'], ['upcoming', 'Próximos'], ['ended', 'Finalizados']] as const).map(([key, label]) => (
-            <button key={key}
-              className="flex-1 py-2 text-[11px] font-semibold rounded-lg transition-all"
-              style={filter === key ? {
-                background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
-                color: 'hsl(var(--primary-foreground))',
-                boxShadow: `0 2px 10px hsl(${ACCENT} / 0.3)`,
-              } : { color: 'hsl(var(--muted-foreground))' }}
-              onClick={() => setFilter(key)}
-            >{label}</button>
+        <div className="flex rounded-xl p-1" style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.15)', backdropFilter: 'blur(8px)' }}>
+          {([['all', t('tc_filter_all')], ['active', t('tc_filter_active')], ['upcoming', t('tc_filter_upcoming')], ['ended', t('tc_filter_ended')]] as const).map(([key, label]) => (
+            <button key={key} className="flex-1 py-2 text-[11px] font-semibold rounded-lg transition-all"
+              style={filter === key ? { background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`, color: 'hsl(var(--primary-foreground))', boxShadow: `0 2px 10px hsl(${ACCENT} / 0.3)` } : { color: 'hsl(var(--muted-foreground))' }}
+              onClick={() => setFilter(key as any)}>{label}</button>
           ))}
         </div>
 
-        {/* Competition cards */}
         <motion.div className="space-y-3"
           initial="hidden" animate="visible"
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.25 } } }}
-        >
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.25 } } }}>
           {filtered.map((comp) => {
             const Icon = TYPE_ICONS[comp.type];
             const typeColor = TYPE_COLORS[comp.type];
@@ -150,16 +127,12 @@ export default function TradingCompetitions() {
             return (
               <motion.div key={comp.id}
                 variants={{ hidden: { opacity: 0, y: 20, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1 } }}
-                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
-              >
+                transition={{ type: 'spring', stiffness: 220, damping: 22 }}>
                 <GlowSection color={typeColor}>
                   <div className="p-4 space-y-3" style={{ borderLeft: `3px solid hsl(${typeColor})` }}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{
-                          background: `hsl(${typeColor} / 0.15)`,
-                          boxShadow: `0 0 10px hsl(${typeColor} / 0.1)`,
-                        }}>
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `hsl(${typeColor} / 0.15)`, boxShadow: `0 0 10px hsl(${typeColor} / 0.1)` }}>
                           <Icon className="w-4 h-4" style={{ color: `hsl(${typeColor})` }} />
                         </div>
                         <div>
@@ -167,40 +140,27 @@ export default function TradingCompetitions() {
                           <div className="text-[10px] text-muted-foreground mt-0.5">{comp.description}</div>
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-[9px] shrink-0 font-semibold" style={{
-                        borderColor: `hsl(${statusCfg.color} / 0.4)`,
-                        color: `hsl(${statusCfg.color})`,
-                        background: `hsl(${statusCfg.color} / 0.1)`,
-                      }}>{statusCfg.label}</Badge>
+                      <Badge variant="outline" className="text-[9px] shrink-0 font-semibold" style={{ borderColor: `hsl(${statusCfg.color} / 0.4)`, color: `hsl(${statusCfg.color})`, background: `hsl(${statusCfg.color} / 0.1)` }}>{statusCfg.label}</Badge>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs rounded-lg px-2.5 py-1.5" style={{
-                      background: `hsl(${ACCENT} / 0.06)`,
-                      border: `1px solid hsl(${ACCENT} / 0.1)`,
-                      color: `hsl(${ACCENT})`,
-                    }}>
+                    <div className="flex items-center gap-2 text-xs rounded-lg px-2.5 py-1.5" style={{ background: `hsl(${ACCENT} / 0.06)`, border: `1px solid hsl(${ACCENT} / 0.1)`, color: `hsl(${ACCENT})` }}>
                       <Gift className="w-3.5 h-3.5" /> <span className="font-semibold">{comp.prizePool}</span>
                     </div>
 
                     <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                       <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {comp.participants}/{comp.maxParticipants}</span>
-                      {comp.status === 'active' && <span className="flex items-center gap-1"><Timer className="w-3 h-3" /> {days}d restantes</span>}
-                      {comp.status === 'upcoming' && <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Inicia {comp.startDate}</span>}
-                      <span>{comp.entryFee === 'Gratis' ? '🆓 Gratis' : `🔒 ${comp.entryFee}`}</span>
+                      {comp.status === 'active' && <span className="flex items-center gap-1"><Timer className="w-3 h-3" /> {days}{t('tc_days_remaining')}</span>}
+                      {comp.status === 'upcoming' && <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {t('tc_starts')} {comp.startDate}</span>}
+                      <span>{comp.entryFee === 'Gratis' ? `🆓 ${t('tc_free')}` : `🔒 ${comp.entryFee}`}</span>
                     </div>
 
                     <Progress value={fillPct} className="h-1.5" />
 
                     {comp.myRank && joined[comp.id] && (
-                      <div className="flex items-center justify-between p-2.5 rounded-xl" style={{
-                        background: `linear-gradient(165deg, hsl(${typeColor} / 0.08), hsl(var(--background) / 0.4))`,
-                        border: `1px solid hsl(${typeColor} / 0.15)`,
-                      }}>
-                        <span className="text-xs text-foreground font-medium">Tu posición</span>
+                      <div className="flex items-center justify-between p-2.5 rounded-xl" style={{ background: `linear-gradient(165deg, hsl(${typeColor} / 0.08), hsl(var(--background) / 0.4))`, border: `1px solid hsl(${typeColor} / 0.15)` }}>
+                        <span className="text-xs text-foreground font-medium">{t('tc_your_position')}</span>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs font-bold" style={{
-                            borderColor: `hsl(${typeColor} / 0.3)`, color: `hsl(${typeColor})`,
-                          }}>#{comp.myRank}</Badge>
+                          <Badge variant="outline" className="text-xs font-bold" style={{ borderColor: `hsl(${typeColor} / 0.3)`, color: `hsl(${typeColor})` }}>#{comp.myRank}</Badge>
                           <span className="text-xs font-bold" style={{ color: 'hsl(160 84% 39%)' }}>
                             {comp.type === 'pnl' && `$${comp.myScore?.toLocaleString()}`}
                             {comp.type === 'winrate' && `${comp.myScore}%`}
@@ -210,10 +170,7 @@ export default function TradingCompetitions() {
                     )}
 
                     {comp.topPlayers.length > 0 && (
-                      <div className="space-y-1 rounded-xl p-2" style={{
-                        background: 'hsl(var(--background) / 0.3)',
-                        border: '1px solid hsl(var(--border) / 0.1)',
-                      }}>
+                      <div className="space-y-1 rounded-xl p-2" style={{ background: 'hsl(var(--background) / 0.3)', border: '1px solid hsl(var(--border) / 0.1)' }}>
                         {comp.topPlayers.map((p, pi) => (
                           <div key={pi} className="flex items-center justify-between text-xs py-1 px-1">
                             <div className="flex items-center gap-2">
@@ -242,17 +199,8 @@ export default function TradingCompetitions() {
                         className="w-full flex items-center justify-center gap-1 h-9 text-xs font-bold rounded-xl transition-all active:scale-[0.97]"
                         onClick={() => !joined[comp.id] && joinComp(comp.id)}
                         disabled={joined[comp.id]}
-                        style={joined[comp.id] ? {
-                          background: 'hsl(var(--muted) / 0.5)',
-                          color: 'hsl(var(--muted-foreground))',
-                          border: '1px solid hsl(var(--border) / 0.15)',
-                        } : {
-                          background: `linear-gradient(165deg, hsl(${typeColor}), hsl(${typeColor} / 0.8))`,
-                          border: `1px solid hsl(${typeColor} / 0.5)`,
-                          boxShadow: `0 0 15px hsl(${typeColor} / 0.2)`,
-                          color: 'white',
-                        }}>
-                        {joined[comp.id] ? <><CheckCircle2 className="w-3 h-3" /> Inscrito</> : comp.tier === 'premium' ? <><Lock className="w-3 h-3" /> Inscribirse (Premium)</> : <><Swords className="w-3 h-3" /> Participar</>}
+                        style={joined[comp.id] ? { background: 'hsl(var(--muted) / 0.5)', color: 'hsl(var(--muted-foreground))', border: '1px solid hsl(var(--border) / 0.15)' } : { background: `linear-gradient(165deg, hsl(${typeColor}), hsl(${typeColor} / 0.8))`, border: `1px solid hsl(${typeColor} / 0.5)`, boxShadow: `0 0 15px hsl(${typeColor} / 0.2)`, color: 'white' }}>
+                        {joined[comp.id] ? <><CheckCircle2 className="w-3 h-3" /> {t('tc_enrolled')}</> : comp.tier === 'premium' ? <><Lock className="w-3 h-3" /> {t('tc_enroll_premium')}</> : <><Swords className="w-3 h-3" /> {t('tc_participate')}</>}
                       </button>
                     )}
                   </div>

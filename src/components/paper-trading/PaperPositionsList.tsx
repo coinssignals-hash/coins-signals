@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Target } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useTranslation } from '@/i18n/LanguageContext';
 import type { PaperPosition } from '@/hooks/usePaperTrading';
 import { INSTRUMENTS } from '@/hooks/usePaperTrading';
 
@@ -13,11 +14,13 @@ interface Props {
 }
 
 export function PaperPositionsList({ positions, getPnl, onClose }: Props) {
+  const { t } = useTranslation();
+
   if (positions.length === 0) {
     return (
       <GlowSection color="270 70% 60%">
         <div className="p-8 text-center">
-          <p className="text-muted-foreground text-sm">No tienes posiciones abiertas</p>
+          <p className="text-muted-foreground text-sm">{t('pt_no_positions')}</p>
         </div>
       </GlowSection>
     );
@@ -49,7 +52,7 @@ export function PaperPositionsList({ positions, getPnl, onClose }: Props) {
                 </span>
               </div>
               <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-2">
-                <span>Entrada: {pos.entryPrice.toFixed(decimals)} · {pos.lotSize} lotes</span>
+                <span>{t('pt_entry')}: {pos.entryPrice.toFixed(decimals)} · {pos.lotSize} {t('pt_lot_size').toLowerCase()}</span>
                 <span>{pos.openedAt}</span>
               </div>
               {(pos.stopLoss || pos.takeProfit) && (
@@ -69,9 +72,9 @@ export function PaperPositionsList({ positions, getPnl, onClose }: Props) {
               <div className="flex justify-end">
                 <Button size="sm" variant="outline" onClick={() => {
                   onClose(pos.id);
-                  toast({ title: pnl >= 0 ? '✅ Trade ganador' : '❌ Trade perdedor', description: `P&L: $${pnl.toFixed(2)}` });
+                  toast({ title: pnl >= 0 ? '✅' : '❌', description: `P&L: $${pnl.toFixed(2)}` });
                 }} className="h-7 text-[10px] rounded-lg border-border/30">
-                  Cerrar Posición
+                  {t('pt_close_position')}
                 </Button>
               </div>
             </div>

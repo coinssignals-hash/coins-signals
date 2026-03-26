@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { PageShell } from '@/components/layout/PageShell';
 import { Header } from '@/components/layout/Header';
 import { ToolPageHeader } from '@/components/tools/ToolCard';
@@ -22,7 +22,6 @@ export default function Leaderboard() {
   const top3 = traders.slice(0, 3);
   const rest = traders.slice(3);
 
-  // Swipeable tabs
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabKeys: LeaderboardPeriod[] = ['weekly', 'monthly', 'alltime'];
   const tabIndex = tabKeys.indexOf(period);
@@ -44,24 +43,13 @@ export default function Leaderboard() {
         <ToolPageHeader
           icon={<Crown className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
           title={t('drawer_leaderboard') || 'Leaderboard'}
-          subtitle="Ranking de los mejores traders"
+          subtitle={t('lb_subtitle')}
           accent={ACCENT}
         />
 
-        <LeaderboardFilters
-          period={period}
-          setPeriod={setPeriod}
-          category={category}
-          setCategory={setCategory}
-          accent={ACCENT}
-        />
+        <LeaderboardFilters period={period} setPeriod={setPeriod} category={category} setCategory={setCategory} accent={ACCENT} />
 
-        <div
-          ref={tabsRef}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="min-h-[300px]"
-        >
+        <div ref={tabsRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="min-h-[300px]">
           {loading && (
             <div className="space-y-3 pt-2">
               <div className="flex items-end justify-center gap-3">
@@ -78,19 +66,11 @@ export default function Leaderboard() {
           )}
 
           {!loading && !error && traders.length === 0 && <LeaderboardEmpty accent={ACCENT} />}
-
-          {!loading && !error && top3.length >= 3 && (
-            <LeaderboardPodium traders={top3} category={category} accent={ACCENT} />
-          )}
-
-          {!loading && !error && (
-            <LeaderboardList traders={rest} category={category} accent={ACCENT} total={total} />
-          )}
+          {!loading && !error && top3.length >= 3 && <LeaderboardPodium traders={top3} category={category} accent={ACCENT} />}
+          {!loading && !error && <LeaderboardList traders={rest} category={category} accent={ACCENT} total={total} />}
 
           {error && !loading && (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              Error al cargar el leaderboard. Intenta de nuevo.
-            </div>
+            <div className="p-4 text-center text-sm text-muted-foreground">{t('lb_error')}</div>
           )}
         </div>
       </main>
