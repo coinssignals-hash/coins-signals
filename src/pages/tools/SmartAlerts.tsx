@@ -474,7 +474,7 @@ function SmartAlertsTab() {
                     </div>
                     {alert.triggeredAt && (
                       <div className="text-[10px] flex items-center gap-1 mb-2" style={{ color: 'hsl(45 95% 55%)' }}>
-                        <Clock className="w-3 h-3" /> Disparada: {alert.triggeredAt.toLocaleString()}
+                        <Clock className="w-3 h-3" /> {t('sa_triggered_at')}: {alert.triggeredAt.toLocaleString()}
                       </div>
                     )}
                     <div className="flex justify-end gap-1">
