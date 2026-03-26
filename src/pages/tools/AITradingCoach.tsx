@@ -244,7 +244,7 @@ export default function AITradingCoach() {
                 <Brain className="w-4 h-4 text-white" />
               </div>
               <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
-                <Loader2 className="w-4 h-4 animate-spin" style={{ color: `hsl(${ACCENT})` }} /> Pensando...
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: `hsl(${ACCENT})` }} /> {t('ac_thinking')}
               </div>
             </div>
           )}
