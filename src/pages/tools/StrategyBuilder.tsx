@@ -375,7 +375,7 @@ export default function StrategyBuilder() {
               </div>
               <div className="flex items-center gap-2 pt-4">
                 <Switch checked={strategy.trailingStop} onCheckedChange={v => setStrategy(s => ({ ...s, trailingStop: v }))} />
-                <span className="text-xs text-foreground">Trailing Stop</span>
+                <span className="text-xs text-foreground">{t('sb_trailing_stop')}</span>
               </div>
             </div>
           </div>
