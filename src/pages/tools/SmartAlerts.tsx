@@ -554,7 +554,8 @@ export default function SmartAlerts() {
                   {t('drawer_smart_alerts') || 'Alertas y Notificaciones'}
                 </h1>
                 <p className="text-[11px] text-muted-foreground">
-                  Alertas inteligentes y configuración de notificaciones
+                  {t('sa_desc')}
+                </p>
                 </p>
               </div>
             </div>
