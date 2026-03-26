@@ -419,7 +419,7 @@ function SmartAlertsTab() {
                     border: `1px solid hsl(${ACCENT} / 0.4)`,
                     boxShadow: `0 0 15px hsl(${ACCENT} / 0.2)`,
                   }}>
-                  <Zap className="w-4 h-4" /> Crear Alerta
+                  <Zap className="w-4 h-4" /> {t('sa_create_alert')}
                 </button>
               </div>
             </GlowSection>
