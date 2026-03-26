@@ -290,8 +290,8 @@ function NotificationSettingsTab() {
 function SmartAlertsTab() {
   const { t } = useTranslation();
   const [alerts, setAlerts] = useState<SmartAlert[]>([
-    { id: '1', name: 'RSI Oversold EUR/USD', type: 'indicator', pair: 'EUR/USD', condition: 'RSI cruza abajo de', value: '30', timeframe: 'H1', status: 'active', sound: true, push: true, createdAt: new Date(), recurrence: 'recurring' },
-    { id: '2', name: 'Gold Price Alert', type: 'price', pair: 'XAU/USD', condition: 'Precio cruza arriba de', value: '2450', timeframe: 'M15', status: 'triggered', sound: true, push: true, createdAt: new Date(Date.now() - 86400000), triggeredAt: new Date(Date.now() - 3600000), recurrence: 'once' },
+    { id: '1', name: 'RSI Oversold EUR/USD', type: 'indicator', pair: 'EUR/USD', condition: 'sa_rsi_crosses_below', value: '30', timeframe: 'H1', status: 'active', sound: true, push: true, createdAt: new Date(), recurrence: 'recurring' },
+    { id: '2', name: 'Gold Price Alert', type: 'price', pair: 'XAU/USD', condition: 'sa_price_crosses_above', value: '2450', timeframe: 'M15', status: 'triggered', sound: true, push: true, createdAt: new Date(Date.now() - 86400000), triggeredAt: new Date(Date.now() - 3600000), recurrence: 'once' },
   ]);
   const [showCreate, setShowCreate] = useState(false);
   const [newAlert, setNewAlert] = useState<Partial<SmartAlert>>({
@@ -299,9 +299,9 @@ function SmartAlertsTab() {
   });
 
   const createAlert = () => {
-    if (!newAlert.condition || !newAlert.value) { toastHook({ title: 'Completa todos los campos', variant: 'destructive' }); return; }
+    if (!newAlert.condition || !newAlert.value) { toastHook({ title: t('sa_complete_fields'), variant: 'destructive' }); return; }
     const alert: SmartAlert = {
-      id: crypto.randomUUID(), name: newAlert.name || `${newAlert.pair} ${newAlert.condition}`,
+      id: crypto.randomUUID(), name: newAlert.name || `${newAlert.pair} ${t(newAlert.condition!)}`,
       type: newAlert.type as AlertType, pair: newAlert.pair!, condition: newAlert.condition!, value: newAlert.value!,
       timeframe: newAlert.timeframe!, status: 'active', sound: newAlert.sound!, push: newAlert.push!,
       createdAt: new Date(), recurrence: newAlert.recurrence as 'once' | 'recurring',
@@ -309,11 +309,11 @@ function SmartAlertsTab() {
     setAlerts(prev => [alert, ...prev]);
     setShowCreate(false);
     setNewAlert({ type: 'price', pair: 'EUR/USD', condition: '', value: '', timeframe: 'H1', sound: true, push: true, recurrence: 'once', name: '' });
-    toastHook({ title: 'Alerta creada ✓' });
+    toastHook({ title: t('sa_alert_created') });
   };
 
   const toggleStatus = (id: string) => setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: a.status === 'active' ? 'paused' : 'active' } : a));
-  const deleteAlert = (id: string) => { setAlerts(prev => prev.filter(a => a.id !== id)); toastHook({ title: 'Alerta eliminada' }); };
+  const deleteAlert = (id: string) => { setAlerts(prev => prev.filter(a => a.id !== id)); toastHook({ title: t('sa_alert_deleted') }); };
 
   const activeCount = alerts.filter(a => a.status === 'active').length;
   const triggeredCount = alerts.filter(a => a.status === 'triggered').length;
