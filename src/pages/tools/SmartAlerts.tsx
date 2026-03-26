@@ -350,7 +350,7 @@ function SmartAlertsTab() {
           border: `1px solid hsl(${ACCENT} / 0.5)`,
           boxShadow: `0 0 20px hsl(${ACCENT} / 0.25), inset 0 1px 0 hsl(0 0% 100% / 0.1)`,
         }}>
-        <Plus className="w-4 h-4" /> Nueva Alerta Inteligente
+        <Plus className="w-4 h-4" /> {t('sa_new_alert')}
       </button>
 
       {/* Create form */}
