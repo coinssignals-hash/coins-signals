@@ -328,22 +328,37 @@ export default function Forum() {
       {channelsLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : (
-        <div className="space-y-2">
-          {channels.map(ch => (
-            <GlowSection key={ch.id} color="210 70% 55%" className="rounded-xl">
+        <div className="space-y-1.5">
+          {channels.map(ch => {
+            const chColor = '210 70% 55%';
+            return (
               <button
+                key={ch.id}
                 onClick={() => openChannel(ch.id, ch.name, ch.icon)}
-                className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
+                className="w-full flex items-center gap-3 p-3 text-left transition-all active:scale-[0.98] rounded-xl"
+                style={{
+                  background: `linear-gradient(165deg, hsl(${chColor} / 0.06) 0%, hsl(var(--card)) 100%)`,
+                  border: `1px solid hsl(${chColor} / 0.15)`,
+                }}
               >
-                <span className="text-xl">{ch.icon}</span>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{
+                  background: `linear-gradient(135deg, hsl(${chColor} / 0.2), hsl(${chColor} / 0.08))`,
+                  border: `1px solid hsl(${chColor} / 0.25)`,
+                }}>
+                  <span className="text-lg">{ch.icon}</span>
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground">{ch.name}</p>
                   {ch.description && <p className="text-[10px] text-muted-foreground truncate">{ch.description}</p>}
                 </div>
-                <Hash className="w-4 h-4 text-muted-foreground" />
+                <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{
+                  background: `hsl(${chColor} / 0.1)`,
+                }}>
+                  <Hash className="w-3.5 h-3.5" style={{ color: `hsl(${chColor})` }} />
+                </div>
               </button>
-            </GlowSection>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
