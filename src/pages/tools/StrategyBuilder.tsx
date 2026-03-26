@@ -446,7 +446,7 @@ export default function StrategyBuilder() {
 
               <GlowSection color="210 80% 55%">
                 <div className="p-3">
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Curva de Equity</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{t('sb_equity_curve')}</div>
                   <ResponsiveContainer width="100%" height={180}>
                     <AreaChart data={backtestResult.equityCurve} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs><linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0.4} /><stop offset="95%" stopColor="hsl(160, 84%, 39%)" stopOpacity={0} /></linearGradient></defs>
