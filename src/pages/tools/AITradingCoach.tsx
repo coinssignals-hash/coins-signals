@@ -34,13 +34,8 @@ const QUICK_PROMPT_KEYS = [
 export default function AITradingCoach() {
   const { t, language } = useTranslation();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0', role: 'assistant',
-      content: '¡Hola! 👋 Soy tu **Coach de Trading con IA**. Puedo ayudarte con:\n\n- 📊 **Análisis de trades** — revisemos tus operaciones\n- 🛡️ **Gestión de riesgo** — optimicemos tu estrategia\n- 🧠 **Psicología** — trabajemos tu mentalidad\n- 📋 **Plan de trading** — creemos uno juntos\n- 🎯 **Mejora continua** — identifiquemos áreas de crecimiento\n\n¿En qué puedo ayudarte hoy?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionStats, setSessionStats] = useState({ questions: 0, tips: 0 });
