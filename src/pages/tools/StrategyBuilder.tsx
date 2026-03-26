@@ -517,7 +517,7 @@ export default function StrategyBuilder() {
                   }}>
                     <div>
                       <div className="text-sm font-medium text-foreground">{s.name}</div>
-                      <div className="text-[11px] text-muted-foreground">{s.rules.length} reglas · {s.pairs.join(', ')}</div>
+                      <div className="text-[11px] text-muted-foreground">{s.rules.length} {t('sb_rules_count')} · {s.pairs.join(', ')}</div>
                     </div>
                     <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setStrategy({ ...s })}>
                       <Copy className="w-3 h-3" />
