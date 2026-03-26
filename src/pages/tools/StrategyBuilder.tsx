@@ -156,7 +156,6 @@ export default function StrategyBuilder() {
                 <p className="text-[11px] text-muted-foreground">
                   {t('sb_subtitle')}
                 </p>
-                </p>
               </div>
             </div>
           </div>
