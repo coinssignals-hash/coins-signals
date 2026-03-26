@@ -33,20 +33,20 @@ interface SmartAlert {
   recurrence: 'once' | 'recurring';
 }
 
-const ALERT_TYPES: { value: AlertType; label: string; icon: any; color: string }[] = [
-  { value: 'price', label: 'Precio', icon: TrendingUp, color: '160 84% 39%' },
-  { value: 'indicator', label: 'Indicador', icon: Activity, color: '210 80% 55%' },
-  { value: 'pattern', label: 'Patrón', icon: Zap, color: '45 95% 55%' },
-  { value: 'news', label: 'Noticias', icon: Bell, color: '270 70% 60%' },
-  { value: 'volatility', label: 'Volatilidad', icon: AlertTriangle, color: '0 84% 60%' },
+const ALERT_TYPE_KEYS: { value: AlertType; labelKey: string; icon: any; color: string }[] = [
+  { value: 'price', labelKey: 'sa_price', icon: TrendingUp, color: '160 84% 39%' },
+  { value: 'indicator', labelKey: 'sa_indicator', icon: Activity, color: '210 80% 55%' },
+  { value: 'pattern', labelKey: 'sa_pattern', icon: Zap, color: '45 95% 55%' },
+  { value: 'news', labelKey: 'sa_news', icon: Bell, color: '270 70% 60%' },
+  { value: 'volatility', labelKey: 'sa_volatility', icon: AlertTriangle, color: '0 84% 60%' },
 ];
 
-const CONDITIONS: Record<AlertType, string[]> = {
-  price: ['Precio cruza arriba de', 'Precio cruza abajo de', 'Precio entre rango', 'Cambio % en'],
-  indicator: ['RSI cruza arriba de', 'RSI cruza abajo de', 'MACD cruce alcista', 'MACD cruce bajista', 'EMA cruce dorado', 'EMA cruce muerte'],
-  pattern: ['Doble techo detectado', 'Doble suelo detectado', 'Hombro-Cabeza-Hombro', 'Triángulo ascendente', 'Doji en soporte', 'Engulfing alcista'],
-  news: ['Noticia alto impacto', 'Decisión tasa interés', 'NFP/Empleo', 'PIB publicación', 'CPI/Inflación'],
-  volatility: ['ATR supera', 'Bollinger squeeze', 'Expansión volatilidad', 'Rango diario supera'],
+const CONDITION_KEYS: Record<AlertType, string[]> = {
+  price: ['sa_price_crosses_above', 'sa_price_crosses_below', 'sa_price_between', 'sa_price_change_pct'],
+  indicator: ['sa_rsi_crosses_above', 'sa_rsi_crosses_below', 'sa_macd_bullish', 'sa_macd_bearish', 'sa_ema_golden', 'sa_ema_death'],
+  pattern: ['sa_double_top', 'sa_double_bottom', 'sa_head_shoulders', 'sa_ascending_triangle', 'sa_doji_support', 'sa_engulfing_bullish'],
+  news: ['sa_high_impact_news', 'sa_interest_rate', 'sa_nfp', 'sa_gdp', 'sa_cpi'],
+  volatility: ['sa_atr_exceeds', 'sa_bollinger_squeeze', 'sa_volatility_expansion', 'sa_daily_range_exceeds'],
 };
 
 const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'XAU/USD', 'BTC/USD', 'US500', 'NAS100'];
