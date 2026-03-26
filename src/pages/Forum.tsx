@@ -291,15 +291,17 @@ export default function Forum() {
       {showPastTopics ? (
         <PastTopicsBrowser onClose={() => setShowPastTopics(false)} />
       ) : (
-        <GlowSection color="210 70% 55%" className="rounded-xl">
-          <button
-            onClick={() => setShowPastTopics(true)}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Calendar className="w-3.5 h-3.5" />
-            Ver temas anteriores
-          </button>
-        </GlowSection>
+        <button
+          onClick={() => setShowPastTopics(true)}
+          className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs text-muted-foreground hover:text-foreground transition-all active:scale-[0.98]"
+          style={{
+            background: 'hsl(var(--card) / 0.5)',
+            border: '1px solid hsl(var(--border) / 0.3)',
+          }}
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          Ver temas anteriores
+        </button>
       )}
 
       {/* Tomorrow's Suggestions */}
