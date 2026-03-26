@@ -309,7 +309,7 @@ export default function Forum() {
 
       {/* MarketSessions-style Tab Grid */}
       <div className="grid grid-cols-3 gap-1.5">
-        {FORUM_TABS.map(tab => {
+        {FORUM_TAB_KEYS.map(tab => {
           const isSelected = view === tab.key;
           return (
             <button
@@ -380,7 +380,7 @@ export default function Forum() {
     <div className="space-y-4">
       {/* MarketSessions-style Tab Grid */}
       <div className="grid grid-cols-3 gap-1.5">
-        {FORUM_TABS.map(tab => {
+        {FORUM_TAB_KEYS.map(tab => {
           const isSelected = (tab.key === 'dms' && view === 'dms');
           return (
             <button
@@ -937,7 +937,7 @@ export default function Forum() {
           <div className="space-y-4">
             {/* MarketSessions-style Tab Grid */}
             <div className="grid grid-cols-3 gap-1.5">
-              {FORUM_TABS.map(tab => {
+              {FORUM_TAB_KEYS.map(tab => {
                 const isSelected = tab.key === 'favorites';
                 return (
                   <button
