@@ -469,7 +469,7 @@ function SmartAlertsTab() {
                       background: 'linear-gradient(165deg, hsl(var(--card) / 0.5), hsl(var(--background) / 0.3))',
                       border: '1px solid hsl(var(--border) / 0.1)',
                     }}>
-                      {alert.condition} <span className="font-mono font-bold text-foreground">{alert.value}</span>
+                      {t(alert.condition)} <span className="font-mono font-bold text-foreground">{alert.value}</span>
                       {alert.recurrence === 'recurring' && <Badge variant="outline" className="ml-2 text-[9px]" style={{ borderColor: `hsl(${alertColor} / 0.3)`, color: `hsl(${alertColor})` }}>↻</Badge>}
                     </div>
                     {alert.triggeredAt && (
