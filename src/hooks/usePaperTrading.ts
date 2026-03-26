@@ -99,18 +99,26 @@ export const CATEGORY_ICONS: Record<InstrumentCategory, string> = {
 };
 
 const INITIAL_BALANCE = 10000;
-const STORAGE_KEY = 'paper-trading-state-v2';
+const STORAGE_KEY = 'paper-trading-state-v3';
 
 interface PersistedState {
   balance: number;
   positions: PaperPosition[];
   history: PaperTrade[];
+  lastPrices?: Record<string, number>;
 }
 
 function loadState(): PersistedState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
+    // Migrate from v2
+    const v2 = localStorage.getItem('paper-trading-state-v2');
+    if (v2) {
+      const parsed = JSON.parse(v2);
+      localStorage.removeItem('paper-trading-state-v2');
+      return parsed;
+    }
   } catch { /* ignore */ }
   return { balance: INITIAL_BALANCE, positions: [], history: [] };
 }
@@ -128,9 +136,14 @@ export function usePaperTrading() {
   const [balance, setBalance] = useState(saved.current.balance);
   const [positions, setPositions] = useState<PaperPosition[]>(saved.current.positions);
   const [history, setHistory] = useState<PaperTrade[]>(saved.current.history);
+  const tickCount = useRef(0);
   const [prices, setPrices] = useState<Record<string, number>>(() => {
+    // Use last saved prices as starting point to avoid SL/TP triggers on reload
     const p: Record<string, number> = {};
-    INSTRUMENTS.forEach(i => { p[i.symbol] = i.basePrice; });
+    const savedPrices = saved.current.lastPrices;
+    INSTRUMENTS.forEach(i => {
+      p[i.symbol] = savedPrices?.[i.symbol] ?? i.basePrice;
+    });
     return p;
   });
 
