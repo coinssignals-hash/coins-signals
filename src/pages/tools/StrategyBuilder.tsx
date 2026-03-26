@@ -103,7 +103,7 @@ export default function StrategyBuilder() {
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const monthlyReturns = months.map((m, i) => ({ month: m, pnl: +monthlyPnl[i].toFixed(2) }));
     setBacktestResult({ totalTrades: total, wins, losses, profitFactor: pf, maxDrawdown: +maxDD.toFixed(1), netPnl: net, sharpe, equityCurve, monthlyReturns });
-    toast({ title: 'Backtest completado' });
+    toast({ title: t('sb_backtest_complete') });
   };
 
   const saveStrategy = () => {
