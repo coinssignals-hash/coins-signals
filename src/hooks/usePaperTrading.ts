@@ -99,18 +99,26 @@ export const CATEGORY_ICONS: Record<InstrumentCategory, string> = {
 };
 
 const INITIAL_BALANCE = 10000;
-const STORAGE_KEY = 'paper-trading-state-v2';
+const STORAGE_KEY = 'paper-trading-state-v3';
 
 interface PersistedState {
   balance: number;
   positions: PaperPosition[];
   history: PaperTrade[];
+  lastPrices?: Record<string, number>;
 }
 
 function loadState(): PersistedState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
+    // Migrate from v2
+    const v2 = localStorage.getItem('paper-trading-state-v2');
+    if (v2) {
+      const parsed = JSON.parse(v2);
+      localStorage.removeItem('paper-trading-state-v2');
+      return parsed;
+    }
   } catch { /* ignore */ }
   return { balance: INITIAL_BALANCE, positions: [], history: [] };
 }
@@ -128,9 +136,14 @@ export function usePaperTrading() {
   const [balance, setBalance] = useState(saved.current.balance);
   const [positions, setPositions] = useState<PaperPosition[]>(saved.current.positions);
   const [history, setHistory] = useState<PaperTrade[]>(saved.current.history);
+  const tickCount = useRef(0);
   const [prices, setPrices] = useState<Record<string, number>>(() => {
+    // Use last saved prices as starting point to avoid SL/TP triggers on reload
     const p: Record<string, number> = {};
-    INSTRUMENTS.forEach(i => { p[i.symbol] = i.basePrice; });
+    const savedPrices = saved.current.lastPrices;
+    INSTRUMENTS.forEach(i => {
+      p[i.symbol] = savedPrices?.[i.symbol] ?? i.basePrice;
+    });
     return p;
   });
 
@@ -151,12 +164,14 @@ export function usePaperTrading() {
         }
         return next;
       });
+      tickCount.current++;
     }, 2000);
     return () => clearInterval(iv);
   }, []);
 
-  // Auto SL/TP check
+  // Auto SL/TP check - skip first 2 ticks after reload to let prices stabilize
   useEffect(() => {
+    if (tickCount.current < 2) return;
     setPositions(prev => {
       let changed = false;
       const remaining: PaperPosition[] = [];
@@ -193,10 +208,10 @@ export function usePaperTrading() {
     });
   }, [prices]);
 
-  // Persist on change
+  // Persist on change (including prices for reload stability)
   useEffect(() => {
-    saveState({ balance, positions, history });
-  }, [balance, positions, history]);
+    saveState({ balance, positions, history, lastPrices: prices });
+  }, [balance, positions, history, prices]);
 
   const openPosition = useCallback((
     symbol: string, side: 'buy' | 'sell', qty: number,
@@ -215,7 +230,7 @@ export function usePaperTrading() {
       stopLoss: opts.stopLoss,
       takeProfit: opts.takeProfit,
       orderType: opts.orderType,
-      openedAt: new Date().toLocaleTimeString(),
+      openedAt: new Date().toLocaleString(),
     };
     setPositions(prev => [...prev, pos]);
     setBalance(prev => prev - margin);
