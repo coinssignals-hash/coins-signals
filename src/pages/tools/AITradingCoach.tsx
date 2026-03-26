@@ -175,18 +175,18 @@ export default function AITradingCoach() {
         {/* Quick prompts */}
         {messages.length <= 1 && (
           <div className="grid grid-cols-2 gap-2 mb-3">
-            {QUICK_PROMPTS.map((qp, i) => (
+            {QUICK_PROMPT_KEYS.map((qp, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
                 <GlowSection color={ACCENT} className="h-full">
                   <button className="flex items-center gap-2 p-2.5 w-full text-left active:scale-[0.97] transition-transform"
-                    onClick={() => sendMessage(qp.prompt)}>
+                    onClick={() => sendMessage(t(qp.promptKey))}>
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{
                       background: `hsl(${ACCENT} / 0.15)`,
                       boxShadow: `0 0 8px hsl(${ACCENT} / 0.1)`,
                     }}>
                       <qp.icon className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
                     </div>
-                    <span className="text-xs font-medium leading-tight text-foreground">{qp.label}</span>
+                    <span className="text-xs font-medium leading-tight text-foreground">{t(qp.labelKey)}</span>
                   </button>
                 </GlowSection>
               </motion.div>
