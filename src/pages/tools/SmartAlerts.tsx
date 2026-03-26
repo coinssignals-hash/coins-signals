@@ -435,7 +435,7 @@ function SmartAlertsTab() {
         </h3>
         <AnimatePresence mode="popLayout">
           {alerts.map(alert => {
-            const typeInfo = ALERT_TYPES.find(at => at.value === alert.type);
+            const typeInfo = ALERT_TYPE_KEYS.find(at => at.value === alert.type);
             const Icon = typeInfo?.icon || Bell;
             const alertColor = typeInfo?.color || ACCENT;
             const isActive = alert.status === 'active';
