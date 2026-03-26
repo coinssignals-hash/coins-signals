@@ -352,7 +352,7 @@ export default function StrategyBuilder() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Riesgo/Trade (%)</label>
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('sb_risk_per_trade')}</label>
                 <Input type="number" value={strategy.riskPerTrade} onChange={e => setStrategy(s => ({ ...s, riskPerTrade: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30 mt-1" />
               </div>
               <div>
