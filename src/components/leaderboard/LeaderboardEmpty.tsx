@@ -1,11 +1,14 @@
 import { Trophy } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   accent: string;
 }
 
 export function LeaderboardEmpty({ accent }: Props) {
+  const { t } = useTranslation();
+
   return (
     <GlowSection color={accent}>
       <div className="p-8 text-center space-y-2">
@@ -15,8 +18,8 @@ export function LeaderboardEmpty({ accent }: Props) {
         }}>
           <Trophy className="w-6 h-6" style={{ color: `hsl(${accent} / 0.5)` }} />
         </div>
-        <p className="text-sm text-muted-foreground">No hay datos de trading aún</p>
-        <p className="text-xs text-muted-foreground/70">Importa tus operaciones desde el Portfolio para aparecer en el ranking</p>
+        <p className="text-sm text-muted-foreground">{t('lb_no_data')}</p>
+        <p className="text-xs text-muted-foreground/70">{t('lb_no_data_desc')}</p>
       </div>
     </GlowSection>
   );

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { PageShell } from '@/components/layout/PageShell';
+import { useTranslation } from '@/i18n/LanguageContext';
 import { learningPaths } from '@/data/learningPathsData';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { GlowSection } from '@/components/ui/glow-section';
@@ -10,6 +11,7 @@ import { Route, CheckCircle, ChevronRight, Lock, Sparkles, Clock, BookOpen, Awar
 import { cn } from '@/lib/utils';
 
 export default function LearningPaths() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isLessonCompleted } = useCourseProgress();
   const [expandedPath, setExpandedPath] = useState<string | null>(null);
@@ -28,50 +30,38 @@ export default function LearningPaths() {
     return 'bg-purple-500/15 text-purple-400 border-purple-500/30';
   };
 
+  const levelLabel = (level: string) => {
+    if (level === 'Principiante') return t('lp_beginner');
+    if (level === 'Intermedio') return t('lp_intermediate');
+    return t('lp_advanced');
+  };
+
   return (
     <PageShell>
       <Header />
       <main className="container py-3 max-w-lg mx-auto px-3 space-y-3">
-        {/* Premium Hero Header */}
         <div className="relative overflow-hidden rounded-2xl" style={{
           background: `linear-gradient(165deg, hsl(217 91% 60% / 0.15) 0%, hsl(var(--card)) 50%, hsl(var(--background)) 100%)`,
           border: `1px solid hsl(217 91% 60% / 0.2)`,
         }}>
-          <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-            background: `linear-gradient(90deg, transparent, hsl(217 91% 60% / 0.7), transparent)`,
-          }} />
-          <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.07]" style={{
-            background: `radial-gradient(circle, hsl(217 91% 60%), transparent 70%)`,
-          }} />
+          <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: `linear-gradient(90deg, transparent, hsl(217 91% 60% / 0.7), transparent)` }} />
           <div className="relative flex items-center gap-3 px-3 py-3">
-            <button
-              onClick={() => navigate(-1)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
-              style={{
-                background: 'hsl(var(--card) / 0.85)',
-                border: '1px solid hsl(var(--border) / 0.6)',
-                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)',
-              }}
-            >
+            <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all active:scale-90 backdrop-blur-sm"
+              style={{ background: 'hsl(var(--card) / 0.85)', border: '1px solid hsl(var(--border) / 0.6)', boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3)' }}>
               <ChevronRight className="w-4 h-4 text-muted-foreground rotate-180" />
             </button>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
-              background: `linear-gradient(135deg, hsl(217 91% 60% / 0.2), hsl(217 91% 60% / 0.08))`,
-              border: `1px solid hsl(217 91% 60% / 0.3)`,
-              boxShadow: `0 0 12px hsl(217 91% 60% / 0.15)`,
-            }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, hsl(217 91% 60% / 0.2), hsl(217 91% 60% / 0.08))`, border: `1px solid hsl(217 91% 60% / 0.3)`, boxShadow: `0 0 12px hsl(217 91% 60% / 0.15)` }}>
               <Route className="w-5 h-5" style={{ color: 'hsl(217 91% 60%)' }} />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-base font-bold text-foreground flex items-center gap-1.5">
-                Rutas de Aprendizaje <Sparkles className="w-4 h-4" style={{ color: 'hsl(40 80% 55%)' }} />
+                {t('lp_title')} <Sparkles className="w-4 h-4" style={{ color: 'hsl(40 80% 55%)' }} />
               </h1>
-              <p className="text-[10px] text-muted-foreground">Sigue un camino estructurado de principiante a profesional</p>
+              <p className="text-[10px] text-muted-foreground">{t('lp_subtitle')}</p>
             </div>
           </div>
         </div>
 
-        {/* Path cards */}
         <div className="space-y-3">
           {learningPaths.map((path, pi) => {
             const progress = pathProgress.find(p => p.id === path.id)!;
@@ -79,18 +69,8 @@ export default function LearningPaths() {
             const isCompleted = progress.percentage === 100;
 
             return (
-              <motion.div
-                key={path.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: pi * 0.1 }}
-              >
-                <GlowSection color={path.color} style={{
-                  borderColor: isExpanded ? `hsl(${path.color} / 0.35)` : undefined,
-                  boxShadow: isExpanded ? `0 4px 24px hsl(${path.color} / 0.1)` : undefined,
-                }}>
-
-                  {/* Path Header */}
+              <motion.div key={path.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: pi * 0.1 }}>
+                <GlowSection color={path.color} style={{ borderColor: isExpanded ? `hsl(${path.color} / 0.35)` : undefined, boxShadow: isExpanded ? `0 4px 24px hsl(${path.color} / 0.1)` : undefined }}>
                   <button onClick={() => setExpandedPath(isExpanded ? null : path.id)} className="w-full text-left p-4">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl">{path.icon}</div>
@@ -105,41 +85,26 @@ export default function LearningPaths() {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={cn('text-[10px] px-2 py-0.5 rounded-full border font-medium', levelColor(path.level))}>
-                            {path.level}
+                            {levelLabel(path.level)}
                           </span>
-                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                            <Clock className="w-2.5 h-2.5" /> {path.estimatedHours}h
-                          </span>
-                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                            <BookOpen className="w-2.5 h-2.5" /> {path.steps.length} módulos
-                          </span>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" /> {path.estimatedHours}h</span>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><BookOpen className="w-2.5 h-2.5" /> {path.steps.length} {t('lp_modules')}</span>
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-bold tabular-nums" style={{ color: `hsl(${path.color})` }}>
-                          {progress.percentage}%
-                        </span>
+                        <span className="text-lg font-bold tabular-nums" style={{ color: `hsl(${path.color})` }}>{progress.percentage}%</span>
                       </div>
                     </div>
-
                     <p className="text-xs text-muted-foreground mt-2">{path.description}</p>
-
-                    {/* Progress bar */}
                     <div className="mt-3 h-2 rounded-full overflow-hidden" style={{ background: `hsl(${path.color} / 0.1)` }}>
-                      <motion.div className="h-full rounded-full" style={{
-                        background: `linear-gradient(90deg, hsl(${path.color} / 0.5), hsl(${path.color}))`,
-                        boxShadow: progress.percentage > 30 ? `0 0 6px hsl(${path.color} / 0.3)` : undefined,
-                      }} animate={{ width: `${progress.percentage}%` }} transition={{ duration: 0.8 }} />
+                      <motion.div className="h-full rounded-full" style={{ background: `linear-gradient(90deg, hsl(${path.color} / 0.5), hsl(${path.color}))`, boxShadow: progress.percentage > 30 ? `0 0 6px hsl(${path.color} / 0.3)` : undefined }} animate={{ width: `${progress.percentage}%` }} transition={{ duration: 0.8 }} />
                     </div>
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-muted-foreground">{progress.completed}/{progress.total} lecciones</span>
-                      <motion.div animate={{ rotate: isExpanded ? 90 : 0 }}>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                      </motion.div>
+                      <span className="text-[10px] text-muted-foreground">{progress.completed}/{progress.total} {t('lp_lessons')}</span>
+                      <motion.div animate={{ rotate: isExpanded ? 90 : 0 }}><ChevronRight className="w-4 h-4 text-muted-foreground" /></motion.div>
                     </div>
                   </button>
 
-                  {/* Steps */}
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
@@ -148,50 +113,27 @@ export default function LearningPaths() {
                             const stepCompleted = step.lessonIds.filter(id => isLessonCompleted(id)).length;
                             const stepTotal = step.lessonIds.length;
                             const stepDone = stepCompleted === stepTotal;
-
                             return (
-                              <motion.div
-                                key={si}
-                                initial={{ opacity: 0, x: -8 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: si * 0.05 }}
-                                onClick={() => navigate('/courses')}
-                                className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-muted/10"
-                                style={{
-                                  background: stepDone ? `hsl(${path.color} / 0.06)` : undefined,
-                                  border: `1px solid ${stepDone ? `hsl(${path.color} / 0.2)` : 'hsl(var(--border) / 0.15)'}`,
-                                }}
-                              >
-                                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" style={{
-                                  background: stepDone ? `hsl(${path.color})` : 'hsl(var(--muted) / 0.3)',
-                                  color: stepDone ? 'white' : 'hsl(var(--muted-foreground))',
-                                  boxShadow: stepDone ? `0 0 8px hsl(${path.color} / 0.3)` : undefined,
-                                }}>
+                              <motion.div key={si} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: si * 0.05 }}
+                                onClick={() => navigate('/courses')} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all hover:bg-muted/10"
+                                style={{ background: stepDone ? `hsl(${path.color} / 0.06)` : undefined, border: `1px solid ${stepDone ? `hsl(${path.color} / 0.2)` : 'hsl(var(--border) / 0.15)'}` }}>
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold" style={{ background: stepDone ? `hsl(${path.color})` : 'hsl(var(--muted) / 0.3)', color: stepDone ? 'white' : 'hsl(var(--muted-foreground))', boxShadow: stepDone ? `0 0 8px hsl(${path.color} / 0.3)` : undefined }}>
                                   {stepDone ? <CheckCircle className="w-3.5 h-3.5" /> : si + 1}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-xs font-semibold text-foreground truncate">{step.moduleTitle}</p>
-                                  <span className="text-[10px] text-muted-foreground">{stepCompleted}/{stepTotal} lecciones</span>
+                                  <span className="text-[10px] text-muted-foreground">{stepCompleted}/{stepTotal} {t('lp_lessons')}</span>
                                 </div>
                                 {step.hasQuiz && (
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{
-                                    background: `hsl(${path.color} / 0.1)`,
-                                    color: `hsl(${path.color})`,
-                                    border: `1px solid hsl(${path.color} / 0.2)`,
-                                  }}>Quiz</span>
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: `hsl(${path.color} / 0.1)`, color: `hsl(${path.color})`, border: `1px solid hsl(${path.color} / 0.2)` }}>Quiz</span>
                                 )}
                               </motion.div>
                             );
                           })}
-
-                          {/* Certificate badge */}
                           {isCompleted && (
-                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-3 rounded-xl text-center" style={{
-                              background: `linear-gradient(135deg, hsl(${path.color} / 0.15), hsl(${path.color} / 0.05))`,
-                              border: `1px solid hsl(${path.color} / 0.3)`,
-                            }}>
+                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-3 rounded-xl text-center" style={{ background: `linear-gradient(135deg, hsl(${path.color} / 0.15), hsl(${path.color} / 0.05))`, border: `1px solid hsl(${path.color} / 0.3)` }}>
                               <Award className="w-6 h-6 mx-auto mb-1" style={{ color: `hsl(${path.color})` }} />
-                              <p className="text-xs font-bold" style={{ color: `hsl(${path.color})` }}>¡Certificado desbloqueado!</p>
+                              <p className="text-xs font-bold" style={{ color: `hsl(${path.color})` }}>{t('lp_certificate_unlocked')}</p>
                               <p className="text-[10px] text-muted-foreground">{path.name}</p>
                             </motion.div>
                           )}

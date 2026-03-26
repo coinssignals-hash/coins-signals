@@ -1,5 +1,6 @@
 import { GlowSection } from '@/components/ui/glow-section';
 import { Wallet, BarChart3, TrendingUp } from 'lucide-react';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface Props {
   balance: number;
@@ -8,14 +9,15 @@ interface Props {
 }
 
 export function PaperStatsRow({ balance, totalPnl, winRate }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-2">
-      {/* Big Balance Display */}
       <GlowSection color="270 70% 60%">
         <div className="p-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Wallet className="h-5 w-5" style={{ color: 'hsl(270 70% 60%)' }} />
-            <p className="text-xs text-muted-foreground font-medium">Balance</p>
+            <p className="text-xs text-muted-foreground font-medium">{t('pt_balance')}</p>
           </div>
           <p className="text-3xl font-extrabold font-mono text-foreground tracking-tight">
             ${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -23,11 +25,10 @@ export function PaperStatsRow({ balance, totalPnl, winRate }: Props) {
         </div>
       </GlowSection>
 
-      {/* P&L and Win Rate */}
       <div className="grid grid-cols-2 gap-2">
         {[
-          { label: 'P&L Total', value: `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}`, icon: BarChart3, color: totalPnl >= 0 ? '160 84% 39%' : '0 84% 60%' },
-          { label: 'Win Rate', value: `${winRate.toFixed(0)}%`, icon: TrendingUp, color: '160 84% 39%' },
+          { label: t('pt_total_pnl'), value: `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}`, icon: BarChart3, color: totalPnl >= 0 ? '160 84% 39%' : '0 84% 60%' },
+          { label: t('pt_win_rate'), value: `${winRate.toFixed(0)}%`, icon: TrendingUp, color: '160 84% 39%' },
         ].map(s => (
           <GlowSection key={s.label} color={s.color}>
             <div className="p-3 text-center">

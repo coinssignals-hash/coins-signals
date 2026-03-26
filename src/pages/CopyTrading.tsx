@@ -9,10 +9,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import {
-  Copy, Users, TrendingUp, Eye, EyeOff,
-  DollarSign, Percent, Zap, CheckCircle2
-} from 'lucide-react';
+import { Copy, Users, TrendingUp, Eye, EyeOff, DollarSign, Percent, Zap, CheckCircle2 } from 'lucide-react';
 import { GlowSection } from '@/components/ui/glow-section';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,7 +32,6 @@ const TRADERS: TopTrader[] = [
 ];
 
 const RISK_COLORS: Record<string, string> = { low: '160 84% 39%', medium: '45 95% 55%', high: '0 84% 60%' };
-const RISK_LABELS: Record<string, string> = { low: 'Bajo', medium: 'Medio', high: 'Alto' };
 const ACCENT = '190 90% 50%';
 
 export default function CopyTrading() {
@@ -46,13 +42,15 @@ export default function CopyTrading() {
   const [allocation, setAllocation] = useState('500');
   const [maxRisk, setMaxRisk] = useState('2');
 
+  const RISK_LABELS: Record<string, string> = { low: t('ct_risk_low'), medium: t('ct_risk_medium'), high: t('ct_risk_high') };
+
   const toggleFollow = (id: string) => {
-    setFollowing(prev => { const next = { ...prev, [id]: !prev[id] }; toast({ title: next[id] ? '✅ Siguiendo trader' : '❌ Dejaste de seguir' }); return next; });
+    setFollowing(prev => { const next = { ...prev, [id]: !prev[id] }; toast({ title: next[id] ? `✅ ${t('ct_following_toast')}` : `❌ ${t('ct_unfollowed_toast')}` }); return next; });
   };
   const startCopying = (traderId: string) => {
     setFollowing(prev => ({ ...prev, [traderId]: true }));
     setCopyConfig(null);
-    toast({ title: '🚀 Copy Trading activado', description: `Copiando con $${allocation} y ${maxRisk}% máx riesgo` });
+    toast({ title: `🚀 ${t('ct_activated_toast')}` });
   };
   const followingCount = Object.values(following).filter(Boolean).length;
 
@@ -63,24 +61,20 @@ export default function CopyTrading() {
         <ToolPageHeader
           icon={<Copy className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />}
           title={t('drawer_copy_trading') || 'Copy Trading'}
-          subtitle="Copia las estrategias de los mejores traders"
+          subtitle={t('ct_subtitle')}
           accent={ACCENT}
         />
 
         <div className="space-y-4 pb-24">
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Siguiendo', value: followingCount, icon: Users, color: '210 80% 55%' },
-            { label: 'Asignado', value: followingCount > 0 ? '$' + (+allocation * followingCount) : '—', icon: Copy, color: '160 84% 39%' },
-            { label: 'P&L Copia', value: followingCount > 0 ? '+$0' : '—', icon: TrendingUp, color: '45 95% 55%' },
+            { label: t('ct_following'), value: followingCount, icon: Users, color: '210 80% 55%' },
+            { label: t('ct_allocated'), value: followingCount > 0 ? '$' + (+allocation * followingCount) : '—', icon: Copy, color: '160 84% 39%' },
+            { label: t('ct_copy_pnl'), value: followingCount > 0 ? '+$0' : '—', icon: TrendingUp, color: '45 95% 55%' },
           ].map(s => (
             <GlowSection key={s.label} color={s.color}>
               <div className="p-3 text-center">
-                <div className="w-7 h-7 mx-auto mb-1.5 rounded-lg flex items-center justify-center" style={{
-                  background: `hsl(${s.color} / 0.15)`,
-                  boxShadow: `0 0 10px hsl(${s.color} / 0.1)`,
-                }}>
+                <div className="w-7 h-7 mx-auto mb-1.5 rounded-lg flex items-center justify-center" style={{ background: `hsl(${s.color} / 0.15)`, boxShadow: `0 0 10px hsl(${s.color} / 0.1)` }}>
                   <s.icon className="w-4 h-4" style={{ color: `hsl(${s.color})` }} />
                 </div>
                 <div className="text-lg font-bold text-foreground">{s.value}</div>
@@ -90,23 +84,18 @@ export default function CopyTrading() {
           ))}
         </div>
 
-        {/* Trader cards */}
         <div className="space-y-3">
           <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
             <Users className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
-            TOP TRADERS
+            {t('ct_top_traders')}
           </h3>
           {TRADERS.map((trader, i) => {
             const isFollowing = following[trader.id];
             const riskColor = RISK_COLORS[trader.riskScore];
             return (
               <motion.div key={trader.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-                <GlowSection color={isFollowing ? '160 84% 39%' : ACCENT} style={{
-                  borderColor: isFollowing ? `hsl(160 84% 39% / 0.35)` : undefined,
-                }}>
-                  <div className="relative p-3 space-y-3" style={{
-                    borderLeft: isFollowing ? '3px solid hsl(160 84% 39%)' : `3px solid hsl(${ACCENT} / 0.3)`,
-                  }}>
+                <GlowSection color={isFollowing ? '160 84% 39%' : ACCENT} style={{ borderColor: isFollowing ? 'hsl(160 84% 39% / 0.35)' : undefined }}>
+                  <div className="relative p-3 space-y-3" style={{ borderLeft: isFollowing ? '3px solid hsl(160 84% 39%)' : `3px solid hsl(${ACCENT} / 0.3)` }}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         <Avatar className="w-10 h-10">
@@ -116,12 +105,10 @@ export default function CopyTrading() {
                           <div className="flex items-center gap-1.5">
                             <span className="text-sm font-bold text-foreground">{trader.alias}</span>
                             <span className="text-xs">{trader.country}</span>
-                            <Badge variant="outline" className="text-[9px] px-1 py-0 font-semibold" style={{
-                              background: `hsl(${ACCENT} / 0.08)`,
-                            }}>{trader.tier}</Badge>
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 font-semibold" style={{ background: `hsl(${ACCENT} / 0.08)` }}>{trader.tier}</Badge>
                           </div>
                           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                            <span><Users className="w-2.5 h-2.5 inline" /> {trader.copiers} copian</span>
+                            <span><Users className="w-2.5 h-2.5 inline" /> {trader.copiers} {t('ct_copy')}</span>
                             <span>· {trader.pairs.join(', ')}</span>
                           </div>
                         </div>
@@ -129,9 +116,7 @@ export default function CopyTrading() {
                       {isFollowing && <CheckCircle2 className="w-5 h-5" style={{ color: 'hsl(160 84% 39%)' }} />}
                     </div>
 
-                    <div className="h-12 rounded-lg overflow-hidden" style={{
-                      background: 'hsl(var(--background) / 0.3)',
-                    }}>
+                    <div className="h-12 rounded-lg overflow-hidden" style={{ background: 'hsl(var(--background) / 0.3)' }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={trader.equityData}>
                           <defs>
@@ -148,13 +133,11 @@ export default function CopyTrading() {
                     <div className="grid grid-cols-4 gap-1">
                       {[
                         { label: 'P&L 30d', value: `$${trader.pnl30d.toLocaleString()}`, color: '160 84% 39%' },
-                        { label: 'Win Rate', value: `${trader.winRate}%`, color: '' },
+                        { label: t('pt_win_rate'), value: `${trader.winRate}%`, color: '' },
                         { label: 'Max DD', value: `${trader.maxDrawdown}%`, color: '0 84% 60%' },
-                        { label: 'Riesgo', value: RISK_LABELS[trader.riskScore], color: riskColor },
+                        { label: t('ct_risk'), value: RISK_LABELS[trader.riskScore], color: riskColor },
                       ].map(s => (
-                        <div key={s.label} className="text-center rounded-lg py-1" style={{
-                          background: 'hsl(var(--background) / 0.3)',
-                        }}>
+                        <div key={s.label} className="text-center rounded-lg py-1" style={{ background: 'hsl(var(--background) / 0.3)' }}>
                           <div className="text-[9px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
                           <div className="text-xs font-bold" style={s.color ? { color: `hsl(${s.color})` } : {}}>{s.value}</div>
                         </div>
@@ -164,22 +147,13 @@ export default function CopyTrading() {
                     <div className="flex gap-2">
                       <button onClick={() => toggleFollow(trader.id)}
                         className="flex-1 flex items-center justify-center gap-1 h-8 text-[11px] font-semibold rounded-xl transition-all active:scale-[0.97]"
-                        style={{
-                          background: 'hsl(var(--card) / 0.6)',
-                          border: '1px solid hsl(var(--border) / 0.2)',
-                          backdropFilter: 'blur(8px)',
-                          color: 'hsl(var(--foreground) / 0.8)',
-                        }}>
-                        {isFollowing ? <><EyeOff className="w-3 h-3" /> Dejar</> : <><Eye className="w-3 h-3" /> Seguir</>}
+                        style={{ background: 'hsl(var(--card) / 0.6)', border: '1px solid hsl(var(--border) / 0.2)', backdropFilter: 'blur(8px)', color: 'hsl(var(--foreground) / 0.8)' }}>
+                        {isFollowing ? <><EyeOff className="w-3 h-3" /> {t('ct_unfollow')}</> : <><Eye className="w-3 h-3" /> {t('ct_follow')}</>}
                       </button>
                       <button onClick={() => setCopyConfig(copyConfig === trader.id ? null : trader.id)}
                         className="flex-1 flex items-center justify-center gap-1 h-8 text-[11px] font-bold text-white rounded-xl transition-all active:scale-[0.97]"
-                        style={{
-                          background: `linear-gradient(165deg, hsl(160 84% 39%), hsl(${ACCENT}))`,
-                          border: '1px solid hsl(160 84% 39% / 0.4)',
-                          boxShadow: '0 0 12px hsl(160 84% 39% / 0.2)',
-                        }}>
-                        <Copy className="w-3 h-3" /> Copiar
+                        style={{ background: `linear-gradient(165deg, hsl(160 84% 39%), hsl(${ACCENT}))`, border: '1px solid hsl(160 84% 39% / 0.4)', boxShadow: '0 0 12px hsl(160 84% 39% / 0.2)' }}>
+                        <Copy className="w-3 h-3" /> {t('ct_copy_btn')}
                       </button>
                     </div>
 
@@ -189,22 +163,18 @@ export default function CopyTrading() {
                           <div className="pt-2 space-y-2 border-t" style={{ borderColor: `hsl(${ACCENT} / 0.15)` }}>
                             <div className="grid grid-cols-2 gap-2">
                               <div>
-                                <label className="text-[10px] text-muted-foreground flex items-center gap-1 uppercase tracking-wider"><DollarSign className="w-3 h-3" /> Asignación</label>
+                                <label className="text-[10px] text-muted-foreground flex items-center gap-1 uppercase tracking-wider"><DollarSign className="w-3 h-3" /> {t('ct_allocation')}</label>
                                 <Input type="number" value={allocation} onChange={e => setAllocation(e.target.value)} className="h-8 text-xs bg-background/40 border-border/30 mt-1" />
                               </div>
                               <div>
-                                <label className="text-[10px] text-muted-foreground flex items-center gap-1 uppercase tracking-wider"><Percent className="w-3 h-3" /> Riesgo máx</label>
+                                <label className="text-[10px] text-muted-foreground flex items-center gap-1 uppercase tracking-wider"><Percent className="w-3 h-3" /> {t('ct_max_risk')}</label>
                                 <Input type="number" value={maxRisk} onChange={e => setMaxRisk(e.target.value)} className="h-8 text-xs bg-background/40 border-border/30 mt-1" />
                               </div>
                             </div>
                             <button onClick={() => startCopying(trader.id)}
                               className="w-full flex items-center justify-center gap-1 h-9 text-xs font-bold text-white rounded-xl transition-all active:scale-[0.97]"
-                              style={{
-                                background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
-                                border: `1px solid hsl(${ACCENT} / 0.4)`,
-                                boxShadow: `0 0 15px hsl(${ACCENT} / 0.2)`,
-                              }}>
-                              <Zap className="w-3 h-3" /> Activar Copy Trading
+                              style={{ background: `linear-gradient(165deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`, border: `1px solid hsl(${ACCENT} / 0.4)`, boxShadow: `0 0 15px hsl(${ACCENT} / 0.2)` }}>
+                              <Zap className="w-3 h-3" /> {t('ct_activate')}
                             </button>
                           </div>
                         </motion.div>

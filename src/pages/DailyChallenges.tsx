@@ -12,61 +12,26 @@ import { GlowSection } from '@/components/ui/glow-section';
 
 interface Challenge {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
   type: 'pattern' | 'quiz' | 'scenario';
   difficulty: 'easy' | 'medium' | 'hard';
   xp: number;
-  question: string;
-  options: string[];
+  questionKey: string;
+  optionKeys: string[];
   correctIndex: number;
-  explanation: string;
+  explanationKey: string;
 }
 
 const DAILY_CHALLENGES: Challenge[] = [
-  {
-    id: '1', title: 'Identifica el Patrón', description: 'Reconoce patrones de velas',
-    type: 'pattern', difficulty: 'easy', xp: 50,
-    question: '¿Qué patrón representa una vela con cuerpo pequeño y sombra inferior larga?',
-    options: ['Hammer', 'Doji', 'Engulfing', 'Shooting Star'],
-    correctIndex: 0,
-    explanation: 'El Hammer tiene un cuerpo pequeño en la parte superior y una sombra inferior al menos 2x el cuerpo. Indica posible reversión alcista.'
-  },
-  {
-    id: '2', title: 'Soporte y Resistencia', description: 'Niveles clave',
-    type: 'quiz', difficulty: 'medium', xp: 75,
-    question: 'Un precio que rebota múltiples veces en el mismo nivel por debajo indica:',
-    options: ['Nivel de resistencia', 'Nivel de soporte', 'Gap de precio', 'Zona de liquidez neutral'],
-    correctIndex: 1,
-    explanation: 'El soporte es un nivel donde la demanda es suficiente para detener la caída del precio. Los rebotes confirman la fuerza del nivel.'
-  },
-  {
-    id: '3', title: 'Gestión de Riesgo', description: 'Money Management',
-    type: 'scenario', difficulty: 'medium', xp: 100,
-    question: 'Con una cuenta de $10,000 y riesgo del 2% por trade, ¿cuánto puedes arriesgar?',
-    options: ['$100', '$200', '$500', '$1,000'],
-    correctIndex: 1,
-    explanation: 'El 2% de $10,000 = $200. Esta regla ayuda a proteger tu capital de rachas perdedoras consecutivas.'
-  },
-  {
-    id: '4', title: 'Indicadores RSI', description: 'Lectura de RSI',
-    type: 'quiz', difficulty: 'easy', xp: 50,
-    question: '¿Qué valor de RSI indica sobrecompra?',
-    options: ['Por debajo de 30', 'Entre 40-60', 'Por encima de 70', 'Exactamente 50'],
-    correctIndex: 2,
-    explanation: 'RSI por encima de 70 indica sobrecompra (posible corrección a la baja). Por debajo de 30 indica sobreventa.'
-  },
-  {
-    id: '5', title: 'Ratio Riesgo/Beneficio', description: 'R:R óptimo',
-    type: 'scenario', difficulty: 'hard', xp: 150,
-    question: 'Si tu SL está a 20 pips y tu TP a 60 pips, ¿cuál es tu ratio R:R?',
-    options: ['1:1', '1:2', '1:3', '3:1'],
-    correctIndex: 2,
-    explanation: 'Ratio R:R = TP/SL = 60/20 = 1:3. Con este ratio, necesitas ganar solo el 25% de trades para ser rentable.'
-  },
+  { id: '1', titleKey: 'dc_q1_title', descKey: 'dc_q1_desc', type: 'pattern', difficulty: 'easy', xp: 50, questionKey: 'dc_q1_question', optionKeys: ['Hammer', 'Doji', 'Engulfing', 'Shooting Star'], correctIndex: 0, explanationKey: 'dc_q1_explanation' },
+  { id: '2', titleKey: 'dc_q2_title', descKey: 'dc_q2_desc', type: 'quiz', difficulty: 'medium', xp: 75, questionKey: 'dc_q2_question', optionKeys: ['dc_q2_opt1', 'dc_q2_opt2', 'dc_q2_opt3', 'dc_q2_opt4'], correctIndex: 1, explanationKey: 'dc_q2_explanation' },
+  { id: '3', titleKey: 'dc_q3_title', descKey: 'dc_q3_desc', type: 'scenario', difficulty: 'medium', xp: 100, questionKey: 'dc_q3_question', optionKeys: ['$100', '$200', '$500', '$1,000'], correctIndex: 1, explanationKey: 'dc_q3_explanation' },
+  { id: '4', titleKey: 'dc_q4_title', descKey: 'dc_q4_desc', type: 'quiz', difficulty: 'easy', xp: 50, questionKey: 'dc_q4_question', optionKeys: ['dc_q4_opt1', 'dc_q4_opt2', 'dc_q4_opt3', 'dc_q4_opt4'], correctIndex: 2, explanationKey: 'dc_q4_explanation' },
+  { id: '5', titleKey: 'dc_q5_title', descKey: 'dc_q5_desc', type: 'scenario', difficulty: 'hard', xp: 150, questionKey: 'dc_q5_question', optionKeys: ['1:1', '1:2', '1:3', '3:1'], correctIndex: 2, explanationKey: 'dc_q5_explanation' },
 ];
 
-const ACCENT = '45 95% 55%'; // amber accent
+const ACCENT = '45 95% 55%';
 
 export default function DailyChallenges() {
   const { t } = useTranslation();
@@ -79,6 +44,11 @@ export default function DailyChallenges() {
 
   const challenge = DAILY_CHALLENGES[currentIndex];
   const progress = (answered.size / DAILY_CHALLENGES.length) * 100;
+
+  const resolveOption = (key: string) => {
+    const translated = t(key);
+    return translated === key && !key.startsWith('dc_') ? key : translated;
+  };
 
   const handleAnswer = (idx: number) => {
     if (answered.has(challenge.id)) return;
@@ -99,6 +69,7 @@ export default function DailyChallenges() {
     }
   };
 
+  const diffLabel = (d: string) => d === 'easy' ? t('dc_easy') : d === 'medium' ? t('dc_medium') : t('dc_hard');
   const diffColor = {
     easy: 'bg-[hsl(var(--bullish))]/20 text-[hsl(var(--bullish))]',
     medium: 'bg-accent/20 text-accent',
@@ -108,34 +79,23 @@ export default function DailyChallenges() {
   return (
     <PageShell>
       <Header />
-      {/* ── Premium Hero Header ── */}
       <div className="relative overflow-hidden" style={{
         background: `linear-gradient(165deg, hsl(${ACCENT} / 0.15) 0%, hsl(var(--background)) 50%)`,
       }}>
-        <div className="absolute top-0 inset-x-0 h-[2px]" style={{
-          background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)`,
-        }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{
-          background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)`,
-        }} />
+        <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: `linear-gradient(90deg, transparent, hsl(${ACCENT} / 0.8), transparent)` }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 rounded-full opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle, hsl(${ACCENT} / 0.5), transparent 70%)` }} />
         <div className="relative px-4 py-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)}
-              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90"
-              style={{ background: `hsl(${ACCENT} / 0.1)`, border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+            <button onClick={() => navigate(-1)} className="flex items-center justify-center w-8 h-8 rounded-xl transition-all active:scale-90" style={{ background: `hsl(${ACCENT} / 0.1)`, border: `1px solid hsl(${ACCENT} / 0.2)` }}>
               <ArrowLeft className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} />
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{
-                background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`,
-                border: `1px solid hsl(${ACCENT} / 0.3)`,
-                boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)`,
-              }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(165deg, hsl(${ACCENT} / 0.25), hsl(${ACCENT} / 0.08))`, border: `1px solid hsl(${ACCENT} / 0.3)`, boxShadow: `0 0 20px hsl(${ACCENT} / 0.15)` }}>
                 <Target className="w-5 h-5" style={{ color: `hsl(${ACCENT})` }} />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-foreground tracking-tight">{t('daily_challenges_title') || 'Retos Diarios'}</h1>
-                <p className="text-[11px] text-muted-foreground">Pon a prueba tus conocimientos</p>
+                <h1 className="text-lg font-bold text-foreground tracking-tight">{t('daily_challenges_title')}</h1>
+                <p className="text-[11px] text-muted-foreground">{t('dc_test_knowledge')}</p>
               </div>
             </div>
           </div>
@@ -145,7 +105,7 @@ export default function DailyChallenges() {
         <GlowSection color={ACCENT}>
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-foreground">{t('daily_challenges_title') || 'Retos Diarios'}</h2>
+              <h2 className="text-sm font-bold text-foreground">{t('daily_challenges_title')}</h2>
               <span className="text-xs text-muted-foreground">{currentIndex + 1}/{DAILY_CHALLENGES.length}</span>
             </div>
             <div className="flex items-center gap-4 mb-3">
@@ -155,14 +115,13 @@ export default function DailyChallenges() {
               </div>
               <div className="flex items-center gap-1.5">
                 <Trophy className="h-4 w-4" style={{ color: `hsl(${ACCENT})` }} />
-                <span className="text-sm text-muted-foreground">Racha: {streak}</span>
+                <span className="text-sm text-muted-foreground">{t('dc_streak')}: {streak}</span>
               </div>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
         </GlowSection>
 
-        {/* Challenge Card */}
         <AnimatePresence mode="wait">
           <motion.div key={challenge.id} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
             <GlowSection color="270 70% 55%">
@@ -170,23 +129,18 @@ export default function DailyChallenges() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
-                    <span className="font-bold text-foreground text-sm">{challenge.title}</span>
+                    <span className="font-bold text-foreground text-sm">{t(challenge.titleKey)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge className={`text-[10px] ${diffColor[challenge.difficulty]}`}>
-                      {challenge.difficulty === 'easy' ? 'Fácil' : challenge.difficulty === 'medium' ? 'Medio' : 'Difícil'}
-                    </Badge>
-                    <Badge variant="outline" className="text-[10px]" style={{
-                      borderColor: `hsl(${ACCENT} / 0.5)`,
-                      color: `hsl(${ACCENT})`,
-                    }}>+{challenge.xp} XP</Badge>
+                    <Badge className={`text-[10px] ${diffColor[challenge.difficulty]}`}>{diffLabel(challenge.difficulty)}</Badge>
+                    <Badge variant="outline" className="text-[10px]" style={{ borderColor: `hsl(${ACCENT} / 0.5)`, color: `hsl(${ACCENT})` }}>+{challenge.xp} XP</Badge>
                   </div>
                 </div>
 
-                <p className="text-sm text-foreground leading-relaxed">{challenge.question}</p>
+                <p className="text-sm text-foreground leading-relaxed">{t(challenge.questionKey)}</p>
 
                 <div className="space-y-2">
-                  {challenge.options.map((opt, idx) => {
+                  {challenge.optionKeys.map((optKey, idx) => {
                     const isAnswered = answered.has(challenge.id);
                     const isCorrect = idx === challenge.correctIndex;
                     const isSelected = selected === idx;
@@ -196,13 +150,12 @@ export default function DailyChallenges() {
                       if (isCorrect) { borderStyle = 'border-[hsl(var(--bullish))]'; bgStyle = 'bg-[hsl(var(--bullish))]/10'; }
                       else if (isSelected) { borderStyle = 'border-[hsl(var(--bearish))]'; bgStyle = 'bg-[hsl(var(--bearish))]/10'; }
                     }
-
                     return (
                       <button key={idx} onClick={() => handleAnswer(idx)} disabled={isAnswered}
                         className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${borderStyle} ${bgStyle} ${!isAnswered ? 'hover:border-primary/50 active:scale-[0.98]' : ''}`}
                         style={{ background: !isAnswered ? 'hsl(var(--background) / 0.4)' : undefined }}>
                         <div className="flex items-center justify-between">
-                          <span className="text-foreground">{opt}</span>
+                          <span className="text-foreground">{resolveOption(optKey)}</span>
                           {isAnswered && isCorrect && <CheckCircle2 className="h-4 w-4 text-[hsl(var(--bullish))]" />}
                           {isAnswered && isSelected && !isCorrect && <XCircle className="h-4 w-4 text-[hsl(var(--bearish))]" />}
                         </div>
@@ -213,12 +166,8 @@ export default function DailyChallenges() {
 
                 {answered.has(challenge.id) && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                    className="p-3 rounded-xl border border-border/30" style={{
-                      background: 'hsl(var(--secondary) / 0.3)',
-                    }}>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      💡 {challenge.explanation}
-                    </p>
+                    className="p-3 rounded-xl border border-border/30" style={{ background: 'hsl(var(--secondary) / 0.3)' }}>
+                    <p className="text-xs text-muted-foreground leading-relaxed">💡 {t(challenge.explanationKey)}</p>
                   </motion.div>
                 )}
               </div>
@@ -231,7 +180,7 @@ export default function DailyChallenges() {
             background: `linear-gradient(135deg, hsl(${ACCENT}), hsl(${ACCENT} / 0.8))`,
             border: `1px solid hsl(${ACCENT} / 0.4)`,
           }}>
-            Siguiente Reto →
+            {t('dc_next_challenge')} →
           </Button>
         )}
 
@@ -239,9 +188,9 @@ export default function DailyChallenges() {
           <GlowSection color={ACCENT} className="text-center">
             <div className="p-6 space-y-2">
               <Trophy className="h-10 w-10 mx-auto" style={{ color: `hsl(${ACCENT})` }} />
-              <p className="text-lg font-bold text-foreground">¡Retos completados!</p>
-              <p className="text-sm text-muted-foreground">Has ganado {totalXP} XP hoy</p>
-              <p className="text-xs text-muted-foreground">Vuelve mañana para nuevos retos</p>
+              <p className="text-lg font-bold text-foreground">{t('dc_completed')}</p>
+              <p className="text-sm text-muted-foreground">{t('dc_earned_xp').replace('{xp}', String(totalXP))}</p>
+              <p className="text-xs text-muted-foreground">{t('dc_come_back')}</p>
             </div>
           </GlowSection>
         )}
