@@ -363,7 +363,7 @@ function SmartAlertsTab() {
                   className="h-9 border-0 bg-transparent placeholder:text-muted-foreground/40 focus-visible:ring-0"
                   style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.2)` }} />
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-                  {ALERT_TYPES.map(at => (
+                  {ALERT_TYPE_KEYS.map(at => (
                     <button key={at.value}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap active:scale-95"
                       style={{
@@ -374,7 +374,7 @@ function SmartAlertsTab() {
                       }}
                       onClick={() => setNewAlert(a => ({ ...a, type: at.value, condition: '' }))}
                     >
-                      <at.icon className="w-3 h-3" /> {at.label}
+                      <at.icon className="w-3 h-3" /> {t(at.labelKey)}
                     </button>
                   ))}
                 </div>
