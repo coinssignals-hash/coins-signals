@@ -208,10 +208,10 @@ export function usePaperTrading() {
     });
   }, [prices]);
 
-  // Persist on change
+  // Persist on change (including prices for reload stability)
   useEffect(() => {
-    saveState({ balance, positions, history });
-  }, [balance, positions, history]);
+    saveState({ balance, positions, history, lastPrices: prices });
+  }, [balance, positions, history, prices]);
 
   const openPosition = useCallback((
     symbol: string, side: 'buy' | 'sell', qty: number,
