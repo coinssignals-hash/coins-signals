@@ -41,6 +41,18 @@ export default function AITradingCoach() {
   const [sessionStats, setSessionStats] = useState({ questions: 0, tips: 0 });
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Initialize welcome message with translation
+  useEffect(() => {
+    if (!initialized) {
+      setMessages([{
+        id: '0', role: 'assistant',
+        content: t('ac_welcome_full'),
+        timestamp: new Date(),
+      }]);
+      setInitialized(true);
+    }
+  }, [t, initialized]);
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
