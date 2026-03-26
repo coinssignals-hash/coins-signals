@@ -104,7 +104,7 @@ export default function AITradingCoach() {
       }
       setSessionStats(s => ({ ...s, tips: s.tips + 1 }));
     } catch {
-      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: 'Lo siento, no pude procesar tu consulta en este momento. Intenta de nuevo en unos segundos. 🔄', timestamp: new Date() }]);
+      setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: t('ac_error_message'), timestamp: new Date() }]);
     } finally {
       setIsLoading(false);
     }
