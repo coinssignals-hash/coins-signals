@@ -270,7 +270,7 @@ export default function StrategyBuilder() {
                       {!rule.collapsed && (
                         <div className="p-3 space-y-2">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Lógica:</span>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('sb_logic')}:</span>
                             <div className="flex rounded-lg overflow-hidden" style={{ border: `1px solid hsl(${ruleColor} / 0.2)` }}>
                               {(['AND', 'OR'] as LogicGate[]).map(g => (
                                 <button key={g} className="px-3 py-1 text-[11px] font-bold transition-colors"
