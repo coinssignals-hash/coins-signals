@@ -462,7 +462,7 @@ function SmartAlertsTab() {
                         color: `hsl(${isActive ? '160 84% 39%' : alert.status === 'triggered' ? '45 95% 55%' : 'var(--muted-foreground)'})`,
                         background: `hsl(${isActive ? '160 84% 39%' : alert.status === 'triggered' ? '45 95% 55%' : 'var(--muted)'} / 0.1)`,
                       }}>
-                        {alert.status === 'active' ? '● Activa' : alert.status === 'triggered' ? '⚡ Disparada' : '⏸ Pausa'}
+                        {alert.status === 'active' ? t('sa_status_active') : alert.status === 'triggered' ? t('sa_status_triggered') : t('sa_status_paused')}
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground mb-2 rounded-lg px-2.5 py-1.5" style={{
