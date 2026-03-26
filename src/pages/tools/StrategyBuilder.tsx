@@ -360,7 +360,7 @@ export default function StrategyBuilder() {
                 <Input type="number" value={strategy.takeProfitRatio} step={0.5} onChange={e => setStrategy(s => ({ ...s, takeProfitRatio: +e.target.value }))} className="h-8 text-sm bg-background/40 border-border/30 mt-1" />
               </div>
               <div>
-                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Stop Loss</label>
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('sb_stop_loss')}</label>
                 <div className="flex gap-1 mt-1">
                   <Select value={strategy.stopLossType} onValueChange={(v: any) => setStrategy(s => ({ ...s, stopLossType: v }))}>
                     <SelectTrigger className="h-8 text-xs w-[80px] bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
