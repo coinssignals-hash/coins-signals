@@ -407,8 +407,8 @@ function SmartAlertsTab() {
                   <Select value={newAlert.recurrence} onValueChange={v => setNewAlert(a => ({ ...a, recurrence: v as any }))}>
                     <SelectTrigger className="h-8 text-xs w-[110px] bg-background/40 border-border/30"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="once">Una vez</SelectItem>
-                      <SelectItem value="recurring">Recurrente</SelectItem>
+                      <SelectItem value="once">{t('sa_once')}</SelectItem>
+                      <SelectItem value="recurring">{t('sa_recurring')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
