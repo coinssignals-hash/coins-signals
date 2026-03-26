@@ -230,7 +230,7 @@ export function usePaperTrading() {
       stopLoss: opts.stopLoss,
       takeProfit: opts.takeProfit,
       orderType: opts.orderType,
-      openedAt: new Date().toLocaleTimeString(),
+      openedAt: new Date().toLocaleString(),
     };
     setPositions(prev => [...prev, pos]);
     setBalance(prev => prev - margin);
