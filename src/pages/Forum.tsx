@@ -37,6 +37,13 @@ type ForumView = 'channels' | 'chat' | 'dms' | 'dm-chat' | 'favorites';
 
 const REACTION_EMOJIS = ['👍', '❤️', '🔥', '🚀', '😂', '🎯'];
 
+/* MarketSessions-style tab config */
+const FORUM_TABS = [
+  { key: 'channels' as ForumView, emoji: '💬', label: 'Canales', color: '210 70% 55%' },
+  { key: 'dms' as ForumView, emoji: '✉️', label: 'DMs', color: '270 70% 60%' },
+  { key: 'favorites' as ForumView, emoji: '⭐', label: 'Amigos', color: '45 90% 55%' },
+];
+
 export default function Forum() {
   const { t, language } = useTranslation();
   const dateLocale = useDateLocale();
@@ -194,9 +201,9 @@ export default function Forum() {
         const displayOptB = translatedTopic?.option_b || topic.option_b;
 
         return (
-        <GlowSection color="210 70% 55%">
+        <GlowSection color="45 90% 55%">
           {/* Image area with admin upload */}
-          <div className="relative">
+          <div className="relative rounded-t-xl overflow-hidden">
             {topic.image_url ? (
               <img
                 src={topic.image_url}
@@ -227,8 +234,13 @@ export default function Forum() {
 
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <Vote className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{
+                background: 'linear-gradient(135deg, hsl(45 90% 55% / 0.2), hsl(45 90% 55% / 0.08))',
+                border: '1px solid hsl(45 90% 55% / 0.3)',
+              }}>
+                <Vote className="w-4 h-4" style={{ color: 'hsl(45 90% 55%)' }} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(45 90% 55%)' }}>
                 {language === 'es' ? 'Tema del Día' : language === 'en' ? 'Topic of the Day' : language === 'pt' ? 'Tema do Dia' : language === 'fr' ? 'Sujet du Jour' : language === 'de' ? 'Thema des Tages' : language === 'it' ? 'Tema del Giorno' : language === 'ar' ? 'موضوع اليوم' : 'Tema del Día'}
               </span>
               {topicTranslating && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
@@ -246,21 +258,25 @@ export default function Forum() {
                   <button
                     key={opt}
                     onClick={() => user ? vote(opt) : toast.error('Inicia sesión para votar')}
-                    className={cn(
-                      "relative overflow-hidden rounded-lg border p-3 text-left transition-all",
-                      isSelected
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-secondary hover:border-primary/50"
-                    )}
+                    className="relative overflow-hidden rounded-xl p-3 text-left transition-all active:scale-[0.98]"
+                    style={{
+                      background: isSelected
+                        ? 'linear-gradient(135deg, hsl(45 90% 55% / 0.15), hsl(45 90% 55% / 0.05))'
+                        : 'hsl(var(--card) / 0.6)',
+                      border: isSelected
+                        ? '1px solid hsl(45 90% 55% / 0.35)'
+                        : '1px solid hsl(var(--border) / 0.3)',
+                      boxShadow: isSelected ? '0 2px 8px hsl(45 90% 55% / 0.15)' : undefined,
+                    }}
                   >
                     <div
-                      className="absolute inset-0 bg-primary/10 transition-all"
-                      style={{ width: `${pct}%` }}
+                      className="absolute inset-0 transition-all"
+                      style={{ width: `${pct}%`, background: 'hsl(45 90% 55% / 0.08)' }}
                     />
                     <span className="relative text-xs font-semibold text-foreground">{label}</span>
                     <div className="relative flex items-center gap-1 mt-1">
                       <span className="text-[10px] text-muted-foreground">{votes} votos</span>
-                      <span className="text-[10px] font-bold text-primary">{pct}%</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'hsl(45 90% 55%)' }}>{pct}%</span>
                     </div>
                   </button>
                 );
@@ -275,67 +291,85 @@ export default function Forum() {
       {showPastTopics ? (
         <PastTopicsBrowser onClose={() => setShowPastTopics(false)} />
       ) : (
-        <GlowSection color="210 70% 55%" className="rounded-xl">
-          <button
-            onClick={() => setShowPastTopics(true)}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Calendar className="w-3.5 h-3.5" />
-            Ver temas anteriores
-          </button>
-        </GlowSection>
+        <button
+          onClick={() => setShowPastTopics(true)}
+          className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs text-muted-foreground hover:text-foreground transition-all active:scale-[0.98]"
+          style={{
+            background: 'hsl(var(--card) / 0.5)',
+            border: '1px solid hsl(var(--border) / 0.3)',
+          }}
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          Ver temas anteriores
+        </button>
       )}
 
       {/* Tomorrow's Suggestions */}
       <TomorrowSuggestions />
 
-      {/* Tabs: Channels / DMs / Favorites */}
-      <GlowSection color="210 70% 55%" className="rounded-xl">
-        <div className="flex gap-2 p-1.5">
-          <button
-            onClick={() => setView('channels')}
-            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-              view === 'channels' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
-          </button>
-          <button
-            onClick={() => setView('dms')}
-            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-              view === 'dms' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
-          </button>
-          <button
-            onClick={() => setView('favorites')}
-            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-              view === 'favorites' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
-          </button>
-        </div>
-      </GlowSection>
+      {/* MarketSessions-style Tab Grid */}
+      <div className="grid grid-cols-3 gap-1.5">
+        {FORUM_TABS.map(tab => {
+          const isSelected = view === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setView(tab.key)}
+              className={cn(
+                'flex flex-col items-center gap-0.5 py-2.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
+                isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
+              )}
+              style={{
+                background: isSelected
+                  ? `linear-gradient(135deg, hsl(${tab.color} / 0.2), hsl(${tab.color} / 0.08))`
+                  : 'hsl(var(--card) / 0.5)',
+                border: `1px solid ${isSelected ? `hsl(${tab.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                boxShadow: isSelected ? `0 2px 8px hsl(${tab.color} / 0.15)` : undefined,
+              }}
+            >
+              <span className="text-base leading-none">{tab.emoji}</span>
+              <span>{tab.label}</span>
+              {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Channel list */}
       {channelsLoading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : (
-        <div className="space-y-2">
-          {channels.map(ch => (
-            <GlowSection key={ch.id} color="210 70% 55%" className="rounded-xl">
+        <div className="space-y-1.5">
+          {channels.map(ch => {
+            const chColor = '210 70% 55%';
+            return (
               <button
+                key={ch.id}
                 onClick={() => openChannel(ch.id, ch.name, ch.icon)}
-                className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
+                className="w-full flex items-center gap-3 p-3 text-left transition-all active:scale-[0.98] rounded-xl"
+                style={{
+                  background: `linear-gradient(165deg, hsl(${chColor} / 0.06) 0%, hsl(var(--card)) 100%)`,
+                  border: `1px solid hsl(${chColor} / 0.15)`,
+                }}
               >
-                <span className="text-xl">{ch.icon}</span>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{
+                  background: `linear-gradient(135deg, hsl(${chColor} / 0.2), hsl(${chColor} / 0.08))`,
+                  border: `1px solid hsl(${chColor} / 0.25)`,
+                }}>
+                  <span className="text-lg">{ch.icon}</span>
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground">{ch.name}</p>
                   {ch.description && <p className="text-[10px] text-muted-foreground truncate">{ch.description}</p>}
                 </div>
-                <Hash className="w-4 h-4 text-muted-foreground" />
+                <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{
+                  background: `hsl(${chColor} / 0.1)`,
+                }}>
+                  <Hash className="w-3.5 h-3.5" style={{ color: `hsl(${chColor})` }} />
+                </div>
               </button>
-            </GlowSection>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -344,25 +378,33 @@ export default function Forum() {
   // ═══ DM CONVERSATIONS LIST ═══
   const renderDMsView = () => (
     <div className="space-y-4">
-      <GlowSection color="210 70% 55%" className="rounded-xl">
-        <div className="flex gap-2 p-1.5">
-          <button
-            onClick={() => setView('channels')}
-            className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
-          </button>
-          <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
-            <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
-          </button>
-          <button
-            onClick={() => setView('favorites')}
-            className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
-          </button>
-        </div>
-      </GlowSection>
+      {/* MarketSessions-style Tab Grid */}
+      <div className="grid grid-cols-3 gap-1.5">
+        {FORUM_TABS.map(tab => {
+          const isSelected = (tab.key === 'dms' && view === 'dms');
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setView(tab.key)}
+              className={cn(
+                'flex flex-col items-center gap-0.5 py-2.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
+                isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
+              )}
+              style={{
+                background: isSelected
+                  ? `linear-gradient(135deg, hsl(${tab.color} / 0.2), hsl(${tab.color} / 0.08))`
+                  : 'hsl(var(--card) / 0.5)',
+                border: `1px solid ${isSelected ? `hsl(${tab.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                boxShadow: isSelected ? `0 2px 8px hsl(${tab.color} / 0.15)` : undefined,
+              }}
+            >
+              <span className="text-base leading-none">{tab.emoji}</span>
+              <span>{tab.label}</span>
+              {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
+            </button>
+          );
+        })}
+      </div>
 
       {!user ? (
         <GlowSection color="210 70% 55%">
@@ -382,12 +424,18 @@ export default function Forum() {
           </div>
         </GlowSection>
       ) : (
-        <div className="space-y-2">
-          {conversations.map(c => (
-            <GlowSection key={c.user_id} color="210 70% 55%" className="rounded-xl">
+        <div className="space-y-1.5">
+          {conversations.map(c => {
+            const dmColor = '270 70% 60%';
+            return (
               <button
+                key={c.user_id}
                 onClick={() => openDM(c.user_id, c.user_name)}
-                className="w-full flex items-center gap-3 p-3 text-left transition-all hover:bg-primary/5 rounded-xl"
+                className="w-full flex items-center gap-3 p-3 text-left transition-all active:scale-[0.98] rounded-xl"
+                style={{
+                  background: `linear-gradient(165deg, hsl(${dmColor} / 0.06) 0%, hsl(var(--card)) 100%)`,
+                  border: `1px solid hsl(${dmColor} / 0.15)`,
+                }}
               >
                 <div className="relative">
                   <Avatar className={cn("w-8 h-8", isLegendaryAvatar(c.user_avatar) && LEGENDARY_RING_CLASS)}>
@@ -401,11 +449,15 @@ export default function Forum() {
                   <p className="text-[10px] text-muted-foreground truncate">{c.last_message}</p>
                 </div>
                 {c.unread_count > 0 && (
-                  <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5">{c.unread_count}</Badge>
+                  <Badge className="text-[10px] px-1.5" style={{
+                    background: `hsl(${dmColor} / 0.2)`,
+                    color: `hsl(${dmColor})`,
+                    border: `1px solid hsl(${dmColor} / 0.3)`,
+                  }}>{c.unread_count}</Badge>
                 )}
               </button>
-            </GlowSection>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -883,20 +935,33 @@ export default function Forum() {
         {view === 'dms' && renderDMsView()}
         {view === 'favorites' && (
           <div className="space-y-4">
-            {/* Tabs */}
-            <GlowSection color="210 70% 55%" className="rounded-xl">
-              <div className="flex gap-2 p-1.5">
-                <button onClick={() => setView('channels')} className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">
-                  <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
-                </button>
-                <button onClick={() => setView('dms')} className="flex-1 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">
-                  <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
-                </button>
-                <button className="flex-1 py-2 rounded-lg text-xs font-bold bg-primary text-primary-foreground">
-                  <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
-                </button>
-              </div>
-            </GlowSection>
+            {/* MarketSessions-style Tab Grid */}
+            <div className="grid grid-cols-3 gap-1.5">
+              {FORUM_TABS.map(tab => {
+                const isSelected = tab.key === 'favorites';
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setView(tab.key)}
+                    className={cn(
+                      'flex flex-col items-center gap-0.5 py-2.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
+                      isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
+                    )}
+                    style={{
+                      background: isSelected
+                        ? `linear-gradient(135deg, hsl(${tab.color} / 0.2), hsl(${tab.color} / 0.08))`
+                        : 'hsl(var(--card) / 0.5)',
+                      border: `1px solid ${isSelected ? `hsl(${tab.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                      boxShadow: isSelected ? `0 2px 8px hsl(${tab.color} / 0.15)` : undefined,
+                    }}
+                  >
+                    <span className="text-base leading-none">{tab.emoji}</span>
+                    <span>{tab.label}</span>
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
+                  </button>
+                );
+              })}
+            </div>
             <FavoriteUsersPanel
               favorites={favorites}
               loading={favsLoading}
