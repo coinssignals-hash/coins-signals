@@ -258,21 +258,25 @@ export default function Forum() {
                   <button
                     key={opt}
                     onClick={() => user ? vote(opt) : toast.error('Inicia sesión para votar')}
-                    className={cn(
-                      "relative overflow-hidden rounded-lg border p-3 text-left transition-all",
-                      isSelected
-                        ? "border-primary bg-primary/10"
-                        : "border-border bg-secondary hover:border-primary/50"
-                    )}
+                    className="relative overflow-hidden rounded-xl p-3 text-left transition-all active:scale-[0.98]"
+                    style={{
+                      background: isSelected
+                        ? 'linear-gradient(135deg, hsl(45 90% 55% / 0.15), hsl(45 90% 55% / 0.05))'
+                        : 'hsl(var(--card) / 0.6)',
+                      border: isSelected
+                        ? '1px solid hsl(45 90% 55% / 0.35)'
+                        : '1px solid hsl(var(--border) / 0.3)',
+                      boxShadow: isSelected ? '0 2px 8px hsl(45 90% 55% / 0.15)' : undefined,
+                    }}
                   >
                     <div
-                      className="absolute inset-0 bg-primary/10 transition-all"
-                      style={{ width: `${pct}%` }}
+                      className="absolute inset-0 transition-all"
+                      style={{ width: `${pct}%`, background: 'hsl(45 90% 55% / 0.08)' }}
                     />
                     <span className="relative text-xs font-semibold text-foreground">{label}</span>
                     <div className="relative flex items-center gap-1 mt-1">
                       <span className="text-[10px] text-muted-foreground">{votes} votos</span>
-                      <span className="text-[10px] font-bold text-primary">{pct}%</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'hsl(45 90% 55%)' }}>{pct}%</span>
                     </div>
                   </button>
                 );
