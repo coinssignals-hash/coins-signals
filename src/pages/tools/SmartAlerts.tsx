@@ -556,7 +556,6 @@ export default function SmartAlerts() {
                 <p className="text-[11px] text-muted-foreground">
                   {t('sa_desc')}
                 </p>
-                </p>
               </div>
             </div>
           </div>
