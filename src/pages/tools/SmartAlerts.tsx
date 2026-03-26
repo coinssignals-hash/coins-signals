@@ -485,7 +485,7 @@ function SmartAlertsTab() {
                           border: '1px solid hsl(var(--border) / 0.2)',
                           color: 'hsl(var(--foreground) / 0.7)',
                         }}>
-                        {alert.status === 'active' ? 'Pausar' : 'Activar'}
+                        {alert.status === 'active' ? t('sa_pause_btn') : t('sa_activate_btn')}
                       </button>
                       <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive/60 rounded-lg" onClick={() => deleteAlert(alert.id)}>
                         <Trash2 className="w-3 h-3" />
