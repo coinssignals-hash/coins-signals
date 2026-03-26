@@ -296,32 +296,33 @@ export default function Forum() {
       {/* Tomorrow's Suggestions */}
       <TomorrowSuggestions />
 
-      {/* Tabs: Channels / DMs / Favorites */}
-      <GlowSection color="210 70% 55%" className="rounded-xl">
-        <div className="flex gap-2 p-1.5">
-          <button
-            onClick={() => setView('channels')}
-            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-              view === 'channels' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <Hash className="w-3.5 h-3.5 inline mr-1" /> Canales
-          </button>
-          <button
-            onClick={() => setView('dms')}
-            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-              view === 'dms' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <Mail className="w-3.5 h-3.5 inline mr-1" /> Mensajes
-          </button>
-          <button
-            onClick={() => setView('favorites')}
-            className={cn("flex-1 py-2 rounded-lg text-xs font-bold transition-colors",
-              view === 'favorites' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <Star className="w-3.5 h-3.5 inline mr-1" /> Amigos
-          </button>
-        </div>
-      </GlowSection>
+      {/* MarketSessions-style Tab Grid */}
+      <div className="grid grid-cols-3 gap-1.5">
+        {FORUM_TABS.map(tab => {
+          const isSelected = view === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setView(tab.key)}
+              className={cn(
+                'flex flex-col items-center gap-0.5 py-2.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95',
+                isSelected ? 'text-foreground shadow-lg' : 'text-muted-foreground'
+              )}
+              style={{
+                background: isSelected
+                  ? `linear-gradient(135deg, hsl(${tab.color} / 0.2), hsl(${tab.color} / 0.08))`
+                  : 'hsl(var(--card) / 0.5)',
+                border: `1px solid ${isSelected ? `hsl(${tab.color} / 0.35)` : 'hsl(var(--border) / 0.3)'}`,
+                boxShadow: isSelected ? `0 2px 8px hsl(${tab.color} / 0.15)` : undefined,
+              }}
+            >
+              <span className="text-base leading-none">{tab.emoji}</span>
+              <span>{tab.label}</span>
+              {isSelected && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: `hsl(${tab.color})` }} />}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Channel list */}
       {channelsLoading ? (
