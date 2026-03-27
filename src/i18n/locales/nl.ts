@@ -684,6 +684,7 @@ const nl: TranslationKeys = {
   broker_title: 'Vind de juiste Broker voor u',
   broker_subtitle: 'Maximaliseer en beveilig uw winsten door de juiste broker te kiezen',
   broker_search: 'Broker Zoeken',
+  broker_all_regions: 'Alle Brokers',
   broker_search_placeholder: 'Zoek uw Broker',
   broker_beginner: 'Beginner',
   broker_intermediate: 'Gevorderd',

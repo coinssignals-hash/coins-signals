@@ -684,6 +684,7 @@ const de: TranslationKeys = {
   broker_title: 'Finden Sie den richtigen Broker',
   broker_subtitle: 'Maximieren und sichern Sie Ihre Gewinne durch die Wahl eines passenden Brokers',
   broker_search: 'Broker suchen',
+  broker_all_regions: 'Alle Broker',
   broker_search_placeholder: 'Ihren Broker suchen',
   broker_beginner: 'Anfänger',
   broker_intermediate: 'Fortgeschritten',

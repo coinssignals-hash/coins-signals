@@ -684,6 +684,7 @@ const mt: TranslationKeys = {
   broker_title: 'Sib il-Broker it-tajjeb għalik',
   broker_subtitle: 'Massimizza u sigura l-profitti tiegħek billi tagħżel broker li jaqbel mal-ħtiġijiet tiegħek',
   broker_search: 'Fittex Broker',
+  broker_all_regions: 'Il-Brokers Kollha',
   broker_search_placeholder: 'Fittex il-Brokers tiegħek',
   broker_beginner: 'Principjant',
   broker_intermediate: 'Intermedju',
