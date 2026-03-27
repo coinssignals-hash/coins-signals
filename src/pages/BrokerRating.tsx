@@ -67,7 +67,7 @@ const parseNumeric = (val: string): number => {
 export default function BrokerRating() {
   const { t } = useTranslation();
   const categories = getCategoriesTranslated(t);
-  const [selectedRegion, setSelectedRegion] = useState('intl');
+  const [selectedRegion, setSelectedRegion] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [globalSearchTerm, setGlobalSearchTerm] = useState('');
   const [isGlobalSearch, setIsGlobalSearch] = useState(false);
@@ -150,7 +150,8 @@ export default function BrokerRating() {
       }
     });
 
-  const currentRegion = BROKER_REGIONS.find(r => r.key === selectedRegion);
+  const ALL_REGION = { key: 'all', label: '🌐 ' + (t('broker_all_regions') || 'Todos los Brokers') };
+  const currentRegion = selectedRegion === 'all' ? ALL_REGION : BROKER_REGIONS.find(r => r.key === selectedRegion);
 
   return (
     <PageShell>
@@ -206,6 +207,12 @@ export default function BrokerRating() {
               </SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-72">
+              <SelectItem value="all" className="py-2.5 pl-9 pr-3">
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-2xl leading-none shrink-0">🌐</span>
+                  <span className="flex-1 font-medium">{t('broker_all_regions') || 'Todos los Brokers'}</span>
+                </div>
+              </SelectItem>
               {BROKER_REGIONS.map((region) => {
                 const flag = region.label.split(' ')[0];
                 const name = region.label.split(' ').slice(1).join(' ');

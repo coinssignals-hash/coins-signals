@@ -684,6 +684,7 @@ const es: TranslationKeys = {
   broker_title: 'Busca el Broker a tu medida',
   broker_subtitle: 'Aumenta y asegura tus ganancias escogiendo un broker a tu medida',
   broker_search: 'Buscar Broker',
+  broker_all_regions: 'Todos los Brokers',
   broker_search_placeholder: 'Buscar tu Brokers',
   broker_beginner: 'Principiante',
   broker_intermediate: 'Intermedio',

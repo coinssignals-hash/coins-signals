@@ -684,6 +684,7 @@ const en: TranslationKeys = {
   broker_title: 'Find the right Broker for you',
   broker_subtitle: 'Maximize and secure your profits by choosing a broker that fits your needs',
   broker_search: 'Search Broker',
+  broker_all_regions: 'All Brokers',
   broker_search_placeholder: 'Search your Brokers',
   broker_beginner: 'Beginner',
   broker_intermediate: 'Intermediate',

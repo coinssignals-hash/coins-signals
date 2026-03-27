@@ -484,6 +484,7 @@ const fr: TranslationKeys = {
   broker_title: 'Trouvez le Courtier qui vous convient',
   broker_subtitle: 'Augmentez et sécurisez vos gains en choisissant un courtier adapté',
   broker_search: 'Rechercher un Courtier',
+  broker_all_regions: 'Tous les Courtiers',
   broker_search_placeholder: 'Rechercher vos Courtiers',
   broker_beginner: 'Débutant',
   broker_intermediate: 'Intermédiaire',

@@ -684,6 +684,7 @@ const ar: TranslationKeys = {
   broker_title: 'ابحث عن الوسيط المناسب لك',
   broker_subtitle: 'حقق أقصى أرباح وأمّنها باختيار وسيط يناسب احتياجاتك',
   broker_search: 'بحث عن وسيط',
+  broker_all_regions: 'جميع الوسطاء',
   broker_search_placeholder: 'ابحث عن وسيطك',
   broker_beginner: 'مبتدئ',
   broker_intermediate: 'متوسط',

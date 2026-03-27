@@ -476,6 +476,7 @@ const pt: TranslationKeys = {
   broker_title: 'Encontre a Corretora ideal para você',
   broker_subtitle: 'Aumente e proteja seus lucros escolhendo uma corretora adequada',
   broker_search: 'Buscar Corretora',
+  broker_all_regions: 'Todas as Corretoras',
   broker_search_placeholder: 'Buscar suas Corretoras',
   broker_beginner: 'Iniciante',
   broker_intermediate: 'Intermediário',
