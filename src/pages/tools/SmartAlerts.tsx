@@ -58,10 +58,15 @@ function NotificationSettingsTab() {
   const { soundEnabled, toggleSound } = useNewSignalsCount();
   const { profile, updateProfile, user } = useAuth();
 
-  const soundPreviews: { type: SoundType; label: string; description: string; icon: typeof TrendingUp; color: string }[] = [
-    { type: 'buy', label: t('notif_buy_signal'), description: t('notif_buy_desc'), icon: TrendingUp, color: 'hsl(142 71% 45%)' },
-    { type: 'sell', label: t('notif_sell_signal'), description: t('notif_sell_desc'), icon: TrendingDown, color: 'hsl(0 84% 60%)' },
-    { type: 'alert', label: t('notif_critical_alert'), description: t('notif_critical_desc'), icon: AlertTriangle, color: 'hsl(48 96% 53%)' },
+  const [soundPrefs, setSoundPrefs] = useState<SoundPreferences>(getSoundPreferences);
+  const [activeCategory, setActiveCategory] = useState<string>('money');
+  const [selectingFor, setSelectingFor] = useState<keyof SoundPreferences | null>(null);
+
+  const soundPreviews: { type: SoundType; prefKey: keyof SoundPreferences; label: string; description: string; icon: typeof TrendingUp; color: string }[] = [
+    { type: soundPrefs.buySignal, prefKey: 'buySignal', label: t('notif_buy_signal'), description: t('notif_buy_desc'), icon: TrendingUp, color: 'hsl(142 71% 45%)' },
+    { type: soundPrefs.sellSignal, prefKey: 'sellSignal', label: t('notif_sell_signal'), description: t('notif_sell_desc'), icon: TrendingDown, color: 'hsl(0 84% 60%)' },
+    { type: soundPrefs.criticalAlert, prefKey: 'criticalAlert', label: t('notif_critical_alert'), description: t('notif_critical_desc'), icon: AlertTriangle, color: 'hsl(48 96% 53%)' },
+    { type: soundPrefs.smartAlert, prefKey: 'smartAlert', label: t('sa_smart_alerts') || 'Smart Alert', description: t('sound_cat_smart'), icon: Zap, color: 'hsl(270 70% 60%)' },
   ];
 
   const DB_MAP: Record<string, keyof Pick<NonNullable<typeof profile>, 'push_notifications_enabled' | 'signal_alerts_enabled' | 'email_notifications_enabled'>> = {
