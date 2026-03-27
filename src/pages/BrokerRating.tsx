@@ -207,6 +207,12 @@ export default function BrokerRating() {
               </SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-72">
+              <SelectItem value="all" className="py-2.5 pl-9 pr-3">
+                <div className="flex items-center gap-3 w-full">
+                  <span className="text-2xl leading-none shrink-0">🌐</span>
+                  <span className="flex-1 font-medium">{t('broker_all_regions') || 'Todos los Brokers'}</span>
+                </div>
+              </SelectItem>
               {BROKER_REGIONS.map((region) => {
                 const flag = region.label.split(' ')[0];
                 const name = region.label.split(' ').slice(1).join(' ');
