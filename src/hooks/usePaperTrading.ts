@@ -11,7 +11,7 @@ export interface PaperPosition {
   stopLoss: number | null;
   takeProfit: number | null;
   orderType: 'market' | 'limit';
-  openedAt: string;
+  openedAt: string; // ISO string
 }
 
 export interface PaperTrade {
@@ -24,7 +24,8 @@ export interface PaperTrade {
   lotSize: number;
   leverage: number;
   pnl: number;
-  closedAt: string;
+  openedAt: string; // ISO string - when the position was opened
+  closedAt: string; // ISO string - when the position was closed
   closeReason: 'manual' | 'sl' | 'tp';
 }
 
