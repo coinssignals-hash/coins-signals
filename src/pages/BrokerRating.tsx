@@ -67,7 +67,7 @@ const parseNumeric = (val: string): number => {
 export default function BrokerRating() {
   const { t } = useTranslation();
   const categories = getCategoriesTranslated(t);
-  const [selectedRegion, setSelectedRegion] = useState('intl');
+  const [selectedRegion, setSelectedRegion] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [globalSearchTerm, setGlobalSearchTerm] = useState('');
   const [isGlobalSearch, setIsGlobalSearch] = useState(false);

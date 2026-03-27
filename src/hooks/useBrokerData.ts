@@ -272,6 +272,47 @@ export function useBrokerData(regionKey: string) {
   const abortRef = useRef<AbortController | null>(null);
 
   const loadRegion = useCallback(async (key: string) => {
+    // "all" loads every region and merges results
+    if (key === 'all') {
+      if (cache.has('all')) {
+        setBrokers(cache.get('all')!);
+        return;
+      }
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      setLoading(true);
+      setError(null);
+      try {
+        const allBrokers: NormalizedBroker[] = [];
+        const seen = new Set<string>();
+        await Promise.all(BROKER_REGIONS.map(async (region) => {
+          if (cache.has(region.key)) {
+            cache.get(region.key)!.forEach(b => { if (!seen.has(b.name)) { seen.add(b.name); allBrokers.push(b); } });
+            return;
+          }
+          try {
+            const res = await fetch(`/data/brokers/${region.file}`, { signal: controller.signal });
+            if (!res.ok) return;
+            const ct = res.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) return;
+            const data = await res.json();
+            const normalized = normalizeJsonData(data, region.key);
+            cache.set(region.key, normalized);
+            normalized.forEach(b => { if (!seen.has(b.name)) { seen.add(b.name); allBrokers.push(b); } });
+          } catch {}
+        }));
+        allBrokers.sort((a, b) => b.rating - a.rating);
+        cache.set('all', allBrokers);
+        if (!controller.signal.aborted) setBrokers(allBrokers);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') { setError(err.message); setBrokers([]); }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+      return;
+    }
+
     const region = BROKER_REGIONS.find(r => r.key === key);
     if (!region) return;
 
