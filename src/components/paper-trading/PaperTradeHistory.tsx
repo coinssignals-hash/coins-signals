@@ -113,7 +113,11 @@ export function PaperTradeHistory({ history }: Props) {
               </div>
 
               <div className="flex items-center justify-between mt-2">
-                <span className="text-[9px] text-muted-foreground">{trade.closedAt}</span>
+                <span className="text-[9px] text-muted-foreground">
+                  {(() => {
+                    try { return new Date(trade.closedAt).toLocaleString(); } catch { return trade.closedAt; }
+                  })()}
+                </span>
                 <Button
                   size="sm"
                   variant="outline"
