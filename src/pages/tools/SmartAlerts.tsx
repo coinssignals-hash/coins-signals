@@ -19,7 +19,7 @@ import { GlowSection } from '@/components/ui/glow-section';
 import { Button } from '@/components/ui/button';
 import { GlobalAlertsPanel } from '@/components/notifications/GlobalAlertsPanel';
 import { useNewSignalsCount } from '@/hooks/useNewSignalsCount';
-import { playNotificationSound, enableAudio, SoundType } from '@/utils/notificationSound';
+import { playNotificationSound, enableAudio, SoundType, SOUND_OPTIONS, SOUND_CATEGORIES, getSoundPreferences, saveSoundPreferences, SoundPreferences } from '@/utils/notificationSound';
 import { useAuth } from '@/hooks/useAuth';
 
 // ── Smart Alert types ──
