@@ -232,7 +232,7 @@ export function usePaperTrading() {
       stopLoss: opts.stopLoss,
       takeProfit: opts.takeProfit,
       orderType: opts.orderType,
-      openedAt: new Date().toLocaleString(),
+      openedAt: new Date().toISOString(),
     };
     setPositions(prev => [...prev, pos]);
     setBalance(prev => prev - margin);
