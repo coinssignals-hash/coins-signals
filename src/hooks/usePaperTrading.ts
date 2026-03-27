@@ -251,7 +251,8 @@ export function usePaperTrading() {
         id: pos.id, symbol: pos.symbol, side: pos.side,
         entryPrice: pos.entryPrice, exitPrice, quantity: pos.quantity,
         lotSize: pos.lotSize, leverage: pos.leverage,
-        pnl: diff * pos.quantity, closedAt: new Date().toLocaleTimeString(),
+        pnl: diff * pos.quantity, openedAt: pos.openedAt,
+        closedAt: new Date().toISOString(),
         closeReason: 'manual',
       }, ...h]);
       return prev.filter(p => p.id !== posId);
