@@ -318,8 +318,8 @@ export default function TradingJournal() {
         {/* Tab Bar — Sessions style */}
         <div className="flex gap-2">
           {([
-            { key: 'journal' as const, label: t('journal_tab_diary') || 'Diario', icon: BookOpen, color: ACCENT },
-            { key: 'psychology' as const, label: t('journal_tab_psychology') || 'Psicología', icon: Brain, color: '270 70% 60%' },
+            { key: 'journal' as const, label: t('journal_diary') || 'Diario', icon: BookOpen, color: ACCENT },
+            { key: 'psychology' as const, label: t('journal_psychology') || 'Psicología', icon: Brain, color: '270 70% 60%' },
             { key: 'coach' as const, label: 'Coach IA', icon: Sparkles, color: '45 80% 55%' },
           ]).map(tab => {
             const isActive = activeTab === tab.key;
