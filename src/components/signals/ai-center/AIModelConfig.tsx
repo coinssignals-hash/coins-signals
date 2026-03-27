@@ -115,9 +115,9 @@ export function AIModelConfig({ settings, onChange, detailLevel, onDetailLevelCh
         </div>
         <div className="grid grid-cols-3 gap-1.5">
           {([
-            { id: 'concise' as DetailLevel, label: t('ai_center_detail_concise') || 'Conciso', icon: FileText, desc: t('ai_center_detail_concise_desc') || '2-3 líneas' },
-            { id: 'standard' as DetailLevel, label: t('ai_center_detail_standard') || 'Estándar', icon: AlignLeft, desc: t('ai_center_detail_standard_desc') || 'Equilibrado' },
-            { id: 'detailed' as DetailLevel, label: t('ai_center_detail_detailed') || 'Detallado', icon: BookOpen, desc: t('ai_center_detail_detailed_desc') || 'Profundo' },
+            { id: 'concise' as DetailLevel, label: t('ai_center_detail_concise') || 'Conciso', icon: FileText, desc: t('ai_center_detail_concise_desc') || 'Resumen rápido con los puntos clave' },
+            { id: 'standard' as DetailLevel, label: t('ai_center_detail_standard') || 'Estándar', icon: AlignLeft, desc: t('ai_center_detail_standard_desc') || 'Análisis equilibrado y completo' },
+            { id: 'detailed' as DetailLevel, label: t('ai_center_detail_detailed') || 'Detallado', icon: BookOpen, desc: t('ai_center_detail_detailed_desc') || 'Análisis profundo con explicaciones' },
           ]).map((opt) => {
             const Icon = opt.icon;
             const isActive = detailLevel === opt.id;
@@ -126,15 +126,20 @@ export function AIModelConfig({ settings, onChange, detailLevel, onDetailLevelCh
                 key={opt.id}
                 onClick={() => onDetailLevelChange(opt.id)}
                 className={cn(
-                  "flex flex-col items-center gap-1 p-2.5 rounded-lg border transition-all text-center",
+                  "flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center",
                   isActive
-                    ? "border-primary bg-primary/10 text-foreground"
+                    ? "border-primary bg-primary/10 text-foreground shadow-[0_0_12px_-3px_hsl(var(--primary)/0.3)]"
                     : "border-border bg-card hover:bg-secondary/50 text-muted-foreground"
                 )}
               >
-                <Icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-muted-foreground")} />
-                <span className="text-[11px] font-semibold">{opt.label}</span>
-                <span className="text-[9px] text-muted-foreground leading-tight">{opt.desc}</span>
+                <div className={cn(
+                  "w-8 h-8 rounded-lg flex items-center justify-center",
+                  isActive ? "bg-primary/20" : "bg-muted/50"
+                )}>
+                  <Icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-muted-foreground")} />
+                </div>
+                <span className="text-[11px] font-bold">{opt.label}</span>
+                <span className="text-[8px] text-muted-foreground leading-tight">{opt.desc}</span>
               </button>
             );
           })}
