@@ -764,6 +764,7 @@ export type TranslationKeys = {
   broker_title: string;
   broker_subtitle: string;
   broker_search: string;
+  broker_all_regions: string;
   broker_search_placeholder: string;
   broker_beginner: string;
   broker_intermediate: string;
