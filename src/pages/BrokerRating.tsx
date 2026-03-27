@@ -150,7 +150,8 @@ export default function BrokerRating() {
       }
     });
 
-  const currentRegion = BROKER_REGIONS.find(r => r.key === selectedRegion);
+  const ALL_REGION = { key: 'all', label: '🌐 ' + (t('broker_all_regions') || 'Todos los Brokers') };
+  const currentRegion = selectedRegion === 'all' ? ALL_REGION : BROKER_REGIONS.find(r => r.key === selectedRegion);
 
   return (
     <PageShell>
