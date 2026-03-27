@@ -11,7 +11,7 @@ export interface PaperPosition {
   stopLoss: number | null;
   takeProfit: number | null;
   orderType: 'market' | 'limit';
-  openedAt: string;
+  openedAt: string; // ISO string
 }
 
 export interface PaperTrade {
@@ -24,7 +24,8 @@ export interface PaperTrade {
   lotSize: number;
   leverage: number;
   pnl: number;
-  closedAt: string;
+  openedAt: string; // ISO string - when the position was opened
+  closedAt: string; // ISO string - when the position was closed
   closeReason: 'manual' | 'sl' | 'tp';
 }
 
@@ -197,7 +198,8 @@ export function usePaperTrading() {
             id: pos.id, symbol: pos.symbol, side: pos.side,
             entryPrice: pos.entryPrice, exitPrice: price, quantity: pos.quantity,
             lotSize: pos.lotSize, leverage: pos.leverage,
-            pnl: diff * pos.quantity, closedAt: new Date().toLocaleTimeString(),
+            pnl: diff * pos.quantity, openedAt: pos.openedAt,
+            closedAt: new Date().toISOString(),
             closeReason: triggered!,
           }, ...h]);
         } else {
@@ -230,7 +232,7 @@ export function usePaperTrading() {
       stopLoss: opts.stopLoss,
       takeProfit: opts.takeProfit,
       orderType: opts.orderType,
-      openedAt: new Date().toLocaleString(),
+      openedAt: new Date().toISOString(),
     };
     setPositions(prev => [...prev, pos]);
     setBalance(prev => prev - margin);
@@ -249,7 +251,8 @@ export function usePaperTrading() {
         id: pos.id, symbol: pos.symbol, side: pos.side,
         entryPrice: pos.entryPrice, exitPrice, quantity: pos.quantity,
         lotSize: pos.lotSize, leverage: pos.leverage,
-        pnl: diff * pos.quantity, closedAt: new Date().toLocaleTimeString(),
+        pnl: diff * pos.quantity, openedAt: pos.openedAt,
+        closedAt: new Date().toISOString(),
         closeReason: 'manual',
       }, ...h]);
       return prev.filter(p => p.id !== posId);
