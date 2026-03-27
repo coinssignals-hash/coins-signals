@@ -325,7 +325,7 @@ export default function TradingJournal() {
             const isActive = activeTab === tab.key;
             return (
               <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                className="flex-1 relative rounded-xl py-2.5 px-2 flex flex-col items-center gap-1 transition-all duration-300 active:scale-95 overflow-hidden"
+                className="flex-1 relative rounded-xl py-2 px-1.5 flex items-center justify-center gap-1.5 transition-all duration-300 active:scale-95 overflow-hidden min-w-0"
                 style={{
                   background: isActive
                     ? `linear-gradient(165deg, hsl(${tab.color} / 0.25), hsl(${tab.color} / 0.08))`
@@ -338,13 +338,10 @@ export default function TradingJournal() {
                     background: `linear-gradient(90deg, transparent, hsl(${tab.color} / 0.8), transparent)`,
                   }} />
                 )}
-                <tab.icon className="w-4 h-4" style={{ color: isActive ? `hsl(${tab.color})` : 'hsl(var(--muted-foreground))' }} />
-                <span className="text-[10px] font-bold tracking-wide" style={{
+                <tab.icon className="w-3.5 h-3.5 shrink-0" style={{ color: isActive ? `hsl(${tab.color})` : 'hsl(var(--muted-foreground))' }} />
+                <span className="text-[10px] font-bold tracking-wide truncate" style={{
                   color: isActive ? `hsl(${tab.color})` : 'hsl(var(--muted-foreground))',
                 }}>{tab.label}</span>
-                {isActive && (
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full" style={{ background: `hsl(${tab.color})` }} />
-                )}
               </button>
             );
           })}
