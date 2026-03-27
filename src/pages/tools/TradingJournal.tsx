@@ -315,22 +315,39 @@ export default function TradingJournal() {
           </div>
         </div>
 
-        {/* Tab Bar */}
-        <div className="flex rounded-xl overflow-hidden" style={{ border: `1px solid hsl(${ACCENT} / 0.2)` }}>
+        {/* Tab Bar — Sessions style */}
+        <div className="flex gap-2">
           {([
-            { key: 'journal' as const, label: '📊 Diario', icon: BookOpen },
-            { key: 'psychology' as const, label: '🧠 Psicología', icon: Brain },
-            { key: 'coach' as const, label: '✨ Coach IA', icon: Sparkles },
-          ]).map(tab => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className="flex-1 px-3 py-2 text-xs font-bold transition-all"
-              style={{
-                background: activeTab === tab.key ? `hsl(${ACCENT} / 0.15)` : 'hsl(var(--secondary))',
-                color: activeTab === tab.key ? `hsl(${ACCENT})` : 'hsl(var(--muted-foreground))',
-              }}>
-              {tab.label}
-            </button>
-          ))}
+            { key: 'journal' as const, label: t('journal_tab_diary') || 'Diario', icon: BookOpen, color: ACCENT },
+            { key: 'psychology' as const, label: t('journal_tab_psychology') || 'Psicología', icon: Brain, color: '270 70% 60%' },
+            { key: 'coach' as const, label: 'Coach IA', icon: Sparkles, color: '45 80% 55%' },
+          ]).map(tab => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+                className="flex-1 relative rounded-xl py-2.5 px-2 flex flex-col items-center gap-1 transition-all duration-300 active:scale-95 overflow-hidden"
+                style={{
+                  background: isActive
+                    ? `linear-gradient(165deg, hsl(${tab.color} / 0.25), hsl(${tab.color} / 0.08))`
+                    : 'hsl(var(--secondary) / 0.5)',
+                  border: `1px solid hsl(${tab.color} / ${isActive ? '0.4' : '0.1'})`,
+                  boxShadow: isActive ? `0 0 20px hsl(${tab.color} / 0.15), inset 0 1px 0 hsl(${tab.color} / 0.2)` : 'none',
+                }}>
+                {isActive && (
+                  <div className="absolute top-0 inset-x-0 h-[2px]" style={{
+                    background: `linear-gradient(90deg, transparent, hsl(${tab.color} / 0.8), transparent)`,
+                  }} />
+                )}
+                <tab.icon className="w-4 h-4" style={{ color: isActive ? `hsl(${tab.color})` : 'hsl(var(--muted-foreground))' }} />
+                <span className="text-[10px] font-bold tracking-wide" style={{
+                  color: isActive ? `hsl(${tab.color})` : 'hsl(var(--muted-foreground))',
+                }}>{tab.label}</span>
+                {isActive && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full" style={{ background: `hsl(${tab.color})` }} />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Psychology Tab */}
