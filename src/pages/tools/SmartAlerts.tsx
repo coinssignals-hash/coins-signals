@@ -247,21 +247,86 @@ function NotificationSettingsTab() {
             <Switch checked={soundEnabled} onCheckedChange={handleSoundToggle} />
           </div>
           <div className="py-4" style={{ borderBottom: `1px solid hsl(${ACCENT} / 0.1)` }}>
-            <p className="text-xs text-muted-foreground mb-3">{t('notif_preview_sounds')}</p>
+            <p className="text-xs text-muted-foreground mb-3">{t('sound_customize_desc')}</p>
             <div className="grid grid-cols-1 gap-2">
               {soundPreviews.map((sound) => {
                 const Icon = sound.icon;
+                const isSelecting = selectingFor === sound.prefKey;
                 return (
-                  <button key={sound.type} onClick={() => handlePreviewSound(sound.type)} className="flex items-center gap-3 p-3 rounded-xl text-left group transition-all active:scale-[0.98]" style={{
-                    background: `hsl(${ACCENT} / 0.04)`, border: `1px solid hsl(${ACCENT} / 0.1)`,
-                  }}>
-                    <div className="p-2 rounded-full" style={{ background: `${sound.color.replace(')', ' / 0.15)')}` }}><Icon className="w-4 h-4" style={{ color: sound.color }} /></div>
-                    <div className="flex-1">
-                      <span className="text-sm font-medium text-foreground">{sound.label}</span>
-                      <p className="text-xs text-muted-foreground">{sound.description}</p>
+                  <div key={sound.prefKey}>
+                    <div className="flex items-center gap-3 p-3 rounded-xl text-left transition-all" style={{
+                      background: isSelecting ? `hsl(${ACCENT} / 0.1)` : `hsl(${ACCENT} / 0.04)`,
+                      border: isSelecting ? `1px solid hsl(${ACCENT} / 0.3)` : `1px solid hsl(${ACCENT} / 0.1)`,
+                    }}>
+                      <div className="p-2 rounded-full" style={{ background: `${sound.color.replace(')', ' / 0.15)')}` }}>
+                        <Icon className="w-4 h-4" style={{ color: sound.color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium text-foreground">{sound.label}</span>
+                        <p className="text-[10px] text-muted-foreground truncate">{sound.description}</p>
+                      </div>
+                      <button onClick={() => { enableAudio(); playNotificationSound(sound.type); }}
+                        className="p-2 rounded-full shrink-0" style={{ background: `hsl(${ACCENT} / 0.1)` }}>
+                        <Play className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+                      </button>
+                      <button onClick={() => setSelectingFor(isSelecting ? null : sound.prefKey)}
+                        className="p-2 rounded-full shrink-0" style={{ background: isSelecting ? `hsl(${ACCENT} / 0.2)` : `hsl(${ACCENT} / 0.08)` }}>
+                        <Settings2 className="w-3.5 h-3.5" style={{ color: `hsl(${ACCENT})` }} />
+                      </button>
                     </div>
-                    <div className="p-2 rounded-full" style={{ background: `hsl(${ACCENT} / 0.1)` }}><Play className="w-4 h-4" style={{ color: `hsl(${ACCENT})` }} /></div>
-                  </button>
+
+                    {/* Sound picker for this alert type */}
+                    <AnimatePresence>
+                      {isSelecting && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden">
+                          <div className="pt-2 pb-1 px-1">
+                            {/* Category tabs */}
+                            <div className="flex gap-1 mb-2 overflow-x-auto scrollbar-hide">
+                              {SOUND_CATEGORIES.map(cat => (
+                                <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
+                                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold whitespace-nowrap transition-all"
+                                  style={{
+                                    background: activeCategory === cat.id ? `hsl(${cat.color} / 0.15)` : 'hsl(var(--muted) / 0.5)',
+                                    border: activeCategory === cat.id ? `1px solid hsl(${cat.color} / 0.3)` : '1px solid transparent',
+                                    color: activeCategory === cat.id ? `hsl(${cat.color})` : undefined,
+                                  }}>
+                                  <span>{cat.icon}</span> {t(cat.labelKey)}
+                                </button>
+                              ))}
+                            </div>
+                            {/* Sound options */}
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {SOUND_OPTIONS.filter(s => s.category === activeCategory).map(opt => {
+                                const isSelected = sound.type === opt.id;
+                                return (
+                                  <button key={opt.id}
+                                    onClick={() => {
+                                      enableAudio();
+                                      playNotificationSound(opt.id);
+                                      const updated = saveSoundPreferences({ [sound.prefKey]: opt.id });
+                                      setSoundPrefs(updated);
+                                    }}
+                                    className="flex flex-col items-start p-2.5 rounded-lg text-left transition-all"
+                                    style={{
+                                      background: isSelected ? `hsl(${ACCENT} / 0.12)` : `hsl(${ACCENT} / 0.03)`,
+                                      border: isSelected ? `1px solid hsl(${ACCENT} / 0.4)` : `1px solid hsl(${ACCENT} / 0.08)`,
+                                      boxShadow: isSelected ? `0 0 8px hsl(${ACCENT} / 0.15)` : undefined,
+                                    }}>
+                                    <div className="flex items-center gap-1.5 w-full">
+                                      <span className="text-xs font-semibold text-foreground">{t(opt.labelKey)}</span>
+                                      {isSelected && <Check className="w-3 h-3 ml-auto" style={{ color: `hsl(${ACCENT})` }} />}
+                                    </div>
+                                    <span className="text-[9px] text-muted-foreground leading-tight mt-0.5">{t(opt.descKey)}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 );
               })}
             </div>
